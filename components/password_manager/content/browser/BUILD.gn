@@ -51,6 +51,26 @@ static_library("browser") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("password_form_classification_util") {
+  sources = [
+    "password_form_classification_util.cc",
+    "password_form_classification_util.h",
+  ]
+
+  public_deps = [
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+  ]
+
+  deps = [
+    "//base",
+    "//components/autofill/content/browser",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/form_parsing",
+    "//content/public/browser",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   deps = [ "//base" ]

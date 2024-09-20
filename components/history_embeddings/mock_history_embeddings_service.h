@@ -17,9 +17,10 @@ namespace history_embeddings {
 
 class MockHistoryEmbeddingsService : public HistoryEmbeddingsService {
  public:
-  MOCK_METHOD(void,
+  MOCK_METHOD(SearchResult,
               Search,
-              (std::string query,
+              (SearchResult * previous_search_result,
+               std::string query,
                std::optional<base::Time> time_range_start,
                size_t count,
                SearchResultCallback callback),

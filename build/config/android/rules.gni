@@ -14,7 +14,7 @@ assert(
     "current_toolchain=$current_toolchain default_toolchain=$default_toolchain")
 
 _sanitizer_runtimes = []
-if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
+if (use_cfi_diag || is_ubsan_any) {
   _sanitizer_runtimes += [ "$clang_base_path/lib/clang/$clang_version/lib/linux/libclang_rt.ubsan_standalone-$sanitizer_arch-android.so" ]
 }
 if (is_asan) {
@@ -1434,6 +1434,7 @@ if (!is_robolectric && enable_java_templates) {
   #   direct_deps_only: Do not recurse on deps.
   #   jar_excluded_patterns (optional)
   #     List of globs for paths to exclude.
+  #   renaming_rules: rename java classes inside according to these rules.
   #
   # Example
   #   dist_jar("lib_fatjar") {
@@ -1452,30 +1453,80 @@ if (!is_robolectric && enable_java_templates) {
         defined(invoker.direct_deps_only) && invoker.direct_deps_only
     assert(!(_use_unprocessed_jars && _use_interface_jars),
            "Cannot set both use_interface_jars and use_unprocessed_jars")
+    _supports_android =
+        !defined(invoker.supports_android) || invoker.supports_android
+    _requires_android =
+        defined(invoker.requires_android) && invoker.requires_android
+    _has_renaming_rules = defined(invoker.renaming_rules)
 
-    _jar_target_name = target_name
+    _is_java_target_name =
+        filter_exclude([ target_name ], java_target_patterns) == []
+    _target_name_without_java_or_junit =
+        string_replace(string_replace(target_name, "_java", "_J"),
+                       "_junit",
+                       "_U")
+    _zip_target_name = "${_target_name_without_java_or_junit}_zip"
+    _zip_jar_path = invoker.output
 
-    if (defined(invoker.build_config)) {
-      _build_config = invoker.build_config
-      _build_config_dep = invoker.build_config_dep
+    if (_has_renaming_rules) {
+      _zip_jar_path = "$target_gen_dir/$target_name.singlejar.jar"
+
+      # if we are java-like and have renaming rules, the main target is the
+      # java_library_impl otherwise its the renaming target.
+      if (_is_java_target_name) {
+        _renaming_target_name = "${_target_name_without_java_or_junit}_renamed"
+        _final_jar_target = _renaming_target_name
+      } else {
+        _renaming_target_name = target_name
+      }
     } else {
-      _build_config = "$target_gen_dir/$target_name.build_config.json"
-      _build_config_target_name = "$target_name$build_config_target_suffix"
-      _build_config_dep = ":$_build_config_target_name"
+      # If we dont have renaming rules then the main target is either the zip
+      # target or the java_library_impl if we are java-like.
+      if (_is_java_target_name) {
+        _final_jar_target = _zip_target_name
+      } else {
+        _zip_target_name = target_name
+      }
+    }
 
+    _build_config = "$target_gen_dir/$target_name.build_config.json"
+    _build_config_target_name = "$target_name$build_config_target_suffix"
+    _build_config_dep = ":$_build_config_target_name"
+
+    if (_is_java_target_name) {
+      # If we have a java-like target name we need to provide the expected
+      # meta_targets as well as the processing (eg: ijar, bytecode rewriting)
+      # that is expected of java targets so that other java targets can depend
+      # on us.
+      java_library_impl(target_name) {
+        forward_variables_from(invoker,
+                               [
+                                 "jar_excluded_patterns",
+                                 "deps",
+                               ])
+        type = "dist_jar"
+        if (!defined(deps)) {
+          deps = []
+        }
+        deps += [ ":$_final_jar_target" ]
+
+        supports_android = _supports_android
+        requires_android = _requires_android
+        jar_path = invoker.output
+        enable_bytecode_checks = false
+      }
+    } else {
       write_build_config(_build_config_target_name) {
         type = "dist_jar"
-        supports_android =
-            !defined(invoker.supports_android) || invoker.supports_android
-        requires_android =
-            defined(invoker.requires_android) && invoker.requires_android
+        supports_android = _supports_android
+        requires_android = _requires_android
         possible_config_deps = invoker.deps
         build_config = _build_config
       }
     }
 
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
-    action_with_pydeps(_jar_target_name) {
+    action_with_pydeps(_zip_target_name) {
       forward_variables_from(invoker, [ "data" ])
       script = "//build/android/gyp/zip.py"
       depfile = "$target_gen_dir/$target_name.d"
@@ -1498,13 +1549,13 @@ if (!is_robolectric && enable_java_templates) {
 
       inputs = [ _build_config ]
 
-      outputs = [ invoker.output ]
+      outputs = [ _zip_jar_path ]
 
       args = [
         "--depfile",
         rebase_path(depfile, root_build_dir),
         "--output",
-        rebase_path(invoker.output, root_build_dir),
+        rebase_path(_zip_jar_path, root_build_dir),
         "--no-compress",
       ]
 
@@ -1544,6 +1595,15 @@ if (!is_robolectric && enable_java_templates) {
       }
       if (_excludes != []) {
         args += [ "--input-zips-excluded-globs=$_excludes" ]
+      }
+    }
+
+    if (_has_renaming_rules) {
+      rename_jar_classes(_renaming_target_name) {
+        input = _zip_jar_path
+        output = invoker.output
+        deps = [ ":$_zip_target_name" ]
+        renaming_rules = invoker.renaming_rules
       }
     }
   }
@@ -1891,7 +1951,7 @@ if (!is_robolectric && enable_java_templates) {
            invoker.assertions_implicitly_enabled) || enable_java_asserts) {
         defines += [ "_ENABLE_ASSERTS" ]
       }
-      if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
+      if (use_cfi_diag || is_ubsan_any) {
         defines += [ "_IS_UBSAN" ]
       }
 
@@ -1899,8 +1959,8 @@ if (!is_robolectric && enable_java_templates) {
         defines += [ "_IS_CHROME_BRANDED" ]
       }
 
-      if (defined(invoker.bundles_supported) && invoker.bundles_supported) {
-        defines += [ "_BUNDLES_SUPPORTED" ]
+      if (defined(invoker.is_bundle) && invoker.is_bundle) {
+        defines += [ "_IS_BUNDLE" ]
       }
 
       if (defined(invoker.isolated_splits_enabled) &&
@@ -1970,7 +2030,6 @@ if (!is_robolectric && enable_java_templates) {
   #
   # Variables:
   #   build_config: Path to build_config used for locale lists.
-  #   is_bundle_module: Whether or not this target is part of a bundle build.
   #   java_package: Java package for the generated class.
   #   use_chromium_linker:
   template("generate_product_config_srcjar") {
@@ -1988,11 +2047,7 @@ if (!is_robolectric && enable_java_templates) {
 
       _use_chromium_linker =
           defined(invoker.use_chromium_linker) && invoker.use_chromium_linker
-      _is_bundle = defined(invoker.is_bundle_module) && invoker.is_bundle_module
-      defines += [
-        "USE_CHROMIUM_LINKER_VALUE=$_use_chromium_linker",
-        "IS_BUNDLE_VALUE=$_is_bundle",
-      ]
+      defines += [ "USE_CHROMIUM_LINKER_VALUE=$_use_chromium_linker" ]
       if (defined(invoker.build_config)) {
         forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
         _rebased_build_config =
@@ -2629,11 +2684,7 @@ if (!is_robolectric && enable_java_templates) {
                                  "disable_strict_mode_context",
                                  "isolated_splits_enabled",
                                ])
-        _bundles_supported = _is_bundle_module
-        if (defined(invoker.bundles_supported)) {
-          _bundles_supported = invoker.bundles_supported
-        }
-        bundles_supported = _bundles_supported
+        is_bundle = _is_bundle_module
         assertions_implicitly_enabled = _assertions_implicitly_enabled
         is_incremental_install = _incremental_apk
         version_code = _version_code
@@ -2662,7 +2713,6 @@ if (!is_robolectric && enable_java_templates) {
         _locale_target_name =
             "${_template_name}_${_package}__product_config_srcjar"
         generate_product_config_srcjar("$_locale_target_name") {
-          forward_variables_from(invoker, [ "is_bundle_module" ])
           build_config = _build_config
           java_package = _package
           use_chromium_linker = _use_chromium_linker

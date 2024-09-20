@@ -13,11 +13,11 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_client.h"
 #include "ash/picker/search/picker_search_aggregator.h"
 #include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/views/picker_view_delegate.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_client.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -126,14 +126,12 @@ std::vector<std::string> GetLanguageCodesFromPrefs(PrefService* prefs) {
 
 }  // namespace
 
-PickerSearchController::PickerSearchController(PickerClient* client,
-                                               base::TimeDelta burn_in_period)
-    : client_(CHECK_DEREF(client)), burn_in_period_(burn_in_period) {}
+PickerSearchController::PickerSearchController(base::TimeDelta burn_in_period)
+    : burn_in_period_(burn_in_period) {}
 
 PickerSearchController::~PickerSearchController() = default;
 
-void PickerSearchController::LoadEmojiLanguagesFromPrefs() {
-  PrefService* prefs = client_->GetPrefs();
+void PickerSearchController::LoadEmojiLanguagesFromPrefs(PrefService* prefs) {
   pref_change_registrar_.Reset();
   if (prefs == nullptr) {
     return;
@@ -156,6 +154,7 @@ void PickerSearchController::LoadEmojiLanguages(PrefService* prefs) {
 }
 
 void PickerSearchController::StartSearch(
+    PickerClient* client,
     std::u16string_view query,
     std::optional<PickerCategory> category,
     PickerSearchRequest::Options search_options,
@@ -171,7 +170,7 @@ void PickerSearchController::StartSearch(
                           aggregator_->GetWeakPtr()),
       base::BindOnce(&PickerSearchAggregator::HandleNoMoreResults,
                      aggregator_->GetWeakPtr()),
-      &client_.get(), std::move(search_options));
+      client, std::move(search_options));
 }
 
 void PickerSearchController::StopSearch() {
@@ -182,12 +181,14 @@ void PickerSearchController::StopSearch() {
 }
 
 void PickerSearchController::StartEmojiSearch(
+    PrefService* prefs,
     std::u16string_view query,
     PickerViewDelegate::EmojiSearchResultsCallback callback) {
   const base::TimeTicks search_start = base::TimeTicks::Now();
 
   emoji::EmojiSearchResult results = emoji_search_.SearchEmoji(
-      query, GetLanguageCodesFromPrefs(client_->GetPrefs()));
+      query, GetLanguageCodesFromPrefs(prefs), kMaxEmojiResults,
+      kMaxSymbolResults, kMaxEmoticonResults);
 
   base::TimeDelta elapsed = base::TimeTicks::Now() - search_start;
   base::UmaHistogramTimes("Ash.Picker.Search.EmojiProvider.QueryTime", elapsed);
@@ -196,8 +197,7 @@ void PickerSearchController::StartEmojiSearch(
   emoji_results.reserve(kMaxEmojiResults + kMaxSymbolResults +
                         kMaxEmoticonResults);
 
-  const base::Value::Dict* emoji_variants =
-      LoadEmojiVariantsFromPrefs(client_->GetPrefs());
+  const base::Value::Dict* emoji_variants = LoadEmojiVariantsFromPrefs(prefs);
 
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.emojis, kMaxEmojiResults)) {

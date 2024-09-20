@@ -16,6 +16,7 @@
 #include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -112,14 +113,13 @@ base::expected<std::string, QueryError> ValidateDownloadedString(
 namespace internal {
 
 void QueryAlmanacApiRaw(
-    network::mojom::URLLoaderFactory& url_loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const std::string& request_body,
     std::string_view endpoint_suffix,
     int max_response_size,
     std::optional<std::string> error_histogram_name,
-    base::OnceCallback<void(base::expected<std::string, QueryError>)>
-        callback) {
+    base::OnceCallback<void(base::expected<std::string, QueryError>)> callback,
+    const std::string& request_body) {
   std::unique_ptr<network::SimpleURLLoader> loader = apps::GetAlmanacUrlLoader(
       traffic_annotation, request_body, endpoint_suffix);
 
@@ -127,7 +127,7 @@ void QueryAlmanacApiRaw(
   // callback.
   auto* loader_ptr = loader.get();
   loader_ptr->DownloadToString(
-      &url_loader_factory,
+      url_loader_factory.get(),
       base::BindOnce(&ValidateDownloadedString, std::move(loader),
                      std::move(error_histogram_name))
           .Then(std::move(callback)),

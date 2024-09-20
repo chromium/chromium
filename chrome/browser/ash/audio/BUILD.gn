@@ -46,8 +46,8 @@ source_set("browser_tests") {
     "//chrome/browser/ash/accessibility",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/audio/public/cpp/sounds",
     "//content/test:test_support",
-    "//services/audio/public/cpp",
     "//ui/base",
     "//ui/events:test_support",
   ]

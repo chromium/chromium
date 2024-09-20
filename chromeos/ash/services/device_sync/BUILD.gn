@@ -188,7 +188,6 @@ static_library("device_sync") {
     "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/phonehub:*",
     "//chrome/browser/ash/tether:unit_tests",
-    "//chrome/browser/chromeos",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/services/device_sync/public/cpp:prefs",
     "//chromeos/ash/services/device_sync/public/cpp:unit_tests",

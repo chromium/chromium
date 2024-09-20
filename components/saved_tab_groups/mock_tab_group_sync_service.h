@@ -68,6 +68,10 @@ class MockTabGroupSyncService : public TabGroupSyncService {
               IsRemoteDevice,
               (const std::optional<std::string>&),
               (const));
+  MOCK_METHOD(bool,
+              WasTabGroupClosedLocally,
+              (const base::Uuid& sync_id),
+              (const));
   MOCK_METHOD(void, RecordTabGroupEvent, (const EventDetails&));
 
   MOCK_METHOD(syncer::DataTypeSyncBridge*, bridge, ());
@@ -80,6 +84,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,
               CreateScopedLocalObserverPauser,
               ());
+  MOCK_METHOD(void,
+              GetURLRestriction,
+              (const GURL&, TabGroupSyncService::UrlRestrictionCallback));
 
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));

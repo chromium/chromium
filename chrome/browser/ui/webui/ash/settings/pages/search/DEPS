@@ -11,6 +11,8 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/assistant",
+  "+chrome/browser/ash/input_method",
+  "+chrome/browser/ash/magic_boost",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/search_engines",
   "+chrome/browser/ui/webui/ash/assistant_optin",

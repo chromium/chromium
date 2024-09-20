@@ -21,7 +21,7 @@ static_library("reset") {
     "//chrome/app/resources:locale_settings",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//components/user_manager",
     "//content/public/browser",

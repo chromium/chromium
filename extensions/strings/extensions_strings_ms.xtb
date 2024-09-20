@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Produk <ph name="PRODUCT_ID" /> daripada vendor <ph name="VENDOR_ID" /> tidak diketahui (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Gagal untuk menggantikan fail crx. Periksa untuk melihat jika fail sedang digunakan.</translation>
 <translation id="3163201441334626963">Produk <ph name="PRODUCT_ID" /> daripada vendor <ph name="VENDOR_ID" /> tidak diketahui</translation>
-<translation id="3369521687965833290">Tidak dapat menyahpek sambungan.  Untuk menyahpek sambungan dengan selamat, perlu ada laluan ke direktori profil anda yang bermula dengan huruf pemacu dan tidak  mengandungi simpang, titik peletakan atau symlink.  Laluan tersebut tidak wujud untuk profil anda.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> daripada vendor <ph name="VENDOR_ID" /> (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Nilai input untuk kunci persendirian mestilah laluan yang sah.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Pentadbir mesin ini memerlukan <ph name="EXTENSION_NAME" /> dipasang. Sambungan ini tidak boleh dinyahpasang.</translation>
 <translation id="6027032947578871493">Produk <ph name="PRODUCT_ID" /> daripada <ph name="VENDOR_NAME" /> tidak diketahui (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> daripada vendor <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Tidak dapat menyahpek sambungan.  Untuk menyahpek sambungan dengan selamat, perlu ada laluan ke direktori profil anda yang tidak mengandungi symlink.  Tiada laluan tersebut wujud untuk profil anda.</translation>
 <translation id="6322279351188361895">Gagal untuk membaca kunci persendirian.</translation>
 <translation id="6391538222494443604">Direktori input mesti wujud.</translation>
 <translation id="641087317769093025">Tidak boleh menyahzip sambungan</translation>

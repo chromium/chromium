@@ -264,6 +264,8 @@ void AuthInputRowView::CreateAndConfigureSubmitButton() {
 
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
+
+  submit_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 void AuthInputRowView::CreateAndConfigureDisplayTextButton() {
@@ -272,10 +274,21 @@ void AuthInputRowView::CreateAndConfigureDisplayTextButton() {
           base::BindRepeating(&AuthInputRowView::ToggleTextDisplayingState,
                               base::Unretained(this))));
 
-  display_text_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_SHOW));
-  display_text_button_->SetToggledTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_HIDE));
+  switch (auth_type_) {
+    case AuthType::kPassword:
+      display_text_button_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_SHOW));
+      display_text_button_->SetToggledTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_HIDE));
+      break;
+    case AuthType::kPin:
+      display_text_button_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_AUTH_DISPLAY_PIN_BUTTON_ACCESSIBLE_NAME_SHOW));
+      display_text_button_->SetToggledTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_AUTH_DISPLAY_PIN_BUTTON_ACCESSIBLE_NAME_HIDE));
+      break;
+  }
+
   display_text_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   display_text_button_->SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(display_text_button_)

@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Produkt i panjohur <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zëvendësimi i skedarit crx dështoi. Kontrollo për të parë nëse skedari është në përdorim.</translation>
 <translation id="3163201441334626963">Produkt i panjohur <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Nuk mund të shpaketojë shtesën. Për të shpaketuar në mënyrë të sigurt një shtesë, duhet të ketë një shteg drejt direktorisë tënde të profilit, që fillon me një shkronjë disku dhe nuk përmban nyje, pikë fiksimi ose lidhje simboli. Asnjë nga këto shtigje nuk ekziston për profilin tënd.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> nga shitësi <ph name="VENDOR_ID" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vlera hyrëse për çelësin privat duhet të jetë një shteg i vlefshëm.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Administratori i kësaj makinerie kërkon instalimin e <ph name="EXTENSION_NAME" /> dhe ajo nuk mund të çinstalohet.</translation>
 <translation id="6027032947578871493">Produkt i panjohur <ph name="PRODUCT_ID" /> nga <ph name="VENDOR_NAME" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> nga shitësi <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Shtesa nuk mund të shpaketohet. Për të shpaketuar në mënyrë të sigurt një shtesë, duhet të ketë një shteg për te direktoria jote e profilit që nuk përfshin një lidhje simboli. Nuk ekziston një shteg i tillë për profilin tënd.</translation>
 <translation id="6322279351188361895">Dështoi në leximin e çelësit privat.</translation>
 <translation id="6391538222494443604">Duhet të ekzistojë një direktori e hyrjes.</translation>
 <translation id="641087317769093025">Nuk mundi të shpaketonte shtesën</translation>

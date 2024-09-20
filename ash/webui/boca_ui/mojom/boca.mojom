@@ -52,6 +52,7 @@ struct Window {
 
 struct Config{
   mojo_base.mojom.TimeDelta session_duration;
+  Identity? teacher;
   // Selected students to be joined for session.
   array<Identity> students;
   OnTaskConfig on_task_config;
@@ -86,13 +87,23 @@ struct OnTaskConfig {
   array<ControlledTab> tabs;
 };
 
+enum GetSessionError{
+  kHTTPError,
+  kEmpty,
+};
+
+union SessionResult {
+ GetSessionError error;
+ Config config;
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
   // non-increasing order for most recent tab's last
   // access timestamp
   GetWindowsTabsList() => (array<Window> window_list);
-    // Fetch a list of courses for the current teacher.
+  // Fetch a list of courses for the current teacher.
   ListCourses() => (array<Course> courses);
   // Requested by the Boca SWA to fetch a list of students for a given
   // course. Must be called on a course_id received from the most recent
@@ -100,6 +111,8 @@ interface PageHandler {
   ListStudents(string course_id) => (array<Identity> students);
   // Create a session with `config`.
   CreateSession(Config config) => (bool success);
+  // Retrieves the current session.
+  GetSession() => (SessionResult result);
 };
 
 // Implemented by renderer process

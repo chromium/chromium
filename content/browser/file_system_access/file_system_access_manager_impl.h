@@ -168,11 +168,13 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const BindingContext& binding_context,
       PathType path_type,
       const base::FilePath& file_path,
+      const base::FilePath& display_name,
       UserAction user_action) override;
   blink::mojom::FileSystemAccessEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
       PathType path_type,
       const base::FilePath& directory_path,
+      const base::FilePath& display_name,
       UserAction user_action) override;
   void ResolveTransferToken(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
@@ -301,6 +303,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void CreateFileSystemAccessDataTransferToken(
       PathType path_type,
       const base::FilePath& file_path,
+      const base::FilePath& display_name,
       int renderer_id,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
           receiver);
@@ -598,6 +601,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void ResolveDataTransferTokenWithFileType(
       const BindingContext& binding_context,
       const base::FilePath& file_path,
+      const base::FilePath& display_name,
       const storage::FileSystemURL& url,
       GetEntryFromDataTransferTokenCallback token_resolved_callback,
       FileSystemAccessPermissionContext::HandleType file_type);
@@ -609,6 +613,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void DidVerifySensitiveDirectoryAccessForDataTransfer(
       const BindingContext& binding_context,
       const base::FilePath& file_path,
+      const base::FilePath& display_name,
       const storage::FileSystemURL& url,
       FileSystemAccessPermissionContext::HandleType file_type,
       GetEntryFromDataTransferTokenCallback token_resolved_callback,

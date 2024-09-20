@@ -13,7 +13,6 @@ desc: |-
 
   - Console Insights: explains console messages and offers suggestions on how to fix console errors.
 default: 0
-default_for_enterprise_users: 1
 example_value: 2
 features:
   dynamic_refresh: true

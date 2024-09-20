@@ -12,12 +12,13 @@
 class SamplePanelModel;
 
 // Singleton that owns all SamplePanelModels and associates them with
-// BrowserStates.
+// profiles.
 class SamplePanelModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static SamplePanelModel* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static SamplePanelModel* GetForBrowserState(ProfileIOS* profile);
 
+  static SamplePanelModel* GetForProfile(ProfileIOS* profile);
   static SamplePanelModelFactory* GetInstance();
 
   SamplePanelModelFactory(const SamplePanelModelFactory&) = delete;

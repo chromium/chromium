@@ -29,6 +29,17 @@ inline constexpr char kExecutableName[] = "updater.exe";
 inline constexpr char kExecutableName[] = "updater";
 #endif
 
+// The name of the enterprise companion program image.
+#if BUILDFLAG(IS_WIN)
+inline constexpr char kCompanionAppExecutableName[] =
+    "enterprise_companion.exe";
+#else
+inline constexpr char kCompanionAppExecutableName[] = "enterprise_companion";
+#endif
+
+// Uninstall switch for the enterprise companion app.
+inline constexpr char kUninstallCompanionAppSwitch[] = "uninstall";
+
 // A suffix appended to the updater executable name before any file extension.
 extern const char kExecutableSuffix[];
 
@@ -512,6 +523,14 @@ inline constexpr int kErrorNoConsoleUser = kUpdaterErrorBase + 78;
 
 // Failed to fetch enterprise policies.
 inline constexpr int kErrorPolicyFetchFailed = kUpdaterErrorBase + 79;
+
+// Failed to uninstall the enterprise companion app.
+inline constexpr int kErrorFailedToUninstallCompanionApp =
+    kUpdaterErrorBase + 80;
+
+// Failed to uninstall the other versions of updater.
+inline constexpr int kErrorFailedToUninstallOtherVersion =
+    kUpdaterErrorBase + 81;
 
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.

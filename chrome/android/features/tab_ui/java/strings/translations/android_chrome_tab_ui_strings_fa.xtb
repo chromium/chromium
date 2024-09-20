@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">رده‌بندی</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد}one{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد}other{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد}}</translation>
 <translation id="3291470810748040983">وقتی در یکی از برگه‌های باز، قیمت کمتری وجود داشت، اعلان دریافت خواهید کرد</translation>
-<translation id="3322827343001922122">باز کردن منو کنش‌های گروه برگه برای گروه برگه <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">پیشنهاد: به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
 <translation id="3547352561153509682">با این کار، گروه از همه دستگاه‌های واردشده به حساب <ph name="USER_EMAIL" /> حذف خواهد شد</translation>
 <translation id="3613492231657284463">پنهان کردن کادر گفتگوی برگه‌های غیرفعال</translation>
@@ -80,7 +79,6 @@
 <translation id="4460014764210899310">لغو گروه‌بندی</translation>
 <translation id="4590027107044272416">اکنون می‌توانید برگه جدیدی را در اینجا باز کنید</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{‫۱ برگه غیرفعال بسته شود؟}one{‫<ph name="TAB_COUNT_MANY" /> برگه غیرفعال بسته شود؟}other{‫<ph name="TAB_COUNT_MANY" /> برگه غیرفعال بسته شود؟}}</translation>
-<translation id="4648718555153979859">برگه‌هایتان اینجا باهم گروه‌بندی می‌شوند</translation>
 <translation id="4686942373615810936">همین الآن ایجاد شد</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{بسته شدن پس‌از ۱ روز}one{بسته شدن پس‌از <ph name="DAY_COUNT_MANY" /> روز}other{بسته شدن پس‌از <ph name="DAY_COUNT_MANY" /> روز}}</translation>
 <translation id="4777866634702576038">گروه برگه حذف شود؟</translation>
@@ -136,6 +134,7 @@
 <translation id="6694634756612002311">مدیریت هم‌رسانی</translation>
 <translation id="6744956528665271406">ویرایش رنگ گروه</translation>
 <translation id="6856809498882026482">پنهان کردن حالت چندانتخابی</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_ONE" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{هم‌رسانی برگه}one{هم‌رسانی برگه}other{هم‌رسانی برگه‌ها}}</translation>
 <translation id="7129458170538955174">اطلاعات مربوط به این فروشگاه به‌صورت نیمه باز شده است</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> برگه.}one{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه.}other{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
@@ -171,6 +170,7 @@
 <translation id="8205266828577616993">انتقال برگه به بالا</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8338427544764842461">گروه‌های برگه شما اینجا ذخیره می‌شود و در همه دستگاه‌های واردشده به حساب به‌روز می‌شود</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه برگه هم‌رسانی‌شده با <ph name="TABS_COUNT_ONE" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه برگه هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه برگه هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{بستن <ph name="TABS_COUNT_ONE" /> برگه انتخابی}one{بستن <ph name="TABS_COUNT_MANY" /> برگه انتخابی}other{بستن <ph name="TABS_COUNT_MANY" /> برگه انتخابی}}</translation>
 <translation id="8398929769197326728">پوشه جدید - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">تنظیمات</translation>

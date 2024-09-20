@@ -7,13 +7,13 @@
 Screen will implement all needed interfaces on the C++ side and will be included
 in the corresponding BUILD files.
 
-Script will generate sample JS and HTML files that user will be able to display
+Script will generate sample TS and HTML files that user will be able to display
 in the OOBE's WebView. Corresponding BUILD files will be updated.
 
 If --no-webview flag is specified previous step will be skipped.
 
 After generation is complete user still needs to manually insert screen into the
-OOBE's wizard controller flow and add WebView content to the screens.js file.
+OOBE's wizard controller flow and add WebView content to the screens.ts file.
 
 usage: generate_screen_template.py [-h] [--no-webview] name
 
@@ -23,7 +23,7 @@ positional arguments:
 
 options:
   -h, --help    show this help message and exit
-  --no-webview  Indicates whether user wants to skip creation of JS/HTML files.
+  --no-webview  Indicates whether user wants to skip creation of TS/HTML files.
                 (default: False)
 """
 
@@ -65,7 +65,7 @@ SCREEN_GN_FILE_PATH = os.path.join(GIT_ROOT,
                                    'chrome/browser/ash/login/screens/BUILD.gn')
 HANDLER_GN_FILE_PATH = os.path.join(
     GIT_ROOT, 'chrome/browser/ui/webui/ash/login/BUILD.gn')
-WEBVIEW_JS_LIBRARY_GN_FILE_PATH = os.path.join(
+WEBVIEW_TS_LIBRARY_GN_FILE_PATH = os.path.join(
     GIT_ROOT, 'chrome/browser/resources/chromeos/login/screens/common/BUILD.gn')
 WEBVIEW_GN_FILE_PATH = os.path.join(
     GIT_ROOT, 'chrome/browser/resources/chromeos/login/BUILD.gn')
@@ -88,7 +88,7 @@ def GetScreenNameWords(screen_name: str) -> list[str]:
   """Breaks camel-case screen name into the words.
 
   Splits given camel case string into the logical lexems thath will be used to
-  substitute new screen's name inside the generated C++/JS files.
+  substitute new screen's name inside the generated C++/TS files.
 
   Args:
     screen_name: A string that represents new screen name in camel case.
@@ -128,7 +128,7 @@ def FindAndReplace(name_words: list[str], file_path: str):
       lambda content: re.sub('placeholder_screen', ('_'.join(
           word.lower() for word in name_words) + '_screen'), content),
 
-      # Update screen id inside the handler and element id inside the JS file.
+      # Update screen id inside the handler and element id inside the TS file.
       lambda content: re.sub('placeholder', '-'.join(
           word.lower() for word in name_words), content)
   ]
@@ -162,8 +162,8 @@ def UpdateGnFile(name_words: list[str], gn_file_path: str):
   for line in content:
     result.append(line)
     is_cpp_include = re.search(r'placeholder_screen.*\.h', line)
-    is_js_include = re.search(r'placeholder.js', line)
-    if is_cpp_include or is_js_include:
+    is_ts_include = re.search(r'placeholder.ts', line)
+    if is_cpp_include or is_ts_include:
       new_file = re.sub('placeholder',
                         '_'.join(word.lower() for word in name_words), line)
       if is_cpp_include:
@@ -175,60 +175,6 @@ def UpdateGnFile(name_words: list[str], gn_file_path: str):
 
   # Currently, works only with the CPP includes.
   sort_sources.ProcessFile(gn_file_path, should_confirm=False)
-
-  logging.info('Updated GN file: %s', gn_file_path)
-
-
-def UpdateWebviewGnFile(name_words: list[str], gn_file_path: str):
-  """Updates WebView GN file.
-
-  It does the following steps;
-    1) If ":placeholder" rule found it adds new rule right after it.
-    2) If "js_library("placeholder")" rule found function copies it's content,
-       replaces all needed names and pastes result right after an original rule.
-    3) If "placeholder.js" rule found it adds new rule right after it.
-
-  This function doesn't sort sources order inside the GN file, as sort_sources
-  doesn't support JS files yet.
-
-  Args:
-    name_words: An array of strings that represents logical lexems of a new
-      screen's name.
-    gn_file_path: An absolute path to a GN file.
-  """
-  with open(gn_file_path, encoding='utf-8') as f:
-    content = f.readlines()
-
-  result = []
-  inside_closure_rule = False
-  closure = []
-  for line in content:
-    result.append(line)
-    if inside_closure_rule:
-      closure.append(line)
-      if re.match('}', line):
-        inside_closure_rule = False
-        result.append('\n')
-        for closure_line in closure:
-          if re.search('placeholder', closure_line):
-            result.append(
-                re.sub('placeholder',
-                       '_'.join(word.lower() for word in name_words),
-                       closure_line))
-          else:
-            result.append(closure_line)
-    else:
-      if re.search(':placeholder', line) or re.search(r'"placeholder.js"',
-                                                      line):
-        result.append(
-            re.sub(r'placeholder',
-                   '_'.join(word.lower() for word in name_words), line))
-      elif re.search(r'js_library\("placeholder"\)', line):
-        inside_closure_rule = True
-        closure.append(line)
-
-  with open(gn_file_path, mode='w', encoding='utf-8', newline='\n') as f:
-    f.writelines(result)
 
   logging.info('Updated GN file: %s', gn_file_path)
 
@@ -309,29 +255,28 @@ def GenerateCppFiles(name_words: list[str]):
 
 
 def GenerateWebviewFiles(name_words: list[str]):
-  """Generates JS and HTML files for a new screen.
+  """Generates TS and HTML files for a new screen.
 
   This function does the following operations:
-    1) Copy content of the placeholder.js and placeholder.html files
-    2) Do a find and replace operations over new JS file.
-    3) Add JS file to the corresponding BUILD.gn file, generate closure rule
-       for it.
+    1) Copy content of the placeholder.ts and placeholder.html files
+    2) Do a find and replace operations over new TS file.
+    3) Add TS file to the corresponding BUILD.gn file.
 
-  JS BUILD.gn rules currently will not be sorted, as sort_sources doesn't
+  TS BUILD.gn rules currently will not be sorted, as sort_sources doesn't
   support those extensions.
 
   Args:
     name_words: An array of strings that represents logical lexems of a new
       screen's name.
   """
-  webview_globs = ['*.js']
+  webview_globs = ['*.ts']
   paths = FindPlacholderFilesPaths(webview_globs)
 
-  assert (len(paths) == 1), 'Only 1 JS file should be found'
+  assert (len(paths) == 1), 'Only 1 TS file should be found'
 
   # HTML file doesn't contain any words that could be used verify it's
-  # correctness, so we can generate it's path from the corresponding JS file.
-  paths.append(re.sub(r'\.js', '.html', paths[0]))
+  # correctness, so we can generate it's path from the corresponding TS file.
+  paths.append(re.sub(r'\.ts', '.html', paths[0]))
 
   for path in paths:
     new_file_path = re.sub('placeholder',
@@ -339,11 +284,10 @@ def GenerateWebviewFiles(name_words: list[str]):
 
     CopyPlaceholderFile(path, new_file_path)
 
-    if new_file_path[-3:] == '.js':
+    if new_file_path[-3:] == '.ts':
       FindAndReplace(name_words, os.path.join(GIT_ROOT, new_file_path))
 
   UpdateGnFile(name_words, WEBVIEW_GN_FILE_PATH)
-  UpdateWebviewGnFile(name_words, WEBVIEW_JS_LIBRARY_GN_FILE_PATH)
 
 
 def GenerateScreen(name_words: list[str], no_webview: bool):
@@ -372,7 +316,7 @@ def main():
       (e.g. MarketingOptIn). No "Screen" suffix is needed.""")
   parser.add_argument(
       '--no-webview',
-      help='Indicates whether user wants to skip creation of JS/HTML files.',
+      help='Indicates whether user wants to skip creation of TS/HTML files.',
       action='store_true')
 
   options = parser.parse_args()

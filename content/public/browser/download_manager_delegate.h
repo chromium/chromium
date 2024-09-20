@@ -135,6 +135,10 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   virtual bool ShouldOpenDownload(download::DownloadItem* item,
                                   DownloadOpenDelayedCallback callback);
 
+  // Returns whether the download contents should be temporarily obfuscated for
+  // access prevention.
+  virtual bool ShouldObfuscateDownload(download::DownloadItem* item);
+
   // Checks and hands off the downloading to be handled by another system based
   // on mime type. Returns true if the download was intercepted.
   virtual bool InterceptDownloadIfApplicable(
@@ -241,6 +245,9 @@ class CONTENT_EXPORT DownloadManagerDelegate {
 
   // Whether to open pdf inline.
   virtual bool ShouldOpenPdfInline();
+
+  // Whether download is restricted by policy.
+  virtual bool IsDownloadRestrictedByPolicy();
 #endif  // BUILDFLAG(IS_ANDROID)
  protected:
   virtual ~DownloadManagerDelegate();

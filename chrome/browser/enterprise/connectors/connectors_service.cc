@@ -281,7 +281,8 @@ std::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
   }
 #endif
 
-  std::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
+  std::optional<DmToken> dm_token =
+      GetDmToken(AnalysisConnectorScopePref(connector));
   bool is_cloud = settings.value().cloud_or_local_settings.is_cloud_analysis();
 
   if (is_cloud) {
@@ -295,7 +296,7 @@ std::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
   settings.value().per_profile =
       (dm_token.has_value() &&
        dm_token.value().scope == policy::POLICY_SCOPE_USER) ||
-      GetPolicyScope(ConnectorScopePref(connector)) ==
+      GetPolicyScope(AnalysisConnectorScopePref(connector)) ==
           policy::POLICY_SCOPE_USER;
   settings.value().client_metadata = BuildClientMetadata(is_cloud);
 
@@ -362,8 +363,9 @@ std::vector<std::string> ConnectorsService::GetAnalysisServiceProviderNames(
   if (!ConnectorsEnabled())
     return {};
 
-  if (!GetDmToken(ConnectorScopePref(connector)).has_value())
+  if (!GetDmToken(AnalysisConnectorScopePref(connector)).has_value()) {
     return {};
+  }
 
   return connectors_manager_->GetAnalysisServiceProviderNames(connector);
 }
@@ -375,11 +377,11 @@ std::string ConnectorsService::GetManagementDomain() {
   std::optional<policy::PolicyScope> scope = std::nullopt;
   for (const char* scope_pref :
        {enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
-        ConnectorScopePref(AnalysisConnector::FILE_ATTACHED),
-        ConnectorScopePref(AnalysisConnector::FILE_DOWNLOADED),
-        ConnectorScopePref(AnalysisConnector::BULK_DATA_ENTRY),
-        ConnectorScopePref(AnalysisConnector::PRINT),
-        ConnectorScopePref(ReportingConnector::SECURITY_EVENT)}) {
+        AnalysisConnectorScopePref(AnalysisConnector::FILE_ATTACHED),
+        AnalysisConnectorScopePref(AnalysisConnector::FILE_DOWNLOADED),
+        AnalysisConnectorScopePref(AnalysisConnector::BULK_DATA_ENTRY),
+        AnalysisConnectorScopePref(AnalysisConnector::PRINT),
+        kOnSecurityEventScopePref}) {
     std::optional<DmToken> dm_token = GetDmToken(scope_pref);
     if (dm_token.has_value()) {
       scope = dm_token.value().scope;

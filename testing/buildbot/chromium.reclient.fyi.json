@@ -66,11 +66,6 @@
       "chromiumos_preflight"
     ]
   },
-  "Win Builder (reclient shadow)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "ios-simulator reclient staging": {
     "additional_compile_targets": [
       "all"

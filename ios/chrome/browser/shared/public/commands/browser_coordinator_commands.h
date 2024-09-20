@@ -106,6 +106,10 @@ class GURL;
 - (void)showLensPromo;
 - (void)dismissLensPromo;
 
+// Shows and dismisses the Enhanced Safe Browsing Promo.
+- (void)showEnhancedSafeBrowsingPromo;
+- (void)dismissEnhancedSafeBrowsingPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_

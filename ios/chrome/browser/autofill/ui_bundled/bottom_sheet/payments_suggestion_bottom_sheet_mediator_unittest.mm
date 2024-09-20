@@ -4,14 +4,17 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_mock_clock_override.h"
+#import "base/time/time.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -35,7 +38,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
     test_web_state_->SetCurrentURL(GURL("http://foo.com"));
 
     consumer_ =
-        OCMProtocolMock(@protocol(PaymentsSuggestionBottomSheetConsumer));
+        OCMStrictProtocolMock(@protocol(PaymentsSuggestionBottomSheetConsumer));
   }
 
   void SetUp() override {
@@ -150,9 +153,62 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
        CleansUpWhenWebStateListDestroyed) {
   CreateMediatorWithSuggestions();
   ASSERT_TRUE(mediator_);
+  OCMExpect([consumer_ setCreditCardData:[OCMArg isNotNil]
+                       showGooglePayLogo:YES]);
   [mediator_ setConsumer:consumer_];
 
   OCMExpect([consumer_ dismiss]);
   web_state_list_.reset();
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that filling the suggestion is only allowed once past the minimal
+// delay before accepting filling. Tests each key moment, before view did
+// appear, right after appearance, after some time but not enough to reach the
+// minimal delay, and after the minimal delay.
+TEST_F(PaymentsSuggestionBottomSheetMediatorTest, FillingDelay) {
+  base::ScopedMockClockOverride mock_clock;
+  base::HistogramTester histogram_tester;
+
+  CreateMediator();
+
+  OCMExpect([consumer_ activatePrimaryButton]);
+
+  // Select a suggestion before the countdown even started, should be ignored.
+  [mediator_ didTapOnPrimaryButton];
+
+  // View did appear, now the countdown starts.
+  [mediator_ paymentsBottomSheetViewDidAppear];
+
+  // Try to select a suggestion right after view did appear while the countdown
+  // is just about to start (no ticks yet), should be ignored.
+  [mediator_ didTapOnPrimaryButton];
+
+  // Advance time but not enough to reach the minimal delay so selecting the
+  // suggestion is once again ignored.
+  mock_clock.Advance(base::Milliseconds(250));
+  [mediator_ didTapOnPrimaryButton];
+
+  // Allow selecting a suggestion past the minimal delay.
+  mock_clock.Advance(base::Milliseconds(250));
+  [mediator_ didTapOnPrimaryButton];
+
+  // Verify that the number of attempts is recorded under the "Accept" variant
+  // of the histogram when a payment suggestion is accepted.
+  [mediator_ logExitReason:PaymentsSuggestionBottomSheetExitReason::
+                               kUsePaymentsSuggestion];
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PaymentsBottomSheet.AcceptAttempts.Accept",
+      /*sample=*/4,
+      /*expected_bucket_count=*/1);
+
+  // Verify that the number of attempts is recorded under the "Dismiss" variant
+  // of the histogram when the sheet is dismissed without filling the
+  // suggestion.
+  [mediator_ logExitReason:PaymentsSuggestionBottomSheetExitReason::
+                               kShowPaymentDetails];
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PaymentsBottomSheet.AcceptAttempts.Dismiss",
+      /*sample=*/4,
+      /*expected_bucket_count=*/1);
 }

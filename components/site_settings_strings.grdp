@@ -112,7 +112,7 @@
   <message name="IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_MID_SENTENCE" desc="The label used for JavaScript site settings controls when used mid-sentence.">
     javascript
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_JIT" desc="The label for the JavaScript optimizer site settings controls.">
+  <message name="IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_OPTIMIZER" desc="The label for the JavaScript optimizer site settings controls.">
     V8 optimizer
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_LOCATION" desc="The label used for geolocation site settings controls." meaning="Geolocation">
@@ -267,6 +267,12 @@
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_ZOOM_LEVELS_MID_SENTENCE" desc="The label used for the zoom levels site settings controls when used mid-sentence.">
     zoom levels
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION" desc="The label used for the web app installation site settings controls.">
+    Web applications
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION_MID_SENTENCE" desc="The label used for the web app installation site settings controls when used mid-sentence. 'apps' is being used as an acceptable abbreviation of 'applications'.">
+    web applications
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_WEB_PRINTING" desc="The label used for the web printing site settings controls.">
     Advanced printer features

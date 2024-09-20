@@ -285,7 +285,7 @@ BlockingDataTypeStoreImpl::DeleteAllDataAndMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return backend_->DeleteDataAndMetadataForPrefix(
       base::StrCat({GetStorageTypePrefix(storage_type_),
-                    GetDataTypeLowerCaseRootTag(data_type_)}));
+                    DataTypeToStableLowerCaseString(data_type_)}));
 }
 
 // static
@@ -300,7 +300,7 @@ std::string BlockingDataTypeStoreImpl::FormatPrefixForDataTypeAndStorageType(
     DataType data_type,
     StorageType storage_type) {
   return base::StrCat({GetStorageTypePrefix(storage_type),
-                       GetDataTypeLowerCaseRootTag(data_type)});
+                       DataTypeToStableLowerCaseString(data_type)});
 }
 
 }  // namespace syncer

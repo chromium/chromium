@@ -86,6 +86,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -3348,7 +3349,8 @@ TEST_F(AppListPresenterTest, ShelfAutoHiddenWhenFullscreen) {
 
   // Create and fullscreen a window. The shelf should be auto hidden.
   auto window = CreateTestWindow();
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(ShelfVisibilityState::SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(ShelfAutoHideState::SHELF_AUTO_HIDE_HIDDEN,
             shelf->GetAutoHideState());
@@ -3918,7 +3920,8 @@ TEST_F(AppListPresenterHomeLauncherTest,
   GetAppListTestHelper()->CheckVisibility(false);
   EXPECT_EQ(0, GetTestAppListClient()->start_zero_state_search_count());
 
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMinimized);
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(1, GetTestAppListClient()->start_zero_state_search_count());
 }
@@ -4057,7 +4060,8 @@ TEST_F(AppListPresenterHomeLauncherTest, FocusOutToDismiss) {
 
   // Minimizing the focused window with no remaining windows should result in a
   // shown applist.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMinimized);
 
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);

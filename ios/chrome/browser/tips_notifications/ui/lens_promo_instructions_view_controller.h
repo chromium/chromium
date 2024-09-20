@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/bottom_sheet/bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/tips_notifications/ui/instructions_bottom_sheet_view_controller.h"
 
 // A view controller to display a set of instructions for using Lens.
-@interface LensPromoInstructionsViewController : BottomSheetViewController
+@interface LensPromoInstructionsViewController
+    : InstructionsBottomSheetViewController
 
 @end
 

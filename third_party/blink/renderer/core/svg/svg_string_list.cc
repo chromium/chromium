@@ -78,8 +78,8 @@ SVGParsingError SVGStringListBase::SetValueAsStringWithDelimiter(
   if (data.empty())
     return SVGParseStatus::kNoError;
 
-  WTF::VisitCharacters(data, [&](const auto* chars, unsigned length) {
-    ParseInternal(chars, chars + length, list_delimiter);
+  WTF::VisitCharacters(data, [&](auto chars) {
+    ParseInternal(chars.data(), chars.data() + chars.size(), list_delimiter);
   });
   return SVGParseStatus::kNoError;
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/hls_data_source_provider.h"
 #include "base/trace_event/trace_event.h"
 
@@ -41,6 +46,11 @@ bool HlsDataSourceStream::RequiresNextDataSource() const {
 
 GURL HlsDataSourceStream::GetNextSegmentURI() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::get<0>(GetNextSegmentURIAndCacheStatus());
+}
+
+std::pair<GURL, bool> HlsDataSourceStream::GetNextSegmentURIAndCacheStatus() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(requires_next_data_source_);
   CHECK(!segments_.empty());
   const auto& first = segments_.front();
@@ -52,9 +62,10 @@ GURL HlsDataSourceStream::GetNextSegmentURI() {
     max_read_position_ = std::nullopt;
   }
   GURL new_url = std::move(first.uri);
+  bool bypass_cache = first.bypass_cache;
   segments_.pop();
   requires_next_data_source_ = false;
-  return new_url;
+  return std::make_pair(new_url, bypass_cache);
 }
 
 bool HlsDataSourceStream::CanReadMore() const {

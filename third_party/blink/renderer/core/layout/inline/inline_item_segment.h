@@ -13,6 +13,8 @@
 #include <unicode/ubidi.h>
 #include <unicode/uscript.h>
 
+#include <bit>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -55,7 +57,18 @@ class CORE_EXPORT InlineItemSegment {
   unsigned EndOffset() const { return end_offset_; }
 
   // Pack/unpack utility functions to store in bit fields.
-  static constexpr unsigned kSegmentDataBits = 12;
+  // UScriptCode is -1 (USCRIPT_INVALID_CODE) to 199 as of ICU 74.
+  // `USCRIPT_CODE_LIMIT` is the max value plus 1, but the plus 1 is necessary
+  // to represent -1 (USCRIPT_INVALID_CODE), which is handled separately.
+  static constexpr unsigned kScriptBits =
+      std::bit_width(static_cast<unsigned>(USCRIPT_CODE_LIMIT));
+  static constexpr unsigned kFontFallbackPriorityBits = std::bit_width(
+      static_cast<unsigned>(FontFallbackPriority::kMaxEnumValue));
+  static constexpr unsigned kRenderOrientationBits =
+      std::bit_width(static_cast<unsigned>(
+          OrientationIterator::RenderOrientation::kMaxEnumValue));
+  static constexpr unsigned kSegmentDataBits =
+      kScriptBits + kFontFallbackPriorityBits + kRenderOrientationBits;
 
   static unsigned PackSegmentData(const RunSegmenter::RunSegmenterRange& range);
   static RunSegmenter::RunSegmenterRange

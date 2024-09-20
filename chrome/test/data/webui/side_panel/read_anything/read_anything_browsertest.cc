@@ -202,8 +202,14 @@ class ReadAnythingReadAloudMochaTest : public ReadAnythingMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/368057422): This test is flaky on Mac. Fix and re-enable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LinksToggledIntegration DISABLED_LinksToggledIntegration
+#else
+#define MAYBE_LinksToggledIntegration LinksToggledIntegration
+#endif
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
-                       LinksToggledIntegration) {
+                       MAYBE_LinksToggledIntegration) {
   RunSidePanelTest("side_panel/read_anything/links_toggled_integration_test.js",
                    "mocha.run()");
 }
@@ -266,7 +272,7 @@ class ReadAnythingReadAloudWordHighlightingMochaTest
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingReadAloud,
          features::kReadAnythingReadAloudAutomaticWordHighlighting},
-        {});
+        {features::kReadAnythingReadAloudPhraseHighlighting});
   }
 
  private:
@@ -327,5 +333,11 @@ class ReadAnythingReadAloudPhraseHighlightingMochaTest
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudPhraseHighlightingMochaTest,
                        HighlightMenu) {
   RunSidePanelTest("side_panel/read_anything/highlight_menu_test.js",
+                   "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudPhraseHighlightingMochaTest,
+                       PhraseHighlighting) {
+  RunSidePanelTest("side_panel/read_anything/phrase_highlighting_test.js",
                    "mocha.run()");
 }

@@ -1,0 +1,176 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/signin/features.gni")
+
+assert(!is_android && !is_fuchsia)
+
+source_set("signin") {
+  sources = [
+    "cookie_clear_on_exit_migration_notice.h",
+    "signin_modal_dialog.h",
+    "signin_modal_dialog_impl.h",
+    "signin_view_controller.h",
+    "signin_view_controller_delegate.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/ui/webui/signin",
+    "//chrome/common",
+    "//components/signin/public/base",
+    "//components/sync/base",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    # //c/b/u/signin and //c/b/ui/webui/signin use different include of each of
+    # other. Thus, allow them to depend on each other.
+    "//chrome/browser/ui/webui/signin",
+  ]
+
+  if (enable_dice_support) {
+    sources += [
+      "bubble_signin_promo_delegate.h",
+      "chrome_signout_confirmation_prompt.h",
+      "dice_web_signin_interceptor_delegate.h",
+    ]
+    public_deps += [ "//chrome/browser/signin" ]
+  }
+
+  if (!is_chromeos_ash) {
+    sources += [ "signin_reauth_view_controller.h" ]
+    public_deps += [
+      "//components/sync/protocol",
+      "//google_apis",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "cookie_clear_on_exit_migration_notice.cc",
+    "signin_modal_dialog.cc",
+    "signin_modal_dialog_impl.cc",
+    "signin_view_controller.cc",
+    "signin_view_controller_delegate.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/signin",
+    "//chrome/browser/ui/webui/signin",
+    "//chrome/common",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//content/public/browser",
+    "//google_apis",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (enable_dice_support) {
+    sources += [
+      "chrome_signout_confirmation_prompt.cc",
+      "dice_web_signin_interceptor_delegate.cc",
+    ]
+  }
+
+  if (!is_chromeos_ash) {
+    sources += [ "signin_reauth_view_controller.cc" ]
+    deps += [ "//components/consent_auditor" ]
+  }
+}
+
+if (!is_android) {
+  # This is not applicable to ChromeOS, but to lacros + other desktop platforms.
+  if (!is_chromeos_device && !is_chromeos_ash) {
+    source_set("interactive_ui_tests") {
+      testonly = true
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+      sources = [ "signin_view_controller_interactive_uitest.cc" ]
+      deps = [
+        ":signin",
+        "//base",
+        "//base/test:test_support",
+        "//build:chromeos_buildflags",
+        "//chrome/browser",
+        "//chrome/browser/ui",
+        "//chrome/browser/ui:browser_element_identifiers",
+        "//chrome/test:test_support_ui",
+        "//components/signin/public/base",
+        "//components/signin/public/identity_manager",
+        "//components/signin/public/identity_manager:test_support",
+        "//content/public/browser",
+        "//content/test:test_support",
+        "//google_apis",
+        "//testing/gmock",
+        "//ui/base",
+        "//ui/events:events_base",
+        "//ui/views:test_support",
+      ]
+    }
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = []
+
+    deps = [
+      ":signin",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui",
+      "//chrome/test:sync_integration_test_support",
+      "//chrome/test:test_support_ui",
+      "//components/signin/public/base",
+      "//components/signin/public/base:signin_switches",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync/base",
+      "//content/test:test_support",
+      "//google_apis",
+    ]
+
+    if (enable_dice_support) {
+      sources += [ "signin_view_controller_browsertest.cc" ]
+      deps += [
+        "//chrome/test:test_support",
+        "//components/sync:test_support",
+      ]
+    }
+
+    # Tests for non mobile and non CrOS (includes Linux, Win, Mac, Lacros).
+    if (!is_chromeos_ash) {
+      sources += [ "signin_reauth_view_controller_browsertest.cc" ]
+    }
+
+    if (!is_chromeos) {
+      sources += [
+        "chrome_signout_confirmation_prompt_browsertest.cc",
+        "cookie_clear_on_exit_migration_notice_browsertest.cc",
+      ]
+    }
+  }
+}

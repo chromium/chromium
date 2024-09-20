@@ -38,10 +38,12 @@
   <div class="cr-row continuation subsection-group">
     <div class="start cr-padded-text" aria-hidden="true">
         $i18n{captionsLiveTranslateTargetLanguage}
+        <div class="secondary">
+          $i18n{captionsLiveTranslateTargetLanguageSubtitle}
+        </div>
     </div>
     <settings-dropdown-menu id="targetLanguageDropdown"
         class="language-dropdown"
-        label="$i18n{captionsLanguage}"
         pref="{{prefs.accessibility.captions.live_translate_target_language}}"
         menu-options="[[translatableLanguages_]]">
     </settings-dropdown-menu>

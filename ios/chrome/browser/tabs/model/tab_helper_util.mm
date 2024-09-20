@@ -138,9 +138,9 @@ constexpr bool IsTabHelperFilterMaskSet(TabHelperFilter mask,
 }  // namespace
 
 void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
-  ChromeBrowserState* const browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
-  const bool is_off_the_record = browser_state->IsOffTheRecord();
+  ProfileIOS* const profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  const bool is_off_the_record = profile->IsOffTheRecord();
   const bool for_prerender =
       IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kPrerender);
   const bool for_bottom_sheet =
@@ -184,7 +184,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   }
   commerce::CommerceTabHelper::CreateForWebState(
       web_state, is_off_the_record,
-      commerce::ShoppingServiceFactory::GetForBrowserState(browser_state));
+      commerce::ShoppingServiceFactory::GetForProfile(profile));
 
   if (!for_bottom_sheet && !for_prerender) {
     // Since LensTabHelper listens for a custom scheme, it needs to be
@@ -222,15 +222,14 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   AnnotationsTabHelper::CreateForWebState(web_state);
 
   SafeBrowsingClient* client =
-      SafeBrowsingClientFactory::GetForBrowserState(browser_state);
+      SafeBrowsingClientFactory::GetForProfile(profile);
   SafeBrowsingQueryManager::CreateForWebState(web_state, client);
   SafeBrowsingTabHelper::CreateForWebState(web_state, client);
   SafeBrowsingUrlAllowList::CreateForWebState(web_state);
   SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
 
   TailoredSecurityTabHelper::CreateForWebState(
-      web_state,
-      TailoredSecurityServiceFactory::GetForBrowserState(browser_state));
+      web_state, TailoredSecurityServiceFactory::GetForProfile(profile));
 
   PolicyUrlBlockingTabHelper::CreateForWebState(web_state);
 
@@ -247,15 +246,12 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   ShareFileDownloadTabHelper::CreateForWebState(web_state);
   OptimizationGuideTabHelper::CreateForWebState(web_state);
   OptimizationGuideValidationTabHelper::CreateForWebState(web_state);
-  ChromeBrowserState* original_browser_state =
-      browser_state->GetOriginalChromeBrowserState();
+  ProfileIOS* original_profile = profile->GetOriginalProfile();
   favicon::WebFaviconDriver::CreateForWebState(
-      web_state,
-      ios::FaviconServiceFactory::GetForBrowserState(
-          original_browser_state, ServiceAccessType::IMPLICIT_ACCESS));
+      web_state, ios::FaviconServiceFactory::GetForProfile(
+                     original_profile, ServiceAccessType::IMPLICIT_ACCESS));
   history::WebStateTopSitesObserver::CreateForWebState(
-      web_state,
-      ios::TopSitesFactory::GetForBrowserState(original_browser_state).get());
+      web_state, ios::TopSitesFactory::GetForProfile(original_profile).get());
 
   // Depends on favicon::WebFaviconDriver, must be created after it.
   SearchEngineTabHelper::CreateForWebState(web_state);
@@ -315,7 +311,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   WebPerformanceMetricsTabHelper::CreateForWebState(web_state);
 
   OfflinePageTabHelper::CreateForWebState(
-      web_state, ReadingListModelFactory::GetForBrowserState(browser_state));
+      web_state, ReadingListModelFactory::GetForProfile(profile));
   PermissionsTabHelper::CreateForWebState(web_state);
 
   RepostFormTabHelper::CreateForWebState(web_state);
@@ -325,16 +321,16 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsUpgrades)) {
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
-        web_state, browser_state->GetPrefs(),
-        PrerenderServiceFactory::GetForBrowserState(browser_state),
-        HttpsUpgradeServiceFactory::GetForBrowserState(browser_state));
+        web_state, profile->GetPrefs(),
+        PrerenderServiceFactory::GetForProfile(profile),
+        HttpsUpgradeServiceFactory::GetForProfile(profile));
     HttpsOnlyModeContainer::CreateForWebState(web_state);
   }
 
   if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
     TypedNavigationUpgradeTabHelper::CreateForWebState(
-        web_state, PrerenderServiceFactory::GetForBrowserState(browser_state),
-        HttpsUpgradeServiceFactory::GetForBrowserState(browser_state));
+        web_state, PrerenderServiceFactory::GetForProfile(profile),
+        HttpsUpgradeServiceFactory::GetForProfile(profile));
   }
 
   if (!is_off_the_record) {
@@ -347,8 +343,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   if (!for_bottom_sheet && !is_off_the_record && IsContextualPanelEnabled()) {
     ContextualPanelModelService* model_service =
-        ContextualPanelModelServiceFactory::GetForBrowserState(
-            ChromeBrowserState::FromBrowserState(browser_state));
+        ContextualPanelModelServiceFactory::GetForProfile(
+            ProfileIOS::FromBrowserState(profile));
     ContextualPanelTabHelper::CreateForWebState(web_state,
                                                 model_service->models());
   }
@@ -356,7 +352,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   if (!for_bottom_sheet && !is_off_the_record &&
       IsAboutThisSiteFeatureEnabled()) {
     if (auto* optimization_guide_decider =
-            OptimizationGuideServiceFactory::GetForProfile(browser_state)) {
+            OptimizationGuideServiceFactory::GetForProfile(profile)) {
       AboutThisSiteTabHelper::CreateForWebState(web_state,
                                                 optimization_guide_decider);
     }

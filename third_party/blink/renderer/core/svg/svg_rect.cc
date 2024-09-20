@@ -73,8 +73,9 @@ SVGParsingError SVGRect::SetValueAsString(const String& string) {
   if (string.empty())
     return SVGParsingError(SVGParseStatus::kExpectedNumber, 0);
 
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-    return Parse(chars, chars + length);
+  return WTF::VisitCharacters(string, [&](auto chars) {
+    const auto* start = chars.data();
+    return Parse(start, start + chars.size());
   });
 }
 

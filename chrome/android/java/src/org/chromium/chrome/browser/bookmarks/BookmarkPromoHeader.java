@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -57,6 +58,7 @@ public class BookmarkPromoHeader
 
     private @Nullable ProfileDataCache mProfileDataCache;
     private final @Nullable SyncPromoController mSyncPromoController;
+    private final @Nullable SigninPromoCoordinator mSigninPromoCoordinator;
     private @SyncPromoState int mPromoState = SyncPromoState.NO_PROMO;
     private final @Nullable SyncService mSyncService;
     private final Profile mProfile;
@@ -84,12 +86,30 @@ public class BookmarkPromoHeader
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         SyncConsentActivityLauncherImpl.get(),
                         SigninAndHistorySyncActivityLauncherImpl.get());
-        if (syncPromoController.canShowSyncPromo()) {
+        if (SigninPromoCoordinator.canShowBookmarkSigninPromo(mProfile)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            // TODO(crbug.com/327387704): Remove dependency on ProfileDataCache and move
+            // corresponding logic into SigninPromoMediator.
+            mProfileDataCache = null;
+            mSigninPromoCoordinator =
+                    new SigninPromoCoordinator(
+                            mContext,
+                            org.chromium.chrome.browser.ui.signin.R.string
+                                    .signin_promo_title_bookmarks,
+                            org.chromium.chrome.browser.ui.signin.R.string
+                                    .signin_promo_description_bookmarks,
+                            false,
+                            false);
+            mSyncPromoController = null;
+        } else if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+                && syncPromoController.canShowSyncPromo()) {
             mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
             mSyncPromoController = syncPromoController;
+            mSigninPromoCoordinator = null;
         } else {
             mProfileDataCache = null;
             mSyncPromoController = null;
+            mSigninPromoCoordinator = null;
         }
 
         if (mSyncService != null) mSyncService.addSyncStateChangedListener(this);
@@ -135,8 +155,14 @@ public class BookmarkPromoHeader
 
     /** Sets up the sync promo view. */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
-        mSyncPromoController.setUpSyncPromoView(
-                mProfileDataCache, view, this::setPersonalizedSigninPromoDeclined);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            // TODO(crbug.com/327387704): Set up the view directly in the
+            // BookmarkManagerCoordinator.
+            mSigninPromoCoordinator.setView(view);
+        } else {
+            mSyncPromoController.setUpSyncPromoView(
+                    mProfileDataCache, view, this::setPersonalizedSigninPromoDeclined);
+        }
     }
 
     /** Detaches the previously configured {@link PersonalizedSigninPromoView}. */
@@ -155,8 +181,9 @@ public class BookmarkPromoHeader
      */
     private boolean shouldShowBookmarkSigninPromo() {
         return mSigninManager.isSyncOptInAllowed()
-                && mSyncPromoController != null
-                && mSyncPromoController.canShowSyncPromo();
+                && ((mSyncPromoController != null && mSyncPromoController.canShowSyncPromo())
+                        || (mSigninPromoCoordinator != null
+                                && SigninPromoCoordinator.canShowBookmarkSigninPromo(mProfile)));
     }
 
     private @SyncPromoState int calculatePromoState() {
@@ -205,8 +232,15 @@ public class BookmarkPromoHeader
                                 || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
                         && (newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
                                 || newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
-        if (mSyncPromoController != null && hasSyncPromoStateChangedtoShown) {
-            mSyncPromoController.increasePromoShowCount();
+        if (hasSyncPromoStateChangedtoShown) {
+            if (mSyncPromoController != null) {
+                assert mSigninPromoCoordinator == null;
+                mSyncPromoController.increasePromoShowCount();
+            }
+            if (mSigninPromoCoordinator != null) {
+                assert mSyncPromoController == null;
+                mSigninPromoCoordinator.increasePromoShowCount();
+            }
         }
         if (newState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE) {
             ChromeSharedPreferences.getInstance()

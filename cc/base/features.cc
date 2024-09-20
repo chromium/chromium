@@ -54,9 +54,6 @@ BASE_FEATURE(kMainRepaintScrollPrefersNewContent,
              "MainRepaintScrollPrefersNewContent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHudDisplayForPerformanceMetrics,
-             "HudDisplayForPerformanceMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRenderSurfaceCommonAncestorClip,
              "RenderSurfaceCommonAncestorClip",
@@ -171,14 +168,6 @@ BASE_FEATURE(kClearCanvasResourcesInBackground,
 
 BASE_FEATURE(kMetricsTracingCalculationReduction,
              "MetricsTracingCalculationReduction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPaintWithGainmapShader,
-             "PaintWithGainmapShader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPaintWithGlobalToneMapFilter,
-             "PaintWithGlobalToneMapFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMetricsBackfillAdjustmentHoldback,

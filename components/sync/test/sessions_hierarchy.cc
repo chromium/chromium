@@ -31,15 +31,17 @@ std::string SessionsHierarchy::ToString() const {
   output << "{";
   bool first_window = true;
   for (const Window& window : windows_) {
-    if (!first_window)
+    if (!first_window) {
       output << ",";
+    }
     output << "{";
     first_window = false;
 
     bool first_tab = true;
     for (const std::string& tab : window) {
-      if (!first_tab)
+      if (!first_tab) {
         output << ",";
+      }
       output << tab;
       first_tab = false;
     }

@@ -8,8 +8,6 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 
-namespace chrome {
-
 class NonTabPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  protected:
@@ -125,5 +123,3 @@ TEST_F(NonTabPageLoadMetricsObserverNonWebUITest,
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.PaintTiming.NavigationToLargestContenfulPaint2", 0);
 }
-
-}  // namespace chrome

@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -87,6 +89,15 @@
 #pragma mark - StandardPromoAlertHandler
 
 - (void)standardPromoAlertDefaultAction {
+  base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
+                                IOSPostRestoreSigninChoice::Continue);
+  ClearPreRestoreIdentity(_prefService);
+
+  if ([self isSignedIn]) {
+    // The user has signed in after the promo was presented, so sign-in has
+    // already completed.
+    return;
+  }
   [self showSignin];
 }
 
@@ -152,10 +163,6 @@
 - (void)showSignin {
   DCHECK(self.handler);
 
-  base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
-                                IOSPostRestoreSigninChoice::Continue);
-  ClearPreRestoreIdentity(_prefService);
-
   __weak __typeof(self) weakSelf = self;
   ShowSigninCommandCompletionCallback callback =
       ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
@@ -179,6 +186,14 @@
                                      _historySyncEnabled);
   _syncUserSettings->SetSelectedType(syncer::UserSelectableType::kTabs,
                                      _historySyncEnabled);
+}
+
+// Returns true if the user is signed-in.
+- (bool)isSignedIn {
+  CoreAccountInfo primaryAccount =
+      IdentityManagerFactory::GetForProfile(_browser->GetProfile())
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  return !primaryAccount.IsEmpty();
 }
 
 @end

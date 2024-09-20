@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -211,15 +210,6 @@ TEST_F(AppMenuModelTest, Basics) {
   detector->NotifyUpgrade();
   EXPECT_TRUE(detector->notify_upgrade());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Forcibly enable Lacros Profile migration, so that IDC_LACROS_DATA_MIGRATION
-  // becomes visible. Note that profile migration is only enabled if Lacros is
-  // the only browser.
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-#endif
-
   FakeIconDelegate fake_delegate;
   AppMenuIconController app_menu_icon_controller(browser()->profile(),
                                                  &fake_delegate);
@@ -234,9 +224,6 @@ TEST_F(AppMenuModelTest, Basics) {
   // Verify that the upgrade item is visible if supported.
   EXPECT_EQ(browser_defaults::kShowUpgradeMenuItem,
             model.GetIndexOfCommandId(IDC_UPGRADE_DIALOG).has_value());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(model.GetIndexOfCommandId(IDC_LACROS_DATA_MIGRATION).has_value());
-#endif
 
   // Execute a couple of the items and make sure it gets back to our delegate.
   // We can't use CountEnabledExecutable() here because the encoding menu's
@@ -385,9 +372,10 @@ TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
   TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   AppMenuModel model(this, browser());
   model.Init();
+  ToolsMenuModel toolModel(&model, browser());
   size_t organize_tabs_index =
-      model.GetIndexOfCommandId(IDC_ORGANIZE_TABS).value();
-  EXPECT_TRUE(model.IsEnabledAt(organize_tabs_index));
+      toolModel.GetIndexOfCommandId(IDC_ORGANIZE_TABS).value();
+  EXPECT_TRUE(toolModel.IsEnabledAt(organize_tabs_index));
 }
 
 TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {

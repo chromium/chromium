@@ -59,13 +59,13 @@ class TipsNotificationClientTest : public PlatformTest {
  protected:
   TipsNotificationClientTest() {
     SetupMockNotificationCenter();
-    ChromeBrowserState* browser_state = profile_manager_.AddProfileWithBuilder(
-        TestChromeBrowserState::Builder());
-    BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
+    ProfileIOS* profile =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+    BrowserList* list = BrowserListFactory::GetForProfile(profile);
     mock_scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([mock_scene_state_ activationLevel])
         .andReturn(SceneActivationLevelForegroundActive);
-    browser_ = std::make_unique<TestBrowser>(browser_state, mock_scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile, mock_scene_state_);
     list->AddBrowser(browser_.get());
     client_ = std::make_unique<TipsNotificationClient>();
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
@@ -266,11 +266,12 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
   SetFalseChromeLikelyDefaultBrowser();
   ClearDefaultBrowserPromoLastAction();
   StubGetPendingRequests(nil);
-  SetSentNotifications({TipsNotificationType::kWhatsNew,
-                        TipsNotificationType::kOmniboxPosition,
-                        TipsNotificationType::kSignin,
-                        TipsNotificationType::kSetUpListContinuation,
-                        TipsNotificationType::kDocking});
+  SetSentNotifications(
+      {TipsNotificationType::kSetUpListContinuation,
+       TipsNotificationType::kWhatsNew, TipsNotificationType::kLens,
+       TipsNotificationType::kOmniboxPosition,
+       TipsNotificationType::kEnhancedSafeBrowsing,
+       TipsNotificationType::kDocking, TipsNotificationType::kSignin});
 
   ExpectNotificationRequest(TipsNotificationType::kDefaultBrowser);
   base::RunLoop run_loop;
@@ -391,7 +392,9 @@ TEST_F(TipsNotificationClientTest, DockingRequest) {
   WriteFirstRunSentinel();
   SetSentNotifications({TipsNotificationType::kSetUpListContinuation,
                         TipsNotificationType::kWhatsNew,
+                        TipsNotificationType::kLens,
                         TipsNotificationType::kOmniboxPosition,
+                        TipsNotificationType::kEnhancedSafeBrowsing,
                         TipsNotificationType::kDefaultBrowser});
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kDocking);
@@ -428,6 +431,7 @@ TEST_F(TipsNotificationClientTest, OmniboxPositionRequest) {
 
   WriteFirstRunSentinel();
   SetSentNotifications({TipsNotificationType::kSetUpListContinuation,
+                        TipsNotificationType::kLens,
                         TipsNotificationType::kWhatsNew});
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kOmniboxPosition);
@@ -549,4 +553,49 @@ TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
   EXPECT_EQ(
       TipsNotificationTriggerDelta(TipsNotificationUserType::kActiveSeeker),
       base::Days(3));
+}
+
+// Tests that the order of notification types changes correctly when the feature
+// param is set.
+TEST_F(TipsNotificationClientTest, TestOrderParam) {
+  // Test order #1.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSTipsNotifications, {
+                                 {kIOSTipsNotificationsOrderParam, "1"},
+                             });
+  std::vector<TipsNotificationType> order = TipsNotificationsTypesOrder();
+  EXPECT_EQ(order[0], TipsNotificationType::kSetUpListContinuation);
+  EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
+
+  // Test order #2.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSTipsNotifications, {
+                                 {kIOSTipsNotificationsOrderParam, "2"},
+                             });
+  order = TipsNotificationsTypesOrder();
+  EXPECT_EQ(order[0], TipsNotificationType::kLens);
+  EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
+
+  // Test order #3.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSTipsNotifications, {
+                                 {kIOSTipsNotificationsOrderParam, "3"},
+                             });
+  order = TipsNotificationsTypesOrder();
+  EXPECT_EQ(order[0], TipsNotificationType::kEnhancedSafeBrowsing);
+  EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
+
+  // Test order #4.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSTipsNotifications, {
+                                 {kIOSTipsNotificationsOrderParam, "4"},
+                             });
+  order = TipsNotificationsTypesOrder();
+  EXPECT_EQ(order[0], TipsNotificationType::kLens);
+  EXPECT_EQ(order[1], TipsNotificationType::kOmniboxPosition);
+  EXPECT_EQ(order[2], TipsNotificationType::kEnhancedSafeBrowsing);
 }

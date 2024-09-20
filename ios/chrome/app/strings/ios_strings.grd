@@ -174,7 +174,7 @@
         Choose an account
       </message>
       <message name="IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST" desc="In account menu, context menu entry. It opens the view to edit the list of accounts. [iOS only]">
-        Edit account list
+        Manage accounts on this device
       </message>
       <message name="IDS_IOS_ACCOUNT_PICKER_SUBMIT_TAPPED_ACCESSIBILITY_LABEL" desc="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]" meaning="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]">
         Action in progress…
@@ -1060,7 +1060,7 @@ See your search engine’s instructions for deleting your search history, if app
         Rename group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE" desc="The name of the Save Image As command in the content area context menu">
-        Save in photos
+        Save in Photos
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SELECTTABS" desc="The iOS context menu item for entering into the selection mode, where users can select tabs to perform bulk actions on them.[iOS only]">
         Select tabs
@@ -1647,9 +1647,27 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DRIVE_FILE_PICKER_CONFIRM" desc="Title for a button that confirms the file selection in a file picker. [iOS only]">
           Confirm
       </message>
-      <message name="IDS_IOS_DRIVE_FILE_PICKER_FILTER_ENABLE_ALL_TITLE" desc="Title for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]" meaning="Title for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]">
-          Enable All
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_MY_DRIVE" desc="Title for My Drive folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the My Drive folder in Google Drive, the translation must be similar. [iOS only]">
+        My Drive
       </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_SHARED_DRIVES" desc="Title for Shared Drives folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the Shared Drives folder in Google Drive, hence the translation must be similar. [iOS only]">
+        Shared Drives
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_COMPUTERS" desc="Title for Computers folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the Computers folder in Google Drive, hence the translation must be similar. [iOS only]">
+       Computers
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_STARRED" desc="Title for Starred folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the Starred folder in Google Drive, hence the translation must be similar. [iOS only]">
+      Starred
+      </message>
+     <message name="IDS_IOS_DRIVE_FILE_PICKER_RECENT" desc="Title for Recent folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the Recent folder in Google Drive, hence the translation must be similar. [iOS only]">
+      Recent
+      </message>
+     <message name="IDS_IOS_DRIVE_FILE_PICKER_SHARED_WITH_ME" desc="Title for Shared With Me folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the Shared With Me folder in Google Drive, hence the translation must be similar. [iOS only]">
+       Shared With Me
+     </message>
+     <message name="IDS_IOS_DRIVE_FILE_PICKER_FILTER_ENABLE_ALL_TITLE" desc="Title for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]" meaning="Title for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]">
+          Enable All
+     </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_FILTER_ENABLE_ALL_DESCRIPTION" desc="Description for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]" meaning="Description for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]">
           Include file extensions not specified by the website
       </message>
@@ -1691,6 +1709,24 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_EDIT_PASSWORD_DESCRIPTION" desc="Message inside confirmation alert when the user is trying to edit password [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
         Make sure the password you are saving matches your password for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP2" desc="Step 2 of instructions telling the user how to enable Enhanced Safe Browsing.">
+        Tap "Privacy and Security" and then "Safe Browsing"
+      </message>
+      <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP3" desc="Step 3 of instructions telling the user how to enable Enhanced Safe Browsing.">
+        Choose "Enhanced Protection"
+      </message>
+      <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_TITLE" desc="Title of a halfsheet of instructions that shows the user how to enable Enhanced Safe Browsing.">
+        How to enable this feature
+      </message>
+      <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_PRIMARY_ACTION" desc="The text of the primary action button for the Enhanced Safe Browsing promo.">
+        Go to Settings
+      </message>
+      <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_SHOW_ME_HOW" desc="The text in the secondary action button for Enhanced Safe Browsing promo view, which leads to a list of instructions.">
+        Show me how
+      </message>
+      <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_SUBTITLE" desc="Subtitle of the fullscreen Enhanced Safe Browsing promo which shows users how to enable Enhanced Safe Browsing.">
+        Add an extra layer of protection against online threats.
       </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION" desc="Text displayed to inform the user that the browser is managed by Enterprise policies (without link). [iOS only]">
         Managed by your organization
@@ -2137,6 +2173,18 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button navigates to 'Sync and Google services' page in settings [iOS only].">
         Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>. Opens settings.
       </message>
+      <message name="IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
+          Signed in as <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>. Open account menu.
+      </message>
+      <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
+          Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>. Open account menu.
+      </message>
+      <message name="IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
+          Signed in as <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>. Google Account error. Open account menu.
+      </message>
+      <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
+          Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>. Google Account error. Open account menu.
+      </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL" desc="The label of the enter passphrase action button in the identity error info bar. [iOS only]">
         Enter
       </message>
@@ -2479,6 +2527,21 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_LENS_PROMO_TITLE" desc="The title text for a Lens promo view.">
         Search with Lens
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_CONSENT_ACCEPT_TERMS_BUTTON_TITLE" desc="The accept terms button title for the lens overlay consent dialog [iOS only].">
+        Continue
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_CONSENT_DENY_TERMS_BUTTON_TITLE" desc="The deny terms button title for the lens overlay consent dialog [iOS only].">
+        Cancel
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_CONSENT_DESCRIPTION" desc="The description for the lens overlay consent dialog [iOS only].">
+        When you use Google Lens, a screenshot of the page is sent to Google.
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_CONSENT_LEARN_MORE" desc="The lens overlay consent dialog learn more about google lens link title [iOS only].">
+        Learn more about Google Lens
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_CONSENT_TITLE" desc="The title for the lens overlay consent dialog. [iOS only].">
+        Tap or highlight to search anything with Google Lens
       </message>
       <message name="IDS_IOS_LINK_TO_TEXT_ERROR_DESCRIPTION" desc="Description message in the alert dialog shown when link-to-text link generation failed. [iOS only]">
         A link to the highlight can not be created.
@@ -3803,6 +3866,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_SUBSCRIBE_ERROR_ALERT_DESCRIPTION" desc="The description that informs the user that an error occurred during the price tracking subscription process.">
           Couldn't track the price.
       </message>
+      <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_UNSUBSCRIBE_ERROR_ALERT_DESCRIPTION" desc="The description that informs the user that an error occurred during the price tracking unsubscription process.">
+          Couldn't untrack the price.
+      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE" desc="Title for Price Notifications table view.">
         Track price
       </message>
@@ -3841,6 +3907,27 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_TITLE" desc="Title for Price Tracking Promotion in Magic Stack">
           Get price tracking notifications
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_TITLE" desc="Snackbar title indicating price tracking notifications have been turned on">
+          Price tracking notifications turned on
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SETTINGS_TURN_ON_NOTIFICATIONS_TITLE" desc="Title indicating the user needs to go to settings to turn on notifications (because they have previously turned it off)">
+          Turn on notifications?
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SETTINGS_TURN_ON_NOTIFICATIONS_TEXT" desc="Text indicating the user needs to go to settings to turn on notifications (because they have previously turned it off)">
+          To get price tracking notifications, turn on notifications in your iOS Settings.
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SETTINGS_TURN_ON_NOTIFICATIONS_ACCEPT" desc="Button text indicating the user can accept turning on price tracking notifications in settings">
+          Go to Settings...
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SETTINGS_TURN_ON_NOTIFICATIONS_DENY" desc="Button text indicating the user can deny turning on price tracking notifications in settings">
+          No, Thanks
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_HIDE_CARD" desc="Button text indicating price tracking promo module can be removed">
+        Hide "Get Price Tracking Notifications"
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_MANAGE" desc="Snackbar action enabling management of price tracking notifications">
+          Manage
       </message>
       <message name="IDS_IOS_PRINT_PDF_ERROR_SUBTITLE" desc="Message of a popup window indicating that the printing operation did not succeed. [Length: 100em] [iOS only]">
         Make sure you have a network connection, and try again.
@@ -4894,8 +4981,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHARE_BUTTON_LABEL" desc="Label of a button which will initiate a share flow. [iOS only]">
         Share…
       </message>
-      <message name="IDS_IOS_SHARE_FULL_URL_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility Label of a button which will initiate the popup message with the full URL in the web context menu. [iOS only]">
-        Share full URL
+      <message name="IDS_IOS_SHOW_FULL_URL_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility Label of a button which will initiate the popup message with the full URL in the web context menu. [iOS only]">
+        Show full URL
       </message>
       <message name="IDS_IOS_CLOSE_ALERT_BUTTON_LABEL" desc="Label of a button which will close the popup message with the full URL in the web context menu. [iOS only]">
         Close
@@ -5508,6 +5595,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GROUP_CREATION_PLACEHOLDER" desc="Placeholder shown in tab group creation view to indicate to the user the expected action which is to type the name of the group currently created. [iOS only]">
         Name group
       </message>
+      <message name="IDS_IOS_TAB_GROUP_INDICATOR_ACCESSIBILITY_TITLE" desc="Accessibility label for the tab group indicator view. This is spoken by VoiceOver.">
+        Tab group, <ph name="GROUP_TITLE">$1<ex>Group name</ex></ph>, Menu.
+      </message>
       <message name="IDS_IOS_TAB_GROUP_SNACKBAR_ACTION" desc="Button to access the Tab Groups panel. [iOS only]">
         View
       </message>
@@ -5674,8 +5764,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLBAR_SHOW_TABS" desc="The accessibility label for the toolbar show tabs button [iOS only].">
         Show tabs
       </message>
-      <message name="IDS_IOS_TOOLBAR_SHOW_TAB_GRID" desc="The accessibility label for the toolbar show tab grid button [iOS only].">
-        Show tab grid
+      <message name="IDS_IOS_TOOLBAR_SHOW_TAB_GROUP" desc="The accessibility label for the toolbar show tab group button [iOS only].">
+        Show tabs in group
       </message>
       <message name="IDS_IOS_TOOLBAR_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the tab strip to navigate between tabs. [iOS only]">
         You can swipe the toolbar to switch between tabs.
@@ -6374,6 +6464,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_CVC_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the CVC chip button displayed in the payment method manual fallback screen and that's allowing the user to autofill a specific form field with their payment method's CVC.">
         Autofill the CVC
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_OPENMANAGEINNEWTAB" desc="The iOS menu item for managing a selected item. [iOS only]">
+        Manage
       </message>
     </messages>
   </release>

@@ -80,4 +80,14 @@ BASE_FEATURE(kPopulateVisitedLinkDatabase,
              "PopulateVisitedLinkDatabase",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMostVisitedTilesNewScoring,
+             "MostVisitedTilesNewScoring",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kMvtScoringParamRecencyFactor[] = "recency_factor";
+const char kMvtScoringParamDailyVisitCountCap[] = "daily_visit_count_cap";
+
+const char kMvtScoringParamRecencyFactor_Default[] = "default";
+const char kMvtScoringParamRecencyFactor_DecayStaircase[] = "decay_staircase";
+
 }  // namespace history

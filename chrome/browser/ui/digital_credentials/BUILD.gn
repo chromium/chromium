@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("digital_credentials") {
+  sources = []
+  deps = []
+  public_deps = [ "//content/public/browser" ]
+
+  if (is_android) {
+    sources += [
+      "digital_identity_safety_interstitial_bridge_android.cc",
+      "digital_identity_safety_interstitial_bridge_android.h",
+    ]
+    deps += [
+      "//chrome/browser/ui/android/digital_credentials:jni_headers",
+      "//ui/android",
+    ]
+  }
+}

@@ -82,6 +82,24 @@ struct ScoringParams {
   base::Value::Dict additional_params;
 };
 
+// Just like TrustedSignalsFetcher::BiddingPartition, but owns its arguments.
+struct FetcherBiddingPartitionArgs {
+  int partition_id;
+  std::set<std::string> interest_group_names;
+  std::set<std::string> keys;
+  std::string hostname;
+  base::Value::Dict additional_params;
+};
+
+// Just like TrustedSignalsFetcher::ScoringPartition, but owns its arguments.
+struct FetcherScoringPartitionArgs {
+  int partition_id;
+  GURL render_url;
+  std::set<GURL> component_render_urls;
+  std::string hostname;
+  base::Value::Dict additional_params;
+};
+
 // Subclass of TrustedSignalsCacheImpl that mocks out TrustedSignalsFetcher
 // calls, and lets tests monitor and respond to those fetches.
 class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
@@ -105,7 +123,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingBiddingSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
-      std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
+      std::map<int, std::vector<FetcherBiddingPartitionArgs>>
           compression_groups;
       TrustedSignalsFetcher::Callback callback;
 
@@ -117,7 +135,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingScoringSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
-      std::map<int, std::vector<TrustedSignalsFetcher::ScoringPartition>>
+      std::map<int, std::vector<FetcherScoringPartitionArgs>>
           compression_groups;
       TrustedSignalsFetcher::Callback callback;
 
@@ -143,26 +161,18 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       EXPECT_FALSE(fetch_started_);
       fetch_started_ = true;
 
-      std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
+      std::map<int, std::vector<FetcherBiddingPartitionArgs>>
           compression_groups_copy;
       for (const auto& compression_group : compression_groups) {
         auto& bidding_partitions_copy =
             compression_groups_copy.try_emplace(compression_group.first)
                 .first->second;
         for (const auto& bidding_partition : compression_group.second) {
-          // Have to manually copy each BiddingPartition, since BiddingPartition
-          // deliberately doesn't have a copy constructor, to avoid accidental
-          // copies, which can be resource intensive.
-          TrustedSignalsFetcher::BiddingPartition bidding_partition_copy;
-          bidding_partition_copy.partition_id = bidding_partition.partition_id;
-          bidding_partition_copy.interest_group_names =
-              bidding_partition.interest_group_names;
-          bidding_partition_copy.keys = bidding_partition.keys;
-          bidding_partition_copy.hostname = bidding_partition.hostname;
-          bidding_partition_copy.additional_params =
-              bidding_partition.additional_params.Clone();
           bidding_partitions_copy.emplace_back(
-              std::move(bidding_partition_copy));
+              bidding_partition.partition_id,
+              *bidding_partition.interest_group_names, *bidding_partition.keys,
+              *bidding_partition.hostname,
+              bidding_partition.additional_params->Clone());
         }
       }
 
@@ -183,27 +193,18 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       EXPECT_FALSE(fetch_started_);
       fetch_started_ = true;
 
-      std::map<int, std::vector<TrustedSignalsFetcher::ScoringPartition>>
+      std::map<int, std::vector<FetcherScoringPartitionArgs>>
           compression_groups_copy;
       for (const auto& compression_group : compression_groups) {
         auto& scoring_partitions_copy =
             compression_groups_copy.try_emplace(compression_group.first)
                 .first->second;
         for (const auto& scoring_partition : compression_group.second) {
-          // Have to manually copy each ScoringPartition, since ScoringPartition
-          // deliberately doesn't have a copy constructor, to avoid accidental
-          // copies, which can be resource intensive.
-          TrustedSignalsFetcher::ScoringPartition scoring_partition_copy;
-          scoring_partition_copy.partition_id = scoring_partition.partition_id;
-          scoring_partition_copy.render_url = scoring_partition.render_url;
-          scoring_partition_copy.component_render_urls =
-              scoring_partition.component_render_urls;
-          scoring_partition_copy.hostname = scoring_partition.hostname;
-          scoring_partition_copy.additional_params =
-              scoring_partition.additional_params.Clone();
-
           scoring_partitions_copy.emplace_back(
-              std::move(scoring_partition_copy));
+              scoring_partition.partition_id, *scoring_partition.render_url,
+              *scoring_partition.component_render_urls,
+              *scoring_partition.hostname,
+              scoring_partition.additional_params->Clone());
         }
       }
 
@@ -393,7 +394,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 // Validates that `partition` has a single partition corresponding to the
 // BiddingParams in `params`.
 void ValidateFetchParamsForPartition(
-    const TrustedSignalsFetcher::BiddingPartition& partition,
+    const FetcherBiddingPartitionArgs& partition,
     const BiddingParams& params,
     int expected_partition_id) {
   EXPECT_EQ(partition.hostname, params.main_frame_origin.host());
@@ -412,7 +413,7 @@ void ValidateFetchParamsForPartition(
 // Validates that `partition` has a single partition corresponding to the
 // ScoringParams in `params`.
 void ValidateFetchParamsForPartition(
-    const TrustedSignalsFetcher::ScoringPartition& partition,
+    const FetcherScoringPartitionArgs& partition,
     const ScoringParams& params,
     int expected_partition_id) {
   EXPECT_EQ(partition.hostname, params.main_frame_origin.host());
@@ -471,7 +472,7 @@ TrustedSignalsFetcher::CompressionGroupResult CreateCompressionGroupResult(
     base::TimeDelta ttl = base::Hours(1)) {
   TrustedSignalsFetcher::CompressionGroupResult result;
   result.compression_group_data =
-      std::vector<std::uint8_t>(body.begin(), body.end());
+      base::Value::BlobStorage(body.begin(), body.end());
   result.compression_scheme = compression_scheme;
   result.ttl = ttl;
   return result;

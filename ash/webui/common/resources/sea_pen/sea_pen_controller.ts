@@ -86,6 +86,11 @@ export async function getSeaPenThumbnails(
 export async function selectSeaPenThumbnail(
     thumbnail: SeaPenThumbnail, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
+  if (store.data.recentImages &&
+      store.data.recentImages.includes(thumbnail.id)) {
+    return selectRecentSeaPenImage(thumbnail.id, provider, store);
+  }
+
   let promise: ReturnType<SeaPenProviderInterface['selectSeaPenThumbnail']>;
 
   store.dispatch(seaPenAction.beginSelectSeaPenThumbnailAction(thumbnail));

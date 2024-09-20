@@ -172,7 +172,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       const url::Origin& browser_signal_seller_origin,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
       const base::TimeDelta browser_signal_recency,
-      mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
+      blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       const std::optional<blink::AdSize>& requested_ad_size,
       uint16_t multi_bid_limit,
@@ -251,7 +251,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     url::Origin browser_signal_seller_origin;
     std::optional<url::Origin> browser_signal_top_level_seller_origin;
     base::TimeDelta browser_signal_recency;
-    mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
+    blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
     std::optional<blink::AdSize> requested_ad_size;
     uint16_t multi_bid_limit;
     base::Time auction_start_time;
@@ -413,6 +413,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         RealTimeReportingContributions real_time_contributions,
         base::TimeDelta bidding_latency,
         mojom::RejectReason reject_reason,
+        bool script_timed_out,
         std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal = base::OnceCallback<void(
         std::optional<GURL> report_url,
@@ -420,6 +421,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::flat_map<std::string, std::string> ad_macro_map,
         PrivateAggregationRequests pa_requests,
         base::TimeDelta reporting_latency,
+        bool script_timed_out,
         std::vector<std::string> errors)>;
 
     // Matches GenerateBidCallbackInternal, but with only one
@@ -438,6 +440,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           PrivateAggregationRequests pa_requests,
           RealTimeReportingContributions real_time_contributions,
           mojom::RejectReason reject_reason,
+          bool script_timed_out,
           std::vector<std::string> error_msgs);
 
       SingleGenerateBidResult(const SingleGenerateBidResult&) = delete;
@@ -463,6 +466,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       PrivateAggregationRequests non_kanon_pa_requests;
       RealTimeReportingContributions real_time_contributions;
       mojom::RejectReason reject_reason;
+      bool script_timed_out;
       std::vector<std::string> error_msgs;
     };
 
@@ -525,7 +529,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const std::optional<url::Origin>&
             browser_signal_top_level_seller_origin,
         const base::TimeDelta browser_signal_recency,
-        mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
+        blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
         base::Time auction_start_time,
         const std::optional<blink::AdSize>& requested_ad_size,
         uint16_t multi_bid_limit,
@@ -564,7 +568,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const url::Origin& browser_signal_seller_origin,
         const url::Origin* browser_signal_top_level_seller_origin,
         const base::TimeDelta browser_signal_recency,
-        const mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
+        const blink::mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
         base::Time auction_start_time,
         const std::optional<blink::AdSize>& requested_ad_size,
         uint16_t multi_bid_limit,
@@ -579,6 +583,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         uint64_t trace_id,
         AuctionV8Helper::TimeLimit& total_timeout,
         bool should_deep_freeze,
+        bool& script_timed_out,
         std::vector<std::string>& errors_out);
 
     void FinishInit(mojo::PendingRemote<mojom::AuctionSharedStorageHost>
@@ -591,6 +596,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::flat_map<std::string, std::string> ad_macro_map,
         PrivateAggregationRequests pa_requests,
         base::TimeDelta reporting_latency,
+        bool script_timed_out,
         std::vector<std::string> errors);
 
     void PostErrorBidCallbackToUserThread(
@@ -722,6 +728,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       RealTimeReportingContributions real_time_contributions,
       base::TimeDelta bidding_latency,
       mojom::RejectReason reject_reason,
+      bool script_timed_out,
       std::vector<std::string> error_msgs);
 
   // Removes `task` from `generate_bid_tasks_` only. Used in case where the
@@ -738,6 +745,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       base::flat_map<std::string, std::string> ad_macro_map,
       PrivateAggregationRequests pa_requests,
       base::TimeDelta reporting_latency,
+      bool script_timed_out,
       std::vector<std::string> errors);
 
   // Returns true if unpaused and the script and WASM helper (if needed) have
@@ -787,6 +795,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // These are deleted once each resource is loaded.
   std::unique_ptr<WorkletLoader> worklet_loader_;
   std::unique_ptr<WorkletWasmLoader> wasm_loader_;
+  base::TimeTicks code_download_start_;
+  std::optional<base::TimeDelta> js_fetch_latency_;
+  std::optional<base::TimeDelta> wasm_fetch_latency_;
 
   // Lives on `v8_runners_`. Since it's deleted there via DeleteSoon, tasks can
   // be safely posted from main thread to it with an Unretained pointer.

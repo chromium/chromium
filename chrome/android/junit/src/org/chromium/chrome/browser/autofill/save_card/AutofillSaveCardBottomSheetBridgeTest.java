@@ -37,6 +37,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.Collections;
+
 /** Unit tests for {@link AutofillSaveCardBottomSheetBridge}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
@@ -75,6 +77,13 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
         mBridge.requestShowContent(
                 new AutofillSaveCardUiInfo.Builder()
                         .withCardDetail(new CardDetail(/* iconId= */ 0, "label", "subLabel"))
+                        .withCardDescription("Card description")
+                        .withLegalMessageLines(Collections.EMPTY_LIST)
+                        .withTitleText("Title")
+                        .withConfirmText("Confirm")
+                        .withCancelText("Cancel")
+                        .withDescriptionText("Description")
+                        .withLoadingDescription("Loading description")
                         .build(),
                 /* skipLoadingForFixFlow= */ false);
     }

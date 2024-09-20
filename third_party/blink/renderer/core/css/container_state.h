@@ -13,9 +13,9 @@ namespace blink {
 enum class ContainerStuckLogical {
   // Not stuck
   kNo,
-  // Stuck to inset-inline-start, or inset-block-start
+  // Stuck to inline-start, or block-start
   kStart,
-  // Stuck to inset-inline-end, or inset-block-end
+  // Stuck to inline-end, or block-end
   kEnd,
 };
 

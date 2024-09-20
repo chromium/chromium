@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
@@ -116,9 +117,10 @@ void LogPreFillMetrics(const FormStructure& form) {
       LogPreFilledFieldStatus(form_type_name, field->initial_value_changed(),
                               field->Type().GetStorableType());
       LogPreFilledValueChanged(
-          form_type_name, field->initial_value_changed(), field->value(),
-          field->field_log_events(), field->possible_types(),
-          field->Type().GetStorableType(), field->is_autofilled());
+          form_type_name, field->initial_value_changed(),
+          field->value(ValueSemantics::kCurrent), field->field_log_events(),
+          field->possible_types(), field->Type().GetStorableType(),
+          field->is_autofilled());
       LogPreFilledFieldClassifications(form_type_name,
                                        field->initial_value_changed(),
                                        field->may_use_prefilled_placeholder());
@@ -206,7 +208,8 @@ void LogPredictionMetrics(
     AutofillMetrics::LogOverallPredictionQualityMetrics(
         form_interactions_ukm_logger, form, *field, metric_type);
     AutofillMetrics::LogEmailFieldPredictionMetrics(*field);
-    autofill_metrics::LogShadowPredictionComparison(*field);
+    autofill_metrics::LogShadowPredictionComparison(*field,
+                                                    GetActiveHeuristicSource());
   }
 }
 

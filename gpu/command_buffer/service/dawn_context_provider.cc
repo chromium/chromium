@@ -325,6 +325,12 @@ bool DawnContextProvider::DefaultForceFallbackAdapter() {
          gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
 }
 
+// static
+bool DawnContextProvider::DefaultValidateAdapterFn(wgpu::BackendType,
+                                                   wgpu::Adapter) {
+  return true;
+}
+
 // Owns the dawn instance/adapter/device so that it's lifetime is not linked to
 // a specific DawnContextProvider.
 class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
@@ -335,6 +341,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   bool Initialize(wgpu::BackendType backend_type,
                   bool force_fallback_adapter,
                   const GpuPreferences& gpu_preferences,
+                  DawnContextProvider::ValidateAdapterFn validate_adapter_fn,
                   const GpuDriverBugWorkarounds& gpu_driver_workarounds);
   void SetCachingInterface(
       std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
@@ -449,6 +456,7 @@ bool DawnSharedContext::Initialize(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
+    DawnContextProvider::ValidateAdapterFn validate_adapter_fn,
     const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
   // Make Dawn experimental API and WGSL features available since access to this
   // instance doesn't exit the GPU process.
@@ -538,6 +546,10 @@ bool DawnSharedContext::Initialize(
     return false;
   }
   adapter_ = wgpu::Adapter(adapters[0].Get());
+
+  if (!validate_adapter_fn(backend_type, adapter_)) {
+    return false;
+  }
 
   // Start initializing dawn device here.
   wgpu::DawnCacheDeviceDescriptor cache_desc;
@@ -760,20 +772,22 @@ bool DawnSharedContext::OnMemoryDump(
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
     const GpuPreferences& gpu_preferences,
+    ValidateAdapterFn validate_adapter_fn,
     const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
   return DawnContextProvider::CreateWithBackend(
       GetDefaultBackendType(), DefaultForceFallbackAdapter(), gpu_preferences,
-      gpu_driver_workarounds);
+      validate_adapter_fn, gpu_driver_workarounds);
 }
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
+    ValidateAdapterFn validate_adapter_fn,
     const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
   auto dawn_shared_context = base::MakeRefCounted<DawnSharedContext>();
   if (!dawn_shared_context->Initialize(backend_type, force_fallback_adapter,
-                                       gpu_preferences,
+                                       gpu_preferences, validate_adapter_fn,
                                        gpu_driver_workarounds)) {
     return nullptr;
   }

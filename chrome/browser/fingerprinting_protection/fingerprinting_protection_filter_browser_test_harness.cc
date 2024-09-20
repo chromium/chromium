@@ -72,4 +72,34 @@ FingerprintingProtectionFilterDryRunBrowserTest::
 FingerprintingProtectionFilterDryRunBrowserTest::
     ~FingerprintingProtectionFilterDryRunBrowserTest() = default;
 
+// ======= FingerprintingProtectionFilterEnabledInIncognitoBrowserTest ========
+
+FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
+    FingerprintingProtectionFilterEnabledInIncognitoBrowserTest() {
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kEnableFingerprintingProtectionFilterInIncognito,
+        {{"activation_level", "enabled"}}}},
+      /*disabled_features=*/{});
+}
+
+FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
+    ~FingerprintingProtectionFilterEnabledInIncognitoBrowserTest() = default;
+
+// ============= FingerprintingProtectionFilterDisabledBrowserTest ============
+
+FingerprintingProtectionFilterDisabledBrowserTest::
+    FingerprintingProtectionFilterDisabledBrowserTest() {
+  scoped_feature_list_.InitWithFeatureStates(
+      {{fingerprinting_protection_filter::features::
+            kEnableFingerprintingProtectionFilterInIncognito,
+        false},
+       {fingerprinting_protection_filter::features::
+            kEnableFingerprintingProtectionFilter,
+        false}});
+}
+
+FingerprintingProtectionFilterDisabledBrowserTest::
+    ~FingerprintingProtectionFilterDisabledBrowserTest() = default;
+
 }  // namespace fingerprinting_protection_filter

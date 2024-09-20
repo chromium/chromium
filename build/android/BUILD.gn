@@ -36,6 +36,9 @@ if (enable_java_templates) {
 
   java_library("build_java") {
     supports_android = true
+
+    # Required to prevent circular dependency from //tools/android/errorprone_plugin.
+    enable_errorprone = false
     srcjar_deps = [
       ":native_libraries_gen",
       ":placeholder_build_config_srcjar",
@@ -49,6 +52,7 @@ if (enable_java_templates) {
       "java/src/org/chromium/build/annotations/DoNotStripLogs.java",
       "java/src/org/chromium/build/annotations/IdentifierNameString.java",
       "java/src/org/chromium/build/annotations/MockedInTests.java",
+      "java/src/org/chromium/build/annotations/ServiceImpl.java",
       "java/src/org/chromium/build/annotations/UsedByReflection.java",
     ]
 

@@ -164,6 +164,45 @@ struct StructTraits<chrome::mojom::AntiVirusProductDataView,
                    metrics::SystemProfileProto_AntiVirusProduct* output);
 };
 
+template <>
+struct StructTraits<chrome::mojom::TpmIdentifierDataView,
+                    metrics::SystemProfileProto_TpmIdentifier> {
+  static uint32_t manufacturer_id(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.manufacturer_id();
+  }
+  static const std::string& manufacturer_version(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.manufacturer_version();
+  }
+  static const std::string& manufacturer_version_info(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.manufacturer_version_info();
+  }
+  static const std::string& tpm_specific_version(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.tpm_specific_version();
+  }
+
+  static uint32_t manufacturer_version_hash(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.manufacturer_version_hash();
+  }
+
+  static uint32_t manufacturer_version_info_hash(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.manufacturer_version_info_hash();
+  }
+
+  static uint32_t tpm_specific_version_hash(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.tpm_specific_version_hash();
+  }
+
+  static bool Read(chrome::mojom::TpmIdentifierDataView data,
+                   metrics::SystemProfileProto_TpmIdentifier* output);
+};
+
 }  // namespace mojo
 
 #endif  // CHROME_SERVICES_UTIL_WIN_PUBLIC_MOJOM_UTIL_WIN_MOJOM_TRAITS_H_

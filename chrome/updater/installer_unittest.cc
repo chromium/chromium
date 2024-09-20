@@ -204,4 +204,25 @@ TEST(InstallerTest, LoadFromPath_KeysMissing) {
   EXPECT_EQ(crx.brand, "BRND");
 }
 
+TEST(InstallerTest, GetInstalledFileReturnsNothing) {
+  base::test::TaskEnvironment environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
+  ASSERT_EQ(
+      static_cast<scoped_refptr<update_client::CrxInstaller>>(
+          base::MakeRefCounted<Installer>(
+              "id", "client_install_data", "install_data_index",
+              "install_source", "target_channel", "target_version_prefix",
+              /*rollback_allowed=*/true,
+              /*update_disabled=*/false,
+              UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
+              crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF))
+          ->GetInstalledFile("f"),
+      std::nullopt);
+}
+
 }  // namespace updater

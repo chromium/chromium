@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <ostream>
 
-namespace content {
+namespace content::indexed_db {
 
 std::ostream& operator<<(std::ostream& out, const PartitionedLockId& lock_id) {
   out << "<PartitionedLockId>{id: 0x";
@@ -34,4 +34,4 @@ bool operator!=(const PartitionedLockId& x, const PartitionedLockId& y) {
   return !(x == y);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

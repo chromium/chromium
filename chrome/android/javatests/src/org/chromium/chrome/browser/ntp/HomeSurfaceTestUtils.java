@@ -20,6 +20,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -122,7 +123,7 @@ public class HomeSurfaceTestUtils {
 
             if (createStateFile) {
                 int rootId = rootIds == null ? tabIds[i] : rootIds[i];
-                saveTabState(tabIds[i], rootId, false);
+                saveTabState(tabIds[i], rootId);
             }
         }
         TabPersistentStore.TabModelMetadata incognitoInfo =
@@ -205,21 +206,24 @@ public class HomeSurfaceTestUtils {
      * Create a file so that a TabState can be restored later.
      *
      * @param tabId the Tab ID
-     * @param tabId the Root ID
-     * @param encrypted for Incognito mode
+     * @param rootId the Root ID
      */
-    private static void saveTabState(int tabId, int rootId, boolean encrypted) {
+    private static void saveTabState(int tabId, int rootId) {
         File file =
                 TabStateFileManager.getTabStateFile(
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
                         tabId,
-                        encrypted,
+                        /* encrypted= */ false,
                         /* isFlatBuffer= */ false);
         writeFile(file, M26_GOOGLE_COM.encodedTabState);
 
-        TabState tabState = TabStateFileManager.restoreTabStateInternal(file, false);
+        CipherFactory unusedCipherFactory = new CipherFactory();
+        TabState tabState =
+                TabStateFileManager.restoreTabStateInternal(
+                        file, /* encrypted= */ false, unusedCipherFactory);
         tabState.rootId = rootId;
-        TabStateFileManager.saveStateInternal(file, tabState, encrypted);
+        TabStateFileManager.saveStateInternal(
+                file, tabState, /* encrypted= */ false, unusedCipherFactory);
     }
 
     private static void writeFile(File file, String data) {

@@ -639,6 +639,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Proxy B"/>
 </enum>
 
+<enum name="IpProtectionTokenBatchRequestError">
+  <int value="58877100" label="Failed to read timestamp"/>
+  <int value="354921842" label="At least one extension is required"/>
+  <int value="1218093704" label="Failed to read extensions"/>
+  <int value="2528366448" label="Failed to parse GetInitialDataResponse"/>
+  <int value="2867080750" label="Failed to read timestamp_precision"/>
+  <int value="3336018440"
+      label="Non-Privacy Pass tokens are no longer supported"/>
+</enum>
+
 <enum name="IpProtectionTokenBatchRequestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed - No Account"/>

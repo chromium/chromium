@@ -23,7 +23,13 @@ class WizardContext;
 class PinSetupScreen : public BaseScreen {
  public:
   using TView = PinSetupScreenView;
-  enum class Result { DONE, USER_SKIP, NOT_APPLICABLE, TIMED_OUT };
+  enum class Result {
+    kDone = 0,
+    kUserSkip = 1,
+    kNotApplicable = 2,
+    kTimedOut = 3,
+    kMaxValue = kTimedOut
+  };
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/enums.xml, and should always reflect it (do not

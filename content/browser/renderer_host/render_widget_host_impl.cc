@@ -124,6 +124,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor.h"
@@ -1062,7 +1063,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   } else {
     visual_properties.compositor_viewport_pixel_rect =
         properties_from_parent_local_root_.compositor_viewport;
-    visual_properties.window_show_state = ui::SHOW_STATE_DEFAULT;
+    visual_properties.window_show_state = ui::mojom::WindowShowState::kDefault;
 
     // These properties come from the top-level main frame's renderer. The
     // top-level main frame in the browser doesn't specify a value.

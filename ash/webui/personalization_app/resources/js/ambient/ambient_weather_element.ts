@@ -10,6 +10,7 @@
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import '../geolocation_dialog.js';
@@ -53,6 +54,11 @@ export class AmbientWeatherUnitElement extends WithPersonalizationStore {
         value: null,
       },
 
+      geolocationIsUserModifiable_: {
+        type: Boolean,
+        value: null,
+      },
+
       shouldShowGeolocationWarningText_: {
         type: Boolean,
         computed: 'computeShouldShowGeolocationWarningText_(' +
@@ -65,6 +71,7 @@ export class AmbientWeatherUnitElement extends WithPersonalizationStore {
   private temperatureUnit_: TemperatureUnit;
   private selectedTemperatureUnit: string;
   private geolocationPermissionEnabled_: boolean|null;
+  private geolocationIsUserModifiable_: boolean|null;
   private shouldShowGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
 
@@ -75,6 +82,9 @@ export class AmbientWeatherUnitElement extends WithPersonalizationStore {
     this.watch<AmbientWeatherUnitElement['geolocationPermissionEnabled_']>(
         'geolocationPermissionEnabled_',
         state => state.ambient.geolocationPermissionEnabled);
+    this.watch<AmbientWeatherUnitElement['geolocationIsUserModifiable_']>(
+        'geolocationIsUserModifiable_',
+        state => state.ambient.geolocationIsUserModifiable);
     this.updateFromStore();
 
     initializeData(getAmbientProvider(), this.getStore());

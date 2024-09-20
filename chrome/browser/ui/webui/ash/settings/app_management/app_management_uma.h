@@ -10,7 +10,7 @@ namespace ash::settings {
 // These are used in histograms, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
 // AppManagementEntryPoint enum listing in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/apps/enums.xml.
 enum class AppManagementEntryPoint {
   kAppListContextMenuAppInfoArc = 0,
   kAppListContextMenuAppInfoChromeApp = 1,
@@ -29,7 +29,8 @@ enum class AppManagementEntryPoint {
   kPageInfoView = 14,
   kPrivacyIndicatorsNotificationSettings = 15,
   kSubAppsInstallPrompt = 16,
-  kMaxValue = kSubAppsInstallPrompt,
+  kSiteDataDialog = 17,
+  kMaxValue = kSiteDataDialog,
 };
 
 }  // namespace ash::settings

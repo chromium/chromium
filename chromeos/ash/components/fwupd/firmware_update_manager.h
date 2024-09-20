@@ -264,9 +264,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
       MethodCallback callback,
       base::FilePath download_path);
 
-  void CheckRequirementsAndMaybeRefreshRemote(Source source,
-                                              const NetworkState* network);
-
   // If refresh remote is allowed and call RefreshRemote otherwise continue with
   // RequestUpdates()
   void MaybeRefreshRemote(bool refresh_allowed);

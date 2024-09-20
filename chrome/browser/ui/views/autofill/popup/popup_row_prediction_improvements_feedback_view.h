@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_PREDICTION_IMPROVEMENTS_FEEDBACK_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_PREDICTION_IMPROVEMENTS_FEEDBACK_VIEW_H_
 
-#include <memory>
 #include <optional>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"

@@ -9,6 +9,7 @@
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -25,7 +26,7 @@ ShimlessRmaDialog::ShimlessRmaDialog()
     : SystemWebDialogDelegate(GURL(kChromeUIShimlessRMAUrl),
                               /*title=*/std::u16string()) {
   // MODAL_TYPE_SYSTEM renders over OOBE/login screens, but does not support
-  // ui::SHOW_STATE_FULLSCREEN correctly.
+  // ui::mojom::WindowShowState::kFullscreen correctly.
   // This dialog uses DisplayObserver::OnDisplayMetricsChanged to update the
   // window size as screen size changes.
   set_dialog_modal_type(ui::mojom::ModalType::kSystem);
@@ -45,7 +46,7 @@ void ShimlessRmaDialog::AdjustWidgetInitParams(
   params->type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
   params->visible_on_all_workspaces = true;
   params->corner_radius = 0;
-  params->show_state = ui::SHOW_STATE_FULLSCREEN;
+  params->show_state = ui::mojom::WindowShowState::kFullscreen;
   params->remove_standard_frame = true;
   params->opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
 }

@@ -485,6 +485,14 @@ bool IsDnsSkippedWithOriginFrame(const VariationParameters& quic_trial_params) {
       "true");
 }
 
+bool IgnoreIpMatchingWhenFindingExistingSessions(
+    const VariationParameters& quic_trial_params) {
+  return base::EqualsCaseInsensitiveASCII(
+      GetVariationParam(quic_trial_params,
+                        "ignore_ip_matching_when_finding_existing_sessions"),
+      "true");
+}
+
 void SetQuicFlags(const VariationParameters& quic_trial_params) {
   std::string flags_list =
       GetVariationParam(quic_trial_params, "set_quic_flags");
@@ -702,6 +710,8 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
     quic_params->enable_origin_frame = IsOriginFrameEnabled(quic_trial_params);
     quic_params->skip_dns_with_origin_frame =
         IsDnsSkippedWithOriginFrame(quic_trial_params);
+    quic_params->ignore_ip_matching_when_finding_existing_sessions =
+        IgnoreIpMatchingWhenFindingExistingSessions(quic_trial_params);
     SetQuicFlags(quic_trial_params);
   }
 

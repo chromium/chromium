@@ -220,12 +220,6 @@ class OverlayProcessorTestBase : public testing::Test {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    // With DisableVideoOverlayIfMoving, videos are required to be stable for a
-    // certain number of frames to be considered for overlay promotion. This
-    // complicates tests since it adds behavior dependent on the number of times
-    // |Process| is called.
-    disabled_features.push_back(features::kDisableVideoOverlayIfMoving);
-
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -265,8 +259,14 @@ class DCLayerOverlayProcessorTest : public OverlayProcessorTestBase {
  protected:
   void InitializeDCLayerOverlayProcessor(int allowed_yuv_overlay_count = 1) {
     CHECK(!dc_layer_overlay_processor_);
+
+    // With disable_video_overlay_if_moving enabled, videos are required to be
+    // stable for a certain number of frames to be considered for overlay
+    // promotion. This complicates tests since it adds behavior dependent on
+    // the number of times |Process| is called.
     dc_layer_overlay_processor_ = std::make_unique<DCLayerOverlayProcessor>(
         allowed_yuv_overlay_count,
+        /*disable_video_overlay_if_moving=*/false,
         /*skip_initialization_for_testing=*/true);
 
     dc_layer_overlay_processor_
@@ -315,7 +315,7 @@ class DCLayerOverlayProcessorTest : public OverlayProcessorTestBase {
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
 };
 
-TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingFeature) {
+TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingWorkaround) {
   InitializeDCLayerOverlayProcessor();
   auto ProcessForOverlaysSingleVideoRectWithOffset =
       [&](gfx::Vector2d video_rect_offset, bool is_hdr = false,
@@ -393,17 +393,15 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingFeature) {
       };
 
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kDisableVideoOverlayIfMoving);
+    dc_layer_overlay_processor_
+        ->set_disable_video_overlay_if_moving_for_testing(false);
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size());
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
   }
 
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kDisableVideoOverlayIfMoving);
+    dc_layer_overlay_processor_
+        ->set_disable_video_overlay_if_moving_for_testing(true);
     // We expect an overlay promotion after a couple frames of no movement
     for (int i = 0; i < 10; i++) {
       ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size();
@@ -421,9 +419,8 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingFeature) {
   }
 
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kDisableVideoOverlayIfMoving);
+    dc_layer_overlay_processor_
+        ->set_disable_video_overlay_if_moving_for_testing(true);
     // We expect an overlay promotion after a couple frames of no movement
     for (int i = 0; i < 10; i++) {
       ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/false,
@@ -442,9 +439,8 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingFeature) {
   }
 
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kDisableVideoOverlayIfMoving);
+    dc_layer_overlay_processor_
+        ->set_disable_video_overlay_if_moving_for_testing(true);
     // We expect an overlay promotion after a couple frames of no movement
     for (int i = 0; i < 10; i++) {
       ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/true)
@@ -2260,11 +2256,13 @@ TEST_F(OverlayProcessorWinStaticTest,
 
 class TestOverlayProcessorWin : public OverlayProcessorWin {
  public:
-  explicit TestOverlayProcessorWin(int allowed_yuv_overlay_count)
+  explicit TestOverlayProcessorWin(int allowed_yuv_overlay_count,
+                                   bool disable_video_overlay_if_moving)
       : OverlayProcessorWin(OutputSurface::DCSupportLevel::kDCompTexture,
                             &debug_settings_,
                             std::make_unique<DCLayerOverlayProcessor>(
                                 allowed_yuv_overlay_count,
+                                disable_video_overlay_if_moving,
                                 /*skip_initialization_for_testing=*/true)) {}
   DebugRendererSettings debug_settings_;
 };
@@ -2274,8 +2272,13 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
   void SetUp() override {
     OverlayProcessorTestBase::SetUp();
 
+    // With disable_video_overlay_if_moving enabled, videos are required to be
+    // stable for a certain number of frames to be considered for overlay
+    // promotion. This complicates tests since it adds behavior dependent on
+    // the number of times |Process| is called.
     overlay_processor_ = std::make_unique<TestOverlayProcessorWin>(
-        /*allowed_yuv_overlay_count=*/1);
+        /*allowed_yuv_overlay_count=*/1,
+        /*disable_video_overlay_if_moving=*/false);
     overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, true);
     overlay_processor_->SetViewportSize(gfx::Size(256, 256));
 

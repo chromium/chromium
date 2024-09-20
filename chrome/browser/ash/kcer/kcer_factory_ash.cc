@@ -4,15 +4,16 @@
 
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 
+#include "ash/components/kcer/chaps/session_chaps_client.h"
+#include "ash/components/kcer/extra_instances.h"
+#include "ash/components/kcer/kcer.h"
+#include "ash/components/kcer/kcer_token.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
-#include "chrome/browser/ash/crosapi/chaps_service_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
@@ -21,10 +22,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
-#include "chromeos/components/kcer/chaps/session_chaps_client.h"
-#include "chromeos/components/kcer/extra_instances.h"
-#include "chromeos/components/kcer/kcer.h"
-#include "chromeos/components/kcer/kcer_token.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -59,22 +56,6 @@ const user_manager::User* GetUserByContext(content::BrowserContext* context) {
     return nullptr;
   }
   return ash::ProfileHelper::Get()->GetUserByProfile(profile);
-}
-
-// Returns the currently valid ChapsService. Might return a nullptr during early
-// initialization and after shutdown.
-crosapi::mojom::ChapsService* GetChapsService() {
-  crosapi::mojom::ChapsService* chaps_service = nullptr;
-  if (crosapi::CrosapiManager::IsInitialized() &&
-      crosapi::CrosapiManager::Get() &&
-      crosapi::CrosapiManager::Get()->crosapi_ash()) {
-    chaps_service =
-        crosapi::CrosapiManager::Get()->crosapi_ash()->chaps_service_ash();
-  }
-  if (!chaps_service) {
-    LOG(ERROR) << "ChapsService mojo interface is not available";
-  }
-  return chaps_service;
 }
 
 KcerFactoryAsh::UniqueSlotId GetUniqueId(PK11SlotInfo* nss_slot) {
@@ -192,6 +173,11 @@ bool KcerFactoryAsh::IsHighLevelChapsClientInitialized() {
 // static
 void KcerFactoryAsh::RecordPkcs12CertDualWritten() {
   GetInstance()->RecordPkcs12CertDualWrittenImpl();
+}
+
+// static
+void KcerFactoryAsh::ClearNssTokenMapForTesting() {
+  GetInstance()->ClearNssTokenMapForTestingImpl();
 }
 
 KcerFactoryAsh::KcerFactoryAsh()
@@ -317,6 +303,11 @@ void KcerFactoryAsh::RecordPkcs12CertDualWrittenImpl() {
     return;
   }
   prefs->SetBoolean(prefs::kNssChapsDualWrittenCertsExist, true);
+}
+
+void KcerFactoryAsh::ClearNssTokenMapForTestingImpl() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  nss_tokens_io_.clear();
 }
 
 bool KcerFactoryAsh::ServiceIsCreatedWithBrowserContext() const {
@@ -508,8 +499,7 @@ bool KcerFactoryAsh::EnsureHighLevelChapsClientInitialized() {
     return true;
   }
 
-  session_chaps_client_ = std::make_unique<SessionChapsClientImpl>(
-      base::BindRepeating(&GetChapsService));
+  session_chaps_client_ = std::make_unique<SessionChapsClientImpl>();
   high_level_chaps_client_ =
       std::make_unique<HighLevelChapsClientImpl>(session_chaps_client_.get());
 

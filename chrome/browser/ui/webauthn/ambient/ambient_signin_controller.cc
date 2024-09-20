@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 
 #include "base/functional/bind.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -16,18 +15,14 @@
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 #include "ui/views/widget/widget.h"
 
+using blink::mojom::CredentialTypeFlags;
 using content::RenderFrameHost;
 using content::WebContents;
 
 namespace ambient_signin {
-
-namespace {
-
-inline constexpr base::TimeDelta kWaitForCredentials = base::Milliseconds(1000);
-
-}  // namespace
 
 AmbientSigninController::~AmbientSigninController() {
   if (model_) {
@@ -43,7 +38,12 @@ AmbientSigninController::~AmbientSigninController() {
 void AmbientSigninController::AddAndShowWebAuthnMethods(
     AuthenticatorRequestDialogModel* model,
     const std::vector<password_manager::PasskeyCredential>& credentials,
+    int expected_credential_type_flags,
     PasskeyCredentialSelectionCallback callback) {
+  CHECK(expected_credential_type_flags &
+            static_cast<int>(CredentialTypeFlags::kPassword) ||
+        expected_credential_type_flags &
+            static_cast<int>(CredentialTypeFlags::kPublicKey));
   if (!model_) {
     model_ = model;
     model_->observers.AddObserver(this);
@@ -54,6 +54,11 @@ void AmbientSigninController::AddAndShowWebAuthnMethods(
   passkey_selection_callback_ = std::move(callback);
   passkey_credentials_ = credentials;
 
+  // TODO(358119268): There isn't a strong guarantee that passwords will ever
+  // arrive here, since errors can be encountered on the credential manager
+  // path. This needs to be addressed, and in general we need to better ensure
+  // that state in both credential manager and webauthn code is adequately
+  // cleaned up.
   if (credentials_received_state_ == CredentialsReceived::kPasskeys ||
       credentials_received_state_ ==
           CredentialsReceived::kPasswordsAndPasskeys) {
@@ -62,20 +67,26 @@ void AmbientSigninController::AddAndShowWebAuthnMethods(
 
   if (credentials_received_state_ == CredentialsReceived::kNone) {
     credentials_received_state_ = CredentialsReceived::kPasskeys;
-    // Unretained |this| is safe because the timer will be destroyed on
-    // destruction of this object.
-    timer_.Start(FROM_HERE, kWaitForCredentials, this,
-                 &AmbientSigninController::ShowBubble);
-    return;
+    if (expected_credential_type_flags &
+        static_cast<int>(CredentialTypeFlags::kPassword)) {
+      // Wait for passwords.
+      return;
+    }
+  } else {
+    credentials_received_state_ = CredentialsReceived::kPasswordsAndPasskeys;
   }
 
-  credentials_received_state_ = CredentialsReceived::kPasswordsAndPasskeys;
   ShowBubble();
 }
 
 void AmbientSigninController::AddAndShowPasswordMethods(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+    int expected_credential_type_flags,
     password_manager::PasswordManagerClient::CredentialsCallback callback) {
+  CHECK(expected_credential_type_flags &
+            static_cast<int>(CredentialTypeFlags::kPassword) ||
+        expected_credential_type_flags &
+            static_cast<int>(CredentialTypeFlags::kPublicKey));
   password_selection_callback_ = std::move(callback);
 
   password_forms_.swap(forms);
@@ -88,24 +99,21 @@ void AmbientSigninController::AddAndShowPasswordMethods(
 
   if (credentials_received_state_ == CredentialsReceived::kNone) {
     credentials_received_state_ = CredentialsReceived::kPasswords;
-    // Unretained |this| is safe because the timer will be destroyed on
-    // destruction of this object.
-    timer_.Start(FROM_HERE, kWaitForCredentials, this,
-                 &AmbientSigninController::ShowBubble);
-    return;
+    if (expected_credential_type_flags &
+        static_cast<int>(CredentialTypeFlags::kPublicKey)) {
+      // Wait for passkeys.
+      return;
+    }
+  } else {
+    credentials_received_state_ = CredentialsReceived::kPasswordsAndPasskeys;
   }
 
-  credentials_received_state_ = CredentialsReceived::kPasswordsAndPasskeys;
   ShowBubble();
 }
 
 void AmbientSigninController::ShowBubble() {
   if (password_forms_.empty() && passkey_credentials_.empty()) {
     return;
-  }
-
-  if (timer_.IsRunning()) {
-    timer_.Stop();
   }
 
   // TODO: double check how this behaves if a conditional request is made while
@@ -133,6 +141,8 @@ void AmbientSigninController::ShowBubble() {
 AmbientSigninController::AmbientSigninController(
     RenderFrameHost* render_frame_host)
     : content::DocumentUserData<AmbientSigninController>(render_frame_host) {
+  // TODO(358119268): This crashes if a request happens from a WebContents that
+  // is not inside a tab.
   tabs::TabInterface* tab_interface_ = tabs::TabInterface::GetFromContents(
       WebContents::FromRenderFrameHost(render_frame_host));
   tab_subscriptions_.push_back(
@@ -156,6 +166,12 @@ void AmbientSigninController::OnPasswordSelected(
 }
 
 void AmbientSigninController::OnWidgetDestroying(views::Widget* widget) {
+  // The passkey callback does not have to be invoked because its state is
+  // scoped to the request, but the password manager state is global and needs
+  // to be resolved.
+  if (password_selection_callback_) {
+    std::move(password_selection_callback_).Run(nullptr);
+  }
   ambient_signin_bubble_view_->NotifyWidgetDestroyed();
   ambient_signin_bubble_view_ = nullptr;
 }

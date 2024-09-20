@@ -335,6 +335,13 @@ class UnsafeBuffersASTConsumer : public clang::ASTConsumer {
     engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
                                "unsafe-buffer-usage",
                                clang::diag::Severity::Remark);
+
+    // TODO(https://crbug.com/364707242): directly ignore this diagnostic in
+    // HandleDiagnostic above after rolling clang with
+    // -Wunsafe-buffer-usage-in-libc-call.
+    engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
+                               "unsafe-buffer-usage-in-libc-call",
+                               clang::diag::Severity::Ignored);
   }
 
   ~UnsafeBuffersASTConsumer() {

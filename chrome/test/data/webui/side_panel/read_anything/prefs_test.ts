@@ -42,7 +42,6 @@ suite('PrefsTest', () => {
 
     suite('with no initial voices', () => {
       setup(() => {
-        chrome.readingMode.isAutoVoiceSwitchingEnabled = false;
         chrome.readingMode.baseLanguageForSpeech = 'en';
 
         // Set synthesis to have no available voices
@@ -61,7 +60,7 @@ suite('PrefsTest', () => {
         // Update the speech synthesis engine with voices.
         setVoices(
             app, speechSynthesis,
-            [createSpeechSynthesisVoice({lang: 'en', name: 'Yu'})]);
+            [createSpeechSynthesisVoice({lang: 'en', name: 'Google Yu'})]);
         app.onVoicesChanged();
 
         // Once voices are available, settings should be restored.
@@ -79,9 +78,9 @@ suite('PrefsTest', () => {
             assertFalse(!!app.getSpeechSynthesisVoice());
 
             // Update the speech synthesis engine with voices.
-            setVoices(
-                app, speechSynthesis,
-                [createSpeechSynthesisVoice({lang: 'es', name: 'Kristi'})]);
+            setVoices(app, speechSynthesis, [
+              createSpeechSynthesisVoice({lang: 'es', name: 'Google Kristi'}),
+            ]);
             app.onVoicesChanged();
 
             // Once voices are available, settings should be restored.
@@ -91,7 +90,7 @@ suite('PrefsTest', () => {
       test(
           'with no initial voices and previously selected voice, correct voice selected after onVoicesChanged',
           () => {
-            chrome.readingMode.getStoredVoice = () => 'Kristi';
+            chrome.readingMode.getStoredVoice = () => 'Google Kristi';
 
             // When there's no voices available, there shouldn't be a speech
             // synthesis voice selected.
@@ -100,22 +99,23 @@ suite('PrefsTest', () => {
 
             // Update the speech synthesis engine with voices.
             setVoices(app, speechSynthesis, [
-              createSpeechSynthesisVoice({lang: 'en', name: 'Lauren'}),
-              createSpeechSynthesisVoice({lang: 'en', name: 'Eitan'}),
-              createSpeechSynthesisVoice({lang: 'en-uk', name: 'Kristi'}),
+              createSpeechSynthesisVoice({lang: 'en', name: 'Google Lauren'}),
+              createSpeechSynthesisVoice({lang: 'en', name: 'Google Eitan'}),
+              createSpeechSynthesisVoice(
+                  {lang: 'en-uk', name: 'Google Kristi'}),
             ]);
             app.onVoicesChanged();
 
             // Once voices are available, settings should be restored.
             const selectedVoice = app.getSpeechSynthesisVoice();
             assertTrue(!!selectedVoice);
-            assertEquals('Kristi', selectedVoice.name);
+            assertEquals('Google Kristi', selectedVoice.name);
           });
 
       test(
           'onVoicesChanged after settings restored, settings aren\'t updated',
           () => {
-            chrome.readingMode.getStoredVoice = () => 'Shari';
+            chrome.readingMode.getStoredVoice = () => 'Google Shari';
 
             // When there's no voices available, there shouldn't be a speech
             // synthesis voice selected.
@@ -124,12 +124,12 @@ suite('PrefsTest', () => {
             assertTrue(app.shouldAttemptLanguageSettingsRestore);
 
             const futureSelectedVoice =
-                createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
+                createSpeechSynthesisVoice({lang: 'en', name: 'Google Kristi'});
 
             // Update the speech synthesis engine with voices.
             setVoices(app, speechSynthesis, [
-              createSpeechSynthesisVoice({lang: 'en', name: 'Lauren'}),
-              createSpeechSynthesisVoice({lang: 'en', name: 'Shari'}),
+              createSpeechSynthesisVoice({lang: 'en', name: 'Google Lauren'}),
+              createSpeechSynthesisVoice({lang: 'en', name: 'Google Shari'}),
               futureSelectedVoice,
             ]);
             app.onVoicesChanged();
@@ -138,18 +138,18 @@ suite('PrefsTest', () => {
             // Once voices are available, settings should be restored.
             let selectedVoice = app.getSpeechSynthesisVoice();
             assertTrue(!!selectedVoice);
-            assertEquals('Shari', selectedVoice.name);
+            assertEquals('Google Shari', selectedVoice.name);
 
             emitEvent(
                 app, ToolbarEvent.VOICE,
                 {detail: {selectedVoice: futureSelectedVoice}});
             selectedVoice = app.getSpeechSynthesisVoice();
             assertTrue(!!selectedVoice);
-            assertEquals('Kristi', selectedVoice.name);
+            assertEquals('Google Kristi', selectedVoice.name);
 
             // We have to update the stored voice so onVoicesChanged recognizes
             // a user chosen voice.
-            chrome.readingMode.getStoredVoice = () => 'Kristi';
+            chrome.readingMode.getStoredVoice = () => 'Google Kristi';
 
             app.onVoicesChanged();
             assertFalse(app.shouldAttemptLanguageSettingsRestore);
@@ -158,7 +158,7 @@ suite('PrefsTest', () => {
             // be used.
             selectedVoice = app.getSpeechSynthesisVoice();
             assertTrue(!!selectedVoice);
-            assertEquals('Kristi', selectedVoice.name);
+            assertEquals('Google Kristi', selectedVoice.name);
           });
     });
 
@@ -198,22 +198,22 @@ suite('PrefsTest', () => {
 
       const defaultVoice = createSpeechSynthesisVoice({
         lang: langForDefaultVoice,
-        name: 'Kristi',
+        name: 'Google Kristi',
         default: true,
       });
       const firstVoiceWithLang1 =
-          createSpeechSynthesisVoice({lang: lang1, name: 'Lauren'});
+          createSpeechSynthesisVoice({lang: lang1, name: 'Google Lauren'});
       const defaultVoiceWithLang1 = createSpeechSynthesisVoice({
         lang: lang1,
-        name: 'Eitan',
+        name: 'Google Eitan',
         default: true,
       });
       const firstVoiceWithLang2 =
-          createSpeechSynthesisVoice({lang: lang2, name: 'Yu'});
+          createSpeechSynthesisVoice({lang: lang2, name: 'Google Yu'});
       const secondVoiceWithLang2 =
-          createSpeechSynthesisVoice({lang: lang2, name: 'Xiang'});
+          createSpeechSynthesisVoice({lang: lang2, name: 'Google Xiang'});
       const otherVoice =
-          createSpeechSynthesisVoice({lang: 'it', name: 'Shari'});
+          createSpeechSynthesisVoice({lang: 'it', name: 'Google Shari'});
       const voices = [
         defaultVoice,
         firstVoiceWithLang1,

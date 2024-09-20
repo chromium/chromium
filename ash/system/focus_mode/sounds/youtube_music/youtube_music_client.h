@@ -6,12 +6,14 @@
 #define ASH_SYSTEM_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_YOUTUBE_MUSIC_CLIENT_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/focus_mode/sounds/youtube_music/request_signer.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/youtube_music/youtube_music_api_request_types.h"
 #include "google_apis/youtube_music/youtube_music_api_response_types.h"
 
 namespace ash::youtube_music {
@@ -27,7 +29,8 @@ class ASH_EXPORT YouTubeMusicClient {
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
   explicit YouTubeMusicClient(
-      const CreateRequestSenderCallback& create_request_sender_callback);
+      const CreateRequestSenderCallback& create_request_sender_callback,
+      std::unique_ptr<::ash::RequestSigner> request_signer);
   YouTubeMusicClient(const YouTubeMusicClient&) = delete;
   YouTubeMusicClient& operator=(const YouTubeMusicClient&) = delete;
   ~YouTubeMusicClient();
@@ -93,6 +96,11 @@ class ASH_EXPORT YouTubeMusicClient {
           std::unique_ptr<google_apis::youtube_music::ReportPlaybackResult>,
           google_apis::ApiErrorCode> result);
 
+  void OnRequestSigned(
+      google_apis::RequestSender* request_sender,
+      std::unique_ptr<google_apis::youtube_music::SignedRequest> signed_request,
+      const std::vector<std::string>& headers);
+
   // Callback passed in at initialization time for creating request sender.
   CreateRequestSenderCallback create_request_sender_callback_;
 
@@ -115,6 +123,9 @@ class ASH_EXPORT YouTubeMusicClient {
 
   // Helper class that sends requests, handles retries and authentication.
   std::unique_ptr<google_apis::RequestSender> request_sender_;
+
+  // Helper class that signs POST requests with a client certificate.
+  std::unique_ptr<::ash::RequestSigner> request_signer_;
 
   base::WeakPtrFactory<YouTubeMusicClient> weak_factory_{this};
 };

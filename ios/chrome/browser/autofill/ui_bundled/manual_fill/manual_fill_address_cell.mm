@@ -739,16 +739,17 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
       base::UserMetricsAction("ManualFallback_Profiles_SuggestionAccepted"));
 
   FormSuggestion* suggestion = [FormSuggestion
-             suggestionWithValue:nil
-                      minorValue:nil
-              displayDescription:nil
-                            icon:nil
-                            type:autofill::SuggestionType::kAddressEntry
-               backendIdentifier:[self.address GUID]
-                  requiresReauth:NO
-      acceptanceA11yAnnouncement:
-          base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
+              suggestionWithValue:nil
+                       minorValue:nil
+               displayDescription:nil
+                             icon:nil
+                             type:autofill::SuggestionType::kAddressEntry
+                backendIdentifier:[self.address GUID]
+      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                   requiresReauth:NO
+       acceptanceA11yAnnouncement:
+           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
   [self.contentInjector autofillFormWithSuggestion:suggestion
                                            atIndex:_cellIndex];

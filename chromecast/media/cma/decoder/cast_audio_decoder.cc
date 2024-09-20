@@ -288,7 +288,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
         ptr += num_frames;
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     result->set_duration(
@@ -348,8 +348,7 @@ int CastAudioDecoder::OutputFormatSizeInBytes(
     case CastAudioDecoder::OutputFormat::kOutputPlanarFloat:
       return 4;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 1;
+  NOTREACHED();
 }
 
 }  // namespace media

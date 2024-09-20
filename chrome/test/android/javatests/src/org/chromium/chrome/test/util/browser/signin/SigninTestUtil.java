@@ -23,8 +23,6 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -33,7 +31,6 @@ import org.chromium.components.sync.SyncFirstSetupCompleteSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /** Utility class for test signin functionality. */
@@ -190,28 +187,6 @@ public final class SigninTestUtil {
                     Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
         SyncTestUtil.waitForHistorySyncEnabled();
-    }
-
-    /** Waits for the AccountTrackerService to seed system accounts. */
-    static void seedAccounts() {
-        ThreadUtils.assertOnBackgroundThread();
-        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            throw new IllegalStateException(
-                    "This method should never be called when SeedAccountsRevamp is enabled");
-        }
-        CallbackHelper ch = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    IdentityServicesProvider.get()
-                            .getAccountTrackerService(ProfileManager.getLastUsedRegularProfile())
-                            .legacySeedAccountsIfNeeded(ch::notifyCalled);
-                });
-        try {
-            ch.waitForOnly(
-                    "Timed out while waiting for system accounts to seed.", 20, TimeUnit.SECONDS);
-        } catch (TimeoutException ex) {
-            throw new RuntimeException("Timed out while waiting for system accounts to seed.");
-        }
     }
 
     static void signOut() {

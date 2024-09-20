@@ -1248,6 +1248,10 @@ class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2DeprecationWarning);
         break;
+      case MV2ExperimentStage::kUnsupported:
+        // TODO(https://crbug.com/367395349): Add tests for the kUnsupported
+        // experiment stage.
+        NOTREACHED();
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);

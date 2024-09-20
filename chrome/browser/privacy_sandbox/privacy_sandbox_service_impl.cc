@@ -1569,6 +1569,11 @@ void PrivacySandboxServiceImpl::RecordPromptActionMetrics(PromptAction action) {
           "Settings.PrivacySandbox.RestrictedNotice.MoreButtonClicked"));
       break;
     }
+    case PromptAction::kPrivacyPolicyLinkClicked: {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Consent.PrivacyPolicyLinkClicked"));
+      break;
+    }
   }
 }
 
@@ -1694,8 +1699,9 @@ void RecordUserSegmentMetrics(const base::Value::List& activity_type_record,
                               int records_in_a_row) {
   // If a different value for records_in_a_row is needed for these metrics,
   // tools/metrics/histograms/metadata/privacy/histograms.xml needs to be
-  // updated with new histograms. Currently, only 10MostRecentRecordsUserSegment
-  // and 20MostRecentRecordsUserSegment histograms are necessary.
+  // updated with new histograms. Currently, only
+  // 10MostRecentRecordsUserSegment2 and 20MostRecentRecordsUserSegment2
+  // histograms are necessary.
   DCHECK(records_in_a_row == 10 || records_in_a_row == 20);
   // Can't emit user segment metrics when the size of the list is less than
   // records_in_a_row

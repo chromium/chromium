@@ -183,8 +183,8 @@ AndroidBatteryMetrics::~AndroidBatteryMetrics() {
 void AndroidBatteryMetrics::InitializeOnSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* power_monitor = base::PowerMonitor::GetInstance();
-  on_battery_power_ =
-      power_monitor->AddPowerStateObserverAndReturnOnBatteryState(this);
+  battery_power_status_ =
+      power_monitor->AddPowerStateObserverAndReturnBatteryPowerStatus(this);
   power_monitor->AddPowerThermalObserver(this);
   content::ProcessVisibilityTracker::GetInstance()->AddObserver(this);
   // TODO(b/339859756): Update this call to take into account the unknown battery
@@ -198,9 +198,10 @@ void AndroidBatteryMetrics::OnVisibilityChanged(bool visible) {
   UpdateMetricsEnabled();
 }
 
-void AndroidBatteryMetrics::OnPowerStateChange(bool on_battery_power) {
+void AndroidBatteryMetrics::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  on_battery_power_ = on_battery_power;
+  battery_power_status_ = battery_power_status;
   UpdateMetricsEnabled();
 }
 
@@ -230,7 +231,9 @@ void AndroidBatteryMetrics::UpdateMetricsEnabled() {
   // We want to attribute battery drain to chromium while the embedding app is
   // visible. Battery drain will only be reflected in remaining battery capacity
   // when the device is not on a charger.
-  bool should_be_enabled = app_visible_ && on_battery_power_;
+  bool should_be_enabled =
+      app_visible_ && (battery_power_status_ ==
+                       PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   if (should_be_enabled && !metrics_timer_.IsRunning()) {
     // Capture first capacity measurement and enable the repeating timer.

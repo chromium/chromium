@@ -763,6 +763,10 @@ void DownloadManagerImpl::CreateNewDownloadItemToStart(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   download::DownloadItemImpl* download = CreateActiveItem(id, *info);
+  if (delegate_ && info->save_info) {
+    info->save_info->needs_obfuscation =
+        delegate_->ShouldObfuscateDownload(download);
+  }
   content::devtools_instrumentation::WillBeginDownload(info.get(), download);
   std::move(callback).Run(
       std::move(info), download,
@@ -1505,6 +1509,17 @@ void DownloadManagerImpl::BeginDownloadInternal(
 
   auto* rfh = RenderFrameHost::FromID(params->render_process_host_id(),
                                       params->render_frame_host_routing_id());
+
+  // Untrusted network access is revoked, download request is interrupted.
+  if (rfh && rfh->IsUntrustedNetworkDisabled()) {
+    // TODO(crbug.com/365033308): Create a new download interrupt reason for
+    // fenced frame network revocation.
+    CreateInterruptedDownload(
+        std::move(params), download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
+        weak_factory_.GetWeakPtr());
+    return;
+  }
+
   StoragePartitionConfig storage_partition_config;
   if (rfh && serialized_embedder_download_data.empty()) {
     storage_partition_config =

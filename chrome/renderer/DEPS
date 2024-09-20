@@ -31,6 +31,7 @@ include_rules = [
   "+components/history_clusters/core/config.h",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
   "+components/language/core/common",
+  "+components/language_detection/core",
   "+components/lens/lens_metadata.mojom.h",
   "+components/metrics/call_stacks/call_stack_profile_builder.h",
   "+components/nacl/common",
@@ -64,6 +65,8 @@ include_rules = [
   "+components/safe_browsing/content/renderer",
   "+components/safe_browsing/content/common",
   "+components/safe_browsing/core/common",
+  "+components/sampling_profiler/thread_profiler.h",
+  "+components/security_interstitials/content/renderer",
   "+components/signin/public/base/signin_buildflags.h",
   "+components/signin/public/base/signin_switches.h",
   "+components/spellcheck/renderer",
@@ -121,17 +124,17 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "chrome_content_renderer_client_browsertest\.cc" : [
+  "chrome_content_renderer_client_browsertest\.cc": [
     "+chrome/browser/profiles/profile_io_data.h",
     "+chrome/browser/ui",
     "+chrome/browser/ui/tabs",
     "+content/public/browser/browser_thread.h",
   ],
-  "commerce_hint_agent_browsertest\.cc" : [
+  "commerce_hint_agent_browsertest\.cc": [
     "+chrome/browser/cart",
     "+chrome/browser/persisted_state_db/session_proto_db.h",
   ],
-  "read_anything_app_controller\.cc" : [
+  "read_anything_app_controller\.cc": [
     "+third_party/re2/src/re2/re2.h",
   ],
   "ash_merge_session_loader_throttle\.cc": [

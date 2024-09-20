@@ -126,8 +126,9 @@ class ShuntedHttpBridge : public HttpBridge {
  protected:
   void MakeAsynchronousPost() override {
     ASSERT_TRUE(test_->GetIOThreadTaskRunner()->BelongsToCurrentThread());
-    if (never_finishes_)
+    if (never_finishes_) {
       return;
+    }
 
     // We don't actually want to make a request for this test, so just callback
     // as if it completed.

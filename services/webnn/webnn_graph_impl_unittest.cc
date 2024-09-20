@@ -32,6 +32,7 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_builder_impl.h"
@@ -81,21 +82,21 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
 };
 
 // A fake WebNNTensor Mojo interface implementation that binds a pipe for
-// buffer creation message.
+// tensor creation message.
 class FakeWebNNTensorImpl final : public WebNNTensorImpl {
  public:
   FakeWebNNTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       WebNNContextImpl* context,
-      mojom::BufferInfoPtr buffer_info)
-      : WebNNTensorImpl(std::move(receiver), context, std::move(buffer_info)) {}
+      mojom::TensorInfoPtr tensor_info)
+      : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)) {}
   ~FakeWebNNTensorImpl() override = default;
 
  private:
   // Read/write nothing for testing the validation of inputs and outputs in
   // `WebNNGraphImpl::Dispatch()` function.
-  void ReadBufferImpl(ReadBufferCallback callback) override {}
-  void WriteBufferImpl(mojo_base::BigBuffer src_buffer) override {}
+  void ReadTensorImpl(ReadTensorCallback callback) override {}
+  void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override {}
 };
 
 // A fake WebNNContext Mojo interface implementation that binds a pipe for
@@ -120,18 +121,20 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   void CreateGraphImpl(
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
       CreateGraphImplCallback callback) override {
     FakeWebNNGraphImpl::CreateAndBuild(this, *graph_info,
                                        std::move(compute_resource_info),
                                        std::move(callback));
   }
 
-  void CreateBufferImpl(
+  void CreateTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::BufferInfoPtr buffer_info,
-      CreateBufferImplCallback callback) override {
+      mojom::TensorInfoPtr tensor_info,
+      CreateTensorImplCallback callback) override {
     std::move(callback).Run(std::make_unique<FakeWebNNTensorImpl>(
-        std::move(receiver), this, std::move(buffer_info)));
+        std::move(receiver), this, std::move(tensor_info)));
   }
 
   base::WeakPtrFactory<FakeWebNNContextImpl> weak_factory_{this};
@@ -209,28 +212,28 @@ bool ValidateInputsForComputing(
   return valid;
 }
 
-struct CreateBufferSuccess {
-  std::optional<mojo::AssociatedRemote<mojom::WebNNTensor>> webnn_buffer;
+struct CreateTensorSuccess {
+  std::optional<mojo::AssociatedRemote<mojom::WebNNTensor>> webnn_tensor;
   blink::WebNNTensorToken webnn_handle;
 };
 
-CreateBufferSuccess CreateWebNNTensor(
+CreateTensorSuccess CreateWebNNTensor(
     mojo::Remote<mojom::WebNNContext>& webnn_context,
     OperandDataType data_type,
     std::vector<uint32_t> shape) {
-  base::test::TestFuture<mojom::CreateBufferResultPtr> create_buffer_future;
-  webnn_context->CreateBuffer(
-      mojom::BufferInfo::New(*OperandDescriptor::Create(data_type, shape),
+  base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
+  webnn_context->CreateTensor(
+      mojom::TensorInfo::New(*OperandDescriptor::Create(data_type, shape),
                              MLTensorUsage()),
-      create_buffer_future.GetCallback());
-  mojom::CreateBufferResultPtr create_buffer_result =
-      create_buffer_future.Take();
-  mojo::AssociatedRemote<mojom::WebNNTensor> webnn_buffer;
-  webnn_buffer.Bind(
-      std::move(create_buffer_result->get_success()->buffer_remote));
-  return CreateBufferSuccess{
-      std::move(webnn_buffer),
-      std::move(create_buffer_result->get_success()->buffer_handle)};
+      create_tensor_future.GetCallback());
+  mojom::CreateTensorResultPtr create_tensor_result =
+      create_tensor_future.Take();
+  mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor;
+  webnn_tensor.Bind(
+      std::move(create_tensor_result->get_success()->tensor_remote));
+  return CreateTensorSuccess{
+      std::move(webnn_tensor),
+      std::move(create_tensor_result->get_success()->tensor_handle)};
 }
 
 mojo::Remote<mojom::WebNNContext> CreateWebNNContext(
@@ -250,8 +253,8 @@ mojo::Remote<mojom::WebNNContext> CreateWebNNContext(
 bool ValidateDispatch(
     mojo::Remote<mojom::WebNNContext>& webnn_context,
     mojom::GraphInfoPtr graph_info,
-    base::flat_map<std::string, CreateBufferSuccess> inputs,
-    base::flat_map<std::string, CreateBufferSuccess> outputs) {
+    base::flat_map<std::string, CreateTensorSuccess> inputs,
+    base::flat_map<std::string, CreateTensorSuccess> outputs) {
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
   webnn_context->CreateGraphBuilder(
       graph_builder_remote.BindNewEndpointAndPassReceiver());
@@ -270,23 +273,23 @@ bool ValidateDispatch(
   // Set up the error handler for bad mojo messages.
   mojo::SetDefaultProcessErrorHandler(
       base::BindLambdaForTesting([&](const std::string& error_message) {
-        EXPECT_EQ(error_message, kBadMessageInvalidBuffer);
+        EXPECT_EQ(error_message, kBadMessageInvalidTensor);
         valid = false;
       }));
 
-  // Assign buffers for the inputs.
+  // Assign tensors for the inputs.
   base::flat_map<std::string, blink::WebNNTensorToken> dispatch_inputs;
-  for (const auto& [name, buffer_info] : inputs) {
-    dispatch_inputs.emplace(name, buffer_info.webnn_handle);
+  for (const auto& [name, tensor_info] : inputs) {
+    dispatch_inputs.emplace(name, tensor_info.webnn_handle);
   }
 
-  // Assign buffers for the outputs.
+  // Assign tensors for the outputs.
   base::flat_map<std::string, blink::WebNNTensorToken> dispatch_outputs;
-  for (const auto& [name, buffer_info] : outputs) {
-    dispatch_outputs.emplace(name, buffer_info.webnn_handle);
+  for (const auto& [name, tensor_info] : outputs) {
+    dispatch_outputs.emplace(name, tensor_info.webnn_handle);
   }
 
-  // Ensure CreateBuffer messages have a chance to finish before calling
+  // Ensure CreateTensor messages have a chance to finish before calling
   // Dispatch().
   webnn_context.FlushForTesting();
   webnn_graph->Dispatch(dispatch_inputs, dispatch_outputs);
@@ -1540,6 +1543,105 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
   }
 }
 
+struct CumulativeSumTester {
+  OperandInfo input;
+  uint32_t axis;
+  std::optional<bool> exclusive;
+  std::optional<bool> reversed;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildCumulativeSum(input_operand_id, output_operand_id, axis,
+                               exclusive, reversed);
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, CumulativeSumTeste) {
+  {
+    // Test cumulativeSum operator with default exclusive and reversed values.
+    CumulativeSumTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 4}},
+        .axis = 0,
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test cumulativeSum operator with exclusive and reversed.
+    CumulativeSumTester{.input = {.type = OperandDataType::kFloat32,
+                                  .dimensions = {1, 2, 3, 4}},
+                        .axis = 0,
+                        .exclusive = true,
+                        .reversed = true,
+                        .output = {.type = OperandDataType::kFloat32,
+                                   .dimensions = {1, 2, 3, 4}},
+                        .expected = true}
+        .Test();
+  }
+  {
+    // Test cumulativeSum operator with axis=2.
+    CumulativeSumTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .axis = 2,
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input is a scalar.
+    CumulativeSumTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .axis = 0,
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph with an invalid axis.
+    CumulativeSumTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .axis = 3,
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {2, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when output type doesn't match input type.
+    CumulativeSumTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .axis = 2,
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {2, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for input operand == output operand.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint32_t axis = 0;
+    bool exclusive = false;
+    bool reversed = false;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {1, 1, 3, 3}, OperandDataType::kFloat32);
+    builder.BuildCumulativeSum(input_operand_id, input_operand_id, axis,
+                               exclusive, reversed);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
 struct DequantizeLinearTester {
   OperandInfo input;
   OperandInfo scale;
@@ -2652,6 +2754,123 @@ TEST_F(WebNNGraphImplTest, GatherElementsTest) {
         builder.BuildInput("indices", {3}, OperandDataType::kUint32);
     builder.BuildGatherElements(input_operand_id, indices_operand_id,
                                 indices_operand_id, /*axis=*/0);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
+struct GatherNDTester {
+  OperandInfo input;
+  OperandInfo indices;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", indices.dimensions, indices.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildGatherND(input_operand_id, indices_operand_id,
+                          output_operand_id);
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, GatherNDTest) {
+  {
+    // Test gatherND with 4-D input 3-D indices.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32,
+                  .dimensions = {3, 4, 5, 6}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {3, 7, 2}},
+        .output = {.type = OperandDataType::kFloat32,
+                   .dimensions = {3, 7, 5, 6}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the input is a scalar.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {1, 2}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the indices is a scalar.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4, 5}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {}},
+        .output = {.type = OperandDataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for indices.shape[-1] is greater than the input
+    // rank.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {1, 2, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {1, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {1, 2, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output shapes are not expected.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {1, 1}},
+        .output = {.type = OperandDataType::kFloat32,
+                   .dimensions = {1, 1, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {1, 1}},
+        .output = {.type = OperandDataType::kFloat16,
+                   .dimensions = {1, 2, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output is as same as the input.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, OperandDataType::kUint32);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", {2, 1}, OperandDataType::kUint32);
+    builder.BuildGatherND(input_operand_id, indices_operand_id,
+                          input_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the output is as same as the indices.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 1}, OperandDataType::kUint32);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", {2, 1}, OperandDataType::kUint32);
+    builder.BuildGatherND(input_operand_id, indices_operand_id,
+                          indices_operand_id);
     EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
         context_properties, builder.GetGraphInfo()));
   }
@@ -5824,6 +6043,137 @@ TEST_F(WebNNGraphImplTest, ReshapeTest) {
         .Test();
   }
 }
+
+struct ScatterNDTester {
+  OperandInfo input;
+  OperandInfo indices;
+  OperandInfo updates;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", indices.dimensions, indices.type);
+    uint64_t updates_operand_id =
+        builder.BuildInput("updates", updates.dimensions, updates.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildScatterND(input_operand_id, indices_operand_id,
+                           updates_operand_id, output_operand_id);
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ScatterNDTest) {
+  {
+    // Test a valid scatterND with 3-D input, 2-D indices and 3-D updates.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND that the updates tensor data type is not the
+    // same as input data type.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        .updates = {.type = OperandDataType::kFloat16, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND with scalar input tensor.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND with scalar indices tensor.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND that the size of last dimension of indices
+    // tensor is greater than input rank.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 4}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND whose updates tensor shape is invalid.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        // Updates tensor shape should be [2, 4, 4].
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND whose output shape is not the same as input.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND whose output data type is not the same as
+    // input.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND where the output is the same as the input.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {4, 4, 4}, OperandDataType::kFloat32);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", {2, 1}, OperandDataType::kUint32);
+    uint64_t updates_operand_id =
+        builder.BuildInput("updates", {2, 4, 4}, OperandDataType::kFloat32);
+    builder.BuildScatterND(input_operand_id, indices_operand_id,
+                           updates_operand_id, input_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
 struct SliceTester {
   struct SliceAttributes {
     std::vector<uint32_t> starts;
@@ -6986,10 +7336,10 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Validate the inputs match the expected.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_TRUE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
@@ -6999,9 +7349,9 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Test the invalid inputs for invalid input size.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
@@ -7011,10 +7361,10 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Test the invalid outputs for invalid output size.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["a_different_output_name"] =
@@ -7026,11 +7376,11 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Test the invalid inputs for invalid input name.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["a_different_input_name"] =
         CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
@@ -7040,10 +7390,10 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Test the invalid outputs for invalid input name.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["a_different_output_name"] =
         CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7054,10 +7404,10 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Test the invalid inputs for invalid first input shape.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, {2, 5});
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
@@ -7067,11 +7417,11 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Test the invalid inputs for invalid first input data type.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] =
         CreateWebNNTensor(webnn_context, OperandDataType::kInt8, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
@@ -7081,10 +7431,10 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Test the invalid outputs for invalid first output shape.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, {3, 4});
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
@@ -7094,11 +7444,11 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Test the invalid inputs for invalid second input data type.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] =
         CreateWebNNTensor(webnn_context, OperandDataType::kInt32, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
@@ -7108,79 +7458,79 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Test the invalid outputs for invalid second output shape.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, {2, 5});
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
                                   std::move(inputs), std::move(outputs)));
   }
   {
-    // Test the inputs using the same buffer more than once.
+    // Test the inputs using the same tensor more than once.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    inputs["rhs"] = {/*webnn_buffer=*/std::nullopt, inputs["lhs"].webnn_handle};
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    inputs["rhs"] = {/*webnn_tensor=*/std::nullopt, inputs["lhs"].webnn_handle};
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_TRUE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
                                  std::move(inputs), std::move(outputs)));
   }
   {
-    // Test the invalid outputs when using the same buffer more than once.
+    // Test the invalid outputs when using the same tensor more than once.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    outputs["output2"] = {/*webnn_buffer=*/std::nullopt,
+    outputs["output2"] = {/*webnn_tensor=*/std::nullopt,
                           outputs["output1"].webnn_handle};
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
                                   std::move(inputs), std::move(outputs)));
   }
   {
-    // Test the inputs and outputs are invalid when using the same buffer.
+    // Test the inputs and outputs are invalid when using the same tensor.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
-    outputs["output1"] = {/*webnn_buffer=*/std::nullopt,
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
+    outputs["output1"] = {/*webnn_tensor=*/std::nullopt,
                           inputs["lhs"].webnn_handle};
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
                                   std::move(inputs), std::move(outputs)));
   }
   {
-    // Test the inputs are invalid when using a invalid buffer.
+    // Test the inputs are invalid when using a invalid tensor.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
-    inputs["lhs"] = {/*webnn_buffer=*/std::nullopt};
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
+    inputs["lhs"] = {/*webnn_tensor=*/std::nullopt};
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
                                   std::move(inputs), std::move(outputs)));
   }
   {
-    // Test the outputs are invalid when using a invalid buffer.
+    // Test the outputs are invalid when using a invalid tensor.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
-    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    outputs["output2"] = {/*webnn_buffer=*/std::nullopt};
+    outputs["output2"] = {/*webnn_tensor=*/std::nullopt};
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
                                   std::move(inputs), std::move(outputs)));
   }

@@ -39,6 +39,10 @@ const char kHistorySearchEnterprisePolicyAllowed[] =
 const char kProductSpecificationsEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.tab_compare_settings_enterprise_policy";
 
+const char kFormsPredictionsEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.forms_predictions_enterprise_policy_"
+    "allowed";
+
 }  // namespace prefs
 
 namespace features {
@@ -61,6 +65,11 @@ BASE_FEATURE(kHistorySearchMqlsLogging,
 BASE_FEATURE(kProductSpecificationsMqlsLogging,
              "ProductSpecificationsMqlsLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFormsPredictionsMqlsLogging,
+             "FormsPredictionsMqlsLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace {
@@ -193,6 +202,22 @@ void RegisterProductSpecifications() {
   MqlsFeatureRegistry::GetInstance().Register(std::move(metadata));
 }
 
+void RegisterFormsPredictions() {
+  EnterprisePolicyPref enterprise_policy =
+      EnterprisePolicyRegistry::GetInstance().Register(
+          prefs::kFormsPredictionsEnterprisePolicyAllowed);
+  UserFeedbackCallback logging_callback =
+      base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
+        return request_proto.forms_predictions().quality().user_feedback();
+      });
+  auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
+      "FormsPredictions",
+      proto::LogAiDataRequest::FeatureCase::kFormsPredictions,
+      enterprise_policy, &features::kFormsPredictionsMqlsLogging,
+      logging_callback, std::nullopt);
+  MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
+}
+
 }  // anonymous namespace
 
 void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
@@ -205,6 +230,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterWallpaperSearch();
     RegisterHistorySearch();
     RegisterProductSpecifications();
+    RegisterFormsPredictions();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);

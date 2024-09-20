@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "google_apis/common/base_requests.h"
 
@@ -29,7 +30,7 @@ using CreateSessionCallback = base::OnceCallback<void(
 class CreateSessionRequest : public google_apis::UrlFetchRequestBase {
  public:
   CreateSessionRequest(google_apis::RequestSender* sender,
-                       std::string gaia_id,
+                       ::boca::UserIdentity teacher,
                        base::TimeDelta duration,
                        ::boca::Session::SessionState session_state,
                        CreateSessionCallback callback);
@@ -37,13 +38,11 @@ class CreateSessionRequest : public google_apis::UrlFetchRequestBase {
   CreateSessionRequest& operator=(const CreateSessionRequest&) = delete;
   ~CreateSessionRequest() override;
 
-  const std::string teacher_gaia_id() const { return teacher_gaia_id_; }
+  const ::boca::UserIdentity& teacher() const { return teacher_; }
   base::TimeDelta duration() const { return duration_; }
   ::boca::Session::SessionState session_state() const { return session_state_; }
 
-  std::vector<::boca::UserIdentity> student_groups() const {
-    return student_groups_;
-  }
+  ::boca::Roster* roster() const { return roster_.get(); }
   ::boca::OnTaskConfig* on_task_config() const { return on_task_config_.get(); }
   ::boca::CaptionsConfig* captions_config() const {
     return captions_config_.get();
@@ -52,8 +51,8 @@ class CreateSessionRequest : public google_apis::UrlFetchRequestBase {
   // For testing.
   void OverrideURLForTesting(std::string url);
 
-  void set_student_groups(std::vector<::boca::UserIdentity> student_groups) {
-    student_groups_ = std::move(student_groups);
+  void set_roster(std::unique_ptr<::boca::Roster> roster) {
+    roster_ = std::move(roster);
   }
 
   void set_on_task_config(
@@ -87,11 +86,11 @@ class CreateSessionRequest : public google_apis::UrlFetchRequestBase {
  private:
   void OnDataParsed(bool success);
 
-  std::string teacher_gaia_id_;
+  ::boca::UserIdentity teacher_;
   base::TimeDelta duration_;
   ::boca::Session::SessionState session_state_;
 
-  std::vector<::boca::UserIdentity> student_groups_;
+  std::unique_ptr<::boca::Roster> roster_;
 
   std::unique_ptr<::boca::OnTaskConfig> on_task_config_;
 

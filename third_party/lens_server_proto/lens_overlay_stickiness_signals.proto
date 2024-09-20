@@ -16,7 +16,7 @@ message StickinessSignals {
 
     TRANSLATE_LITE = 56;
   }
-  optional Namespace id_namespace = 1 [default = UNKNOWN];
+  optional Namespace id_namespace = 1;
 
   optional MessageSet interpretation = 28;
 }

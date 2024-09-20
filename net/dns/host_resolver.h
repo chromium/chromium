@@ -367,7 +367,6 @@ class NET_EXPORT HostResolver {
   // default.
   struct NET_EXPORT ResolveHostParameters {
     ResolveHostParameters();
-    ResolveHostParameters(const ResolveHostParameters& other);
 
     // Requested DNS query type. If UNSPECIFIED, the resolver will select a set
     // of queries automatically. It will select A, AAAA, or both as the address

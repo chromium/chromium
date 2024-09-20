@@ -9,25 +9,27 @@ import("//components/crx_file/crx3.gni")
 if (is_win) {
   # generate the GoogleUpdate admx templates here
   action("GoogleUpdateAdmxGenerate") {
-    output_dir = "$root_build_dir/GoogleUpdateAdmx/"
     script = "build_group_policy_template.py"
-    generate_group_policy_template_admx =
-        "generate_group_policy_template_admx.py"
-    public_apps = "public_apps.py"
-    googleupdate_admx_file = output_dir + "GoogleUpdate.admx"
-    googleupdate_adml_file = output_dir + "en-US/GoogleUpdate.adml"
+    googleupdate_adm_file = "$root_build_dir/GoogleUpdateAdm/GoogleUpdate.adm"
+    output_dir_admx = "$root_build_dir/GoogleUpdateAdmx/"
+    googleupdate_admx_file = output_dir_admx + "GoogleUpdate.admx"
+    googleupdate_adml_file = output_dir_admx + "en-US/GoogleUpdate.adml"
 
     inputs = [
       script,
-      generate_group_policy_template_admx,
-      public_apps,
+      "generate_group_policy_template_adm.py",
+      "generate_group_policy_template_admx.py",
+      "public_apps.py",
     ]
     outputs = [
+      googleupdate_adm_file,
       googleupdate_admx_file,
       googleupdate_adml_file,
     ]
 
     args = [
+      "--updater_adm_file",
+      rebase_path(googleupdate_adm_file),
       "--updater_admx_file",
       rebase_path(googleupdate_admx_file),
       "--updater_adml_file",
@@ -47,6 +49,11 @@ if (is_win) {
   }
 
   # Copy the Google Cloud Management policy template files.
+  copy("GoogleCloudManagementAdm") {
+    sources = [ "GoogleCloudManagement.adm" ]
+    outputs =
+        [ "$root_build_dir/GoogleCloudManagementAdm/{{source_file_part}}" ]
+  }
   copy("GoogleCloudManagementAdmx") {
     sources = [
       "GoogleCloudManagement.admx",
@@ -78,10 +85,12 @@ if (is_win) {
   }
 
   zip("GoogleCloudManagementAdmxZip") {
-    inputs = get_target_outputs(":GoogleCloudManagementAdmx") +
+    inputs = get_target_outputs(":GoogleCloudManagementAdm") +
+             get_target_outputs(":GoogleCloudManagementAdmx") +
              get_target_outputs(":GoogleCloudManagementAdml")
     output = "$root_build_dir/GoogleCloudManagementAdmx.zip"
     deps = [
+      ":GoogleCloudManagementAdm",
       ":GoogleCloudManagementAdml",
       ":GoogleCloudManagementAdmx",
     ]

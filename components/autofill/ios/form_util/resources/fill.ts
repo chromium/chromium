@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
 import '//components/autofill/ios/form_util/resources/fill_util.js';
 
 import {registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';

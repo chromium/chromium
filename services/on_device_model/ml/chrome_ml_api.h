@@ -342,6 +342,11 @@ struct ChromeMLAPI {
   void (*SessionSizeInTokens)(ChromeMLSession session,
                               const std::string& text,
                               const ChromeMLSizeInTokensFn& fn);
+  void (*SessionSizeInTokensInputPiece)(ChromeMLSession session,
+                                        ChromeMLModel model,
+                                        const ml::InputPiece* input,
+                                        size_t input_size,
+                                        const ChromeMLSizeInTokensFn& fn);
 
   // Scores the first token of the given text.
   void (*SessionScore)(ChromeMLSession session,
@@ -367,11 +372,10 @@ struct ChromeMLAPI {
   // `model_blob` should contain a binary blob of a TFLite model (read from
   // .tflite file). `model_blob_size` is the size in bytes of `model_blob`. On
   // failure, will return `0`.
-  ChromeMLInferenceEngine (*CreateInferenceEngine)(
-      WGPUAdapterProperties adapter_properties,
-      WGPUDevice device,
-      const char* model_blob,
-      size_t model_blob_size);
+  ChromeMLInferenceEngine (*CreateInferenceEngine)(WGPUAdapterInfo adapter_info,
+                                                   WGPUDevice device,
+                                                   const char* model_blob,
+                                                   size_t model_blob_size);
 
   // Runs inference on `source`, producing results into `destination`. `engine`
   // must have been obtained from `CreateInferenceEngine()` call.

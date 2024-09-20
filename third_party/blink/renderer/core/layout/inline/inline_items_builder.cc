@@ -512,8 +512,9 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
       // The following should be true, but some unit tests fail.
       // DCHECK_EQ(item->Type(), InlineItem::kControl);
     }
-    InlineItem adjusted_item(item, start, end, adjusted_shape_result);
 
+    InlineItem& adjusted_item =
+        items_->emplace_back(item, start, end, adjusted_shape_result);
 #if DCHECK_IS_ON()
     DCHECK_EQ(start, adjusted_item.StartOffset());
     DCHECK_EQ(end, adjusted_item.EndOffset());
@@ -523,8 +524,6 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
     }
     DCHECK_EQ(item.IsEmptyItem(), adjusted_item.IsEmptyItem());
 #endif
-
-    items_->push_back(adjusted_item);
     DidAppendTextReusing(adjusted_item);
   }
   return true;

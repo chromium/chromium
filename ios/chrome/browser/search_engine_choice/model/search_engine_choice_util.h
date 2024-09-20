@@ -5,18 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_
 
-#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Utilities for the search engine choice screen.
 
 // Whether or not the choice screen should be displayed for existing users.
-// The parameter `app_started_via_external_intent` is used only if `promo`
-// is set to search_engines::ChoicePromo::kDialog. The value is ignored for
-// other promo types.
+// The parameter `app_started_via_external_intent` is used only if
+// `is_first_run_entrypoint` is set to `false . The value is ignored otherwise.
 bool ShouldDisplaySearchEngineChoiceScreen(
-    ChromeBrowserState& browser_state,
-    search_engines::ChoicePromo promo,
+    ProfileIOS& profile,
+    bool is_first_run_entrypoint,
     bool app_started_via_external_intent);
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_

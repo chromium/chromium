@@ -100,6 +100,11 @@ class FakeCursorShapeStub : public protocol::CursorShapeStub {
   void SetCursorShape(const protocol::CursorShapeInfo& cursor_shape) override {}
 };
 
+// Stub used for Me2MeHostAuthenticatorFactory::CheckAccessPermissionCallback.
+bool CheckAccessPermission(std::string_view user_email) {
+  return true;
+}
+
 }  // namespace
 
 class ProtocolPerfTest
@@ -337,7 +342,8 @@ class ProtocolPerfTest
     auth_config->AddSharedSecretAuth(host_pin_hash);
     auto auth_factory =
         std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(
-            kHostOwner, std::vector<std::string>(), std::move(auth_config));
+            base::BindRepeating(&CheckAccessPermission),
+            std::move(auth_config));
     host_->SetAuthenticatorFactory(std::move(auth_factory));
 
     host_->status_monitor()->AddStatusObserver(this);
@@ -541,8 +547,7 @@ void ProtocolPerfTest::MeasureTotalLatency(bool use_webrtc) {
           stats.client_stats.time_rendered - change_info.timestamp;
       switch (change_info.type) {
         case test::CyclicFrameGenerator::ChangeType::NO_CHANGES:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
         case test::CyclicFrameGenerator::ChangeType::FULL:
           total_latency_big_updates += latency;
           ++big_update_count;

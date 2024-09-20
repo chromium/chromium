@@ -828,6 +828,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         'name': test_config['name'],
         'script': test_config['script'],
     }
+    for a in ('args', 'precommit_args', 'non_precommit_args'):
+      if a in test_config:
+        result[a] = test_config[a]
     result = self.apply_common_transformations(waterfall,
                                                tester_name,
                                                tester_config,

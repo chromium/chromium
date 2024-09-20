@@ -10,8 +10,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import android.view.ViewGroup;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -21,18 +19,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 /** Test relating to {@link EducationalTipModuleBuilder} */
@@ -45,25 +40,13 @@ public class EducationalTipModuleBuilderUnitTest {
 
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private Callback<ModuleProvider> mBuildCallback;
-    @Mock private BottomSheetController mBottomSheetController;
-    @Mock private ViewGroup mParentView;
-    @Mock private Runnable mShowTabSwitcherRunnable;
+    @Mock private EducationTipModuleActionDelegate mActionDelegate;
 
     private EducationalTipModuleBuilder mModuleBuilder;
-    private ObservableSupplierImpl<ViewGroup> mParentViewSupplier;
 
     @Before
     public void setUp() {
-        mParentViewSupplier = new ObservableSupplierImpl<>();
-        mParentViewSupplier.set(mParentView);
-
-        mModuleBuilder =
-                new EducationalTipModuleBuilder(
-                        RuntimeEnvironment.application,
-                        mBottomSheetController,
-                        new ObservableSupplierImpl<>(),
-                        mShowTabSwitcherRunnable,
-                        mParentViewSupplier);
+        mModuleBuilder = new EducationalTipModuleBuilder(mActionDelegate);
     }
 
     @Test

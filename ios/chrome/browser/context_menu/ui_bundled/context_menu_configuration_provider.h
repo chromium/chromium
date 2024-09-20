@@ -13,14 +13,27 @@ class WebState;
 }
 
 class Browser;
+@protocol ContextMenuConfigurationProviderDelegate;
 class GURL;
 
 // Object creating the configuration (action items...) for the context menu.
 @interface ContextMenuConfigurationProvider : NSObject
 
-// Instantiates with a `browser`.
+// Instantiates with a `browser`. The context menu will be presented for the
+// active webState.
+// TODO(crbug.com/365698103): Remove the browser dependency.
 - (instancetype)initWithBrowser:(Browser*)browser
              baseViewController:(UIViewController*)baseViewController;
+
+// Instantiates with a `browser` and a base `webState`. The context menu will
+// only be presented for this webState.
+// `isLensOverlay`: Whether the context menu is presented in the LensOverlay.
+// LensOverlay presents the webState in a modal sheet.
+// TODO(crbug.com/365698103): Remove the browser dependency.
+- (instancetype)initWithBrowser:(Browser*)browser
+             baseViewController:(UIViewController*)baseViewController
+                   baseWebState:(web::WebState*)webState
+                  isLensOverlay:(BOOL)isLensOverlay;
 
 // Returns a configuration for a context menu, based on its associated
 // `webState`, `params` and `baseViewController`.
@@ -35,6 +48,10 @@ class GURL;
 // The URL to be loaded when the user taps on the preview. Empty URL if there is
 // nothing to load.
 @property(nonatomic, assign, readonly) GURL URLToLoad;
+
+// Delegate for events in this class.
+@property(nonatomic, weak) id<ContextMenuConfigurationProviderDelegate>
+    delegate;
 
 @end
 

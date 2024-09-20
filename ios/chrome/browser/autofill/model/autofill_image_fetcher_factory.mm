@@ -11,12 +11,17 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace autofill {
-
 // static
 AutofillImageFetcherImpl* AutofillImageFetcherFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+AutofillImageFetcherImpl* AutofillImageFetcherFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<AutofillImageFetcherImpl*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

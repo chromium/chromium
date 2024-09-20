@@ -54,7 +54,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,6 +65,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -76,8 +76,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -210,13 +208,8 @@ public class ManageSyncSettingsTest {
                                                     ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(true);
                 });
-        AppHooks.setInstanceForTesting(
-                new AppHooksImpl() {
-                    @Override
-                    public GoogleActivityController createGoogleActivityController() {
-                        return mGoogleActivityController;
-                    }
-                });
+        ServiceLoaderUtil.setInstanceForTesting(
+                GoogleActivityController.class, mGoogleActivityController);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.isEeaChoiceCountry()).thenReturn(false);
@@ -239,12 +232,6 @@ public class ManageSyncSettingsTest {
         }
 
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
-    }
-
-    @After
-    public void tearDown() {
-        AppHooks.setInstanceForTesting(null);
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     @Test

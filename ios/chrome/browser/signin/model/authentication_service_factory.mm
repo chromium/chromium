@@ -33,9 +33,15 @@ std::unique_ptr<KeyedService> BuildAuthenticationService(
 
 // static
 AuthenticationService* AuthenticationServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+AuthenticationService* AuthenticationServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   AuthenticationService* service = static_cast<AuthenticationService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
   CHECK(!service || service->initialized());
   return service;
 }

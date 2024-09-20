@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/prefs/pref_notifier_impl.h"
+
 #include <stddef.h>
 
+#include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/prefs/mock_pref_change_callback.h"
-#include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -122,9 +124,9 @@ TEST_F(PrefNotifierTest, AddAndRemovePrefObservers) {
   ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
 
   // Re-adding the same observer for the same pref doesn't change anything.
-  // Skip this in debug mode, since it hits a DCHECK and death tests aren't
-  // thread-safe.
-#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
+  // This hits a DUMP_WILL_BE_NOTREACHED() which is fatal in non-official
+  // builds.
+#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
   notifier.AddPrefObserver(pref_name, &obs1_);
   ASSERT_EQ(1u, notifier.CountObserver(pref_name, &obs1_));
   ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs1_));

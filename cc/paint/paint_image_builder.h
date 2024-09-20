@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "cc/paint/deferred_paint_record.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_generator.h"
@@ -94,11 +95,6 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.target_hdr_headroom_ = target_hdr_headroom;
     return std::move(*this);
   }
-  PaintImageBuilder&& set_use_global_tone_map(bool enabled) {
-    paint_image_.use_global_tone_map_ = enabled;
-    return std::move(*this);
-  }
-
   PaintImageBuilder&& set_completion_state(PaintImage::CompletionState state) {
     paint_image_.completion_state_ = state;
     return std::move(*this);
@@ -134,12 +130,12 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.decoding_mode_ = decoding_mode;
     return std::move(*this);
   }
-  PaintImageBuilder&& set_paint_worklet_input(
-      scoped_refptr<PaintWorkletInput> input) {
-    paint_image_.paint_worklet_input_ = std::move(input);
+
+  PaintImageBuilder&& set_deferred_paint_record(
+      scoped_refptr<DeferredPaintRecord> input) {
+    paint_image_.deferred_paint_record_ = std::move(input);
     return std::move(*this);
   }
-
   PaintImage TakePaintImage();
 
  private:
@@ -159,14 +155,10 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     return std::move(*this);
   }
   PaintImageBuilder&& set_gainmap_texture_image(
-      sk_sp<SkImage> sk_image,
       sk_sp<SkImage> gainmap_sk_image,
-      const SkGainmapInfo& gainmap_info,
-      PaintImage::ContentId content_id) {
-    paint_image_.sk_image_ = std::move(sk_image);
+      const SkGainmapInfo& gainmap_info) {
     paint_image_.gainmap_sk_image_ = std::move(gainmap_sk_image);
     paint_image_.gainmap_info_ = gainmap_info;
-    paint_image_.content_id_ = content_id;
     return std::move(*this);
   }
 

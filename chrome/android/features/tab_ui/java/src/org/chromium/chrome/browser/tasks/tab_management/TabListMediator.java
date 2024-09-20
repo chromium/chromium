@@ -52,8 +52,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -96,7 +94,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -184,15 +181,52 @@ class TabListMediator implements TabListNotificationHandler {
         boolean isReorderAction(int action);
     }
 
-    /** An interface to show IPH for a tab. */
-    public interface IphProvider {
-        void showIPH(View anchor);
-    }
-
     /** Interface for implementing a {@link Runnable} that takes a tabId for a generic action. */
     public interface TabActionListener {
         /** Run the action for the given view and tabId. */
         void run(View view, int tabId);
+    }
+
+    /**
+     * Holder class for a {@link TabActionListener} with a {@link TabActionButtonType} describing
+     * what the listener does to determine which drawable to show in the UI.
+     */
+    static class TabActionButtonData {
+        @IntDef({
+            TabActionButtonType.CLOSE,
+            TabActionButtonType.SELECT,
+            TabActionButtonType.OVERFLOW
+        })
+        @Retention(RetentionPolicy.SOURCE)
+        @interface TabActionButtonType {
+            int CLOSE = 0;
+            int SELECT = 1;
+            int OVERFLOW = 2;
+        }
+
+        public final @TabActionButtonType int type;
+        public final TabActionListener tabActionListener;
+
+        TabActionButtonData(@TabActionButtonType int type, TabActionListener tabActionListener) {
+            this.type = type;
+            this.tabActionListener = tabActionListener;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) return true;
+
+            if (other instanceof TabActionButtonData otherData) {
+                return this.type == otherData.type
+                        && Objects.equals(this.tabActionListener, otherData.tabActionListener);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.type, this.tabActionListener);
+        }
     }
 
     /**
@@ -284,25 +318,6 @@ class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    /** A class that stores shared info regarding a tab group's state. */
-    static class TabGroupInfo {
-        private boolean mIsTabGroupSyncEnabled;
-        private boolean mIsTabGroup;
-
-        TabGroupInfo(boolean isTabGroupSyncEnabled, boolean isTabGroup) {
-            mIsTabGroupSyncEnabled = isTabGroupSyncEnabled;
-            mIsTabGroup = isTabGroup;
-        }
-
-        boolean getIsTabGroupSyncEnabled() {
-            return mIsTabGroupSyncEnabled;
-        }
-
-        boolean getIsTabGroup() {
-            return mIsTabGroup;
-        }
-    }
-
     @IntDef({
         TabClosedFrom.TAB_STRIP,
         TabClosedFrom.GRID_TAB_SWITCHER,
@@ -361,34 +376,11 @@ class TabListMediator implements TabListNotificationHandler {
     // until `postHiding` is invoked or the mediator is destroyed. While true, this mediator is
     // actively tracking updates to a TabModel.
     private boolean mShowingTabs;
-    private boolean mShownIPH;
     private Tab mTabToAddDelayed;
     private RecyclerViewItemAnimationToggle mRecyclerViewItemAnimationToggle;
     private ListObserver<Void> mListObserver;
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private View.AccessibilityDelegate mAccessibilityDelegate;
-
-    private final IphProvider mIphProvider =
-            new IphProvider() {
-                private static final int IPH_DELAY_MS = 1000;
-
-                @Override
-                public void showIPH(View anchor) {
-                    if (mShownIPH) return;
-                    mShownIPH = true;
-
-                    PostTask.postDelayedTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                TabGroupUtils.maybeShowIPH(
-                                        mProfile,
-                                        FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
-                                        anchor,
-                                        null);
-                            },
-                            IPH_DELAY_MS);
-                }
-            };
 
     private final TabActionListener mTabSelectedListener =
             new TabActionListener() {
@@ -1633,22 +1625,6 @@ class TabListMediator implements TabListNotificationHandler {
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && isTabGroup) {
             updateFaviconForTab(tab, null, null);
         }
-        // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
-        // setting the property keys on the model. Both properties modify the onClickListener
-        // so ensure that the default behavior (close on click) is set first, and tab groups
-        // under valid circumstances will override the listener with alternate behavior.
-        if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
-            model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, mTabClosedListener);
-        }
-        // Only set this for tab group representation cards. An onClickListener will be set in the
-        // view as part of the accompanying logic.
-        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-            model.set(
-                    TabProperties.TAB_GROUP_INFO,
-                    new TabGroupInfo(
-                            TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile), isTabGroup));
-        }
-
         bindTabActionStateProperties(model.get(TabProperties.TAB_ACTION_STATE), tab, model);
 
         model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab));
@@ -1886,15 +1862,22 @@ class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private TabListMediator.TabActionListener getTabActionButtonListener(
+    private TabActionButtonData getTabActionButtonData(
             Tab tab, @TabActionState int tabActionState) {
         if (tabActionState == TabActionState.SELECTABLE) {
-            return mSelectableTabOnClickListener;
-        } else {
-            return isTabInTabGroup(tab)
-                    ? getTabGroupOverflowMenuClickListener()
-                    : mTabClosedListener;
+            return new TabActionButtonData(
+                    TabActionButtonData.TabActionButtonType.SELECT, mSelectableTabOnClickListener);
         }
+        // A tab is deemed a tab group card representation if it is part of a tab group and
+        // based in the tab switcher.
+        boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
+        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() && isTabGroup) {
+            return new TabActionButtonData(
+                    TabActionButtonData.TabActionButtonType.OVERFLOW,
+                    getTabGroupOverflowMenuClickListener());
+        }
+        return new TabActionButtonData(
+                TabActionButtonData.TabActionButtonType.CLOSE, mTabClosedListener);
     }
 
     private TabListMediator.TabActionListener getTabGroupOverflowMenuClickListener() {
@@ -1952,8 +1935,7 @@ class TabListMediator implements TabListNotificationHandler {
         model.set(TabProperties.IS_SELECTED, isTabSelected(tabActionState, tab));
 
         model.set(
-                TabProperties.TAB_ACTION_BUTTON_LISTENER,
-                getTabActionButtonListener(tab, tabActionState));
+                TabProperties.TAB_ACTION_BUTTON_DATA, getTabActionButtonData(tab, tabActionState));
         model.set(TabProperties.TAB_CLICK_LISTENER, getTabClickListener(tab, tabActionState));
         model.set(TabProperties.TAB_LONG_CLICK_LISTENER, getTabLongClickListener(tabActionState));
         model.set(TabProperties.TAB_CARD_LABEL_DATA, model.get(TabProperties.TAB_CARD_LABEL_DATA));
@@ -1964,24 +1946,6 @@ class TabListMediator implements TabListNotificationHandler {
                     TabModelUtils.getCurrentTabId(
                                     mCurrentTabModelFilterSupplier.get().getTabModel())
                             == tab.getId());
-            // A tab is deemed a tab group card representation if it is part of a tab group and
-            // based in the tab switcher.
-            boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
-            // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
-            // setting the property keys on the model. Both properties modify the onClickListener
-            // so ensure that the default behavior (close on click) is set first, and tab groups
-            // under valid circumstances will override the listener with alternate behavior.
-            if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
-                model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, mTabClosedListener);
-            }
-            // Only set this for tab group representation cards. An onClickListener will be set in
-            // the view as part of the accompanying logic.
-            if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-                model.set(
-                        TabProperties.TAB_GROUP_INFO,
-                        new TabGroupInfo(
-                                TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile), isTabGroup));
-            }
 
             updateDescriptionString(tab, model);
             updateActionButtonDescriptionString(tab, model);
@@ -2028,11 +1992,7 @@ class TabListMediator implements TabListNotificationHandler {
 
     private void addTabInfoToModel(Tab tab, int index, boolean isSelected) {
         assert index != TabModel.INVALID_TAB_INDEX;
-        boolean showIPH = false;
         boolean isInTabGroup = isTabInTabGroup(tab);
-        if (mActionsOnAllRelatedTabs && !mShownIPH) {
-            showIPH = isInTabGroup;
-        }
 
         int colorId = TabGroupColorUtils.INVALID_COLOR_ID;
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
@@ -2059,7 +2019,6 @@ class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.FAVICON_FETCHER, null)
                         .with(TabProperties.FAVICON_FETCHED, false)
                         .with(TabProperties.IS_SELECTED, isSelected)
-                        .with(TabProperties.IPH_PROVIDER, showIPH ? mIphProvider : null)
                         .with(CARD_ALPHA, 1f)
                         .with(
                                 TabProperties.CARD_ANIMATION_STATUS,
@@ -2153,6 +2112,26 @@ class TabListMediator implements TabListNotificationHandler {
                         ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                                 colorId);
                 String colorDesc = res.getString(colorDescRes);
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                        && hasCollaboration(tab)) {
+                    model.set(
+                            TabProperties.CONTENT_DESCRIPTION_STRING,
+                            title.isEmpty()
+                                    ? res.getQuantityString(
+                                            R.plurals
+                                                    .accessibility_expand_shared_tab_group_with_color,
+                                            numOfRelatedTabs,
+                                            numOfRelatedTabs,
+                                            colorDesc)
+                                    : res.getQuantityString(
+                                            R.plurals
+                                                    .accessibility_expand_shared_tab_group_with_group_name_with_color,
+                                            numOfRelatedTabs,
+                                            title,
+                                            numOfRelatedTabs,
+                                            colorDesc));
+                    return;
+                }
                 model.set(
                         TabProperties.CONTENT_DESCRIPTION_STRING,
                         title.isEmpty()
@@ -2182,7 +2161,7 @@ class TabListMediator implements TabListNotificationHandler {
                 String title = getLatestTitleForTab(tab, /* useDefault= */ false);
 
                 String descriptionString =
-                        getActionButtonDescriptionString(numOfRelatedTabs, title, tab.getRootId());
+                        getActionButtonDescriptionString(numOfRelatedTabs, title, tab);
                 model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING, descriptionString);
                 return;
             }
@@ -2818,14 +2797,18 @@ class TabListMediator implements TabListNotificationHandler {
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGroupItemMenu.DeleteShared");
             TabUiUtils.deleteSharedTabGroup(
+                    mContext,
                     (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                     mActionConfirmationManager,
+                    mModalDialogManager,
                     tabId);
         } else if (menuId == R.id.leave_group) {
             RecordUserAction.record("TabGroupItemMenu.LeaveShared");
             TabUiUtils.leaveTabGroup(
+                    mContext,
                     (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                     mActionConfirmationManager,
+                    mModalDialogManager,
                     tabId);
         }
     }
@@ -2897,8 +2880,7 @@ class TabListMediator implements TabListNotificationHandler {
         tabGroupVisualDataDialogManager.showDialog(rootId, filter, dialogController);
     }
 
-    private String getActionButtonDescriptionString(
-            int numOfRelatedTabs, String title, int rootId) {
+    private String getActionButtonDescriptionString(int numOfRelatedTabs, String title, Tab tab) {
         Resources res = mContext.getResources();
         if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             if (title.isEmpty()) {
@@ -2914,23 +2896,32 @@ class TabListMediator implements TabListNotificationHandler {
                         numOfRelatedTabs);
             }
         } else {
+            TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+            @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
+            final @StringRes int colorDescRes =
+                    ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+            String colorDesc = res.getString(colorDescRes);
             if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
                 String descriptionTitle = title;
                 if (descriptionTitle.isEmpty()) {
                     descriptionTitle =
                             TabGroupTitleEditor.getDefaultTitle(mContext, numOfRelatedTabs);
                 }
-                return res.getString(
-                        R.string.accessibility_open_tab_group_overflow_menu_with_group_name,
-                        descriptionTitle);
+                if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                        || !hasCollaboration(tab)) {
+                    return res.getString(
+                            R.string
+                                    .accessibility_open_tab_group_overflow_menu_with_group_name_with_color,
+                            descriptionTitle,
+                            colorDesc);
+                } else {
+                    return res.getString(
+                            R.string
+                                    .accessibility_open_shared_tab_group_overflow_menu_with_group_name_with_color,
+                            descriptionTitle,
+                            colorDesc);
+                }
             } else {
-                TabGroupModelFilter filter =
-                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(rootId);
-                final @StringRes int colorDescRes =
-                        ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
-                                colorId);
-                String colorDesc = res.getString(colorDescRes);
                 if (title.isEmpty()) {
                     return res.getQuantityString(
                             R.plurals.accessibility_close_tab_group_button_with_color,
@@ -2948,6 +2939,23 @@ class TabListMediator implements TabListNotificationHandler {
                 }
             }
         }
+    }
+
+    /** Check if the current tab group's tab representation is being shared. */
+    private boolean hasCollaboration(Tab tab) {
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabModel tabModel = filter.getTabModel();
+        if (tabModel.isIncognitoBranded()) return false;
+
+        @Nullable TabGroupSyncService tabGroupSyncService = null;
+        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(tab.getProfile())) {
+            tabGroupSyncService =
+                    TabGroupSyncServiceFactory.getForProfile(tab.getProfile().getOriginalProfile());
+        }
+        @Nullable
+        String collaborationId =
+                TabShareUtils.getCollaborationIdOrNull(tab.getId(), tabModel, tabGroupSyncService);
+        return TabShareUtils.isCollaborationIdValid(collaborationId);
     }
 
     private void setUseShrinkCloseAnimation(int tabId, boolean useShrinkCloseAnimation) {

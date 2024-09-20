@@ -10,17 +10,36 @@ import("//ios/chrome/test/xcuitest/ios_chrome_xcuitest_app_host.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//testing/test.gni")
 
+# Options shared by all script test targets that call `run_wpt_tests.py`.
+_common_web_test_options = [
+  "--no-show-results",
+  "--zero-tests-executed-ok",
+]
+if (is_debug) {
+  _common_web_test_options += [ "--debug" ]
+} else {
+  _common_web_test_options += [ "--release" ]
+}
+base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), "../../.")
+out_dir = get_path_info(root_build_dir, "name")
+_common_web_test_options += [
+  "--build-directory",
+  base_out_dir,
+  "--target",
+  out_dir,
+]
+
 script_test("chrome_ios_wpt") {
   script = "//third_party/blink/tools/run_wpt_tests.py"
-  args = [
-    "--product",
-    "chrome_ios",
-    "--target",
-    "Release",
-    "--zero-tests-executed-ok",
-    "--no-retry-failures",
-    "--use-upstream-wpt",
-  ]
+  args = _common_web_test_options + [
+           "--product",
+           "chrome_ios",
+           "--target",
+           "Release",
+           "--zero-tests-executed-ok",
+           "--no-retry-failures",
+           "--use-upstream-wpt",
+         ]
   deps = [ ":all_tests" ]
   data_deps = [
     ":tools",

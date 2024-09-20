@@ -1,4 +1,5 @@
 CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
 ../resources/tests7.dat:
 13
 14

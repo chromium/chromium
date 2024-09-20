@@ -87,15 +87,15 @@ BringAndroidTabsToIOSService::BringAndroidTabsToIOSService(
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher,
     syncer::SyncService* sync_service,
     sync_sessions::SessionSyncService* session_sync_service,
-    PrefService* browser_state_prefs)
+    PrefService* profile_prefs)
     : device_switcher_result_dispatcher_(dispatcher),
       sync_service_(sync_service),
       session_sync_service_(session_sync_service),
-      browser_state_prefs_(browser_state_prefs) {
+      profile_prefs_(profile_prefs) {
   DCHECK(device_switcher_result_dispatcher_);
   DCHECK(sync_service_);
   DCHECK(session_sync_service_);
-  DCHECK(browser_state_prefs_);
+  DCHECK(profile_prefs_);
 }
 
 BringAndroidTabsToIOSService::~BringAndroidTabsToIOSService() {}
@@ -166,8 +166,7 @@ void BringAndroidTabsToIOSService::OpenAllTabs(
 }
 
 void BringAndroidTabsToIOSService::OnBringAndroidTabsPromptDisplayed() {
-  browser_state_prefs_->SetBoolean(prefs::kIosBringAndroidTabsPromptDisplayed,
-                                   true);
+  profile_prefs_->SetBoolean(prefs::kIosBringAndroidTabsPromptDisplayed, true);
   prompt_shown_current_session_ = true;
 }
 
@@ -176,8 +175,8 @@ void BringAndroidTabsToIOSService::OnUserInteractWithBringAndroidTabsPrompt() {
 }
 
 bool BringAndroidTabsToIOSService::PromptShownAndShouldNotShowAgain() const {
-  bool shown_before = browser_state_prefs_->GetBoolean(
-      prefs::kIosBringAndroidTabsPromptDisplayed);
+  bool shown_before =
+      profile_prefs_->GetBoolean(prefs::kIosBringAndroidTabsPromptDisplayed);
   bool should_not_show_again =
       prompt_interacted_ || (shown_before && !prompt_shown_current_session_);
   return should_not_show_again;

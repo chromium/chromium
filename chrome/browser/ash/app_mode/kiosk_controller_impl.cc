@@ -39,12 +39,10 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
-#include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
@@ -253,20 +251,12 @@ KioskSystemSession* KioskControllerImpl::GetKioskSystemSession() {
 
 kiosk_vision::TelemetryProcessor*
 KioskControllerImpl::GetKioskVisionTelemetryProcessor() {
-  auto* kiosk_system_session = GetKioskSystemSession();
-  if (!kiosk_system_session) {
-    return nullptr;
-  }
-  return kiosk_system_session->kiosk_vision().GetTelemetryProcessor();
+  return nullptr;
 }
 
 kiosk_vision::InternalsPageProcessor*
 KioskControllerImpl::GetKioskVisionInternalsPageProcessor() {
-  auto* kiosk_system_session = GetKioskSystemSession();
-  if (!kiosk_system_session) {
-    return nullptr;
-  }
-  return kiosk_system_session->kiosk_vision().GetInternalsPageProcessor();
+  return nullptr;
 }
 
 void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {

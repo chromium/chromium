@@ -114,8 +114,8 @@ void VTTParser::GetNewStyleSheets(
   output_sheets.swap(style_sheets_);
 }
 
-void VTTParser::ParseBytes(const char* data, size_t length) {
-  String text_data = decoder_->Decode(data, length);
+void VTTParser::ParseBytes(base::span<const char> data) {
+  String text_data = decoder_->Decode(data);
   line_reader_.Append(text_data);
   Parse();
 }

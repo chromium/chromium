@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Unknown product <ph name="PRODUCT_ID" /> from vendor <ph name="VENDOR_ID" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Failed to replace crx file. Check to see if the file is in use.</translation>
 <translation id="3163201441334626963">Unknown product <ph name="PRODUCT_ID" /> from vendor <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Cannot unpack extension.  To safely unpack an extension, there must be a path to your profile directory that starts with a drive letter and does not contain a junction, mount point or symlink.  No such path exists for your profile.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> from vendor <ph name="VENDOR_ID" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Input value for private key must be a valid path.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">The administrator of this machine requires <ph name="EXTENSION_NAME" /> to be installed. It cannot be uninstalled.</translation>
 <translation id="6027032947578871493">Unknown product <ph name="PRODUCT_ID" /> from <ph name="VENDOR_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> from vendor <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Cannot unpack extension.  To unpack an extension safely, there must be a path to your profile directory that does not contain a symlink.  No such path exists for your profile.</translation>
 <translation id="6322279351188361895">Failed to read private key.</translation>
 <translation id="6391538222494443604">Input directory must exist.</translation>
 <translation id="641087317769093025">Could not unzip extension</translation>

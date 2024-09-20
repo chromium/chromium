@@ -97,6 +97,7 @@ BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
   }
 
   UseCounter::Count(document, mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
+  UseCounter::Count(document, mojom::blink::WebFeature::kTopicsAPIAll);
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<BrowsingTopic>>>(

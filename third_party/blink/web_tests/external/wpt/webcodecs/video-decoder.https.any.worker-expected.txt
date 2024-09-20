@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test that VideoDecoder.isConfigSupported() accepts config:valid codec with spaces
+  assert_unreached: unexpected error Reached unreachable code
+Harness: the test ran to completion.
+

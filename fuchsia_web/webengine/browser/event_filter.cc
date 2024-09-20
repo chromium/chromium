@@ -131,12 +131,10 @@ bool EventFilter::IsEventAllowed(ui::EventType type) {
       return true;
 
     case ui::EventType::kUmaData:
-      NOTREACHED_IN_MIGRATION();  // ChromeOS only.
-      break;
+      NOTREACHED();  // ChromeOS only.
 
     case ui::EventType::kLast:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
 
     case ui::EventType::kUnknown:
       break;

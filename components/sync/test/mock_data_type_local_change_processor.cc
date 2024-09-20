@@ -55,8 +55,9 @@ void MockDataTypeLocalChangeProcessor::DelegateCallsByDefaultTo(
       .WillByDefault(Invoke(
           delegate, &DataTypeLocalChangeProcessor::UntrackEntityForStorageKey));
   ON_CALL(*this, UntrackEntityForClientTagHash)
-      .WillByDefault(Invoke(
-          delegate, &DataTypeLocalChangeProcessor::UntrackEntityForClientTagHash));
+      .WillByDefault(
+          Invoke(delegate,
+                 &DataTypeLocalChangeProcessor::UntrackEntityForClientTagHash));
   ON_CALL(*this, IsEntityUnsynced)
       .WillByDefault(
           Invoke(delegate, &DataTypeLocalChangeProcessor::IsEntityUnsynced));
@@ -77,12 +78,13 @@ void MockDataTypeLocalChangeProcessor::DelegateCallsByDefaultTo(
       .WillByDefault(
           Invoke(delegate, &DataTypeLocalChangeProcessor::TrackedCacheGuid));
   ON_CALL(*this, ReportError)
-      .WillByDefault(Invoke(delegate, &DataTypeLocalChangeProcessor::ReportError));
+      .WillByDefault(
+          Invoke(delegate, &DataTypeLocalChangeProcessor::ReportError));
   ON_CALL(*this, GetError())
       .WillByDefault(Invoke(delegate, &DataTypeLocalChangeProcessor::GetError));
   ON_CALL(*this, GetControllerDelegate())
-      .WillByDefault(
-          Invoke(delegate, &DataTypeLocalChangeProcessor::GetControllerDelegate));
+      .WillByDefault(Invoke(
+          delegate, &DataTypeLocalChangeProcessor::GetControllerDelegate));
 }
 
 }  //  namespace syncer

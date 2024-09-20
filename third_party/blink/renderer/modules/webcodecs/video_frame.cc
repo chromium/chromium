@@ -70,7 +70,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
 
@@ -633,10 +633,10 @@ VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
   handle_ = base::MakeRefCounted<VideoFrameHandle>(
       frame, std::move(sk_image), context, std::move(monitoring_source_id),
       use_capture_timestamp);
-  external_allocated_memory_ =
+  size_t external_allocated_memory =
       media::VideoFrame::AllocationSize(frame->format(), frame->coded_size());
-  context->GetIsolate()->AdjustAmountOfExternalAllocatedMemory(
-      external_allocated_memory_);
+  external_memory_accounter_.Increase(context->GetIsolate(),
+                                      external_allocated_memory);
 }
 
 VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
@@ -649,10 +649,10 @@ VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
   if (!local_frame)
     return;
 
-  external_allocated_memory_ = media::VideoFrame::AllocationSize(
+  size_t external_allocated_memory = media::VideoFrame::AllocationSize(
       local_frame->format(), local_frame->coded_size());
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      external_allocated_memory_);
+  external_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                      external_allocated_memory);
 }
 
 VideoFrame::~VideoFrame() {
@@ -818,8 +818,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       return nullptr;
 
     auto* sbi = static_cast<StaticBitmapImage*>(image.get());
-    gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes] = {
-        sbi->GetMailboxHolder()};
+    gpu::MailboxHolder mailbox_holder = sbi->GetMailboxHolder();
     const bool is_origin_top_left = sbi->IsOriginTopLeft();
 
     // The sync token needs to be updated when |frame| is released, but
@@ -835,12 +834,12 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     auto client_shared_image = sbi->GetSharedImage();
     if (client_shared_image) {
       frame = media::VideoFrame::WrapSharedImage(
-          format, std::move(client_shared_image), mailbox_holders[0].sync_token,
-          mailbox_holders[0].texture_target, std::move(release_cb), coded_size,
+          format, std::move(client_shared_image), mailbox_holder.sync_token,
+          mailbox_holder.texture_target, std::move(release_cb), coded_size,
           parsed_init.visible_rect, parsed_init.display_size, timestamp);
     } else {
-      frame = media::VideoFrame::WrapNativeTextures(
-          format, mailbox_holders, std::move(release_cb), coded_size,
+      frame = media::VideoFrame::WrapNativeTexture(
+          format, mailbox_holder, std::move(release_cb), coded_size,
           parsed_init.visible_rect, parsed_init.display_size, timestamp);
     }
 
@@ -1476,11 +1475,7 @@ bool VideoFrame::IsAccelerated() const {
 }
 
 void VideoFrame::ResetExternalMemory() {
-  if (external_allocated_memory_) {
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        -external_allocated_memory_);
-    external_allocated_memory_ = 0;
-  }
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
 }
 
 gfx::Size VideoFrame::BitmapSourceSize() const {

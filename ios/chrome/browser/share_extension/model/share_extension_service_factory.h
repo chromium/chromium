@@ -14,13 +14,11 @@
 class ShareExtensionService;
 
 // Singleton that creates the ShareExtensionService and associates that service
-// with ChromeBrowserState.
+// with ProfileIOS.
 class ShareExtensionServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static ShareExtensionService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static ShareExtensionService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static ShareExtensionService* GetForProfile(ProfileIOS* profile);
+  static ShareExtensionService* GetForProfileIfExists(ProfileIOS* profile);
   static ShareExtensionServiceFactory* GetInstance();
 
   ShareExtensionServiceFactory(const ShareExtensionServiceFactory&) = delete;

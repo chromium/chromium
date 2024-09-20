@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -49,7 +50,8 @@ public class ExplicitPassphrasePlatformClientTest {
 
     @Before
     public void setUp() {
-        ExplicitPassphrasePlatformClient.overrideForTesting(mExplicitPassphrasePlatformClient);
+        ServiceLoaderUtil.setInstanceForTesting(
+                ExplicitPassphrasePlatformClient.class, mExplicitPassphrasePlatformClient);
     }
 
     @Test

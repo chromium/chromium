@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class GradientView;
+@class TabGroupIndicatorView;
 
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
@@ -46,6 +47,9 @@
     NSLayoutConstraint* fakeLocationBarTrailingConstraint;
 @property(nonatomic, strong) GradientView* fakeLocationBar;
 @property(nonatomic, strong) UILabel* searchHintLabel;
+
+// View that contains tab group information.
+@property(nonatomic, weak) TabGroupIndicatorView* tabGroupIndicatorView;
 
 // `YES` if Google is the default search engine.
 @property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
@@ -106,6 +110,10 @@
 
 // Hides the new feature badge on the Home customization menu's entrypoint.
 - (void)hideBadgeOnCustomizationMenu;
+
+// Updates the `tabGroupIndicatorView` availability.
+// `offset` represents the scroll view's y `offset`.
+- (void)updateTabGroupIndicatorAvailabilityWithOffset:(CGFloat)offset;
 
 @end
 

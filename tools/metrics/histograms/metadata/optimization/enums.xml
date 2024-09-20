@@ -717,8 +717,11 @@ chromium-metrics-reviews@google.com.
   <int value="65" label="AUTOFILL_ABLATION_SITES_LIST6"/>
   <int value="67" label="AMOUNT_EXTRACTION_ALLOWLIST"/>
   <int value="68" label="AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST"/>
-  <int value="69" label="AMOUNT_EXTRACTION_ALLOWLIST_AFFIRM"/>
-  <int value="70" label="AMOUNT_EXTRACTION_ALLOWLIST_ZIP"/>
+  <int value="69" label="BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM"/>
+  <int value="70" label="BUY_NOW_PAY_LATER_ALLOWLIST_ZIP"/>
+  <int value="71" label="SAVED_TAB_GROUP"/>
+  <int value="73" label="FORMS_ANNOTATIONS"/>
+  <int value="74" label="TEXT_CLASSIFIER_ENTITY_DETECTION"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

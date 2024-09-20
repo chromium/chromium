@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.IbanRecordType;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.PaymentInstrument;
@@ -251,10 +252,10 @@ public class PersonalDataManagerTest {
     public void testAddCreditCardWithCardArtUrl_imageDownloaded() throws TimeoutException {
         AutofillUiUtils.CardIconSpecs cardIconSpecsLarge =
                 AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), AutofillUiUtils.CardIconSize.LARGE);
+                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
         AutofillUiUtils.CardIconSpecs cardIconSpecsSmall =
                 AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), AutofillUiUtils.CardIconSize.LARGE);
+                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
         GURL cardArtUrl = new GURL("http://google.com/test.png");
         CreditCard cardWithCardArtUrl =
                 new CreditCard(
@@ -1024,7 +1025,7 @@ public class PersonalDataManagerTest {
             throws TimeoutException {
         Context context = ContextUtils.getApplicationContext();
         AutofillUiUtils.CardIconSpecs cardIconSpecs =
-                AutofillUiUtils.CardIconSpecs.create(context, AutofillUiUtils.CardIconSize.LARGE);
+                AutofillUiUtils.CardIconSpecs.create(context, ImageSize.LARGE);
         GURL cardArtUrl = new GURL("http://google.com/test.png");
         CreditCard cardWithCardArtUrl =
                 new CreditCard(
@@ -1062,8 +1063,7 @@ public class PersonalDataManagerTest {
                                                                     new GURL(
                                                                             "http://google.com/test.png"),
                                                                     R.drawable.mc_card,
-                                                                    AutofillUiUtils.CardIconSize
-                                                                            .LARGE,
+                                                                    ImageSize.LARGE,
                                                                     /* showCustomIcon= */ true))
                                                     .getBitmap()));
                 });
@@ -1109,8 +1109,7 @@ public class PersonalDataManagerTest {
                                                                             .getPersonalDataManagerForLastUsedProfile(),
                                                                     new GURL(""),
                                                                     R.drawable.mc_card,
-                                                                    AutofillUiUtils.CardIconSize
-                                                                            .LARGE,
+                                                                    ImageSize.LARGE,
                                                                     true))
                                                     .getBitmap()));
                 });
@@ -1150,7 +1149,7 @@ public class PersonalDataManagerTest {
                                     AutofillTestHelper.getPersonalDataManagerForLastUsedProfile(),
                                     new GURL(""),
                                     0,
-                                    AutofillUiUtils.CardIconSize.LARGE,
+                                    ImageSize.LARGE,
                                     true));
                 });
     }
@@ -1164,7 +1163,7 @@ public class PersonalDataManagerTest {
         GURL cardArtUrl = new GURL("http://google.com/test.png");
         AutofillUiUtils.CardIconSpecs cardIconSpecs =
                 AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), AutofillUiUtils.CardIconSize.LARGE);
+                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
 
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newSingleRecordWatcher("Autofill.ImageFetcher.Result", true);
@@ -1187,7 +1186,7 @@ public class PersonalDataManagerTest {
         GURL cardArtUrl = new GURL("http://google.com/test.png");
         AutofillUiUtils.CardIconSpecs cardIconSpecs =
                 AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), AutofillUiUtils.CardIconSize.LARGE);
+                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
 
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newSingleRecordWatcher("Autofill.ImageFetcher.Result", false);
@@ -1258,10 +1257,10 @@ public class PersonalDataManagerTest {
         Iban.Builder ibanBuilder =
                 new Iban.Builder()
                         .setInstrumentId(123456L)
-                        .setLabel("")
+                        .setLabel("CH •••8009")
                         .setNickname("My IBAN")
                         .setRecordType(IbanRecordType.SERVER_IBAN)
-                        .setValue("FR76 3000 6000 0112 3456 7890 189");
+                        .setValue("");
 
         ibanBuilder.build();
     }

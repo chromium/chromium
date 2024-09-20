@@ -916,7 +916,7 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
   for (size_t i = 0; i < histogram_values.size(); ++i) {
     std::string key_id = base::NumberToString(i);
     aggregatable_trigger_data.push_back(
-        *attribution_reporting::AggregatableTriggerData::Create(
+        attribution_reporting::AggregatableTriggerData(
             absl::MakeUint128(/*high=*/i, /*low=*/0),
             /*source_keys=*/{key_id}, FilterPair()));
     aggregatable_values.emplace(

@@ -10,12 +10,7 @@ load("./config.star", "config")
 load("./protoc_wrapper.star", "protoc_wrapper")
 
 def __filegroups(ctx):
-    return {
-        "third_party/protobuf/python/google:pyprotolib": {
-            "type": "glob",
-            "includes": ["*.py"],
-        },
-    }
+    return {}
 
 def __protoc_wrapper(ctx, cmd):
     inputs = protoc_wrapper.scandeps(ctx, cmd.args)
@@ -27,11 +22,6 @@ __handlers = {
 
 def __step_config(ctx, step_config):
     remote_run = True  # Turn this to False when you do file access trace.
-    step_config["input_deps"].update({
-        "third_party/dom_distiller_js/protoc_plugins/util/plugin_protos.py": [
-            "third_party/protobuf/python/google:pyprotolib",
-        ],
-    })
     step_config["rules"].extend([
         {
             "name": "proto/protoc_wrapper",

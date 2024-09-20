@@ -111,15 +111,13 @@ rtc::SocketAddress FakeUdpSocket::GetLocalAddress() const {
 }
 
 rtc::SocketAddress FakeUdpSocket::GetRemoteAddress() const {
-  NOTREACHED_IN_MIGRATION();
-  return rtc::SocketAddress();
+  NOTREACHED();
 }
 
 int FakeUdpSocket::Send(const void* data,
                         size_t data_size,
                         const rtc::PacketOptions& options) {
-  NOTREACHED_IN_MIGRATION();
-  return EINVAL;
+  NOTREACHED();
 }
 
 int FakeUdpSocket::SendTo(const void* data,
@@ -161,7 +159,7 @@ int FakeUdpSocket::GetError() const {
 }
 
 void FakeUdpSocket::SetError(int error) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -38,8 +38,11 @@ lens::mojom::Polygon_VertexOrdering ProtoToMojo(
       return lens::mojom::Polygon_VertexOrdering::kClockwise;
     case lens::Polygon::COUNTER_CLOCKWISE:
       return lens::mojom::Polygon_VertexOrdering::kCounterClockwise;
+    default:
+      // This default case is needed because two dummy enums that should not be
+      // used are created by the proto compiler.
+      NOTREACHED() << "Unknown vertex ordering.";
   }
-  return lens::mojom::Polygon_VertexOrdering::kUnspecified;
 }
 
 lens::mojom::Polygon_CoordinateType ProtoToMojo(
@@ -51,8 +54,11 @@ lens::mojom::Polygon_CoordinateType ProtoToMojo(
       return lens::mojom::Polygon_CoordinateType::kNormalized;
     case lens::IMAGE:
       return lens::mojom::Polygon_CoordinateType::kImage;
+    default:
+      // This default case is needed because two dummy enums that should not be
+      // used are created by the proto compiler.
+      NOTREACHED() << "Unknown coordinate type.";
   }
-  return lens::mojom::Polygon_CoordinateType::kUnspecified;
 }
 
 lens::mojom::Alignment ProtoToMojo(lens::Alignment text_alignment) {
@@ -66,9 +72,8 @@ lens::mojom::Alignment ProtoToMojo(lens::Alignment text_alignment) {
     default:
       // This default case is needed because two dummy enums that should not be
       // used are created by the proto compiler.
-      break;
+      NOTREACHED() << "Unknown text alignment.";
   }
-  return lens::mojom::Alignment::kDefaultLeftAlgined;
 }
 
 lens::mojom::PolygonPtr CreatePolygonMojomFromProto(

@@ -283,6 +283,10 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- TODO(b/356947395): Remove this once the improved management disclosure uses the *_no_link version. -->
     <ignore regexp="The resource `R.string.management_legacy_tech_report_no_link` appears to be unused"/>
 
+    <!-- TODO(b/362360807): Remove the following 2 lines after the bug is resolved. -->
+    <ignore regexp="The resource `R.string.discount_code_copied_button_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.discount_expiration_date_android` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

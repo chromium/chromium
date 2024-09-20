@@ -265,7 +265,8 @@ class AppAccessNotifierTest : public testing::Test,
 
   // This instance is needed for setting up `ash_test_helper_`.
   // See //docs/threading_and_tasks_testing.md.
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   TestingProfileManager testing_profile_manager_;
 
@@ -526,8 +527,14 @@ TEST_P(AppAccessNotifierTest, AppAccessNotification) {
 
   LaunchAppUsingCameraOrMicrophone(id1, "test_app_name", /*use_camera=*/false,
                                    /*use_microphone=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment_.FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   LaunchAppUsingCameraOrMicrophone(id2, "test_app_name", /*use_camera=*/false,
                                    /*use_microphone=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment_.FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
       notification_id1));
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
@@ -557,6 +564,9 @@ TEST_P(AppAccessNotifierTest, PrivacyIndicatorsVisibility) {
   LaunchAppUsingCameraOrMicrophone("test_app_id", "test_app_name",
                                    /*use_camera=*/true,
                                    /*use_microphone=*/true);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment_.FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   ExpectPrivacyIndicatorsVisible(/*visible=*/true);
   ExpectPrivacyIndicatorsCameraIconVisible(/*visible=*/true);
   ExpectPrivacyIndicatorsMicrophoneIconVisible(/*visible=*/true);
@@ -564,7 +574,12 @@ TEST_P(AppAccessNotifierTest, PrivacyIndicatorsVisibility) {
   LaunchAppUsingCameraOrMicrophone("test_app_id", "test_app_name",
                                    /*use_camera=*/false,
                                    /*use_microphone=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment_.FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   ExpectPrivacyIndicatorsVisible(/*visible=*/false);
+  ExpectPrivacyIndicatorsCameraIconVisible(/*visible=*/false);
+  ExpectPrivacyIndicatorsMicrophoneIconVisible(/*visible=*/false);
 
   LaunchAppUsingCameraOrMicrophone("test_app_id", "test_app_name",
                                    /*use_camera=*/true,

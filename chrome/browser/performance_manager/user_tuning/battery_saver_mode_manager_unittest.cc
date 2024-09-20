@@ -12,6 +12,7 @@
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test_utils.h"
 #include "base/test/scoped_feature_list.h"
@@ -239,7 +240,8 @@ TEST_F(BatterySaverModeManagerTest, TemporaryBatterySaverTurnsOffWhenPlugged) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(true);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -264,7 +266,8 @@ TEST_F(BatterySaverModeManagerTest, TemporaryBatterySaverTurnsOffWhenPlugged) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(false);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -354,7 +357,8 @@ TEST_F(BatterySaverModeManagerTest, EnabledOnBatteryPower) {
         std::make_unique<QuitRunLoopOnBSMChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(true);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -370,7 +374,8 @@ TEST_F(BatterySaverModeManagerTest, EnabledOnBatteryPower) {
         std::make_unique<QuitRunLoopOnBSMChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(false);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -396,7 +401,8 @@ TEST_F(BatterySaverModeManagerTest, EnabledOnBatteryPower) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(true);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -462,7 +468,8 @@ TEST_F(BatterySaverModeManagerTest, BSMEnabledUnderThreshold) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(true);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -481,7 +488,8 @@ TEST_F(BatterySaverModeManagerTest, BSMEnabledUnderThreshold) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(false);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -500,7 +508,8 @@ TEST_F(BatterySaverModeManagerTest, BSMEnabledUnderThreshold) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(true);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }

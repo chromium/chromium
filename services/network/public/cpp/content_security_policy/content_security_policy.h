@@ -116,7 +116,6 @@ CSPCheckResult CheckContentSecurityPolicy(
     const GURL& url,
     const GURL& url_before_redirects,
     bool has_followed_redirect,
-    bool is_response_check,
     CSPContext* context,
     const mojom::SourceLocationPtr& source_location,
     bool is_form_submission,

@@ -33,7 +33,6 @@ import org.chromium.components.feature_engagement.Tracker;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({
-    ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
     ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
     ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
 })

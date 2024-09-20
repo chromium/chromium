@@ -70,6 +70,10 @@ extern const char kSafetyHubPasswordCheckOriginsKey[];
 extern const char kSafetyHubCompromiedPasswordOriginsCount[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Name of the histogram which logs how many times the blocklist is checked
+// during an auto-revocation run.
+extern const char kBlocklistCheckCountHistogramName[];
+
 // State that a top card in the Safety Hub page can be in. This enum should
 // remain sorted from the "worst" state (warning) to the "best" state (safe).
 // Should be kept in sync with the corresponding enum in

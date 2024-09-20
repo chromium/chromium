@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -70,6 +71,15 @@ void WaitForPreferenceValue(int pref_value) {
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
   config.features_enabled.push_back(syncer::kEnablePreferencesAccountStorage);
+  // TODO(crbug.com/368056380): Re-enable after fixing failure.
+  // The tests fail when kSendTabToSelfIOSPushNotifications is enabled.
+  // Moreover, the test is already a bit flaky.
+  if ([self isRunningTest:@selector(testAccountPrefValueCleanedUpOnSignout)] ||
+      [self
+          isRunningTest:@selector(testLocalPrefNotUploadedToAccountOnSignIn)]) {
+    config.features_disabled.push_back(
+        send_tab_to_self::kSendTabToSelfIOSPushNotifications);
+  }
   return config;
 }
 

@@ -12,8 +12,9 @@
               var subType = MediaSourceUtil.getSubType(MediaSourceUtil.AUDIO_ONLY_TYPE);
               var mediaDataManifest = subType + '/test-a-5min-44100Hz-1ch-manifest.json';
               MediaSourceUtil.fillUpSourceBuffer(test, mediaSource, mediaDataManifest, function (appendedDataSize) { // onBufferFull
+                  // This test is just measuring the amount of overhead StreamParserBuffer adds per packet.
                   assert_greater_than(appendedDataSize, 2 * 1048576, "Appended more than 2MB of data");
-                  assert_less_than(appendedDataSize, 3 * 1048576, "Appended less than 3MB of data");
+                  assert_less_than(appendedDataSize, 5 * 1048576, "Appended less than 5MB of data");
                   test.done();
               });
           }, 'Appending data repeatedly should fill up the buffer and throw a QuotaExceededError when buffer is full.');

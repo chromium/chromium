@@ -73,7 +73,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       const url::Origin& browser_signal_seller_origin,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
       const base::TimeDelta browser_signal_recency,
-      auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
+      blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       const std::optional<blink::AdSize>& requested_ad_size,
       uint16_t multi_bid_limit,
@@ -142,10 +142,21 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // OnGenerateBidComplete()), respectively, to return `delta`.
   void SetBidderTrustedSignalsFetchLatency(base::TimeDelta delta);
   void SetBiddingLatency(base::TimeDelta delta);
+  void SetCodeFetchLatencies(std::optional<base::TimeDelta> js_fetch_latency,
+                             std::optional<base::TimeDelta> wasm_fetch_latency);
+  void SetScriptTimedOut(bool val) { script_timed_out_ = val; }
 
   // Same for `reporting_latency` for ReportWin()
   void SetReportingLatency(base::TimeDelta delta) {
     reporting_latency_ = delta;
+  }
+
+  // Controls what's passed to `non_kanon_pa_requests` of the generate bid
+  // callback.
+  void SetNonKAnonPARequests(
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+          non_kanon_pa_requests) {
+    non_kanon_pa_requests_ = std::move(non_kanon_pa_requests);
   }
 
   // Invokes the GenerateBid callback. A bid of base::nullopt means no bid
@@ -210,6 +221,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
 
   std::optional<std::string> selected_buyer_and_seller_reporting_id_;
 
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+      non_kanon_pa_requests_;
+
   std::unique_ptr<base::RunLoop> generate_bid_run_loop_;
   std::unique_ptr<base::RunLoop> report_win_run_loop_;
   ReportWinCallback report_win_callback_;
@@ -227,13 +241,17 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   std::map<std::string, base::TimeDelta> expected_per_buyer_timeouts_;
 
   // To be fed as `trusted_signals_fetch_latency` (from
-  // OnBiddingSignalsReceived()) and `bidding_latency` (from
-  // OnGenerateBidComplete()), respectively,
+  // OnBiddingSignalsReceived()).
   base::TimeDelta trusted_signals_fetch_latency_;
-  base::TimeDelta bidding_latency_;
 
-  // To be fed as `reporting_latency` to ReportWin() callback.
+  // These are fed as part of BidderTimingMetrics. Except for
+  // `bidding_latency_` and `reporting_latency_` they are used both for
+  // generateBid and reportWin.
+  base::TimeDelta bidding_latency_;
   base::TimeDelta reporting_latency_;
+  std::optional<base::TimeDelta> js_fetch_latency_;
+  std::optional<base::TimeDelta> wasm_fetch_latency_;
+  bool script_timed_out_ = false;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -365,6 +383,12 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     expect_send_pending_signals_requests_called_ = value;
   }
 
+  void SetCodeFetchLatency(std::optional<base::TimeDelta> js_fetch_latency) {
+    js_fetch_latency_ = js_fetch_latency;
+  }
+
+  void SetScriptTimedOut(bool val) { script_timed_out_ = val; }
+
  private:
   std::unique_ptr<base::RunLoop> score_ad_run_loop_;
   std::list<ScoreAdParams> score_ad_params_;
@@ -377,6 +401,10 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   // To be fed as `reporting_latency` to ReportResult() callback.
   base::TimeDelta reporting_latency_;
+
+  // Used for reporting callback as well.
+  std::optional<base::TimeDelta> js_fetch_latency_;
+  bool script_timed_out_ = false;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.

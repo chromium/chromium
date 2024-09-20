@@ -236,30 +236,3 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
   histogram_tester.ExpectUniqueSample("Tab.Organization.TabContextMenu.Clicked",
                                       true, 1);
 }
-
-class SavedTabGroupV2TabStripModelBrowserTest : public InProcessBrowserTest {
- public:
-  SavedTabGroupV2TabStripModelBrowserTest() {
-    feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveV2}, {});
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SavedTabGroupV2TabStripModelBrowserTest,
-                       GroupAutoSaveOnCreate) {
-  // Create a group, expect it to be saved.
-  tab_groups::SavedTabGroupKeyedService* const service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser()->profile());
-  ASSERT_NE(service, nullptr);
-
-  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->count());
-
-  // Create a group.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0});
-
-  // With the V2 flag the group should be saved.
-  EXPECT_TRUE(service->model()->Contains(group));
-}

@@ -19,8 +19,6 @@ import org.chromium.base.ThreadUtils;
  * this class and use this base class to fetch their specialized version.
  */
 public abstract class PlatformServiceBridge {
-    private static final String TAG = "PlatformServiceBrid-";
-
     private static PlatformServiceBridge sInstance;
     private static final Object sInstanceLock = new Object();
 

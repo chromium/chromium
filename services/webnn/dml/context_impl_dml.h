@@ -44,10 +44,10 @@ class ContextImplDml final : public WebNNContextImpl {
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
-  void ReadBuffer(TensorImplDml* src_buffer,
-                  mojom::WebNNTensor::ReadBufferCallback callback);
+  void ReadTensor(TensorImplDml* src_tensor,
+                  mojom::WebNNTensor::ReadTensorCallback callback);
 
-  void WriteBuffer(TensorImplDml* dst_buffer, mojo_base::BigBuffer src_buffer);
+  void WriteTensor(TensorImplDml* dst_tensor, mojo_base::BigBuffer src_buffer);
 
   // Some errors like `E_OUTOFMEMORY`, `DXGI_ERROR_DEVICE_REMOVED` and
   // `DXGI_ERROR_DEVICE_RESET` are treated as `context lost` errors, other
@@ -61,12 +61,14 @@ class ContextImplDml final : public WebNNContextImpl {
   void CreateGraphImpl(
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
       CreateGraphImplCallback callback) override;
 
-  void CreateBufferImpl(
+  void CreateTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::BufferInfoPtr buffer_info,
-      CreateBufferImplCallback callback) override;
+      mojom::TensorInfoPtr tensor_info,
+      CreateTensorImplCallback callback) override;
 
   // Begins recording commands needed for context operations.
   // If recording failed, calling this function will recreate the recorder to
@@ -83,7 +85,7 @@ class ContextImplDml final : public WebNNContextImpl {
   void OnReadbackComplete(
       Microsoft::WRL::ComPtr<ID3D12Resource> download_buffer,
       size_t read_byte_size,
-      mojom::WebNNTensor::ReadBufferCallback callback,
+      mojom::WebNNTensor::ReadTensorCallback callback,
       HRESULT hr);
 
   // After the upload completes, tell the queue to immediately

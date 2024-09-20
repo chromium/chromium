@@ -866,6 +866,8 @@ void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
 
   site_data_manager_->ExpireDataBefore(browsing_topics_data_sccessible_since);
 
+  browsing_topics_state_.ScheduleEpochsExpiration();
+
   ScheduleBrowsingTopicsCalculation(
       /*is_manually_triggered=*/false,
       /*previous_timeout_count=*/0, decision.next_calculation_delay,

@@ -103,6 +103,7 @@ found in the LICENSE file.
     <dimen name="tab_group_color_share_icon_inset">4dp</dimen>
     <dimen name="tab_group_color_share_icon_item_size">12dp</dimen>
     <dimen name="tab_group_share_icon_item_size">16dp</dimen>
+    <dimen name="tab_group_share_tiles_padding">14dp</dimen>
 
     <!-- Dimens for Hub integration. -->
     <dimen name="floating_action_button_space">88dp</dimen>

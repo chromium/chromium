@@ -19,10 +19,6 @@ const int kFeedSyncPromoDefaultAutodismissImpressions = 6;
 
 #pragma mark - Feature declarations
 
-BASE_FEATURE(kEnableDiscoverFeedPreview,
-             "EnableDiscoverFeedPreview",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
              "EnableDiscoverFeedStaticResourceServing",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -38,10 +34,6 @@ BASE_FEATURE(kEnableDiscoverFeedTopSyncPromo,
 BASE_FEATURE(kEnableNTPViewHierarchyRepair,
              "NTPViewHierarchyRepair",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFeedHeaderSettings,
-             "FeedHeaderSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOverrideFeedSettings,
              "OverrideFeedSettings",
@@ -78,13 +70,6 @@ const char kDiscoverFeedTopSyncPromoAutodismissImpressions[] =
 const char kDiscoverFeedTopSyncPromoIgnoreEngagementCondition[] =
     "IgnoreFeedEngagementConditionForTopSyncPromo";
 
-// Feature parameters for `kFeedHeaderSettings`.
-const char kEnableDotForNewFollowedContent[] =
-    "kEnableDotForNewFollowedContent";
-const char kDisableStickyHeaderForFollowingFeed[] =
-    "DisableStickyHeaderForFollowingFeed";
-const char kOverrideFeedHeaderHeight[] = "OverrideFeedHeaderHeight";
-
 // Feature parameters for `kOverrideFeedSettings`.
 const char kFeedSettingRefreshThresholdInSeconds[] =
     "RefreshThresholdInSeconds";
@@ -98,10 +83,6 @@ const char kFeedSettingDiscoverReferrerParameter[] =
     "DiscoverReferrerParameter";
 
 #pragma mark - Helpers
-
-bool IsDiscoverFeedPreviewEnabled() {
-  return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
-}
 
 bool IsNTPViewHierarchyRepairEnabled() {
   return base::FeatureList::IsEnabled(kEnableNTPViewHierarchyRepair);
@@ -156,23 +137,6 @@ int FeedSyncPromoAutodismissCount() {
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {
   return pref_service->GetBoolean(
       prefs::kNTPContentSuggestionsForSupervisedUserEnabled);
-}
-
-bool IsStickyHeaderDisabledForFollowingFeed() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kFeedHeaderSettings, kDisableStickyHeaderForFollowingFeed, true);
-}
-
-bool IsDotEnabledForNewFollowedContent() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kFeedHeaderSettings, kEnableDotForNewFollowedContent, false);
-}
-
-int FollowingFeedHeaderHeight() {
-  int defaultWebChannelsHeaderHeight = 30;
-  return base::GetFieldTrialParamByFeatureAsInt(kFeedHeaderSettings,
-                                                kOverrideFeedHeaderHeight,
-                                                defaultWebChannelsHeaderHeight);
 }
 
 bool IsWebFeedFeedbackRerouteEnabled() {

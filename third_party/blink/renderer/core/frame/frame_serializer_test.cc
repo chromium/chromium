@@ -122,12 +122,12 @@ class FrameSerializerTest
     // load.
     frame_test_helpers::PumpPendingRequestsForFrameToLoad(
         helper_.GetWebView()->MainFrameImpl());
-    FrameSerializer serializer(resources_, this);
     Frame* frame = helper_.LocalMainFrame()->GetFrame();
     for (; frame; frame = frame->Tree().TraverseNext()) {
       // This is safe, because tests do not do cross-site navigation
       // (and therefore don't have remote frames).
-      serializer.SerializeFrame(*To<LocalFrame>(frame));
+      FrameSerializer::SerializeFrame(resources_, *this,
+                                      *To<LocalFrame>(frame));
       // Don't serialize the same resource on subsequent frames. This mimics how
       // FrameSerializer is actually used.
       for (auto& res : GetResources()) {

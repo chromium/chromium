@@ -25,15 +25,18 @@ necessary authority to fulfill them. In particular, you have the authority to:
 
 TBRs were removed in Q1 2021.
 
-For more information on Chromium Trunk Gardeners, including How Tos, Swapping
-Shifts and rotation updates, please see [Chromium Trunk Gardening](https://goto.google.com/chrome-trunk-gardening)
+There are a number of different gardening rotations. For more information on
+gardening, including How Tos, Swapping Shifts and rotation updates, please see
+[Chromium Trunk Gardening](https://goto.google.com/chrome-gardening)
+(Google-internal link).
 
 ## How to be a Gardener
 
 To be a gardener, you must be both a Chromium committer and a Google employee.
 For more detailed gardening instructions, please see the internal documentation
 at
-[go/chrome-gardening-how-to](https://goto.google.com/chrome-gardening-how-to).
+[go/chrome-gardening-how-to](https://goto.google.com/chrome-gardening-how-to)
+(Google-internal link).
 
 ## Contacting the Gardeners
 

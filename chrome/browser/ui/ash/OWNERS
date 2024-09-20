@@ -14,3 +14,4 @@ per-file *capture_mode*=file://ash/capture_mode/OWNERS
 per-file recording_service_browsertest.cc=file://ash/capture_mode/OWNERS
 per-file thumbnail_loader*=file://chrome/browser/ui/ash/holding_space/OWNERS
 per-file system_tray_tray_cast_browsertest_media_router_chromeos.cc=file://chrome/browser/media/router/discovery/access_code/OWNERS
+per-file annotator_client_impl_browsertest.cc=file://ash/webui/annotator/OWNERS

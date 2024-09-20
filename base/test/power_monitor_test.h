@@ -38,19 +38,16 @@ class ScopedPowerMonitorTestSource {
 
   // Retrieve current states.
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState() const;
-  bool IsOnBatteryPower() const;
   PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
 
   // Sends asynchronous notifications to registered observers.
   void Suspend();
   void Resume();
-  void SetOnBatteryPower(bool on_battery_power);
   void SetBatteryPowerStatus(
       PowerStateObserver::BatteryPowerStatus battery_power_status);
 
   void GenerateSuspendEvent();
   void GenerateResumeEvent();
-  void GeneratePowerStateEvent(bool on_battery_power);
   void GeneratePowerStateEvent(
       PowerStateObserver::BatteryPowerStatus battery_power_status);
   void GenerateThermalThrottlingEvent(
@@ -71,9 +68,8 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
   ~PowerMonitorTestObserver() override;
 
   // PowerStateObserver overrides.
-  void OnPowerStateChange(bool on_battery_power) override;
   void OnBatteryPowerStatusChange(
-      PowerStateObserver::BatteryPowerStatus battery_power_status);
+      PowerStateObserver::BatteryPowerStatus battery_power_status) override;
   // PowerSuspendObserver overrides.
   void OnSuspend() override;
   void OnResume() override;

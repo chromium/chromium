@@ -93,6 +93,13 @@ BASE_FEATURE(kSavedTabGroupNotifyOnInteractionTimeChanged,
              "SavedTabGroupNotifyOnInteractionTimeChanged",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature flag to determine whether an alternate illustration should be used on
+// the history sync consent screen. This feature should be used independent of
+// any other features in this file.
+BASE_FEATURE(kUseAlternateHistorySyncIllustration,
+             "UseAlternateHistorySyncIllustration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
 }

@@ -119,10 +119,19 @@ bool HTMLOptGroupElement::ChildrenChangedAllChildrenRemovedNeedsList() const {
 
 Node::InsertionNotificationRequest HTMLOptGroupElement::InsertedInto(
     ContainerNode& insertion_point) {
+  customizable_select_rendering_ = false;
   HTMLElement::InsertedInto(insertion_point);
   if (HTMLSelectElement* select = OwnerSelectElement()) {
     if (&insertion_point == select)
       select->OptGroupInsertedOrRemoved(*this);
+    // TODO(crbug.com/1511354): This UsesMenuList check doesn't account for
+    // the case when the select's rendering is changed after insertion.
+    customizable_select_rendering_ =
+        RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+        select->UsesMenuList();
+  }
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    UpdateGroupLabel();
   }
   return kInsertionDone;
 }
@@ -148,7 +157,19 @@ String HTMLOptGroupElement::GroupLabelText() const {
 }
 
 HTMLSelectElement* HTMLOptGroupElement::OwnerSelectElement() const {
-  return DynamicTo<HTMLSelectElement>(parentNode());
+  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    // TODO(crbug.com/351990825): Cache the owner select ancestor on insertion
+    // rather than doing a tree traversal here every time OwnerSelectElement is
+    // called, which may be a lot.
+    for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
+      if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
+        return select;
+      }
+    }
+    return nullptr;
+  } else {
+    return DynamicTo<HTMLSelectElement>(parentNode());
+  }
 }
 
 String HTMLOptGroupElement::DefaultToolTip() const {
@@ -185,8 +206,9 @@ void HTMLOptGroupElement::ManuallyAssignSlots() {
   for (Node& child : NodeTraversal::ChildrenOf(*this)) {
     if (!child.IsSlotable())
       continue;
-    if (CanAssignToOptGroupSlot(child))
+    if (customizable_select_rendering_ || CanAssignToOptGroupSlot(child)) {
       opt_group_nodes.push_back(child);
+    }
   }
   opt_group_slot_->Assign(opt_group_nodes);
 }
@@ -196,6 +218,16 @@ void HTMLOptGroupElement::UpdateGroupLabel() {
   HTMLDivElement& label = OptGroupLabelElement();
   label.setTextContent(label_text);
   label.setAttribute(html_names::kAriaLabelAttr, AtomicString(label_text));
+  if (label_text.ContainsOnlyWhitespaceOrEmpty()) {
+    if (customizable_select_rendering_) {
+      // If the author uses <legend> to label the <optgroup> instead of the
+      // label attribute, then we don't want extra space being taken up for the
+      // unused label attribute.
+      label.SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+    }
+  } else {
+    label.RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+  }
 }
 
 HTMLDivElement& HTMLOptGroupElement::OptGroupLabelElement() const {

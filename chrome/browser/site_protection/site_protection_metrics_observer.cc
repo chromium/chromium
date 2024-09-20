@@ -67,22 +67,26 @@ void SiteProtectionMetricsObserver::OnEngagementEvent(
 }
 
 void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
+  std::optional<GotPointsNavigation> got_points_navigation =
+      std::move(got_points_navigation_);
+  got_points_navigation_ = std::nullopt;
+
   // HistoryService is null in tests.
   if (!history_service_) {
     return;
   }
 
-  std::optional<GotPointsNavigation> got_points_navigation =
-      std::move(got_points_navigation_);
-  got_points_navigation_ = std::nullopt;
+  GURL last_committed_url = page.GetMainDocument().GetLastCommittedURL();
+  if (!last_committed_url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
 
   // Store any in-progress data in `metrics_data` so that we can still log the
   // matching heuristics even if the page navigates prior to the asynchronous
   // data fetches completing.
   auto metrics_data = std::make_unique<MetricsData>();
   metrics_data->ukm_source_id = page.GetMainDocument().GetPageUkmSourceId();
-  metrics_data->last_committed_url =
-      page.GetMainDocument().GetLastCommittedURL();
+  metrics_data->last_committed_url = last_committed_url;
   metrics_data->last_committed_origin =
       page.GetMainDocument().GetLastCommittedOrigin();
   metrics_data->data_fetch_start_time = base::Time::Now();
@@ -122,6 +126,10 @@ void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
           &SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThan4HoursAgo,
           weak_factory_.GetWeakPtr(), std::move(metrics_data)),
       &task_tracker_);
+}
+
+bool SiteProtectionMetricsObserver::HasPendingTasksForTesting() {
+  return weak_factory_.HasWeakPtrs();
 }
 
 void SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThan4HoursAgo(
@@ -203,12 +211,22 @@ void SiteProtectionMetricsObserver::OnKnowIfAnyVisitOlderThanADayAgo(
   }
 
   LogMetrics(std::move(metrics_data),
-             /* url_on_safe_browsing_high_confidence_allowlist=*/false);
+             /*url_on_safe_browsing_high_confidence_allowlist=*/false,
+             /*logging_details=*/std::nullopt);
 }
 
 void SiteProtectionMetricsObserver::LogMetrics(
     std::unique_ptr<MetricsData> metrics_data,
-    bool url_on_safe_browsing_high_confidence_allowlist) {
+    bool url_on_safe_browsing_high_confidence_allowlist,
+    std::optional<safe_browsing::SafeBrowsingDatabaseManager::
+                      HighConfidenceAllowlistCheckLoggingDetails>
+        logging_details) {
+  if (logging_details && (!logging_details->were_all_stores_available ||
+                          logging_details->was_allowlist_size_too_small)) {
+    metrics_data->matched_heuristics.push_back(
+        SiteFamiliarityHeuristicName::kGlobalAllowlistNotReady);
+    url_on_safe_browsing_high_confidence_allowlist = false;
+  }
   if (url_on_safe_browsing_high_confidence_allowlist) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kGlobalAllowlistMatch);
@@ -221,13 +239,19 @@ void SiteProtectionMetricsObserver::LogMetrics(
   }
 
   base::UmaHistogramTimes(
-      "SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration",
+      profile_->IsOffTheRecord()
+          ? "SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration."
+            "OffTheRecord"
+          : "SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration",
       (base::Time::Now() - metrics_data->data_fetch_start_time));
 
   for (SiteFamiliarityHeuristicName heuristic :
        metrics_data->matched_heuristics) {
     base::UmaHistogramEnumeration(
-        "SafeBrowsing.SiteProtection.FamiliarityHeuristic", heuristic);
+        profile_->IsOffTheRecord()
+            ? "SafeBrowsing.SiteProtection.FamiliarityHeuristic.OffTheRecord"
+            : "SafeBrowsing.SiteProtection.FamiliarityHeuristic",
+        heuristic);
   }
 
   ukm::builders::SiteFamiliarityHeuristicResult(metrics_data->ukm_source_id)

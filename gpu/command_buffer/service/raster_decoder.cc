@@ -751,19 +751,6 @@ class RasterDecoderImpl final : public RasterDecoder,
                                         GLuint v_stride,
                                         const volatile GLbyte* mailbox);
 
-  void DoConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
-                                           GLint src_y,
-                                           GLsizei width,
-                                           GLsizei height,
-                                           GLenum yuv_color_space,
-                                           GLenum plane_config,
-                                           GLenum subsampling,
-                                           const volatile GLbyte* mailboxes);
-  void DoConvertRGBAToYUVAMailboxesINTERNAL(GLenum yuv_color_space,
-                                            GLenum plane_config,
-                                            GLenum subsampling,
-                                            const volatile GLbyte* mailboxes);
-
   void DoLoseContextCHROMIUM(GLenum current, GLenum other);
   void DoBeginRasterCHROMIUM(GLfloat r,
                              GLfloat g,
@@ -2742,43 +2729,6 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
                    v_out, v_stride, dst_width, dst_height);
 
   *result = 1;
-}
-
-void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const volatile GLbyte* bytes_in) {
-  CopySharedImageHelper helper(&shared_image_representation_factory_,
-                               shared_context_state_.get());
-  auto result = helper.ConvertYUVAMailboxesToRGB(
-      src_x, src_y, width, height, planes_yuv_color_space, plane_config,
-      subsampling, bytes_in);
-  if (!result.has_value()) {
-    LOCAL_SET_GL_ERROR(result.error().gl_error,
-                       result.error().function_name.c_str(),
-                       result.error().msg.c_str());
-  }
-}
-
-void RasterDecoderImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
-    GLenum yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const volatile GLbyte* mailboxes_in) {
-  CopySharedImageHelper helper(&shared_image_representation_factory_,
-                               shared_context_state_.get());
-  auto result = helper.ConvertRGBAToYUVAMailboxes(yuv_color_space, plane_config,
-                                                  subsampling, mailboxes_in);
-  if (!result.has_value()) {
-    LOCAL_SET_GL_ERROR(result.error().gl_error,
-                       result.error().function_name.c_str(),
-                       result.error().msg.c_str());
-  }
 }
 
 void RasterDecoderImpl::DoLoseContextCHROMIUM(GLenum current, GLenum other) {

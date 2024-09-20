@@ -56,15 +56,17 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
 
   int Open(AddressFamily family);
 
-  // Takes ownership of |socket|, which is known to already be connected to the
+  // Takes ownership of `socket`, which is known to already be connected to the
   // given peer address. However, peer address may be the empty address, for
   // compatibility. The given peer address will be returned by GetPeerAddress.
+  // `socket` must support overlapped I/O operations operations.
   int AdoptConnectedSocket(SocketDescriptor socket,
                            const IPEndPoint& peer_address);
   // Takes ownership of |socket|, which may or may not be open, bound, or
   // listening. The caller must determine the state of the socket based on its
-  // provenance and act accordingly. The socket may have connections waiting
-  // to be accepted, but must not be actually connected.
+  // provenance and act accordingly. The socket may have connections waiting to
+  // be accepted, but must not be actually connected. `socket` must support
+  // overlapped I/O operations operations.
   int AdoptUnconnectedSocket(SocketDescriptor socket);
 
   int Bind(const IPEndPoint& address);
@@ -80,6 +82,7 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
 
   // Multiple outstanding requests are not supported.
   // Full duplex mode (reading and writing at the same time) is supported.
+  // These methods can only be called from an IO thread.
   virtual int Read(IOBuffer* buf,
                    int buf_len,
                    CompletionOnceCallback callback) = 0;
@@ -146,6 +149,10 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
   // Exposes the underlying socket descriptor for testing its state. Does not
   // release ownership of the descriptor.
   SocketDescriptor SocketDescriptorForTesting() const;
+
+  // Closes the underlying socket descriptor but otherwise keeps this object
+  // functional. Should only be used in `TCPSocketTest`.
+  void CloseSocketDescriptorForTesting();
 
   // Apply |tag| to this socket.
   void ApplySocketTag(const SocketTag& tag);
@@ -222,6 +229,13 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
   void DidCompleteConnect();
 
   SOCKET socket_;
+
+  // Whether `core_` is registered as an IO handler for `socket_` (see
+  // `base::CurrentIOThread::RegisterIOHandler`). Calling
+  // `ReleaseSocketDescriptorForTesting()` is disallowed when this is true, as
+  // that could result in `core_` being notified of operations that weren't
+  // issued by `this` (possibly after `core_` has been deleted).
+  bool registered_as_io_handler_ = false;
 
   // |socket_performance_watcher_| may be nullptr.
   std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher_;

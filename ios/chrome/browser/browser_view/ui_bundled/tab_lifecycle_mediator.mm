@@ -168,7 +168,7 @@
 
     PrefService* prefs =
         IsHomeCustomizationEnabled()
-            ? ChromeBrowserState::FromBrowserState(webState->GetBrowserState())
+            ? ProfileIOS::FromBrowserState(webState->GetBrowserState())
                   ->GetPrefs()
             : GetApplicationContext()->GetLocalState();
 

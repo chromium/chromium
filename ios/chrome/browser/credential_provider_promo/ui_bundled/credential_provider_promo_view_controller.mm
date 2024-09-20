@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_view_controller.h"
 
 #import "base/values.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -55,23 +56,25 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   }
   [self configureAlertScreen];
   [self layoutAlertScreen];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitVerticalSizeClass.self, UITraitUserInterfaceStyle.self ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateUIOnTraitChange)];
+  }
 }
 
-// Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
-// the animations accordingly.
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  BOOL darkModeEnabled =
-      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
-  BOOL hidden = ![self shouldShowAnimation];
+  if (@available(iOS 17, *)) {
+    return;
+  }
 
-  self.animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
-  self.animationViewWrapperDarkMode.animationView.hidden =
-      hidden || !darkModeEnabled;
-
-  [self updateAnimationsPlaying];
-  [self updateAlertScreenTopAnchorConstraint];
+  [self updateUIOnTraitChange];
 }
+#endif
 
 #pragma mark - CredentialProviderPromoConsumer
 
@@ -256,6 +259,21 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   self.animationViewWrapperDarkMode.animationView.hidden
       ? [self.animationViewWrapperDarkMode stop]
       : [self.animationViewWrapperDarkMode play];
+}
+
+// Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
+// the animations accordingly.
+- (void)updateUIOnTraitChange {
+  BOOL darkModeEnabled =
+      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+  BOOL hidden = ![self shouldShowAnimation];
+
+  self.animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
+  self.animationViewWrapperDarkMode.animationView.hidden =
+      hidden || !darkModeEnabled;
+
+  [self updateAnimationsPlaying];
+  [self updateAlertScreenTopAnchorConstraint];
 }
 
 @end

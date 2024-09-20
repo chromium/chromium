@@ -9,10 +9,6 @@
 
 #include "components/policy/core/common/cloud/device_management_service.h"
 
-namespace content {
-class BrowserContext;
-}
-
 namespace policy {
 
 // The real implementation of the device management service configuration that
@@ -35,8 +31,6 @@ class DeviceManagementServiceConfiguration
   std::string GetPlatformParameter() const override;
   std::string GetRealtimeReportingServerUrl() const override;
   std::string GetEncryptedReportingServerUrl() const override;
-  std::string GetReportingConnectorServerUrl(
-      content::BrowserContext* context) const override;
 
  private:
   const std::string dm_server_url_;

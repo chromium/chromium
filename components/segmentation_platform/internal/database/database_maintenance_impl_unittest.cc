@@ -19,8 +19,11 @@
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
+#include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -31,6 +34,7 @@
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::Return;
 using ::testing::SetArgReferee;
 
 namespace segmentation_platform {
@@ -87,16 +91,35 @@ class DatabaseMaintenanceImplTest : public testing::Test {
 
   void SetUp() override {
     SegmentationPlatformService::RegisterProfilePrefs(prefs_.registry());
-    segment_info_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
-    signal_database_ = std::make_unique<MockSignalDatabase>();
-    signal_storage_config_ = std::make_unique<MockSignalStorageConfig>();
+    auto segment_info_database =
+        std::make_unique<test::TestSegmentInfoDatabase>();
+    segment_info_database_ = segment_info_database.get();
+    auto signal_database = std::make_unique<MockSignalDatabase>();
+    signal_database_ = signal_database.get();
+    auto signal_storage_config = std::make_unique<MockSignalStorageConfig>();
+    signal_storage_config_ = signal_storage_config.get();
+    mock_ukm_data_manager_ = std::make_unique<MockUkmDataManager>();
+    mock_ukm_database_ = std::unique_ptr<MockUkmDatabase>();
+    storage_service_ = std::make_unique<StorageService>(
+        std::move(segment_info_database), std::move(signal_database),
+        std::move(signal_storage_config), nullptr, nullptr,
+        mock_ukm_data_manager_.get());
     base::flat_set<SegmentId> segment_ids = {
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
     database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
-        segment_ids, &clock_, segment_info_database_.get(),
-        signal_database_.get(), signal_storage_config_.get(), &prefs_);
+        segment_ids, &clock_, storage_service_.get(), &prefs_);
     clock_.SetNow(base::Time::Now());
+  }
+
+  void TearDown() override {
+    database_maintenance_.reset();
+    segment_info_database_ = nullptr;
+    signal_database_ = nullptr;
+    signal_storage_config_ = nullptr;
+    storage_service_.reset();
+    mock_ukm_data_manager_.reset();
+    mock_ukm_database_.reset();
   }
 
   // Adds the provided features to the SegmentInfoDatabase.
@@ -191,9 +214,12 @@ class DatabaseMaintenanceImplTest : public testing::Test {
 
   std::unique_ptr<Config> config_;
   base::SimpleTestClock clock_;
-  std::unique_ptr<test::TestSegmentInfoDatabase> segment_info_database_;
-  std::unique_ptr<MockSignalDatabase> signal_database_;
-  std::unique_ptr<MockSignalStorageConfig> signal_storage_config_;
+  std::unique_ptr<MockUkmDatabase> mock_ukm_database_;
+  std::unique_ptr<MockUkmDataManager> mock_ukm_data_manager_;
+  std::unique_ptr<StorageService> storage_service_;
+  raw_ptr<test::TestSegmentInfoDatabase> segment_info_database_;
+  raw_ptr<MockSignalDatabase> signal_database_;
+  raw_ptr<MockSignalStorageConfig> signal_storage_config_;
 
   std::unique_ptr<DatabaseMaintenanceImpl> database_maintenance_;
   TestingPrefServiceSimple prefs_;

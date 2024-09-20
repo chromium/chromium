@@ -765,7 +765,6 @@ void PrePaintTreeWalk::WalkMissedChildren(
       }
 
       bool update_tree_builder_context =
-          RuntimeEnabledFeatures::PrePaintAncestorsOfMissedOOFEnabled() &&
           NeedsTreeBuilderContextUpdate(descendant_object, descendant_context);
 
       RebuildContextForMissedDescendant(fragment, *descendant_object.Parent(),

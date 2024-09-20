@@ -178,6 +178,18 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.83 -> 1.0.86"
 notes = "Delta only updates the ensure macro implementation, still safe to run, no crypto"
 
+[[audits.anyhow]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.86 -> 1.0.87"
+notes = "Minimal changes, mostly renaming std to core for a type"
+
+[[audits.anyhow]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.87 -> 1.0.89"
+notes = "No safety-related changes in this delta"
+
 [[audits.autocfg]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
@@ -330,6 +342,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.16.3 -> 1.17.1"
 notes = "Unsafe review comments can be found in https://crrev.com/c/5813463"
 
+[[audits.bytemuck]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.17.1 -> 1.18.0"
+notes = "No code changes - just altering feature flag arrangements"
+
 [[audits.bytemuck_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -369,6 +387,12 @@ No impact on safety AFAICT - the delta only specifies a new attribute for
 `proc_macro_derive` to work around re-export issues described at
 https://github.com/Lokathor/bytemuck/issues/159
 """
+
+[[audits.byteorder]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "1.5.0"
+notes = "Unsafe review in https://crrev.com/c/5838022"
 
 [[audits.bytes]]
 who = "agl@chromium.org"
@@ -882,6 +906,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.5.0 -> 1.5.1"
 notes = "Only `Cargo.toml` changes + defining two new measurement units."
 
+[[audits.fend-core]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.5.1 -> 1.5.2"
+notes = "No unsafe, no crypto"
+
 [[audits.flate2]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -1006,9 +1036,15 @@ notes = "No unsafe changes."
 
 [[audits.font-types]]
 who = "Dominik Röttsches <drott@chromium.org>"
-criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-1"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 delta = "0.5.5 -> 0.6.0"
 notes = "This change comprises changes to understand larger GlyphId and compatibility with older Mac TrueType fonts. No unsafe code is introduced."
+
+[[audits.font-types]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "0.6.0 -> 0.7.1"
+notes = "No new unsafe, mostly changes about int24 as a new OpenType type, and moving Pen from Skrifa."
 
 [[audits.getrandom]]
 who = "danakj@chromium.org"
@@ -1204,6 +1240,12 @@ Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
 """
+
+[[audits.ppv-lite86]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.17 -> 0.2.20"
+notes = "Using zerocopy to reduce unsafe usage."
 
 [[audits.proc-macro2]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -1424,7 +1466,7 @@ notes = "No unsafe."
 
 [[audits.read-fonts]]
 who = "Dominik Röttsches <drott@chromium.org>"
-criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-0"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.19.3 -> 0.20.0"
 notes = """
 Contains changes for:
@@ -1435,6 +1477,12 @@ Contains changes for:
 * Closure computations for subsetting of COLR
 * large glyphId support.
 """
+
+[[audits.read-fonts]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.20.0 -> 0.22.0"
+notes = "Changes for incremental font transfer, Ankr, Feat tables, and support for getting access to the SVG document from the SVG table, as well as Avar2."
 
 [[audits.regex]]
 who = "danakj@chromium.org"
@@ -1710,6 +1758,12 @@ delta has no impact on the `unsafe`, `from_utf8_unchecked`-related parts
 of the crate (in `src/de/format.rs` and `src/ser/impls.rs`).
 """
 
+[[audits.serde]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.209 -> 1.0.210"
+notes = "Almost no new code - just feature rearrangement"
+
 [[audits.serde_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "ub-risk-0"
@@ -1771,6 +1825,12 @@ There are no code changes in this delta - see https://crrev.com/c/5812194/2..5
 I've neverthless also grepped for `-i cipher`, `-i crypto`, `\bfs\b`,
 `\bnet\b`, and `\bunsafe\b`.  There were no hits.
 '''
+
+[[audits.serde_derive]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.209 -> 1.0.210"
+notes = "Almost no new code - just feature rearrangement"
 
 [[audits.serde_json]]
 who = "danakj@chromium.org"
@@ -1917,9 +1977,15 @@ delta = "0.19.2 -> 0.19.3"
 
 [[audits.skrifa]]
 who = "Dominik Röttsches <drott@chromium.org>"
-criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-0"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.19.3 -> 0.20.0"
 notes = "Contains mainly preparatory autohint changes and data tables."
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.20.0 -> 0.22.0"
+notes = "Changes for adding autohinting support. Crates forbids unsafe code."
 
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
@@ -2079,6 +2145,12 @@ the unsafe review CL at https://crrev.com/c/5350386.
 
 This crate has been added to Chromium in https://crrev.com/c/3891618.
 '''
+
+[[audits.unicode-ident]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.12 -> 1.0.13"
+notes = "Lots of table updates, and tables are assumed correct with unsafe `.get_unchecked()`, so ub-risk-2 is appropriate"
 
 [[audits.unicode-linebreak]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"

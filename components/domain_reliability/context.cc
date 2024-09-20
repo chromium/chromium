@@ -162,10 +162,11 @@ void DomainReliabilityContext::StartUpload() {
 
 void DomainReliabilityContext::OnUploadComplete(
     const DomainReliabilityUploader::UploadResult& result) {
-  if (result.is_success())
+  if (result.is_success()) {
     CommitUpload();
-  else
+  } else {
     RollbackUpload();
+  }
   scheduler_.OnUploadComplete(result);
   DCHECK(!upload_time_.is_null());
   last_upload_time_ = upload_time_;

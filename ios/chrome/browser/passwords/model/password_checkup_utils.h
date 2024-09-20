@@ -48,8 +48,18 @@ bool operator==(const InsecurePasswordCounts& lhs,
 // Helper function to determine if a credential is compromised but not muted.
 bool IsCredentialUnmutedCompromised(const CredentialUIEntry& credential);
 
-// Returns the type of warning with the highest priority, the descending order
-// of priority being:
+// Returns the type of warning with the highest priority using
+// `insecure_password_counts`, the descending order of priority being:
+//  1. Compromised password warnings
+//  2. Reused password warnings
+//  3. Weak password warnings
+//  4. Muted warnings warning
+//  5. No insecure password warning
+WarningType GetWarningOfHighestPriority(
+    InsecurePasswordCounts insecure_password_counts);
+
+// Returns the type of warning with the highest priority using
+// `insecure_credentials`, the descending order of priority being:
 //  1. Compromised password warnings
 //  2. Reused password warnings
 //  3. Weak password warnings

@@ -30,7 +30,8 @@
 
 namespace blink {
 
-Document* DOMParser::parseFromString(const String& str, const String& type) {
+Document* DOMParser::parseFromString(const String& str,
+                                     const AtomicString& type) {
   Document* doc = DocumentInit::Create()
                       .WithURL(window_->Url())
                       .WithTypeFrom(type)
@@ -40,7 +41,7 @@ Document* DOMParser::parseFromString(const String& str, const String& type) {
   doc->setAllowDeclarativeShadowRoots(false);
   doc->CountUse(mojom::blink::WebFeature::kParseFromString);
   doc->SetContentFromDOMParser(str);
-  doc->SetMimeType(AtomicString(type));
+  doc->SetMimeType(type);
   return doc;
 }
 

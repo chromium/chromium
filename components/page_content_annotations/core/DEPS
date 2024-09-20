@@ -16,6 +16,7 @@ include_rules = [
   "+net/base",
   "+services/metrics/public",
   "+third_party/omnibox_proto",
+  "+third_party/tensorflow_models/src",
   "+third_party/tflite_support",
   "+ui/base/l10n",
 ]

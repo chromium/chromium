@@ -608,6 +608,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="7" label="Create a new desk to ensure the default desk exists"/>
   <int value="8" label="Desk Floating Workspace"/>
   <int value="9" label="Button pressed on desk button desk bar"/>
+  <int value="10" label="Coral button on birch bar pressed"/>
 </enum>
 
 <enum name="DesksMoveWindowFromActiveDeskSource">
@@ -641,6 +642,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
       label="Desk switch by clicking on a mini view in the desk button desk
              bar"/>
   <int value="16" label="Desk switch due to session restore"/>
+  <int value="17" label="Coral button on birch bar pressed"/>
 </enum>
 
 <enum name="DisclaimerViewAction">
@@ -1641,27 +1643,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="13"
       label="After user login, if full restore settings is ask everytime"/>
   <int value="14" label="Entering overview by clicking on wallpaper."/>
-</enum>
-
-<enum name="PaletteModeCancelType">
-  <int value="0" label="Palette laser pointer mode is cancelled."/>
-  <int value="1" label="Palette laser pointer mode is switched out of"/>
-  <int value="2" label="Palette magnify mode is cancelled."/>
-  <int value="3" label="Palette magnify mode is switched out of."/>
-</enum>
-
-<enum name="PaletteTrayOptions">
-  <int value="0" label="Palette being closed or dismissed with no action"/>
-  <int value="1" label="Click on the settings button"/>
-  <int value="2" label="Click on the help button"/>
-  <int value="3" label="Capture region"/>
-  <int value="4" label="Capture screen"/>
-  <int value="5" label="Add new note"/>
-  <int value="6" label="Magnifying glass mode"/>
-  <int value="7" label="Laser pointer mode"/>
-  <int value="8" label="Assistant mode"/>
-  <int value="9" label="Enter capture mode"/>
-  <int value="10" label="Marker mode"/>
 </enum>
 
 <enum name="PanelButton">

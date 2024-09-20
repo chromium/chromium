@@ -518,7 +518,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
              "to execute these tests.";
     }
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    ASSERT_NE(GetActiveHeuristicSource(), HeuristicSource::kLegacy)
+    ASSERT_NE(GetActiveHeuristicSource(), HeuristicSource::kLegacyRegexes)
         << "Internal tests are only supported with internal parsing patterns";
 #endif
     ASSERT_GE(TestTimeouts::test_launcher_timeout().InSeconds(), 100)

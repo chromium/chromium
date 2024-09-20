@@ -46,6 +46,12 @@ bool IsMinimumAddress(const AutofillProfile& profile,
 bool IsEligibleForMigrationToAccount(
     const AddressDataManager& address_data_manager,
     const AutofillProfile& profile);
+
+// Returns true if the profile is eligible to be migrated to the Account. Does
+// not check if the user is eligible for account storage.
+bool IsProfileEligibleForMigrationToAccount(
+    const AddressDataManager& address_data_manager,
+    const AutofillProfile& profile);
 }  //  namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PROFILE_REQUIREMENT_UTILS_H_

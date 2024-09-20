@@ -21,10 +21,16 @@
 
 // static
 ChromePasswordProtectionService*
-ChromePasswordProtectionServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
+ChromePasswordProtectionServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<ChromePasswordProtectionService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+}
+
+// static
+ChromePasswordProtectionService*
+ChromePasswordProtectionServiceFactory::GetForBrowserState(
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static
@@ -55,14 +61,12 @@ ChromePasswordProtectionServiceFactory::BuildServiceInstanceFor(
   if (!safe_browsing_service) {
     return nullptr;
   }
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<ChromePasswordProtectionService>(
-      safe_browsing_service, chrome_browser_state,
-      ios::HistoryServiceFactory::GetForBrowserState(
-          chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
-          chrome_browser_state));
+      safe_browsing_service, profile,
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      SafeBrowsingMetricsCollectorFactory::GetForProfile(profile));
 }
 
 bool ChromePasswordProtectionServiceFactory::ServiceIsCreatedWithBrowserState()

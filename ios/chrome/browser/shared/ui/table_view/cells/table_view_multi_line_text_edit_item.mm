@@ -30,6 +30,7 @@ const CGFloat kSymbolSize = 15;
   if (self) {
     self.cellClass = [TableViewMultiLineTextEditCell class];
     _validText = YES;
+    _textFieldInteractionEnabled = YES;
   }
   return self;
 }
@@ -61,6 +62,10 @@ const CGFloat kSymbolSize = 15;
     cell.iconView.hidden = NO;
     [cell.iconView setImage:[self errorImage]];
     cell.iconView.tintColor = [UIColor colorNamed:kRedColor];
+  }
+
+  if (!self.textFieldInteractionEnabled) {
+    cell.textView.userInteractionEnabled = NO;
   }
 }
 

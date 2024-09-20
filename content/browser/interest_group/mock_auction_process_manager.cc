@@ -81,7 +81,7 @@ void MockBidderWorklet::BeginGenerateBid(
     const url::Origin& browser_signal_seller_origin,
     const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
     const base::TimeDelta browser_signal_recency,
-    auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
+    blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
     const std::optional<blink::AdSize>& requested_ad_size,
     uint16_t multi_bid_limit,
@@ -219,6 +219,13 @@ void MockBidderWorklet::SetBiddingLatency(base::TimeDelta delta) {
   bidding_latency_ = delta;
 }
 
+void MockBidderWorklet::SetCodeFetchLatencies(
+    std::optional<base::TimeDelta> js_fetch_latency,
+    std::optional<base::TimeDelta> wasm_fetch_latency) {
+  js_fetch_latency_ = js_fetch_latency;
+  wasm_fetch_latency_ = wasm_fetch_latency;
+}
+
 void MockBidderWorklet::InvokeGenerateBidCallback(
     std::optional<double> bid,
     const std::optional<blink::AdCurrency>& bid_currency,
@@ -262,6 +269,18 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
             /*generate_bid_finish_time=*/base::TimeTicks::Now());
   }
 
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+      non_kanon_pa_requests;
+  for (const auto& request : non_kanon_pa_requests_) {
+    non_kanon_pa_requests.push_back(request->Clone());
+  }
+
+  auto bid_metrics = auction_worklet::mojom::BidderTimingMetrics::New(
+      /*js_fetch_latency=*/js_fetch_latency_,
+      /*wasm_fetch_latency=*/wasm_fetch_latency_,
+      /*script_latency=*/bidding_latency_,
+      /*script_timed_out=*/script_timed_out_);
+
   std::vector<auction_worklet::mojom::BidderWorkletBidPtr> bids;
   if (!bid.has_value()) {
     DCHECK(further_bids.empty());
@@ -274,9 +293,9 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
         base::flat_map<std::string,
                        auction_worklet::mojom::PrioritySignalsDoublePtr>(),
         /*pa_requests=*/std::move(pa_requests),
-        /*non_kanon_pa_requests=*/{},
+        /*non_kanon_pa_requests=*/std::move(non_kanon_pa_requests),
         /*real_time_contributions=*/{},
-        /*bidding_latency=*/bidding_latency_,
+        /*generate_bid_metrics=*/std::move(bid_metrics),
         /*generate_bid_dependency_latencies=*/std::move(dependency_latencies),
         reject_reason,
         /*errors=*/std::vector<std::string>());
@@ -299,9 +318,9 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>(),
       /*pa_requests=*/std::move(pa_requests),
-      /*non_kanon_pa_requests=*/{},
+      /*non_kanon_pa_requests=*/std::move(non_kanon_pa_requests),
       /*real_time_contributions=*/std::move(real_time_contributions),
-      /*bidding_latency=*/bidding_latency_,
+      /*generated_bid_metrics=*/std::move(bid_metrics),
       /*generate_bid_dependency_latencies=*/std::move(dependency_latencies),
       reject_reason,
       /*errors=*/std::vector<std::string>());
@@ -328,7 +347,13 @@ void MockBidderWorklet::InvokeReportWinCallback(
   DCHECK(report_win_callback_);
   std::move(report_win_callback_)
       .Run(report_url, std::move(ad_beacon_map), std::move(ad_macro_map),
-           std::move(pa_requests), reporting_latency_, std::move(errors));
+           std::move(pa_requests),
+           auction_worklet::mojom::BidderTimingMetrics::New(
+               /*js_fetch_latency=*/js_fetch_latency_,
+               /*wasm_fetch_latency=*/wasm_fetch_latency_,
+               /*script_latency=*/reporting_latency_,
+               /*script_timed_out=*/script_timed_out_),
+           std::move(errors));
 }
 
 void MockBidderWorklet::Flush() {
@@ -510,7 +535,12 @@ void MockSellerWorklet::InvokeReportResultCallback(
   DCHECK(report_result_callback_);
   std::move(report_result_callback_)
       .Run(/*signals_for_winner=*/std::nullopt, std::move(report_url),
-           ad_beacon_map, std::move(pa_requests), reporting_latency_, errors);
+           ad_beacon_map, std::move(pa_requests),
+           auction_worklet::mojom::SellerTimingMetrics::New(
+               /*js_fetch_latency=*/js_fetch_latency_,
+               /*script_latency=*/reporting_latency_,
+               /*script_timed_out=*/script_timed_out_),
+           errors);
 }
 
 void MockSellerWorklet::Flush() {

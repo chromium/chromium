@@ -18,6 +18,7 @@
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/render_widget_host_view_input.h"
 #include "components/input/touch_emulator.h"
+#include "components/input/utils.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -314,11 +315,35 @@ void RenderInputRouter::OnInvalidInputEventSource() {
   delegate_->OnInvalidInputEventSource();
 }
 
+void RenderInputRouter::ForwardGestureEvent(
+    const blink::WebGestureEvent& gesture_event) {
+  TRACE_EVENT("input", "RenderInputRouter::ForwardGestureEvent", "type",
+              WebInputEvent::GetName(gesture_event.GetType()));
+
+  ForwardGestureEventWithLatencyInfo(gesture_event, ui::LatencyInfo());
+}
+
 void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
     const blink::WebGestureEvent& gesture_event,
     const ui::LatencyInfo& latency_info) {
   TRACE_EVENT1("input", "RenderInputRouter::ForwardGestureEvent", "type",
                WebInputEvent::GetName(gesture_event.GetType()));
+
+  input::GestureEventWithLatencyInfo gesture_with_latency(gesture_event,
+                                                          latency_info);
+
+  // Assigns a `trace_id` to the latency object.
+  latency_tracker_->OnEventStart(&gesture_with_latency.latency);
+
+  TRACE_EVENT(
+      "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+      [&gesture_with_latency](perfetto::EventContext ctx) {
+        ui::LatencyInfo::EmitFirstLatencyInfoStep(
+            ctx, gesture_with_latency.latency.trace_id(),
+            perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                STEP_SEND_INPUT_EVENT_UI,
+            InputEventTypeToProto(gesture_with_latency.event.GetType()));
+      });
 
   // Early out if necessary, prior to performing latency logic.
   if (delegate_->IsIgnoringWebInputEvents(gesture_event)) {
@@ -360,8 +385,6 @@ void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
     return;
   }
 
-  input::GestureEventWithLatencyInfo gesture_with_latency(gesture_event,
-                                                          latency_info);
   DispatchInputEventWithLatencyInfo(
       gesture_with_latency.event, &gesture_with_latency.latency,
       &gesture_with_latency.event.GetModifiableEventLatencyMetadata());
@@ -450,6 +473,19 @@ void RenderInputRouter::ForwardTouchEventWithLatencyInfo(
   // ignored if appropriate in FilterInputEvent().
 
   input::TouchEventWithLatencyInfo touch_with_latency(touch_event, latency);
+
+  // Assigns a `trace_id` to the latency object.
+  latency_tracker_->OnEventStart(&touch_with_latency.latency);
+
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
+              [&touch_with_latency](perfetto::EventContext ctx) {
+                ui::LatencyInfo::EmitFirstLatencyInfoStep(
+                    ctx, touch_with_latency.latency.trace_id(),
+                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                        STEP_SEND_INPUT_EVENT_UI,
+                    InputEventTypeToProto(touch_with_latency.event.GetType()));
+              });
+
   DispatchInputEventWithLatencyInfo(
       touch_with_latency.event, &touch_with_latency.latency,
       &touch_with_latency.event.GetModifiableEventLatencyMetadata());

@@ -204,7 +204,8 @@ public class SearchResumptionModuleMediator
                                         "",
                                         mTabToTrackSuggestion.getUrl(),
                                         pageClassification,
-                                        mTabToTrackSuggestion.getTitle());
+                                        mTabToTrackSuggestion.getTitle(),
+                                        /* isOnFocusContext= */ false);
                             });
         } else {
             mSearchResumptionModuleBridge = new SearchResumptionModuleBridge(profile);

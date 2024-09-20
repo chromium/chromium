@@ -240,6 +240,29 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "14-desktop-x64-emulator",
+    description = "Run with android_34_desktop_x64",
+    generate_pyl_entry = False,
+    args = [
+        "--avd-config=../../tools/android/avd/proto/android_34_desktop_x64.textpb",
+    ],
+    swarming = targets.swarming(
+        # soft affinity so that bots with caches will be picked first
+        optional_dimensions = {
+            60: {
+                "caches": "android_34_desktop_x64",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "android_34_desktop_x64",
+                path = ".android_emulator/android_34_desktop_x64",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "15-x64-emulator",
     description = "Run with android_35_google_apis_x64",
     args = [
@@ -351,11 +374,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "shards-10",
-    shards = 10,
-)
-
-targets.mixin(
     name = "shards-20",
     shards = 20,
 )
@@ -363,6 +381,11 @@ targets.mixin(
 targets.mixin(
     name = "shards-30",
     shards = 30,
+)
+
+targets.mixin(
+    name = "shards-50",
+    shards = 50,
 )
 
 targets.mixin(
@@ -461,6 +484,32 @@ targets.mixin(
         dimensions = {
             "os": "ChromeOS",
             "device_type": "octopus",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "chromium_nexus_5x_oreo",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_os": "OPR4.170623.020",
+            "device_os_flavor": "google",
+            "device_type": "bullhead",
+            "os": "Android",
+            "pool": "chromium.tests",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "chromium_pixel_2_pie",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests",
         },
     ),
 )
@@ -1510,16 +1559,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "oreo_fleet",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "OPR4.170623.020",
-            "device_os_flavor": "google",
-        },
-    ),
-)
-
-targets.mixin(
     name = "oreo_mr1_fleet",
     generate_pyl_entry = False,
     swarming = targets.swarming(
@@ -1578,16 +1617,6 @@ targets.mixin(
                 path = ".android_emulator/android_28_google_apis_x86",
             ),
         ],
-    ),
-)
-
-targets.mixin(
-    name = "pie_fleet",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "PQ3A.190801.002",
-            "device_os_flavor": "google",
-        },
     ),
 )
 
@@ -1996,12 +2025,12 @@ targets.mixin(
     name = "xcode_16_main",
     args = [
         "--xcode-build-version",
-        "16a5230g",
+        "16a242",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_16a5230g",
+                name = "xcode_ios_16a242",
                 path = "Xcode.app",
             ),
         ],
@@ -2012,12 +2041,12 @@ targets.mixin(
     name = "xcode_16_beta",
     args = [
         "--xcode-build-version",
-        "16a5230g",
+        "16a242d",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_16a5230g",
+                name = "xcode_ios_16a242d",
                 path = "Xcode.app",
             ),
         ],

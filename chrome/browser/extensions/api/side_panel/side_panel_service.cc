@@ -18,7 +18,6 @@
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_types.h"
-#include "extensions/common/extension_features.h"
 
 namespace extensions {
 
@@ -54,9 +53,7 @@ SidePanelService::SidePanelService(content::BrowserContext* context)
 
 bool SidePanelService::HasSidePanelActionForTab(const Extension& extension,
                                                 TabId tab_id) {
-  if (!OpenSidePanelOnIconClick(extension.id()) ||
-      !base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
+  if (!OpenSidePanelOnIconClick(extension.id())) {
     return false;
   }
 
@@ -66,11 +63,6 @@ bool SidePanelService::HasSidePanelActionForTab(const Extension& extension,
 bool SidePanelService::HasSidePanelContextMenuActionForTab(
     const Extension& extension,
     TabId tab_id) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
-    return false;
-  }
-
   return HasSidePanelAvailableForTab(extension, tab_id);
 }
 
@@ -223,10 +215,11 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
     int window_id,
     bool include_incognito_information) {
   std::string error;
-  Browser* browser = ExtensionTabUtil::GetBrowserInProfileWithId(
-      Profile::FromBrowserContext(context), window_id,
-      include_incognito_information, &error);
-  if (!browser) {
+  WindowController* window_controller =
+      ExtensionTabUtil::GetControllerInProfileWithId(
+          Profile::FromBrowserContext(context), window_id,
+          include_incognito_information, &error);
+  if (!window_controller) {
     return base::unexpected(error);
   }
 
@@ -238,7 +231,8 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
   }
 
   side_panel_util::OpenGlobalExtensionSidePanel(
-      *browser, /*web_contents=*/nullptr, extension.id());
+      *window_controller->GetBrowser(), /*web_contents=*/nullptr,
+      extension.id());
   return true;
 }
 

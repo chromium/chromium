@@ -74,7 +74,156 @@ _COVERAGE_FLAGS = [
 ]
 
 # Files that should not be built with coverage flags by default.
-_DEFAULT_COVERAGE_EXCLUSION_LIST = []
+_DEFAULT_COVERAGE_EXCLUSION_LIST = [
+    # These files caused perf regressions, resulting in time-outs on some bots.
+    # TODO(https://crbug.com/356570413): Remove when the bug is fixed.
+    '../../base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_bitmap.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/address_space_randomization.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/address_space_randomization_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/allocation_guard.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/compressed_pointer.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/compressed_pointer_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/extended_api.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/gwp_asan_support.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/hardening_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/internal_allocator.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/lightweight_quarantine.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/lightweight_quarantine_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/oom_callback.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/oom.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/page_allocator.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_posix.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/page_allocator_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_address_space.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/apple/mach_logging.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/alias.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/proc_maps_linux.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace_android.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace_linux.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace_mac.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace_posix.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace_win.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/files/file_path.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/files/file_path_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/files/file_util_posix.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/fuchsia/fuchsia_logging.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/fuchsia/fuchsia_logging_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/log_message.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/page_size_posix.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/page_size_win.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/ref_counted.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/native_library.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/native_library_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/native_library_posix.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/posix/safe_strerror.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/process/process_handle_posix.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/process/process_handle_win.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util_fuchsia.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util_posix.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util_win.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/scoped_clear_last_error_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/scoped_clear_last_error_win.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/cstring_builder.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/cstring_builder_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/safe_sprintf.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/safe_sprintf_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/stringprintf.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/stringprintf_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/string_util.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/string_util_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations_pa_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_android_for_testing.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_fuchsia_for_testing.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_linux_for_testing.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_posix.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_posix_for_testing.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_win.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_win_for_testing.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time_conversion_posix.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time_fuchsia.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time_now_posix.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time_override.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time_win.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_hooks.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_perftest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_alloc_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_bucket.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_dcheck_helper.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_freelist_entry.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_lock_perftest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_lock_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_oom.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_page.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_root.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_stats.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_tls_win.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/pointers/empty.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/pointers/instance_tracer.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_asan_unowned_impl.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_backup_ref_impl.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_hookable_impl.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ref_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/random.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/reverse_bytes_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_android.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_apple.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_apple_zoned_malloc.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_glibc.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_with_advanced_checks.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_winheap.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_dispatch_to_noop_on_free.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_functions_win_component.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_win_component.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_win_static.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/empty.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/winheap_stubs_win.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/shim/winheap_stubs_win_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/slot_start_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/spinning_mutex.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/stack/asm/arm64/push_registers_asm.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/stack/asm/arm/push_registers_asm.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/stack/asm/riscv64/push_registers_asm.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/stack/asm/x64/push_registers_asm.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/stack/asm/x86/push_registers_asm.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/stack/stack.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/stack/stack_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/tagging.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/tagging_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/thread_cache.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/thread_cache_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/thread_isolation/pkey.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/thread_isolation/pkey_unittest.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/thread_isolation/thread_isolation.cc',  #pylint: disable=line-too-long
+]
 
 # Map of exclusion lists indexed by target OS.
 # If no target OS is defined, or one is defined that doesn't have a specific
@@ -83,14 +232,14 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
     'android': [
         # This file caused webview native library failed on arm64.
         '../../device/gamepad/dualshock4_controller.cc',
-    ],
+    ] + _DEFAULT_COVERAGE_EXCLUSION_LIST,
     'fuchsia': [
         # TODO(crbug.com/40167659): These files caused clang to crash while
         # compiling them.
         '../../third_party/skia/src/core/SkOpts.cpp',
         '../../third_party/skia/src/opts/SkOpts_hsw.cpp',
         '../../third_party/skia/third_party/skcms/skcms.cc',
-    ],
+    ] + _DEFAULT_COVERAGE_EXCLUSION_LIST,
     'linux': [
         # These files caused a static initializer to be generated, which
         # shouldn't.
@@ -100,7 +249,7 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
         '../../components/media_router/common/providers/cast/channel/cast_message_util.cc',  #pylint: disable=line-too-long
         '../../components/media_router/common/providers/cast/cast_media_source.cc',  #pylint: disable=line-too-long
         '../../ui/events/keycodes/dom/keycode_converter.cc',
-    ],
+    ] + _DEFAULT_COVERAGE_EXCLUSION_LIST,
     'chromeos': [
         # These files caused clang to crash while compiling them. They are
         # excluded pending an investigation into the underlying compiler bug.
@@ -108,7 +257,7 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
         '../../third_party/icu/source/common/uts46.cpp',
         '../../third_party/icu/source/common/ucnvmbcs.cpp',
         '../../base/android/android_image_reader_compat.cc',
-    ],
+    ] + _DEFAULT_COVERAGE_EXCLUSION_LIST,
 }
 
 # Map of force lists indexed by target OS.

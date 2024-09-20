@@ -67,13 +67,15 @@ static_library("settings") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/login/screens",
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/contacts",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/resources/settings_shared:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/pages/apps",
     "//chrome/browser/ui/webui/ash/settings/pages/date_time",
     "//chrome/browser/ui/webui/ash/settings/pages/device",
@@ -104,6 +106,8 @@ static_library("settings") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/webui/ash/settings/pages/device",
     "//chrome/browser/ui/webui/ash/settings/pages/languages",
     "//chrome/browser/ui/webui/ash/settings/pages/main",

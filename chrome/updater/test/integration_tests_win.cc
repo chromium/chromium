@@ -303,16 +303,37 @@ void CheckInstallation(UpdaterScope scope,
                 !IsServiceGone(GetServiceName(is_internal_service)))
           << ": " << service_name << ": " << is_internal_service;
 
-      if (!is_installed) {
-        ForEachServiceWithPrefix(
-            base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-                          is_internal_service ? kWindowsInternalServiceName
-                                              : kWindowsServiceName}),
-            base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-            [](const std::wstring& service_name) {
+      int count_entries = 0;
+      ForEachServiceWithPrefix(
+          base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+                        is_internal_service ? kWindowsInternalServiceName
+                                            : kWindowsServiceName}),
+          GetLocalizedString(
+              is_internal_service
+                  ? IDS_INTERNAL_UPDATER_SERVICE_DISPLAY_NAME_BASE
+                  : IDS_UPDATER_SERVICE_DISPLAY_NAME_BASE),
+          [&](const std::wstring& service_name) {
+            ++count_entries;
+
+            if (is_installed) {
+              base::win::RegKey key;
+              ASSERT_EQ(key.Open(HKEY_LOCAL_MACHINE,
+                                 base::StrCat(
+                                     {L"SYSTEM\\CurrentControlSet\\Services\\",
+                                      service_name})
+                                     .c_str(),
+                                 Wow6432(KEY_READ)),
+                        ERROR_SUCCESS);
+              std::wstring description;
+              EXPECT_EQ(key.ReadValue(L"Description", &description),
+                        ERROR_SUCCESS);
+              EXPECT_EQ(description, GetLocalizedString(
+                                         IDS_UPDATER_SERVICE_DESCRIPTION_BASE));
+            } else {
               ADD_FAILURE() << "Unexpected service found: " << service_name;
-            });
-      }
+            }
+          });
+      EXPECT_EQ(count_entries, is_installed);
     }
   }
 
@@ -748,8 +769,7 @@ void Clean(UpdaterScope scope) {
   }
 
   if (IsSystemInstall(scope)) {
-    ForEachServiceWithPrefix(base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-                             base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+    ForEachServiceWithPrefix(base::ASCIIToWide(PRODUCT_FULLNAME_STRING), {},
                              [](const std::wstring& service_name) {
                                EXPECT_TRUE(DeleteService(service_name));
                              });
@@ -1979,7 +1999,8 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
   ASSERT_EQ(
       key.Open(UpdaterScopeToHKeyRoot(scope), CLIENTS_KEY, Wow6432(DELETE)),
       ERROR_SUCCESS);
-  ASSERT_EQ(key.DeleteKey(base::SysUTF8ToWide(app_id).c_str()), ERROR_SUCCESS);
+  LONG result = key.DeleteKey(base::SysUTF8ToWide(app_id).c_str());
+  ASSERT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
 }
 
 void RunOfflineInstall(UpdaterScope scope,

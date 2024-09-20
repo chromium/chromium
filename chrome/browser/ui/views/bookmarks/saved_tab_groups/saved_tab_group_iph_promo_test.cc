@@ -15,18 +15,27 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
 
-class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest {
+class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
+                                 public testing::WithParamInterface<bool> {
  public:
   SavedTabGroupV2PromoTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature})) {
-    feature_list_.InitWithFeatures(
-        {{tab_groups::kTabGroupsSaveV2, tab_groups::kTabGroupsSaveUIUpdate}},
-        {});
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {{tab_groups::kTabGroupSyncServiceDesktopMigration,
+            tab_groups::kTabGroupsSaveV2, tab_groups::kTabGroupsSaveUIUpdate}},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {{tab_groups::kTabGroupsSaveV2, tab_groups::kTabGroupsSaveUIUpdate}},
+          {});
+    }
   }
 
   ~SavedTabGroupV2PromoTest() override = default;
@@ -34,17 +43,21 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest {
   auto TriggerPromo() {
     auto steps = Steps(
         Do([this]() {
+          tab_groups::TabGroupSyncService* service =
+              tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+                  browser()->profile());
+          ASSERT_TRUE(service);
+          service->SetIsInitializedForTesting(true);
+
           chrome::AddTabAt(browser(), GURL(), 0, true);
           chrome::AddTabAt(browser(), GURL(), 1, true);
-
           tab_groups::TabGroupId group_id =
               browser()->tab_strip_model()->AddToNewGroup({0});
 
           tab_groups::SavedTabGroupUtils::RemoveGroupFromTabstrip(browser(),
                                                                   group_id);
         }),
-        WaitForShow(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+        WaitForPromo(feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature));
     AddDescription(steps, "SaveAndCloseGroup( %s )");
     return steps;
   }
@@ -53,12 +66,12 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupV2PromoTest,
                        TestShowingIPHOnSavedTabGroupBar) {
   // Show the SavedTabGroupBar and the BookmarkBar.
   PrefService* prefs = browser()->profile()->GetPrefs();
-  const bool original_stgb_pref = browser()->profile()->GetPrefs()->GetBoolean(
-      bookmarks::prefs::kShowTabGroupsInBookmarkBar);
+  const bool original_stgb_pref =
+      prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
   prefs->SetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar, true);
 
   RunTestSequence(
@@ -71,12 +84,12 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
                     original_stgb_pref);
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupV2PromoTest,
                        TestShowingIPHWithoutSavedTabGroupBar) {
   // Show the SavedTabGroupBar and the BookmarkBar.
   PrefService* prefs = browser()->profile()->GetPrefs();
-  const bool original_stgb_pref = browser()->profile()->GetPrefs()->GetBoolean(
-      bookmarks::prefs::kShowTabGroupsInBookmarkBar);
+  const bool original_stgb_pref =
+      prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
   prefs->SetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar, false);
 
   RunTestSequence(
@@ -88,3 +101,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
   prefs->SetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar,
                     original_stgb_pref);
 }
+
+INSTANTIATE_TEST_SUITE_P(SavedTabGroupV2Promo,
+                         SavedTabGroupV2PromoTest,
+                         testing::Bool());

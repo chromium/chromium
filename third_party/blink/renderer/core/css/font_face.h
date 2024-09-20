@@ -53,7 +53,9 @@ class CSSValue;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class Document;
+class CSSLengthResolver;
 class ExceptionState;
+class MediaValues;
 class FontFaceDescriptors;
 class StyleRuleFontFace;
 class V8UnionArrayBufferOrArrayBufferViewOrString;
@@ -162,6 +164,8 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   const StyleRuleFontFace* GetStyleRule() const { return style_rule_.Get(); }
   bool IsUserStyle() const { return is_user_style_; }
 
+  const CSSLengthResolver& EnsureLengthResolver() const;
+
  private:
   static FontFace* Create(ExecutionContext*,
                           const AtomicString& family,
@@ -215,6 +219,9 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   // Note that we will also need to distinguish font faces in different tree
   // scopes when we allow @font-face in shadow DOM. See crbug.com/336876.
   bool is_user_style_ = false;
+
+  // Global media values to resolve calc().
+  mutable Member<const MediaValues> media_values_;
 };
 
 using FontFaceArray = HeapVector<Member<FontFace>>;

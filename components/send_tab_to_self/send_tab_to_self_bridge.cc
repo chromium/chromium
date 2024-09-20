@@ -149,11 +149,7 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
     const std::string& guid = change->storage_key();
     if (change->type() == syncer::EntityChange::ACTION_DELETE) {
       if (entries_.find(guid) != entries_.end()) {
-        if (mru_entry_ && mru_entry_->GetGUID() == guid) {
-          mru_entry_ = nullptr;
-        }
-        entries_.erase(change->storage_key());
-        batch->DeleteData(guid);
+        EraseEntryInBatch(guid, batch.get());
         removed.push_back(change->storage_key());
       }
     } else {
@@ -174,6 +170,16 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
             GetMutableEntryByGUID(remote_entry->GetGUID());
         SendTabToSelfLocal remote_entry_pb = remote_entry->AsLocalProto();
         if (local_entry == nullptr) {
+          if (unknown_opened_entries_.contains(remote_entry->GetGUID())) {
+            unknown_opened_entries_.erase(remote_entry->GetGUID());
+            remote_entry->MarkOpened();
+            // Reupload the entry to the server. This operation is safe because
+            // it is happening at most once per entry.
+            change_processor()->Put(
+                remote_entry->GetGUID(),
+                CopyToEntityData(remote_entry->AsLocalProto().specifics()),
+                batch->GetMetadataChangeList());
+          }
           // This remote_entry is new. Add it to the model.
           added.push_back(remote_entry.get());
           if (remote_entry->IsOpened()) {
@@ -372,6 +378,7 @@ void SendTabToSelfBridge::MarkEntryOpened(const std::string& guid) {
   SendTabToSelfEntry* entry = GetMutableEntryByGUID(guid);
   // Assure that an entry with that guid exists.
   if (!entry) {
+    unknown_opened_entries_.insert(guid);
     return;
   }
 
@@ -687,12 +694,7 @@ void SendTabToSelfBridge::DeleteEntryWithBatch(
   change_processor()->Delete(guid, syncer::DeletionOrigin::Unspecified(),
                              batch->GetMetadataChangeList());
 
-  if (mru_entry_ && mru_entry_->GetGUID() == guid) {
-    mru_entry_ = nullptr;
-  }
-
-  entries_.erase(guid);
-  batch->DeleteData(guid);
+  EraseEntryInBatch(guid, batch);
 }
 
 void SendTabToSelfBridge::DeleteEntries(const std::vector<GURL>& urls) {
@@ -740,6 +742,16 @@ void SendTabToSelfBridge::DeleteAllEntries() {
   mru_entry_ = nullptr;
 
   NotifyRemoteSendTabToSelfEntryDeleted(all_guids);
+}
+
+void SendTabToSelfBridge::EraseEntryInBatch(const std::string& guid,
+                                            DataTypeStore::WriteBatch* batch) {
+  if (mru_entry_ && mru_entry_->GetGUID() == guid) {
+    mru_entry_ = nullptr;
+  }
+  entries_.erase(guid);
+  unknown_opened_entries_.erase(guid);
+  batch->DeleteData(guid);
 }
 
 }  // namespace send_tab_to_self

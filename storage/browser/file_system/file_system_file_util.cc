@@ -21,6 +21,10 @@ base::File::Error FileSystemFileUtil::EmptyFileEnumerator::GetError() {
   return base::File::FILE_OK;
 }
 
+base::FilePath FileSystemFileUtil::EmptyFileEnumerator::GetName() {
+  return base::FilePath();
+}
+
 int64_t FileSystemFileUtil::EmptyFileEnumerator::Size() {
   return 0;
 }

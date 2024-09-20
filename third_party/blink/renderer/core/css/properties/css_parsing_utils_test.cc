@@ -78,12 +78,18 @@ TEST(CSSParsingUtilsTest, ConsumeAngles) {
 TEST(CSSParsingUtilsTest, AtIdent) {
   String text = "foo,bar,10px";
   CSSParserTokenStream stream(text);
-  EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // foo
-  EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // ,
-  EXPECT_TRUE(AtIdent(stream.Consume(), "bar"));   // bar
-  EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // ,
-  EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // 10px
-  EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // EOF
+  EXPECT_FALSE(AtIdent(stream.Peek(), "bar"));  // foo
+  stream.Consume();
+  EXPECT_FALSE(AtIdent(stream.Peek(), "bar"));  // ,
+  stream.Consume();
+  EXPECT_TRUE(AtIdent(stream.Peek(), "bar"));  // bar
+  stream.Consume();
+  EXPECT_FALSE(AtIdent(stream.Peek(), "bar"));  // ,
+  stream.Consume();
+  EXPECT_FALSE(AtIdent(stream.Peek(), "bar"));  // 10px
+  stream.Consume();
+  EXPECT_FALSE(AtIdent(stream.Peek(), "bar"));  // EOF
+  stream.Consume();
 }
 
 TEST(CSSParsingUtilsTest, ConsumeIfIdent) {
@@ -99,12 +105,18 @@ TEST(CSSParsingUtilsTest, ConsumeIfIdent) {
 TEST(CSSParsingUtilsTest, AtDelimiter) {
   String text = "foo,<,10px";
   CSSParserTokenStream stream(text);
-  EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // foo
-  EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // ,
-  EXPECT_TRUE(AtDelimiter(stream.Consume(), '<'));   // <
-  EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // ,
-  EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // 10px
-  EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // EOF
+  EXPECT_FALSE(AtDelimiter(stream.Peek(), '<'));  // foo
+  stream.Consume();
+  EXPECT_FALSE(AtDelimiter(stream.Peek(), '<'));  // ,
+  stream.Consume();
+  EXPECT_TRUE(AtDelimiter(stream.Peek(), '<'));  // <
+  stream.Consume();
+  EXPECT_FALSE(AtDelimiter(stream.Peek(), '<'));  // ,
+  stream.Consume();
+  EXPECT_FALSE(AtDelimiter(stream.Peek(), '<'));  // 10px
+  stream.Consume();
+  EXPECT_FALSE(AtDelimiter(stream.Peek(), '<'));  // EOF
+  stream.Consume();
 }
 
 TEST(CSSParsingUtilsTest, ConsumeIfDelimiter) {

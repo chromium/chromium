@@ -15,7 +15,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/md_select.css.js';
 
@@ -460,9 +460,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       this.setCheckMarkForMenu_(
           this.$.rateMenu.getIfExists(), this.rateOptions.indexOf(speechRate));
 
+      const highlightOn = chrome.readingMode.isHighlightOn();
+      this.setHighlightButtonTitle_(highlightOn);
       if (!chrome.readingMode.isPhraseHighlightingEnabled) {
-        // Only update the toggle state if the highlight menu is disabled.
-        this.setHighlightState_(chrome.readingMode.isHighlightOn());
+        this.setHighlightButtonIcon_(highlightOn);
       }
     }
   }
@@ -550,41 +551,67 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     openMenu(menu, event.target as HTMLElement);
   }
 
+  private onHighlightChange_(event: CustomEvent<{data: number}>) {
+    // Event handler for highlight-change (from highlight-menu).
+    const changedHighlight = event.detail.data;
+    this.setHighlightButtonIcon_(
+        changedHighlight !== chrome.readingMode.noHighlighting);
+  }
+
   private onHighlightClick_(event: MouseEvent) {
+    // Click handler for the highlight button. Used both for the
+    // highlight menu mode and the toggle button mode.
     if (chrome.readingMode.isPhraseHighlightingEnabled) {
       this.$.highlightMenu.open(event.target as HTMLElement);
     } else {
       // Don't show the highlight menu if phrase highlighting is disabled.
-      this.onHighlightToggleClick_();
+      this.onHighlightToggle_();
     }
   }
 
-  private onHighlightToggleClick_() {
+  private onHighlightToggle_() {
+    assert(
+        !chrome.readingMode.isPhraseHighlightingEnabled,
+        'should not be called when highlighting menu is shown');
     this.logger_.logSpeechSettingsChange(
         ReadAloudSettingsChange.HIGHLIGHT_CHANGE);
     const isHighlightOn = chrome.readingMode.isHighlightOn();
-    if (isHighlightOn) {
-      chrome.readingMode.turnedHighlightOff();
-    } else {
-      chrome.readingMode.turnedHighlightOn();
-    }
-
-    this.logger_.logHighlightState(!isHighlightOn);
-    this.setHighlightState_(!isHighlightOn);
+    const turnOn = !isHighlightOn;
+    this.logger_.logHighlightState(turnOn);
+    this.setHighlightButtonIcon_(turnOn);
+    this.setHighlightButtonTitle_(turnOn);
+    emitEvent(this, ToolbarEvent.HIGHLIGHT_CHANGE, {
+      data: turnOn ? chrome.readingMode.autoHighlighting :
+                     chrome.readingMode.noHighlighting,
+    });
   }
 
-  private setHighlightState_(turnOn: boolean) {
+  private setHighlightButtonIcon_(turnOn: boolean) {
+    // Sets the icon of the highlight button. This happens regardless of
+    // whether the button toggles highlight on/off (the behavior when the phrase
+    // highlighting flag is off), or the button shows the highlight menu (when
+    // the flag is on).
     const button = this.$.toolbarContainer.querySelector('#highlight');
     assert(button, 'no highlight button');
     if (turnOn) {
       button.setAttribute('iron-icon', 'read-anything:highlight-on');
-      button.setAttribute('title', loadTimeData.getString('turnHighlightOff'));
     } else {
       button.setAttribute('iron-icon', 'read-anything:highlight-off');
-      button.setAttribute('title', loadTimeData.getString('turnHighlightOn'));
     }
+  }
 
-    emitEvent(this, ToolbarEvent.HIGHLIGHT_TOGGLE);
+  private setHighlightButtonTitle_(turnOn: boolean) {
+    // Sets the title of the highlight button. This is dynamically changed only
+    // when the highlight menu is disabled (i.e. the button acts as a toggle).
+    const button = this.$.toolbarContainer.querySelector('#highlight');
+    assert(button, 'no highlight button');
+    // The title is the opposite of the state, since it connotes the action that
+    // will be performed when the button is next clicked, and not the present
+    // state.
+    const title =
+        loadTimeData.getString(turnOn ? 'turnHighlightOff' : 'turnHighlightOn');
+    button.setAttribute('title', title);
+    button.setAttribute('aria-label', title);
   }
 
   private onFontClick_(event: DomRepeatEvent<string>) {

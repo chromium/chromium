@@ -244,6 +244,7 @@ mask-position: 0% 0%
 mask-repeat: repeat
 mask-size: auto
 mask-type: luminance
+masonry-slack: normal
 masonry-template-tracks: auto
 masonry-track-end: auto
 masonry-track-start: auto

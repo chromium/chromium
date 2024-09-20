@@ -167,8 +167,8 @@ static bool ParsePointInternal(const CharType* ptr,
 static bool ParsePoint(const String& string, gfx::PointF& point) {
   if (string.empty())
     return false;
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-    return ParsePointInternal(chars, chars + length, point);
+  return WTF::VisitCharacters(string, [&](auto chars) {
+    return ParsePointInternal(chars.data(), chars.data() + chars.size(), point);
   });
 }
 

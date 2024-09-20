@@ -18,6 +18,7 @@ android_library("test_support_java") {
     "//base:base_java_test_support",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/privacy:privacy_preference_manager_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/hats/internal:controller_java",
     "//chrome/browser/ui/android/hats/internal:java",

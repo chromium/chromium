@@ -9,8 +9,10 @@
 
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -29,6 +31,13 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace media_router {
+
+bool AccessCodeCastUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return base::FeatureList::IsEnabled(features::kAccessCodeCastUI) &&
+         media_router::GetAccessCodeCastEnabledPref(profile);
+}
 
 AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
     : MojoWebDialogUI(web_ui) {

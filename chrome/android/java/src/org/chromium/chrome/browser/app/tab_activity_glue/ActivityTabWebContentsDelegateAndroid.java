@@ -25,7 +25,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -202,7 +201,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
                 RecordUserAction.record("LinkNavigationOpenedInForegroundTab");
             } else if (disposition == WindowOpenDisposition.NEW_POPUP) {
-                PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
+                PolicyAuditor auditor = PolicyAuditor.maybeCreate();
                 if (auditor != null) {
                     auditor.notifyAuditEvent(
                             ContextUtils.getApplicationContext(),

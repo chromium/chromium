@@ -297,6 +297,14 @@ void EnsureDisplayWithResolution(display::Screen* screen,
   display_metrics_change_observer.Wait();
 }
 
+// static
+uint64_t SynthesizeSerialNumber() {
+  static uint64_t synthesized_serial_num = 1;
+  CHECK_LT(synthesized_serial_num, std::numeric_limits<uint64_t>::max())
+      << "All synthesized display IDs in use.";
+  return synthesized_serial_num++;
+}
+
 }  // namespace
 
 namespace display::test {
@@ -311,45 +319,9 @@ VirtualDisplayUtilMac::~VirtualDisplayUtilMac() {
   screen_->RemoveObserver(this);
 }
 
-int64_t VirtualDisplayUtilMac::AddDisplay(uint8_t display_id,
-                                          const DisplayParams& display_params) {
-  CHECK(!display_params.resolution.IsEmpty());
-  CHECK(!display_params.dpi.IsZero());
-  CHECK_EQ(display_params.dpi.x(), display_params.dpi.y());
-
-  NSString* display_name =
-      [NSString stringWithFormat:@"Virtual Display #%d", display_id];
-  CGVirtualDisplay* display = CreateVirtualDisplay(
-      display_params.resolution.width(), display_params.resolution.height(),
-      display_params.dpi.x(), /*hiDPI=*/display_params.dpi.x() >= 200,
-      display_name, display_id);
-  DCHECK(display);
-
-  // TODO(crbug.com/40148077): Please remove this log or replace it with
-  // [D]CHECK() ASAP when the TEST is stable.
-  LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
-            << " - display id: " << display_id
-            << ". CreateVirtualDisplay success.";
-
-  int64_t id = display.displayID;
-  DCHECK_NE(id, 0u);
-
-  WaitForDisplay(id, /*added=*/true);
-
-  EnsureDisplayWithResolution(screen_, id,
-                              gfx::Size(display_params.resolution.width(),
-                                        display_params.resolution.height()));
-
-  // TODO(crbug.com/40148077): Please remove this log or replace it with
-  // [D]CHECK() ASAP when the TEST is stable.
-  LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
-            << " - display id: " << display_id << "(" << id
-            << "). WaitForDisplay success.";
-
-  DCHECK(!g_display_map[id]);
-  g_display_map[id] = display;
-
-  return id;
+int64_t VirtualDisplayUtilMac::AddDisplay(const DisplayParams& display_params) {
+  int64_t serial_number = SynthesizeSerialNumber();
+  return AddDisplay(serial_number, display_params);
 }
 
 void VirtualDisplayUtilMac::RemoveDisplay(int64_t display_id) {
@@ -417,6 +389,47 @@ void VirtualDisplayUtilMac::ResetDisplays() {
   g_display_map.clear();
 
   StartWaiting();
+}
+
+int64_t VirtualDisplayUtilMac::AddDisplay(int64_t serial_number,
+                                          const DisplayParams& display_params) {
+  CHECK(!display_params.resolution.IsEmpty());
+  CHECK(!display_params.dpi.IsZero());
+  CHECK_EQ(display_params.dpi.x(), display_params.dpi.y());
+
+  NSString* display_name =
+      [NSString stringWithFormat:@"Virtual Display #%lld", serial_number];
+  CGVirtualDisplay* display = CreateVirtualDisplay(
+      display_params.resolution.width(), display_params.resolution.height(),
+      display_params.dpi.x(), /*hiDPI=*/display_params.dpi.x() >= 200,
+      display_name, serial_number);
+  DCHECK(display);
+
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
+  // [D]CHECK() ASAP when the TEST is stable.
+  LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
+            << " - serial number: " << serial_number
+            << ". CreateVirtualDisplay success.";
+
+  int64_t id = display.displayID;
+  DCHECK_NE(id, 0u);
+
+  WaitForDisplay(id, /*added=*/true);
+
+  EnsureDisplayWithResolution(screen_, id,
+                              gfx::Size(display_params.resolution.width(),
+                                        display_params.resolution.height()));
+
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
+  // [D]CHECK() ASAP when the TEST is stable.
+  LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
+            << " - serial number: " << serial_number << "(" << id
+            << "). WaitForDisplay success.";
+
+  DCHECK(!g_display_map[id]);
+  g_display_map[id] = display;
+
+  return id;
 }
 
 // static

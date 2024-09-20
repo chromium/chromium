@@ -29,6 +29,7 @@
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion_handler.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
+#include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -111,6 +112,12 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
                                       kModulesCustomizeIPHAnchorElement);
+
+bool NewTabPageUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile->IsOffTheRecord();
+}
 
 namespace {
 
@@ -658,6 +665,13 @@ void NewTabPageUI::BindInterface(
         pending_page_handler) {
   google_calendar_handler_ = std::make_unique<GoogleCalendarPageHandler>(
       std::move(pending_page_handler), profile_);
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<ntp::calendar::mojom::OutlookCalendarPageHandler>
+        pending_page_handler) {
+  outlook_calendar_handler_ = std::make_unique<OutlookCalendarPageHandler>(
+      std::move(pending_page_handler));
 }
 
 void NewTabPageUI::BindInterface(

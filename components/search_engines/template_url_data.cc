@@ -158,7 +158,8 @@ void TemplateURLData::SetKeyword(std::u16string_view keyword) {
   // keywords to be lower case.
   keyword_ = base::i18n::ToLower(keyword);
 
-  base::TrimWhitespace(keyword_, base::TRIM_ALL, &keyword_);
+  // The omnibox doesn't properly handle search keywords with whitespace.
+  base::RemoveChars(keyword_, base::kWhitespaceUTF16, &keyword_);
 }
 
 void TemplateURLData::SetURL(const std::string& url) {

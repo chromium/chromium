@@ -42,10 +42,11 @@ class IdentityGetAuthTokenError {
     kRemoteConsentPageLoadFailure = 24,
     // kSetAccountsInCookieFailure = 25, // Deprecated
     kInvalidConsentResult = 26,
-    kCanceled = 27,
+    // kCanceled = 27, // Deprecated
     kInteractivityDenied = 28,
     kCannotCreateWindow = 29,
-    kMaxValue = kCannotCreateWindow,
+    kBrowserContextShutDown = 30,
+    kMaxValue = kBrowserContextShutDown,
   };
 
   // Constructs a |State::kMintTokenAuthFailure| error with an

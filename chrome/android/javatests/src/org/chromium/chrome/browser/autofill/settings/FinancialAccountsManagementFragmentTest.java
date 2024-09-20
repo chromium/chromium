@@ -31,7 +31,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSize;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.PaymentInstrument;
@@ -106,8 +106,7 @@ public class FinancialAccountsManagementFragmentTest {
                                     PIX_BANK_ACCOUNT_DISPLAY_ICON_URL,
                                     PIX_BANK_ACCOUNT_DISPLAY_ICON_BITMAP,
                                     CardIconSpecs.create(
-                                            ContextUtils.getApplicationContext(),
-                                            CardIconSize.LARGE));
+                                            ContextUtils.getApplicationContext(), ImageSize.LARGE));
                     // Set the Pix pref to true.
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, true);
                 });

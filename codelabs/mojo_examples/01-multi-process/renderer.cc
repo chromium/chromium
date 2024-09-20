@@ -27,7 +27,7 @@ class ProcessImpl : public codelabs::mojom::Process {
       const std::string&,
       mojo::PendingAssociatedReceiver<codelabs::mojom::GenericInterface>)
       override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void SayHello() override { LOG(INFO) << "Hello!"; }
 

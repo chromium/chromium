@@ -959,6 +959,9 @@ FOO_SCRIPT_SUITE = """\
     'foo_scripts': {
       'foo_test': {
         'script': 'foo.py',
+        'args': ['common-arg'],
+        'precommit_args': ['precommit-arg'],
+        'non_precommit_args': ['non-precommit-arg'],
       },
       'bar_test': {
         'script': 'bar.py',

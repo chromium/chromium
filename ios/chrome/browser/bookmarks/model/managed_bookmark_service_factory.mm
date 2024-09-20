@@ -17,9 +17,9 @@
 
 namespace {
 
-std::string GetManagedBookmarksDomain(ChromeBrowserState* browser_state) {
+std::string GetManagedBookmarksDomain(ProfileIOS* profile) {
   AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+      AuthenticationServiceFactory::GetForProfile(profile);
   if (!auth_service) {
     return std::string();
   }
@@ -38,24 +38,27 @@ std::string GetManagedBookmarksDomain(ChromeBrowserState* browser_state) {
 
 std::unique_ptr<KeyedService> BuildManagedBookmarkModel(
     web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   // base::Unretained is safe because ManagedBookmarkService will
-  // be destroyed before the browser_state it is attached to.
+  // be destroyed before the profile it is attached to.
   return std::make_unique<bookmarks::ManagedBookmarkService>(
-      browser_state->GetPrefs(),
-      base::BindRepeating(&GetManagedBookmarksDomain,
-                          base::Unretained(browser_state)));
+      profile->GetPrefs(), base::BindRepeating(&GetManagedBookmarksDomain,
+                                               base::Unretained(profile)));
 }
 
 }  // namespace
 
 // static
 bookmarks::ManagedBookmarkService*
-ManagedBookmarkServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+ManagedBookmarkServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+bookmarks::ManagedBookmarkService* ManagedBookmarkServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<bookmarks::ManagedBookmarkService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

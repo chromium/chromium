@@ -19,7 +19,7 @@ namespace ip_protection {
 // Manages a list of currently cached proxy hostnames.
 //
 // This class is responsible for checking, fetching, and refreshing the proxy
-// list for IpProtectionConfigCache.
+// list for IpProtectionCore.
 class IpProtectionProxyConfigManager {
  public:
   virtual ~IpProtectionProxyConfigManager() = default;

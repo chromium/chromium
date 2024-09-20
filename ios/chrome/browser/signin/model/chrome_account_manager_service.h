@@ -14,10 +14,11 @@
 #import "base/scoped_observation.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_change_registrar.h"
-#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/pattern_account_restriction.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 
 class PrefService;
 @protocol RefreshAccessTokenError;
@@ -25,7 +26,7 @@ class PrefService;
 
 // Service that provides Chrome identities.
 class ChromeAccountManagerService : public KeyedService,
-                                    public AccountProfileMapper::Observer
+                                    public SystemIdentityManagerObserver
 
 {
  public:
@@ -60,8 +61,7 @@ class ChromeAccountManagerService : public KeyedService,
 
   // Initializes the service.
   // Filter identities according to the profile.
-  explicit ChromeAccountManagerService(PrefService* pref_service,
-                                       std::string_view profile_name);
+  explicit ChromeAccountManagerService(PrefService* pref_service);
   ChromeAccountManagerService(const ChromeAccountManagerService&) = delete;
   ChromeAccountManagerService& operator=(const ChromeAccountManagerService&) =
       delete;
@@ -143,8 +143,6 @@ class ChromeAccountManagerService : public KeyedService,
   ResizedAvatarCache* regular_avatar_cache_;
   // ResizedAvatarCache for IdentityAvatarSize::Large.
   ResizedAvatarCache* large_avatar_cache_;
-
-  const std::string profile_name_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_CHROME_ACCOUNT_MANAGER_SERVICE_H_

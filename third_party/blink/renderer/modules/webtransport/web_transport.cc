@@ -581,13 +581,13 @@ class WebTransport::StreamVendingUnderlyingSource final
                             ExceptionState&) override {
     if (!is_opened_) {
       is_pull_waiting_ = true;
-      return ScriptPromiseUntyped::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
 
     vendor_->RequestStream(WTF::BindOnce(
         &StreamVendingUnderlyingSource::Enqueue, WrapWeakPersistent(this)));
 
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   // Used by WebTransport to error the stream.
@@ -654,16 +654,14 @@ class WebTransport::ReceiveStreamVendor final
     auto* receive_stream = MakeGarbageCollected<ReceiveStream>(
         script_state_, web_transport_, stream_id, std::move(readable));
     auto* isolate = script_state_->GetIsolate();
-    ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                   "ReceiveStream");
     v8::MicrotasksScope microtasks_scope(
         isolate, ToMicrotaskQueue(script_state_),
         v8::MicrotasksScope::kDoNotRunMicrotasks);
-    receive_stream->Init(exception_state);
+    v8::TryCatch try_catch(isolate);
+    receive_stream->Init(PassThroughException(isolate));
 
-    if (exception_state.HadException()) {
+    if (try_catch.HasCaught()) {
       // Abandon the stream.
-      exception_state.ClearException();
       return;
     }
 
@@ -722,15 +720,13 @@ class WebTransport::BidirectionalStreamVendor final
         std::move(incoming_consumer));
 
     auto* isolate = script_state_->GetIsolate();
-    ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                   "BidirectionalStream");
     v8::MicrotasksScope microtasks_scope(
         isolate, ToMicrotaskQueue(script_state_),
         v8::MicrotasksScope::kDoNotRunMicrotasks);
-    bidirectional_stream->Init(exception_state);
-    if (exception_state.HadException()) {
+    v8::TryCatch try_catch(isolate);
+    bidirectional_stream->Init(PassThroughException(isolate));
+    if (try_catch.HasCaught()) {
       // Just throw away the stream.
-      exception_state.ClearException();
       return;
     }
 
@@ -1540,15 +1536,13 @@ void WebTransport::OnCreateSendStreamResponse(
       script_state_, this, stream_id, std::move(producer));
 
   auto* isolate = script_state_->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                 "SendStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state_),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
-  send_stream->Init(exception_state);
-  if (exception_state.HadException()) {
-    resolver->Reject(exception_state.GetException());
-    exception_state.ClearException();
+  v8::TryCatch try_catch(isolate);
+  send_stream->Init(PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
+    resolver->Reject(try_catch.Exception());
     return;
   }
 
@@ -1589,15 +1583,13 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
       script_state_, this, stream_id, std::move(outgoing_producer),
       std::move(incoming_consumer));
 
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                 "BidirectionalStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state_),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
-  bidirectional_stream->Init(exception_state);
-  if (exception_state.HadException()) {
-    resolver->Reject(exception_state.GetException());
-    exception_state.ClearException();
+  v8::TryCatch try_catch(isolate);
+  bidirectional_stream->Init(PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
+    resolver->Reject(try_catch.Exception());
     return;
   }
 

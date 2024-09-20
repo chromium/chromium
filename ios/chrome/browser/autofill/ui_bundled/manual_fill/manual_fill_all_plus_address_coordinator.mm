@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_plus_address_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/plus_address_list_navigator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
@@ -19,6 +20,8 @@
 
 @interface ManualFillAllPlusAddressCoordinator () <
     ManualFillAllPlusAddressViewControllerDelegate,
+    ManualFillPlusAddressMediatorDelegate,
+    PlusAddressListNavigator,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -41,27 +44,31 @@
       initWithSearchController:searchController];
   _plusAddressViewController.delegate = self;
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
   WebStateList* webStateList = self.browser->GetWebStateList();
   CHECK(webStateList->GetActiveWebState());
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
 
   plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForProfile(browserState);
+      PlusAddressServiceFactory::GetForProfile(profile);
   CHECK(plusAddressService);
 
   _plusAddressMediator = [[ManualFillPlusAddressMediator alloc]
       initWithFaviconLoader:faviconLoader
          plusAddressService:plusAddressService
                         URL:URL
-             isOffTheRecord:browserState->IsOffTheRecord()];
+             isOffTheRecord:profile->IsOffTheRecord()];
 
   // Fetch all plus addresses before setting the consumer.
   [_plusAddressMediator fetchAllPlusAddresses];
+  _plusAddressMediator.contentInjector = self.injectionHandler;
+  _plusAddressMediator.delegate = self;
+
   _plusAddressMediator.consumer = _plusAddressViewController;
+  _plusAddressMediator.navigator = self;
 
   _plusAddressViewController.imageDataSource = _plusAddressMediator;
 
@@ -97,12 +104,34 @@
       manualFillAllPlusAddressCoordinatorWantsToBeDismissed:self];
 }
 
+#pragma mark - ManualFillPlusAddressMediatorDelegate
+
+- (void)manualFillPlusAddressMediatorWillInjectContent {
+  [self.manualFillAllPlusAddressCoordinatorDelegate
+      manualFillAllPlusAddressCoordinatorWantsToBeDismissed:self];
+}
+
 #pragma mark - ManualFillAllPlusAddressViewControllerDelegate
 
 - (void)selectPlusAddressViewControllerDidTapDoneButton:
     (ManualFillAllPlusAddressViewController*)selectPlusAddressViewController {
   [self.manualFillAllPlusAddressCoordinatorDelegate
       manualFillAllPlusAddressCoordinatorWantsToBeDismissed:self];
+}
+
+#pragma mark - PlusAddressListNavigator
+
+- (void)openCreatePlusAddressSheet {
+  NOTREACHED_NORETURN();
+}
+
+- (void)openAllPlusAddressList {
+  NOTREACHED_NORETURN();
+}
+
+- (void)openManagePlusAddress {
+  [self.manualFillAllPlusAddressCoordinatorDelegate
+          dismissManualFillAllPlusAddressAndOpenManagePlusAddress];
 }
 
 @end

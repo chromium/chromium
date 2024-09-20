@@ -11,6 +11,7 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/load_policy.h"
@@ -18,6 +19,9 @@
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 
 namespace content {
 class NavigationHandle;
@@ -354,6 +358,11 @@ void FingerprintingProtectionWebContentsHelper::Detach() {
   base::UmaHistogramCounts100(
       "FingerprintingProtection.WebContentsObserver.RefreshCount",
       refresh_count_);
+  ukm::SourceId source_id =
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  ukm::builders::FingerprintingProtectionUsage(source_id)
+      .SetRefreshCount(refresh_count_)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void FingerprintingProtectionWebContentsHelper::AddObserver(

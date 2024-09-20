@@ -203,10 +203,17 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
 // Whether to show a re-auth interstitial instead of the parent approval
 // interstitial.
 bool SupervisedUserNavigationThrottle::ShouldShowReauthInterstitial(
-    const Profile* profile) {
+    const Profile* profile,
+    bool is_main_frame) {
   if (!base::FeatureList::IsEnabled(
           supervised_user::
               kForceSupervisedUserReauthenticationForBlockedSites)) {
+    return false;
+  }
+
+  if (!is_main_frame &&
+      !base::FeatureList::IsEnabled(
+          supervised_user::kAllowSupervisedUserReauthenticationForSubframes)) {
     return false;
   }
 
@@ -220,6 +227,24 @@ bool SupervisedUserNavigationThrottle::ShouldShowReauthInterstitial(
   // later" message).
   return identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+}
+
+SupervisedUserVerificationPage::VerificationPurpose
+GetVerificationPurposeFromFilteringReason(
+    supervised_user::FilteringBehaviorReason reason) {
+  switch (reason) {
+    case supervised_user::FilteringBehaviorReason::DEFAULT:
+      return SupervisedUserVerificationPage::VerificationPurpose::
+          DEFAULT_BLOCKED_SITE;
+    case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
+      return SupervisedUserVerificationPage::VerificationPurpose::
+          SAFE_SITES_BLOCKED_SITE;
+    case supervised_user::FilteringBehaviorReason::MANUAL:
+      return SupervisedUserVerificationPage::VerificationPurpose::
+          MANUAL_BLOCKED_SITE;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 #endif
 
@@ -238,7 +263,7 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
           navigation_handle()->GetWebContents()->GetBrowserContext());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      if (ShouldShowReauthInterstitial(profile)) {
+      if (ShouldShowReauthInterstitial(profile, is_main_frame)) {
         // Show the re-authentication interstitial if the user signed out of the
         // content area, as parent's approval requires authentication. This
         // interstitial is only available on Linux/Mac/Windows as ChromeOS and
@@ -248,8 +273,7 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
                 CANCEL, net::ERR_BLOCKED_BY_CLIENT,
                 supervised_user::CreateReauthenticationInterstitial(
                     *navigation_handle(),
-                    SupervisedUserVerificationPage::VerificationPurpose::
-                        BLOCKED_SITE)));
+                    GetVerificationPurposeFromFilteringReason(reason_))));
         return;
       }
 #endif

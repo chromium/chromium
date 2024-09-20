@@ -16,13 +16,13 @@
 #include "net/http/alternative_service.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_job.h"
+#include "net/http/http_stream_pool_switching_info.h"
 #include "net/http/http_stream_request.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_config.h"
 
 namespace net {
 
-class HttpStreamKey;
 class NetLogWithSource;
 class SSLCertRequestInfo;
 struct NetErrorDetails;
@@ -41,13 +41,11 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   // Creates an HttpStreamRequest and starts Job(s) to handle it.
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
-      const HttpStreamKey& stream_key,
+      HttpStreamPoolSwitchingInfo switching_info,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
       bool enable_alternative_services,
-      AlternativeServiceInfo alternative_service_info,
-      quic::ParsedQuicVersion quic_version,
       const NetLogWithSource& net_log);
 
   // HttpStreamPool::Job::Delegate implementation:

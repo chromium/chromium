@@ -868,12 +868,14 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
   // error is received.
   void ExpectPrefetchFailedBeforeResponseReceived(
       const base::HistogramTester& histogram_tester,
-      PrefetchStatus expected_prefetch_status) {
+      PrefetchStatus expected_prefetch_status,
+      bool is_accurate = false) {
     ExpectPrefetchNoNetErrorOrResponseReceived(histogram_tester,
                                                /*is_eligible=*/true);
     ExpectCorrectUkmLogs(
         {.outcome = PreloadingTriggeringOutcome::kFailure,
-         .failure = ToPreloadingFailureReason(expected_prefetch_status)});
+         .failure = ToPreloadingFailureReason(expected_prefetch_status),
+         .is_accurate = is_accurate});
   }
 
   // Prefetch was started but failed due to a network error, before the final
@@ -3110,6 +3112,10 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(IneligibleRedirectCookies)) {
                            {.use_prefetch_proxy = true});
   VerifyFollowRedirectParams(0);
 
+  NavigateInitiatedByRenderer(GURL("https://example.com"));
+  base::test::TestFuture<PrefetchContainer::Reader> future;
+  GetPrefetchToServe(future, GURL("https://example.com"), MainDocumentToken());
+
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
   redirect_info.new_referrer_policy =
@@ -3126,6 +3132,9 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(IneligibleRedirectCookies)) {
   // requires mojo, the eligibility check will not complete immediately.
   VerifyFollowRedirectParams(0);
 
+  // Falls back to normal navigation.
+  EXPECT_FALSE(future.Take());
+
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Redirect.Result",
                                       PrefetchRedirectResult::kFailedIneligible,
                                       1);
@@ -3134,7 +3143,8 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(IneligibleRedirectCookies)) {
       PrefetchRedirectNetworkContextTransition::kIsolatedToIsolated, 1);
 
   ExpectPrefetchFailedBeforeResponseReceived(
-      histogram_tester, PrefetchStatus::kPrefetchFailedIneligibleRedirect);
+      histogram_tester, PrefetchStatus::kPrefetchFailedIneligibleRedirect,
+      /*is_accurate=*/true);
 
   NavigateInitiatedByRenderer(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));

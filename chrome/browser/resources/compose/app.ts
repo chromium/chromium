@@ -11,7 +11,7 @@ import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/md_select.css.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 
@@ -68,7 +68,6 @@ export interface ComposeAppElement {
     acceptButton: CrButtonElement,
     loading: HTMLElement,
     undoButton: CrButtonElement,
-    undoButtonRefined: CrButtonElement,
     redoButton: CrButtonElement,
     refreshButton: HTMLElement,
     resultContainer: HTMLElement,
@@ -126,11 +125,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       enableAnimations: {
         type: Boolean,
         value: loadTimeData.getBoolean('enableAnimations'),
-        reflectToAttribute: true,
-      },
-      enableUiRefinements: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('enableRefinedUi'),
         reflectToAttribute: true,
       },
       feedbackState_: {
@@ -304,7 +298,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   enableAnimations: boolean;
-  enableUiRefinements: boolean;
 
   private animator_: ComposeAppAnimator;
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
@@ -349,7 +342,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     ColorChangeUpdater.forDocument().start();
     this.animator_ = new ComposeAppAnimator(
         this, loadTimeData.getBoolean('enableAnimations'));
-    this.enableUiRefinements = loadTimeData.getBoolean('enableRefinedUi');
     this.getInitialState_();
     this.router_.responseReceived.addListener((response: ComposeResponse) => {
       this.composeResponseReceived_(response);
@@ -363,7 +355,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   // Overridden from CrScrollObserverMixin in order to change the scrolling
   // container based on the UI Refinements flag.
   override getContainer(): HTMLElement {
-    return this.enableUiRefinements ? this.$.resultTextContainer : this.$.body;
+    return this.$.resultTextContainer;
   }
 
   private getResponseText_(): TextInput {
@@ -774,11 +766,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.$.modifierMenu.focus({ preventScroll: true });
         break;
       case TriggerElement.UNDO:
-        if (this.enableUiRefinements) {
-          this.$.undoButtonRefined.focus();
-        } else {
-          this.$.undoButton.focus();
-        }
+        this.$.undoButton.focus();
         break;
       case TriggerElement.REDO:
         this.$.redoButton.focus();
@@ -862,10 +850,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private showOnDeviceDogfoodFooter_(): boolean {
     return Boolean(this.response_?.onDeviceEvaluationUsed) &&
         loadTimeData.getBoolean('enableOnDeviceDogfoodFooter');
-  }
-
-  private undoButtonIcon_(): string {
-    return this.enableUiRefinements ? 'compose:undo' : 'compose:mvpUndo';
   }
 
   private acceptButtonText_(): string {
@@ -958,10 +942,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         return;
       }
       this.updateWithNewState_(state);
-      // If UI Refinements is enabled, then focus is moved from the undo button
-      // to the redo button if undo is disabled in the new state. Otherwise, the
-      // undo button always keeps focus.
-      if (this.undoEnabled_ || !this.enableUiRefinements) {
+      // Focus is moved from the undo button to the redo button if undo is
+      // disabled in the new state. Otherwise, the undo button always keeps
+      // focus.
+      if (this.undoEnabled_) {
         this.lastTriggerElement_ = TriggerElement.UNDO;
       } else {
         this.lastTriggerElement_ = TriggerElement.REDO;

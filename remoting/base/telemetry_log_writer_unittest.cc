@@ -131,6 +131,7 @@ class TelemetryLogWriterTest : public testing::Test {
   TelemetryLogWriter log_writer_{
       std::make_unique<FakeOAuthTokenGetter>(OAuthTokenGetter::SUCCESS,
                                              "dummy",
+                                             "dummy",
                                              "dummy")};
 
  private:

@@ -11,16 +11,17 @@ architected between the browser and ChromeOS code.
 
 Originally, ChromeOS was just the Linux Chrome browser with a few extra
 additions for UI system management. As such, and to keep the system requirements
-very low, the entire ChromeOS UI was built into the Chrome “browser” process.
+very low, the entire ChromeOS UI was built into the Chrome "browser" process.
 Over time, ChromeOS has gotten substantially more sophisticated and capable.
 Many important services run in separate processes, services, or VMs, but most of
 the UI still runs in the main browser process.
 
-The Lacros project aims to separate the Linux processes and the software
-releases between the browser and the OS shell. But Lacros does not by itself
-move any code: Lacros only converts what would otherwise be abstract C++
-interfaces and internal APIs to IPC calls. This document deals with the code
-layout and abstractions which is independent from Lacros.
+The Lacros project aimed to separate the Linux processes and the software
+releases between the browser and the OS shell by shipping the Chrome web browser
+as a standalone app which could be updated independently of ChromeOS. Lacros
+communicated between the Chrome browser and ChromeOS via an IPC interface called
+crosapi. However, the Lacros project has been deprioritized and relevant code is
+in the process of being deprecated and deleted.
 
 ### Definitions
 
@@ -31,19 +32,19 @@ layout and abstractions which is independent from Lacros.
   system tray and notifications, the window manager, the system compositor, and
   the login UI.
 
-- **Lacros:** The ChromeOS-specific browser that does not include Ash. This is
-  similar to the Linux browser but with ChromeOS-specific features and
-  integrations.
+- **Lacros (deprecate, being deleted):** The ChromeOS-specific browser that does
+  not include Ash. This is similar to the Linux browser but with ChromeOS-
+  specific features and integrations.
 
-- **Ash Browser:** The “classic” (non-Lacros) ChromeOS software that includes
+- **Ash Browser:** The "classic" (non-Lacros) ChromeOS software that includes
   Ash and the browser in one process.
 
 - **Browser code:** Code required to build a browser. This includes
   platform-specific integrations with the host OS rather than just the
   cross-platform parts. For ChromeOS, this includes many important ChromeOS
-  browser features but does not include anything considered “Ash.”
+  browser features but does not include anything considered "Ash."
 
-- **OS code:** Any ChromeOS-specific code that isn’t “browser code.” This is
+- **OS code:** Any ChromeOS-specific code that isn’t "browser code." This is
   mostly Ash when referring to code in the Chromium repository.
 
 - **Shared code:** Code used in both browser and OS code including //base,
@@ -54,10 +55,10 @@ layout and abstractions which is independent from Lacros.
 _This section describes the long-term architectural goal rather than the current
 state or the current requirements. See below for what to do for current work._
 
-The desired end-state is that “browser code” (including ChromeOS-specific
-browser features) and “OS code” have a clear separation. Communication between
+The desired end-state is that "browser code" (including ChromeOS-specific
+browser features) and "OS code" have a clear separation. Communication between
 these layers should be done using well-defined APIs. Function calls in the code
-happen “down” the stack from the browser to the OS, and any calls “up” from the
+happen "down" the stack from the browser to the OS, and any calls "up" from the
 OS to the browser happen via events, observers, and callbacks configured by the
 browser layers.
 
@@ -67,20 +68,19 @@ appropriate for such sharing.
 
 In this desired state:
 
-- The //chrome directory is for the implementation of the Chrome browser,
-  including Lacros. It should not have any OS code in it (for example,
-  //chrome/browser/ash is undesirable) and OS code should not call directly into
-  //chrome code outside of the above-mentioned callbacks.
+- The //chrome directory is for the implementation of the Chrome browser. It
+  should not have any OS code in it (for example, //chrome/browser/ash is
+  undesirable) and OS code should not call directly into //chrome code outside
+  of the above-mentioned callbacks.
 
 - The //content directory is the API for building a web browser. Even though Ash
   does use web technology for rendering many things, it is not itself a web
   browser and there should be no OS code in this directory or calling directly
   into it.
 
-- Browser code should only call into OS code through well-defined APIs
-  (“crosapi”). In addition to addressing the practical cross-process
-  requirements of Lacros, this provides a conceptual separation between browser
-  and OS concerns.
+- Browser code should only call into OS code through well-defined APIs (e.g.,
+  extension APIs). This provides a conceptual separation between browser and OS
+  concerns.
 
 Not all parts of the product fit neatly into the browser and OS layers, with
 extensions and apps being big examples. How web page embedding should be done
@@ -91,7 +91,7 @@ component.
 
 ## Current policies
 
-New features should be designed to adhere to the “desired state” as closely as
+New features should be designed to adhere to the "desire" state" as closely as
 practical. However, it is currently not possible to implement all functionality
 in Ash according to that state:
 
@@ -111,13 +111,13 @@ using the following guidance:
   - Guidance on where this code should exist:
     - **Ash-only code which is not system UI:** //chromeos/ash/components
     - **Ash-only system UI code:** //ash
-    - **Lacros-only code:** Match other platform code for that component
-      (contact chrome-cros@google.com if you are unsure)
     - **Shared by both Ash and Lacros:**
       - *UI code:* //chromeos/ui
       - *Non-UI code:* //chromeos/components
-    - **Shared between ChromeOS (i.e., ash-chrome and lacros-chrome) and other
-      platforms:** //components
+      - **NOTE:** Lacros is in the process of being deprecated. Do not add any
+        new Lacros code.
+    - **Shared between ChromeOS (i.e., ash-chrome) and other platforms:**
+      //components
 
 - For code which must depend on //chrome, push logic down lower in the
   dependency graph as much as possible, and only implement a thin wrapper in
@@ -152,12 +152,6 @@ using the following guidance:
   possible when reviewing the code which adds this new DEPS file. See
   [b/332805865](http://b/332805865) for more details.
 
-- Note: Any features related specifically to the Ash browser (in Lacros-disabled
-  mode) should stay in //chrome since this code will be deleted after Lacros is
-  launched. For example, [`BrowserViewAsh`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/frame/browser_view_ash.h;drc=1f59e9522facce081aea6b0eb7ab8b122e60428b) implements UI
-  specific to the ash-chrome browser, and we should not attempt to push this
-  lower in the dependency graph.
-
 If you need advice to help you make a decision regarding your design, please
 reach out to ash-chrome-refactor@google.com for feedback.
 
@@ -166,13 +160,10 @@ reach out to ash-chrome-refactor@google.com for feedback.
 The current policy aims to stop accumulating more undesirable OS/browser
 dependencies while acknowledging there is a large amount of legacy code that
 does not follow the guidelines. The team is moving toward the desired state
-using a 2-pronged approach:
+using the following approach outlined in go/ash-chrome-refactor:
 
-1) Eliminating OS ⇔ Browser calls: the Lacros project has been creating a clear
-   OS API (“crosapi”) to communicate between the Lacros browser and Ash.
-
-2) Removing Ash code from //chrome: The go/ash-chrome-refactor project seeks to
-   refactor Ash code in //chrome and decouple it from browser code as much as
-   possible. This project, which will introduce a C++ based glue layer, has a
-   long time horizon. Although its long-term goals are clear, the project is
-   only on its early milestones at this stage.
+- Ensure that all Ash code in //chrome is defined using granular BUILD.gn files.
+  Each directory should define its own build targets and list dependencies
+  explicitly.
+  - See https://crbug.com/335314438, https://crbug.com/351889236.
+- ...more to come as the Ash //chrome Refactor makes progress.

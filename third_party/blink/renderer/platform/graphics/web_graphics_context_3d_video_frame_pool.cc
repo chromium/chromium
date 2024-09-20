@@ -217,6 +217,7 @@ void CopyToGpuMemoryBuffer(
   CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
   CHECK_EQ(dst_frame->shared_image_format_type(),
            media::SharedImageFormatType::kSharedImageFormat);
+  CHECK(dst_frame->HasTextures());
 
   DCHECK(ctx_wrapper);
   auto* context_provider = ctx_wrapper->ContextProvider();
@@ -250,10 +251,8 @@ void CopyToGpuMemoryBuffer(
         base::BindOnce(std::move(copy_to_gmb_done_lambda),
                        std::move(callback)));
   } else {
-    for (size_t plane = 0; plane < dst_frame->NumTextures(); ++plane) {
-      const auto& mailbox = dst_frame->mailbox_holder(plane).mailbox;
-      sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
-    }
+    const auto& mailbox = dst_frame->mailbox_holder(/*plane=*/0).mailbox;
+    sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
   }
 
   // Synchronize RasterInterface with SharedImageInterface.
@@ -269,9 +268,7 @@ void CopyToGpuMemoryBuffer(
   gpu::SyncToken completion_sync_token;
   ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
   media::SimpleSyncTokenClient simple_client(completion_sync_token);
-  for (size_t plane = 0; plane < dst_frame->NumTextures(); ++plane) {
-    dst_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
-  }
+  dst_frame->UpdateMailboxHolderSyncToken(&simple_client);
   dst_frame->UpdateReleaseSyncToken(&simple_client);
 
   // Do not use a query to track copy completion on Windows when using the new
@@ -321,6 +318,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   if (!dst_frame) {
     return false;
   }
+  CHECK(dst_frame->HasTextures());
 
   if (!media::CopyRGBATextureToVideoFrame(
           raster_context_provider, src_format, src_size, src_color_space,
@@ -347,9 +345,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
             // we've synchronized with the GPU.
             gpu::SyncToken empty_sync_token;
             media::SimpleSyncTokenClient simple_client(empty_sync_token);
-            for (size_t plane = 0; plane < frame->NumTextures(); ++plane) {
-              frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
-            }
+            frame->UpdateMailboxHolderSyncToken(&simple_client);
             frame->UpdateReleaseSyncToken(&simple_client);
             std::move(callback).Run(std::move(frame));
           },

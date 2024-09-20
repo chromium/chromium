@@ -20,6 +20,7 @@ export interface ThemeState {
   geolocationPermissionEnabled: boolean|null;
   sunriseTime: string|null;
   sunsetTime: string|null;
+  geolocationIsUserModifiable: boolean|null;
 }
 
 export function emptyState(): ThemeState {
@@ -32,5 +33,6 @@ export function emptyState(): ThemeState {
     geolocationPermissionEnabled: null,
     sunriseTime: null,
     sunsetTime: null,
+    geolocationIsUserModifiable: null,
   };
 }

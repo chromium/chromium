@@ -7,23 +7,33 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_web_provider.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/web/public/web_state.h"
 
 @protocol ApplicationCommands;
+@class ContextMenuConfigurationProvider;
 @protocol LensResultPageConsumer;
 @protocol LensResultPageWebStateDelegate;
+@protocol SnackbarCommands;
+class WebStateList;
 
 /// Mediator that handles lens result page operations.
 @interface LensResultPageMediator
-    : NSObject <LensOverlayResultConsumer, LensWebProvider>
+    : NSObject <ContextMenuConfigurationProviderDelegate,
+                LensOverlayResultConsumer,
+                LensResultPageMutator,
+                LensWebProvider>
 
 @property(nonatomic, weak) id<LensResultPageConsumer> consumer;
 
 /// Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+/// Snackbar commands handler.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
 
 /// Container for the web view.
 @property(nonatomic, weak) UIView* webViewContainer;
@@ -35,9 +45,14 @@
 @property(nonatomic, weak) id<LensOverlayBottomSheetPresentationDelegate>
     presentationDelegate;
 
+/// WebState context menu configuration provider.
+@property(nonatomic, weak)
+    ContextMenuConfigurationProvider* contextMenuProvider;
+
 - (instancetype)
      initWithWebStateParams:(const web::WebState::CreateParams&)params
     browserWebStateDelegate:(web::WebStateDelegate*)browserWebStateDelegate
+               webStateList:(WebStateList*)webStateList
                 isIncognito:(BOOL)isIncognito NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -94,6 +94,12 @@ BASE_FEATURE(kV8ExperimentalRegexpEngine,
              "V8ExperimentalRegexpEngine",
              kFeatureDefaultStateControlledByV8);
 
+// Enable accounting for external memory limits as part of global limits in v8
+// Heap.
+BASE_FEATURE(kV8ExternalMemoryAccountedInGlobalLimit,
+             "V8ExternalMemoryAccountedInGlobalLimit",
+             kFeatureDefaultStateControlledByV8);
+
 // Enables the Turbofan compiler.
 BASE_FEATURE(kV8Turbofan, ("V8Turbofan"), kFeatureDefaultStateControlledByV8);
 
@@ -130,6 +136,10 @@ BASE_FEATURE(kV8ScavengerHigherCapacity,
 
 const base::FeatureParam<int> kV8ScavengerMaxCapacity{
     &kV8ScavengerHigherCapacity, "V8ScavengerMaxCapacity", 16};
+
+BASE_FEATURE(kV8SeparateGCPhases,
+             ("V8SeparateGCPhases"),
+             kFeatureDefaultStateControlledByV8);
 
 // Enables Sparkplug compiler. Note that this only sets the V8 flag when
 // manually overridden; otherwise it defers to whatever the V8 default is.
@@ -330,11 +340,6 @@ BASE_FEATURE(kWebAssemblyInliningCallIndirect,
 // Enable WebAssembly code flushing.
 BASE_FEATURE(kWebAssemblyLiftoffCodeFlushing,
              ("WebAssemblyLiftoffCodeFlushing"),
-             kFeatureDefaultStateControlledByV8);
-
-// Enable the generic wasm-to-js wrapper.
-BASE_FEATURE(kWebAssemblyGenericWrapper,
-             ("WebAssemblyGenericWrapper"),
              kFeatureDefaultStateControlledByV8);
 
 // Enable support for multiple memories according to the multi-memory proposal:

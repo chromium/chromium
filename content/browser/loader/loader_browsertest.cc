@@ -88,8 +88,9 @@ class LoaderBrowserTest : public ContentBrowserTest,
     ShellAddedObserver new_shell_observer;
 
     // Create dynamic popup.
-    if (!ExecJs(shell(), "OpenPopup();"))
+    if (!ExecJs(shell(), "OpenPopup();")) {
       return false;
+    }
 
     Shell* new_shell = new_shell_observer.GetShell();
     *title = new_shell->web_contents()->GetTitle();
@@ -274,8 +275,9 @@ std::unique_ptr<net::test_server::HttpResponse> CancelOnRequest(
     int child_id,
     base::RepeatingClosure crash_network_service_callback,
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != relative_url)
+  if (request.relative_url != relative_url) {
     return nullptr;
+  }
 
   GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
                                       crash_network_service_callback);
@@ -296,8 +298,9 @@ std::unique_ptr<net::test_server::HttpResponse> CancelOnRequest(
 #endif
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, MAYBE_SyncXMLHttpRequest_Cancelled) {
   // If network service is running in-process, we can't simulate a crash.
-  if (IsInProcessNetworkService())
+  if (IsInProcessNetworkService()) {
     return;
+  }
 
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &CancelOnRequest, "/hung",
@@ -727,8 +730,9 @@ class RequestDataBrowserTest : public ContentBrowserTest {
       base::RunLoop run_loop;
       {
         base::AutoLock auto_lock(requests_lock_);
-        if (requests_.size() == count)
+        if (requests_.size() == count) {
           return;
+        }
         requests_closure_ = run_loop.QuitClosure();
       }
       run_loop.Run();
@@ -757,8 +761,9 @@ class RequestDataBrowserTest : public ContentBrowserTest {
   void RequestCreated(RequestData data) {
     base::AutoLock auto_lock(requests_lock_);
     requests_.push_back(data);
-    if (requests_closure_)
+    if (requests_closure_) {
       std::move(requests_closure_).Run();
+    }
   }
 
   base::Lock requests_lock_;
@@ -1106,8 +1111,9 @@ class URLModifyingThrottle : public blink::URLLoaderThrottle {
 
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override {
-    if (!modify_start_)
+    if (!modify_start_) {
       return;
+    }
 
     GURL::Replacements replacements;
     replacements.SetQueryStr("foo=bar");
@@ -1123,15 +1129,17 @@ class URLModifyingThrottle : public blink::URLLoaderThrottle {
       std::vector<std::string>* to_be_removed_request_headers,
       net::HttpRequestHeaders* modified_request_headers,
       net::HttpRequestHeaders* modified_cors_exempt_request_headers) override {
-    if (!modify_redirect_)
+    if (!modify_redirect_) {
       return;
+    }
 
     modified_request_headers->SetHeader("Foo", "BarRedirect");
     modified_cors_exempt_request_headers->SetHeader("ExemptFoo",
                                                     "ExemptBarRedirect");
 
-    if (modified_redirect_url_)
+    if (modified_redirect_url_) {
       return;  // Only need to do this once.
+    }
 
     modified_redirect_url_ = true;
     GURL::Replacements replacements;

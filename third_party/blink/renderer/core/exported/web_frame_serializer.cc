@@ -91,10 +91,7 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
   TRACE_EVENT_BEGIN0("page-serialization",
                      "WebFrameSerializer::generateMHTMLParts serializing");
   Deque<SerializedResource> resources;
-  {
-    FrameSerializer serializer(resources, web_delegate);
-    serializer.SerializeFrame(*frame);
-  }
+  FrameSerializer::SerializeFrame(resources, *web_delegate, *frame);
 
   TRACE_EVENT_END1("page-serialization",
                    "WebFrameSerializer::generateMHTMLParts serializing",

@@ -42,6 +42,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -1373,7 +1374,7 @@ TEST_F(WindowStateTest,
 
   // Ensure a freeform window gets freeform again after it enters PIP via
   // occulusion, gets minimized, and unminimized.
-  ::wm::SetWindowState(window.get(), ui::SHOW_STATE_NORMAL);
+  ::wm::SetWindowState(window.get(), ui::mojom::WindowShowState::kNormal);
 
   window_state->OnWMEvent(&enter_pip);
   EXPECT_TRUE(window_state->IsPip());
@@ -1411,7 +1412,7 @@ TEST_F(WindowStateTest, RestoreStateAfterEnterPipViaMinimizeAndDismissingPip) {
 
   // Ensure a freeform window gets freeform again after it enters PIP via
   // minimize, gets minimized, and unminimized.
-  ::wm::SetWindowState(window.get(), ui::SHOW_STATE_NORMAL);
+  ::wm::SetWindowState(window.get(), ui::mojom::WindowShowState::kNormal);
 
   window_state->Minimize();
   EXPECT_TRUE(window_state->IsMinimized());

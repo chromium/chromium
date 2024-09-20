@@ -72,7 +72,7 @@ SVGStringListTearOff* SVGStaticStringList::TearOff() {
 }
 
 SVGParsingError SVGStaticStringList::AttributeChanged(const String& value) {
-  ClearBaseValueNeedsSynchronization();
+  SetContentAttributeState(value.IsNull() ? kNotSet : kHasValue);
   return value_->SetValueAsString(value);
 }
 

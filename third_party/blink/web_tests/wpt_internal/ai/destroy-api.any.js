@@ -25,4 +25,11 @@ promise_test(async t => {
     t, "InvalidStateError", session.prompt("What is 2+3?"),
     "The model execution session has been destroyed."
   );
+
+  // After destroying the session, the properties should be still accessible.
+  assert_true(typeof session.maxTokens === "number");
+  assert_true(typeof session.tokensSoFar === "number");
+  assert_true(typeof session.tokensLeft === "number");
+  assert_true(typeof session.temperature === "number");
+  assert_true(typeof session.topK === "number");
 });

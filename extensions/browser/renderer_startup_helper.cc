@@ -77,6 +77,8 @@ std::optional<base::UnguessableToken> GetActivationTokenForWorkerBasedExtension(
     if (IncognitoInfo::IsSplitMode(&extension)) {
       // Split mode extensions will have a separate activation token.
       CHECK(activation_token.has_value());
+      // TODO(crbug.com/357889496): Add a test that confirms that split mode
+      // tokens are different across the OnTR and OffTR extension processes.
     } else if (IncognitoInfo::IsSpanningMode(&extension)) {
       // Spanning mode extensions will not have a separate activation token.
       CHECK(!activation_token.has_value());
@@ -168,8 +170,9 @@ void RendererStartupHelper::RenderProcessHostDestroyed(
 void RendererStartupHelper::InitializeProcess(
     content::RenderProcessHost* process) {
   ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
-  if (!client->IsSameContext(browser_context_, process->GetBrowserContext()))
+  if (!client->IsSameContext(browser_context_, process->GetBrowserContext())) {
     return;
+  }
 
   mojom::Renderer* renderer =
       process_mojo_map_.emplace(process, BindNewRendererRemote(process))
@@ -180,8 +183,9 @@ void RendererStartupHelper::InitializeProcess(
       client->IsActivityLoggingEnabled(process->GetBrowserContext());
   // We only send the ActivityLoggingEnabled message if it is enabled; otherwise
   // the default (not enabled) is correct.
-  if (activity_logging_enabled)
+  if (activity_logging_enabled) {
     renderer->SetActivityLoggingEnabled(activity_logging_enabled);
+  }
 
   // extensions need to know the developer mode value for api restrictions.
   renderer->SetDeveloperMode(
@@ -235,8 +239,9 @@ void RendererStartupHelper::InitializeProcess(
     DCHECK(base::Contains(extension_process_map_, ext->id()));
     DCHECK(!base::Contains(extension_process_map_[ext->id()], process));
 
-    if (!util::IsExtensionVisibleToContext(*ext, renderer_context))
+    if (!util::IsExtensionVisibleToContext(*ext, renderer_context)) {
       continue;
+    }
 
     // TODO(kalman): Only include tab specific permissions for extension
     // processes, no other process needs it, so it's mildly wasteful.
@@ -339,8 +344,9 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
 
   // util::IsExtensionVisibleToContext() would filter out themes, but we choose
   // to return early for performance reasons.
-  if (extension.is_theme())
+  if (extension.is_theme()) {
     return;
+  }
 
   for (auto& process_entry : process_mojo_map_) {
     content::RenderProcessHost* process = process_entry.first;
@@ -354,11 +360,12 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
     // first batch of messages.
     std::vector<mojom::ExtensionLoadedParamsPtr> params;
     params.emplace_back(CreateExtensionLoadedParams(
-        extension, false /* no tab permissions */, browser_context_));
-
+        extension, /*include_tab_permissions=*/false,
+        process->GetBrowserContext()));
     mojom::Renderer* renderer = GetRenderer(process);
-    if (renderer)
+    if (renderer) {
       renderer->LoadExtensions(std::move(params));
+    }
 
     loaded_process_set.insert(process);
   }
@@ -371,8 +378,9 @@ void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
       loaded_process_set = extension_process_map_[extension.id()];
   for (content::RenderProcessHost* process : loaded_process_set) {
     mojom::Renderer* renderer = GetRenderer(process);
-    if (renderer)
+    if (renderer) {
       renderer->UnloadExtension(extension.id());
+    }
   }
 
   // Resets registered origin access lists in the BrowserContext asynchronously.
@@ -390,8 +398,9 @@ void RendererStartupHelper::OnDeveloperModeChanged(bool in_developer_mode) {
   for (auto& process_entry : process_mojo_map_) {
     content::RenderProcessHost* process = process_entry.first;
     mojom::Renderer* renderer = GetRenderer(process);
-    if (renderer)
+    if (renderer) {
       renderer->SetDeveloperMode(in_developer_mode);
+    }
   }
 }
 
@@ -450,8 +459,9 @@ RendererStartupHelper::BindNewRendererRemote(
 mojom::Renderer* RendererStartupHelper::GetRenderer(
     content::RenderProcessHost* process) {
   auto it = process_mojo_map_.find(process);
-  if (it == process_mojo_map_.end())
+  if (it == process_mojo_map_.end()) {
     return nullptr;
+  }
   return it->second.get();
 }
 

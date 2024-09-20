@@ -16,6 +16,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
+#include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "ui/gfx/overlay_priority_hint.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -110,10 +111,16 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     return std::make_unique<OverlayProcessorStub>();
   }
 
+  DCHECK(display_controller);
+  DCHECK(display_controller->skia_dependency());
   return std::make_unique<OverlayProcessorWin>(
       capabilities.dc_support_level, debug_settings,
       std::make_unique<DCLayerOverlayProcessor>(
-          capabilities.allowed_yuv_overlay_count));
+          capabilities.allowed_yuv_overlay_count,
+          display_controller->skia_dependency()
+              ->GetGpuDriverBugWorkarounds()
+              .disable_video_overlay_if_moving));
+
 #elif BUILDFLAG(IS_OZONE)
 #if !BUILDFLAG(IS_CASTOS)
   // In tests and Ozone/X11, we do not expect surfaceless surface support.

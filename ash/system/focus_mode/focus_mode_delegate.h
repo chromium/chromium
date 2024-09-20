@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -24,7 +25,15 @@ class ASH_EXPORT FocusModeDelegate {
 
   // Virtual function that is implemented in chrome to create the client.
   virtual std::unique_ptr<youtube_music::YouTubeMusicClient>
-  CreateYouTubeMusicClient() = 0;
+  CreateYouTubeMusicClient(const AccountId& account_id,
+                           const std::string& device_id) = 0;
+
+  // Returns the application locale from the browser process.
+  virtual const std::string& GetLocale() = 0;
+
+  // True if the active user is considered a minor (e.g. under the age of 18)
+  // using the manta service account capability as the signal.
+  virtual bool IsMinorUser() = 0;
 };
 
 }  // namespace ash

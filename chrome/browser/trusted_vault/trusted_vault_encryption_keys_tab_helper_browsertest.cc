@@ -920,6 +920,51 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
       1 /*Incognito*/, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
+                       ShouldNotSetKeysIfCallingFrameIsDeleted_364338802) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/iframe.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+
+  const GURL frame_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "test", frame_url));
+  content::RenderFrameHost* child_frame =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+
+  // EncryptionKeysApi is created for the child frame as the origin is allowed.
+  ASSERT_TRUE(HasEncryptionKeysApi(child_frame));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  content::RenderFrameDeletedObserver frame_deleted_observer(child_frame);
+
+  // Ensure that deleting the calling frame in the middle of the request doesn't
+  // crash. Keys will not be set successfully.
+  constexpr std::string_view script = R"(
+      var childFrame = document.querySelector("iframe");
+      let trustedVaultKey = new Object();
+      childFrame.contentWindow.Object.defineProperty(
+          trustedVaultKey, "key", { get: () => {
+              document.body.remove(childFrame);
+              return new ArrayBuffer(1);
+      }});
+      trustedVaultKey.key = new ArrayBuffer(1);
+      trustedVaultKey.epoch = 1;
+      childFrame.contentWindow.chrome.setClientEncryptionKeys(
+          () => { console.log("test:OK") },
+          "fake_gaia_id",
+          new Map([['chromesync', [trustedVaultKey]]]));
+    )";
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), script));
+  EXPECT_TRUE(frame_deleted_observer.WaitUntilDeleted());
+  EXPECT_EQ(console_observer.messages().size(), 0u);
+  EXPECT_THAT(FetchTrustedVaultKeysForProfile(
+                  browser()->profile(),
+                  trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
+              IsEmpty());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Tests that chrome.addTrustedSyncEncryptionRecoveryMethod() works in the main

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -327,7 +328,7 @@ TEST(HTMLDocumentParserFastpathTest, DomParserUsesFastPath) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  parser->parseFromString("<strong>0</strong> items left", "text/html");
+  parser->parseFromString("<strong>0</strong> items left", keywords::kTextHtml);
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
 }
 
@@ -336,7 +337,8 @@ TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingWhitespace) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString("\n   <div></div>", "text/html");
+  Document* document =
+      parser->parseFromString("\n   <div></div>", keywords::kTextHtml);
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   EXPECT_EQ("<body><div></div></body>", CreateMarkup(document->body()));
   auto* first_child = document->body()->firstChild();
@@ -349,7 +351,7 @@ TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingAndTrailingWhitespace) {
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
   Document* document =
-      parser->parseFromString("\n   x<div></div>y ", "text/html");
+      parser->parseFromString("\n   x<div></div>y ", keywords::kTextHtml);
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   EXPECT_EQ("<body>x<div></div>y </body>", CreateMarkup(document->body()));
   auto* first_child = document->body()->firstChild();
@@ -361,8 +363,8 @@ TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingAndTrailingWhitespace2) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document =
-      parser->parseFromString("\n   x \n  <div></div>y \n   ", "text/html");
+  Document* document = parser->parseFromString("\n   x \n  <div></div>y \n   ",
+                                               keywords::kTextHtml);
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   EXPECT_EQ("<body>x \n  <div></div>y \n   </body>",
             CreateMarkup(document->body()));

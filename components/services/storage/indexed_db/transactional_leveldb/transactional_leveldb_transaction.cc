@@ -20,7 +20,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 
-namespace content {
+namespace content::indexed_db {
 
 TransactionalLevelDBTransaction::TransactionalLevelDBTransaction(
     TransactionalLevelDBDatabase* db,
@@ -199,4 +199,4 @@ leveldb::Status LevelDBDirectTransaction::Commit() {
   return s;
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

@@ -42,6 +42,7 @@
 #include "net/quic/quic_connection_logger.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http3_logger.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/spdy/http2_priority_dependencies.h"
@@ -604,7 +605,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       TransportSecurityState* transport_security_state,
       SSLConfigService* ssl_config_service,
       std::unique_ptr<QuicServerInfo> server_info,
-      const QuicSessionKey& session_key,
+      QuicSessionAliasKey session_alias_key,
       bool require_confirmation,
       bool migrate_sesion_early_v2,
       bool migrate_session_on_network_change_v2,
@@ -828,6 +829,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   }
 
   const QuicSessionKey& quic_session_key() const { return session_key_; }
+
+  const QuicSessionAliasKey& session_alias_key() const {
+    return session_alias_key_;
+  }
 
   // Attempts to migrate session when |writer| encounters a write error.
   // If |writer| is no longer actively used, abort migration.
@@ -1067,6 +1072,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       StreamRequest* stream_request);
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
+  const QuicSessionAliasKey session_alias_key_;
   QuicSessionKey session_key_;
   bool require_confirmation_;
   bool migrate_session_early_v2_;

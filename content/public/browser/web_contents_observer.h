@@ -31,6 +31,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -41,6 +42,7 @@ class GURL;
 
 namespace blink {
 namespace mojom {
+class ViewportIntersectionState;
 enum class ViewportFit;
 }  // namespace mojom
 }  // namespace blink
@@ -115,6 +117,18 @@ struct TrustTokenAccessDetails;
 // returned by GetRenderViewHost().
 class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
  public:
+  // Device connection types that can be used by a WebContents.
+  enum class DeviceConnectionType {
+    // WebUSB
+    kUSB,
+    // Web Bluetooth
+    kBluetooth,
+    // WebHID
+    kHID,
+    // Web Serial
+    kSerial
+  };
+
   WebContentsObserver(WebContentsObserver&&) = delete;
   WebContentsObserver(const WebContentsObserver&) = delete;
   WebContentsObserver& operator=(WebContentsObserver&&) = delete;
@@ -690,8 +704,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // provided |render_frame_host|. By the time this is called the
   // |inner_web_contents| will have been added to the WebContents tree.
   virtual void InnerWebContentsAttached(WebContents* inner_web_contents,
-                                        RenderFrameHost* render_frame_host,
-                                        bool is_full_page) {}
+                                        RenderFrameHost* render_frame_host) {}
 
   // Invoked when WebContents::Clone() was used to clone a WebContents.
   virtual void DidCloneToNewWebContents(WebContents* old_web_contents,
@@ -724,6 +737,18 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // Called when the audio state of an individual frame changes.
   virtual void OnFrameAudioStateChanged(RenderFrameHost* rfh, bool audible) {}
 
+  // Called when an individual remote subframe's intersection with the viewport
+  // of the page changes. Note that this value is independent from the
+  // visibility of the page.
+  //
+  // Note: This is only called for remote frames. If you only care about if the
+  // frame intersects or not with the viewport, use OnFrameVisibilityChanged()
+  // below, as it is called for all frames.
+  virtual void OnRemoteSubframeViewportIntersectionStateChanged(
+      RenderFrameHost* rfh,
+      const blink::mojom::ViewportIntersectionState&
+          viewport_intersection_state) {}
+
   // Called when an individual frame's visibility inside the viewport of the
   // page changes. Note that this value is independent from the visibility of
   // the page.
@@ -739,13 +764,12 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
       RenderFrameHost* rfh,
       bool is_capturing_media_stream) {}
 
-  // Called when the connected to USB device state changes.
-  virtual void OnIsConnectedToUsbDeviceChanged(
-      bool is_connected_to_usb_device) {}
-
-  // Called when the connected to Bluetooth device state changes.
-  virtual void OnIsConnectedToBluetoothDeviceChanged(
-      bool is_connected_to_bluetooth_device) {}
+  // Called when WebContents starts/stops using a device connection type. The
+  // arguments indicate the device connection type that starts/stops being used
+  // and whether it is in use (true if it starts being used, false if it stops).
+  virtual void OnDeviceConnectionTypesChanged(
+      DeviceConnectionType connection_type,
+      bool used) {}
 
   // Invoked when the WebContents is muted/unmuted.
   virtual void DidUpdateAudioMutingState(bool muted) {}

@@ -1159,10 +1159,22 @@
         You can use Chrome any time you tap links in messages, documents and other apps
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_TITLE" desc="Title of the tab group promo in the educational tip module on NTP.">
-        Tab groups keep things tidy
+        Tidy up with tab groups
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_DESCRIPTION" desc="Description of the Tab group promo in the educational tip module on NTP.">
-        You can group related pages, and your groups save and update across all your devices
+        Create tab groups that automatically save and update across all your devices
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_SYNC_TITLE" desc="Title of the tab group sync promo in the educational tip module on NTP.">
+        Your tab groups are saved
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_SYNC_DESCRIPTION" desc="Description of the Tab group promo in the educational tip module on NTP.">
+        You’ll find your groups in the tab group section across all your devices
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_TITLE" desc="Title of the quick delete promo in the educational tip module on NTP.">
+        Manage your browsing data
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_DESCRIPTION" desc="Description of the quick delete promo in the educational tip module on NTP.">
+        You can delete some or all of your history, cookies, site data and more
       </message>
 
       <message name="IDS_GO_TO_OS_SETTINGS" desc="When the user clicks on this text button, Chrome sends them to the device OS Settings. One use is the text button shown below the text 'Get alerts for price drops?', which takes the user to the Android notification settings. Another use is in the primary button of the dialog prompting the user to create a device lock, which takes the user to the Android security settings.">

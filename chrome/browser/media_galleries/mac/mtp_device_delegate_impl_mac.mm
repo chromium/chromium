@@ -464,7 +464,7 @@ void MTPDeviceDelegateImplMac::NotifyReadDir() {
       read_path.AppendRelativePath(file_paths_[i], &relative_path);
       base::File::Info info = file_info_[file_paths_[i].value()];
       entry_list.emplace_back(
-          std::move(relative_path),
+          std::move(relative_path), base::FilePath(),
           info.is_directory ? filesystem::mojom::FsFileType::DIRECTORY
                             : filesystem::mojom::FsFileType::REGULAR_FILE);
     }

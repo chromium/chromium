@@ -482,7 +482,7 @@ void PepperFileIOHost::OnLocalFileOpened(
     quarantine::mojom::Quarantine* raw_quarantine = quarantine_remote.get();
     raw_quarantine->QuarantineFile(
         path, browser_ppapi_host_->GetDocumentURLForInstance(pp_instance()),
-        GURL(), std::string(),
+        GURL(), /*request_initiator=*/std::nullopt, std::string(),
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             base::BindOnce(&PepperFileIOHost::OnLocalFileQuarantined,
                            weak_ptr_factory_.GetWeakPtr(), reply_context, path,

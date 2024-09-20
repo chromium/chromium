@@ -102,7 +102,8 @@ public class TabUmaTest {
                 null,
                 null,
                 rootUiCoordinator.getToolbarManager().getTabStripHeightSupplier(),
-                new OneshotSupplierImpl<ModuleRegistry>());
+                new OneshotSupplierImpl<ModuleRegistry>(),
+                new ObservableSupplierImpl<>());
     }
 
     private Tab createLazilyLoadedTab(boolean show) throws ExecutionException {
@@ -229,7 +230,7 @@ public class TabUmaTest {
             state.parentId = 1;
             state.themeColor = 4;
             state.openerAppId = "test";
-            state.tabLaunchTypeAtCreation = null;
+            state.tabLaunchTypeAtCreation = TabLaunchType.UNSET;
             state.rootId = 1;
         }
         return state;

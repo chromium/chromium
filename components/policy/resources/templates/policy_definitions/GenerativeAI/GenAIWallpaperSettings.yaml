@@ -10,7 +10,6 @@ desc: |-
 
   For more information on data handling for generative AI features, please see https://support.google.com/chrome/a?p=generative_ai_settings.
 default: 0
-default_for_enterprise_users: 1
 example_value: 2
 features:
   dynamic_refresh: true
@@ -33,7 +32,7 @@ schema:
   - 1
   - 2
   type: integer
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:130-
 tags: []
 type: int-enum

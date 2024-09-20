@@ -34,6 +34,7 @@ class TabOrganizationButton : public TabStripControlButton {
   // TabStripControlButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  views::LabelButton* close_button_for_testing() { return close_button_; }
 
  protected:
   // TabStripControlButton:

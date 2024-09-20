@@ -166,6 +166,9 @@ base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
             : TriggerRegistrationError::kAggregatableValuesValueInvalid);
   }
 
+  base::UmaHistogramCounts100("Conversions.ScopesPerTriggerRegistration",
+                              registration.attribution_scopes.scopes().size());
+
   return registration;
 }
 

@@ -41,7 +41,6 @@ class PromiseAppAlmanacConnectorTest : public testing::Test {
     profile_builder.SetSharedURLLoaderFactory(
         url_loader_factory_->GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
-    test_shared_loader_factory_ = url_loader_factory_->GetSafeWeakWrapper();
     connector_ = std::make_unique<PromiseAppAlmanacConnector>(profile_.get());
     connector_->SetSkipApiKeyCheckForTesting(true);
   }
@@ -51,12 +50,11 @@ class PromiseAppAlmanacConnectorTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  std::unique_ptr<PromiseAppAlmanacConnector> connector_;
   content::BrowserTaskEnvironment task_environment_;
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   std::unique_ptr<Profile> profile_;
+  std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
+  std::unique_ptr<PromiseAppAlmanacConnector> connector_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoRequest) {

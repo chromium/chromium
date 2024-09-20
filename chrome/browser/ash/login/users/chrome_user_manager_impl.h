@@ -75,14 +75,7 @@ class ChromeUserManagerImpl
 
   // If data for a device local account is marked as pending removal and the
   // user is no longer logged into that account, removes the data.
-  void CleanUpDeviceLocalAccountNonCryptohomeDataPendingRemoval();
-
-  // Removes data belonging to device local accounts that are no longer found on
-  // the user list. If the user is currently logged into one of these accounts,
-  // the data for that account is not removed immediately but marked as pending
-  // removal after logout.
-  void CleanUpDeviceLocalAccountNonCryptohomeData(
-      const std::vector<std::string>& old_device_local_accounts);
+  void RemovePendingDeviceLocalAccount();
 
   // Replaces the list of device local accounts with those found in
   // `device_local_accounts`. Ensures that data belonging to accounts no longer
@@ -90,16 +83,16 @@ class ChromeUserManagerImpl
   // Device local accounts are defined by policy. This method is called whenever
   // an updated list of device local accounts is received from policy.
   bool UpdateAndCleanUpDeviceLocalAccounts(
-      const std::vector<policy::DeviceLocalAccount>& device_local_accounts);
-
-  // Updates the display name for public account `username` from policy settings
-  // associated with that username.
-  void UpdatePublicAccountDisplayName(const std::string& user_id);
+      const std::vector<DeviceLocalAccountInfo>& device_local_accounts);
 
   // Update the number of users.
   void UpdateNumberOfUsers();
 
   void UpdateOwnerId();
+
+  // Returns the display name taken from policy, expected to be used for
+  // public accounts.
+  std::optional<std::u16string> GetDisplayName(std::string_view user_id);
 
   // Interface to device-local account definitions and associated policy.
   raw_ptr<policy::DeviceLocalAccountPolicyService>

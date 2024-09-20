@@ -33,7 +33,7 @@ static_library("multidevice_internals") {
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/multidevice_internals:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chromeos/ash/components/phonehub:debug",
     "//chromeos/ash/components/phonehub/proto",
     "//components/prefs",

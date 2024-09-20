@@ -37,6 +37,7 @@ class PaletteTray;
 class PhoneHubTray;
 class PodsOverflowTray;
 class AnnotationTray;
+class MouseKeysTray;
 class SelectToSpeakTray;
 class Shelf;
 class StatusAreaAnimationController;
@@ -143,6 +144,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   PhoneHubTray* phone_hub_tray() { return phone_hub_tray_; }
   EcheTray* eche_tray() { return eche_tray_; }
 
+  MouseKeysTray* mouse_keys_tray() { return mouse_keys_tray_; }
   SelectToSpeakTray* select_to_speak_tray() { return select_to_speak_tray_; }
   WmModeButtonTray* wm_mode_button_tray() { return wm_mode_button_tray_; }
 
@@ -301,6 +303,8 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   raw_ptr<VirtualKeyboardTray, DanglingUntriaged> virtual_keyboard_tray_ =
       nullptr;
   raw_ptr<ImeMenuTray, DanglingUntriaged> ime_menu_tray_ = nullptr;
+  raw_ptr<MouseKeysTray, DisableDanglingPtrDetection> mouse_keys_tray_ =
+      nullptr;
   raw_ptr<SelectToSpeakTray, DanglingUntriaged> select_to_speak_tray_ = nullptr;
   raw_ptr<HoldingSpaceTray, DanglingUntriaged> holding_space_tray_ = nullptr;
   raw_ptr<WmModeButtonTray, DanglingUntriaged> wm_mode_button_tray_ = nullptr;

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/sharing/qr_generator/qr_generator_view_controller.h"
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/sharing/qr_generator/qr_generator_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -162,10 +163,22 @@ constexpr CGFloat kSymbolSize = 22;
           constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                                 .bottomAnchor
                                    constant:-8];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+    [self registerForTraitChanges:traits
+                       withTarget:self.view
+                           action:@selector(setNeedsUpdateConstraints)];
+  }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
 
   // Update constraints for different size classes.
   BOOL hasNewVerticalSizeClass = previousTraitCollection.verticalSizeClass !=
@@ -175,6 +188,7 @@ constexpr CGFloat kSymbolSize = 22;
     [self.view setNeedsUpdateConstraints];
   }
 }
+#endif
 
 - (void)updateViewConstraints {
   BOOL isVerticalCompact =

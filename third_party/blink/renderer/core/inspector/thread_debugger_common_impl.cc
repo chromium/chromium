@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
@@ -198,6 +199,7 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
   static const char kShadowRootMode[] = "mode";
   static const char kShadowRootOpen[] = "open";
   static const char kShadowRootClosed[] = "closed";
+  static const char kFrameIdParameterName[] = "frameId";
 
   v8::LocalVector<v8::Name> serialized_value_keys(isolate);
   v8::LocalVector<v8::Value> serialized_value_values(isolate);
@@ -240,6 +242,18 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
 
   if (node->IsElementNode()) {
     Element* element = To<Element>(node);
+
+    if (HTMLFrameOwnerElement* frameOwnerElement =
+            DynamicTo<HTMLFrameOwnerElement>(node)) {
+      if (frameOwnerElement->ContentFrame()) {
+        serialized_value_keys.push_back(
+            V8String(isolate, kFrameIdParameterName));
+        serialized_value_values.push_back(V8String(
+            isolate,
+            IdentifiersFactory::IdFromToken(
+                frameOwnerElement->ContentFrame()->GetDevToolsFrameToken())));
+      }
+    }
 
     if (ShadowRoot* shadow_root = node->GetShadowRoot()) {
       // Do not decrease `max_node_depth` for shadow root. Shadow root should be

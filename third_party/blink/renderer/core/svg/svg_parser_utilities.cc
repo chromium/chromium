@@ -175,8 +175,9 @@ bool ParseNumberOptionalNumber(const String& string, float& x, float& y) {
   if (string.empty())
     return false;
 
-  return WTF::VisitCharacters(string, [&](const auto* ptr, unsigned length) {
-    const auto* end = ptr + length;
+  return WTF::VisitCharacters(string, [&](auto chars) {
+    const auto* ptr = chars.data();
+    const auto* end = ptr + chars.size();
     if (!ParseNumber(ptr, end, x))
       return false;
 

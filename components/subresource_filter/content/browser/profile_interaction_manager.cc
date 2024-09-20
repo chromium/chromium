@@ -179,6 +179,11 @@ void ProfileInteractionManager::MaybeShowNotification() {
   }
 }
 
+content_settings::CookieSettings*
+ProfileInteractionManager::GetCookieSettings() {
+  return profile_context_->cookie_settings();
+}
+
 content::WebContents* ProfileInteractionManager::GetWebContents() {
   CHECK(page_, base::NotFatalUntil::M129);
   CHECK(page_->IsPrimary(), base::NotFatalUntil::M129);

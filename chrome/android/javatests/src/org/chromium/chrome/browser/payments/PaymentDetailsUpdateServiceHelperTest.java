@@ -26,6 +26,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -317,6 +318,19 @@ public class PaymentDetailsUpdateServiceHelperTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    public void testBindHistogramRecordedWhenConnected() throws Throwable {
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.PaymentDetailsUpdateService.Bind", true)) {
+            // No payment flow needs to be happening for recording the metric of a service
+            // connection to Chrome.
+            startPaymentDetailsUpdateService();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
     public void testSuccessfulChangePaymentMethod() throws Throwable {
         installAndInvokePaymentApp();
         startPaymentDetailsUpdateService();
@@ -332,11 +346,27 @@ public class PaymentDetailsUpdateServiceHelperTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    public void testChangePaymentMethodHistogram() throws Throwable {
+        installAndInvokePaymentApp();
+        startPaymentDetailsUpdateService();
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod", true);
+
+        mIPaymentDetailsUpdateService.changePaymentMethod(
+                defaultMethodDataBundle(), new PaymentDetailsUpdateServiceCallback());
+
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
     public void testChangePaymentMethodMissingBundle() throws Throwable {
         installAndInvokePaymentApp();
         startPaymentDetailsUpdateService();
         mIPaymentDetailsUpdateService.changePaymentMethod(
-                null, new PaymentDetailsUpdateServiceCallback());
+                /* paymentHandlerMethodData= */ null, new PaymentDetailsUpdateServiceCallback());
         verifyIsWaitingForPaymentDetailsUpdate(false);
         Assert.assertFalse(mMethodChangeListenerNotified);
         Assert.assertEquals(ErrorStrings.METHOD_DATA_REQUIRED, receivedErrorString());
@@ -408,6 +438,22 @@ public class PaymentDetailsUpdateServiceHelperTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    public void testChangeShippingOptionHistogram() throws Throwable {
+        installAndInvokePaymentApp();
+        startPaymentDetailsUpdateService();
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.PaymentDetailsUpdateService.ChangeShippingOption", true);
+
+        mIPaymentDetailsUpdateService.changeShippingOption(
+                /* shippingOptionId= */ "", new PaymentDetailsUpdateServiceCallback());
+
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
     public void testSuccessfulChangeShippingAddress() throws Throwable {
         installAndInvokePaymentApp();
         startPaymentDetailsUpdateService();
@@ -423,11 +469,27 @@ public class PaymentDetailsUpdateServiceHelperTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    public void testChangeShippingAddressHistogram() throws Throwable {
+        installAndInvokePaymentApp();
+        startPaymentDetailsUpdateService();
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.PaymentDetailsUpdateService.ChangeShippingAddress", true);
+
+        mIPaymentDetailsUpdateService.changeShippingAddress(
+                /* shippingAddress= */ null, new PaymentDetailsUpdateServiceCallback());
+
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
     public void testChangeShippingAddressWithMissingBundle() throws Throwable {
         installAndInvokePaymentApp();
         startPaymentDetailsUpdateService();
         mIPaymentDetailsUpdateService.changeShippingAddress(
-                null, new PaymentDetailsUpdateServiceCallback());
+                /* shippingAddress= */ null, new PaymentDetailsUpdateServiceCallback());
         verifyIsWaitingForPaymentDetailsUpdate(false);
         Assert.assertFalse(mShippingAddressChangeListenerNotified);
         Assert.assertEquals(ErrorStrings.SHIPPING_ADDRESS_INVALID, receivedErrorString());

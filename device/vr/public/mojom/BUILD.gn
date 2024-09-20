@@ -9,10 +9,12 @@ mojom_component("vr_service") {
   output_prefix = "device_vr_service_mojo_bindings"
   macro_prefix = "DEVICE_VR_SERVICE_MOJO_BINDINGS"
 
-  sources = [ "vr_service.mojom" ]
+  sources = [
+    "vr_service.mojom",
+    "xr_hand_tracking_data.mojom",
+  ]
 
   public_deps = [
-    ":test_mojom",
     ":xr_common",
     "//device/gamepad/public/mojom",
     "//gpu/ipc/common:interfaces",
@@ -78,6 +80,7 @@ mojom_component("test_mojom") {
   sources = [ "browser_test_interfaces.mojom" ]
 
   public_deps = [
+    ":vr_service",
     ":xr_common",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",

@@ -827,6 +827,18 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     return false;
   }
 
+  ++swapped_trace_id_;
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(swapped_trace_id_),
+      [this](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_DRAW_AND_SWAP);
+        data->set_display_trace_id(swapped_trace_id_);
+      });
+
   if (params.max_pending_swaps >= 0 && skia_output_surface_ &&
       skia_output_surface_->capabilities()
           .supports_dynamic_frame_buffer_allocation) {
@@ -891,7 +903,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     frame = aggregator_->Aggregate(
         current_surface_id_, params.expected_display_time,
         current_display_transform, target_damage_bounding_rect,
-        ++swapped_trace_id_);
+        swapped_trace_id_);
   }
   DebugDrawFrame(frame, resource_provider_);
 

@@ -21,6 +21,8 @@
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
 #include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
 #include "chrome/browser/ash/policy/value_validation/onc_device_policy_value_validator.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/ownership/owner_key_util.h"
@@ -29,8 +31,17 @@
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_service.h"
 
 namespace em = enterprise_management;
+
+namespace features {
+
+BASE_FEATURE(kDeviceIdValidation,
+             "DeviceIdValidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace features
 
 namespace policy {
 
@@ -38,6 +49,21 @@ namespace {
 
 const char kDMTokenCheckHistogram[] = "Enterprise.EnrolledPolicyHasDMToken";
 const char kPolicyCheckHistogram[] = "Enterprise.EnrolledDevicePolicyPresent";
+
+bool CanUseDeviceIdValidation() {
+  if (!base::FeatureList::IsEnabled(features::kDeviceIdValidation)) {
+    return false;
+  }
+
+  // The devices are storing the OS version in the local state at enrollment,
+  // starting from version M122. For those devices the stats shows 100%
+  // matching of device_id from policy with the value from install attributes.
+  // Therefore we consider a low risk for them to enforce the device_id
+  // validation now.
+  auto* local_state = g_browser_process->local_state();
+  return local_state &&
+         !local_state->GetString(prefs::kEnrollmentVersionOS).empty();
+}
 
 }  // namespace
 
@@ -146,6 +172,13 @@ DeviceCloudPolicyStoreAsh::CreateValidator(
   auto validator = std::make_unique<DeviceCloudPolicyValidator>(
       std::make_unique<em::PolicyFetchResponse>(policy),
       background_task_runner_);
+  if (CanUseDeviceIdValidation()) {
+    validator->ValidateDeviceId(install_attributes_->GetDeviceId(),
+                                CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
+  }
+
+  // TODO(b:256551074): The domain validation is planned to be removed when we
+  // confirm that the device_id validation works.
   validator->ValidateDomain(install_attributes_->GetDomain());
   validator->ValidatePolicyType(dm_protocol::kChromeDevicePolicyType);
   validator->ValidatePayload();

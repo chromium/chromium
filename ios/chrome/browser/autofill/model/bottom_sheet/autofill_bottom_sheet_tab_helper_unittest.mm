@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -64,34 +65,34 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
 
   AutofillBottomSheetTabHelperTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(chrome_browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
 
     AutofillBottomSheetTabHelper::CreateForWebState(web_state_.get());
     helper_ = AutofillBottomSheetTabHelper::FromWebState(web_state_.get());
 
-    autofill_agent_ = [[AutofillAgent alloc]
-        initWithPrefService:chrome_browser_state_->GetPrefs()
-                   webState:web_state_.get()];
+    autofill_agent_ =
+        [[AutofillAgent alloc] initWithPrefService:profile_->GetPrefs()
+                                          webState:web_state_.get()];
 
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
     infobars::InfoBarManager* infobar_manager =
         InfoBarManagerImpl::FromWebState(web_state_.get());
 
     autofill_client_ = std::make_unique<TestAutofillClient>(
-        chrome_browser_state_.get(), web_state_.get(), infobar_manager,
-        autofill_agent_);
+        profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(
         web_state_.get(), autofill_client_.get(), autofill_agent_,
         /*app_locale=*/"en");
   }
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
   web::ScopedTestingWebClient web_client_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   AutofillBottomSheetTabHelper* helper_;
   std::unique_ptr<autofill::AutofillClient> autofill_client_;

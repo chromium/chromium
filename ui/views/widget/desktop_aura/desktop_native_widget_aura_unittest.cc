@@ -853,9 +853,8 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
 // active.
 TEST_F(DesktopNativeWidgetAuraTest, WindowModalityActivationTest) {
   TestDesktopWidgetDelegate widget_delegate;
-  widget_delegate.InitWidget(
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW));
+  widget_delegate.InitWidget(CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW));
 
   Widget* top_level_widget = widget_delegate.GetWidget();
   top_level_widget->Show();

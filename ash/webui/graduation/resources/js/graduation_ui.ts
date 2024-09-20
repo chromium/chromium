@@ -2,21 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../strings.m.js';
 
+import {isRTL} from '//resources/js/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './graduation_ui.html.js';
 
 /**
- * The URL of the banner shown in Takeout indicating that the user has
+ * The base URL of the banner shown in Takeout indicating that the user has
  * completed the final step of the flow.
+ * May be suffixed by a year, for example: "-2024.png".
  */
-const TAKEOUT_COMPLETED_BANNER_URL: string =
-    'https://www.gstatic.com/ac/takeout/migration/migration-banner.png';
+const TAKEOUT_COMPLETED_BANNER_BASE_URL: string =
+    'https://www.gstatic.com/ac/takeout/migration/migration-banner';
 
 export interface GraduationUi {
   $: {
@@ -52,36 +58,47 @@ export class GraduationUi extends PolymerElement {
 
   webviewLoading: boolean;
   takeoutFlowCompleted: boolean;
+  private webview: chrome.webviewTag.WebView;
 
   override ready() {
     super.ready();
     const webviewUrl = loadTimeData.getString('webviewUrl');
-    const webview =
+    this.webview =
         this.shadowRoot!.querySelector<chrome.webviewTag.WebView>('webview')!;
 
-    webview.addEventListener('contentload', () => {
+    this.webview.addEventListener('contentload', () => {
       this.webviewLoading = false;
     });
 
-    webview.addEventListener('loadabort', () => {
+    this.webview.addEventListener('loadabort', () => {
       this.webviewLoading = false;
       /** TODO(b/357877855) Trigger error screen. */
     });
 
     /**
-     * The flow is marked as completed when the image shown at the end of the
+     * The done button is made visible when the image shown at the end of the
      * Takeout flow is displayed to the user.
-     * TODO(b/361797263): Enable Done button when `takeoutFlowCompleted` is
-     * true.
      */
-    webview.request.onCompleted.addListener((details: any) => {
+    this.webview.request.onCompleted.addListener((details: any) => {
       if (details.statusCode === 200 &&
-          details.url === TAKEOUT_COMPLETED_BANNER_URL) {
+          details.url.startsWith(TAKEOUT_COMPLETED_BANNER_BASE_URL)) {
         this.takeoutFlowCompleted = true;
       }
     }, {urls: ['<all_urls>']});
 
-    webview.src = webviewUrl.toString();
+    this.webview.src = webviewUrl.toString();
+  }
+
+  private getBackButtonIcon_(): string {
+    return isRTL() ? 'cr:chevron-right' : 'cr:chevron-left';
+  }
+
+  private onBackClicked_(): void {
+    /** TODO(b/357877542): Trigger navigation to the welcome screen. */
+  }
+
+  private onDoneClicked_(): void {
+    window.close();
   }
 }
 

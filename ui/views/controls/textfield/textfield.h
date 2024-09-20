@@ -562,7 +562,7 @@ class VIEWS_EXPORT Textfield : public View,
   // Returns true if a context menu for this view is showing.
   bool IsMenuShowing() const;
 
-  virtual void UpdateAccessibleTextSelection();
+  virtual void UpdateAccessibleTextSelection() {}
 
   void AddedToWidget() override;
 

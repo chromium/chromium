@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -24,6 +25,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/supervised_user_capabilities.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -170,10 +172,15 @@ std::string CreateReauthenticationInterstitial(
   content::WebContents* web_contents = navigation_handle.GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  bool has_second_custodian =
+      !supervised_user_service->GetSecondCustodianName().empty();
   supervised_user::ChildAccountService* child_account_service =
       ChildAccountServiceFactory::GetForProfile(profile);
   GURL request_url = navigation_handle.GetURL();
-
+  bool is_main_frame = navigation_handle.GetNavigatingFrameType() ==
+                       content::FrameType::kPrimaryMainFrame;
   std::unique_ptr<SupervisedUserVerificationPage> blocking_page =
       std::make_unique<SupervisedUserVerificationPage>(
           web_contents, profile->GetProfileUserName(), request_url,
@@ -182,7 +189,8 @@ std::string CreateReauthenticationInterstitial(
           std::make_unique<SupervisedUserVerificationControllerClient>(
               web_contents, profile->GetPrefs(),
               g_browser_process->GetApplicationLocale(),
-              GURL(chrome::kChromeUINewTabURL), request_url));
+              GURL(chrome::kChromeUINewTabURL), request_url),
+          is_main_frame, has_second_custodian);
 
   std::string interstitial_html = blocking_page->GetHTMLContents();
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(

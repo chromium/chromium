@@ -360,7 +360,10 @@ TEST_F(ChromeShelfPrefsTest, PinMallBeforeDefaultApps) {
     second_pin_app_id = pinned_apps_strs[1];
   }
   {
-    base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kCrosMall},
+        /*disabled_features=*/{chromeos::features::kCrosMallSwa});
 
     std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
     EXPECT_EQ(pinned_apps_strs[1], web_app::kMallAppId);

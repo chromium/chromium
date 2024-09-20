@@ -113,10 +113,10 @@ bool Uninstall() {
   // Try deleting the directory 15 times and wait one second between tries.
   const std::wstring command_line = base::StrCat(
       {L"\"", cmd_exe_path.value(),
-       L"\" /Q /C for /L \%G IN (1,1,15) do ( ping -n 2 127.0.0.1 > nul & "
+       L"\" /Q /C \"for /L \%G IN (1,1,15) do ( ping -n 2 127.0.0.1 > nul & "
        L"rmdir \"",
        install_directory->value(), L"\" /s /q > nul & if not exist \"",
-       install_directory->value(), L"\" exit 0 ) & exit 3"});
+       install_directory->value(), L"\" exit 0 )\""});
   VLOG(1) << "Running " << command_line;
 
   base::LaunchOptions options;

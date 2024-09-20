@@ -13,10 +13,10 @@
 #include <cstring>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/numerics/safe_conversions.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
@@ -121,22 +121,20 @@ class WTF_EXPORT StringView {
   StringView(StringImpl&, unsigned offset, unsigned length);
 
   // From a String, implemented in wtf_string.h
-  inline StringView(const String& string ABSL_ATTRIBUTE_LIFETIME_BOUND,
+  inline StringView(const String& string LIFETIME_BOUND,
                     unsigned offset,
                     unsigned length);
-  inline StringView(const String& string ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                    unsigned offset);
+  inline StringView(const String& string LIFETIME_BOUND, unsigned offset);
   // NOLINTNEXTLINE(google-explicit-constructor)
-  inline StringView(const String& string ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  inline StringView(const String& string LIFETIME_BOUND);
 
   // From an AtomicString, implemented in atomic_string.h
-  inline StringView(const AtomicString& string ABSL_ATTRIBUTE_LIFETIME_BOUND,
+  inline StringView(const AtomicString& string LIFETIME_BOUND,
                     unsigned offset,
                     unsigned length);
-  inline StringView(const AtomicString& string ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                    unsigned offset);
+  inline StringView(const AtomicString& string LIFETIME_BOUND, unsigned offset);
   // NOLINTNEXTLINE(google-explicit-constructor)
-  inline StringView(const AtomicString& string ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  inline StringView(const AtomicString& string LIFETIME_BOUND);
 
   // From a literal string or LChar buffer:
   StringView(const LChar* chars, unsigned length)

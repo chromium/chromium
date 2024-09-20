@@ -1193,21 +1193,7 @@ TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
   EXPECT_EQ(live_registration2, found_registration);
 }
 
-class ServiceWorkerRegistryMergeTest
-    : public ServiceWorkerRegistryTest,
-      public testing::WithParamInterface<bool> {};
-
-INSTANTIATE_TEST_SUITE_P(All, ServiceWorkerRegistryMergeTest, testing::Bool());
-
-TEST_P(ServiceWorkerRegistryMergeTest, MergeDuplicateFindRegistrationCalls) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  if (GetParam()) {
-    scoped_feature_list.InitAndEnableFeature(
-        kServiceWorkerMergeFindRegistrationForClientUrl);
-  } else {
-    scoped_feature_list.InitAndDisableFeature(
-        kServiceWorkerMergeFindRegistrationForClientUrl);
-  }
+TEST_F(ServiceWorkerRegistryTest, MergeDuplicateFindRegistrationCalls) {
   const GURL kScope("http://www.example.com/scope/");
   const GURL kScript("http://www.example.com/script.js");
   const blink::StorageKey kKey =
@@ -1238,20 +1224,12 @@ TEST_P(ServiceWorkerRegistryMergeTest, MergeDuplicateFindRegistrationCalls) {
               }
             }));
   }
-  if (GetParam()) {
-    // When kServiceWorkerMergeFindRegistrationForClientUrl is enabled,
-    // Even when FindRegistrationForClientUrl is called 3 times, the in-flight
-    // calls of FindRegistrationForClientUrl must be merged into one internally.
-    // The following check expects that the
-    // `registry()->FindRegistrationForClientUrl()` implementation keeps track
-    // of `inflight_call_count()` synchronously.
-    EXPECT_EQ(inflight_call_count(), 1U);
-  } else {
-    // When kServiceWorkerMergeFindRegistrationForClientUrl is disabled,
-    // FindRegistrationForClientUrl will never be merged. So
-    // inflight_call_count() returns 3 (= kCallCount).
-    EXPECT_EQ(int(inflight_call_count()), kCallCount);
-  }
+  // Even when FindRegistrationForClientUrl is called 3 times, the in-flight
+  // calls of FindRegistrationForClientUrl must be merged into one internally.
+  // The following check expects that the
+  // `registry()->FindRegistrationForClientUrl()` implementation keeps track
+  // of `inflight_call_count()` synchronously.
+  EXPECT_EQ(inflight_call_count(), 1U);
   loop.Run();
 }
 
@@ -1319,9 +1297,6 @@ class ServiceWorkerScopeAndRegistrationCacheTest
 };
 
 TEST_F(ServiceWorkerScopeAndRegistrationCacheTest, SkipMojoCallIfPossible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {storage::kServiceWorkerScopeCache, kServiceWorkerRegistrationCache}, {});
   const GURL kScript("http://www.example.com/script.js");
   const GURL kScope1("http://www.example.com/scope1/");
   const GURL kScope2("http://www.example.com/scope2/");
@@ -1448,15 +1423,24 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest, SkipMojoCallIfPossible) {
 
 TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
        RegistrationCacheSizeAndScopeCacheLimitPerKey) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{storage::kServiceWorkerScopeCache,
-        {{storage::kServiceWorkerScopeCacheLimitPerKey.name, "2"}}},
-       {kServiceWorkerRegistrationCache,
-        {{kServiceWorkerRegistrationCacheSize.name, "1"}}}},
-      {});
+  const size_t kMaxScopeUrlCount = 2;
+  storage::OverrideMaxServiceWorkerScopeUrlCountForTesting(kMaxScopeUrlCount);
+  base::ScopedClosureRunner reset(base::BindOnce([]() {
+    storage::OverrideMaxServiceWorkerScopeUrlCountForTesting(std::nullopt);
+  }));
+
   // Restart to apply the above feature params.
   SimulateRestart();
+  {
+    base::LRUCache<blink::StorageKey, std::set<GURL>>
+        registration_scope_cache_for_testing(/*max_size=*/2);
+    registration_scope_cache().Swap(registration_scope_cache_for_testing);
+
+    base::LRUCache<std::tuple<GURL, blink::StorageKey>, int64_t>
+        registration_id_cache_for_testing(/*max_size=*/1);
+    registration_id_cache().Swap(registration_id_cache_for_testing);
+  }
+  EXPECT_EQ(2U, registration_scope_cache().max_size());
   EXPECT_EQ(1U, registration_id_cache().max_size());
 
   const GURL kScript("http://www.example.com/script.js");
@@ -1565,7 +1549,7 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
                     /*expected_registration_id_cache_size=*/1);
 
   // Register kScope3. This time, even if the scope count exceeds the
-  // kServiceWorkerScopeCacheLimitPerKey, the scope must be cached because this
+  // kMaxScopeUrlCount, the scope must be cached because this
   // operation doesn't involve mojo call that send a large size of data.
   scoped_refptr<ServiceWorkerRegistration> registration3 =
       RegisterServiceWorker(kScope3, kScript, /*resource_id=*/3,
@@ -1584,7 +1568,7 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
                     /*expected_registration_id_cache_size=*/1);
 
   // Check registration for kScope3. This time, the scope count exceeds
-  // the kServiceWorkerScopeCacheLimitPerKey, and the scope_cache will be
+  // the kMaxScopeUrlCount, and the scope_cache will be
   // cleared.
   CheckRegistration(kScope3, blink::ServiceWorkerStatusCode::kOk, registration3,
                     /*expected_inflight_call_count=*/1,
@@ -1593,7 +1577,7 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
 
   // Confirm that finding kOutOfScope trigger mojo call. The scope
   // cache must be empty because the scope count exceeds the
-  // kServiceWorkerScopeCacheLimitPerKey.
+  // kMaxScopeUrlCount.
   CheckRegistration(kOutOfScope, blink::ServiceWorkerStatusCode::kErrorNotFound,
                     /*expected_registration=*/nullptr,
                     /*expected_inflight_call_count=*/1,
@@ -1602,9 +1586,6 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
 }
 
 TEST_F(ServiceWorkerScopeAndRegistrationCacheTest, CanHandleNewRegistration) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {storage::kServiceWorkerScopeCache, kServiceWorkerRegistrationCache}, {});
   const GURL kScript("http://www.example.com/script.js");
   const GURL kScope1("http://www.example.com/scope/");
   const GURL kScope2("http://www.example.com/");
@@ -1676,15 +1657,13 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest, CanHandleNewRegistration) {
 
 TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
        ServiceWorkerScopeCacheLimit) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{storage::kServiceWorkerScopeCache, {}},
-       {kServiceWorkerRegistrationCache, {}},
-       {kServiceWorkerScopeCacheLimit,
-        {{kServiceWorkerScopeCacheLimitSize.name, "2"}}}},
-      {});
   // Restart to apply the above feature params.
   SimulateRestart();
+  {
+    base::LRUCache<blink::StorageKey, std::set<GURL>>
+        registration_scope_cache_for_testing(2);
+    registration_scope_cache().Swap(registration_scope_cache_for_testing);
+  }
   EXPECT_EQ(2U, registration_scope_cache().max_size());
 
   // const GURL("http://www.example.com/script.js");

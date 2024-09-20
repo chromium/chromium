@@ -35,8 +35,14 @@ const char kNearbySharingOnboardingCompletePrefName[] =
 const char kNearbySharingFullNamePrefName[] = "nearby_sharing.full_name";
 const char kNearbySharingIconUrlPrefName[] = "nearby_sharing.icon_url";
 const char kNearbySharingIconTokenPrefName[] = "nearby_sharing.icon_token";
+extern const char kNearbySharingInHighVisibilityPrefName[] =
+    "nearby_sharing.in_high_visibility";
 const char kNearbySharingNearbyDeviceTryingToShareDismissedTimePrefName[] =
     "nearby_sharing.nearby_device_trying_to_share_dismissed_time";
+extern const char kNearbySharingPreviousBackgroundVisibilityPrefName[] =
+    "nearby_sharing.previous_background_visibility";
+extern const char kNearbySharingPreviousInHighVisibilityPrefName[] =
+    "nearby_sharing.previous_in_high_visibility";
 const char kNearbySharingPublicCertificateExpirationDictPrefName[] =
     "nearbyshare.public_certificate_expiration_dict";
 const char kNearbySharingPrivateCertificateListPrefName[] =
@@ -76,6 +82,8 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
       prefs::kNearbySharingFastInitiationNotificationStatePrefName,
       /*default_value=*/static_cast<int>(
           nearby_share::mojom::FastInitiationNotificationState::kEnabled));
+  registry->RegisterBooleanPref(prefs::kNearbySharingInHighVisibilityPrefName,
+                                /*default_value=*/false);
   registry->RegisterBooleanPref(prefs::kNearbySharingOnboardingCompletePrefName,
                                 /*default_value=*/false);
   registry->RegisterIntegerPref(
@@ -104,6 +112,13 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(
       prefs::kNearbySharingNextVisibilityReminderTimePrefName,
       /*default_value=*/base::Time());
+  registry->RegisterIntegerPref(
+      prefs::kNearbySharingPreviousBackgroundVisibilityPrefName,
+      /*default_value=*/static_cast<int>(
+          nearby_share::mojom::Visibility::kNoOne));
+  registry->RegisterBooleanPref(
+      prefs::kNearbySharingPreviousInHighVisibilityPrefName,
+      /*default_value=*/false);
   registry->RegisterDictionaryPref(
       prefs::kNearbySharingPublicCertificateExpirationDictPrefName);
   registry->RegisterListPref(

@@ -647,10 +647,14 @@ TEST_P(MetricReportingManagerEventTest, Default) {
           _, chrome_crash_event_queue_ptr_.get(), _,
           test_case.setting_data.enable_setting_path,
           test_case.setting_data.setting_enabled_default_value, _, init_delay))
-      .WillByDefault([&]() {
-        return std::make_unique<FakeMetricEventObserverManager>(
-            fake_reporting_settings.get(), &observer_manager_count);
-      });
+      .WillByDefault(
+          // We expect `ChromeFatalCrashEventObserver` to be owned by
+          // `MetricEventObserverManager`.
+          WithArg<0>([&](std::unique_ptr<MetricEventObserver> event_observer) {
+            return std::make_unique<FakeMetricEventObserverManager>(
+                fake_reporting_settings.get(), &observer_manager_count,
+                std::move(event_observer));
+          }));
 
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);

@@ -48,16 +48,16 @@ base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
 TensorImplCoreml::Create(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl* context,
-    mojom::BufferInfoPtr buffer_info) {
+    mojom::TensorInfoPtr tensor_info) {
   // TODO(crbug.com/343638938): Check `MLTensorUsageFlags` and use an
   // IOSurface to facilitate zero-copy buffer sharing with WebGPU when possible.
 
   // TODO(crbug.com/329482489): Move this check to the renderer and throw a
   // TypeError.
-  if (buffer_info->descriptor.Rank() > 5) {
-    LOG(ERROR) << "[WebNN] Buffer rank is too large.";
+  if (tensor_info->descriptor.Rank() > 5) {
+    LOG(ERROR) << "[WebNN] Tensor rank is too large.";
     return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kNotSupportedError, "Buffer rank is too large."));
+        mojom::Error::Code::kNotSupportedError, "Tensor rank is too large."));
   }
 
   // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
@@ -68,21 +68,21 @@ TensorImplCoreml::Create(
   // TODO(crbug.com/356670455): Consider moving this check to the renderer and
   // throwing a TypeError.
   if (!base::IsValueInRangeForNumericType<int>(
-          buffer_info->descriptor.PackedByteLength())) {
-    LOG(ERROR) << "[WebNN] Buffer is too large to create.";
+          tensor_info->descriptor.PackedByteLength())) {
+    LOG(ERROR) << "[WebNN] Tensor is too large to create.";
     return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Buffer is too large to create."));
+        mojom::Error::Code::kUnknownError, "Tensor is too large to create."));
   }
 
   NSMutableArray<NSNumber*>* ns_shape = [[NSMutableArray alloc] init];
-  for (uint32_t dimension : buffer_info->descriptor.shape()) {
+  for (uint32_t dimension : tensor_info->descriptor.shape()) {
     [ns_shape addObject:[[NSNumber alloc] initWithUnsignedLong:dimension]];
   }
 
   NSError* error = nil;
   MLMultiArray* multi_array = [[MLMultiArray alloc]
       initWithShape:ns_shape
-           dataType:ToMLMultiArrayDataType(buffer_info->descriptor.data_type())
+           dataType:ToMLMultiArrayDataType(tensor_info->descriptor.data_type())
               error:&error];
   if (error) {
     LOG(ERROR) << "[WebNN] Failed to allocate buffer: " << error;
@@ -110,25 +110,25 @@ TensorImplCoreml::Create(
       base::MakeRefCounted<QueueableResourceState<BufferContent>>(
           std::move(buffer_content));
   return base::WrapUnique(new TensorImplCoreml(
-      std::move(receiver), context, std::move(buffer_info),
+      std::move(receiver), context, std::move(tensor_info),
       std::move(buffer_state), base::PassKey<TensorImplCoreml>()));
 }
 
 TensorImplCoreml::TensorImplCoreml(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl* context,
-    mojom::BufferInfoPtr buffer_info,
+    mojom::TensorInfoPtr tensor_info,
     scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
     base::PassKey<TensorImplCoreml> /*pass_key*/)
-    : WebNNTensorImpl(std::move(receiver), context, std::move(buffer_info)),
+    : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)),
       buffer_state_(std::move(buffer_state)) {}
 
 TensorImplCoreml::~TensorImplCoreml() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void TensorImplCoreml::ReadBufferImpl(
-    mojom::WebNNTensor::ReadBufferCallback callback) {
+void TensorImplCoreml::ReadTensorImpl(
+    mojom::WebNNTensor::ReadTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Lock the buffer contents as shared/read-only.
@@ -142,7 +142,7 @@ void TensorImplCoreml::ReadBufferImpl(
       base::BindOnce(
           [](size_t bytes_to_read,
              scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-             ReadBufferCallback read_buffer_result_callback,
+             ReadTensorCallback read_tensor_result_callback,
              base::OnceClosure completion_closure) {
             mojo_base::BigBuffer output_buffer(bytes_to_read);
 
@@ -150,24 +150,24 @@ void TensorImplCoreml::ReadBufferImpl(
             // until `completion_closure` is run.
             buffer_state->GetSharedLockedResource().Read(base::BindOnce(
                 [](base::OnceClosure completion_closure,
-                   ReadBufferCallback read_buffer_result_callback,
+                   ReadTensorCallback read_tensor_result_callback,
                    mojo_base::BigBuffer output_buffer) {
                   // Unlock the buffer contents.
                   std::move(completion_closure).Run();
 
-                  std::move(read_buffer_result_callback)
-                      .Run(mojom::ReadBufferResult::NewBuffer(
+                  std::move(read_tensor_result_callback)
+                      .Run(mojom::ReadTensorResult::NewBuffer(
                           std::move(output_buffer)));
                 },
                 std::move(completion_closure),
-                std::move(read_buffer_result_callback)));
+                std::move(read_tensor_result_callback)));
           },
           /*bytes_to_read=*/PackedByteLength(), buffer_state_,
           std::move(callback)));
   task->Enqueue();
 }
 
-void TensorImplCoreml::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
+void TensorImplCoreml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Take an exclusive lock to the buffer contents while writing.

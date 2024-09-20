@@ -35,7 +35,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <new>
 #include <optional>
 #include <utility>
 
@@ -226,7 +225,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   //
   // Careful! PartitionAlloc's performance is sensitive to its layout.  Please
   // put the fast-path objects in the struct below.
-  struct alignas(std::hardware_destructive_interference_size) Settings {
+  struct alignas(internal::kPartitionCachelineSize) Settings {
     // Chromium-style: Complex constructor needs an explicit out-of-line
     // constructor.
     Settings();
@@ -284,7 +283,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.
-  alignas(std::hardware_destructive_interference_size) internal::Lock lock_;
+  alignas(internal::kPartitionCachelineSize) internal::Lock lock_;
 
   Bucket buckets[internal::kNumBuckets] = {};
   Bucket sentinel_bucket{};
@@ -794,7 +793,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE uintptr_t SlotStartToObjectAddr(uintptr_t slot_start) const {
     return internal::SlotStart::FromUntaggedAddr(slot_start)
-        .untagged_slot_start;
+        .untagged_slot_start_;
   }
 
   PA_ALWAYS_INLINE void* SlotStartToObject(uintptr_t slot_start) const {
@@ -805,7 +804,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     uintptr_t untagged_slot_start =
         internal::UntagAddr(reinterpret_cast<uintptr_t>(object));
     return internal::SlotStart::FromUntaggedAddr(untagged_slot_start)
-        .untagged_slot_start;
+        .untagged_slot_start_;
   }
 
   PA_ALWAYS_INLINE uintptr_t ObjectToSlotStartUnchecked(void* object) const {
@@ -914,8 +913,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   //
   // See crbug.com/1150772 for an instance of Clusterfuzz / UBSAN detecting
   // this.
-  PA_ALWAYS_INLINE const Bucket& PA_NO_SANITIZE("undefined")
-      bucket_at(size_t i) const {
+  PA_NO_SANITIZE("undefined")
+  PA_ALWAYS_INLINE const Bucket& bucket_at(size_t i) const {
     PA_DCHECK(i <= internal::kNumBuckets);
     return buckets[i];
   }
@@ -1471,7 +1470,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
 
   internal::SlotStart slot_start = internal::SlotStart::FromObject(object);
   PA_DCHECK(slot_span == ReadOnlySlotSpanMetadata::FromSlotStart(
-                             slot_start.untagged_slot_start));
+                             slot_start.untagged_slot_start_));
 
   // We are going to read from |*slot_span| in all branches, but haven't done it
   // yet.
@@ -1500,18 +1499,18 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
       // `brp_enabled` will be false only for the aligned partition.
       if (brp_enabled()) {
         auto* ref_count = InSlotMetadataPointerFromSlotStartAndSize(
-            slot_start.untagged_slot_start, slot_span->bucket->slot_size);
+            slot_start.untagged_slot_start_, slot_span->bucket->slot_size);
         ref_count->PreReleaseFromAllocator();
       }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       GetSchedulerLoopQuarantineBranch().Quarantine(
-          object, slot_span, slot_start.untagged_slot_start,
+          object, slot_span, slot_start.untagged_slot_start_,
           GetSlotUsableSize(slot_span));
       return;
     }
   }
 
-  FreeNoHooksImmediate(object, slot_span, slot_start.untagged_slot_start);
+  FreeNoHooksImmediate(object, slot_span, slot_start.untagged_slot_start_);
 }
 
 PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(

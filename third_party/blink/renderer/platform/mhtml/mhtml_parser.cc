@@ -417,12 +417,12 @@ ArchiveResource* MHTMLParser::ParseNextPart(
       }
       // Note that we use line.utf8() and not line.ascii() as ascii turns
       // special characters (such as tab, line-feed...) into '?'.
-      content.Append(line.Utf8().c_str(), line.length());
+      content.AppendSpan(base::span(line.Utf8()));
       if (content_transfer_encoding == MIMEHeader::Encoding::kQuotedPrintable) {
         // The line reader removes the \r\n, but we need them for the content in
         // this case as the QuotedPrintable decoder expects CR-LF terminated
         // lines.
-        content.Append("\r\n", 2u);
+        content.AppendSpan(base::span_from_cstring("\r\n"));
       }
     }
   }

@@ -16,7 +16,7 @@ namespace autofill {
 namespace {
 base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
                                                    ParsingContext& context) {
-  return GetMatchPatterns(name, context.page_language, context.pattern_source);
+  return GetMatchPatterns(name, context.page_language, context.pattern_file);
 }
 }  // namespace
 

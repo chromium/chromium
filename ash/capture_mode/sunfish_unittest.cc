@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/search_results_panel.h"
+#include "ash/capture_mode/sunfish_capture_bar_view.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -84,6 +85,37 @@ TEST_F(SunfishTest, PressEscapeKey) {
   EXPECT_FALSE(controller->capture_mode_session());
 }
 
+// Tests that the Enter key does not attempt to perform capture or image search.
+TEST_F(SunfishTest, PressEnterKey) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  // While we are in waiting to select a capture region phase, pressing the
+  // Enter key will do nothing.
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  auto* capture_button =
+      session_test_api.GetCaptureLabelView()->capture_button_container();
+  auto* capture_label = session_test_api.GetCaptureLabelInternalView();
+  ASSERT_TRUE(!capture_button->GetVisible() && capture_label->GetVisible());
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  EXPECT_TRUE(controller->IsActive());
+
+  // Immediately upon region selection, `PerformImageSearch()` and
+  // `OnCaptureImageAttempted()` will be called once.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*proceed=*/true);
+  ASSERT_TRUE(capture_button->GetVisible() && !capture_label->GetVisible());
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_EQ(1, test_delegate->num_capture_image_attempts());
+
+  // Test that pressing the Enter key does not attempt image capture again.
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  EXPECT_EQ(1, test_delegate->num_capture_image_attempts());
+}
+
 // Tests the session UI after a region is dragged and the results panel is
 // shown.
 TEST_F(SunfishTest, OnRegionSelected) {
@@ -136,9 +168,9 @@ TEST_F(SunfishTest, CaptureLabelView) {
   EXPECT_FALSE(capture_button->GetVisible());
   EXPECT_FALSE(capture_label->GetVisible());
 
-  // Release the drag. The label and button are both hidden.
+  // Release the drag. Only the button is shown.
   event_generator->ReleaseLeftButton();
-  EXPECT_FALSE(capture_button->GetVisible());
+  EXPECT_TRUE(capture_button->GetVisible());
   EXPECT_FALSE(capture_label->GetVisible());
 }
 
@@ -186,9 +218,9 @@ TEST_F(SunfishTest, ResetCaptureRegion) {
   // Start sunfish, then select a region.
   auto* controller = CaptureModeController::Get();
   controller->StartSunfishSession();
-  auto* session = controller->capture_mode_session();
-  ASSERT_EQ(BehaviorType::kSunfish,
-            session->active_behavior()->behavior_type());
+  ASSERT_EQ(
+      BehaviorType::kSunfish,
+      controller->capture_mode_session()->active_behavior()->behavior_type());
 
   const gfx::Rect capture_region(100, 100, 600, 500);
   SelectCaptureModeRegion(GetEventGenerator(), capture_region,
@@ -201,7 +233,7 @@ TEST_F(SunfishTest, ResetCaptureRegion) {
 
   controller->StartSunfishSession();
   EXPECT_TRUE(controller->user_capture_region().IsEmpty());
-  CaptureModeSessionTestApi test_api(session);
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
   auto* capture_label = test_api.GetCaptureLabelInternalView();
   EXPECT_TRUE(capture_label->GetVisible());
   EXPECT_EQ(u"Drag to select an area to search", capture_label->GetText());
@@ -358,6 +390,77 @@ TEST_F(SunfishTest, UpdateCursor) {
   // Simulate mouse release in the panel.
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_manager->GetCursor().type());
+}
+
+// Tests that while a video recording is in progress, starting sunfish works
+// correctly.
+TEST_F(SunfishTest, StartRecordingThenStartSunfish) {
+  // Start Capture Mode in a fullscreen video recording mode.
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_FALSE(controller->is_recording_in_progress());
+
+  // Start a video recording.
+  StartVideoRecordingImmediately();
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // Start sunfish session.
+  controller->StartSunfishSession();
+  EXPECT_TRUE(controller->IsActive());
+
+  // Expect the behavior and UI to be updated.
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  EXPECT_EQ(session->active_behavior()->behavior_type(),
+            BehaviorType::kSunfish);
+  CaptureModeSessionTestApi test_api(session);
+  EXPECT_TRUE(views::AsViewClass<SunfishCaptureBarView>(
+      test_api.GetCaptureModeBarView()));
+
+  // Before the drag, only the capture label is visible and is in waiting to
+  // select a capture region phase.
+  auto* capture_button =
+      test_api.GetCaptureLabelView()->capture_button_container();
+  auto* capture_label = test_api.GetCaptureLabelInternalView();
+  EXPECT_FALSE(capture_button->GetVisible());
+  EXPECT_TRUE(capture_label->GetVisible());
+  EXPECT_EQ(u"Drag to select an area to search", capture_label->GetText());
+
+  // Test we can select a region and show the search results panel.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*proceed=*/true);
+  WaitForImageCapturedForSearch();
+  EXPECT_TRUE(session->search_results_panel_widget());
+
+  // Test we can stop video recording.
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  EXPECT_FALSE(controller->is_recording_in_progress());
+}
+
+// Tests that when capture mode session is active, switching between behavior
+// types updates the session type and UI.
+TEST_F(SunfishTest, SwitchBehaviorTypes) {
+  // Start default capture mode session.
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+
+  // Switch to sunfish session.
+  PressAndReleaseKey(ui::VKEY_8,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  VerifyActiveBehavior(BehaviorType::kSunfish);
+
+  // Switch to default capture mode session.
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+
+  // Switch to sunfish session.
+  PressAndReleaseKey(ui::VKEY_8,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  VerifyActiveBehavior(BehaviorType::kSunfish);
 }
 
 }  // namespace ash

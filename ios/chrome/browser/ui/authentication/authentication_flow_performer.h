@@ -32,21 +32,21 @@ class Browser;
                  completion:(ProceduralBlock)completion;
 
 // Fetches the managed status for `identity`.
-- (void)fetchManagedStatus:(ChromeBrowserState*)browserState
+- (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
 // Signs `identity` with `hostedDomain` into `browserState`.
 - (void)signInIdentity:(id<SystemIdentity>)identity
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain
-        toBrowserState:(ChromeBrowserState*)browserState;
+             toProfile:(ProfileIOS*)profile;
 
-// Signs out of `browserState` and sends `didSignOut` to the delegate when
+// Signs out of `profile` and sends `didSignOut` to the delegate when
 // complete.
-- (void)signOutBrowserState:(ChromeBrowserState*)browserState;
+- (void)signOutProfile:(ProfileIOS*)profile;
 
-// Immediately signs out `browserState` without waiting for dependent services.
-- (void)signOutImmediatelyFromBrowserState:(ChromeBrowserState*)browserState;
+// Immediately signs out `profile` without waiting for dependent services.
+- (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile;
 
 // Shows a confirmation dialog for signing in to an account managed by
 // `hostedDomain`. The confirmation dialog's content will be different depending
@@ -68,10 +68,10 @@ class Browser;
                  viewController:(UIViewController*)viewController
                         browser:(Browser*)browser;
 
-- (void)registerUserPolicy:(ChromeBrowserState*)browserState
+- (void)registerUserPolicy:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
-- (void)fetchUserPolicy:(ChromeBrowserState*)browserState
+- (void)fetchUserPolicy:(ProfileIOS*)profile
             withDmToken:(NSString*)dmToken
                clientID:(NSString*)clientID
      userAffiliationIDs:(NSArray<NSString*>*)userAffiliationIDs

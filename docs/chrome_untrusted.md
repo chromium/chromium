@@ -14,7 +14,7 @@ Examples of trustworthy content include, the contents of `chrome://version` whic
 
 It is a new scheme which can be used to serve resources bundled with Chrome and that process untrustworthy content. It has the usual protections provided to `chrome://`, e.g. process isolation, but it won’t be default-granted extra capabilities that are default-granted to `chrome://`.
 
-The `-untrusted` suffix indicates that the WebUI processes untrustworthy content. For example, rendering an image provided by users, parsing a PDF file, etc.
+The `-untrusted` suffix indicates that the [WebUI](webui_explainer.md) processes untrustworthy content. For example, rendering an image provided by users, parsing a PDF file, etc.
 
 The `-untrusted` suffix does not mean the web page is designed to do malicious things, or users should not trust it. Instead, the `-untrusted` suffix is to signal to us, Chromium developers, that this page will process untrustworthy content, and should be assumed to be compromised, much like an ordinary renderer process.
 
@@ -32,10 +32,11 @@ Semantic because it indicates to chromium developers and security reviewers that
 
 Historically, `chrome://` pages have been built with the assumption that they are an extension to the browser process, so `chrome://` web pages are granted special capabilities not granted to ordinary web pages. For example, all `chrome://` pages can use Web APIs like camera and mic without requesting permission.
 
-Some WebUIs would like to be able to process untrustworthy content, but granting these capabilities to a `chrome://` page would violate the rule of 2:
-running in an privileged context:
+Some WebUIs would like to be able to process untrustworthy content, but granting these capabilities to a `chrome://` page would violate the [rule of 2](security/rule-of-2.md):
+
  * a `chrome://` page is considered an extension to the browser process
  * the renderer is written in an unsafe programming language (C++).
+ * running in an privileged context:
 
 By using `chrome-untrusted://` we put the untrustworthy content into a sandboxed and non-privileged environment (an ordinary renderer, with no dangerous capabilities). This brings us back to safety, a compromised `chrome-untrusted://` page is no worse than an ordinary web page.
 
@@ -59,17 +60,17 @@ Any team that requires extra capabilities granted to `chrome-untrusted://` shoul
 
 We recommend using Mojo to expose APIs to `chrome-untrusted://`. Mojo for `chrome-untrusted://` works similarly to how it works for `chrome://` with a few key differences:
 
-* Unlike chrome:// pages, chrome-untrusted:// pages don't get access to all renderer exposed Mojo interfaces by default. Use `PopulateChromeWebUIFrameInterfaceBrokers` to expose WebUI specific interfaces to your WebUI. See [this CL](https://crrev.com/c/3138688/5/chrome/browser/chrome_browser_interface_binders.cc) for example.
+* Unlike `chrome://` pages, `chrome-untrusted://` pages don't get access to all renderer exposed Mojo interfaces by default. Use `PopulateChromeWebUIFrameInterfaceBrokers` to expose WebUI specific interfaces to your WebUI. See [this CL](https://crrev.com/c/3138688/5/chrome/browser/chrome_browser_interface_binders.cc) for example.
 * The exposed interface has a different threat model: a compromised `chrome-untrusted://` page could try to exploit the interface (e.g. sending malformed messages, closing the Mojo pipe).
 
-When exposing extra capabilities to chrome-untrusted://, keep in mind:
+When exposing extra capabilities to `chrome-untrusted://`, keep in mind:
 
 * Don't grant any capabilities that we wouldn't grant to a regular renderer. For example, don't expose unrestricted access to Bluetooth devices, but expose a method that opens a browser-controlled dialog where the user chooses a device.
 * What you received (from the WebUI page) is untrustworthy. You must sanitize and verify its content before processing.
 * What you send (to the WebUI page) could be exfiltrated to the Web. Don't send sensitive information (e.g. user credentials). Only send what you actually need.
 * The difference in Mojo interface lifetimes could lead to use-after-free bugs (e.g. a page reloads itself when it shouldn't). We recommend you create and reinitialize the interface on each page load (using [WebUIPrimaryPageChanged](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/web_ui_controller.h;l=54?q=WebUIPrimaryPageChanged&ss=chromium)), and have the JavaScript bind the interface on page load.
 
-We also recommend using Mojo to communicate between parent and child frames whenever possible. See [this CL](https://crrev.com/c/3222406) for example. 
+We also recommend using Mojo to communicate between parent and child frames whenever possible. See [this CL](https://crrev.com/c/3222406) for example.
 
 You should only use `postMessage()` when transferring objects unsupported by Mojo. For example, Media App uses `postMessage()` to pass a read-only [`FileSystemHandle`](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) file handle to `chrome-untrusted://media-app` from its parent `chrome://media-app`.
 

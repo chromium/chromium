@@ -10,6 +10,9 @@
 
 namespace enterprise_signals::features {
 
+// Allows the reporting of client certificates for managed users.
+BASE_DECLARE_FEATURE(kAllowClientCertificateReportingForUsers);
+
 // Feature flag for new private SecureConnect functions exposing additional
 // device signals.
 BASE_DECLARE_FEATURE(kNewEvSignalsEnabled);

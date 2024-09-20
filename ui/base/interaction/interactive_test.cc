@@ -51,6 +51,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::PressButton(
 InteractionSequence::StepBuilder InteractiveTestApi::SelectMenuItem(
     ElementSpecifier menu_item,
     InputType input_type) {
+  RequireInteractiveTest();
   StepBuilder builder;
   builder.SetDescription("SelectMenuItem()");
   internal::SpecifyElement(builder, menu_item);
@@ -115,6 +116,13 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectDropdownItem(
     ElementSpecifier collection,
     size_t item,
     InputType input_type) {
+  // "Don't care" option directly sets the value; the other actually require
+  // popping out the dropdown menu and selecting an item which is not reliable
+  // in non-interactive tests.
+  if (input_type != InputType::kDontCare) {
+    RequireInteractiveTest();
+  }
+
   StepBuilder builder;
   builder.SetDescription(base::StringPrintf("SelectDropdownItem( %zu )", item));
   internal::SpecifyElement(builder, collection);
@@ -150,6 +158,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::EnterText(
 
 InteractionSequence::StepBuilder InteractiveTestApi::ActivateSurface(
     ElementSpecifier element) {
+  RequireInteractiveTest();
   StepBuilder builder;
   builder.SetDescription("ActivateSurface()");
   internal::SpecifyElement(builder, element);
@@ -340,6 +349,40 @@ InteractiveTestApi::StepBuilder InteractiveTestApi::SetOnIncompatibleAction(
         test->private_test_impl().on_incompatible_action_reason_ = reason;
       },
       base::Unretained(this), action, std::string(reason)));
+}
+
+constexpr char kInteractiveErrorMessage[] = R"(
+
+The test verb you are trying to use requires an interactive test environment.
+
+This is one in which the test can safely control things like mouse movement and
+window activation, without having to worry about other processes making changes
+that can cause flakiness.
+
+Q: But I was just selecting a menu item!
+A: In tests where process exclusivity is not guaranteed, if the test application
+   loses focus, the menu could unexpectedly close, leading to flakiness. We want
+   to preemptively avoid these flakes.
+
+Solutions:
+ - Use PressButton() instead of MoveMouseTo() + ClickMouse()
+ - Move your browser test from browser_tests to interactive_ui_tests
+ - Move your Ash test into chromeos_integration_tests
+
+How to make a browser test interactive:
+ - Rename your test file from *_browsertest.cc to *_interactive_uitest.cc
+    * e.g. my_system_browsertest.cc -> my_system_interactive_uitest.cc
+ - Rename your test class from *Browsertest to *UiTest
+    * e.g. MySystemBrowserTest -> MySystemUiTest
+ - Edit chrome/test/BUILD.gn to move your test from the "browser_tests" target
+   to the "interactive_ui_tests" target.
+    * Ensure that if your test only ran in certain configurations, in
+      browser_tests, it is gated by the same conditions in interactive_ui_tests.
+)";
+
+void InteractiveTestApi::RequireInteractiveTest() {
+  CHECK(internal::InteractiveTestPrivate::allow_interactive_test_verbs_)
+      << kInteractiveErrorMessage;
 }
 
 bool InteractiveTestApi::RunTestSequenceImpl(

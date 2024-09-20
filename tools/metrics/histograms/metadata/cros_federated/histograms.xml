@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="FederatedService.ServiceEvent" enum="FederatedServiceEvent"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>cros-federated-team@google.com</owner>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FederatedService.TrainingConditionToContinue"
-    enum="FederatedTrainingConditionResult" expires_after="2025-01-05">
+    enum="FederatedTrainingConditionResult" expires_after="2025-03-09">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>amandadeacon@chromium.org</owner>
@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FederatedService.TrainingConditionToStart"
-    enum="FederatedTrainingConditionResult" expires_after="2025-01-05">
+    enum="FederatedTrainingConditionResult" expires_after="2025-03-09">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>amandadeacon@chromium.org</owner>
@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FederatedService.{Population}.Event"
-    enum="FederatedClientEvent" expires_after="2025-01-05">
+    enum="FederatedClientEvent" expires_after="2025-03-09">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>cros-federated-team@google.com</owner>

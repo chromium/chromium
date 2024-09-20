@@ -24,6 +24,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -362,6 +363,24 @@ void ContentPasswordManagerDriver::GeneratePassword(
     autofill::mojom::PasswordGenerationAgent::TriggeredGeneratePasswordCallback
         callback) {
   GetPasswordGenerationAgent()->TriggeredGeneratePassword(std::move(callback));
+}
+
+bool ContentPasswordManagerDriver::IsPasswordFieldForPasswordManager(
+    autofill::FieldRendererId field_renderer_id,
+    const content::ContextMenuParams& params) {
+  if (params.form_control_type ==
+          blink::mojom::FormControlType::kInputPassword ||
+      params.is_password_type_by_heuristics) {
+    return true;
+  }
+
+  password_manager::PasswordGenerationFrameHelper*
+      password_generation_frame_helper = GetPasswordGenerationHelper();
+  if (!password_generation_frame_helper) {
+    return false;
+  }
+  return password_generation_frame_helper->IsManualGenerationEnabledField(
+      field_renderer_id);
 }
 
 void ContentPasswordManagerDriver::PasswordFormsParsed(

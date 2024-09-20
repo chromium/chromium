@@ -19,6 +19,15 @@ enum TabOrganizationState {
   kFailure,
 };
 
+// These values are persisted and must not be renumbered or reordered.
+[Stable, Extensible]
+enum TabOrganizationFeature {
+  [Default] kNone = 0,
+  kSelector = 1,
+  kAutoTabGroups = 2,
+  kDeclutter = 3,
+};
+
 enum TabOrganizationError {
   kNone,
   kGrouping,
@@ -214,14 +223,18 @@ interface PageHandler {
   // Bulk close multiple tabs as part of the declutter workflow.
   DeclutterTabs(array<int32> tab_ids);
 
-  // Accept the tab organization, updated with the specified name and tab list.
+  // Accept the tab organization, updated with the specified tab list.
   AcceptTabOrganization(int32 session_id,
                         int32 organization_id,
-                        mojo_base.mojom.String16 name,
                         array<Tab> tabs);
 
   // Reject the tab organization.
   RejectTabOrganization(int32 session_id, int32 organization_id);
+
+  // Rename the tab organization.
+  RenameTabOrganization(int32 session_id,
+                        int32 organization_id,
+                        mojo_base.mojom.String16 name);
 
   // Exclude the given tab from the stale tabs list.
   ExcludeFromStaleTabs(int32 tab_id);
@@ -231,6 +244,9 @@ interface PageHandler {
 
   // Get all tabs that are considered stale based on their last active time.
   GetStaleTabs() => (array<Tab> tabs);
+
+  // Get the currently active tab organization feature.
+  GetTabOrganizationFeature() => (TabOrganizationFeature feature);
 
   // Get the current tab organization session info.
   GetTabOrganizationSession() => (TabOrganizationSession session);
@@ -263,6 +279,10 @@ interface PageHandler {
   // Set the user preference for which tab the tab search UI should display
   // when next shown.
   SetTabIndex(int32 index);
+
+  // Set the user preference for which feature the tab organization selector
+  // should display when next shown.
+  SetOrganizationFeature(TabOrganizationFeature feature);
 
   // Force trigger the tab group tutorial.
   StartTabGroupTutorial();
@@ -319,6 +339,10 @@ interface Page {
 
   // Called when the top level bubble tab should change.
   TabSearchTabIndexChanged(int32 index);
+
+  // Called when the feature shown by the tab organization selector should
+  // change.
+  TabOrganizationFeatureChanged(TabOrganizationFeature feature);
 
   // Called when state of whether the first run experience should be shown
   // changes.

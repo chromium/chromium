@@ -13,10 +13,9 @@ import android.view.View.AccessibilityDelegate;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.IphProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -54,6 +53,10 @@ public class TabProperties {
 
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
 
+    // TODO(crbug.com/365972761): Move this to `TabGroupProperties` when it is created.
+    public static final WritableObjectPropertyKey<String> COLLABORATION_ID =
+            new WritableObjectPropertyKey<>();
+
     public static final ReadableBooleanPropertyKey IS_INCOGNITO = new ReadableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<TabActionListener> TAB_CLICK_LISTENER =
@@ -62,9 +65,10 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabActionListener> TAB_LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<TabActionListener> TAB_ACTION_BUTTON_LISTENER =
+    public static final WritableObjectPropertyKey<TabActionButtonData> TAB_ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey<>();
 
+    // TODO(crbug.com/365973166): Move this to `TabStripProperties` when it is created.
     /**
      * Indicator that a {@link TabProperties.FAVICON_FETCHER} has completed fetching a favicon. Only
      * used by TabStrip for the {@link TabStripSnapshotter}.
@@ -82,9 +86,6 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<Size> GRID_CARD_SIZE =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<IphProvider> IPH_PROVIDER =
-            new WritableObjectPropertyKey<>();
-
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
@@ -100,14 +101,15 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<AccessibilityDelegate> ACCESSIBILITY_DELEGATE =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<ShoppingPersistedTabDataFetcher>
-            SHOPPING_PERSISTED_TAB_DATA_FETCHER = new WritableObjectPropertyKey<>(true);
-
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION_STRING =
             new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> ACTION_BUTTON_DESCRIPTION_STRING =
             new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<ShoppingPersistedTabDataFetcher>
+            SHOPPING_PERSISTED_TAB_DATA_FETCHER = new WritableObjectPropertyKey<>(true);
+
     public static final WritableBooleanPropertyKey SHOULD_SHOW_PRICE_DROP_TOOLTIP =
             new WritableBooleanPropertyKey();
 
@@ -119,12 +121,11 @@ public class TabProperties {
     public static final WritableBooleanPropertyKey USE_SHRINK_CLOSE_ANIMATION =
             new WritableBooleanPropertyKey();
 
+    // TODO(crbug.com/365972761): Move this to `TabGroupProperties` when it is created.
     /** The {@link TabGroupColorId} for a tab group representation's color in TabListMode only. */
     public static final WritableIntPropertyKey TAB_GROUP_COLOR_ID = new WritableIntPropertyKey();
 
-    public static final WritableObjectPropertyKey<TabGroupInfo> TAB_GROUP_INFO =
-            new WritableObjectPropertyKey<>();
-
+    // TODO(crbug.com/365973166): Move this to `TabStripProperties` when it is created.
     public static final WritableBooleanPropertyKey HAS_NOTIFICATION_BUBBLE =
             new WritableBooleanPropertyKey();
 
@@ -135,16 +136,16 @@ public class TabProperties {
             new PropertyKey[] {
                 TAB_ACTION_STATE,
                 TAB_ID,
+                COLLABORATION_ID,
                 IS_INCOGNITO,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
-                TAB_ACTION_BUTTON_LISTENER,
+                TAB_ACTION_BUTTON_DATA,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
                 IS_SELECTED,
                 GRID_CARD_SIZE,
                 THUMBNAIL_FETCHER,
-                IPH_PROVIDER,
                 TITLE,
                 CARD_ALPHA,
                 CARD_ANIMATION_STATUS,
@@ -158,7 +159,6 @@ public class TabProperties {
                 SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                 QUICK_DELETE_ANIMATION_STATUS,
                 TAB_GROUP_COLOR_ID,
-                TAB_GROUP_INFO,
                 VISIBILITY,
                 USE_SHRINK_CLOSE_ANIMATION,
                 HAS_NOTIFICATION_BUBBLE,
@@ -170,7 +170,7 @@ public class TabProperties {
                 TAB_ID,
                 IS_INCOGNITO,
                 TAB_CLICK_LISTENER,
-                TAB_ACTION_BUTTON_LISTENER,
+                TAB_ACTION_BUTTON_DATA,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
                 IS_SELECTED,
@@ -180,7 +180,7 @@ public class TabProperties {
 
     public static final WritableObjectPropertyKey[] TAB_ACTION_STATE_OBJECT_KEYS =
             new WritableObjectPropertyKey[] {
-                TAB_ACTION_BUTTON_LISTENER,
+                TAB_ACTION_BUTTON_DATA,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
                 ACTION_BUTTON_DESCRIPTION_STRING,

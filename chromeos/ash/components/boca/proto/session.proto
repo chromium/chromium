@@ -147,11 +147,14 @@ message ActiveTab {
 }
 
 message CaptionsActivity {
+  reserved 2, 3;
+
   string language_code = 1;
 
-  Timestamp time_enabled = 2;
+  // Set to "false" to denote disabled captions.
+  bool enabled = 4;
 
-  Timestamp time_disabled = 3;
+  Timestamp activity_time = 5;
 }
 
 message TeacherCaptionsConfig {

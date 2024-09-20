@@ -75,6 +75,12 @@ NetworkDelegateImpl::OnGetStorageAccessStatus(const URLRequest& request) const {
   return std::nullopt;
 }
 
+bool NetworkDelegateImpl::OnIsStorageAccessHeaderEnabled(
+    const url::Origin* top_frame_origin,
+    const GURL& url) const {
+  return false;
+}
+
 NetworkDelegate::PrivacySetting NetworkDelegateImpl::OnForcePrivacyMode(
     const URLRequest& request) const {
   return NetworkDelegate::PrivacySetting::kStateAllowed;

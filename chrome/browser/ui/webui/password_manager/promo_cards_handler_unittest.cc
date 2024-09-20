@@ -171,7 +171,7 @@ TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
   promo_cards.emplace_back("relaunch_chrome_promo");
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   promo_cards.emplace_back("screenlock_reauth_promo");
 #endif
   task_environment()->RunUntilIdle();

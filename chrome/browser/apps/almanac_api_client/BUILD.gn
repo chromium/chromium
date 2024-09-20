@@ -76,6 +76,7 @@ source_set("unit_tests") {
     ":almanac_api_client",
     "//base",
     "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/apps/almanac_api_client/proto:test_proto",
     "//chrome/common:channel_info",
     "//chrome/test:test_support",
     "//chromeos/ash/components/system",

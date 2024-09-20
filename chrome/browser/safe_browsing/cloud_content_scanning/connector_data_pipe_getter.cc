@@ -177,6 +177,11 @@ ConnectorDataPipeGetter::ConnectorDataPipeGetter(
                               base::ReadOnlySharedMemoryMapping()) {
   file_data_pipe_ = true;
   CHECK(file_->IsValid());
+
+  if (enterprise_obfuscation::IsFileObfuscationEnabled()) {
+    deobfuscator_ =
+        std::make_unique<enterprise_obfuscation::DownloadObfuscator>();
+  }
 }
 
 ConnectorDataPipeGetter::ConnectorDataPipeGetter(
@@ -205,7 +210,18 @@ void ConnectorDataPipeGetter::Read(mojo::ScopedDataPipeProducerHandle pipe,
                                    ReadCallback callback) {
   Reset();
 
-  std::move(callback).Run(net::OK, FullSize());
+  if (deobfuscator_ && file_data_pipe_) {
+    CHECK(file_->IsValid());
+    auto overhead =
+        deobfuscator_->CalculateDeobfuscationOverhead(file_->bytes());
+    if (!overhead.value()) {
+      return;
+    }
+    // Pass the size of the deobfuscated data to the data pipe producer.
+    std::move(callback).Run(net::OK, FullSize() - overhead.value());
+  } else {
+    std::move(callback).Run(net::OK, FullSize());
+  }
 
   pipe_ = std::move(pipe);
   watcher_ = std::make_unique<mojo::SimpleWatcher>(
@@ -306,7 +322,31 @@ bool ConnectorDataPipeGetter::WriteFileData() {
 
   base::span<const uint8_t> bytes = file_->bytes();
   bytes = bytes.subspan(base::checked_cast<size_t>(file_offset));
-  return Write(bytes);
+
+  if (!deobfuscator_) {
+    return Write(bytes);
+  }
+
+  // For obfuscated files, we deobfuscate chunk by chunk and write it
+  // incrementally.
+  while (!bytes.empty()) {
+    auto deobfuscated_chunk = deobfuscator_->GetNextDeobfuscatedChunk(bytes);
+    if (!deobfuscated_chunk.has_value()) {
+      Reset();
+      return false;
+    }
+
+    if (!Write(deobfuscated_chunk.value())) {
+      return false;
+    }
+
+    size_t offset = deobfuscator_->GetNextChunkOffset();
+
+    // Update positions and move to the next chunk to deobfuscate.
+    write_position_ += offset;
+    bytes = bytes.subspan(offset);
+  }
+  return true;
 }
 
 bool ConnectorDataPipeGetter::WritePageData() {
@@ -339,7 +379,13 @@ bool ConnectorDataPipeGetter::Write(base::span<const uint8_t> data) {
     }
 
     data = data.subspan(actually_written_bytes);
-    write_position_ += actually_written_bytes;
+    if (deobfuscator_) {
+      // Update write position within the current deobfuscated chunk for the
+      // next call.
+      deobfuscator_->UpdateDeobfuscatedChunkPosition(actually_written_bytes);
+    } else {
+      write_position_ += actually_written_bytes;
+    }
   }
 }
 

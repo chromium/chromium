@@ -26,9 +26,10 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -37,6 +38,7 @@
 #include "components/user_education/common/new_badge_controller.h"
 #include "ui/base/base_window.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/origin.h"
@@ -590,8 +592,10 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void ShowCaretBrowsingDialog() = 0;
 
   // Create and open the tab search bubble. Optionally force it to open to the
-  // given tab index.
-  virtual void CreateTabSearchBubble(int tab_index) = 0;
+  // given tab index and organization feature index.
+  virtual void CreateTabSearchBubble(
+      int tab_index,
+      tab_search::mojom::TabOrganizationFeature organization_feature) = 0;
   // Closes the tab search bubble if open for the given browser instance.
   virtual void CloseTabSearchBubble() = 0;
 
@@ -705,7 +709,7 @@ class BrowserWindow : public ui::BaseWindow {
   // "native" resizability.
   virtual bool GetCanResize() = 0;
 
-  virtual ui::WindowShowState GetWindowShowState() const = 0;
+  virtual ui::mojom::WindowShowState GetWindowShowState() const = 0;
 
   // Shows the Chrome Labs bubble if enabled.
   virtual void ShowChromeLabs() = 0;

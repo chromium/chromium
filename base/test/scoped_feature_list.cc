@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/features.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,8 +22,7 @@
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/task_environment.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 // A struct describes ParsedEnableFeatures()' result.
 struct ScopedFeatureList::FeatureWithStudyGroup {
@@ -73,8 +73,9 @@ struct ScopedFeatureList::FeatureWithStudyGroup {
   bool has_params() const { return !params.empty(); }
 
   std::string ParamsForFeatureList() const {
-    if (params.empty())
+    if (params.empty()) {
       return "";
+    }
     return ":" + params;
   }
 
@@ -167,13 +168,15 @@ std::string_view GetFeatureName(std::string_view feature) {
   std::string_view feature_name = feature;
 
   // Remove default info.
-  if (StartsWith(feature_name, "*"))
+  if (StartsWith(feature_name, "*")) {
     feature_name = feature_name.substr(1);
+  }
 
   // Remove field_trial info.
   std::size_t index = feature_name.find("<");
-  if (index != std::string::npos)
+  if (index != std::string::npos) {
     feature_name = feature_name.substr(0, index);
+  }
 
   return feature_name;
 }
@@ -242,8 +245,9 @@ std::string HexEncodeString(const std::string& input) {
 
 // Inverse of HexEncodeString().
 std::string HexDecodeString(const std::string& input) {
-  if (input.empty())
+  if (input.empty()) {
     return std::string();
+  }
   std::string bytes;
   bool result = HexStringToString(input, &bytes);
   DCHECK(result);
@@ -300,8 +304,9 @@ ScopedFeatureList::~ScopedFeatureList() {
 
 void ScopedFeatureList::Reset() {
   // If one of the Init() functions was never called, don't reset anything.
-  if (!init_called_)
+  if (!init_called_) {
     return;
+  }
 
   init_called_ = false;
 
@@ -339,8 +344,9 @@ void ScopedFeatureList::Reset() {
     original_field_trial_list_ = nullptr;
   }
 
-  if (original_feature_list_)
+  if (original_feature_list_) {
     FeatureList::RestoreInstanceForTesting(std::move(original_feature_list_));
+  }
 }
 
 void ScopedFeatureList::Init() {
@@ -459,8 +465,9 @@ void ScopedFeatureList::InitWithFeaturesImpl(
       std::string params;
       for (const auto& param : feature.params) {
         // Add separator from previous param information if it exists.
-        if (!params.empty())
+        if (!params.empty()) {
           params.append(1, '/');
+        }
         params.append(EscapeValue(param.first));
         params.append(1, '/');
         params.append(EscapeValue(param.second));
@@ -471,11 +478,24 @@ void ScopedFeatureList::InitWithFeaturesImpl(
     }
     create_associated_field_trials = true;
   } else {
-    for (const auto& feature : enabled_features)
+    for (const auto& feature : enabled_features) {
       merged_features.enabled_feature_list.emplace_back(feature->name);
+    }
   }
-  for (const auto& feature : disabled_features)
+  // If there is any parameter override, we need to disable parameter cache so
+  // that the FeatureParam doesn't pick up a cached value.
+  bool need_to_disable_parameter_cache = create_associated_field_trials;
+  for (const auto& feature : disabled_features) {
     merged_features.disabled_feature_list.emplace_back(feature->name);
+    if (feature->name == features::kFeatureParamWithCache.name) {
+      // Reset the flag as the cache is already ordered to be disabled.
+      need_to_disable_parameter_cache = false;
+    }
+  }
+  if (need_to_disable_parameter_cache) {
+    merged_features.disabled_feature_list.emplace_back(
+        features::kFeatureParamWithCache.name);
+  }
 
   InitWithMergedFeatures(std::move(merged_features),
                          create_associated_field_trials, keep_existing_states);
@@ -531,8 +551,9 @@ void ScopedFeatureList::InitWithMergedFeatures(
     // If we don't need to create any field trials for the |feature| (i.e.
     // unless |create_associated_field_trials|=true or |feature| has any
     // params), we can skip the code: EraseIf()...ClearParamsForTesting().
-    if (!(create_associated_field_trials || feature.has_params()))
+    if (!(create_associated_field_trials || feature.has_params())) {
       continue;
+    }
 
     // |all_states| contains the existing field trials, and is used to
     // restore the field trials into a newly created field trial list with
@@ -592,5 +613,4 @@ void ScopedFeatureList::InitWithMergedFeatures(
   InitWithFeatureList(std::move(new_feature_list));
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

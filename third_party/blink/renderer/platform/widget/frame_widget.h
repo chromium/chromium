@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
 #include "ui/gfx/mojom/delegated_ink_metadata.mojom-blink.h"
 
 namespace cc {
@@ -127,7 +127,7 @@ class PLATFORM_EXPORT FrameWidget {
   virtual mojom::blink::DisplayMode DisplayMode() const = 0;
 
   // Returns the WindowShowState in use for the widget.
-  virtual ui::WindowShowState WindowShowState() const = 0;
+  virtual ui::mojom::blink::WindowShowState WindowShowState() const = 0;
 
   // Returns the CanResize value of the widget.
   virtual bool Resizable() const = 0;

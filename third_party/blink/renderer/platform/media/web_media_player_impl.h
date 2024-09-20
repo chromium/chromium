@@ -53,6 +53,7 @@
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/media/learning_experiment_helper.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 #include "third_party/blink/renderer/platform/media/smoothness_helper.h"
@@ -147,7 +148,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner>
           video_frame_compositor_task_runner,
-      WebMediaPlayerBuilder::AdjustAllocatedMemoryCB adjust_allocated_memory_cb,
       WebContentDecryptionModule* initial_cdm,
       media::RequestRoutingTokenCallback request_routing_token_cb,
       base::WeakPtr<media::MediaObserver> media_observer,
@@ -185,8 +185,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void SetVolume(double volume) override;
   void SetLatencyHint(double seconds) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) override;
+  void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) override;
   void OnRequestPictureInPicture() override;
   void OnTimeUpdate() override;
   bool SetSinkId(const WebString& sink_id,
@@ -213,9 +213,12 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool HasAudio() const override;
 
   void EnabledAudioTracksChanged(
-      const WebVector<WebMediaPlayer::TrackId>& enabledTrackIds) override;
+      const WebVector<WebMediaPlayer::TrackId>& enabled_track_ids) override;
   void SelectedVideoTrackChanged(
-      WebMediaPlayer::TrackId* selectedTrackId) override;
+      std::optional<WebMediaPlayer::TrackId> selected_track_id) override;
+
+  void OnEnabledAudioTracksChanged(std::vector<media::MediaTrack::Id>);
+  void OnSelectedVideoTrackChanged(std::optional<media::MediaTrack::Id>);
 
   // Dimensions of the video.
   gfx::Size NaturalSize() const override;
@@ -446,18 +449,12 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void DemuxerRequestsSeek(base::TimeDelta seek_time) override;
 
 #if BUILDFLAG(ENABLE_FFMPEG)
-  void AddAudioTrack(const std::string& id,
-                     const std::string& label,
-                     const std::string& language,
-                     bool is_first_track) override;
-  void AddVideoTrack(const std::string& id,
-                     const std::string& label,
-                     const std::string& language,
-                     bool is_first_track) override;
+  void AddMediaTrack(const media::MediaTrack&) override;
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   void GetUrlData(const GURL& gurl,
+                  bool ignore_cache,
                   base::OnceCallback<void(scoped_refptr<UrlData>)> cb);
   base::SequenceBound<media::HlsDataSourceProvider> GetHlsDataSourceProvider()
       override;
@@ -870,7 +867,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Members for notifying upstream clients about internal memory usage.  The
   // |adjust_allocated_memory_cb_| must only be called on |main_task_runner_|.
   base::RepeatingTimer memory_usage_reporting_timer_;
-  WebMediaPlayerBuilder::AdjustAllocatedMemoryCB adjust_allocated_memory_cb_;
+  raw_ptr<v8::Isolate> isolate_;
+  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
   int64_t last_reported_memory_usage_ = 0;
   std::unique_ptr<media::MemoryDumpProviderProxy> main_thread_mem_dumper_;
   std::unique_ptr<media::MemoryDumpProviderProxy> media_thread_mem_dumper_;

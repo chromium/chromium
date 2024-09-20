@@ -50,7 +50,7 @@ void OnReadDirectoryOnUIThread(
   storage::AsyncFileUtil::EntryList entries;
   entries.reserve(files.size());
   for (const auto& file : files) {
-    entries.emplace_back(base::FilePath(file.name),
+    entries.emplace_back(base::FilePath(file.name), base::FilePath(),
                          file.is_directory
                              ? filesystem::mojom::FsFileType::DIRECTORY
                              : filesystem::mojom::FsFileType::REGULAR_FILE);

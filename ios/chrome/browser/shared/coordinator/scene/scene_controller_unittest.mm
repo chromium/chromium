@@ -40,6 +40,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -289,7 +290,7 @@ TEST_F(SceneControllerTest, TestReportAnIssueViewControllerWithFamilyResponse) {
       base::BindRepeating(^(UserFeedbackData* data) {
         EXPECT_EQ(UserFeedbackSender::ToolsMenu, data.origin);
         EXPECT_FALSE(data.currentPageIsIncognito);
-        EXPECT_TRUE([data.familyMemberRole isEqualToString:@"child"]);
+        EXPECT_NSEQ(data.familyMemberRole, @"child");
       }).Then(run_loop.QuitClosure());
 
   [scene_controller_

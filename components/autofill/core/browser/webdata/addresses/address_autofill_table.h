@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
@@ -93,19 +94,18 @@ class AddressAutofillTable : public WebDatabaseTable {
   // indicates where the profile was synced from.
   bool RemoveAutofillProfile(const std::string& guid);
 
-  // Removes all profiles from the given `record_type`.
-  bool RemoveAllAutofillProfiles(AutofillProfile::RecordType record_type);
+  // Removes all profiles of the given `record_types`.
+  bool RemoveAllAutofillProfiles(
+      DenseSet<AutofillProfile::RecordType> record_types);
 
   // Retrieves a profile with guid `guid`.
   std::optional<AutofillProfile> GetAutofillProfile(
       const std::string& guid) const;
 
   // Retrieves profiles in the database. They are returned in unspecified order.
-  // The `record_type` specifies if profiles from the legacy or the remote
-  // backend should be retrieved. If nullopt, all profiles are returned.
-  bool GetAutofillProfiles(
-      std::optional<AutofillProfile::RecordType> record_type,
-      std::vector<AutofillProfile>& profiles) const;
+  // `record_types` specifies which record types to consider.
+  bool GetAutofillProfiles(DenseSet<AutofillProfile::RecordType> record_types,
+                           std::vector<AutofillProfile>& profiles) const;
 
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as

@@ -262,6 +262,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Commit"/>
 </enum>
 
+<!-- LINT.IfChange(HistoryNavigationDirection) -->
+
+<enum name="HistoryNavigationDirection">
+  <int value="0" label="Back"/>
+  <int value="1" label="Forward"/>
+  <int value="2" label="Same entry (e.g. session restore)"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/back_forward_cache_metrics.h:HistoryNavigationDirection) -->
+
 <enum name="HistoryNavType">
   <int value="0" label="kMainFrame"/>
   <int value="1" label="kMainFrameAndSubframe"/>
@@ -402,6 +412,24 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/navigation_throttle_runner.h:Event)-->
+
+<enum name="NavigationTransitionCacheHitOrMissReason">
+  <int value="0" label="Cache Hit"/>
+  <int value="1" label="Sent Screenshot Request"/>
+  <int value="2" label="Captured Empty Bitmap"/>
+  <int value="3" label="Cache Miss Subframe"/>
+  <int value="4" label="Cache Miss Evicted"/>
+  <int value="5" label="Cache Miss Purged Memory Pressure"/>
+  <int value="6" label="Cache Miss Cold Start"/>
+  <int value="7" label="Cache Miss Cloned Navigation Entry"/>
+  <int value="8" label="Cache Miss Embedded Pages"/>
+  <int value="9" label="Cache Miss CCNS"/>
+  <int value="10" label="Cache Miss Invisible"/>
+  <int value="11" label="Cache Miss Prefers Reduced Motion"/>
+  <int value="12" label="Cache Miss Screenshot Orientation"/>
+  <int value="13" label="Navigate away from a crashed page"/>
+  <int value="14" label="Navigate away from a crashed page (no early swap)"/>
+</enum>
 
 <enum name="NavigationWasServedFromCache">
   <int value="0" label="Navigation wasn't served from cache"/>

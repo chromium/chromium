@@ -152,6 +152,7 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 
@@ -1473,7 +1474,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 // Makes sure the browser doesn't crash when
-// set_show_state(ui::SHOW_STATE_MAXIMIZED) has been invoked.
+// set_show_state(ui::mojom::WindowShowState::kMaximized) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
   Browser::CreateParams params[] = {
       Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
@@ -1487,7 +1488,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
                             browser()->profile(), true),
   };
   for (size_t i = 0; i < std::size(params); ++i) {
-    params[i].initial_show_state = ui::SHOW_STATE_MAXIMIZED;
+    params[i].initial_show_state = ui::mojom::WindowShowState::kMaximized;
     AddBlankTabAndShow(Browser::Create(params[i]));
   }
 }
@@ -1499,7 +1500,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
 #define MAYBE_StartMinimized StartMinimized
 #endif
 // Makes sure the browser doesn't crash when
-// set_show_state(ui::SHOW_STATE_MINIMIZED) has been invoked.
+// set_show_state(ui::mojom::WindowShowState::kMinimized) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_StartMinimized) {
   Browser::CreateParams params[] = {
       Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
@@ -1513,7 +1514,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_StartMinimized) {
                             browser()->profile(), true),
   };
   for (size_t i = 0; i < std::size(params); ++i) {
-    params[i].initial_show_state = ui::SHOW_STATE_MINIMIZED;
+    params[i].initial_show_state = ui::mojom::WindowShowState::kMinimized;
     AddBlankTabAndShow(Browser::Create(params[i]));
   }
 }

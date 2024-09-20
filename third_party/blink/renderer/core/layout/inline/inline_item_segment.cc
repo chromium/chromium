@@ -21,17 +21,16 @@ namespace blink {
 namespace {
 
 // Constants for PackSegmentData() and UnpackSegmentData().
-//
-// UScriptCode is -1 (USCRIPT_INVALID_CODE) to 177 as of ICU 60.
-// This can be packed to 8 bits, by handling -1 separately.
-static constexpr unsigned kScriptBits = 8;
-static constexpr unsigned kFontFallbackPriorityBits = 3;
-static constexpr unsigned kRenderOrientationBits = 1;
+inline constexpr unsigned kScriptBits = InlineItemSegment::kScriptBits;
+inline constexpr unsigned kFontFallbackPriorityBits =
+    InlineItemSegment::kFontFallbackPriorityBits;
+inline constexpr unsigned kRenderOrientationBits =
+    InlineItemSegment::kRenderOrientationBits;
 
-static constexpr unsigned kScriptMask = (1 << kScriptBits) - 1;
-static constexpr unsigned kFontFallbackPriorityMask =
+inline constexpr unsigned kScriptMask = (1 << kScriptBits) - 1;
+inline constexpr unsigned kFontFallbackPriorityMask =
     (1 << kFontFallbackPriorityBits) - 1;
-static constexpr unsigned kRenderOrientationMask =
+inline constexpr unsigned kRenderOrientationMask =
     (1 << kRenderOrientationBits) - 1;
 
 static_assert(InlineItemSegment::kSegmentDataBits ==

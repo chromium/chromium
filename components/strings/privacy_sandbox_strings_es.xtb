@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="1444443021901415601">Chrome toma nota de temas de interés basados en tu historial de navegación reciente</translation>
 <translation id="2252052615723281030">Si has iniciado sesión en Chrome, esta opción te ayuda a que tu dirección IP se mantenga privada. En caso de que Chrome sospeche que un sitio te puede estar rastreando, parte de tu tráfico puede enviarse a través de servidores de privacidad.</translation>
+<translation id="2793385791865768072">Chrome toma nota de temas de interés basados en tu historial de navegación reciente</translation>
 <translation id="33479675708419823">Si has iniciado sesión en Chrome, esta opción ayuda a que tu dirección IP se mantenga privada. En caso de que Chrome sospeche que un sitio te puede estar rastreando, parte de tu tráfico puede enviarse a través de servidores de privacidad. <ph name="LINK_BEGIN" />Más información sobre cómo funciona la protección de IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Más información sobre ocultar tu dirección IP</translation>
+<translation id="4041687306270459969">Los temas de anuncios con más de 4 semanas de antigüedad se eliminan automáticamente. Entre los temas se incluyen deportes, ropa y otros.</translation>
+<translation id="4177501066905053472">Temas de anuncios</translation>
 <translation id="4301151630239508244">Los temas de anuncios son solo una de las muchas cosas que un sitio puede usar para personalizar anuncios. Incluso sin los temas de anuncios, los sitios pueden seguir mostrándote anuncios, pero pueden estar menos personalizados. Consulta más información sobre cómo <ph name="BEGIN_LINK_1" />gestionar la privacidad en la publicidad<ph name="END_LINK_1" />.</translation>
+<translation id="453692855554576066">Puedes ver tus temas de anuncios en la configuración de Chromium y bloquear los que no quieras que se compartan con sitios</translation>
 <translation id="4598427486995631491">Ocultar tu dirección IP</translation>
+<translation id="4692439979815346597">Puedes ver tus temas de anuncios en la configuración de Chrome y bloquear los que no quieras que se compartan con los sitios</translation>
+<translation id="5413586988657235240">Los sitios que visites pueden solicitar temas a Chromium para mostrarte anuncios relevantes y proteger tu historial de navegación y tu identidad</translation>
+<translation id="6186536480878693792">Los sitios que visites pueden solicitar temas a Chrome para mostrarte anuncios relevantes y proteger tu historial de navegación y tu identidad</translation>
 <translation id="6371812158043974664">Si has iniciado sesión en Chromium, esta opción ayuda a que tu dirección IP se mantenga privada. En caso de que Chromium sospeche que un sitio te puede estar rastreando, parte de tu tráfico puede enviarse a través de servidores de privacidad. <ph name="LINK_BEGIN" />Más información sobre cómo funciona la protección de IP<ph name="LINK_END" /></translation>
 <translation id="7040031291654706261"><ph name="BEGIN_LINK" />Más información sobre cómo funciona la protección de IP<ph name="END_LINK" /></translation>
+<translation id="7475768947023614021">Revisa tu configuración de temas de anuncios</translation>
 </translationbundle>

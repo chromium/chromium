@@ -469,8 +469,8 @@ TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
   EXPECT_TRUE(task_dict.empty());
 }
 
-// Tests basic ending moment functionality. Includes starting a new session
-// after the previous ending moment terminates.
+// Tests basic ending moment functionality. Includes verifying that the ending
+// moment is persistent.
 TEST_F(FocusModeControllerMultiUserTest, EndingMoment) {
   SimulateUserLogin(GetUser1AccountId());
   base::TimeDelta kSessionDuration = base::Minutes(20);
@@ -491,14 +491,14 @@ TEST_F(FocusModeControllerMultiUserTest, EndingMoment) {
 
   // Verifies that the ending moment terminates after the specified duration and
   // that there is no longer an existing `current_session`.
-  AdvanceClock(focus_mode_util::kEndingMomentDuration);
-  EXPECT_FALSE(controller->current_session().has_value());
 
-  // Toggling on a focus session after the previous one expires creates
-  // a new `current_session`.
-  controller->ToggleFocusMode();
-  EXPECT_TRUE(controller->current_session().has_value());
-  EXPECT_TRUE(controller->in_focus_session());
+  // Verifies that DND terminates after the initial specified duration, but the
+  // ending moment is persistent.
+  AdvanceClock(focus_mode_util::kInitialEndingMomentDuration);
+  EXPECT_TRUE(controller->in_ending_moment());
+
+  AdvanceClock(base::Minutes(100));
+  EXPECT_TRUE(controller->in_ending_moment());
 }
 
 // Tests that we can start a new/separate focus session during an ongoing ending
@@ -556,10 +556,11 @@ TEST_F(FocusModeControllerMultiUserTest, EndingMomentNudgeTest) {
   EXPECT_EQ(ax::mojom::Role::kNone,
             GetShownEndingMomentNudge()->GetAccessibleWindowRole());
 
-  // Verify that the ending moment terminating also hides the nudge.
-  AdvanceClock(focus_mode_util::kEndingMomentDuration);
-  EXPECT_FALSE(controller->current_session().has_value());
+  // Verify that the nudge hides.
+  AdvanceClock(focus_mode_util::kInitialEndingMomentDuration);
   EXPECT_FALSE(IsEndingMomentNudgeShown());
+
+  controller->ResetFocusSession();
 
   // Trigger the ending moment, then check that the notification disappears when
   // we open the tray bubble.
@@ -602,43 +603,6 @@ TEST_F(FocusModeControllerMultiUserTest, CheckInitialDurationHistograms) {
   histogram_tester.ExpectTotalCount(
       focus_mode_histogram_names::kInitialDurationOnSessionStartsHistogramName,
       2);
-}
-
-// Verify that when we start a focus session, the histogram will record whether
-// there is a selected task or not.
-TEST_F(FocusModeControllerMultiUserTest, CheckHasSelectedTaskHistogram) {
-  base::HistogramTester histogram_tester;
-
-  auto* controller = FocusModeController::Get();
-  EXPECT_FALSE(controller->in_focus_session());
-  histogram_tester.ExpectTotalCount(
-      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
-      0);
-
-  // 1. Start a focus session without a selected task.
-  EXPECT_FALSE(controller->HasSelectedTask());
-  controller->ToggleFocusMode();
-  EXPECT_TRUE(controller->in_focus_session());
-  histogram_tester.ExpectBucketCount(
-      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
-      false, 1);
-  controller->ToggleFocusMode();
-  EXPECT_FALSE(controller->in_focus_session());
-
-  // 2. Start a focus session with a selected task.
-  FocusModeTask task;
-  task.task_id = {.list_id = "abc", .id = "1"};
-  task.title = "Focus Task";
-  task.updated = base::Time::Now();
-
-  controller->SetSelectedTask(task);
-  EXPECT_TRUE(controller->HasSelectedTask());
-
-  controller->ToggleFocusMode();
-  EXPECT_TRUE(controller->in_focus_session());
-  histogram_tester.ExpectBucketCount(
-      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
-      true, 1);
 }
 
 // Tests that the histogram will record how many tasks we selected during a
@@ -875,8 +839,8 @@ TEST_F(FocusModeControllerMultiUserTest, CheckPercentCompletedHistogram) {
   AdvanceClock(current_session->session_duration());
   EXPECT_TRUE(controller->in_ending_moment());
 
-  // After the ending moment expires, the histogram will record 100%.
-  AdvanceClock(focus_mode_util::kEndingMomentDuration);
+  // After the ending moment terminates, the histogram will record 100%.
+  controller->ResetFocusSession();
   histogram_tester.ExpectBucketCount(
       /*name=*/"Ash.FocusMode.PercentOfSessionCompleted.Long",
       /*sample=*/100, /*expected_count=*/1);
@@ -945,8 +909,8 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksCompletedHistogram) {
   EXPECT_TRUE(controller->in_ending_moment());
   controller->CompleteTask();
 
-  // Verify the histogram after the ending moment expires.
-  AdvanceClock(focus_mode_util::kEndingMomentDuration);
+  // Verify the histogram after the ending moment terminates.
+  controller->ResetFocusSession();
   histogram_tester.ExpectBucketCount(
       focus_mode_histogram_names::kTasksCompletedHistogramName,
       /*sample=*/2, /*expected_count=*/1);
@@ -982,23 +946,23 @@ TEST_F(FocusModeControllerMultiUserTest,
   auto* controller = FocusModeController::Get();
   controller->SetInactiveSessionDuration(kShortDuration);
 
-  // 1. Bubble was never opened.
+  // 1. Bubble was opened and closed.
   controller->ToggleFocusMode();
   EXPECT_TRUE(controller->in_focus_session());
 
   AdvanceClock(kShortDuration);
   EXPECT_TRUE(controller->in_ending_moment());
 
-  // After the ending moment expires, the histogram will record 100%.
-  AdvanceClock(focus_mode_util::kEndingMomentDuration);
+  // After the ending moment terminates, the histogram will record 100%.
+  controller->ResetFocusSession();
   EXPECT_FALSE(controller->in_ending_moment());
   histogram_tester.ExpectBucketCount(
       /*name=*/focus_mode_histogram_names::kEndingMomentBubbleActionHistogram,
       /*sample=*/
-      focus_mode_histogram_names::EndingMomentBubbleClosedReason::kIgnored,
+      focus_mode_histogram_names::EndingMomentBubbleClosedReason::kOpended,
       /*expected_count=*/1);
 
-  // 2. Bubble was opened and minutes were added to the session
+  // 2. Bubble was opened and minutes were added to the session.
   controller->ToggleFocusMode();
   EXPECT_TRUE(controller->in_focus_session());
   AdvanceClock(kShortDuration);

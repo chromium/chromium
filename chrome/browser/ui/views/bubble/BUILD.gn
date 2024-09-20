@@ -31,6 +31,7 @@ source_set("bubble") {
     "//chrome/browser/ui:webui_name_variants",
   ]
   deps = [
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/input",
   ]

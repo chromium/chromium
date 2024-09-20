@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -30,6 +32,8 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -49,6 +53,7 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+
 namespace {
 
 LensEntrypoint LensEntrypointFromOverlayEntrypoint(
@@ -62,6 +67,9 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 }
 
 const CGFloat kSelectionOffsetPadding = 50.0f;
+
+NSString* const kCustomConsentSheetDetentIdentifier =
+    @"kCustomConsentSheetDetentIdentifier";
 
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 const CGFloat kMenuSymbolSize = 18;
@@ -92,6 +100,8 @@ const CGFloat kMenuSymbolSize = 18;
   LensResultPageViewController* _resultViewController;
   /// The mediator for lens results.
   LensResultPageMediator* _resultMediator;
+  /// The context menu configuration provider for the result page.
+  ContextMenuConfigurationProvider* _resultContextMenuProvider;
 
   /// The tab helper associated with the current UI.
   LensOverlayTabHelper* _associatedTabHelper;
@@ -135,6 +145,11 @@ const CGFloat kMenuSymbolSize = 18;
   [_selectionViewController setLensOverlayDelegate:_mediator];
   _mediator.lensHandler = _selectionViewController;
   _mediator.commandsHandler = self;
+  // The mediator might destory lens UI if the search engine doesn't support
+  // lens.
+  _mediator.templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
 
   if ([self termsOfServiceAccepted]) {
     [_selectionViewController start];
@@ -225,7 +240,8 @@ const CGFloat kMenuSymbolSize = 18;
 #pragma mark - LensOverlayCommands
 
 - (void)createAndShowLensUI:(BOOL)animated
-                 entrypoint:(LensOverlayEntrypoint)entrypoint {
+                 entrypoint:(LensOverlayEntrypoint)entrypoint
+                 completion:(void (^)(BOOL))completion {
   if ([self isUICreated]) {
     // The UI is probably associated with the non-active tab. Destroy it with no
     // animation.
@@ -242,22 +258,32 @@ const CGFloat kMenuSymbolSize = 18;
 
   __weak __typeof(self) weakSelf = self;
   [self captureSnapshotWithCompletion:^(UIImage* snapshot) {
-    __typeof(self) strongSelf = weakSelf;
-    if (!weakSelf) {
-      return;
-    }
-    if (snapshot == nil) {
-      return;
-    }
-
-    BOOL success = [strongSelf createUIWithSnapshot:snapshot
-                                         entrypoint:entrypoint];
-    if (success) {
-      [strongSelf showLensUI:animated];
-    } else {
-      [strongSelf destroyLensUI:NO];
-    }
+    [weakSelf onSnapshotCaptured:snapshot
+                      entrypoint:entrypoint
+                        animated:animated
+                      completion:completion];
   }];
+}
+
+- (void)onSnapshotCaptured:(UIImage*)snapshot
+                entrypoint:(LensOverlayEntrypoint)entrypoint
+                  animated:(BOOL)animated
+                completion:(void (^)(BOOL))completion {
+  if (!snapshot) {
+    completion(NO);
+    return;
+  }
+
+  BOOL success = [self createUIWithSnapshot:snapshot entrypoint:entrypoint];
+  if (success) {
+    [self showLensUI:animated];
+  } else {
+    [self destroyLensUI:NO];
+  }
+
+  if (completion) {
+    completion(success);
+  }
 }
 
 - (void)showLensUI:(BOOL)animated {
@@ -345,9 +371,20 @@ const CGFloat kMenuSymbolSize = 18;
   UISheetPresentationController* sheet =
       base::apple::ObjCCastStrict<UISheetPresentationController>(
           presentationController);
-  return (![sheet.selectedDetentIdentifier
-      isEqualToString:UISheetPresentationControllerDetent.largeDetent
-                          .identifier]);
+  BOOL isInLargestDetent = [sheet.selectedDetentIdentifier
+      isEqualToString:UISheetPresentationControllerDetentIdentifierLarge];
+
+  // If the user is actively adjusting a selection (by moving the selection
+  // frame), it means the sheet dismissal was incidental and shouldn't be
+  // processed. Only when the sheet is directly dragged downwards should the
+  // dismissal intent be considered.
+  BOOL isSelecting = _selectionViewController.isPanningSelectionUI;
+
+  if (isSelecting || isInLargestDetent) {
+    return NO;
+  }
+
+  return YES;
 }
 
 - (void)presentationControllerDidDismiss:
@@ -356,8 +393,7 @@ const CGFloat kMenuSymbolSize = 18;
       presentationController.presentedViewController;
 
   if (presentedViewController == _resultViewController) {
-    [self stopResultPage];
-    return;
+    [self destroyLensUI:YES];
   }
 }
 
@@ -432,6 +468,16 @@ const CGFloat kMenuSymbolSize = 18;
   }
 }
 
+- (void)didPressLearnMore {
+  OpenNewTabCommand* command = [OpenNewTabCommand
+      commandWithURLFromChrome:GURL(kLearnMoreLensURL)
+                   inIncognito:self.browser->GetBrowserState()
+                                   ->IsOffTheRecord()];
+
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
+      openURLInNewTab:command];
+}
+
 #pragma mark - LensOverlayBottomSheetPresentationDelegate
 
 - (void)requestMaximizeBottomSheet {
@@ -480,7 +526,7 @@ const CGFloat kMenuSymbolSize = 18;
         ::signin::ConsentLevel::kSignin);
     configuration.identity = identity;
   }
-
+  configuration.localState = GetApplicationContext()->GetLocalState();
   return configuration;
 }
 
@@ -500,17 +546,30 @@ const CGFloat kMenuSymbolSize = 18;
   _resultMediator = [[LensResultPageMediator alloc]
        initWithWebStateParams:params
       browserWebStateDelegate:browserWebStateDelegate
+                 webStateList:browser->GetWebStateList()
                   isIncognito:browserState->IsOffTheRecord()];
   _resultMediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  _resultMediator.snackbarHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
   _resultMediator.webStateDelegate = self;
   _resultMediator.presentationDelegate = self;
   _mediator.resultConsumer = _resultMediator;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
+  _resultViewController.mutator = _resultMediator;
+  _resultViewController.toolbarMutator = _mediator;
+
+  _resultContextMenuProvider = [[ContextMenuConfigurationProvider alloc]
+         initWithBrowser:browser
+      baseViewController:_resultViewController
+            baseWebState:_resultMediator.webState
+           isLensOverlay:YES];
+  _resultContextMenuProvider.delegate = _resultMediator;
 
   _resultMediator.consumer = _resultViewController;
   _resultMediator.webViewContainer = _resultViewController.webViewContainer;
+  _resultMediator.contextMenuProvider = _resultContextMenuProvider;
 
   [self showResultsBottomSheet];
 
@@ -544,7 +603,6 @@ const CGFloat kMenuSymbolSize = 18;
 
   _mediator.omniboxCoordinator = _omniboxCoordinator;
   _mediator.toolbarConsumer = _resultViewController;
-  _resultViewController.toolbarMutator = _mediator;
   _omniboxCoordinator.focusDelegate = _mediator;
 }
 
@@ -566,6 +624,8 @@ const CGFloat kMenuSymbolSize = 18;
 
 - (void)stopResultPage {
   [_selectionViewController removeSelectionWithClearText:YES];
+  [_resultContextMenuProvider stop];
+  _resultContextMenuProvider = nil;
   [_resultViewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -704,11 +764,22 @@ const CGFloat kMenuSymbolSize = 18;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
   sheet.largestUndimmedDetentIdentifier =
       [UISheetPresentationControllerDetent largeDetent].identifier;
-  sheet.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
   sheet.prefersGrabberVisible = YES;
+
+  __weak LensOverlayConsentViewController* weakConsentViewController =
+      _consentViewController;
+
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return [weakConsentViewController preferredContentSize].height;
+  };
+
+  UISheetPresentationControllerDetent* customDetent =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kCustomConsentSheetDetentIdentifier
+                            resolver:resolver];
+
+  sheet.detents = @[ customDetent ];
 
   [_containerViewController presentViewController:_consentViewController
                                          animated:YES
@@ -734,6 +805,7 @@ const CGFloat kMenuSymbolSize = 18;
     [UISheetPresentationControllerDetent largeDetent]
   ];
   sheet.prefersGrabberVisible = YES;
+  sheet.preferredCornerRadius = 14;
 
   __weak __typeof(self) weakSelf = self;
   [_containerViewController

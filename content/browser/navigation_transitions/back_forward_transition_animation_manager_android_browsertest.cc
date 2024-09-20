@@ -90,10 +90,11 @@ static constexpr float kFloatTolerance = 0.001f;
   EXPECT_TRANSFORM_NEAR(ViewportTranslationX(expected), (actual), \
                         kFloatTolerance)
 
-#define EXPECT_STATE_EQ(expected, actual)                                  \
-  EXPECT_EQ(expected, actual)                                              \
-      << "Expected: " << BackForwardTransitionAnimator::ToString(expected) \
-      << " but got " << BackForwardTransitionAnimator::ToString(actual);
+#define EXPECT_STATE_EQ(expected, actual)                                      \
+  EXPECT_EQ(expected, actual)                                                  \
+      << "Expected: "                                                          \
+      << BackForwardTransitionAnimator::StateToString(expected) << " but got " \
+      << BackForwardTransitionAnimator::StateToString(actual);
 
 // TODO(liuwilliam): 99 seconds seems arbitrary. Pick a meaningful constant
 // instead.
@@ -3114,6 +3115,79 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       ScreenshotCompression) {
+  SkBitmap expected_pixels;
+  {
+    NavigationEntryScreenshot::SetDisableCompressionForTesting(true);
+    ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+              GreenURL());
+    GetAnimationManager()->OnGestureStarted(
+        ui::BackGestureEvent(0), SwipeEdge::LEFT, NavType::kBackward);
+    GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+    TestFuture<gfx::Image> result;
+    auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
+    ui::GrabWindowSnapshot(window, gfx::Rect(), result.GetCallback());
+    expected_pixels = result.Get().AsBitmap();
+    ASSERT_FALSE(expected_pixels.empty());
+
+    for (int col = 0.6 * expected_pixels.width() + 1;
+         col < expected_pixels.width(); col++) {
+      for (int row = 0; row < expected_pixels.height(); row++) {
+        ASSERT_EQ(expected_pixels.getColor(col, row), SK_ColorGREEN)
+            << col << "," << row << " and image "
+            << cc::GetPNGDataUrl(expected_pixels);
+      }
+    }
+
+    TestFuture<AnimatorState> destroyed;
+    GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
+    GetAnimationManager()->OnGestureInvoked();
+    ASSERT_TRUE(destroyed.Wait());
+    ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+              RedURL());
+    observer.Wait();
+  }
+
+  SkBitmap actual_pixels;
+  {
+    NavigationEntryScreenshot::SetDisableCompressionForTesting(false);
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
+    ASSERT_TRUE(NavigateToURL(web_contents(), GreenURL()));
+    observer.Wait();
+    WaitForCopyableViewInWebContents(web_contents());
+    NavigationTransitionTestUtils::WaitForScreenshotCompressed(
+        web_contents()->GetController(),
+        web_contents()->GetController().GetLastCommittedEntryIndex() - 1);
+
+    GetAnimationManager()->OnGestureStarted(
+        ui::BackGestureEvent(0), SwipeEdge::LEFT, NavType::kBackward);
+    GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+    TestFuture<gfx::Image> result;
+    auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
+    ui::GrabWindowSnapshot(window, gfx::Rect(), result.GetCallback());
+    actual_pixels = result.Get().AsBitmap();
+    ASSERT_FALSE(actual_pixels.empty());
+
+    TestFuture<AnimatorState> destroyed;
+    GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+    GetAnimationManager()->OnGestureCancelled();
+    ASSERT_TRUE(destroyed.Wait());
+  }
+
+  // Allow all pixels to be off by 1.
+  auto comparator = cc::FuzzyPixelComparator()
+                        .SetErrorPixelsPercentageLimit(100.0f)
+                        .SetAbsErrorLimit(2);
+  EXPECT_TRUE(cc::MatchesBitmap(actual_pixels, expected_pixels, comparator));
+}
+
+namespace {
 class BackForwardTransitionAnimationManagerBrowserTestWithProgressBar
     : public BackForwardTransitionAnimationManagerBrowserTest {
  public:
@@ -3137,6 +3211,7 @@ class BackForwardTransitionAnimationManagerBrowserTestWithProgressBar
       .color = SkColors::kBlue,
       .hairline_color = SkColors::kWhite};
 };
+}  // namespace
 
 // Tests that the progress bar is drawn at the correct position during the
 // invoke phase.
@@ -3483,78 +3558,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_TRUE(did_invoke.IsReady());
   EXPECT_TRUE(did_cross_fade.IsReady());
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       ScreenshotCompression) {
-  SkBitmap expected_pixels;
-  {
-    NavigationEntryScreenshot::SetDisableCompressionForTesting(true);
-    ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
-              GreenURL());
-    GetAnimationManager()->OnGestureStarted(
-        ui::BackGestureEvent(0), SwipeEdge::LEFT, NavType::kBackward);
-    GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-
-    TestFuture<gfx::Image> result;
-    auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
-    ui::GrabWindowSnapshot(window, gfx::Rect(), result.GetCallback());
-    expected_pixels = result.Get().AsBitmap();
-    ASSERT_FALSE(expected_pixels.empty());
-
-    for (int col = 0.6 * expected_pixels.width() + 1;
-         col < expected_pixels.width(); col++) {
-      for (int row = 0; row < expected_pixels.height(); row++) {
-        ASSERT_EQ(expected_pixels.getColor(col, row), SK_ColorGREEN)
-            << col << "," << row << " and image "
-            << cc::GetPNGDataUrl(expected_pixels);
-      }
-    }
-
-    TestFuture<AnimatorState> destroyed;
-    GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
-    ScopedScreenshotCapturedObserverForTesting observer(
-        web_contents()->GetController().GetLastCommittedEntryIndex());
-    GetAnimationManager()->OnGestureInvoked();
-    ASSERT_TRUE(destroyed.Wait());
-    ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
-              RedURL());
-    observer.Wait();
-  }
-
-  SkBitmap actual_pixels;
-  {
-    NavigationEntryScreenshot::SetDisableCompressionForTesting(false);
-    ScopedScreenshotCapturedObserverForTesting observer(
-        web_contents()->GetController().GetLastCommittedEntryIndex());
-    ASSERT_TRUE(NavigateToURL(web_contents(), GreenURL()));
-    observer.Wait();
-    WaitForCopyableViewInWebContents(web_contents());
-    NavigationTransitionTestUtils::WaitForScreenshotCompressed(
-        web_contents()->GetController(),
-        web_contents()->GetController().GetLastCommittedEntryIndex() - 1);
-
-    GetAnimationManager()->OnGestureStarted(
-        ui::BackGestureEvent(0), SwipeEdge::LEFT, NavType::kBackward);
-    GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-
-    TestFuture<gfx::Image> result;
-    auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
-    ui::GrabWindowSnapshot(window, gfx::Rect(), result.GetCallback());
-    actual_pixels = result.Get().AsBitmap();
-    ASSERT_FALSE(actual_pixels.empty());
-
-    TestFuture<AnimatorState> destroyed;
-    GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
-    GetAnimationManager()->OnGestureCancelled();
-    ASSERT_TRUE(destroyed.Wait());
-  }
-
-  // Allow all pixels to be off by 1.
-  auto comparator = cc::FuzzyPixelComparator()
-                        .SetErrorPixelsPercentageLimit(100.0f)
-                        .SetAbsErrorLimit(2);
-  EXPECT_TRUE(cc::MatchesBitmap(actual_pixels, expected_pixels, comparator));
 }
 
 namespace {

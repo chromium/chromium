@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_observer.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 
 namespace wm {
@@ -140,7 +141,9 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
                                bool enable_wrapping) override;
 
   // Return the initial show state for this surface.
-  ui::WindowShowState initial_show_state() { return initial_show_state_; }
+  ui::mojom::WindowShowState initial_show_state() {
+    return initial_show_state_;
+  }
 
   void AddObserver(ShellSurfaceObserver* observer);
   void RemoveObserver(ShellSurfaceObserver* observer);
@@ -320,7 +323,8 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   int resize_component_ = HTCAPTION;  // HT constant (see ui/base/hit_test.h)
   int pending_resize_component_ = HTCAPTION;
   // TODO(oshima): Use WindowStateType instead.
-  ui::WindowShowState initial_show_state_ = ui::SHOW_STATE_DEFAULT;
+  ui::mojom::WindowShowState initial_show_state_ =
+      ui::mojom::WindowShowState::kDefault;
   bool notify_bounds_changes_ = true;
   bool window_state_is_changing_ = false;
   float pending_raster_scale_ = 1.0;

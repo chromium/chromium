@@ -16,6 +16,7 @@ include_rules = [
   "+content/public/test",
   "+mojo/public",
   "+net/base",
+  "+net/cookies",
   "+services/metrics/public/cpp",
   "+services/network/public/mojom",
   "+ui/base",

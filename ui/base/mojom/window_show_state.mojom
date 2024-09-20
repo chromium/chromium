@@ -1,0 +1,28 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// This enum must be version-skew tolerant. It is persisted to disk by ChromeOS
+// full restore, and read from disk by a possibly newer version of chrome. This
+// means that it's ok to add new values, but existing values should never be
+// changed or removed.
+//
+// Window "show" state.
+// TODO: Add snapped window state to immersive fullscreen state to
+// WindowShowState. Those are ChromeOS specific window states but we should make
+// it available here as well as Lacros also needs to know those states.
+// TODO(crbug.com/361008605): Move back to ui_base_types.mojom and delete
+// this file.
+[Stable, Extensible]
+enum WindowShowState {
+  [Default] kDefault = 0,
+  kNormal = 1,
+  kMinimized = 2,
+  kMaximized = 3,
+  kInactive = 4, // Views only, not persisted.
+  kFullscreen = 5,
+  // TODO(crbug.com/361560784): Investigate and Remove `kEnd`
+  [MinVersion=1] kEnd = 6,
+};

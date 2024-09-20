@@ -37,16 +37,23 @@ enum UserAction {
   kTranslateSourceLanguageChanged = 12,
   kTranslateTargetLanguageChanged = 13,
   kTranslateTextSelection = 14,
+  kCopyAsImage = 15,
+  kSaveAsImage = 16,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
 
-// Factory method for creating a new WebUI page handler.
+// TODO(crbug.com/365448173): Split into separate mojom files for overlay
+// and side panel.
+// Factory method for creating a new WebUI page handler for lens overlay.
 interface LensPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreatePageHandler(pending_receiver<LensPageHandler> handler,
                     pending_remote<LensPage> page);
+};
 
+// Factory method for creating a new WebUI page handler for lens side panel.
+interface LensSidePanelPageHandlerFactory {
   // The side panel WebUI calls this method when the page is first initialized.
   CreateSidePanelPageHandler(
       pending_receiver<LensSidePanelPageHandler> handler,
@@ -143,6 +150,11 @@ interface LensPageHandler {
   // text.
   IssueTranslateFullPageRequest(
       string source_language, string target_language);
+
+  // When this method is called, the C++ coordinator issues another full image
+  // request with the auto filter, which is necessary to update the overlay
+  // state to the default non-translate mode.
+  IssueEndTranslateModeRequest();
 
   // When called, the C++ coordinator closes the lens search bubble. When the
   // user selects text or thumbnail on the WebUI overlay, the search bubble

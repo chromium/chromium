@@ -32,36 +32,14 @@ namespace content {
 // (currently only during a prerender activation navigation) and never happens
 // for subframes.
 //
-// TODO(https://crbug.com/361344235): Remove this whole class and replace it
-// with a simple using declaration:
-//
-// using FrameTreeNodeId = base::IdType<class FrameTreeNodeIdTag,
-//                  int32_t,
-//                  /*kInvalidValue=*/-1,
-//                  /*kFirstGeneratedId=*/1,
-//                  /*kExtraInvalidValues=*/0>;
-//
-class FrameTreeNodeId
-    : public base::IdType<class FrameTreeNodeId, int32_t, -1, 1, 0> {
- public:
-  // Default-construct in the null state. The null state has an invalid value
-  // and will test `false` when converted to boolean. (Generation of new values
-  // is done with `FrameTreeNodeId::Generator`.)
-  constexpr FrameTreeNodeId() = default;
-
-  // During the transition, allow implicit construction from int.
-  constexpr FrameTreeNodeId(int id)
-      : base::IdType<FrameTreeNodeId, int32_t, -1, 1, 0>(id) {}
-
-  // During the transition, allow implicit construction from the IdType that
-  // this will become.
-  constexpr FrameTreeNodeId(
-      base::IdType<class FrameTreeNodeId, int32_t, -1, 1, 0> id)
-      : base::IdType<FrameTreeNodeId, int32_t, -1, 1, 0>(id.value()) {}
-
-  // During the transition, allow implicit conversion to int.
-  constexpr operator const int&() const& { return value_; }
-};
+// Like all base::IdType types, this is default-constructed in the null state.
+// The null state has an invalid value and will test `false` when converted to
+// boolean. (Generation of new values is done with FrameTreeNodeId::Generator.)
+using FrameTreeNodeId = base::IdType<class FrameTreeNodeIdTag,
+                                     int32_t,
+                                     /*kInvalidValue=*/-1,
+                                     /*kFirstGeneratedId=*/1,
+                                     /*kExtraInvalidValues=*/0>;
 
 }  // namespace content
 

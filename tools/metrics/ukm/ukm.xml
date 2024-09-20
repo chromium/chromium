@@ -3766,6 +3766,12 @@ be describing additional metrics about the same event.
   <summary>
     Records performance metrics for FedCM(Federated Credential Management) API.
   </summary>
+  <metric name="AccountLabel.NumMatchingAccounts" enum="FedCmNumAccounts">
+    <summary>
+      Records the number of accounts that match an account label. Records at the
+      time the accounts received by the FedCM API are filtered.
+    </summary>
+  </metric>
   <metric name="AccountsDialogShown" enum="BooleanHit">
     <summary>
       Records a 1 each time an accounts dialog is shown.
@@ -3837,6 +3843,12 @@ be describing additional metrics about the same event.
       of the main frame.
     </summary>
   </metric>
+  <metric name="DomainHint.NumMatchingAccounts" enum="FedCmNumAccounts">
+    <summary>
+      Records the number of accounts that match a domain hint. Records at the
+      time the accounts received by the FedCM API are filtered.
+    </summary>
+  </metric>
   <metric name="Error.ErrorDialogResult" enum="FedCmErrorDialogResult">
     <summary>
       Records the outcome of the error dialog. Recorded at most once per API
@@ -3860,6 +3872,12 @@ be describing additional metrics about the same event.
       Records the session ID associated to the FedCM call for which this event
       is recording metrics. Each FedCM call gets a random integer session id,
       which helps group UKM events by the session id.
+    </summary>
+  </metric>
+  <metric name="LoginHint.NumMatchingAccounts" enum="FedCmNumAccounts">
+    <summary>
+      Records the number of accounts that match a login hint. Records at the
+      time the accounts received by the FedCM API are filtered.
     </summary>
   </metric>
   <metric name="MismatchDialogShown" enum="BooleanHit">
@@ -8376,6 +8394,40 @@ be describing additional metrics about the same event.
       dry-run mode. In dry-run mode, fingerprinting protection filtering policy
       is evaluated against resources loaded on the page, but subresource
       blocking is not actually applied.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="FingerprintingProtectionUsage" singular="True">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <summary>
+    Recorded to track heuristics for refreshes where Fingerprinting Protection
+    was enabled.
+  </summary>
+  <metric name="RefreshCount">
+    <summary>
+      The number of times the user refreshed the current page (without
+      navigating elsewhere).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SiteEngagementLevel" enum="SiteEngagementLevel">
+    <summary>
+      The site engagement level of the page where this event was triggered.
     </summary>
     <aggregation>
       <history>
@@ -15158,6 +15210,13 @@ be describing additional metrics about the same event.
       crbug.com/897837 crbug.com/897840
     </summary>
   </metric>
+  <metric name="Experimental.TotalForegroundDuration">
+    <summary>
+      Re-adding experimental version of TotalForegroundDuration to allow for an
+      analysis of the now obsolete field. This will help inform a discrepency
+      found when switching to the PageTiming.TotalForegroundDuration field.
+    </summary>
+  </metric>
   <metric name="HourOfDay">
     <summary>
       The hour of the day when the page load was initiated. The time is measured
@@ -20190,6 +20249,13 @@ be describing additional metrics about the same event.
     <summary>
       A boolean signaling that data is available. Only records true values.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -20203,6 +20269,13 @@ be describing additional metrics about the same event.
     <summary>
       A boolean signaling that message is clicked. Only records true values.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -20216,6 +20289,13 @@ be describing additional metrics about the same event.
     <summary>
       A boolean signaling that message is displayed. Only records true values.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -20230,6 +20310,13 @@ be describing additional metrics about the same event.
       A boolean signaling that store info row is clicked. Only records true
       values.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -20244,6 +20331,13 @@ be describing additional metrics about the same event.
       A boolean signaling that store info row is displayed. Only records true
       values.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -20566,17 +20660,41 @@ be describing additional metrics about the same event.
     <summary>
       Whether any familiarity heuristics would trigger on the site.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="OnHighConfidenceAllowlist" enum="Boolean">
     <summary>
       Whether the site is on the safe browsing high confidence allowlist.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="SiteEngagementScore">
     <summary>
       Site engagement score in the range [0, 100], rounded down to a multiple of
       10 to limit granularity.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="SiteFamiliarityHistoryHeuristic"
       enum="SiteFamiliarityHistoryHeuristicName">
@@ -20585,6 +20703,14 @@ be describing additional metrics about the same event.
       would trigger on the site. If no navigation-history heuristic matches then
       the value NO_HEURISTIC_MATCH is recorded.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -21451,144 +21577,6 @@ be describing additional metrics about the same event.
       The time when the tab was closed, expressed as the amount of time in MS
       that has elapsed since the main frame navigation providing the content of
       the tab.
-    </summary>
-  </metric>
-</event>
-
-<event name="TabManager.TabMetrics">
-  <owner>michaelpg@chromium.org</owner>
-  <summary>
-    Collects tab information for a tab after navigations, activations and close
-    events.
-  </summary>
-  <metric name="HasBeforeUnloadHandler">
-    <summary>
-      Boolean value indicating whether the page has a beforeunload JavaScript
-      event handler.
-    </summary>
-  </metric>
-  <metric name="HasFormEntry">
-    <summary>
-      Boolean value indicating whether the page has any user-input text.
-    </summary>
-  </metric>
-  <metric name="IsPinned">
-    <summary>
-      Boolean value indicating whether the tab is pinned in the tabstrip.
-    </summary>
-  </metric>
-  <metric name="KeyEventCount">
-    <summary>
-      Number of key events that were sent to the page.
-    </summary>
-  </metric>
-  <metric name="LabelId">
-    <summary>
-      An int64 random number generated at logging time. The same number will
-      also be logged to the TabManager.Background.ForegroundedOrClosed event, so
-      that feature label can be paired.
-    </summary>
-  </metric>
-  <metric name="MouseEventCount">
-    <summary>
-      Number of mouse events that were sent to the page.
-    </summary>
-  </metric>
-  <metric name="MRUIndex">
-    <summary>
-      Index of the tab in most-recently-used order. A value of N means there are
-      N tabs more recently used than the one that is being foregrounded or
-      closed.
-    </summary>
-  </metric>
-  <metric name="NavigationEntryCount">
-    <summary>
-      Number of navigation entries in the tab's NavigationController.
-      Corresponds to the size of the tab's back/forward list.
-    </summary>
-  </metric>
-  <metric name="NumReactivationBefore">
-    <summary>
-      Number of reactivations that this tab had till now.
-    </summary>
-  </metric>
-  <metric name="PageTransitionCoreType">
-    <summary>
-      Type of the page transition for this navigation. Uses the core values from
-      ui::PageTransition.
-    </summary>
-  </metric>
-  <metric name="PageTransitionFromAddressBar">
-    <summary>
-      True if the page transition came from interacting with the address bar,
-      such as by typing a URL or performing a search.
-    </summary>
-  </metric>
-  <metric name="PageTransitionIsRedirect">
-    <summary>
-      True if the page transition type is a redirect, in which case the
-      PageTransition type may not be accurate.
-    </summary>
-  </metric>
-  <metric name="QueryId">
-    <summary>
-      An int64 random number generated at query time of
-      TabManager::GetSortedLifecycleUnitsFromTabRanker. Tabs with the same
-      QueryId will be later on combined in one full list for further analysis.
-    </summary>
-  </metric>
-  <metric name="SiteEngagementScore">
-    <summary>
-      Site engagement score in the range [0, 100], rounded down to a multiple of
-      10 to limit granularity.
-    </summary>
-  </metric>
-  <metric name="TimeFromBackgrounded">
-    <summary>
-      Duration in MS from when the tab is backgrounded to when it is brought to
-      foreground or closed.
-    </summary>
-  </metric>
-  <metric name="TotalTabCount">
-    <summary>
-      Total number of tabs open across all non-incognito browser windows. Helps
-      contextualize the MRUIndex value.
-    </summary>
-  </metric>
-  <metric name="TouchEventCount">
-    <summary>
-      Number of touch events that were sent to the page.
-    </summary>
-  </metric>
-  <metric name="WasRecentlyAudible">
-    <summary>
-      Boolean value indicating whether the tab has played audio within the last
-      two seconds.
-    </summary>
-  </metric>
-  <metric name="WindowIsActive">
-    <summary>
-      Boolean value indicating whether the window is the active (frontmost)
-      window.
-    </summary>
-  </metric>
-  <metric name="WindowShowState">
-    <summary>
-      Enumeration of the window show state, such as fullscreen or minimized.
-      Values are enumerated in metrics::WindowMetricsEvent::ShowState.
-    </summary>
-  </metric>
-  <metric name="WindowTabCount">
-    <summary>
-      Number of tabs in the tab strip. Rounded down to the nearest exponential
-      bucket (with a bucket spacing factor of 1.5). Will be 1 for windows with
-      only one top-level WebContents, such as app windows.
-    </summary>
-  </metric>
-  <metric name="WindowType">
-    <summary>
-      Enumeration for the type of the window. Values are enumerated in
-      metrics::WindowMetricsEvent::Type.
     </summary>
   </metric>
 </event>

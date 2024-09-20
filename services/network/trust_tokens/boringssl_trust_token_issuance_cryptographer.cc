@@ -64,7 +64,8 @@ BoringsslTrustTokenIssuanceCryptographer::BeginIssuance(size_t num_tokens) {
 
   ScopedBoringsslBytes raw_issuance_request;
   if (!TRUST_TOKEN_CLIENT_begin_issuance(
-          state_->Get(), raw_issuance_request.mutable_ptr(),
+          state_->Get(),
+          &raw_issuance_request.mutable_ptr()->AsEphemeralRawAddr(),
           raw_issuance_request.mutable_len(), num_tokens)) {
     return std::nullopt;
   }

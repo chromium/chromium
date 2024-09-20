@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/sync/synced_session_client_ash.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_model.h"
@@ -18,48 +17,26 @@
 
 namespace ash::phonehub {
 
-// static
-bool BrowserTabsModelProviderImpl::IsLacrosSessionSyncFeatureEnabled() {
-  return !crosapi::browser_util::IsAshWebBrowserEnabled() &&
-         base::FeatureList::IsEnabled(syncer::kChromeOSSyncedSessionSharing);
-}
-
 BrowserTabsModelProviderImpl::BrowserTabsModelProviderImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    SyncedSessionClientAsh* synced_session_client_ash,
     syncer::SyncService* sync_service,
     sync_sessions::SessionSyncService* session_sync_service,
     std::unique_ptr<BrowserTabsMetadataFetcher> browser_tabs_metadata_fetcher)
     : multidevice_setup_client_(multidevice_setup_client),
-      synced_session_client_ash_(synced_session_client_ash),
       sync_service_(sync_service),
       session_sync_service_(session_sync_service),
       browser_tabs_metadata_fetcher_(std::move(browser_tabs_metadata_fetcher)) {
   multidevice_setup_client_->AddObserver(this);
-  if (IsLacrosSessionSyncFeatureEnabled()) {
-    if (synced_session_client_ash_) {
-      synced_session_client_ash_->AddObserver(this);
-      // Fetch Browser Metadata for cached foreign synced phone sessions.
-      OnForeignSyncedPhoneSessionsUpdated(
-          synced_session_client_ash_->last_foreign_synced_phone_sessions());
-    }
-  } else {
-    session_updated_subscription_ =
-        session_sync_service->SubscribeToForeignSessionsChanged(
-            base::BindRepeating(
-                &BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate,
-                base::Unretained(this)));
-    AttemptBrowserTabsModelUpdate();
-  }
+  session_updated_subscription_ =
+      session_sync_service->SubscribeToForeignSessionsChanged(
+          base::BindRepeating(
+              &BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate,
+              base::Unretained(this)));
+  AttemptBrowserTabsModelUpdate();
 }
 
 BrowserTabsModelProviderImpl::~BrowserTabsModelProviderImpl() {
   multidevice_setup_client_->RemoveObserver(this);
-  if (IsLacrosSessionSyncFeatureEnabled()) {
-    if (synced_session_client_ash_) {
-      synced_session_client_ash_->RemoveObserver(this);
-    }
-  }
 }
 
 std::optional<std::string> BrowserTabsModelProviderImpl::GetHostDeviceName()
@@ -77,14 +54,7 @@ std::optional<std::string> BrowserTabsModelProviderImpl::GetHostDeviceName()
 void BrowserTabsModelProviderImpl::OnHostStatusChanged(
     const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
         host_device_with_status) {
-  if (IsLacrosSessionSyncFeatureEnabled()) {
-    if (synced_session_client_ash_) {
-      OnForeignSyncedPhoneSessionsUpdated(
-          synced_session_client_ash_->last_foreign_synced_phone_sessions());
-    }
-  } else {
-    AttemptBrowserTabsModelUpdate();
-  }
+  AttemptBrowserTabsModelUpdate();
 }
 
 void BrowserTabsModelProviderImpl::TriggerRefresh() {
@@ -98,12 +68,7 @@ void BrowserTabsModelProviderImpl::TriggerRefresh() {
 }
 
 bool BrowserTabsModelProviderImpl::IsBrowserTabSyncEnabled() {
-  DCHECK(IsLacrosSessionSyncFeatureEnabled());
-  if (!synced_session_client_ash_) {
-    return false;
-  }
-
-  return synced_session_client_ash_->is_session_sync_enabled();
+  NOTREACHED();
 }
 
 void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
@@ -170,66 +135,6 @@ void BrowserTabsModelProviderImpl::OnMetadataFetched(
   }
   NotifyBrowserTabsUpdated(
       /*is_tab_sync_enabled=*/true, *metadata);
-}
-
-// TODO(b/260599791): Updating this method signature to remove the |sessions|
-// parameter and utilize the getter in |synced_session_client_ash_| instead.
-void BrowserTabsModelProviderImpl::OnForeignSyncedPhoneSessionsUpdated(
-    const std::vector<ForeignSyncedSessionAsh>& phone_sessions) {
-  DCHECK(IsLacrosSessionSyncFeatureEnabled());
-  DCHECK(synced_session_client_ash_);
-
-  if (!synced_session_client_ash_->is_session_sync_enabled()) {
-    InvalidateWeakPtrsAndClearTabMetadata(/*is_tab_sync_enabled=*/false);
-    return;
-  }
-
-  std::optional<std::string> host_device_name = GetHostDeviceName();
-
-  // Tab sync is disabled or no valid |pii_free_name_|.
-  if (!host_device_name) {
-    InvalidateWeakPtrsAndClearTabMetadata(/*is_tab_sync_enabled=*/false);
-    return;
-  }
-
-  // No tabs were found, clear all tab metadata.
-  if (phone_sessions.empty()) {
-    InvalidateWeakPtrsAndClearTabMetadata(/*is_tab_sync_enabled=*/true);
-    return;
-  }
-
-  std::optional<ForeignSyncedSessionAsh> host_phone_session;
-  for (const ForeignSyncedSessionAsh& session : phone_sessions) {
-    if (session.session_name != *host_device_name) {
-      continue;
-    }
-    if (!host_phone_session ||
-        host_phone_session->modified_time < session.modified_time) {
-      host_phone_session = session;
-    }
-  }
-  // No session with the same name as |pii_free_name_| was found, clear all
-  // tab metadata.
-  if (!host_phone_session) {
-    InvalidateWeakPtrsAndClearTabMetadata(/*is_tab_sync_enabled=*/true);
-    return;
-  }
-  browser_tabs_metadata_fetcher_->FetchForeignSyncedPhoneSessionMetadata(
-      host_phone_session.value(), synced_session_client_ash_,
-      base::BindOnce(&BrowserTabsModelProviderImpl::OnMetadataFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void BrowserTabsModelProviderImpl::OnSessionSyncEnabledChanged(bool enabled) {
-  DCHECK(IsLacrosSessionSyncFeatureEnabled());
-  DCHECK(synced_session_client_ash_);
-
-  if (enabled) {
-    OnForeignSyncedPhoneSessionsUpdated(
-        synced_session_client_ash_->last_foreign_synced_phone_sessions());
-  } else {
-    InvalidateWeakPtrsAndClearTabMetadata(/*is_tab_sync_enabled=*/false);
-  }
 }
 
 }  // namespace ash::phonehub

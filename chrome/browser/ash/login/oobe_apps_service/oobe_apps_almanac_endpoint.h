@@ -11,9 +11,7 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/ash/login/oobe_apps_service/proto/oobe.pb.h"
 
-namespace network::mojom {
-class URLLoaderFactory;
-}  // namespace network::mojom
+class Profile;
 
 namespace ash::oobe_apps_almanac_endpoint {
 
@@ -22,9 +20,7 @@ using GetAppsCallback =
 
 // Fetches a list of apps and use-cases from the endpoint in the Almanac
 // server.
-void GetAppsAndUseCases(const apps::DeviceInfo& device_info,
-                        network::mojom::URLLoaderFactory& url_loader_factory,
-                        GetAppsCallback callback);
+void GetAppsAndUseCases(Profile* profile, GetAppsCallback callback);
 
 }  // namespace ash::oobe_apps_almanac_endpoint
 

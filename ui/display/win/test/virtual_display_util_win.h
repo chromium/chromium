@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "third_party/win_virtual_display/controller/display_driver_controller.h"
@@ -39,7 +40,7 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
   static bool IsAPIAvailable();
 
   // VirtualDisplayUtil overrides:
-  int64_t AddDisplay(uint8_t id, const DisplayParams& display_params) override;
+  int64_t AddDisplay(const DisplayParams& display_params) override;
   void RemoveDisplay(int64_t display_id) override;
   void ResetDisplays() override;
 
@@ -54,6 +55,9 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
   void StartWaiting();
   void StopWaiting();
 
+  // Creates a new internal display ID to identify the display to the driver.
+  static uint8_t SynthesizeInternalDisplayId();
+
   raw_ptr<Screen> screen_;
   // True if the environment was considered headless during initialization.
   const bool is_headless_;
@@ -61,7 +65,7 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
   DisplayDriverController driver_controller_;
   // Contains the last configuration that was set.
   DriverProperties current_config_;
-  // Map of virtual display ID (product code) to corresponding display ID.
+  // Map of internal display ID (product code) to corresponding display ID.
   base::flat_map<unsigned short, int64_t> virtual_displays_;
   // Copy of the display list when this utility was constructed.
   std::vector<display::Display> initial_displays_;

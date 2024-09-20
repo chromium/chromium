@@ -10,80 +10,81 @@
  * #include=cr-hidden-style-lit cr-icons-lit
  * #css_wrapper_metadata_end */
 
- :host {
-    --horizontal-carousel-button-size: 32px;
+:host {
+  --horizontal-carousel-button-size: 32px;
 
-    display: flex;
-    isolation: isolate;
-    position: relative;
-  }
+  display: flex;
+  isolation: isolate;
+  position: relative;
+}
 
-  .carousel-button,
-  .hover-layer {
-    border-radius: 50%;
-    position: absolute;
-    top: 44%;
-    transform: translateY(-50%);
-  }
+.carousel-button,
+.hover-layer {
+  border-radius: 50%;
+  position: absolute;
+}
 
-  .carousel-button {
-    --cr-icon-button-size: var(--horizontal-carousel-button-size);
-    background-color: var(--color-button-background-tonal);
-    margin: 0;
-    /* Buttons should display on top of any overflowing text. */
-    z-index: 1;
-  }
+.carousel-button {
+  --cr-icon-button-fill-color: currentColor;
+  --cr-icon-button-size: var(--horizontal-carousel-button-size);
+  background-color: var(--color-button-background-tonal);
+  margin: 0;
+}
 
-  .hover-layer {
-    background: var(--cr-hover-background-color);
-    display: none;
-    height: var(--horizontal-carousel-button-size);
-    width: var(--horizontal-carousel-button-size);
-    pointer-events: none;
-    z-index: 2;
-  }
+.carousel-button-container {
+  height: 0;
+  position: sticky;
+  top: min(44vh, 44%);
+  width: 0;
+  z-index: 1; /* Buttons should display on top of any overflowing text. */
+}
 
-  #backButton, #backHoverLayer {
-    left: calc(-1 * var(--horizontal-carousel-button-size));
-  }
+.hover-layer {
+  background: var(--cr-hover-background-color);
+  display: none;
+  height: var(--horizontal-carousel-button-size);
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  width: var(--horizontal-carousel-button-size);
+  z-index: 1;
+}
 
-  #forwardButton, #forwardHoverLayer {
-    right: calc(-1 * var(--horizontal-carousel-button-size));
-  }
+#backButton, #backHoverLayer {
+  left: calc(-1 * var(--horizontal-carousel-button-size));
+}
 
-  #backButton:hover ~ #backHoverLayer,
-  #forwardButton:hover ~ #forwardHoverLayer {
-    display: block;
-  }
+#forwardButton, #forwardHoverLayer {
+  right: calc(-1 * var(--horizontal-carousel-button-size));
+}
 
-  #carouselContainer {
-    display: flex;
-    flex-wrap: nowrap;
-    min-width: 0;
-    max-width: 1140px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
-  }
+#backButton:hover~#backHoverLayer,
+#forwardButton:hover~#forwardHoverLayer {
+  display: block;
+}
 
-  :host(:not([can-scroll_])) #carouselContainer {
-    scrollbar-width: none;
-  }
+#carouselContainer {
+  display: flex;
+  flex-wrap: nowrap;
+  min-width: 0;
+  max-width: 1140px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
 
-  :host([can-scroll_]) #carouselContainer::-webkit-scrollbar {
-    background: transparent;
-    height: 6px;
-    width: 0;
-  }
+:host(:not([can-scroll_])) #carouselContainer {
+  scrollbar-width: none;
+}
 
-  :host([can-scroll_]) #carouselContainer::-webkit-scrollbar-thumb {
-    background:
-        var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
-    border-radius: 8px;
-  }
+:host([can-scroll_]) #carouselContainer::-webkit-scrollbar {
+  background: transparent;
+  height: 6px;
+  width: 0;
+}
 
-  #startProbe,
-  #endProbe {
-    position: sticky;
-    top: 0;
-  }
+:host([can-scroll_]) #carouselContainer::-webkit-scrollbar-thumb {
+  background:
+    var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
+  border-radius: 8px;
+}

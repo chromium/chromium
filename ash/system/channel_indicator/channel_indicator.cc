@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/version_info/channel.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/version_info/channel.h"
@@ -47,8 +48,8 @@ constexpr int kBorderInset = 6;
 // Size of the vector icon.
 constexpr int kVectorIconSize = 16;
 
-// Insets in the layout manager.
-constexpr int kLayoutManagerInset = 2;
+// Insets for the channel indicator icon's background.
+constexpr int kIconBackgroundInset = 2;
 
 }  // namespace
 
@@ -86,7 +87,7 @@ void ChannelIndicatorView::OnThemeChanged() {
       session_manager::SessionState::ACTIVE) {
     // User is logged in, set image view colors.
     if (image_view()) {
-      SetBackground(views::CreateThemedRoundedRectBackground(
+      image_view()->SetBackground(views::CreateThemedRoundedRectBackground(
           channel_indicator_utils::GetBgColorJelly(channel_),
           (IsHorizontalAlignment() ? GetLocalBounds().width()
                                    : GetLocalBounds().height()) /
@@ -144,10 +145,9 @@ void ChannelIndicatorView::SetImageOrText() {
     SetBorder(views::CreateEmptyBorder(IsHorizontalAlignment()
                                            ? gfx::Insets::VH(kBorderInset, 0)
                                            : gfx::Insets::VH(0, kBorderInset)));
-
-    box_layout_->set_inside_border_insets(
-        gfx::Insets::VH(kLayoutManagerInset, kLayoutManagerInset));
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    image_view()->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets(kIconBackgroundInset)));
+    image_view()->SetBackground(views::CreateThemedRoundedRectBackground(
         channel_indicator_utils::GetBgColorJelly(channel_),
         (IsHorizontalAlignment() ? GetLocalBounds().width()
                                  : GetLocalBounds().height()) /
@@ -170,7 +170,6 @@ void ChannelIndicatorView::SetImageOrText() {
   // where side-shelf isn't possible (for now at least!), so nothing here is
   // adjusted for shelf alignment.
   DCHECK(IsHorizontalAlignment());
-  SetBackground(nullptr);
   box_layout_->set_inside_border_insets(gfx::Insets());
   SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(kBorderInset, 0)));
   label()->SetBorder(

@@ -56,13 +56,6 @@ void RecordStartSessionSourceHistogram(
   }
 }
 
-void RecordHasSelectedTaskOnSessionStartHistogram() {
-  base::UmaHistogramBoolean(
-      /*name=*/focus_mode_histogram_names::
-          kHasSelectedTaskOnSessionStartHistogramName,
-      /*sample=*/FocusModeController::Get()->HasSelectedTask());
-}
-
 void RecordTasksSelectedHistogram(const int tasks_selected_count) {
   base::UmaHistogramCounts100(
       focus_mode_histogram_names::kTasksSelectedHistogramName,
@@ -289,8 +282,6 @@ void FocusModeMetricsRecorder::RecordHistogramsOnStart(
   RecordInitialDurationHistogram(
       /*session_duration=*/initial_session_duration_);
   RecordStartSessionSourceHistogram(source);
-  // TODO(b/344594740): Remove `RecordHasSelectedTaskOnSessionStartHistogram()`.
-  RecordHasSelectedTaskOnSessionStartHistogram();
   RecordStartedWithTaskHistogram(selected_task_id);
   RecordExistingMediaPlayingOnStartHistogram();
 }
@@ -299,8 +290,7 @@ void FocusModeMetricsRecorder::RecordHistogramsOnEnd() {
   RecordTasksSelectedHistogram(tasks_selected_count_);
   RecordTasksCompletedHistogram(tasks_completed_count_);
   RecordPlaylistsPlayedHistogram(playlists_played_count_);
-  RecordDNDStateOnFocusEndHistogram(
-      has_user_interactions_on_dnd_in_focus_session_);
+  RecordDNDHistogram();
 
   auto session_snapshot =
       FocusModeController::Get()->GetSnapshot(base::Time::Now());
@@ -316,11 +306,28 @@ void FocusModeMetricsRecorder::RecordHistogramsOnEnd() {
   RecordPausedEventCountHistogram();
 }
 
-void FocusModeMetricsRecorder::RecordHistogramOnEndingMoment(
+void FocusModeMetricsRecorder::RecordDNDHistogram() {
+  if (has_recorded_dnd_state_histogram_) {
+    return;
+  }
+
+  RecordDNDStateOnFocusEndHistogram(
+      has_user_interactions_on_dnd_in_focus_session_);
+  has_recorded_dnd_state_histogram_ = true;
+}
+
+void FocusModeMetricsRecorder::RecordEndingMomentBubbleHistogram(
     focus_mode_histogram_names::EndingMomentBubbleClosedReason reason) {
   base::UmaHistogramEnumeration(
       /*name=*/focus_mode_histogram_names::kEndingMomentBubbleActionHistogram,
       /*sample=*/reason);
+
+  // If the user extends the session, then we want to make sure that the DND
+  // histograms at the end of the session are triggered again.
+  if (reason ==
+      focus_mode_histogram_names::EndingMomentBubbleClosedReason::kExtended) {
+    has_recorded_dnd_state_histogram_ = false;
+  }
 }
 
 }  // namespace ash

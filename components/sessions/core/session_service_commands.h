@@ -16,6 +16,7 @@
 #include "components/sessions/core/sessions_export.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace sessions {
@@ -32,7 +33,7 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabWindowCommand(
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowBoundsCommand(
     SessionID window_id,
     const gfx::Rect& bounds,
-    ui::WindowShowState show_state);
+    ui::mojom::WindowShowState show_state);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateSetTabIndexInWindowCommand(SessionID tab_id, int new_index);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateTabClosedCommand(

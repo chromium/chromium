@@ -23,6 +23,8 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_V
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import android.view.View;
@@ -308,5 +310,23 @@ public class HubToolbarMediatorUnitTest {
         paneSwitcherButtonData.get(1).getOnPressRunnable().run();
         verify(mPaneManager).focusPane(PaneId.TAB_GROUPS);
         verify(mTracker).notifyEvent("tab_groups_surface_clicked");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    public void testSearchBoxSetup_FlagEnabled() {
+        new HubToolbarMediator(mModel, mPaneManager, mTracker);
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
+        assertNotNull(mModel.get(SEARCH_BOX_LISTENER));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    public void testSearchBoxSetup_FlagNotEnabled() {
+        new HubToolbarMediator(mModel, mPaneManager, mTracker);
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+        assertNotNull(mModel.get(SEARCH_BOX_LISTENER));
     }
 }

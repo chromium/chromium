@@ -123,10 +123,6 @@ source_set("helpers") {
     "//third_party/libyuv",
   ]
   public_deps = [ "//testing/gtest" ]
-
-  if ((is_chromeos || is_linux) && (use_v4l2_codec || use_vaapi)) {
-    deps += [ "//media/gpu/chromeos:common" ]
-  }
 }
 
 source_set("frame_validator") {
@@ -143,10 +139,6 @@ source_set("frame_validator") {
 
   if (is_chromeos || is_linux) {
     deps += [ "//build:chromeos_buildflags" ]
-
-    if (use_v4l2_codec || use_vaapi) {
-      deps += [ "//media/gpu/chromeos:common" ]
-    }
   }
 }
 
@@ -164,10 +156,6 @@ source_set("frame_file_writer") {
 
   if (is_chromeos || is_linux) {
     deps += [ "//build:chromeos_buildflags" ]
-
-    if (use_v4l2_codec || use_vaapi) {
-      deps += [ "//media/gpu/chromeos:common" ]
-    }
   }
 }
 

@@ -59,8 +59,9 @@ ClipStrategy DetermineClipStrategy(const SVGGraphicsElement& element) {
     return ClipStrategy::kNone;
   const ComputedStyle& style = layout_object->StyleRef();
   if (style.Display() == EDisplay::kNone ||
-      style.Visibility() != EVisibility::kVisible)
+      style.UsedVisibility() != EVisibility::kVisible) {
     return ClipStrategy::kNone;
+  }
   ClipStrategy strategy = ClipStrategy::kNone;
   // Only shapes, paths and texts are allowed for clipping.
   if (layout_object->IsSVGShape()) {

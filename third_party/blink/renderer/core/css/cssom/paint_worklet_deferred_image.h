@@ -49,7 +49,7 @@ class CORE_EXPORT PaintWorkletDeferredImage : public GeneratedImage {
                             const gfx::SizeF& size)
       : GeneratedImage(size) {
     image_ = PaintImageBuilder::WithDefault()
-                 .set_paint_worklet_input(std::move(input))
+                 .set_deferred_paint_record(std::move(input))
                  .set_id(PaintImage::GetNextId())
                  .TakePaintImage();
   }

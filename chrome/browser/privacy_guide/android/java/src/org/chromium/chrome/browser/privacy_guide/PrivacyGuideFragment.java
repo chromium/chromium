@@ -57,8 +57,8 @@ public class PrivacyGuideFragment extends Fragment
         FragmentType.COOKIES,
         FragmentType.SEARCH_SUGGESTIONS,
         FragmentType.PRELOAD,
+        FragmentType.AD_TOPICS,
         FragmentType.DONE,
-        FragmentType.AD_TOPICS
     })
     @interface FragmentType {
         int WELCOME = 0;
@@ -68,9 +68,9 @@ public class PrivacyGuideFragment extends Fragment
         int COOKIES = 4;
         int SEARCH_SUGGESTIONS = 5;
         int PRELOAD = 6;
-        int DONE = 7;
-        int AD_TOPICS = 8;
-        int MAX_VALUE = AD_TOPICS;
+        int AD_TOPICS = 7;
+        int DONE = 8;
+        int MAX_VALUE = DONE;
     }
 
     public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER =
@@ -81,6 +81,7 @@ public class PrivacyGuideFragment extends Fragment
                             FragmentType.HISTORY_SYNC,
                             FragmentType.SAFE_BROWSING,
                             FragmentType.COOKIES,
+                            FragmentType.AD_TOPICS,
                             FragmentType.DONE));
     public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER_PG3 =
             Collections.unmodifiableList(

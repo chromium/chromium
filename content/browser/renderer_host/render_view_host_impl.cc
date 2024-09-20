@@ -606,10 +606,10 @@ bool RenderViewHostImpl::CreateRenderView(
   // We must send access information relative to the popin opener in order for
   // the renderer to properly conduct checks.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  RenderFrameHostImpl* partitioned_popin_opener =
-      frame_tree_->GetMainFrame()->delegate()->PartitionedPopinOpener();
-  if (partitioned_popin_opener &&
-      !frame_tree_->GetMainFrame()->IsNestedWithinFencedFrame()) {
+  if (!frame_tree_->GetMainFrame()->IsNestedWithinFencedFrame() &&
+      frame_tree_->GetMainFrame()->delegate()->IsPartitionedPopin()) {
+    RenderFrameHostImpl* partitioned_popin_opener =
+        frame_tree_->GetMainFrame()->delegate()->PartitionedPopinOpener();
     params->partitioned_popin_params =
         blink::mojom::PartitionedPopinParams::New(
             partitioned_popin_opener->ComputeTopFrameOrigin(

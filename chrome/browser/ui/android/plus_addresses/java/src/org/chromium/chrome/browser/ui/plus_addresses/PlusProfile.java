@@ -24,7 +24,7 @@ class PlusProfile {
     @CalledByNative
     public PlusProfile(
             @JniType("std::string") String plusAddress,
-            @JniType("std::string") String displayName,
+            @JniType("std::u16string") String displayName,
             @JniType("std::string") String origin) {
         mPlusAddress = plusAddress;
         mDisplayName = displayName;

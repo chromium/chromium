@@ -18,6 +18,7 @@
 
 namespace syncer {
 class DataTypeLocalChangeProcessor;
+class DataTypeStoreService;
 struct EntityData;
 class MetadataChangeList;
 class ModelError;
@@ -25,7 +26,6 @@ class ModelError;
 
 namespace webapk {
 
-class AbstractWebApkDatabaseFactory;
 struct WebApkRestoreData;
 
 // A unified sync and storage controller.
@@ -41,11 +41,11 @@ struct WebApkRestoreData;
 // DataTypeLocalChangeProcessor and WebApkDatabase (the storage).
 class WebApkSyncBridge : public syncer::DataTypeSyncBridge {
  public:
-  WebApkSyncBridge(AbstractWebApkDatabaseFactory* database_factory,
+  WebApkSyncBridge(syncer::DataTypeStoreService* data_type_store_service,
                    base::OnceClosure on_initialized);
   // Tests may inject mocks using this ctor.
   WebApkSyncBridge(
-      AbstractWebApkDatabaseFactory* database_factory,
+      syncer::DataTypeStoreService* data_type_store_service,
       base::OnceClosure on_initialized,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       std::unique_ptr<base::Clock> clock,

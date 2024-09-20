@@ -10,6 +10,8 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -25,42 +27,23 @@ namespace {
 
 class LauncherAppAlmanacEndpointTest : public testing::Test {
  public:
-  LauncherAppAlmanacEndpointTest()
-      : test_shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &url_loader_factory_)) {}
+  void SetUp() override {
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetSharedURLLoaderFactory(
+        url_loader_factory_.GetSafeWeakWrapper());
+    profile_ = profile_builder.Build();
+  }
+
+  Profile* profile() { return profile_.get(); }
 
  protected:
   network::TestURLLoaderFactory url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  DeviceInfo device_info_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  std::unique_ptr<TestingProfile> profile_;
 };
-
-TEST_F(LauncherAppAlmanacEndpointTest, GetAppsRequest) {
-  std::string method;
-  std::optional<std::string> method_override_header;
-  std::optional<std::string> content_type;
-
-  url_loader_factory_.SetInterceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        content_type =
-            request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
-        method_override_header =
-            request.headers.GetHeader("X-HTTP-Method-Override");
-        method = request.method;
-      }));
-
-  launcher_app_almanac_endpoint::GetApps(
-      device_info_, *test_shared_loader_factory_, base::DoNothing());
-
-  EXPECT_EQ(method, "POST");
-  EXPECT_EQ(method_override_header, "GET");
-  EXPECT_EQ(content_type, "application/x-protobuf");
-}
 
 TEST_F(LauncherAppAlmanacEndpointTest, GetAppsSuccess) {
   proto::LauncherAppResponse response;
@@ -72,9 +55,8 @@ TEST_F(LauncherAppAlmanacEndpointTest, GetAppsSuccess) {
 
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>>
       observed_response;
-  launcher_app_almanac_endpoint::GetApps(device_info_,
-                                       *test_shared_loader_factory_,
-                                       observed_response.GetCallback());
+  launcher_app_almanac_endpoint::GetApps(profile(),
+                                         observed_response.GetCallback());
   ASSERT_TRUE(observed_response.Get().has_value());
   EXPECT_EQ(observed_response.Get()->app_groups_size(), 1);
 }
@@ -83,8 +65,7 @@ TEST_F(LauncherAppAlmanacEndpointTest, GetAppsEmptyResponse) {
   url_loader_factory_.AddResponse(
       launcher_app_almanac_endpoint::GetServerUrl().spec(), "");
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
-  launcher_app_almanac_endpoint::GetApps(
-      device_info_, *test_shared_loader_factory_, response.GetCallback());
+  launcher_app_almanac_endpoint::GetApps(profile(), response.GetCallback());
   ASSERT_TRUE(response.Get().has_value());
   EXPECT_EQ(response.Get()->app_groups_size(), 0);
 }
@@ -95,8 +76,7 @@ TEST_F(LauncherAppAlmanacEndpointTest, GetAppsError) {
       /*content=*/"", net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
-  launcher_app_almanac_endpoint::GetApps(
-      device_info_, *test_shared_loader_factory_, response.GetCallback());
+  launcher_app_almanac_endpoint::GetApps(profile(), response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
 }
 
@@ -108,8 +88,7 @@ TEST_F(LauncherAppAlmanacEndpointTest, GetAppsNetworkError) {
       network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
 
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
-  launcher_app_almanac_endpoint::GetApps(
-      device_info_, *test_shared_loader_factory_, response.GetCallback());
+  launcher_app_almanac_endpoint::GetApps(profile(), response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
 }
 

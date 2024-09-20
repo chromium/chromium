@@ -614,6 +614,32 @@ TEST_P(SavedTabGroupBarUnitTest, PinTabGroupAddButton) {
       saved_tab_group_bar()->children()[0]));
 }
 
+TEST_P(SavedTabGroupBarUnitTest, AccessibleName) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+  SaveGroup(CreateNewGroupInBrowser());
+  SavedTabGroupButton* saved_tab_group_button =
+      views::AsViewClass<SavedTabGroupButton>(
+          saved_tab_group_bar()->children()[0]);
+  saved_tab_group_button->SetText(u"");
+
+  ui::AXNodeData data;
+  saved_tab_group_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_GROUP_AX_LABEL_UNNAMED_SAVED_GROUP_FORMAT,
+                l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_OPENED)),
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  saved_tab_group_button->SetText(u"Accessible Name");
+  data = ui::AXNodeData();
+  saved_tab_group_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT, u"Accessible Name",
+                l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_OPENED)),
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
 // Verify unpin an existing tab group will remove a button.
 TEST_P(SavedTabGroupBarUnitTest, UnpinTabGroupRemoveButton) {
   if (!IsV2UIEnabled()) {

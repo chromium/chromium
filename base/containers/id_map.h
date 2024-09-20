@@ -256,6 +256,7 @@ class IDMap final {
     using inner_iterator = typename HashTable::iterator;
     inner_iterator iter_;
 
+    KeyIterator() = default;
     KeyIterator(inner_iterator iter) : iter_(iter) {}
     KeyType operator*() const { return iter_->first; }
     KeyIterator& operator++() {

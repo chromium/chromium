@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace autofill {
 
@@ -16,6 +17,7 @@ namespace autofill {
 // submits a form with an IBAN value that has been saved. This bubble is
 // accessible by clicking on the omnibox IBAN icon.
 class ManageSavedIbanBubbleView : public AutofillLocationBarBubble {
+  METADATA_HEADER(ManageSavedIbanBubbleView, AutofillLocationBarBubble)
  public:
   // Bubble will be anchored to `anchor_view`.
   ManageSavedIbanBubbleView(views::View* anchor_view,
@@ -24,6 +26,7 @@ class ManageSavedIbanBubbleView : public AutofillLocationBarBubble {
   ManageSavedIbanBubbleView(const ManageSavedIbanBubbleView&) = delete;
   ManageSavedIbanBubbleView& operator=(const ManageSavedIbanBubbleView&) =
       delete;
+  ~ManageSavedIbanBubbleView() override;
 
   void Show(DisplayReason reason);
 
@@ -35,7 +38,6 @@ class ManageSavedIbanBubbleView : public AutofillLocationBarBubble {
   void WindowClosing() override;
 
  private:
-  ~ManageSavedIbanBubbleView() override;
 
   IbanBubbleController* controller() const { return controller_; }
 

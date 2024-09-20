@@ -174,6 +174,16 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
   if (usage_ & wgpu::TextureUsage::StorageBinding) {
     usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
   }
+
+  wgpu::AdapterInfo adapter_info;
+  device_.GetAdapter().GetInfo(&adapter_info);
+  if (adapter_info.adapterType == wgpu::AdapterType::CPU) {
+    // When using the fallback adapter, service-side reads and writes of the
+    // SharedImage occur via Skia with copies from/to Dawn textures.
+    usage |= gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+  }
+
   gpu::ImageInfo info = {size,
                          Format(),
                          usage,
@@ -295,8 +305,8 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
       current_swap_buffer_->GetSharedImage(), texture_target,
       current_swap_buffer_->GetSyncToken(),
       current_swap_buffer_->GetSharedImage()->size(), Format(),
-      current_swap_buffer_->GetSharedImage()->usage() &
-          gpu::SHARED_IMAGE_USAGE_SCANOUT,
+      current_swap_buffer_->GetSharedImage()->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_SCANOUT),
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
   out_resource->color_space = PredefinedColorSpaceToGfxColorSpace(color_space_);
   out_resource->hdr_metadata = hdr_metadata_;

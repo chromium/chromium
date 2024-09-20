@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -432,7 +431,9 @@ void LocaleSwitchScreen::HideImpl() {
   // timer, stop observing `IdentintyManager` and cancel the ongoing request to
   // fetch the locale.
   if (timeout_waiter_.IsRunning()) {
-    CHECK_IS_TEST();
+    LOG(WARNING) << __func__
+                 << " while LocaleSwitchScreen is still executing requests. "
+                    "Ignore if tests advance to next OOBE screens directly.";
     timeout_waiter_.Stop();
     identity_manager_observer_.Reset();
     AbandonPeopleAPICall();
@@ -445,7 +446,9 @@ void LocaleSwitchScreen::OnLanguageChangedCallback(
   // Return early when the screen is already hidden for tests. Check comment in
   // `LocaleSwitchScreen::HideImpl` for more information.
   if (is_hidden()) {
-    CHECK_IS_TEST();
+    LOG(WARNING) << __func__
+                 << " when LocaleSwitchScreen is already hidden. "
+                    "Ignore if tests advance to next OOBE screens directly.";
     return;
   }
 

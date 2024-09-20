@@ -10,6 +10,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 
@@ -39,11 +41,25 @@ class AutofillPlusAddressDelegate {
   // Describes interactions with Autofill suggestions for plus addresses.
   // The values are persisted to metrics, do not change them.
   enum class SuggestionEvent {
+    // Suggestion shown events.
     kExistingPlusAddressSuggested = 0,
     kCreateNewPlusAddressSuggested = 1,
+    kCreateNewPlusAddressInlineSuggested = 4,
+    kErrorDuringReserve = 8,
+
+    // Suggestion accepted events.
     kExistingPlusAddressChosen = 2,
     kCreateNewPlusAddressChosen = 3,
-    kMaxValue = kCreateNewPlusAddressChosen,
+    kCreateNewPlusAddressInlineChosen = 5,
+
+    // Other events.
+    // The other clicked the refresh button on an inline creation suggestion.
+    kRefreshPlusAddressInlineClicked = 6,
+    // A loading state for the suggested address was shown because none was
+    // available synchronously.
+    kCreateNewPlusAddressInlineReserveLoadingStateShown = 7,
+
+    kMaxValue = kErrorDuringReserve,
   };
 
   virtual ~AutofillPlusAddressDelegate() = default;
@@ -60,8 +76,7 @@ class AutofillPlusAddressDelegate {
   virtual void GetSuggestions(
       const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
-      const AutofillClient::PasswordFormClassification&
-          focused_form_classification,
+      const PasswordFormClassification& focused_form_classification,
       const FormFieldData& focused_field,
       AutofillSuggestionTriggerSource trigger_source,
       GetSuggestionsCallback callback) = 0;
@@ -69,11 +84,6 @@ class AutofillPlusAddressDelegate {
   // Returns the "Manage plus addresses..." suggestion which redirects the user
   // to the plus address management page.
   virtual Suggestion GetManagePlusAddressSuggestion() const = 0;
-
-  // Returns whether plus address suggestions should be mixed with single field
-  // form fill suggestions instead of override them.
-  // TODO(crbug.com/324557560): Remove once feature flag is not needed.
-  virtual bool ShouldMixWithSingleFieldFormFillSuggestions() const = 0;
 
   // Logs Autofill suggestion events related to plus addresses.
   virtual void RecordAutofillSuggestionEvent(
@@ -107,7 +117,7 @@ class AutofillPlusAddressDelegate {
       FormGlobalId form,
       FieldGlobalId field,
       SuggestionContext suggestion_context,
-      AutofillClient::PasswordFormClassification::Type form_type,
+      PasswordFormClassification::Type form_type,
       SuggestionType suggestion_type) = 0;
 
   using UpdateSuggestionsCallback =
@@ -130,6 +140,29 @@ class AutofillPlusAddressDelegate {
       const url::Origin& primary_main_frame_origin,
       base::span<const Suggestion> current_suggestions,
       UpdateSuggestionsCallback update_suggestions_callback) = 0;
+
+  using HideSuggestionsCallback =
+      base::OnceCallback<void(SuggestionHidingReason)>;
+  using PlusAddressErrorDialogType = AutofillClient::PlusAddressErrorDialogType;
+  using ShowErrorDialogCallback =
+      base::OnceCallback<void(PlusAddressErrorDialogType, base::OnceClosure)>;
+  // A callback to inform the user that there is an affiliated domain (first
+  // parameter) with an existing plus address (second parameter).
+  using ShowAffiliationErrorDialogCallback =
+      base::OnceCallback<void(std::u16string, std::u16string)>;
+  // Attempts to create the plus address in
+  // `current_suggestions[current_suggestion_index]` for
+  // `primary_main_frame_origin`.
+  virtual void OnAcceptedInlineSuggestion(
+      const url::Origin& primary_main_frame_origin,
+      base::span<const Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      UpdateSuggestionsCallback update_suggestions_callback,
+      HideSuggestionsCallback hide_suggestions_callback,
+      PlusAddressCallback fill_field_callback,
+      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
+      ShowErrorDialogCallback show_error_dialog,
+      base::OnceClosure reshow_suggestions) = 0;
 };
 
 }  // namespace autofill

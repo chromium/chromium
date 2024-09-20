@@ -117,6 +117,7 @@ using ::testing::Mock;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
@@ -865,16 +866,153 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
-       SourceDataHostRegistration_LimitNavigationOnUniqueAttributionScopeSet) {
+       NavigationSourceUniqueScopesSet_NoScopes) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       attribution_reporting::features::kAttributionScopes);
+
   base::HistogramTester histograms;
 
   const auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
   const auto reporting_url = GURL("https://report.test");
   const auto reporting_origin = *SuitableOrigin::Create(reporting_url);
+
   const auto attribution_scope_set =
+      *attribution_reporting::AttributionScopesData::Create(
+          attribution_reporting::AttributionScopesSet({"a", "b"}),
+          /*attribution_scope_limit=*/2, /*max_event_states=*/3);
+
+  constexpr char kRegisterSourceJsonWithScopesSet[] =
+      R"json({"source_event_id":"6","destination":"https://destination.example","attribution_scopes":{"limit":2,"max_event_states":3,"values":["a","b"]}})json";
+  constexpr char kRegisterSourceJsonNoScopes[] =
+      R"json({"source_event_id":"5","destination":"https://destination.example"})json";
+
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(1), _));
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(2), _))
+      .Times(0);
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(3), _));
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(4), _));
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(5), _));
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(6), _))
+      .Times(0);
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(7), _));
+
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
+
+  // 1 - Renderer registration, no scopes defined, should register properly.
+  SourceRegistration source_data(*DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://trigger.example")}));
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.RegisterNavigationDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token);
+
+  data_host_manager_.NotifyNavigationRegistrationStarted(
+      AttributionSuitableContext::CreateForTesting(
+          page_origin,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
+      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId);
+
+  source_data.source_event_id = 1;
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
+
+  // 2 - Renderer registration, same navigation, non-empty scopes, should be
+  // dropped.
+  source_data.source_event_id = 2;
+  source_data.attribution_scopes_data = attribution_scope_set;
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
+
+  // 3 - Renderer registration, same navigation, no scopes, should register
+  // properly.
+  source_data.source_event_id = 3;
+  source_data.attribution_scopes_data = std::nullopt;
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
+
+  data_host_remote.FlushForTesting();
+
+  data_host_remote.reset();
+
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(),
+      AttributionSuitableContext::CreateForTesting(
+          page_origin, /*is_nested_within_fenced_frame=*/true, kFrameId,
+          kLastNavigationId),
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
+
+  // 4 - Event registration, not tied to a navigation ID, should register
+  // properly.
+  source_data.source_event_id = 4;
+  source_data.attribution_scopes_data = attribution_scope_set;
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
+
+  data_host_remote.FlushForTesting();
+
+  // 5 - Browser registration, same navigation, no scopes, should be registered.
+  {
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+
+    headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                       kRegisterSourceJsonNoScopes);
+    EXPECT_TRUE(data_host_manager_.NotifyNavigationRegistrationData(
+        attribution_src_token, headers.get(), reporting_url));
+    task_environment_.FastForwardBy(base::TimeDelta());
+  }
+
+  // 6 - Browser registration, same navigation, non-empty scopes, should be
+  // dropped.
+  {
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+
+    headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                       kRegisterSourceJsonWithScopesSet);
+    EXPECT_TRUE(data_host_manager_.NotifyNavigationRegistrationData(
+        attribution_src_token, headers.get(), reporting_url));
+    task_environment_.FastForwardBy(base::TimeDelta());
+  }
+
+  data_host_remote.reset();
+
+  // 7 - Renderer registration, different navigation, non-empty scopes, should
+  // register properly.
+  const blink::AttributionSrcToken attribution_src_token_2;
+  data_host_manager_.RegisterNavigationDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token_2);
+
+  data_host_manager_.NotifyNavigationRegistrationStarted(
+      AttributionSuitableContext::CreateForTesting(
+          page_origin,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
+      attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId);
+
+  source_data.source_event_id = 7;
+  source_data.attribution_scopes_data = attribution_scope_set;
+  data_host_remote->SourceDataAvailable(
+      reporting_origin, std::move(source_data), kViaServiceWorker);
+
+  data_host_remote.FlushForTesting();
+
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "Conversions.NavigationSourceScopesLimitOutcome"),
+              UnorderedElementsAre(base::Bucket(0, 3), base::Bucket(2, 1),
+                                   base::Bucket(3, 2)));
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationSourceUniqueScopesSet_WithScopes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      attribution_reporting::features::kAttributionScopes);
+
+  base::HistogramTester histograms;
+
+  const auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
+  const auto reporting_url = GURL("https://report.test");
+  const auto reporting_origin = *SuitableOrigin::Create(reporting_url);
+
+  const auto attribution_scope_set_1 =
       *attribution_reporting::AttributionScopesData::Create(
           attribution_reporting::AttributionScopesSet({"a", "b"}),
           /*attribution_scope_limit=*/2, /*max_event_states=*/3);
@@ -887,115 +1025,66 @@ TEST_F(AttributionDataHostManagerImplTest,
       R"json({"source_event_id":"6","destination":"https://destination.example","attribution_scopes":{"limit":2,"max_event_states":3,"values":["a","b"]}})json";
   constexpr char kRegisterSourceJsonWithScopesSet2[] =
       R"json({"source_event_id":"7","destination":"https://destination.example","attribution_scopes":{"limit":2,"max_event_states":3,"values":["a"]}})json";
+  constexpr char kRegisterSourceJsonNoScopes[] =
+      R"json({"source_event_id":"8","destination":"https://destination.example"})json";
 
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(AllOf(SourceTypeIs(SourceType::kNavigation),
-                         ImpressionOriginIs(page_origin),
-                         ReportingOriginIs(reporting_origin),
-                         RegistrationAttributionScopesDataIs(std::nullopt),
-                         RegistrationSourceEventIdIs(1)),
-                   kFrameId))
-      .Times(1);
-
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(
-          AllOf(SourceTypeIs(SourceType::kNavigation),
-                ImpressionOriginIs(page_origin),
-                ReportingOriginIs(reporting_origin),
-                RegistrationAttributionScopesDataIs(attribution_scope_set),
-                RegistrationSourceEventIdIs(2)),
-          kFrameId))
-      .Times(1);
-
-  EXPECT_CALL(mock_manager_,
-              HandleSource(RegistrationSourceEventIdIs(3), kFrameId))
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(1), _));
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(2), _))
       .Times(0);
-
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(AllOf(SourceTypeIs(SourceType::kNavigation),
-                         ImpressionOriginIs(page_origin),
-                         ReportingOriginIs(reporting_origin),
-                         RegistrationAttributionScopesDataIs(std::nullopt),
-                         RegistrationSourceEventIdIs(4)),
-                   kFrameId))
-      .Times(1);
-
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(
-          AllOf(SourceTypeIs(SourceType::kEvent),
-                ImpressionOriginIs(page_origin),
-                ReportingOriginIs(reporting_origin),
-                RegistrationAttributionScopesDataIs(attribution_scope_set_2),
-                SourceIsWithinFencedFrameIs(true),
-                RegistrationSourceEventIdIs(5)),
-          kFrameId))
-      .Times(1);
-
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(
-          AllOf(SourceTypeIs(SourceType::kNavigation),
-                ImpressionOriginIs(page_origin),
-                ReportingOriginIs(reporting_origin),
-                RegistrationAttributionScopesDataIs(attribution_scope_set),
-                RegistrationSourceEventIdIs(6)),
-          kFrameId))
-      .Times(1);
-
-  EXPECT_CALL(mock_manager_,
-              HandleSource(RegistrationSourceEventIdIs(7), kFrameId))
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(3), _))
       .Times(0);
-
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(
-          AllOf(SourceTypeIs(SourceType::kNavigation),
-                ImpressionOriginIs(page_origin),
-                ReportingOriginIs(reporting_origin),
-                RegistrationAttributionScopesDataIs(attribution_scope_set_2),
-                RegistrationSourceEventIdIs(8)),
-          kFrameId))
-      .Times(1);
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(4), _));
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(5), _));
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(6), _));
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(7), _))
+      .Times(0);
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(8), _))
+      .Times(0);
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(9), _));
+  EXPECT_CALL(mock_manager_, HandleSource(RegistrationSourceEventIdIs(10), _));
 
   mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
 
-  // 1 - Renderer registration, no scopes defined, should register properly.
+  // 1 - Renderer registration, non-empty scopes defined, should register
+  // properly.
   SourceRegistration source_data(*DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://trigger.example")}));
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token);
 
+  data_host_manager_.NotifyNavigationRegistrationStarted(
+      AttributionSuitableContext::CreateForTesting(
+          page_origin,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
+      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId);
+
   source_data.source_event_id = 1;
+  source_data.attribution_scopes_data = attribution_scope_set_1;
   data_host_remote->SourceDataAvailable(reporting_origin, source_data,
                                         kViaServiceWorker);
 
-  // 2 - Renderer registration, same navigation, first registration with scopes
-  // set, should register properly.
+  // 2 - Renderer registration, same navigation, different scopes, should be
+  // dropped.
   source_data.source_event_id = 2;
-  source_data.attribution_scopes_data = attribution_scope_set;
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
-                                        kViaServiceWorker);
-
-  // 3 - Renderer registration, same navigation, scopes different from
-  // registration 2, should not register.
-  source_data.source_event_id = 3;
   source_data.attribution_scopes_data = attribution_scope_set_2;
-
   data_host_remote->SourceDataAvailable(reporting_origin, source_data,
                                         kViaServiceWorker);
 
-  // 4 - Renderer registration, same navigation, no scopes, should register
-  // properly.
+  // 3 - Renderer registration, same navigation, no scopes, should be dropped.
+  source_data.source_event_id = 3;
+  source_data.attribution_scopes_data.reset();
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
+
+  // 4 - Renderer registration, same navigation, same scopes as registration 1,
+  // should register properly.
   source_data.source_event_id = 4;
-  source_data.attribution_scopes_data = std::nullopt;
-
+  source_data.attribution_scopes_data = attribution_scope_set_1;
   data_host_remote->SourceDataAvailable(reporting_origin, source_data,
                                         kViaServiceWorker);
+
+  data_host_remote.FlushForTesting();
 
   data_host_remote.reset();
 
@@ -1013,14 +1102,10 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_remote->SourceDataAvailable(reporting_origin, source_data,
                                         kViaServiceWorker);
 
-  data_host_manager_.NotifyNavigationRegistrationStarted(
-      AttributionSuitableContext::CreateForTesting(
-          page_origin,
-          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId);
+  data_host_remote.FlushForTesting();
 
-  // 6 - Browser registration, same navigation, shares same scopes as
-  // registration 2, should register properly.
+  // 6 - Browser registration, same navigation, same scopes as the first source,
+  // should register properly.
   {
     auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
 
@@ -1031,29 +1116,36 @@ TEST_F(AttributionDataHostManagerImplTest,
     task_environment_.FastForwardBy(base::TimeDelta());
   }
 
-  // 7 - Browser registration, same navigation, scopes different from
-  // registration 2, should not register.
+  // 7 - Browser registration, same navigation, different scopes, should be
+  // dropped.
   {
     auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+
     headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJsonWithScopesSet2);
     EXPECT_TRUE(data_host_manager_.NotifyNavigationRegistrationData(
         attribution_src_token, headers.get(), reporting_url));
+    task_environment_.FastForwardBy(base::TimeDelta());
   }
 
-  // 8 - Renderer registration, different navigation, scopes different from
-  // registration 2, should register properly.
+  // 8 - Browser registration, same navigation, no scopes, should be dropped.
+  {
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+
+    headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                       kRegisterSourceJsonNoScopes);
+    EXPECT_TRUE(data_host_manager_.NotifyNavigationRegistrationData(
+        attribution_src_token, headers.get(), reporting_url));
+    task_environment_.FastForwardBy(base::TimeDelta());
+  }
+
+  data_host_remote.reset();
+
+  // 9 - Renderer registration, different navigation, different scopes, should
+  // register properly.
   const blink::AttributionSrcToken attribution_src_token_2;
-  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote_2;
   data_host_manager_.RegisterNavigationDataHost(
-      data_host_remote_2.BindNewPipeAndPassReceiver(), attribution_src_token_2);
-
-  source_data.source_event_id = 8;
-  source_data.attribution_scopes_data = attribution_scope_set_2;
-  data_host_remote_2->SourceDataAvailable(
-      reporting_origin, std::move(source_data), kViaServiceWorker);
-
-  data_host_remote_2.reset();
+      data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token_2);
 
   data_host_manager_.NotifyNavigationRegistrationStarted(
       AttributionSuitableContext::CreateForTesting(
@@ -1061,20 +1153,37 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId);
 
-  task_environment_.RunUntilIdle();
-  data_host_manager_.NotifyNavigationRegistrationCompleted(
-      attribution_src_token);
+  source_data.source_event_id = 9;
+  source_data.attribution_scopes_data = attribution_scope_set_2;
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
 
-  static constexpr char
-      kNavigationSourceRegistrationsWithScopesAllowedMetric[] =
-          "Conversions.NavigationSourceRegistrationsWithScopesAllowed";
-  histograms.ExpectBucketCount(
-      kNavigationSourceRegistrationsWithScopesAllowedMetric, 0, 2);
+  data_host_remote.FlushForTesting();
+  data_host_remote.reset();
 
-  // We don't record source 1 or 4 due to having empty scopes as well as source
-  // 5 for being an event source.
-  histograms.ExpectBucketCount(
-      kNavigationSourceRegistrationsWithScopesAllowedMetric, 1, 3);
+  // 10 - Renderer registration, different navigation, no scopes, should
+  // register properly.
+  const blink::AttributionSrcToken attribution_src_token_3;
+  data_host_manager_.RegisterNavigationDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token_3);
+
+  data_host_manager_.NotifyNavigationRegistrationStarted(
+      AttributionSuitableContext::CreateForTesting(
+          page_origin,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
+      attribution_src_token_3, /*navigation_id=*/3, kDevtoolsRequestId);
+
+  source_data.source_event_id = 10;
+  source_data.attribution_scopes_data.reset();
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
+
+  data_host_remote.FlushForTesting();
+
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "Conversions.NavigationSourceScopesLimitOutcome"),
+              UnorderedElementsAre(base::Bucket(0, 1), base::Bucket(1, 2),
+                                   base::Bucket(2, 4), base::Bucket(3, 2)));
 }
 
 // Ensures correct behavior in

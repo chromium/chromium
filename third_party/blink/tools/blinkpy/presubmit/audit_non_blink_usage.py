@@ -90,6 +90,7 @@ _CONFIG = [
             'base::HashingLRUCache',
             'base::HashInts',
             'base::HeapArray',
+            'base::Hertz',
             'base::HexStringToUInt64',
             'base::Hours',
             'base::i18n::TextDirection',
@@ -139,7 +140,6 @@ _CONFIG = [
             'base::Span(OrSize|Reader|Writer)',
             'base::StringPiece',
             'base::SubstringSetMatcher',
-            'base::SupportsWeakPtr',
             'base::SysInfo',
             'base::ThreadChecker',
             'base::ThreadTicks',
@@ -928,16 +928,21 @@ _CONFIG = [
             # Flags to be used to set up sharedImage
             'gpu::SHARED_IMAGE_USAGE_DISPLAY_READ',
             'gpu::SHARED_IMAGE_USAGE_SCANOUT',
+            'gpu::SharedImageUsageSet'
         ],
     },
     {
         'paths': [
-            'third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.cc'
+            'third_party/blink/renderer/core',
+            'third_party/blink/public/common/messaging/accelerated_image_info.h',
+            'third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h',
+            'third_party/blink/common/messaging/accelerated_static_bitmap_image_mojom_traits.cc'
         ],
         'allowed': [
             'gpu::SHARED_IMAGE_USAGE_DISPLAY_READ',
             'gpu::SHARED_IMAGE_USAGE_SCANOUT',
             'gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE',
+            'gpu::SharedImageUsageSet'
         ],
     },
     {
@@ -980,6 +985,13 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/renderer/core/exported/web_form_control_element.cc'],
+        'allowed': [
+            'base::i18n::LEFT_TO_RIGHT',
+            'base::i18n::RIGHT_TO_LEFT',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/exported/web_view_impl.cc'],
         'allowed': [
             'base::TaskAnnotator',
@@ -1007,6 +1019,12 @@ _CONFIG = [
         'paths': ['third_party/blink/renderer/core/css/media_values.cc'],
         'allowed': [
             'color_space_utilities::GetColorSpaceGamut',
+        ],
+    },
+    {
+        'paths': ['third_party/blink/renderer/core/css/style_color.cc'],
+        'allowed': [
+            'base::flat_map',
         ],
     },
     {
@@ -1382,6 +1400,7 @@ _CONFIG = [
             'gpu::raster::RasterInterface',
             'gpu::SHARED_IMAGE_USAGE_.+',
             'gpu::SharedImageInterface',
+            'gpu::SharedImageUsageSet',
             'gpu::SyncToken',
             'gpu::webgpu::ReservedTexture',
             'media::IsOpaque',
@@ -1637,6 +1656,7 @@ _CONFIG = [
             'gpu::raster::RasterInterface',
             'gpu::SHARED_IMAGE_.+',
             'gpu::SharedImageInterface',
+            'gpu::SharedImageUsageSet',
             'gpu::SyncToken',
             'libgav1::.+',
             'libyuv::.+',
@@ -1809,6 +1829,7 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/public/platform/web_theme_engine.h',
+            'third_party/blink/renderer/core/css/resolver/style_builder_converter.h',
             'third_party/blink/renderer/core/layout/layout_theme.cc',
             'third_party/blink/renderer/core/layout/layout_theme.h',
             'third_party/blink/renderer/core/scroll/',

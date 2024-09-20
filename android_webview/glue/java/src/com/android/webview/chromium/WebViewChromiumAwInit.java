@@ -40,7 +40,6 @@ import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.HttpAuthDatabase;
-import org.chromium.android_webview.ProductConfig;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
@@ -51,7 +50,6 @@ import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.BuildInfo;
-import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FieldTrialList;
@@ -192,8 +190,6 @@ public class WebViewChromiumAwInit {
             JNIUtils.setClassLoader(WebViewChromiumAwInit.class.getClassLoader());
 
             ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
-
-            BundleUtils.setIsBundle(ProductConfig.IS_BUNDLE);
 
             // We are rewriting Java resources in the background.
             // NOTE: Any reference to Java resources will cause a crash.

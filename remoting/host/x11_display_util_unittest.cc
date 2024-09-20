@@ -29,12 +29,12 @@ TEST(X11DisplayUtilTest, ToVideoTrackLayout) {
                                      .height = 500,
                                      .width_in_millimeters = 100,
                                      .height_in_millimeters = 100};
-  DesktopLayout layout = ToVideoTrackLayout(monitor);
-  EXPECT_EQ(layout.screen_id(), 123);
-  EXPECT_EQ(layout.position_x(), 10);
-  EXPECT_EQ(layout.position_y(), 20);
-  EXPECT_EQ(layout.width(), 1000);
-  EXPECT_EQ(layout.height(), 500);
+  x11::RandRMonitorConfig layout = ToVideoTrackLayout(monitor);
+  EXPECT_EQ(layout.id(), 123);
+  EXPECT_EQ(layout.rect().x(), 10);
+  EXPECT_EQ(layout.rect().y(), 20);
+  EXPECT_EQ(layout.rect().width(), 1000);
+  EXPECT_EQ(layout.rect().height(), 500);
   EXPECT_EQ(layout.dpi().x(), 254);
   EXPECT_EQ(layout.dpi().y(), 127);
 }

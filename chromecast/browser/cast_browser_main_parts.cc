@@ -188,7 +188,7 @@ void RegisterClosureOnSignal(base::OnceClosure closure) {
   for (int sig : kSignalsToRunClosure) {
     struct sigaction sa_old;
     if (sigaction(sig, &sa_new, &sa_old) == -1) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     } else {
       DCHECK_EQ(sa_old.sa_handler, SIG_DFL);
     }
@@ -214,13 +214,13 @@ void RegisterKillOnAlarm(int timeout_seconds) {
 
   struct sigaction sa_old;
   if (sigaction(SIGALRM, &sa_new, &sa_old) == -1) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   } else {
     DCHECK_EQ(sa_old.sa_handler, SIG_DFL);
   }
 
   if (alarm(timeout_seconds) > 0)
-    NOTREACHED_IN_MIGRATION() << "Previous alarm() was cancelled";
+    NOTREACHED() << "Previous alarm() was cancelled";
 }
 
 void DeregisterKillOnAlarm() {
@@ -235,7 +235,7 @@ void DeregisterKillOnAlarm() {
 
   struct sigaction sa_old;
   if (sigaction(SIGALRM, &sa_new, &sa_old) == -1) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   } else {
     DCHECK_EQ(sa_old.sa_handler, KillOnAlarm);
   }
@@ -704,7 +704,7 @@ void CastBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
 #if BUILDFLAG(IS_ANDROID)
   // Android does not use native main MessageLoop.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #elif !BUILDFLAG(IS_FUCHSIA)
   // Fuchsia doesn't have signals.
   RegisterClosureOnSignal(run_loop->QuitClosure());
@@ -727,9 +727,8 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
 
 #if BUILDFLAG(IS_ANDROID)
   // Android does not use native main MessageLoop.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
-
 #if defined(USE_AURA)
   // Reset display change observer here to ensure it is deleted before
   // display_configurator since display_configurator is deleted when
@@ -750,9 +749,9 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
 #if !BUILDFLAG(IS_FUCHSIA)
   DeregisterKillOnAlarm();
 #endif  // !BUILDFLAG(IS_FUCHSIA)
-#endif
 
   service_manager_context_.reset();
+#endif
 }
 
 void CastBrowserMainParts::PostDestroyThreads() {

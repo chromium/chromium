@@ -14,7 +14,9 @@ const targetScriptUrls = [
   // Hotjar
   'https://static.hotjar.com/c/hotjar-1903348.js',
   // Elementor
-  'https://elementor.com/wp-content/plugins/elementor/assets/lib/swiper/v8/swiper.min.js'
+  'https://elementor.com/wp-content/plugins/elementor/assets/lib/swiper/v8/swiper.min.js',
+  // Slider Revolution
+  'https://artfulagenda.com/wp-content/plugins/revslider/public/assets/js/jquery.themepunch.tools.min.js'
 ];
 
 function third_party_script_test(test_type, url, expected_metric_value) {

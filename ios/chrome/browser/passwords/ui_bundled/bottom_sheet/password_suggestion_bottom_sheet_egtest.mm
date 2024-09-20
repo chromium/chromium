@@ -478,8 +478,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Long press to open context menu.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
@@ -551,8 +550,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Long press to open context menu.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]

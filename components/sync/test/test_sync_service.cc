@@ -386,8 +386,9 @@ void TestSyncService::SendExplicitPassphraseToPlatformClient() {
 }
 
 void TestSyncService::Shutdown() {
-  for (SyncServiceObserver& observer : observers_)
+  for (SyncServiceObserver& observer : observers_) {
     observer.OnSyncShutdown(this);
+  }
 }
 
 void TestSyncService::SetTypesWithUnsyncedData(const DataTypeSet& types) {

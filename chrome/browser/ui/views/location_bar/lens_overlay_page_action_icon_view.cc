@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/vector_icons/vector_icons.h"

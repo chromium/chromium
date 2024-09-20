@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_bubble_controller.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -20,6 +21,7 @@ namespace autofill {
 // Class responsible for showing the local card migration bubble which is
 // the entry point of the entire migration flow.
 class LocalCardMigrationBubbleViews : public AutofillLocationBarBubble {
+  METADATA_HEADER(LocalCardMigrationBubbleViews, AutofillLocationBarBubble)
  public:
   // The |controller| is lazily initialized in ChromeAutofillClient and there
   // should be only one controller per tab after the initialization. It should
@@ -31,6 +33,7 @@ class LocalCardMigrationBubbleViews : public AutofillLocationBarBubble {
   LocalCardMigrationBubbleViews(const LocalCardMigrationBubbleViews&) = delete;
   LocalCardMigrationBubbleViews& operator=(
       const LocalCardMigrationBubbleViews&) = delete;
+  ~LocalCardMigrationBubbleViews() override;
 
   void Show(DisplayReason reason);
 
@@ -45,8 +48,6 @@ class LocalCardMigrationBubbleViews : public AutofillLocationBarBubble {
 
  private:
   friend class LocalCardMigrationBrowserTest;
-
-  ~LocalCardMigrationBubbleViews() override;
 
   void OnDialogAccepted();
   void OnDialogCancelled();

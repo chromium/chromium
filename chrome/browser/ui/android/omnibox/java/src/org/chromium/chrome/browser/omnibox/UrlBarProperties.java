@@ -168,6 +168,10 @@ class UrlBarProperties {
     public static final WritableBooleanPropertyKey HAS_URL_SUGGESTIONS =
             new WritableBooleanPropertyKey();
 
+    /** Specifies whether the text should be selected when the URL bar is focused. */
+    public static final WritableBooleanPropertyKey SELECT_ALL_ON_FOCUS =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ACTION_MODE_CALLBACK,
@@ -186,6 +190,7 @@ class UrlBarProperties {
                 WINDOW_DELEGATE,
                 HAS_URL_SUGGESTIONS,
                 TEXT_COLOR,
-                HINT_TEXT_COLOR
+                HINT_TEXT_COLOR,
+                SELECT_ALL_ON_FOCUS
             };
 }

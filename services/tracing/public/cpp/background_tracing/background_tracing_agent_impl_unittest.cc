@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_impl.h"
+
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
-
-#include "base/metrics/histogram_macros.h"
 #include "base/test/task_environment.h"
+#include "base/trace_event/named_trigger.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_provider_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,6 +82,17 @@ class BackgroundTracingAgentImplTest : public testing::Test {
 TEST_F(BackgroundTracingAgentImplTest, TestInitialize) {
   RunUntilIdle();
   EXPECT_EQ(1, recorder()->on_initialized_count());
+}
+
+TEST_F(BackgroundTracingAgentImplTest, TestEmitNamedTrigger) {
+  RunUntilIdle();
+  base::trace_event::EmitNamedTrigger("foo1");
+  // RunLoop ensures that OnTriggerBackgroundTrace mojo message is processed.
+  RunUntilIdle();
+
+  EXPECT_EQ(1, recorder()->on_initialized_count());
+  EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
+  EXPECT_EQ("foo1", recorder()->on_trigger_background_trace_rule_id());
 }
 
 TEST_F(BackgroundTracingAgentImplTest, TestHistogramDoesNotTrigger) {

@@ -165,6 +165,8 @@ class MutableProfileOAuth2TokenServiceDelegate
                            InvalidateTokensForMultilogin);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            ExtractCredentials);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           TokenReencryption);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   FRIEND_TEST_ALL_PREFIXES(
       MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
@@ -204,10 +206,13 @@ class MutableProfileOAuth2TokenServiceDelegate
   void ExtractCredentialsInternal(ProfileOAuth2TokenService* to_service,
                                   const CoreAccountId& account_id) override;
 
-  // Loads credentials into in memory structure.
+  // Loads credentials into in memory structure, and remove any invalid or
+  // revoked tokens. If `should_reencrypt` is true then any tokens successfully
+  // loaded will be written back to the database to rotate the encryption key.
   void LoadAllCredentialsIntoMemory(
       const std::map<std::string, TokenServiceTable::TokenWithBindingKey>&
-          db_tokens);
+          db_tokens,
+      bool should_reencrypt = false);
 
   // Updates the in-memory representation of the credentials.
   void UpdateCredentialsInMemory(const CoreAccountId& account_id,

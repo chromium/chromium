@@ -64,13 +64,7 @@ TEST_F(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
 
   ChromeMetricsServicesManagerClient client(local_state());
   const metrics::EnabledStateProvider& provider =
-      client.GetEnabledStateProviderForTesting();
-  metrics_services_manager::MetricsServicesManagerClient* base_client = &client;
-
-  // The provider and client APIs should agree.
-  EXPECT_EQ(provider.IsConsentGiven(), base_client->IsMetricsConsentGiven());
-  EXPECT_EQ(provider.IsReportingEnabled(),
-            base_client->IsMetricsReportingEnabled());
+      client.GetEnabledStateProvider();
 
   // Both consent and reporting should be false.
   EXPECT_FALSE(provider.IsConsentGiven());
@@ -78,11 +72,6 @@ TEST_F(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
 
   // Set the pref to true.
   local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, true);
-
-  // The provider and client APIs should agree.
-  EXPECT_EQ(provider.IsConsentGiven(), base_client->IsMetricsConsentGiven());
-  EXPECT_EQ(provider.IsReportingEnabled(),
-            base_client->IsMetricsReportingEnabled());
 
   // Both consent and reporting should be true.
   EXPECT_TRUE(provider.IsConsentGiven());
@@ -92,11 +81,6 @@ TEST_F(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
   // but not consent.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kForceFieldTrials, "Foo/Bar");
-
-  // The provider and client APIs should agree.
-  EXPECT_EQ(provider.IsConsentGiven(), base_client->IsMetricsConsentGiven());
-  EXPECT_EQ(provider.IsReportingEnabled(),
-            base_client->IsMetricsReportingEnabled());
 
   // Consent should be true but reporting should be false.
   EXPECT_TRUE(provider.IsConsentGiven());

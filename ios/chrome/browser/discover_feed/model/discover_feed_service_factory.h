@@ -12,12 +12,11 @@
 class DiscoverFeedService;
 
 // Singleton that owns all DiscoverFeedServices and associates them with
-// ChromeBrowserState.
+// Profile.
 class DiscoverFeedServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static DiscoverFeedService* GetForBrowserState(
-      ChromeBrowserState* browser_state,
-      bool create = true);
+  static DiscoverFeedService* GetForProfile(ProfileIOS* profile);
+  static DiscoverFeedService* GetForProfileIfExists(ProfileIOS* profile);
 
   static DiscoverFeedServiceFactory* GetInstance();
 

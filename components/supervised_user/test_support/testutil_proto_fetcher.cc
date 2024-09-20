@@ -12,7 +12,7 @@
 namespace supervised_user {
 
 template <>
-void TypedProtoFetcher<std::string>::OnResponse(
+void TypedFetchProcess<std::string>::OnResponse(
     std::unique_ptr<std::string> response_body) {
   CHECK(response_body) << "Use OnError when there is no response.";
   OnSuccess(std::move(response_body));

@@ -33,27 +33,25 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
 
-  CHECK(!browserState->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord());
 
   BrowsingDataCounterWrapperProducer* producer =
-      [[BrowsingDataCounterWrapperProducer alloc]
-          initWithBrowserState:browserState];
+      [[BrowsingDataCounterWrapperProducer alloc] initWithBrowserState:profile];
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserState(browserState);
+      BrowsingDataRemoverFactory::GetForBrowserState(profile);
   DiscoverFeedService* discoverFeedService =
-      DiscoverFeedServiceFactory::GetForBrowserState(browserState);
+      DiscoverFeedServiceFactory::GetForProfile(profile);
 
-  _mediator =
-      [[QuickDeleteMediator alloc] initWithPrefs:browserState->GetPrefs()
-              browsingDataCounterWrapperProducer:producer
-                                 identityManager:identityManager
-                             browsingDataRemover:browsingDataRemover
-                             discoverFeedService:discoverFeedService
-                  canPerformTabsClosureAnimation:NO];
+  _mediator = [[QuickDeleteMediator alloc] initWithPrefs:profile->GetPrefs()
+                      browsingDataCounterWrapperProducer:producer
+                                         identityManager:identityManager
+                                     browsingDataRemover:browsingDataRemover
+                                     discoverFeedService:discoverFeedService
+                          canPerformTabsClosureAnimation:NO];
 
   _viewController = [[QuickDeleteBrowsingDataViewController alloc] init];
   _viewController.delegate = self;

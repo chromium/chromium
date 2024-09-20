@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/safe_ref.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -35,7 +36,15 @@ enum class EventSource {
 // TODO(crbug.com/41460939): Handle 3d space cases correctly.
 class VIZ_COMMON_EXPORT HitTestQuery {
  public:
-  HitTestQuery();
+  class DataProvider {
+   public:
+    virtual ~DataProvider() = default;
+    // Gets HitTestData from `HitTestAggregator` on VizCompositor thread.
+    virtual const std::vector<AggregatedHitTestRegion>& GetHitTestData()
+        const = 0;
+  };
+
+  explicit HitTestQuery(std::optional<base::SafeRef<DataProvider>> provider);
 
   HitTestQuery(const HitTestQuery&) = delete;
   HitTestQuery& operator=(const HitTestQuery&) = delete;
@@ -154,7 +163,16 @@ class VIZ_COMMON_EXPORT HitTestQuery {
                                        size_t region_index,
                                        gfx::Transform* transform) const;
 
+  // Returns updated aggregated hit test data from stored `hit_test_data` in the
+  // browser and uses `provider_` to get updated hit test data on VizCompositor
+  // thread.
+  const std::vector<AggregatedHitTestRegion>& GetHitTestRegionData() const;
+
   std::vector<AggregatedHitTestRegion> hit_test_data_;
+
+  // DataProvider is expected to outlive |this|. `HitTestAggregator` is the
+  // provider on VizCompositorThread whereas it's null on CrBrowserMain.
+  std::optional<base::SafeRef<DataProvider>> provider_;
 };
 
 }  // namespace viz

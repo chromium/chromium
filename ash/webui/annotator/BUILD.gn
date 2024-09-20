@@ -9,6 +9,10 @@ assert(is_chromeos_ash, "Projector App is ash-chrome only")
 
 static_library("annotator") {
   sources = [
+    "annotations_overlay_view_impl.cc",
+    "annotations_overlay_view_impl.h",
+    "annotator_client_impl.cc",
+    "annotator_client_impl.h",
     "untrusted_annotator_page_handler_impl.cc",
     "untrusted_annotator_page_handler_impl.h",
     "untrusted_annotator_ui.cc",
@@ -16,6 +20,7 @@ static_library("annotator") {
   ]
 
   deps = [
+    "//ash",
     "//ash/public/cpp",
     "//ash/strings",
     "//ash/webui/annotator/mojom:annotator_mojo_bindings",
@@ -25,8 +30,10 @@ static_library("annotator") {
     "//ash/webui/resources:media_app_bundle_resources",
     "//ash/webui/resources:projector_app_bundle_resources",
     "//ash/webui/resources:projector_common_resources",
+    "//chromeos/ash/components/browser_context_helper",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//ui/views/controls/webview",
     "//ui/webui",
   ]
 
@@ -58,7 +65,10 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "test/untrusted_annotator_page_handler_impl_unittest.cc" ]
+  sources = [
+    "test/annotator_client_impl_unittest.cc",
+    "test/untrusted_annotator_page_handler_impl_unittest.cc",
+  ]
 
   deps = [
     ":annotator",

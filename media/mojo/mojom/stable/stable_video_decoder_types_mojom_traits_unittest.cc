@@ -764,7 +764,6 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidVideoDecoderConfig) {
             mojom_video_decoder_config->natural_size);
   EXPECT_EQ(deserialized_video_decoder_config.hdr_metadata(),
             mojom_video_decoder_config->hdr_metadata);
-  EXPECT_FALSE(deserialized_video_decoder_config.is_rtc());
   EXPECT_TRUE(deserialized_video_decoder_config.IsValidConfig());
 }
 

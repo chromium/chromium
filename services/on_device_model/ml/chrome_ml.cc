@@ -10,6 +10,7 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
@@ -49,7 +50,8 @@ enum class GpuErrorReason {
   kOther = 0,
   kDxgiErrorDeviceHung = 1,
   kDxgiErrorDeviceRemoved = 2,
-  kMaxValue = kDxgiErrorDeviceRemoved,
+  kDeviceCreationFailed = 3,
+  kMaxValue = kDeviceCreationFailed,
 };
 
 void FatalGpuErrorFn(const char* msg) {
@@ -60,6 +62,8 @@ void FatalGpuErrorFn(const char* msg) {
     error_reason = GpuErrorReason::kDxgiErrorDeviceHung;
   } else if (msg_str.find("DXGI_ERROR_DEVICE_REMOVED") != std::string::npos) {
     error_reason = GpuErrorReason::kDxgiErrorDeviceRemoved;
+  } else if (msg_str.find("Failed to create device.") != std::string::npos) {
+    error_reason = GpuErrorReason::kDeviceCreationFailed;
   }
   base::UmaHistogramEnumeration("OnDeviceModel.GpuErrorReason", error_reason);
   if (error_reason == GpuErrorReason::kOther) {
@@ -92,6 +96,32 @@ void RecordCustomCountsHistogram(const char* name,
 
 }  // namespace
 
+base::FilePath GetChromeMLPath(const std::optional<std::string>& library_name) {
+  // TODO(https://crbug.com/366498630): Clean up the API to introduce dedicated
+  // ForTesting() methods for loading the library / querying its path.
+  if (library_name.has_value()) {
+    // Library name override should only be used in test code.
+    CHECK_IS_TEST();
+  }
+
+  base::FilePath base_dir;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_MAC)
+  if (base::apple::AmIBundled()) {
+    base_dir = base::apple::FrameworkBundlePath().Append("Libraries");
+  } else {
+#endif  // BUILDFLAG(IS_MAC)
+    CHECK(base::PathService::Get(base::DIR_MODULE, &base_dir));
+#if BUILDFLAG(IS_MAC)
+  }
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
+
+  return base_dir.AppendASCII(base::GetNativeLibraryName(
+      library_name.value_or(std::string(kChromeMLLibraryName))));
+}
+
 ChromeMLHolder::ChromeMLHolder(base::PassKey<ChromeMLHolder>,
                                base::ScopedNativeLibrary library,
                                const ChromeMLAPI* api)
@@ -106,23 +136,8 @@ DISABLE_CFI_DLSYM
 std::unique_ptr<ChromeMLHolder> ChromeMLHolder::Create(
     const std::optional<std::string>& library_name) {
   base::NativeLibraryLoadError error;
-  base::FilePath base_dir;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
-#if BUILDFLAG(IS_MAC)
-  if (base::apple::AmIBundled()) {
-    base_dir = base::apple::FrameworkBundlePath().Append("Libraries");
-  } else {
-#endif  // BUILDFLAG(IS_MAC)
-    CHECK(base::PathService::Get(base::DIR_MODULE, &base_dir));
-#if BUILDFLAG(IS_MAC)
-  }
-#endif  // BUILDFLAG(IS_MAC)
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_FUCHSIA)
-  base::NativeLibrary library = base::LoadNativeLibrary(
-      base_dir.AppendASCII(base::GetNativeLibraryName(
-          library_name.value_or(std::string(kChromeMLLibraryName)))),
-      &error);
+  base::NativeLibrary library =
+      base::LoadNativeLibrary(GetChromeMLPath(library_name), &error);
   if (!library) {
     LOG(ERROR) << "Error loading native library: " << error.ToString();
     return {};

@@ -300,6 +300,10 @@ void Component::NotifyWait() {
   NotifyObservers(Events::COMPONENT_WAIT);
 }
 
+bool Component::HasDiffUpdate() const {
+  return !crx_diffurls().empty();
+}
+
 void Component::AppendEvent(base::Value::Dict event) {
   if (previous_version().IsValid()) {
     event.Set("previousversion", previous_version().GetString());
@@ -352,7 +356,7 @@ base::Value::Dict Component::MakeEventUpdateComplete() const {
   if (extra_code1()) {
     event.Set("extracode1", extra_code1());
   }
-  if (HasDiffUpdate(*this)) {
+  if (HasDiffUpdate()) {
     const int diffresult = static_cast<int>(!diff_update_failed());
     event.Set("diffresult", diffresult);
   }
@@ -611,7 +615,7 @@ void Component::StateCanUpdate::DoHandle() {
 // and the configuration allows this update.
 bool Component::StateCanUpdate::CanTryDiffUpdate() const {
   const auto& component = Component::State::component();
-  return HasDiffUpdate(component) && !component.diff_error_code_ &&
+  return component.HasDiffUpdate() && !component.diff_error_code_ &&
          component.update_context_->crx_cache_.has_value() &&
          component.update_context_->config->EnabledDeltas();
 }
@@ -976,8 +980,10 @@ void Component::StateRun::DoHandle() {
   const auto& component = State::component();
   CHECK(component.crx_component());
 
-  action_runner_ = std::make_unique<ActionRunner>(component);
-  action_runner_->Run(
+  RunAction(
+      component.crx_component()->action_handler,
+      component.crx_component()->installer, component.action_run(),
+      component.session_id(),
       base::BindOnce(&StateRun::ActionRunComplete, base::Unretained(this)));
 }
 

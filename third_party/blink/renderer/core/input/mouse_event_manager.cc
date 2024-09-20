@@ -92,10 +92,7 @@ void SetMouseEventAttributes(MouseEventInit* initializer,
   initializer->setButtons(
       MouseEvent::WebInputEventModifiersToButtons(mouse_event.GetModifiers()));
   initializer->setView(target_node->GetDocument().domWindow());
-  initializer->setComposed(
-      RuntimeEnabledFeatures::NonComposedEnterLeaveEventsEnabled()
-          ? !is_mouse_enter_or_leave
-          : true);
+  initializer->setComposed(!is_mouse_enter_or_leave);
   initializer->setDetail(click_count);
   initializer->setRelatedTarget(related_target);
   UIEventWithKeyState::SetFromWebInputEventModifiers(
@@ -139,10 +136,9 @@ void MouseEventManager::Clear() {
   mouse_press_node_ = nullptr;
   mouse_down_may_start_autoscroll_ = false;
   mouse_down_may_start_drag_ = false;
-  captures_dragging_ = false;
   mouse_pressed_ = false;
   click_count_ = 0;
-  click_element_ = nullptr;
+  mousedown_element_ = nullptr;
   mouse_down_pos_ = gfx::Point();
   mouse_down_timestamp_ = base::TimeTicks();
   mouse_down_ = WebMouseEvent();
@@ -165,7 +161,7 @@ void MouseEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_manager_);
   visitor->Trace(element_under_mouse_);
   visitor->Trace(mouse_press_node_);
-  visitor->Trace(click_element_);
+  visitor->Trace(mousedown_element_);
   SynchronousMutationObserver::Trace(visitor);
 }
 
@@ -278,19 +274,22 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
 // TODO(https://crbug.com/1147674): This bypasses PointerEventManager states!
 // This method is called only from GestureManager, and that's one of the reasons
 // PointerEvents are incomplete for touch gesture.
-WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(
+WebInputEventResult
+MouseEventManager::SetElementUnderMouseAndDispatchMouseEvent(
     Element* target_element,
     const AtomicString& event_type,
     const WebMouseEvent& web_mouse_event) {
+  // This method is used by GestureManager::HandleGestureTap to apply hover
+  // states based on the tap. Note that we do not want to update the cached
+  // mouse position here (using SetLastKnownMousePosition), since that would
+  // cause the hover state to stick to the tap's viewport coordinates after a
+  // scroll.
+  //
+  // TODO(crbug.com/368256331): If there IS a cached mouse position, the hover
+  // state will revert to it as soon as somebody calls MarkHoverStateDirty,
+  // which isn't ideal.
+
   SetElementUnderMouse(target_element, web_mouse_event);
-
-  // Gesture tap should update last known mouse position just like mousemove.
-  // Otherwise, HandleGestureTap and RecomputeMouseHoverState will fight over
-  // SetElementUnderMouse with different ideas about where the mouse is. This
-  // creates flakiness in tests that send taps and listen to mouseout, like
-  // fast/events/touch/gesture/focus-selectionchange-on-tap.html.
-  SetLastKnownMousePosition(web_mouse_event);
-
   return DispatchMouseEvent(
       element_under_mouse_, event_type, web_mouse_event, nullptr, nullptr,
       false, web_mouse_event.id,
@@ -317,8 +316,8 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
 #endif
 
   const bool should_dispatch_click_event =
-      click_count_ > 0 && !context_menu_event && click_element_ &&
-      mouse_release_target && click_element_->isConnected();
+      click_count_ > 0 && !context_menu_event && mousedown_element_ &&
+      mouse_release_target && mousedown_element_->isConnected();
   if (!should_dispatch_click_event)
     return WebInputEventResult::kNotHandled;
 
@@ -326,10 +325,10 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
   if (RuntimeEnabledFeatures::ClickToCapturedPointerEnabled() &&
       captured_click_target) {
     click_target_node = captured_click_target;
-  } else if (click_element_->GetDocument() ==
+  } else if (mousedown_element_->GetDocument() ==
              mouse_release_target->GetDocument()) {
     click_target_node = mouse_release_target->CommonAncestor(
-        *click_element_, event_handling_util::ParentForClickEvent);
+        *mousedown_element_, event_handling_util::ParentForClickEvent);
   }
 
   if (!click_target_node)
@@ -459,20 +458,23 @@ void MouseEventManager::NodeChildrenWillBeRemoved(ContainerNode& container) {
   if (RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled()) {
     return;
   }
-  if (container == click_element_)
+  if (container == mousedown_element_) {
     return;
-  if (!click_element_ ||
-      !container.IsShadowIncludingInclusiveAncestorOf(*click_element_))
+  }
+  if (!mousedown_element_ ||
+      !container.IsShadowIncludingInclusiveAncestorOf(*mousedown_element_)) {
     return;
-  click_element_ = nullptr;
+  }
+  mousedown_element_ = nullptr;
 }
 
 void MouseEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
-  if (click_element_ && node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
-                            *click_element_)) {
+  if (mousedown_element_ &&
+      node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
+          *mousedown_element_)) {
     // We don't dispatch click events if the mousedown node is removed
     // before a mouseup event. It is compatible with IE and Firefox.
-    click_element_ = nullptr;
+    mousedown_element_ = nullptr;
   }
   if (mouse_press_node_ &&
       node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
@@ -612,7 +614,6 @@ void MouseEventManager::HandleMouseReleaseEventUpdateStates() {
 void MouseEventManager::HandleMousePressEventUpdateStates(
     const WebMouseEvent& mouse_event) {
   mouse_pressed_ = true;
-  captures_dragging_ = true;
   SetLastKnownMousePosition(mouse_event);
   mouse_down_may_start_drag_ = false;
   mouse_down_may_start_autoscroll_ = false;
@@ -1161,7 +1162,6 @@ void MouseEventManager::ClearDragHeuristicState() {
   // Used to prevent mouseMoveEvent from initiating a drag before
   // the mouse is pressed again.
   mouse_pressed_ = false;
-  captures_dragging_ = false;
   mouse_down_may_start_drag_ = false;
   mouse_down_may_start_autoscroll_ = false;
 }
@@ -1177,7 +1177,7 @@ bool MouseEventManager::HandleSvgPanIfNeeded(bool is_release_event) {
 
 void MouseEventManager::InvalidateClick() {
   click_count_ = 0;
-  click_element_ = nullptr;
+  mousedown_element_ = nullptr;
 }
 
 bool MouseEventManager::MousePressed() {
@@ -1188,14 +1188,6 @@ void MouseEventManager::ReleaseMousePress() {
   mouse_pressed_ = false;
 }
 
-bool MouseEventManager::CapturesDragging() const {
-  return captures_dragging_;
-}
-
-void MouseEventManager::SetCapturesDragging(bool captures_dragging) {
-  captures_dragging_ = captures_dragging;
-}
-
 Node* MouseEventManager::MousePressNode() {
   return mouse_press_node_.Get();
 }
@@ -1204,17 +1196,13 @@ void MouseEventManager::SetMousePressNode(Node* node) {
   mouse_press_node_ = node;
 }
 
-Element* MouseEventManager::ClickElement() {
-  return click_element_.Get();
-}
-
-void MouseEventManager::SetClickElement(Element* element) {
+void MouseEventManager::SetMouseDownElement(Element* element) {
   // TODO(mustaq): Why is SetDocument() not called earlier at
   // LocalFrame::DidAttachDocument()?  Because this is delayed call, the methods
   // MouseEventManager::WillBeRemoved() are not called until a mouse-press or
   // tap!
   SetDocument(element ? element->ownerDocument() : nullptr);
-  click_element_ = element;
+  mousedown_element_ = element;
 }
 
 void MouseEventManager::SetClickCount(int click_count) {

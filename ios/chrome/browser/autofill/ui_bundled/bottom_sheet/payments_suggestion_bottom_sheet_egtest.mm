@@ -131,6 +131,17 @@ NSString* ExpirationDateNSString() {
                                  autofill::test::NextYear().substr(2));
 }
 
+// Waits on a responsive Continue button to fill the credit card and returns a
+// matcher to that button.
+id<GREYMatcher> WaitOnResponsiveContinueButton() {
+  id<GREYMatcher> continueButton = ContinueButton();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+  // Wait enough time so the min delay is past before being allowed to fill
+  // credit card information from the sheet.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+  return continueButton;
+}
+
 // Verifies that the number of accepted suggestions recorded for the given
 // `suggestion_index` is as expected.
 void CheckAutofillSuggestionAcceptedIndexMetricsCount(
@@ -214,9 +225,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
 
-  id<GREYMatcher> continueButton = ContinueButton();
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
 
   // Verify that the credit card is visible to the user.
   [[EarlGrey selectElementWithMatcher:grey_text(_lastDigits)]
@@ -254,9 +263,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
 
-  id<GREYMatcher> continueButton = ContinueButton();
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
 
   // Make sure the user is seeing 2 cards on the bottom sheet.
   GREYAssertEqual(2, [AutofillAppInterface localCreditCount],
@@ -283,9 +290,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
 
-  id<GREYMatcher> continueButton = ContinueButton();
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
 
   // Add a credit card to the Personal Data Manager.
   id<GREYMatcher> serverCreditCardEntry =
@@ -352,9 +357,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
 
-  id<GREYMatcher> continueButton = ContinueButton();
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
 
   // Long press to open context menu.
   id<GREYMatcher> creditCardEntry = grey_text(_lastDigits);
@@ -397,9 +400,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
 
-  id<GREYMatcher> continueButton = ContinueButton();
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
 
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
 }
@@ -441,9 +442,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
 
-  id<GREYMatcher> continueButton = ContinueButton();
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+  WaitOnResponsiveContinueButton();
 
   // Long press to open context menu.
   id<GREYMatcher> creditCardEntry = grey_text(_lastDigits);
@@ -474,7 +473,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
   // Close the context menu.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   // Reopen the bottom sheet.
@@ -496,9 +495,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
 
-  id<GREYMatcher> continueButton = ContinueButton();
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
 
   // Long press to open context menu.
   id<GREYMatcher> creditCardEntry = grey_text(_lastDigits);
@@ -551,10 +548,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
-
-  id<GREYMatcher> continueButton = ContinueButton();
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
 
   // Dismiss the bottom sheet by tapping outside.
   [[EarlGrey selectElementWithMatcher:grey_keyWindow()]

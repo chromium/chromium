@@ -29,11 +29,10 @@
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 
-namespace content {
+namespace content::indexed_db {
 
 namespace {
 const size_t kTestingMaxOpenCursors = 3;
-}  // namespace
 
 class TransactionalLevelDBTransactionTest : public LevelDBScopesTestBase {
  public:
@@ -1026,4 +1025,5 @@ TEST_F(TransactionalLevelDBTransactionTest,
   ASSERT_FALSE(it->IsValid());
 }
 
-}  // namespace content
+}  // namespace
+}  // namespace content::indexed_db

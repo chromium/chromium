@@ -199,11 +199,10 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // Check if OS lockdown mode is enabled and update the preference value.
   if (!self.beingDestroyed) {
     static dispatch_once_t onceToken;
-    web::BrowserState* browser_state = self.webStateImpl->GetBrowserState();
     dispatch_once(&onceToken, ^{
       if (@available(iOS 16.0, *)) {
         web::GetWebClient()->SetOSLockdownModeEnabled(
-            browser_state, preferences.lockdownModeEnabled);
+            preferences.lockdownModeEnabled);
       }
     });
   }
@@ -265,9 +264,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       }
 
       if (!self.beingDestroyed) {
-        web::BrowserState* browser_state = self.webStateImpl->GetBrowserState();
         bool browser_lockdown_mode_enabled =
-            web::GetWebClient()->IsBrowserLockdownModeEnabled(browser_state);
+            web::GetWebClient()->IsBrowserLockdownModeEnabled();
         if ((policy == WKNavigationActionPolicyAllow) &&
             isMainFrameNavigationAction) {
           UMA_HISTOGRAM_BOOLEAN(

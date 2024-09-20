@@ -314,6 +314,9 @@ void PerksDiscoveryScreen::ShowImpl() {
 void PerksDiscoveryScreen::HideImpl() {}
 
 void PerksDiscoveryScreen::ExitScreenTimeout() {
+  if (is_hidden()) {
+    return;
+  }
   exit_callback_.Run(Result::kTimeout);
 }
 

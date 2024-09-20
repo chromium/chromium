@@ -378,7 +378,7 @@ class RenderViewContextMenu
   void ExecControls();
   void ExecSaveVideoFrameAs();
   void ExecCopyVideoFrame();
-  void ExecSearchForVideoFrame(int event_flags);
+  void ExecSearchForVideoFrame(int event_flags, bool is_lens_query);
   void ExecLiveCaption();
   void ExecRotateCW();
   void ExecRotateCCW();
@@ -398,6 +398,7 @@ class RenderViewContextMenu
 
   void MediaPlayerAction(const blink::mojom::MediaPlayerAction& action);
   void SearchForVideoFrame(int event_flags,
+                           bool is_lens_query,
                            const SkBitmap& bitmap,
                            const gfx::Rect& region_bounds);
   void PluginActionAt(const gfx::Point& location,

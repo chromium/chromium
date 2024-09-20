@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/css/color_function.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_color_channel_keywords.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
@@ -229,10 +230,100 @@ CSSValue* StyleColor::UnresolvedRelativeColor::ToCSSValue() const {
 
 Color StyleColor::UnresolvedRelativeColor::Resolve(
     const Color& current_color) const {
-  // TODO(crbug.com/325309578): Fully resolve the relative color.
-  const Color resolved_origin =
+  Color resolved_origin =
       ResolveColorOperand(origin_color_, origin_color_type_, current_color);
-  return resolved_origin;
+  resolved_origin.ConvertToColorSpace(color_interpolation_space_);
+
+  const ColorFunction::Metadata& function_metadata =
+      ColorFunction::MetadataForColorSpace(color_interpolation_space_);
+
+  std::vector<std::pair<ColorChannelKeyword, float>> keyword_values = {
+      {{CSSValueIDToColorChannelKeyword(function_metadata.channel_name[0]),
+        resolved_origin.Param0()},
+       {CSSValueIDToColorChannelKeyword(function_metadata.channel_name[1]),
+        resolved_origin.Param1()},
+       {CSSValueIDToColorChannelKeyword(function_metadata.channel_name[2]),
+        resolved_origin.Param2()},
+       {ColorChannelKeyword::kAlpha, resolved_origin.Alpha()}}};
+
+  // We need to make value adjustments for certain color spaces.
+  //
+  // https://www.w3.org/TR/css-color-4/#the-hsl-notation
+  // https://www.w3.org/TR/css-color-4/#the-hwb-notation
+  // hsl and hwb are specified with percent reference ranges of 0..100 in
+  // channels 1 and 2, but blink::Color represents these values over 0..1.
+  // We scale up the origin values so that they pass through computation
+  // correctly, then later, scale them down in the final result.
+  //
+  // https://www.w3.org/TR/css-color-4/#hue-syntax
+  // Channels representing <hue> are normalized to the range [0,360).
+  const bool is_hxx_color_space =
+      (color_interpolation_space_ == Color::ColorSpace::kHSL) ||
+      (color_interpolation_space_ == Color::ColorSpace::kHWB);
+  const bool is_lch_color_space =
+      (color_interpolation_space_ == Color::ColorSpace::kLch) ||
+      (color_interpolation_space_ == Color::ColorSpace::kOklch);
+
+  if (is_hxx_color_space) {
+    keyword_values[1].second *= 100.;
+    keyword_values[2].second *= 100.;
+  }
+
+  EvaluationInput evaluation_input;
+  evaluation_input.color_channel_keyword_values =
+      base::flat_map(std::move(keyword_values));
+
+  auto to_channel_value =
+      [&evaluation_input](const CalculationValue* calculation_value,
+                          double channel_percentage) -> std::optional<float> {
+    // The color function metadata table uses NaN to indicate that percentages
+    // are not applicable to a given channel. NaN is not suitable as a clamp
+    // limit for evaluating a CalculationValue, so translate it into float max.
+    const float max_value = (std::isnan(channel_percentage))
+                                ? std::numeric_limits<float>::max()
+                                : channel_percentage;
+    if (calculation_value != nullptr) {
+      return calculation_value->Evaluate(max_value, evaluation_input);
+    }
+    return std::nullopt;
+  };
+
+  std::array<std::optional<float>, 3> params = {
+      to_channel_value(channel0_.get(),
+                       function_metadata.channel_percentage[0]),
+      to_channel_value(channel1_.get(),
+                       function_metadata.channel_percentage[1]),
+      to_channel_value(channel2_.get(),
+                       function_metadata.channel_percentage[2])};
+  std::optional<float> param_alpha = to_channel_value(alpha_.get(), 1.f);
+
+  auto wrap_hue_channel = [](std::optional<float>& param) {
+    if (param.has_value()) {
+      // Perform the wrap at double precision to avoid floating-point rounding
+      // drift which is observable at single precision for some values.
+      param.value() =
+          fmod(fmod(static_cast<double>(param.value()), 360.0) + 360.0, 360.0);
+    }
+  };
+  auto scale_down_channel = [](std::optional<float>& param) {
+    if (param.has_value()) {
+      param.value() /= 100.f;
+    }
+  };
+  if (is_hxx_color_space) {
+    wrap_hue_channel(params[0]);
+    scale_down_channel(params[1]);
+    scale_down_channel(params[2]);
+  } else if (is_lch_color_space) {
+    wrap_hue_channel(params[2]);
+  }
+
+  Color result = Color::FromColorSpace(color_interpolation_space_, params[0],
+                                       params[1], params[2], param_alpha);
+  if (Color::IsLegacyColorSpace(result.GetColorSpace())) {
+    result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+  }
+  return result;
 }
 
 bool StyleColor::UnresolvedRelativeColor::operator==(
@@ -413,12 +504,18 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
   if (color.IsCurrentColor()) {
     return stream << "currentcolor";
   } else if (color.IsUnresolvedColorFunction()) {
-    return stream << "<unresolved color function>";
+    return stream << color.GetUnresolvedColorFunction();
   } else if (color.HasColorKeyword() && !color.IsNumeric()) {
     return stream << getValueName(color.GetColorKeyword());
   } else {
     return stream << color.GetColor();
   }
+}
+
+CORE_EXPORT std::ostream& operator<<(
+    std::ostream& stream,
+    const StyleColor::UnresolvedColorFunction& unresolved_color_function) {
+  return stream << unresolved_color_function.ToCSSValue()->CssText();
 }
 
 }  // namespace blink

@@ -605,7 +605,8 @@ bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
           // *duplicate* filling happened.
           return false;
         }
-        return field.value() == form_field->value() &&
+        return field.value(ValueSemantics::kCurrent) ==
+                   form_field->value(ValueSemantics::kCurrent) &&
                form_field->is_autofilled();
       };
   return std::ranges::any_of(form, is_autofilled_with_same_value);
@@ -1308,11 +1309,12 @@ void AutofillMetrics::LogOverallPredictionQualityMetrics(
 void AutofillMetrics::LogEmailFieldPredictionMetrics(
     const AutofillField& field) {
   // If the field has no value, there is no need to record any of the metrics.
-  if (field.value().empty()) {
+  if (field.value(ValueSemantics::kCurrent).empty()) {
     return;
   }
 
-  bool is_valid_email = IsValidEmailAddress(field.value());
+  bool is_valid_email =
+      IsValidEmailAddress(field.value(ValueSemantics::kCurrent));
   bool is_email_prediction = field.Type().GetStorableType() == EMAIL_ADDRESS;
 
   if (is_email_prediction) {
@@ -2381,22 +2383,28 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 
     if (auto* event =
             absl::get_if<HeuristicPredictionFieldLogEvent>(&log_event)) {
-      switch (event->pattern_source) {
+      switch (event->heuristic_source) {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        case PatternSource::kLegacy:
+        case HeuristicSource::kLegacyRegexes:
           heuristic_legacy_type = event->field_type;
           break;
 #else
-        case PatternSource::kDefault:
+        case HeuristicSource::kDefaultRegexes:
           heuristic_default_type = event->field_type;
           break;
-        case PatternSource::kExperimental:
+        case HeuristicSource::kExperimentalRegexes:
           heuristic_experimental_type = event->field_type;
           break;
+        case HeuristicSource::kPredictionImprovementRegexes:
+          // Prediction improvements are currently ignored for Autofill based
+          // UKM logging.
+          break;
 #endif
+        case HeuristicSource::kMachineLearning:
+          NOTREACHED();
       }
 
-      if (event->is_active_pattern_source) {
+      if (event->is_active_heuristic_source) {
         heuristic_type = event->field_type;
       }
       rank_in_field_signature_group = event->rank_in_field_signature_group;
@@ -2454,7 +2462,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   SetStatusVector(AutofillStatus::kWasFocusedByTapOrClick,
                   OptionalBooleanToBool(was_focused_by_tap_or_click));
   SetStatusVector(AutofillStatus::kIsInSubFrame,
-                  form.ToFormData().host_frame() != field.host_frame());
+                  form.global_id().frame_token != field.host_frame());
 
   if (filling_prevented_by_iframe_security_policy !=
       OptionalBoolean::kUndefined) {

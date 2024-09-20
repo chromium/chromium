@@ -121,8 +121,13 @@ class PasskeyModel : public KeyedService {
 
   // Updates attributes of the passkey with the given `credential_id`. Returns
   // true if the credential was found and updated, false otherwise.
+  // |updated_by_user| should be true if the user explicitly requested this
+  // update, e.g. through the password manager. Passkeys updated by the user
+  // will be permantently marked as such. Any further attempts to update the
+  // passkey with |updated_by_user| set to |false| will be dropped.
   virtual bool UpdatePasskey(const std::string& credential_id,
-                             PasskeyUpdate change) = 0;
+                             PasskeyUpdate change,
+                             bool updated_by_user) = 0;
 
   // Creates a passkey for the given RP and user and returns the new entity
   // specifics.

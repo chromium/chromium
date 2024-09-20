@@ -26,19 +26,15 @@ namespace {
 // The height of the whole view based on whether the progress line is squiggly
 // or straight.
 constexpr int kSquigglyProgressViewHeight = 32;
-constexpr int kStraightProgressViewHeight = 24;
+constexpr int kStraightProgressViewHeight = 28;
 
-// The width of stroke to paint the progress foreground and background lines,
-// and also the focus ring.
+// The stroke width to paint the progress foreground and background lines, and
+// also the focus ring.
 constexpr int kStrokeWidth = 2;
 
-// The width of stroke to paint the progress foreground straight line when user
-// is dragging the progress line.
+// The stroke width to paint the straight progress line when user is dragging
+// the progress line.
 constexpr int kLargeStrokeWidth = 4;
-
-// The height of squiggly progress that user can click to seek to a new media
-// position. This is slightly larger than the painted progress height.
-constexpr int kProgressClickHeight = 16;
 
 // Defines the x of where the painting of progress should start since we own the
 // OnPaint() function.
@@ -112,7 +108,7 @@ MediaProgressView::MediaProgressView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   slide_animation_.SetSlideDuration(kSlideAnimationDuration);
-  foreground_straight_line_width_ = kStrokeWidth;
+  straight_progress_stroke_width_ = kStrokeWidth;
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().SetValue(GetFormattedDuration(current_position_));
@@ -219,14 +215,15 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
   } else {
     // Paint the foreground straight progress line with rounded corners.
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    int straight_progress_width = progress_width -
-                                  kStraightProgressIndicatorGap -
-                                  kStraightProgressIndicatorSize.width() / 2;
-    if (straight_progress_width > 0) {
+    const int foreground_progress_width =
+        progress_width - kStraightProgressIndicatorGap -
+        kStraightProgressIndicatorSize.width() / 2;
+    if (foreground_progress_width > 0) {
       canvas->DrawRoundRect(
-          gfx::RectF(0, (view_height - foreground_straight_line_width_) / 2,
-                     straight_progress_width, foreground_straight_line_width_),
-          foreground_straight_line_width_ / 2, flags);
+          gfx::RectF(0, (view_height - straight_progress_stroke_width_) / 2,
+                     foreground_progress_width,
+                     straight_progress_stroke_width_),
+          straight_progress_stroke_width_ / 2, flags);
     }
   }
   canvas->Restore();
@@ -250,10 +247,14 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
     flags.setColor(color_provider->GetColor(
         use_paused_colors_ ? paused_background_color_id_
                            : playing_background_color_id_));
+    const int background_progress_stroke_width =
+        use_squiggly_line_ ? kStrokeWidth : straight_progress_stroke_width_;
     canvas->DrawRoundRect(
-        gfx::RectF(background_line_x, (view_height - kStrokeWidth) / 2,
-                   view_width - background_line_x, kStrokeWidth),
-        kStrokeWidth / 2, flags);
+        gfx::RectF(background_line_x,
+                   (view_height - background_progress_stroke_width) / 2,
+                   view_width - background_line_x,
+                   background_progress_stroke_width),
+        background_progress_stroke_width / 2, flags);
   }
   canvas->Restore();
 
@@ -453,9 +454,9 @@ void MediaProgressView::DelayedProgressDragStarted(double location) {
     UpdateProgressColors(paused_for_dragging_);
   }
 
-  // Enlarge the foreground straight progress line width when the user starts
+  // Enlarge the straight progress line stroke width when the user starts
   // dragging the progress line.
-  foreground_straight_line_width_ = kLargeStrokeWidth;
+  straight_progress_stroke_width_ = kLargeStrokeWidth;
   drag_state_change_callback_.Run(DragState::kDragStarted);
 
   // Seek to the location for the dragging event so that if the user only
@@ -477,8 +478,8 @@ void MediaProgressView::OnProgressDragEnded() {
       paused_for_dragging_ = false;
       UpdateProgressColors(paused_for_dragging_);
     }
-    // Reset the foreground straight progress line width.
-    foreground_straight_line_width_ = kStrokeWidth;
+    // Reset the straight progress line stroke width.
+    straight_progress_stroke_width_ = kStrokeWidth;
     drag_state_change_callback_.Run(DragState::kDragEnded);
   }
 }
@@ -508,10 +509,12 @@ double MediaProgressView::CalculateNewValue(base::TimeDelta new_position) {
 }
 
 bool MediaProgressView::IsValidSeekPosition(int x, int y) {
+  const int height = (use_squiggly_line_ ? kSquigglyProgressViewHeight
+                                         : kStraightProgressViewHeight);
   return (kWidthInset <= x) &&
          (x <= GetContentsBounds().width() - kWidthInset) &&
-         ((GetContentsBounds().height() - kProgressClickHeight) / 2 <= y) &&
-         (y <= (GetContentsBounds().height() + kProgressClickHeight) / 2);
+         ((GetContentsBounds().height() - height) / 2 <= y) &&
+         (y <= (GetContentsBounds().height() + height) / 2);
 }
 
 // Helper functions for testing:

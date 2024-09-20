@@ -19,7 +19,7 @@
 #include "url/gurl.h"
 
 const int kSanitizeWindowWidth = 680;
-const int kSanitizeWindowHeight = 672;
+const int kSanitizeWindowHeight = 680;
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForSanitizeSystemWebApp() {

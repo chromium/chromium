@@ -219,9 +219,8 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
 
 TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
-  gpu::MailboxHolder mailbox_holder[VideoFrame::kMaxPlanes];
-  mailbox_holder[0] = gpu::MailboxHolder(mailbox, gpu::SyncToken(), 0);
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
+  gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), 0);
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTexture(
       PIXEL_FORMAT_ARGB, mailbox_holder, VideoFrame::ReleaseMailboxCB(),
       gfx::Size(100, 100), gfx::Rect(10, 10, 80, 80), gfx::Size(200, 100),
       base::Seconds(100));

@@ -77,6 +77,17 @@
     min-width: 0;
   }
 
+  :host-context([is-lens-searchbox_]) .primary-side::before {
+    content: '';
+    position: relative;
+    height: 1px;
+    background-color: #DADCE0;
+    top: 0;
+    width: calc(var(--cr-searchbox-width) - 24px);
+    display: block;
+    left: 12px;
+  }
+
   .secondary-side {
     display: var(--cr-searchbox-secondary-side-display, none);
     min-width: 0;

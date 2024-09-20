@@ -299,7 +299,52 @@ targets.binaries.console_test_launcher(
     label = "//fuchsia_web/runners:cast_runner_unittests",
 )
 
-# TODO(crbug.com/41489655): Remove unneeded cast_* suites.
+# TODO(issues.chromium.org/1516671): Remove unneeded cast_* suites.
+
+targets.binaries.console_test_launcher(
+    name = "cast_display_settings_unittests",
+    label = "//chromecast/ui/display_settings:cast_display_settings_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_audio_backend_unittests",
+    label = "//chromecast/media/cma/backend:cast_audio_backend_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_base_unittests",
+    label = "//chromecast/base:cast_base_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_cast_core_unittests",
+    label = "//chromecast/cast_core:cast_cast_core_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_crash_unittests",
+    label = "//chromecast/crash:cast_crash_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_graphics_unittests",
+    label = "//chromecast/graphics:cast_graphics_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_media_unittests",
+    label = "//chromecast/media:cast_media_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_shell_browsertests",
+    label = "//chromecast:cast_shell_browsertests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_shell_unittests",
+    label = "//chromecast:cast_shell_unittests",
+)
 
 targets.binaries.windowed_test_launcher(
     name = "cast_unittests",
@@ -335,14 +380,6 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "chrome_disabled_tast_tests",
     label = "//chromeos:chrome_disabled_tast_tests",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
-targets.binaries.generated_script(
-    name = "cq_medium_tast_tests",
-    label = "//chromeos:cq_medium_tast_tests",
     args = [
         "--logs-dir=${ISOLATED_OUTDIR}",
     ],
@@ -1013,11 +1050,6 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
-    name = "ios_remoting_unittests",
-    label = "//remoting/ios:ios_remoting_unittests",
-)
-
-targets.binaries.generated_script(
     name = "ios_testing_unittests",
     label = "//ios/testing:ios_testing_unittests",
 )
@@ -1060,14 +1092,6 @@ targets.binaries.generated_script(
 targets.binaries.windowed_test_launcher(
     name = "keyboard_unittests",
     label = "//ash/keyboard/ui:keyboard_unittests",
-)
-
-targets.binaries.generated_script(
-    name = "lacros_all_tast_tests",
-    label = "//chromeos/lacros:lacros_all_tast_tests",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
 )
 
 targets.binaries.windowed_test_launcher(
@@ -1712,30 +1736,14 @@ targets.binaries.generated_script(
     label = "//chrome/test:telemetry_perf_unittests",
 )
 
-targets.binaries.script(
+targets.binaries.generated_script(
     name = "telemetry_perf_unittests_android_chrome",
     label = "//chrome/test:telemetry_perf_unittests_android_chrome",
-    script = "//testing/scripts/run_telemetry_as_googletest.py",
-    args = [
-        "../../tools/perf/run_tests",
-        "-v",
-    ],
-    resultdb = targets.resultdb(
-        enable = True,
-    ),
 )
 
-targets.binaries.script(
+targets.binaries.generated_script(
     name = "telemetry_perf_unittests_android_monochrome",
     label = "//chrome/test:telemetry_perf_unittests_android_monochrome",
-    script = "//testing/scripts/run_telemetry_as_googletest.py",
-    args = [
-        "../../tools/perf/run_tests",
-        "-v",
-    ],
-    resultdb = targets.resultdb(
-        enable = True,
-    ),
 )
 
 targets.binaries.script(

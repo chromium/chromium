@@ -289,6 +289,11 @@ bool FakeTabGroupSyncService::IsRemoteDevice(
   return false;
 }
 
+bool FakeTabGroupSyncService::WasTabGroupClosedLocally(
+    const base::Uuid& sync_id) const {
+  return false;
+}
+
 void FakeTabGroupSyncService::RecordTabGroupEvent(
     const EventDetails& event_details) {
   // No op.
@@ -307,6 +312,12 @@ FakeTabGroupSyncService::GetSharedTabGroupControllerDelegate() {
 std::unique_ptr<ScopedLocalObservationPauser>
 FakeTabGroupSyncService::CreateScopedLocalObserverPauser() {
   return std::make_unique<ScopedLocalObservationPauser>();
+}
+
+void FakeTabGroupSyncService::GetURLRestriction(
+    const GURL& url,
+    TabGroupSyncService::UrlRestrictionCallback callback) {
+  std::move(callback).Run(std::nullopt);
 }
 
 void FakeTabGroupSyncService::AddObserver(Observer* observer) {

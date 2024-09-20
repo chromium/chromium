@@ -292,26 +292,36 @@ Status ExecuteClickElement(Session* session,
     if (element_type == "file")
       return Status(kInvalidArgument);
   }
-  WebPoint location;
-  status =
-      GetElementClickableLocation(session, web_view, element_id, &location);
+  WebPoint absolute_location;
+  status = GetElementClickableLocation(session, web_view, element_id,
+                                       &absolute_location);
   if (status.IsError())
     return status;
 
+  WebView* containing_web_view =
+      web_view->FindContainerForFrame(session->GetCurrentFrameId());
+
+  WebPoint relative_location;
+  status = GetElementClickableLocation(session, containing_web_view, element_id,
+                                       &relative_location);
+  if (status.IsError()) {
+    return status;
+  }
+
   std::vector<MouseEvent> events;
-  events.push_back(MouseEvent(kMovedMouseEventType, kNoneMouseButton,
-                              location.x, location.y, session->sticky_modifiers,
-                              0, 0));
-  events.push_back(MouseEvent(kPressedMouseEventType, kLeftMouseButton,
-                              location.x, location.y, session->sticky_modifiers,
-                              0, 1));
-  events.push_back(MouseEvent(kReleasedMouseEventType, kLeftMouseButton,
-                              location.x, location.y, session->sticky_modifiers,
-                              1, 1));
-  status = web_view->DispatchMouseEvents(events, session->GetCurrentFrameId(),
-                                         false);
+  events.emplace_back(kMovedMouseEventType, kNoneMouseButton,
+                      relative_location.x, relative_location.y,
+                      session->sticky_modifiers, 0, 0);
+  events.emplace_back(kPressedMouseEventType, kLeftMouseButton,
+                      relative_location.x, relative_location.y,
+                      session->sticky_modifiers, 0, 1);
+  events.emplace_back(kReleasedMouseEventType, kLeftMouseButton,
+                      relative_location.x, relative_location.y,
+                      session->sticky_modifiers, 1, 1);
+  status = containing_web_view->DispatchMouseEvents(
+      events, session->GetCurrentFrameId(), false);
   if (status.IsOk())
-    session->mouse_position = location;
+    session->mouse_position = absolute_location;
   return status;
 }
 

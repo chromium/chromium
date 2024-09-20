@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -20,6 +21,9 @@ class OptimizationGuidePermissionsUtilTest : public testing::Test {
   void SetUp() override {
     unified_consent::UnifiedConsentService::RegisterPrefs(
         pref_service_.registry());
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kGoogleApiKeyConfigurationCheckOverride);
   }
 
   void SetUrlKeyedAnonymizedDataCollectionEnabled(bool enabled) {
@@ -97,36 +101,6 @@ TEST_F(OptimizationGuidePermissionsUtilTest,
 
   EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
       /*is_off_the_record=*/false, pref_service()));
-}
-
-TEST_F(OptimizationGuidePermissionsUtilTest,
-       IsUserPermittedToFetchHintsPerformanceInfoFlagExplicitlyAllows) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {optimization_guide::features::kRemoteOptimizationGuideFetching,
-       optimization_guide::features::
-           kContextMenuPerformanceInfoAndRemoteHintFetching},
-      {});
-  SetUrlKeyedAnonymizedDataCollectionEnabled(false);
-
-  EXPECT_TRUE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
-      /*is_off_the_record=*/false, pref_service()));
-}
-
-TEST_F(OptimizationGuidePermissionsUtilTest,
-       IsUserPermittedToFetchHintsAllConsentsEnabledIncognitoProfile) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {optimization_guide::features::kRemoteOptimizationGuideFetching,
-       optimization_guide::features::
-           kRemoteOptimizationGuideFetchingAnonymousDataConsent,
-       optimization_guide::features::
-           kContextMenuPerformanceInfoAndRemoteHintFetching},
-      {});
-  SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-
-  EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
-      /*is_off_the_record=*/true, pref_service()));
 }
 
 }  // namespace optimization_guide

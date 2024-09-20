@@ -39,6 +39,7 @@ constexpr char kKeyNameCertProfileVersion[] = "policy_version";
 constexpr char kKeyNameCertProfileProtocolVersion[] = "protocol_version";
 constexpr char kKeyNameCertProfileVaEnabled[] = "va_enabled";
 constexpr char kKeyNameCertProfileRenewalPeriod[] = "renewal_period";
+constexpr char kKeyNameCertProfileKeyType[] = "key_type";
 
 template <typename T>
 bool ConvertToEnum(int value, T* dst) {
@@ -104,7 +105,7 @@ bool DeserializeProtocolVersion(const base::Value::Dict& parent_value,
 }
 
 base::Value::Dict SerializeCertProfile(const CertProfile& profile) {
-  static_assert(CertProfile::kVersion == 6, "This function should be updated");
+  static_assert(CertProfile::kVersion == 7, "This function should be updated");
 
   base::Value::Dict result;
   result.Set(kKeyNameCertProfileId, profile.profile_id);
@@ -112,10 +113,11 @@ base::Value::Dict SerializeCertProfile(const CertProfile& profile) {
   result.Set(kKeyNameCertProfileVersion, profile.policy_version);
   result.Set(kKeyNameCertProfileVaEnabled, profile.is_va_enabled);
   if (profile.protocol_version != ProtocolVersion::kStatic) {
-    // Only set the protocol_version if it's not kStatic to avoid changing how
-    // "static flow" workers are serialized.
+    // Only set the protocol_version and key type if it's not kStatic to avoid
+    // changing how "static flow" workers are serialized.
     result.Set(kKeyNameCertProfileProtocolVersion,
                static_cast<int>(profile.protocol_version));
+    result.Set(kKeyNameCertProfileKeyType, static_cast<int>(profile.key_type));
   }
 
   if (!profile.renewal_period.is_zero()) {
@@ -129,7 +131,7 @@ base::Value::Dict SerializeCertProfile(const CertProfile& profile) {
 bool DeserializeCertProfile(const base::Value::Dict& parent_dict,
                             const char* value_name,
                             CertProfile* dst) {
-  static_assert(CertProfile::kVersion == 6, "This function should be updated");
+  static_assert(CertProfile::kVersion == 7, "This function should be updated");
 
   const base::Value::Dict* serialized_profile =
       parent_dict.FindDict(value_name);
@@ -157,6 +159,17 @@ bool DeserializeCertProfile(const base::Value::Dict& parent_dict,
   is_ok = is_ok && DeserializeProtocolVersion(
                        *serialized_profile, kKeyNameCertProfileProtocolVersion,
                        &(dst->protocol_version));
+
+  // The static protocol does not support key types other than RSA, and should
+  // not serialize the key type, so we hardcode it here instead.
+  if (is_ok && dst->protocol_version == ProtocolVersion::kStatic) {
+    dst->key_type = KeyType::kRsa;
+  } else {
+    is_ok = is_ok &&
+            DeserializeEnumValue(*serialized_profile,
+                                 kKeyNameCertProfileKeyType, &(dst->key_type));
+  }
+
   return is_ok;
 }
 

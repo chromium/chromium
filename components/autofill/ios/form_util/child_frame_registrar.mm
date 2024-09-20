@@ -7,6 +7,7 @@
 #import "base/values.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/features.h"
 #import "ios/web/public/js_messaging/content_world.h"
 
 namespace autofill {
@@ -113,7 +114,8 @@ void ChildFrameRegistrar::DeclareNewRemoteToken(
 ChildFrameRegistrar* ChildFrameRegistrar::GetOrCreateForWebState(
     web::WebState* web_state) {
   if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos)) {
+          autofill::features::kAutofillAcrossIframesIos) &&
+      !base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
     return nullptr;
   }
 

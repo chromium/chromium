@@ -448,17 +448,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     }
 
     @Override
-    public void showCloseAllTabsAnimation(Runnable closeTabs) {
-        @Nullable
-        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
-        if (coordinator == null) {
-            closeTabs.run();
-        } else {
-            coordinator.showCloseAllTabsAnimation(closeTabs);
-        }
-    }
-
-    @Override
     public void openInvitationModal(String invitationId) {
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator == null) return;

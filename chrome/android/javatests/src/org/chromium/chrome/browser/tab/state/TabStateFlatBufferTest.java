@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -65,6 +66,7 @@ public class TabStateFlatBufferTest {
     @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private static EmbeddedTestServer sTestServer;
+    private static CipherFactory sCipherFactory;
 
     private static final String TEST_URL = "/chrome/test/data/browsing_data/e.html";
     private static final String TEST_URL_DISPLAY_TITLE = "My_title";
@@ -72,6 +74,7 @@ public class TabStateFlatBufferTest {
     @BeforeClass
     public static void beforeClass() {
         sTestServer = sActivityTestRule.getTestServer();
+        sCipherFactory = new CipherFactory();
     }
 
     @Test
@@ -79,8 +82,9 @@ public class TabStateFlatBufferTest {
     public void testFlatBufferTabStateRegularTab() throws ExecutionException, IOException {
         TabState state = getTestTabState(false);
         File file = getTestFile(1, false);
-        TabStateFileManager.saveStateInternal(file, state, false);
-        TabState restoredTabState = TabStateFileManager.restoreTabStateInternal(file, false);
+        TabStateFileManager.saveStateInternal(file, state, false, sCipherFactory);
+        TabState restoredTabState =
+                TabStateFileManager.restoreTabStateInternal(file, false, sCipherFactory);
         verifyTabStateResult(restoredTabState, state);
     }
 
@@ -89,8 +93,9 @@ public class TabStateFlatBufferTest {
     public void testFlatBufferTabStateIncognitoTab() throws ExecutionException, IOException {
         TabState state = getTestTabState(true);
         File file = getTestFile(2, true);
-        TabStateFileManager.saveStateInternal(file, state, false);
-        TabState restoredTabState = TabStateFileManager.restoreTabStateInternal(file, false);
+        TabStateFileManager.saveStateInternal(file, state, false, sCipherFactory);
+        TabState restoredTabState =
+                TabStateFileManager.restoreTabStateInternal(file, false, sCipherFactory);
         verifyTabStateResult(restoredTabState, state);
     }
 
@@ -122,12 +127,14 @@ public class TabStateFlatBufferTest {
                     legacyHandWrittenFiles.get(tabId),
                     tabState,
                     /** encrypted = */
-                    tabId % 2 == 0);
+                    tabId % 2 == 0,
+                    sCipherFactory);
             TabStateFileManager.saveStateInternal(
                     flatBufferFiles.get(tabId),
                     tabState,
                     /** encrypted = */
-                    tabId % 2 == 0);
+                    tabId % 2 == 0,
+                    sCipherFactory);
         }
         for (File file :
                 Stream.concat(legacyHandWrittenFiles.stream(), flatBufferFiles.stream())
@@ -161,13 +168,13 @@ public class TabStateFlatBufferTest {
     public void testFlatBufferMetrics() throws ExecutionException, IOException {
         TabState state = getTestTabState(false);
         File file = getTestFile(1, false);
-        TabStateFileManager.saveStateInternal(file, state, false);
+        TabStateFileManager.saveStateInternal(file, state, false, sCipherFactory);
         var histograms =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.TabState.RestoreMethod",
                         TabStateFileManager.TabStateRestoreMethod.FLATBUFFER);
         TabState restoredTabState =
-                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1);
+                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1, sCipherFactory);
         Assert.assertNotNull(restoredTabState);
         histograms.assertExpected();
     }
@@ -178,13 +185,13 @@ public class TabStateFlatBufferTest {
     public void testLegacyHandWrittenMetrics() throws ExecutionException, IOException {
         TabState state = getTestTabState(false);
         File file = getLegacyTestFile(1, false);
-        TabStateFileManager.saveStateInternal(file, state, false);
+        TabStateFileManager.saveStateInternal(file, state, false, sCipherFactory);
         var histograms =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.TabState.RestoreMethod",
                         TabStateFileManager.TabStateRestoreMethod.LEGACY_HAND_WRITTEN);
         TabState restoredTabState =
-                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1);
+                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1, sCipherFactory);
         Assert.assertNotNull(restoredTabState);
         histograms.assertExpected();
     }
@@ -206,7 +213,7 @@ public class TabStateFlatBufferTest {
                         "Tabs.TabState.RestoreMethod",
                         TabStateFileManager.TabStateRestoreMethod.FAILED);
         TabState restoredTabState =
-                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1);
+                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1, sCipherFactory);
         Assert.assertNull(restoredTabState);
         histograms.assertExpected();
     }
@@ -223,8 +230,10 @@ public class TabStateFlatBufferTest {
                         /* encrypted= */ true,
                         /* isFlatBuffer= */ true),
                 state,
-                /* isEncrypted= */ true);
-        TabState restored = TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 4);
+                /* isEncrypted= */ true,
+                sCipherFactory);
+        TabState restored =
+                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 4, sCipherFactory);
         Assert.assertTrue(restored.isIncognito);
     }
 

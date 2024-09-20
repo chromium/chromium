@@ -189,6 +189,13 @@ uint64_t GetEnumValueForName(const DrmWrapper& drm,
                              int property_id,
                              const char* str);
 
+// Checks if |mode_size| corresponds to a tile mode size according to
+// |tile_property|. Note that this method does not return true for
+// tile-composited mode.
+bool IsTileMode(const gfx::Size mode_size, const TileProperty& tile_property);
+
+const gfx::Point GetTileCrtcOffset(const TileProperty& tiled_property);
+
 std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);
 
 std::optional<TileProperty> ParseTileBlob(

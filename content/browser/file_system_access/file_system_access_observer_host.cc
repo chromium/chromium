@@ -103,9 +103,22 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
       break;
   }
 
-    // Fuchsia doesn't support symlinks. Android and iOS only support Bucket
-    // File System observations.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+  // We only need to check if the path is a symlink or junction on local file
+  // system.
+  bool file_could_be_symlink =
+      resolved_token->url().type() == storage::kFileSystemTypeLocal;
+#if BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia does not support symlinks.
+  file_could_be_symlink = false;
+#endif
+
+  if (!file_could_be_symlink) {
+    DidCheckIfSymlinkOrJunction(std::move(handle), std::move(callback),
+                                resolved_token->url(), is_recursive,
+                                handle_type, file_could_be_symlink);
+    return;
+  }
+
   base::FilePath path = resolved_token->url().path();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -125,12 +138,6 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
                      weak_factory_.GetWeakPtr(), std::move(handle),
                      std::move(callback), resolved_token->url(), is_recursive,
                      handle_type));
-#else
-  DidCheckIfSymlinkOrJunction(std::move(handle), std::move(callback),
-                              resolved_token->url(), is_recursive, handle_type,
-                              /*is_symlink_or_junction=*/false);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_FUCHSIA)
 }
 
 void FileSystemAccessObserverHost::DidCheckIfSymlinkOrJunction(
@@ -143,9 +150,11 @@ void FileSystemAccessObserverHost::DidCheckIfSymlinkOrJunction(
     bool is_symlink_or_junction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::UmaHistogramBoolean(
-      "Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction",
-      is_symlink_or_junction);
+  if (url.type() == storage::kFileSystemTypeLocal) {
+    base::UmaHistogramBoolean(
+        "Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction",
+        is_symlink_or_junction);
+  }
   // Observing symlink and junction is not supported for Origin Trial.
   // TODO(crbug.com/363195541): Add support for symlinks and junctions for
   // feature launch.

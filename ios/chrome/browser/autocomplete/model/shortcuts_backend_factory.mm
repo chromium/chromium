@@ -21,41 +21,37 @@
 namespace ios {
 namespace {
 
-scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(
-    ChromeBrowserState* browser_state,
-    bool suppress_db) {
+scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(ProfileIOS* profile,
+                                                       bool suppress_db) {
   scoped_refptr<ShortcutsBackend> shortcuts_backend(new ShortcutsBackend(
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state),
+      ios::TemplateURLServiceFactory::GetForProfile(profile),
       std::make_unique<ios::UIThreadSearchTermsData>(),
-      ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-      browser_state->GetStatePath().Append(kShortcutsDatabaseName),
-      suppress_db));
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      profile->GetStatePath().Append(kShortcutsDatabaseName), suppress_db));
   return shortcuts_backend->Init() ? shortcuts_backend : nullptr;
 }
 
 scoped_refptr<RefcountedKeyedService> BuildShortcutsBackend(
     web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return CreateShortcutsBackend(browser_state, false /* suppress_db */);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  return CreateShortcutsBackend(profile, false /* suppress_db */);
 }
 
 }  // namespace
 
 // static
-scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForProfile(
+    ProfileIOS* profile) {
   return base::WrapRefCounted(static_cast<ShortcutsBackend*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
+      GetInstance()->GetServiceForBrowserState(profile, true).get()));
 }
 
 // static
-scoped_refptr<ShortcutsBackend>
-ShortcutsBackendFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   return base::WrapRefCounted(static_cast<ShortcutsBackend*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false).get()));
+      GetInstance()->GetServiceForBrowserState(profile, false).get()));
 }
 
 // static

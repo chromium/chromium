@@ -230,8 +230,8 @@ uint64_t FileSystemSyncAccessHandle::write(
   return bytes_written;
 }
 
-const char* FileSystemSyncAccessHandle::mode() {
-  return lock_mode_.AsCStr();
+String FileSystemSyncAccessHandle::mode() {
+  return lock_mode_.AsString();
 }
 
 }  // namespace blink

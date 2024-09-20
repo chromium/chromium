@@ -210,7 +210,7 @@ class MockDataSourceFactory
  public:
   ~MockDataSourceFactory() override;
   MockDataSourceFactory();
-  void CreateDataSource(GURL uri, DataSourceCb cb) override;
+  void CreateDataSource(GURL uri, bool ignore_cache, DataSourceCb cb) override;
   void AddReadExpectation(size_t from, size_t to, int response);
   testing::NiceMock<MockDataSource>* PregenerateNextMock();
 

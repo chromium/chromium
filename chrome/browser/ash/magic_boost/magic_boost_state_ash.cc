@@ -13,6 +13,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
+#include "chrome/browser/ash/mahi/mahi_availability.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -42,6 +43,22 @@ MagicBoostStateAsh::~MagicBoostStateAsh() {
 void MagicBoostStateAsh::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   RegisterPrefChanges(pref_service);
+}
+
+bool MagicBoostStateAsh::IsMagicBoostAvailable() {
+  return mahi_availability::IsMahiAvailable();
+}
+
+bool MagicBoostStateAsh::CanShowNoticeBannerForHMR() {
+  PrefService* pref = pref_change_registrar_->prefs();
+
+  // Only show the notice when:
+  //  1. HMR is forced ON by the admin, and
+  //  2. The consent status is currently disabled.
+  return pref->IsManagedPreference(ash::prefs::kHmrEnabled) &&
+         pref->GetBoolean(ash::prefs::kHmrEnabled) &&
+         hmr_consent_status().has_value() &&
+         hmr_consent_status().value() == chromeos::HMRConsentStatus::kDeclined;
 }
 
 int32_t MagicBoostStateAsh::AsyncIncrementHMRConsentWindowDismissCount() {

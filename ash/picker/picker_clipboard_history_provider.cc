@@ -17,6 +17,7 @@ namespace ash {
 namespace {
 
 constexpr base::TimeDelta kRecencyThreshold = base::Seconds(60);
+constexpr int kMaxTextLength = 10000;
 
 std::optional<PickerClipboardResult::DisplayFormat> GetDisplayFormat(
     const ClipboardHistoryItem& item) {
@@ -40,6 +41,9 @@ std::optional<PickerClipboardResult::DisplayFormat> GetDisplayFormat(
 bool MatchQuery(const ClipboardHistoryItem& item, std::u16string_view query) {
   if (query.empty()) {
     return true;
+  }
+  if (item.display_text().length() > kMaxTextLength) {
+    return false;
   }
   if (item.display_format() !=
           crosapi::mojom::ClipboardHistoryDisplayFormat::kText &&

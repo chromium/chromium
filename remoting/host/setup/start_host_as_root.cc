@@ -82,13 +82,13 @@ int StartHostAsRoot(int argc, char** argv) {
     if (!parts) {
       user_name = std::move(arg_value);
     } else {
-      user_name = std::move(parts->first);
+      user_name = std::string(parts->first);
     }
   } else if (command_line.HasSwitch("cloud-user")) {
-    auto parts = base::SplitStringOnce(
-        command_line.GetSwitchValueASCII("cloud-user"), '@');
+    std::string arg_value = command_line.GetSwitchValueASCII("cloud-user");
+    auto parts = base::SplitStringOnce(arg_value, '@');
     if (parts) {
-      user_name = std::move(parts->first);
+      user_name = std::string(parts->first);
     } else {
       fprintf(stderr, "The --cloud-user flag requires an email address.\n");
     }

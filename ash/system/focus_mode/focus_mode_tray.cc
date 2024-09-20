@@ -341,12 +341,6 @@ void FocusModeTray::ShowBubble() {
   auto* controller = FocusModeController::Get();
   CHECK(controller->current_session());
 
-  if (controller->in_ending_moment()) {
-    controller->EnablePersistentEnding();
-    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
-        NudgeCatalogName::kFocusModeEndingMomentNudge);
-  }
-
   auto bubble_view =
       std::make_unique<TrayBubbleView>(CreateInitParamsForTrayBubble(
           /*tray=*/this, /*anchor_to_shelf_corner=*/false));
@@ -376,6 +370,12 @@ void FocusModeTray::ShowBubble() {
   UpdateProgressRing();
 
   controller->tasks_model().RequestUpdate();
+
+  if (session_snapshot_->state == FocusModeSession::State::kEnding) {
+    controller->OnEndingBubbleShown();
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+        NudgeCatalogName::kFocusModeEndingMomentNudge);
+  }
 }
 
 void FocusModeTray::UpdateTrayItemColor(bool is_active) {
@@ -403,7 +403,7 @@ void FocusModeTray::OnAnimationEnded() {
   controller->MaybeShowEndingMomentNudge();
 }
 
-void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
+void FocusModeTray::OnFocusModeChanged(FocusModeSession::State session_state) {
   UpdateProgressRing();
   show_progress_ring_after_animation_ = false;
   progress_ring_update_threshold_ = 0.0;
@@ -424,7 +424,7 @@ void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
     UpdateBubbleViews(session_snapshot_.value());
   } else if (session_snapshot_->state == FocusModeSession::State::kEnding) {
     bounce_in_animation_finished_ = false;
-    BounceInAnimation();
+    MaybePlayBounceInAnimation();
   }
 }
 
@@ -531,6 +531,14 @@ void FocusModeTray::Layout(PassKey) {
       /*target=*/tray_container(), image_view_->GetImageBounds()));
   progress_bounds.Inset(kProgressIndicatorInsets);
   progress_indicator_->layer()->SetBounds(progress_bounds);
+}
+
+void FocusModeTray::MaybePlayBounceInAnimation() {
+  if (bubble_ || !FocusModeController::Get()->in_ending_moment()) {
+    return;
+  }
+
+  BounceInAnimation(/*scale_animation=*/false);
 }
 
 const views::ImageButton* FocusModeTray::GetRadioButtonForTesting() const {

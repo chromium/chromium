@@ -16,7 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/ip_protection/common/ip_protection_config_cache.h"
+#include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
@@ -127,7 +127,7 @@ class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
   std::deque<ExpectedTryGetAuthTokensCall> expected_try_get_auth_token_calls_;
 };
 
-class MockIpProtectionConfigCache : public IpProtectionConfigCache {
+class MockIpProtectionCore : public IpProtectionCore {
  public:
   MOCK_METHOD(void, GeoObserved, (const std::string& geo_id), (override));
 
@@ -186,7 +186,7 @@ class IpProtectionTokenManagerImplTest : public testing::Test {
     // Default behavior for `GeoObserved`. The default is defined here
     // (instead of in the mock) to allow access to the local instances of the
     // token cache managers.
-    ON_CALL(mock_config_cache_, GeoObserved(testing::_))
+    ON_CALL(mock_core_, GeoObserved(testing::_))
         .WillByDefault([this](const std::string& geo_id) {
           if (ipp_proxy_a_token_manager_->CurrentGeo() != geo_id) {
             ipp_proxy_a_token_manager_->SetCurrentGeo(geo_id);
@@ -197,10 +197,10 @@ class IpProtectionTokenManagerImplTest : public testing::Test {
         });
 
     ipp_proxy_a_token_manager_ = std::make_unique<IpProtectionTokenManagerImpl>(
-        &mock_config_cache_, &mock_, ProxyLayer::kProxyA,
+        &mock_core_, &mock_, ProxyLayer::kProxyA,
         /* disable_cache_management_for_testing=*/true);
     ipp_proxy_b_token_manager_ = std::make_unique<IpProtectionTokenManagerImpl>(
-        &mock_config_cache_, &mock_, ProxyLayer::kProxyB,
+        &mock_core_, &mock_, ProxyLayer::kProxyB,
         /* disable_cache_management_for_testing=*/true);
 
     // Default to disabling token expiration fuzzing.
@@ -271,7 +271,7 @@ class IpProtectionTokenManagerImplTest : public testing::Test {
 
   MockIpProtectionConfigGetter mock_;
 
-  testing::NiceMock<MockIpProtectionConfigCache> mock_config_cache_;
+  testing::NiceMock<MockIpProtectionCore> mock_core_;
 
   std::unique_ptr<IpProtectionTokenManagerImpl> ipp_proxy_a_token_manager_;
 
@@ -409,7 +409,7 @@ TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenSuccessful) {
 TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenForGeoSuccessful) {
   SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(1);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kFutureExpiration, kMountainViewGeo));
@@ -435,7 +435,7 @@ TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenForGeoSuccessful) {
 TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenForUnavailableGeo) {
   SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(1);
 
   // Cache contains Mountain view geo tokens.
   mock_.ExpectTryGetAuthTokensCall(
@@ -497,7 +497,7 @@ TEST_F(IpProtectionTokenManagerImplTest,
        CurrentGeoTokensNotRequestedGeoCachingEnabledReturnsEmpty) {
   SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
   // If no tokens have been added, this should not be called.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(0);
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(0);
 
   EXPECT_EQ(ipp_proxy_a_token_manager_->CurrentGeo(), "");
 }
@@ -543,7 +543,7 @@ TEST_F(IpProtectionTokenManagerImplTest, SmallBatch) {
 TEST_F(IpProtectionTokenManagerImplTest, ErrorBatch) {
   SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(0);
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(0);
 
   const base::TimeDelta kBackoff = base::Seconds(10);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
@@ -601,9 +601,9 @@ TEST_F(IpProtectionTokenManagerImplTest, TokenExpirationFuzzed) {
 // If the `IpProtectionConfigGetter` is nullptr, no tokens are gotten, but
 // things don't crash.
 TEST_F(IpProtectionTokenManagerImplTest, NullGetter) {
-  MockIpProtectionConfigCache config_cache;
+  MockIpProtectionCore core;
   auto ipp_token_manager = IpProtectionTokenManagerImpl(
-      &config_cache, nullptr, ProxyLayer::kProxyA,
+      &core, nullptr, ProxyLayer::kProxyA,
       /* disable_cache_management_for_testing=*/true);
 
   EXPECT_FALSE(ipp_token_manager.IsAuthTokenAvailable(kMountainViewGeoId));
@@ -760,7 +760,7 @@ TEST_F(IpProtectionTokenManagerImplTest, ProxyBTokenExpirationRate) {
 TEST_F(IpProtectionTokenManagerImplTest, Prefill) {
   SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(1);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
@@ -781,7 +781,7 @@ TEST_F(IpProtectionTokenManagerImplTest, RefillLowWaterMark) {
 
   // A refill with tokens from the same geo should not trigger this function a
   // second time.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(1);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
@@ -841,7 +841,7 @@ TEST_F(IpProtectionTokenManagerImplTest, RefillAfterExpiration) {
 
   // A refill with tokens from the same geo should not trigger this function a
   // second time.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(1);
 
   // Make a batch of tokens almost all with `expiration2`, except one expiring
   // sooner and the one expiring later. These are returned in incorrect order
@@ -901,7 +901,7 @@ TEST_F(IpProtectionTokenManagerImplTest, GeoChangeNewGeoAvailableForGetToken) {
   // A and B which would lead to incorrect histogram sampling.
   // A geo change means this is called twice: once for prefill and once for
   // second batch.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_))
       .Times(2)
       .WillRepeatedly([this](const std::string& geo_id) {
         if (ipp_proxy_a_token_manager_->CurrentGeo() != geo_id) {
@@ -953,7 +953,7 @@ TEST_F(IpProtectionTokenManagerImplTest, GeoChangeOldGeoTokensStillUsable) {
 
   // A geo change means this is called twice: once for prefill and once for
   // second batch.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(2);
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(2);
 
   // First geo will be Mountain View.
   mock_.ExpectTryGetAuthTokensCall(
@@ -1005,7 +1005,7 @@ TEST_F(IpProtectionTokenManagerImplTest,
   // The geo change to Sunnyvale occurs through a call to `SetCurrentGeo`
   // which means there will not be an additional call to `GeoObserved`
   // aside from the first one during the prefill.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_))
       .Times(1)
       .WillRepeatedly([this](const std::string& geo_id) {
         if (ipp_proxy_a_token_manager_->CurrentGeo() != geo_id) {
@@ -1054,7 +1054,7 @@ TEST_F(IpProtectionTokenManagerImplTest, SetCurrentGeoNewTokensHaveSameGeo) {
   // 2. `SetCurrentGeo("Sunnyvale")` causes refill and current geo to change.
   //    Refill however returns "Mountain View" which causes an additional
   //    `GeoObserved`.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(2);
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(2);
 
   // Mountain View geo that will be maintained from token refill requests.
   mock_.ExpectTryGetAuthTokensCall(
@@ -1114,7 +1114,7 @@ TEST_F(IpProtectionTokenManagerImplTest,
   // A and B which would lead to incorrect histogram sampling.
   // A geo change means this is called three times: once for prefill and twice
   // for the second and third batch.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_))
       .Times(3)
       .WillRepeatedly([this](const std::string& geo_id) {
         if (ipp_proxy_a_token_manager_->CurrentGeo() != geo_id) {
@@ -1184,7 +1184,7 @@ TEST_F(IpProtectionTokenManagerImplTest,
   // The geo change to Sunnyvale and Mountain View (second time) occurs through
   // a call to `SetCurrentGeo` which means there will not be an additional call
   // to `GeoObserved` aside from the first one during the prefill.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_))
       .Times(1)
       .WillRepeatedly([this](const std::string& geo_id) {
         if (ipp_proxy_a_token_manager_->CurrentGeo() != geo_id) {

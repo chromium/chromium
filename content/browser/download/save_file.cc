@@ -68,9 +68,11 @@ void SaveFile::AnnotateWithSourceInformation(
     const GURL& referrer_url,
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
     download::BaseFile::OnAnnotationDoneCallback on_annotation_done_callback) {
-  file_.AnnotateWithSourceInformation(client_guid, source_url, referrer_url,
-                                      std::move(remote_quarantine),
-                                      std::move(on_annotation_done_callback));
+  // TODO(crbug.com/351165321): Consider propagating request_initiator
+  // information here.
+  file_.AnnotateWithSourceInformation(
+      client_guid, source_url, referrer_url, /*request_initiator=*/std::nullopt,
+      std::move(remote_quarantine), std::move(on_annotation_done_callback));
 }
 
 base::FilePath SaveFile::FullPath() const {

@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+source_set("android") {
+  sources = [ "bookmark_bridge.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/android/bookmarks",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/reading_list/android:reading_list",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common/android",
+    "//components/bookmarks/managed",
+    "//components/power_bookmarks/core:core",
+    "//components/prefs",
+    "//components/reading_list/core",
+    "//components/signin/public/identity_manager",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "bookmark_bridge.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":android",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/commerce",
+    "//chrome/browser/profiles:profiles",
+    "//components/query_parser",
+    "//components/undo",
+  ]
+}

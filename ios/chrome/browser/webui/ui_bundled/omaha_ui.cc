@@ -95,8 +95,8 @@ OmahaUI::OmahaUI(web::WebUIIOS* web_ui, const std::string& host)
   web_ui->AddMessageHandler(std::make_unique<OmahaDOMHandler>());
 
   // Set up the chrome://omaha/ source.
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  web::WebUIIOSDataSource::Add(browser_state, CreateOmahaUIHTMLSource());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  web::WebUIIOSDataSource::Add(profile, CreateOmahaUIHTMLSource());
 }
 
 OmahaUI::~OmahaUI() {}

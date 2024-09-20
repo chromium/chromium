@@ -764,8 +764,7 @@ void GaiaAuthFetcher::OnOAuth2RevokeTokenFetched(const std::string& data,
           GetTokenRevocationStatusFromResponseData(data, response_code);
       break;
     case net::ERR_IO_PENDING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case net::ERR_ABORTED:
       revocation_status =
           GaiaAuthConsumer::TokenRevocationStatus::kConnectionCanceled;
@@ -900,6 +899,6 @@ void GaiaAuthFetcher::DispatchFetchedRequest(const GURL& url,
   } else if (IsReAuthApiUrl(url)) {
     OnReAuthApiInfoFetched(data, net_error, response_code);
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unknown url: '" << url << "'";
+    NOTREACHED() << "Unknown url: '" << url << "'";
   }
 }

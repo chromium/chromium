@@ -60,7 +60,9 @@ class HttpStreamPool::Job {
   // `delegate` must outlive `this`.
   Job(Delegate* delegate,
       AttemptManager* attempt_manager,
-      NextProto expected_protocol);
+      NextProto expected_protocol,
+      bool is_http1_allowed,
+      ProxyInfo proxy_info);
 
   Job& operator=(const Job&) = delete;
 
@@ -69,6 +71,7 @@ class HttpStreamPool::Job {
   // Starts this job.
   void Start(RequestPriority priority,
              const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+             RespectLimits respect_limits,
              bool enable_ip_based_pooling,
              bool enable_alternative_services,
              quic::ParsedQuicVersion quic_version,
@@ -100,14 +103,26 @@ class HttpStreamPool::Job {
   // requested a client certificate.
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info);
 
+  const ProxyInfo& proxy_info() const { return proxy_info_; }
+
   const ConnectionAttempts& connection_attempts() const {
     return connection_attempts_;
   }
 
  private:
+  void CallOnStreamReady(std::unique_ptr<HttpStream> stream,
+                         NextProto negotiated_protocol);
+  void CallOnStreamFailed(int status,
+                          const NetErrorDetails& net_error_details,
+                          ResolveErrorInfo resolve_error_info);
+  void CallOnCertificateError(int status, const SSLInfo& ssl_info);
+  void CallOnNeedsClientAuth(SSLCertRequestInfo* cert_info);
+
   const raw_ptr<Delegate> delegate_;
   raw_ptr<AttemptManager> attempt_manager_;
   const NextProto expected_protocol_;
+  const bool is_http1_allowed_;
+  const ProxyInfo proxy_info_;
 
   ConnectionAttempts connection_attempts_;
 

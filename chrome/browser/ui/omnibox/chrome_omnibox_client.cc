@@ -32,6 +32,7 @@
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -547,10 +548,24 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
 
 void ChromeOmniboxClient::OnInputInProgress(bool in_progress) {
   location_bar_->UpdateWithoutTabRestore();
+  content::WebContents* const web_contents = location_bar_->GetWebContents();
+  if (web_contents) {
+    auto* const helper =
+        OmniboxTabHelper::FromWebContents(location_bar_->GetWebContents());
+    CHECK(helper);
+    helper->OnInputInProgress(in_progress);
+  }
 }
 
-void ChromeOmniboxClient::OnPopupVisibilityChanged() {
+void ChromeOmniboxClient::OnPopupVisibilityChanged(bool popup_is_open) {
   location_bar_->OnPopupVisibilityChanged();
+  content::WebContents* const web_contents = location_bar_->GetWebContents();
+  if (web_contents) {
+    auto* const helper =
+        OmniboxTabHelper::FromWebContents(location_bar_->GetWebContents());
+    CHECK(helper);
+    helper->OnPopupVisibilityChanged(popup_is_open);
+  }
 }
 
 void ChromeOmniboxClient::OpenIphLink(GURL gurl) {
@@ -559,6 +574,10 @@ void ChromeOmniboxClient::OpenIphLink(GURL gurl) {
   NavigateParams params(profile_, gurl, transition);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
+}
+
+bool ChromeOmniboxClient::IsHistoryEmbeddingsEnabled() const {
+  return history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile_);
 }
 
 base::WeakPtr<OmniboxClient> ChromeOmniboxClient::AsWeakPtr() {

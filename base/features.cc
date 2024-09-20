@@ -63,7 +63,7 @@ const base::FeatureParam<int> kLowMemoryDeviceThresholdMB{
 
 BASE_FEATURE(kUseRustJsonParser,
              "UseRustJsonParser",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // Force to enable LowEndDeviceMode partially on Android 3Gb devices.

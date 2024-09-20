@@ -314,7 +314,11 @@ void* PartitionAlignedReallocUnchecked(void* address,
   return new_ptr;
 }
 
-void* PartitionRealloc(void* address, size_t size, void* context) {
+template <partition_alloc::AllocFlags alloc_flags,
+          partition_alloc::FreeFlags free_flags>
+PA_ALWAYS_INLINE void* PartitionReallocInternal(void* address,
+                                                size_t size,
+                                                void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
   if (!partition_alloc::IsManagedByPartitionAlloc(
@@ -327,8 +331,23 @@ void* PartitionRealloc(void* address, size_t size, void* context) {
   }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
-  return Allocator()->Realloc<partition_alloc::AllocFlags::kNoHooks>(address,
-                                                                     size, "");
+  return Allocator()->Realloc<alloc_flags, free_flags>(address, size, "");
+}
+
+void* PartitionRealloc(void* address, size_t size, void* context) {
+  return PartitionReallocInternal<partition_alloc::AllocFlags::kNoHooks,
+                                  partition_alloc::FreeFlags::kNone>(
+      address, size, context);
+}
+
+void* PartitionReallocWithAdvancedChecks(void* address,
+                                         size_t size,
+                                         void* context) {
+  return PartitionReallocInternal<
+      partition_alloc::AllocFlags::kNoHooks,
+      partition_alloc::FreeFlags::kNoHooks |
+          partition_alloc::FreeFlags::kSchedulerLoopQuarantine |
+          partition_alloc::FreeFlags::kZap>(address, size, context);
 }
 
 void* PartitionReallocUnchecked(void* address, size_t size, void* context) {
@@ -355,7 +374,8 @@ void __real_free(void*);
 }       // extern "C"
 #endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
 
-void PartitionFree(void* object, void* context) {
+template <partition_alloc::FreeFlags flags>
+PA_ALWAYS_INLINE void PartitionFreeInternal(void* object, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
   // TODO(bartekn): Add MTE unmasking here (and below).
@@ -384,8 +404,17 @@ void PartitionFree(void* object, void* context) {
   }
 #endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
 
-  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-      partition_alloc::FreeFlags::kNoHooks>(object);
+  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<flags>(object);
+}
+
+void PartitionFree(void* object, void* context) {
+  PartitionFreeInternal<partition_alloc::FreeFlags::kNoHooks>(object, context);
+}
+
+void PartitionFreeWithAdvancedChecks(void* object, void* context) {
+  PartitionFreeInternal<partition_alloc::FreeFlags::kNoHooks |
+                        partition_alloc::FreeFlags::kSchedulerLoopQuarantine |
+                        partition_alloc::FreeFlags::kZap>(object, context);
 }
 
 #if PA_BUILDFLAG(IS_APPLE)

@@ -87,6 +87,7 @@ static_library("child_accounts") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profiles",
+    "//chrome/browser/ui:browser_list",
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus",

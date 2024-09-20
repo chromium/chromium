@@ -258,17 +258,17 @@ bool RemoteSafeBrowsingDatabaseManager::CheckExtensionIDs(
   return true;
 }
 
-std::optional<
-    SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
-RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+void RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    base::OnceCallback<void(bool)> callback) {
+    CheckUrlForHighConfidenceAllowlistCallback callback) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   if (!enabled_ || !CanCheckUrl(url)) {
-    ui_task_runner()->PostTask(FROM_HERE,
-                               base::BindOnce(std::move(callback), false));
-    return std::nullopt;
+    ui_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  /*url_on_high_confidence_allowlist=*/false,
+                                  /*logging_details=*/std::nullopt));
+    return;
   }
 
   IsInAllowlistResult match_result =
@@ -276,9 +276,10 @@ RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
   // Note that if the allowlist is unavailable, we say that is a match.
   bool is_match = match_result == IsInAllowlistResult::kInAllowlist ||
                   match_result == IsInAllowlistResult::kAllowlistUnavailable;
-  ui_task_runner()->PostTask(FROM_HERE,
-                             base::BindOnce(std::move(callback), is_match));
-  return std::nullopt;
+  ui_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                /*url_on_high_confidence_allowlist=*/is_match,
+                                /*logging_details=*/std::nullopt));
 }
 
 bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(

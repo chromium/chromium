@@ -129,8 +129,8 @@ cbor::Value::MapValue BuildMapForBiddingPartition(
   // Hostname isn't in `additional_params` since it's used by the caller to
   // partition fetches.
   metadata.try_emplace(cbor::Value("hostname"),
-                       cbor::Value(bidding_partition.hostname));
-  for (const auto param : bidding_partition.additional_params) {
+                       cbor::Value(*bidding_partition.hostname));
+  for (const auto param : *bidding_partition.additional_params) {
     // TODO(crbug.com/333445540): Consider switching to taking
     // `additional_params` as a cbor::Value, for greater flexibility. The
     // `slotSizes` parameter, in particular, might be best represented as an
@@ -147,8 +147,8 @@ cbor::Value::MapValue BuildMapForBiddingPartition(
 
   cbor::Value::ArrayValue arguments;
   arguments.emplace_back(MakeArgument("interestGroupNames",
-                                      bidding_partition.interest_group_names));
-  arguments.emplace_back(MakeArgument("keys", bidding_partition.keys));
+                                      *bidding_partition.interest_group_names));
+  arguments.emplace_back(MakeArgument("keys", *bidding_partition.keys));
   partition_cbor_map.try_emplace(cbor::Value("arguments"),
                                  cbor::Value(std::move(arguments)));
 
@@ -212,7 +212,17 @@ std::string BuildBiddingSignalsRequestBody(
 
 }  // namespace
 
-TrustedSignalsFetcher::BiddingPartition::BiddingPartition() = default;
+TrustedSignalsFetcher::BiddingPartition::BiddingPartition(
+    int partition_id,
+    const std::set<std::string>* interest_group_names,
+    const std::set<std::string>* keys,
+    const std::string* hostname,
+    const base::Value::Dict* additional_params)
+    : partition_id(partition_id),
+      interest_group_names(*interest_group_names),
+      keys(*keys),
+      hostname(*hostname),
+      additional_params(*additional_params) {}
 
 TrustedSignalsFetcher::BiddingPartition::BiddingPartition(BiddingPartition&&) =
     default;
@@ -223,7 +233,17 @@ TrustedSignalsFetcher::BiddingPartition&
 TrustedSignalsFetcher::BiddingPartition::operator=(BiddingPartition&&) =
     default;
 
-TrustedSignalsFetcher::ScoringPartition::ScoringPartition() = default;
+TrustedSignalsFetcher::ScoringPartition::ScoringPartition(
+    int partition_id,
+    const GURL* render_url,
+    const std::set<GURL>* component_render_urls,
+    const std::string* hostname,
+    const base::Value::Dict* additional_params)
+    : partition_id(partition_id),
+      render_url(*render_url),
+      component_render_urls(*component_render_urls),
+      hostname(*hostname),
+      additional_params(*additional_params) {}
 
 TrustedSignalsFetcher::ScoringPartition::ScoringPartition(ScoringPartition&&) =
     default;
@@ -431,8 +451,10 @@ TrustedSignalsFetcher::ParseDataDecoderResult(
   CompressionGroupResultMap compression_groups_out;
   for (auto& compression_group : *compression_groups) {
     int compression_group_id;
-    auto compression_group_result =
-        ParseCompressionGroup(compression_group, compression_group_id);
+    // This consumes each value of the list, to avoid having to copy the
+    // contents of each compression group.
+    auto compression_group_result = ParseCompressionGroup(
+        std::move(compression_group), compression_group_id);
 
     if (!compression_group_result.has_value()) {
       return base::unexpected(std::move(compression_group_result).error());
@@ -453,15 +475,14 @@ TrustedSignalsFetcher::ParseDataDecoderResult(
 
 base::expected<TrustedSignalsFetcher::CompressionGroupResult, std::string>
 TrustedSignalsFetcher::ParseCompressionGroup(
-    const base::Value& compression_group_value,
+    base::Value compression_group_value,
     int& compression_group_id) {
   if (!compression_group_value.is_dict()) {
     return base::unexpected(CreateError(
         base::StringPrintf("Compression group is not of type map")));
   }
 
-  const base::Value::Dict& compression_group_dict =
-      compression_group_value.GetDict();
+  base::Value::Dict& compression_group_dict = compression_group_value.GetDict();
   std::optional<int> compression_group_id_opt =
       compression_group_dict.FindInt("compressionGroupId");
   if (!compression_group_id_opt.has_value() || *compression_group_id_opt < 0) {
@@ -484,25 +505,18 @@ TrustedSignalsFetcher::ParseCompressionGroup(
     ttl = base::Milliseconds(std::max(0, ttl_ms_value->GetInt()));
   }
 
-  const std::string* content = compression_group_dict.FindString("content");
+  auto* content = compression_group_dict.FindBlob("content");
   if (!content) {
-    return base::unexpected(CreateError(
-        base::StringPrintf("Compression group %i missing content string",
-                           *compression_group_id_opt)));
+    return base::unexpected(CreateError(base::StringPrintf(
+        "Compression group %i missing binary string \"content\"",
+        *compression_group_id_opt)));
   }
 
   compression_group_id = *compression_group_id_opt;
 
   CompressionGroupResult result;
   result.compression_scheme = compression_scheme_;
-  // TODO(crbug.com/333445540): This copy is unnecessary, since Value::Dict
-  // allows its values to be moved. Instead, make `compression_group_data` a
-  // std::string. Can then either switch the API to using a mojom::BigString and
-  // pass to Mojo as a std::string, and have the other end use BigBuffer
-  // directly (Which is what mojom::BigString is typemapped to), or continue to
-  // use mojom::BigBuffer pass as a span<uint8_t>.
-  result.compression_group_data =
-      std::vector<uint8_t>(content->begin(), content->end());
+  result.compression_group_data = std::move(*content);
   result.ttl = ttl;
   return result;
 }

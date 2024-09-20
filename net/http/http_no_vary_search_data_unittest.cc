@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/types/expected.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -184,11 +185,11 @@ FailureData response_header_failed[] = {
      "\r\n\r\n",
      HttpNoVarySearchData::ParseErrorEnum::kExceptWithoutTrueParams},
 
-    {// An unknown dictionary key should behave as if the header was not
+    {// An unknown dictionary key should behave as if the key was not
      // specified.
      "HTTP/1.1 200 OK\r\n"
      "No-Vary-Search: unknown-key\r\n\r\n",
-     HttpNoVarySearchData::ParseErrorEnum::kUnknownDictionaryKey},
+     HttpNoVarySearchData::ParseErrorEnum::kDefaultValue},
 
     {// params not a boolean or a list of strings.
      "HTTP/1.1 200 OK\r\n"
@@ -334,7 +335,7 @@ FailureData response_header_failed[] = {
      // a list of tokens is incorrect.
      "HTTP/1.1 200 OK\r\n"
      "No-Vary-Search: params=?0\r\n"
-     "No-Vary-Search: except=(a)\r\n\r\n",
+     "No-Vary-Search: except=(\"a\")\r\n\r\n",
      HttpNoVarySearchData::ParseErrorEnum::kExceptWithoutTrueParams},
 
     {// except set to a list of tokens is incorrect.
@@ -348,14 +349,6 @@ FailureData response_header_failed[] = {
      "No-Vary-Search: params=?1\r\n"
      "No-Vary-Search: except\r\n\r\n",
      HttpNoVarySearchData::ParseErrorEnum::kExceptNotStringList},
-
-    {// Fail parsing if an unknown key is in the dictionary.
-     "HTTP/1.1 200 OK\r\n"
-     "No-Vary-Search: params,except=(a)\r\n"
-     "No-Vary-Search: unknown-key\r\n"
-     R"(No-Vary-Search: except=("a"))"
-     "\r\n\r\n",
-     HttpNoVarySearchData::ParseErrorEnum::kUnknownDictionaryKey},
 };
 
 const TestData response_headers_tests[] = {
@@ -768,6 +761,18 @@ const TestData response_headers_tests[] = {
         {"a"},       // expected_vary_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
+    },
+    // Continue parsing if an unknown key is in the dictionary.
+    {
+        "HTTP/1.1 200 OK\r\n"
+        "No-Vary-Search: params,except=(a)\r\n"
+        "No-Vary-Search: unknown-key\r\n"
+        R"(No-Vary-Search: except=("a"))"
+        "\r\n\r\n",  // raw_headers
+        {},          // expected_no_vary_params
+        {"a"},       // expected_vary_params
+        true,        // expected_vary_on_key_order
+        false,       // expected_vary_by_default
     }};
 
 INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchResponseHeadersTest,
@@ -1148,6 +1153,30 @@ const NoVarySearchCompareTestData no_vary_search_compare_tests[] = {
 INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchCompare,
                          HttpNoVarySearchCompare,
                          testing::ValuesIn(no_vary_search_compare_tests));
+
+TEST(HttpNoVarySearchResponseHeadersParseHistogramTest, NoUnrecognizedKeys) {
+  base::HistogramTester histogram_tester;
+  const std::string raw_headers = HttpUtil::AssembleRawHeaders(
+      "HTTP/1.1 200 OK\r\nNo-Vary-Search: params\r\n\r\n");
+  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
+  const auto no_vary_search_data =
+      HttpNoVarySearchData::ParseFromHeaders(*parsed);
+  EXPECT_THAT(no_vary_search_data, base::test::HasValue());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpNoVarySearch.HasUnrecognizedKeys", false, 1);
+}
+
+TEST(HttpNoVarySearchResponseHeadersParseHistogramTest, UnrecognizedKeys) {
+  base::HistogramTester histogram_tester;
+  const std::string raw_headers = HttpUtil::AssembleRawHeaders(
+      "HTTP/1.1 200 OK\r\nNo-Vary-Search: params, rainbows\r\n\r\n");
+  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
+  const auto no_vary_search_data =
+      HttpNoVarySearchData::ParseFromHeaders(*parsed);
+  EXPECT_THAT(no_vary_search_data, base::test::HasValue());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpNoVarySearch.HasUnrecognizedKeys", true, 1);
+}
 
 }  // namespace
 

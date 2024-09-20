@@ -135,5 +135,9 @@ TEST(ProtoEnumConversionsTest, GetBrowserColorSchemeString) {
   TestEnumStringsNonEmpty(sync_pb::ThemeSpecifics::BrowserColorScheme);
 }
 
+TEST(ProtoEnumConversionsTest, GetContactInfoAddressType) {
+  TestEnumStringsNonEmpty(sync_pb::ContactInfoSpecifics::AddressType);
+}
+
 }  // namespace
 }  // namespace syncer

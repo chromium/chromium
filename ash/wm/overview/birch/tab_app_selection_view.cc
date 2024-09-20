@@ -100,7 +100,8 @@ class TabAppSelectionView::TabAppSelectionItemView
     bool show_close_button = true;
   };
 
-  explicit TabAppSelectionItemView(InitParams params) : owner_(params.owner) {
+  explicit TabAppSelectionItemView(InitParams params)
+      : type_(params.type), owner_(params.owner) {
     views::Builder<views::BoxLayoutView>(this)
         .SetAccessibleRole(ax::mojom::Role::kMenuItem)
         .SetAccessibleName(u"TempAccessibleName")
@@ -166,11 +167,28 @@ class TabAppSelectionView::TabAppSelectionItemView
   TabAppSelectionItemView& operator=(const TabAppSelectionItemView&) = delete;
   ~TabAppSelectionItemView() override = default;
 
+  InitParams::Type type() const { return type_; }
+
+  bool selected() const { return selected_; }
+  void SetSelected(bool selected) {
+    if (selected_ == selected) {
+      return;
+    }
+
+    selected_ = selected;
+    if (close_button_) {
+      close_button_->SetVisible(selected);
+    }
+    SetBackground(selected_ ? views::CreateThemedSolidBackground(
+                                  cros_tokens::kCrosSysHoverOnSubtle)
+                            : nullptr);
+  }
+
   void RemoveCloseButton() {
     if (!close_button_) {
       return;
     }
-    RemoveChildViewT(close_button_.ExtractAsDangling().get());
+    RemoveChildViewT(std::exchange(close_button_, nullptr));
   }
 
   // views::BoxLayoutView:
@@ -189,19 +207,7 @@ class TabAppSelectionView::TabAppSelectionItemView
     owner_->OnCloseButtonPressed(this);
   }
 
-  void SetSelected(bool selected) {
-    if (selected_ == selected) {
-      return;
-    }
-
-    selected_ = selected;
-    if (close_button_) {
-      close_button_->SetVisible(selected);
-    }
-    SetBackground(selected_ ? views::CreateThemedSolidBackground(
-                                  cros_tokens::kCrosSysHoverOnSubtle)
-                            : nullptr);
-  }
+  const InitParams::Type type_;
 
   // True when the mouse is hovered over this view. The background is painted
   // differently.
@@ -257,13 +263,11 @@ TabAppSelectionView::TabAppSelectionView() {
   // provider.
   const int num_tabs = 3;
   const int num_apps = 2;
-  tab_item_views_.reserve(num_tabs);
-  app_item_views_.reserve(num_apps);
+  item_views_.reserve(num_tabs + num_apps);
   const bool show_close_button = (num_tabs + num_apps) > kMinItems;
   auto create_item_view =
       [&](TabAppSelectionItemView::InitParams::Type type,
-          const std::string& identifier,
-          std::vector<raw_ptr<TabAppSelectionItemView>>& container) {
+          const std::string& identifier) {
         TabAppSelectionItemView::InitParams params;
         params.type = type;
         params.identifier = identifier;
@@ -271,14 +275,14 @@ TabAppSelectionView::TabAppSelectionView() {
         params.show_close_button = show_close_button;
         auto* item_view = contents->AddChildView(
             std::make_unique<TabAppSelectionItemView>(std::move(params)));
-        container.push_back(item_view);
+        item_views_.push_back(item_view);
       };
 
   if (num_tabs > 0) {
     contents->AddChildView(CreateSubtitle(u"Tabs", kTabSubtitleID));
     for (int i = 0; i < num_tabs; ++i) {
       create_item_view(TabAppSelectionItemView::InitParams::Type::kTab,
-                       "https://www.nhl.com/", tab_item_views_);
+                       "https://www.nhl.com/");
     }
   }
 
@@ -286,7 +290,7 @@ TabAppSelectionView::TabAppSelectionView() {
     contents->AddChildView(CreateSubtitle(u"Apps", kAppSubtitleID));
     for (int i = 0; i < num_apps; ++i) {
       create_item_view(TabAppSelectionItemView::InitParams::Type::kApp,
-                       "odknhmnlageboeamepcngndbggdpaobj", app_item_views_);
+                       "odknhmnlageboeamepcngndbggdpaobj");
     }
   }
 
@@ -295,35 +299,98 @@ TabAppSelectionView::TabAppSelectionView() {
 
 TabAppSelectionView::~TabAppSelectionView() = default;
 
+void TabAppSelectionView::ProcessKeyEvent(ui::KeyEvent* event) {
+  switch (event->key_code()) {
+    case ui::VKEY_UP:
+      AdvanceSelection(/*reverse=*/true);
+      break;
+    case ui::VKEY_DOWN:
+      AdvanceSelection(/*reverse=*/false);
+      break;
+    default:
+      break;
+  }
+}
+
+void TabAppSelectionView::AdvanceSelection(bool reverse) {
+  std::optional<size_t> selected_index;
+  for (size_t i = 0; i < item_views_.size(); ++i) {
+    if (item_views_[i]->selected()) {
+      selected_index = i;
+      break;
+    }
+  }
+
+  // If nothing is currently selected, then select the first or last item
+  // depending on `reverse`.
+  if (!selected_index) {
+    if (reverse) {
+      item_views_.back()->SetSelected(true);
+    } else {
+      item_views_.front()->SetSelected(true);
+    }
+    return;
+  }
+
+  size_t new_selected_index;
+  if (reverse) {
+    // Decrease the index unless the current selection is the first item, then
+    // wrap around.
+    if (*selected_index == 0) {
+      new_selected_index = item_views_.size() - 1;
+    } else {
+      new_selected_index = *selected_index - 1;
+    }
+  } else {
+    // Increase the index unless the current selection is the last item, then
+    // wrap around.
+    if (*selected_index == item_views_.size() - 1) {
+      new_selected_index = 0;
+    } else {
+      new_selected_index = *selected_index + 1;
+    }
+  }
+
+  item_views_[new_selected_index]->SetSelected(true);
+  item_views_[*selected_index]->SetSelected(false);
+}
+
 void TabAppSelectionView::OnCloseButtonPressed(
     TabAppSelectionItemView* sender) {
-  std::erase(tab_item_views_, sender);
-  std::erase(app_item_views_, sender);
+  TabAppSelectionItemView::InitParams::Type sender_type = sender->type();
+  std::erase(item_views_, sender);
   scroll_view_->contents()->RemoveChildViewT(sender);
 
-  // Remove the subtitle if necessary.
-  if (tab_item_views_.empty()) {
-    if (views::View* subtitle = GetViewByID(kTabSubtitleID)) {
-      scroll_view_->contents()->RemoveChildViewT(subtitle);
+  // Remove the subtitle(s) if necessary.
+  bool remove_subtitle = true;
+  for (TabAppSelectionItemView* item : item_views_) {
+    if (sender_type == item->type()) {
+      remove_subtitle = false;
+      break;
     }
   }
 
-  if (app_item_views_.empty()) {
-    if (views::View* subtitle = GetViewByID(kAppSubtitleID)) {
-      scroll_view_->contents()->RemoveChildViewT(subtitle);
+  if (remove_subtitle) {
+    std::optional<ViewID> id;
+    switch (sender_type) {
+      case TabAppSelectionItemView::InitParams::Type::kTab:
+        id = kTabSubtitleID;
+        break;
+      case TabAppSelectionItemView::InitParams::Type::kApp:
+        id = kAppSubtitleID;
+        break;
     }
+    CHECK(id.has_value());
+    scroll_view_->contents()->RemoveChildViewT(GetViewByID(*id));
   }
 
-  if (tab_item_views_.size() + app_item_views_.size() > kMinItems) {
+  if (item_views_.size() > kMinItems) {
     return;
   }
 
   // Remove all close buttons if we have 3 elements or less. This function won't
   // be called again.
-  for (TabAppSelectionItemView* item : tab_item_views_) {
-    item->RemoveCloseButton();
-  }
-  for (TabAppSelectionItemView* item : app_item_views_) {
+  for (TabAppSelectionItemView* item : item_views_) {
     item->RemoveCloseButton();
   }
 }

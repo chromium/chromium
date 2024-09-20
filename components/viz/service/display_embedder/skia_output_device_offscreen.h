@@ -40,6 +40,7 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
+  void ReadbackForTesting(base::OnceCallback<void(SkBitmap)> callback) override;
 
  protected:
   scoped_refptr<gpu::SharedContextState> context_state_;

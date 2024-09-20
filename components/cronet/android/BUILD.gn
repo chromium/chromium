@@ -12,6 +12,7 @@ import("//build/config/zip.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//chrome/version.gni")
+import("//components/cronet/android/cronet_test_templates.gni")
 import("//components/cronet/native/include/headers.gni")
 import("//components/grpc_support/include/headers.gni")
 import("//testing/test.gni")
@@ -977,6 +978,10 @@ template("repackage_jars") {
     use_unprocessed_jars = true
     no_build_hooks = true
     jar_excluded_patterns = _excludes
+
+    # This is to prevent clashing with the real jni_zero in apps that include
+    # cronet (eg: google3). See https://crbug.com/353534209
+    renaming_rules = [ "org.jni_zero.**->internal.org.jni_zero" ]
     forward_variables_from(invoker, "*", [ "jar_excluded_patterns" ])
   }
 }
@@ -1225,6 +1230,7 @@ android_library("cronet_common_javatests") {
     "test/javatests/src/org/chromium/net/TestUrlRequestCallback.java",
     "test/javatests/src/org/chromium/net/httpflags/HttpFlagsInterceptor.java",
     "test/javatests/src/org/chromium/net/impl/CronetManifestInterceptor.java",
+    "test/javatests/src/org/chromium/net/impl/TestLogger.java",
   ]
   deps = [
            ":cronet_all_java",
@@ -1383,7 +1389,7 @@ android_library("cronet_javatests") {
   data = [ "//components/cronet/testing/test_server/data/" ]
 }
 
-instrumentation_test_apk("cronet_test_instrumentation_apk") {
+cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
   # This is the only Cronet APK with lint enabled. This one was chosen because
   # it depends on basically all source files.
   enable_lint = true
@@ -1531,7 +1537,7 @@ instrumentation_test_apk(
 # Note: The proguard rules includes the test proguard configs as
 # the build system automatically pulls in all transitive proguard
 # configs that can be found through the dependency chain.
-instrumentation_test_apk("cronet_smoketests_apk") {
+cronet_instrumentation_test_apk("cronet_smoketests_apk") {
   apk_name = "CronetSmokeTestInstrumentation"
   android_manifest = "test/javatests/AndroidManifest.xml"
   shared_libraries = [
@@ -1610,7 +1616,7 @@ android_apk("cronet_perf_test_apk") {
   ]
 }
 
-test("cronet_unittests_android") {
+cronet_test("cronet_unittests_android") {
   deps = [
     ":cronet_base_feature_unittest",
     ":cronet_impl_native_java",
@@ -1638,7 +1644,7 @@ test("cronet_unittests_android") {
   }
 }
 
-test("cronet_tests_android") {
+cronet_test("cronet_tests_android") {
   deps = [
     ":cronet_impl_native_java",
     ":cronet_static",
@@ -1970,6 +1976,16 @@ action("gn2bp_check") {
   sources = [
     "$_gn_path",
     "//components/cronet/gn2bp/gen_android_bp.py",
+    "//components/cronet/gn2bp/gen_desc_json.sh",
+    "//components/cronet/gn2bp/gn_utils.py",
+    "//components/cronet/gn2bp/update_results.sh",
+    "//components/cronet/license/constants.py",
+    "//components/cronet/license/create_android_metadata_license.py",
+    "//components/cronet/license/license_type.py",
+    "//components/cronet/license/license_utils.py",
+    "//components/cronet/license/mapper.py",
+    "//components/cronet/license/metadata.py",
+    "//components/cronet/license/metadata_dictionary.py",
     "//tools/mb/mb.py",
   ]
   outputs = [ "$target_gen_dir/$target_name.stamp" ]

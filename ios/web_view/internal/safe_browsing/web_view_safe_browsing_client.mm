@@ -45,8 +45,9 @@ bool WebViewSafeBrowsingClient::ShouldBlockUnsafeResource(
   return false;
 }
 
-void WebViewSafeBrowsingClient::OnMainFrameUrlQueryCancellationDecided(
+bool WebViewSafeBrowsingClient::OnMainFrameUrlQueryCancellationDecided(
     web::WebState* web_state,
     const GURL& url) {
-  // No op.
+  // ios/web_view does not support OnMainFrameUrlQueryCancellationDecided.
+  return true;
 }

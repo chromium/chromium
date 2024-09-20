@@ -113,6 +113,7 @@ void WebAuthenticationDelegate::DeleteUnacceptedPasskeys(
 
 void WebAuthenticationDelegate::UpdateUserPasskeys(
     content::WebContents* web_contents,
+    const url::Origin& origin,
     const std::string& relying_party_id,
     std::vector<uint8_t>& user_id,
     const std::string& name,
@@ -169,14 +170,6 @@ void AuthenticatorRequestClientDelegate::RegisterActionCallbacks(
         void(device::FidoRequestHandlerBase::BlePermissionCallback)>
         request_ble_permission_callback) {}
 
-void AuthenticatorRequestClientDelegate::ShouldReturnAttestation(
-    const std::string& relying_party_id,
-    const device::FidoAuthenticator* authenticator,
-    bool is_enterprise_attestation,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(!is_enterprise_attestation);
-}
-
 void AuthenticatorRequestClientDelegate::ConfigureDiscoveries(
     const url::Origin& origin,
     const std::string& rp_id,
@@ -220,6 +213,9 @@ bool AuthenticatorRequestClientDelegate::IsVirtualEnvironmentEnabled() {
 
 void AuthenticatorRequestClientDelegate::SetConditionalRequest(
     bool is_conditional) {}
+
+void AuthenticatorRequestClientDelegate::SetAmbientCredentialTypes(
+    int credential_type_flags) {}
 
 void AuthenticatorRequestClientDelegate::SetCredentialIdFilter(
     std::vector<device::PublicKeyCredentialDescriptor>) {}

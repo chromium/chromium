@@ -5,14 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
 
-#include <algorithm>
 #include <array>
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
-#include "base/types/cxx23_to_underlying.h"
 
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -149,23 +147,6 @@ constexpr auto kPatternMap = base::MakeFixedFlatMap<NameAndLanguage, std::array<
 constexpr auto kLanguages = base::MakeFixedFlatSet<const char*>({
   "de", "en"
 }, LanguageComparator());
-
-// Checks if all the matching patterns for the given PatternSources
-// and language are the same - meaning that computing predictions for
-// both is unnecessary, since it will yield the same result.
-constexpr bool AreMatchingPatternsEqualImpl(PatternSource a,
-                                            PatternSource b,
-                                            LanguageCode lang_code) {
-  if (a == b) {
-    return true;
-  }
-  auto a_id = base::to_underlying(a);
-  auto b_id = base::to_underlying(b);
-  if (a_id > b_id) {
-    std::swap(a_id, b_id);
-  }
-  return false;
-}
 
 }  // namespace autofill
 

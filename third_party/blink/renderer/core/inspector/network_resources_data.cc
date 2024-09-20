@@ -182,13 +182,13 @@ void NetworkResourcesData::ResourceData::FontResourceDataWillBeCleared() {
   network_resources_data_->MaybeDecodeDataToContent(RequestId());
 }
 
-void NetworkResourcesData::ResourceData::AppendData(const char* data,
-                                                    size_t data_length) {
+void NetworkResourcesData::ResourceData::AppendData(
+    base::span<const char> data) {
   DCHECK(!HasContent());
   if (!data_buffer_) {
     data_buffer_ = SegmentedBuffer();
   }
-  data_buffer_->Append(data, data_length);
+  data_buffer_->Append(data);
 }
 
 size_t NetworkResourcesData::ResourceData::DecodeDataToContent() {
@@ -320,11 +320,10 @@ NetworkResourcesData::PrepareToAddResourceData(const String& request_id,
 }
 
 void NetworkResourcesData::MaybeAddResourceData(const String& request_id,
-                                                const char* data,
-                                                uint64_t data_length) {
+                                                base::span<const char> data) {
   if (ResourceData* resource_data =
-          PrepareToAddResourceData(request_id, data_length)) {
-    resource_data->AppendData(data, base::checked_cast<size_t>(data_length));
+          PrepareToAddResourceData(request_id, data.size())) {
+    resource_data->AppendData(data);
   }
 }
 
@@ -335,7 +334,7 @@ void NetworkResourcesData::MaybeAddResourceData(
   if (ResourceData* resource_data =
           PrepareToAddResourceData(request_id, data->size())) {
     for (const auto& span : *data)
-      resource_data->AppendData(span.data(), span.size());
+      resource_data->AppendData(span);
   }
 }
 

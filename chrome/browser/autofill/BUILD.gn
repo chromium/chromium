@@ -56,6 +56,7 @@ static_library("autofill") {
   ]
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/sync",
     "//chrome/common:constants",
@@ -134,6 +135,7 @@ static_library("test_support") {
   deps = [
     "//chrome/browser/autofill:autofill",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/autofill",
     "//components/autofill/content/browser:browser",
     "//components/autofill/content/common/mojom",
     "//components/autofill/core/browser:test_support",
@@ -208,6 +210,8 @@ if (!is_android) {
 
     deps = [
       "//chrome/browser/autofill",
+      "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/autofill:test_support",
       "//chrome/test:test_support",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
@@ -231,6 +235,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/autofill",
       "//chrome/common:chrome_features",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
@@ -283,6 +288,8 @@ if (!is_android) {
 
     deps = [
       "//chrome/browser/autofill:test_support_ui",
+      "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/autofill:test_support",
       "//chrome/test:test_support",
       "//components/autofill/core/common:autofill_regex",
     ]

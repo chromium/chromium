@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
+
+#include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -117,6 +118,7 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   NetworkStateTestHelper network_state_test_helper_{
       /*use_default_devices_and_services=*/false};
@@ -129,6 +131,8 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
 };
 
 TEST_F(ESimPolicyLoginMetricsLoggerTest, LoginMetricsTest) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   // Perform this test as though this "device" is enterprise managed.
   esim_policy_login_metrics_logger_->SetIsEnterpriseManaged(
       /*is_enterprise_managed=*/true);

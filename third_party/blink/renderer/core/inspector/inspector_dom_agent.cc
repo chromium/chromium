@@ -239,6 +239,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ScrollNextButton;
     case kPseudoIdScrollPrevButton:
       return protocol::DOM::PseudoTypeEnum::ScrollPrevButton;
+    case kPseudoIdColumn:
+      return protocol::DOM::PseudoTypeEnum::Column;
     case kPseudoIdResizer:
       return protocol::DOM::PseudoTypeEnum::Resizer;
     case kPseudoIdInputListButton:
@@ -265,6 +267,10 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ViewTransitionNew;
     case kPseudoIdViewTransitionOld:
       return protocol::DOM::PseudoTypeEnum::ViewTransitionOld;
+    case kPseudoIdColumnScrollMarker:
+      // Not reachable, since it's an internal representation of
+      // ::column::scroll-marker and won't be exposed to devtools
+      NOTREACHED_NORETURN();
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
     case kPseudoIdInvalid:

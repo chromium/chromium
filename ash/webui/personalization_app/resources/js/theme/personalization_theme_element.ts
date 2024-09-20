@@ -65,6 +65,11 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         value: null,
       },
 
+      geolocationIsUserModifiable_: {
+        type: Boolean,
+        value: null,
+      },
+
       sunriseTime_: {
         type: String,
         value: null,
@@ -94,6 +99,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   private sunriseTime_: string|null;
   private sunsetTime_: string|null;
   private selectedButton_: CrButtonElement;
+  private geolocationIsUserModifiable_: boolean|null;
   private shouldShowGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
 
@@ -113,6 +119,9 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     this.watch<PersonalizationThemeElement['geolocationPermissionEnabled_']>(
         'geolocationPermissionEnabled_',
         state => state.theme.geolocationPermissionEnabled);
+    this.watch<PersonalizationThemeElement['geolocationIsUserModifiable_']>(
+        'geolocationIsUserModifiable_',
+        state => state.theme.geolocationIsUserModifiable);
     this.watch<PersonalizationThemeElement['sunriseTime_']>(
         'sunriseTime_', state => state.theme.sunriseTime);
     this.watch<PersonalizationThemeElement['sunsetTime_']>(
@@ -199,7 +208,8 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     // If needed, pop up a dialog asking users to enable system location
     // permission.
     if (isCrosPrivacyHubLocationEnabled() &&
-        this.geolocationPermissionEnabled_ === false) {
+        this.geolocationPermissionEnabled_ === false &&
+        this.geolocationIsUserModifiable_ === true) {
       this.shouldShowGeolocationDialog_ = true;
     }
   }

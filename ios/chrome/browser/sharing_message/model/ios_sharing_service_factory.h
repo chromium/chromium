@@ -15,9 +15,11 @@ class SharingService;
 // ChromeBrowserState.
 class IOSSharingServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static SharingService* GetForBrowserState(ChromeBrowserState* browser_state);
-  static SharingService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+
+  static SharingService* GetForProfile(ProfileIOS* profile);
+  static SharingService* GetForProfileIfExists(ProfileIOS* profile);
   static IOSSharingServiceFactory* GetInstance();
 
   IOSSharingServiceFactory(const IOSSharingServiceFactory&) = delete;

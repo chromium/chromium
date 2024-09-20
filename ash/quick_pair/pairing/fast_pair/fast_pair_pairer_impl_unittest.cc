@@ -167,6 +167,7 @@ class FakeBluetoothDevice
       BluetoothDevice::PairingDelegate* pairing_delegate,
       base::OnceCallback<void(std::optional<ConnectErrorCode> error_code)>
           callback) override {
+    is_device_classic_paired = true;
     if (floss::features::IsFlossEnabled()) {
       // On Floss, ConnectClassic is equivalent to Pair
       Pair(pairing_delegate, std::move(callback));
@@ -193,6 +194,8 @@ class FakeBluetoothDevice
 
   bool IsDevicePaired() { return is_device_paired_; }
 
+  bool IsDeviceClassicPaired() { return is_device_classic_paired; }
+
  protected:
   base::OnceCallback<void(std::optional<ConnectErrorCode> error_code)>
       pair_callback_;
@@ -202,6 +205,7 @@ class FakeBluetoothDevice
   bool connect_failure_ = false;
   bool connect_timeout_ = false;
   bool is_device_paired_ = false;
+  bool is_device_classic_paired = false;
 };
 
 class FakeFastPairGattServiceClientImplFactory
@@ -386,6 +390,10 @@ class FastPairPairerImplTest : public AshTestBase {
   void SetGetDeviceNullptr() { adapter_->SetGetDeviceNullptr(); }
 
   bool IsDevicePaired() { return fake_bluetooth_device_ptr_->IsDevicePaired(); }
+
+  bool IsDeviceClassicPaired() {
+    return fake_bluetooth_device_ptr_->IsDeviceClassicPaired();
+  }
 
   bool IsAccountKeySavedToFootprints() {
     return fast_pair_repository_->HasKeyForDevice(
@@ -654,6 +662,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_Floss) {
   CreatePairer();
   fake_bluetooth_device_ptr_->TriggerPairCallback();
   EXPECT_EQ(GetPairFailure(), std::nullopt);
+  EXPECT_TRUE(IsDeviceClassicPaired());
   ExpectStepMetrics<FastPairProtocolPairingSteps>(
       kProtocolPairingStepInitial,
       {FastPairProtocolPairingSteps::kPairingStarted,
@@ -682,6 +691,7 @@ TEST_F(FastPairPairerImplTest, PairByBLEDeviceSuccess_Initial) {
   CreatePairer();
   fake_bluetooth_device_ptr_->TriggerPairCallback();
   EXPECT_EQ(GetPairFailure(), std::nullopt);
+  EXPECT_FALSE(IsDeviceClassicPaired());
   ExpectStepMetrics<FastPairProtocolPairingSteps>(
       kProtocolPairingStepInitial,
       {FastPairProtocolPairingSteps::kPairingStarted,

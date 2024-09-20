@@ -15,12 +15,13 @@ class TemplateURLService;
 
 namespace ios {
 // Singleton that owns all TemplateURLServices and associates them with
-// ChromeBrowserState.
+// Profile.
 class TemplateURLServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static TemplateURLService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static TemplateURLService* GetForBrowserState(ProfileIOS* profile);
 
+  static TemplateURLService* GetForProfile(ProfileIOS* profile);
   static TemplateURLServiceFactory* GetInstance();
 
   // Returns the default factory used to build TemplateURLServices. Can be

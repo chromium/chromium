@@ -447,6 +447,7 @@ std::string_view GetRlzBrandCode(
                      {"NTBE", {"ARRB", "AELU", "HGEA"}},
                      {"NZRH", {"NOUG", "UDYG", "ZGAU"}},
                      {"ODVK", {"VIOP", "MIHJ", "VXFY"}},
+                     {"OEER", {"TQAV", "TGPB", "AYYR"}},
                      {"OFPE", {"YFOO", "UIGY", "PFGZ"}},
                      {"OFPO", {"TSWQ", "EBUR", "JASZ"}},
                      {"OFRL", {"WFXP", "RTOK", "YKGH"}},

@@ -1,0 +1,47 @@
+let gc = globalThis.gc || function() {
+    try { new ArrayBuffer(2**34); } catch(e) {}
+}
+
+// setTimeout(function() { cleanup(); }, 12000);
+
+function cleanup() {
+    // Let's ensure buffer is garbage collected
+    try { gc(); } catch(e) {}
+    try { new ArrayBuffer(2**34); } catch(e) {}
+}
+
+async function trigger(video_codec, audio_codec) {
+    <webcodecs_fuzzer>
+}
+
+async function main() {
+    bigF32ArrayBuffer = new Float32Array(100000);
+    audioData1 = new AudioData({
+        format: 'f32-planar',
+        sampleRate: 48000,  // 48 kHz
+        numberOfChannels: 2,  // Stereo
+        numberOfFrames: 48000 / 2,  // 1 second of audio for stereo
+        timestamp: 0,
+        data: bigF32ArrayBuffer.buffer  // 1 second of silence
+    });
+
+    bm = await window.createImageBitmap(new ImageData(1, 1));
+    videoFrame1 = new VideoFrame (bm, {timestamp:0});
+
+    bm = await window.createImageBitmap(new ImageData(1920, 1080));
+    videoFrame2 = new VideoFrame(bm, {timestamp: 0});
+
+    canvas = document.createElement("canvas");
+
+    transformer = {
+        start() {}, // required.
+        async transform(chunk, controller) {
+            controller.enqueue(audioData1);
+        },
+        flush() {},
+    };
+
+    await trigger();
+}
+
+main();

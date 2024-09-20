@@ -170,7 +170,6 @@ class DocumentPictureInPictureWindowControllerBrowserTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kDocumentPictureInPictureAPI,
-         blink::features::kCSSDisplayModePictureInPicture,
          blink::features::kDocumentPictureInPicturePreferInitialPlacement},
         /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();

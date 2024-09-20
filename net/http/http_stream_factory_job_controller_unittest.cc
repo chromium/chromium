@@ -65,6 +65,7 @@
 #include "net/quic/quic_chromium_connection_helper.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_test_packet_maker.h"
@@ -645,6 +646,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, NoSupportedProxies) {
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 class JobControllerReconsiderProxyAfterErrorTest
     : public HttpStreamFactoryJobControllerTestBase {
  public:
@@ -679,7 +682,8 @@ class JobControllerReconsiderProxyAfterErrorTest
     factory_ = session_->http_stream_factory();
   }
 
-  void CreateMockQUICProxySession(url::SchemeHostPort server) {
+  std::unique_ptr<MockQuicChromiumClientSession> CreateMockQUICProxySession(
+      url::SchemeHostPort server) {
     const IPEndPoint kIpEndPoint = IPEndPoint(IPAddress::IPv4AllZeros(), 0);
     quic::test::MockRandom random{0};
     quic::MockClock clock;
@@ -709,37 +713,35 @@ class JobControllerReconsiderProxyAfterErrorTest
         ProxyChain::ForIpProtection({}, 0), SessionUsage::kProxy, SocketTag(),
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
         /*require_dns_https_alpn=*/false);
-    mock_proxy_sessions_.emplace_back(
-        std::make_unique<MockQuicChromiumClientSession>(
-            connection, std::move(socket), session_->quic_session_pool(),
-            &crypto_client_stream_factory_, &clock, &transport_security_state,
-            &ssl_config_service,
-            base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
-            session_key,
-            /*require_confirmation=*/false,
-            /*migrate_session_early_v2=*/false,
-            /*migrate_session_on_network_change_v2=*/false,
-            kDefaultNetworkForTests,
-            quic::QuicTime::Delta::FromMilliseconds(
-                kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
-            /*migrate_idle_session=*/false, /*allow_port_migration_=*/false,
-            kDefaultIdleSessionMigrationPeriod,
-            /*multi_port_probing_interval=*/0, kMaxTimeOnNonDefaultNetwork,
-            kMaxMigrationsToNonDefaultNetworkOnWriteError,
-            kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
-            kQuicYieldAfterPacketsRead,
-            quic::QuicTime::Delta::FromMilliseconds(
-                kQuicYieldAfterDurationMilliseconds),
-            /*cert_verify_flags=*/0, quic_config,
-            std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config),
-            "CONNECTION_UNKNOWN", base::TimeTicks::Now(),
-            base::TimeTicks::Now(), base::DefaultTickClock::GetInstance(),
-            base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-            /*socket_performance_watcher=*/nullptr,
-            ConnectionEndpointMetadata(),
-            /*report_ecn=*/true,
-            /*enable_origin_frame=*/true,
-            NetLogWithSource::Make(NetLogSourceType::NONE)));
+    auto new_session = std::make_unique<MockQuicChromiumClientSession>(
+        connection, std::move(socket), session_->quic_session_pool(),
+        &crypto_client_stream_factory_, &clock, &transport_security_state,
+        &ssl_config_service,
+        base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
+        QuicSessionAliasKey(server, session_key),
+        /*require_confirmation=*/false,
+        /*migrate_session_early_v2=*/false,
+        /*migrate_session_on_network_change_v2=*/false, kDefaultNetworkForTests,
+        quic::QuicTime::Delta::FromMilliseconds(
+            kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
+        /*migrate_idle_session=*/false, /*allow_port_migration_=*/false,
+        kDefaultIdleSessionMigrationPeriod,
+        /*multi_port_probing_interval=*/0, kMaxTimeOnNonDefaultNetwork,
+        kMaxMigrationsToNonDefaultNetworkOnWriteError,
+        kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
+        kQuicYieldAfterPacketsRead,
+        quic::QuicTime::Delta::FromMilliseconds(
+            kQuicYieldAfterDurationMilliseconds),
+        /*cert_verify_flags=*/0, quic_config,
+        std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config),
+        "CONNECTION_UNKNOWN", base::TimeTicks::Now(), base::TimeTicks::Now(),
+        base::DefaultTickClock::GetInstance(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
+        /*report_ecn=*/true,
+        /*enable_origin_frame=*/true,
+        NetLogWithSource::Make(NetLogSourceType::NONE));
+    mock_proxy_sessions_.emplace_back(new_session.get());
 
     quic::test::NoopQpackStreamSenderDelegate
         noop_qpack_stream_sender_delegate_;
@@ -748,6 +750,8 @@ class JobControllerReconsiderProxyAfterErrorTest
         ->qpack_decoder()
         ->set_qpack_stream_sender_delegate(&noop_qpack_stream_sender_delegate_);
     mock_proxy_sessions_.back()->StartReading();
+
+    return new_session;
   }
 
   std::unique_ptr<HttpStreamRequest> CreateJobController(
@@ -767,8 +771,7 @@ class JobControllerReconsiderProxyAfterErrorTest
   }
 
  protected:
-  std::vector<std::unique_ptr<MockQuicChromiumClientSession>>
-      mock_proxy_sessions_;
+  std::vector<raw_ptr<MockQuicChromiumClientSession>> mock_proxy_sessions_;
 
  private:
   // Use real Jobs so that Job::Resume() is not mocked out. When main job is
@@ -1258,8 +1261,10 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
                                      HostPortPair("badproxyserver", 99)};
   const ProxyServer kBadProxyServer2{
       ProxyServer::SCHEME_HTTPS, HostPortPair("badfallbackproxyserver", 98)};
-  const ProxyChain kNestedProxyChain1{{kBadProxyServer1, kGoodProxyServer}};
-  const ProxyChain kNestedProxyChain2{{kBadProxyServer2, kGoodProxyServer}};
+  const ProxyChain kNestedProxyChain1 =
+      ProxyChain::ForIpProtection({{kBadProxyServer1, kGoodProxyServer}});
+  const ProxyChain kNestedProxyChain2 =
+      ProxyChain::ForIpProtection({{kBadProxyServer2, kGoodProxyServer}});
 
   for (GURL dest_url :
        {GURL("http://www.example.com"), GURL("https://www.example.com")}) {
@@ -1496,8 +1501,10 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
                                      HostPortPair("badproxyserver", 99)};
   const ProxyServer kBadProxyServer2{
       ProxyServer::SCHEME_HTTPS, HostPortPair("badfallbackproxyserver", 98)};
-  const ProxyChain kNestedProxyChain1{{kGoodProxyServer, kBadProxyServer1}};
-  const ProxyChain kNestedProxyChain2{{kGoodProxyServer, kBadProxyServer2}};
+  const ProxyChain kNestedProxyChain1 =
+      ProxyChain::ForIpProtection({{kGoodProxyServer, kBadProxyServer1}});
+  const ProxyChain kNestedProxyChain2 =
+      ProxyChain::ForIpProtection({{kGoodProxyServer, kBadProxyServer2}});
 
   for (GURL dest_url :
        {GURL("http://www.example.com"), GURL("https://www.example.com")}) {
@@ -2112,13 +2119,11 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
                std::move(test_proxy_delegate),
                /*using_quic=*/true);
     if (mock_error.phase == ErrorPhase::kProxySession) {
-      CreateMockQUICProxySession(proxy_server);
-      CreateMockQUICProxySession(proxy_server2);
+      session_->quic_session_pool()->ActivateSessionForTesting(
+          CreateMockQUICProxySession(proxy_server));
+      session_->quic_session_pool()->ActivateSessionForTesting(
+          CreateMockQUICProxySession(proxy_server2));
       ASSERT_EQ(mock_proxy_sessions_.size(), 2u);
-      session_->quic_session_pool()->ActivateSessionForTesting(
-          proxy_server, mock_proxy_sessions_[0].get());
-      session_->quic_session_pool()->ActivateSessionForTesting(
-          proxy_server2, mock_proxy_sessions_[1].get());
     }
 
     // Start two requests. The first request should consume data from
@@ -2151,12 +2156,12 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       // Quic connection does not create socket. So only check the sessions,
       // and close them. So that the next loop iteration won't reuse them.
       QuicSessionPool* quic_session_pool = session_->quic_session_pool();
-      // Mock session is owned by the test case. So after test is done,
-      // remove them from the session pool to avoid dangling pointer.
+      // Mock sessions must be removed from the vector before the session pool
+      // destroys them to avoid dangling pointers.
       while (!mock_proxy_sessions_.empty()) {
-        quic_session_pool->DeactivateSessionForTesting(
-            mock_proxy_sessions_.back().get());
+        MockQuicChromiumClientSession* session = mock_proxy_sessions_.back();
         mock_proxy_sessions_.pop_back();
+        quic_session_pool->DeactivateSessionForTesting(session);
       }
       EXPECT_EQ(1, quic_session_pool->CountActiveSessions());
       quic_session_pool->CloseAllSessions(OK, quic::QUIC_NO_ERROR);

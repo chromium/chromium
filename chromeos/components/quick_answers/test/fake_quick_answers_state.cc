@@ -67,6 +67,11 @@ void FakeQuickAnswersState::SetUnitConversionEligible(bool eligible) {
                                      eligible);
 }
 
+void FakeQuickAnswersState::OverrideFeatureType(
+    QuickAnswersState::FeatureType feature_type) {
+  feature_type_ = feature_type;
+}
+
 void FakeQuickAnswersState::AsyncWriteConsentUiImpressionCount(int32_t count) {
   consent_ui_impression_count_ = count;
 }
@@ -80,4 +85,13 @@ void FakeQuickAnswersState::AsyncWriteEnabled(bool enabled) {
   quick_answers_enabled_ = enabled;
 
   MaybeNotifyIsEnabledChanged();
+}
+
+base::expected<QuickAnswersState::FeatureType, QuickAnswersState::Error>
+FakeQuickAnswersState::GetFeatureTypeExpected() const {
+  if (feature_type_) {
+    return feature_type_.value();
+  }
+
+  return QuickAnswersState::GetFeatureTypeExpected();
 }

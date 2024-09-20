@@ -25,7 +25,7 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './certificate_list_v2.html.js';
-import type {CertificateSource, ImportResult, SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
+import type {ActionResult, CertificateSource, SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
 
 const CertificateListV2ElementBase = I18nMixin(PolymerElement);
@@ -35,6 +35,7 @@ export interface CertificateListV2Element {
     certs: CrCollapseElement,
     exportCerts: HTMLElement,
     importCert: HTMLElement,
+    importAndBindCert: HTMLElement,
     noCertsRow: HTMLElement,
     listHeader: HTMLElement,
     expandButton: HTMLElement,
@@ -55,6 +56,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
       certSource: Number,
       headerText: String,
       showImport: Boolean,
+      showImportAndBind: Boolean,
 
       // True if the list should not be collapsible.
       // Empty lists will always not be collapsible.
@@ -89,6 +91,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
   certSource: CertificateSource;
   headerText: string;
   showImport: boolean = false;
+  showImportAndBind: boolean = false;
   hideExport: boolean = false;
   hideHeader: boolean = false;
   inSubpage: boolean = false;
@@ -131,15 +134,33 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
     e.stopPropagation();
     CertificatesV2BrowserProxy.getInstance()
         .handler.importCertificate(this.certSource)
-        .then((value: {result: ImportResult|null}) => {
-          if (value.result !== null && value.result.success !== undefined) {
-            // On successful import, refresh the certificate list.
-            this.refreshCertificates();
-          }
-          this.dispatchEvent(new CustomEvent(
-              'import-result',
-              {composed: true, bubbles: true, detail: value.result}));
-        });
+        .then(this.handleImportResult.bind(this));
+  }
+
+  private onImportAndBindCertClick_(e: Event) {
+    // Import button click shouldn't collapse the list as well.
+    e.stopPropagation();
+    CertificatesV2BrowserProxy.getInstance()
+        .handler.importAndBindCertificate(this.certSource)
+        .then(this.handleImportResult.bind(this));
+  }
+
+  private handleImportResult(value: {result: ActionResult|null}) {
+    if (value.result !== null && value.result.success !== undefined) {
+      // On successful import, refresh the certificate list.
+      this.refreshCertificates();
+    }
+    this.dispatchEvent(new CustomEvent(
+        'import-result',
+        {composed: true, bubbles: true, detail: value.result}));
+  }
+
+  private onDeleteResult_(e: CustomEvent<ActionResult|null>) {
+    const result = e.detail;
+    if (result !== null && result.success !== undefined) {
+      // On successful deletion, refresh the certificate list.
+      this.refreshCertificates();
+    }
   }
 
   private computeHasCerts_(): boolean {

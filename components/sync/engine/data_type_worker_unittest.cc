@@ -1286,8 +1286,7 @@ TEST_F(DataTypeWorkerTest, ReceiveDecryptableEntities) {
 
 // Test the receipt of decryptable entities, and that the worker will keep the
 // entities until the decryption key arrives.
-TEST_F(DataTypeWorkerTest,
-       ReceiveDecryptableEntitiesShouldWaitTillKeyArrives) {
+TEST_F(DataTypeWorkerTest, ReceiveDecryptableEntitiesShouldWaitTillKeyArrives) {
   NormalInitialize();
 
   // This next update will be encrypted using the second key.
@@ -3037,7 +3036,7 @@ class DataTypeWorkerIncomingPasswordSharingInvitationTest
  public:
   DataTypeWorkerIncomingPasswordSharingInvitationTest()
       : DataTypeWorkerTest(INCOMING_PASSWORD_SHARING_INVITATION,
-                            /*is_encrypted_type=*/false) {}
+                           /*is_encrypted_type=*/false) {}
 };
 
 TEST_F(DataTypeWorkerIncomingPasswordSharingInvitationTest,
@@ -3223,8 +3222,9 @@ TEST_F(DataTypeWorkerAckTrackingTest, OverflowAndRecover) {
     invalidation_ids.push_back(SendInvalidation(i + 10, "hint"));
   }
 
-  for (int id : invalidation_ids)
+  for (int id : invalidation_ids) {
     EXPECT_TRUE(IsInvalidationUnacknowledged(id));
+  }
 
   // This invalidation, though arriving the most recently, has the oldest
   // version number so it should be dropped first.
@@ -3242,8 +3242,9 @@ TEST_F(DataTypeWorkerAckTrackingTest, OverflowAndRecover) {
   // This should recover from the drop and bring us back into sync.
   worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
 
-  for (int id : invalidation_ids)
+  for (int id : invalidation_ids) {
     EXPECT_TRUE(IsInvalidationAcknowledged(id));
+  }
 
   EXPECT_TRUE(IsInvalidationAcknowledged(inv100_id));
 
@@ -3473,7 +3474,7 @@ class DataTypeWorkerSharedTabGroupDataTest : public DataTypeWorkerTest {
  protected:
   DataTypeWorkerSharedTabGroupDataTest()
       : DataTypeWorkerTest(SHARED_TAB_GROUP_DATA,
-                            /*is_encrypted_type=*/false) {
+                           /*is_encrypted_type=*/false) {
     CHECK(SharedTypes().Has(SHARED_TAB_GROUP_DATA));
   }
 };

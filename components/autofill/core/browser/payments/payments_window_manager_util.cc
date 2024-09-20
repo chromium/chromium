@@ -17,7 +17,7 @@
 namespace autofill::payments {
 
 base::expected<PaymentsWindowManager::RedirectCompletionResult,
-               PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult>
+               PaymentsWindowManager::Vcn3dsAuthenticationResult>
 ParseUrlForVcn3ds(const GURL& url,
                   const Vcn3dsChallengeOptionMetadata& metadata) {
   std::string redirect_completion_result;
@@ -46,14 +46,12 @@ ParseUrlForVcn3ds(const GURL& url,
 
   // `is_failure` being true indicates the authentication has failed.
   if (is_failure) {
-    return base::unexpected(
-        PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult::
-            kAuthenticationFailed);
+    return base::unexpected(PaymentsWindowManager::Vcn3dsAuthenticationResult::
+                                kAuthenticationFailed);
   }
 
-  return base::unexpected(
-      PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult::
-          kAuthenticationNotCompleted);
+  return base::unexpected(PaymentsWindowManager::Vcn3dsAuthenticationResult::
+                              kAuthenticationNotCompleted);
 }
 
 PaymentsNetworkInterface::UnmaskRequestDetails
@@ -87,12 +85,14 @@ CreateUnmaskRequestDetailsForVcn3ds(
 }
 
 PaymentsWindowManager::Vcn3dsAuthenticationResponse
-CreateVcn3dsAuthenticationResponse(
+CreateVcn3dsAuthenticationResponseFromServerResult(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const PaymentsNetworkInterface::UnmaskResponseDetails& response_details,
     CreditCard card) {
   PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
   if (result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    response.result =
+        PaymentsWindowManager::Vcn3dsAuthenticationResult::kSuccess;
     card.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
     card.SetExpirationMonthFromString(
         base::UTF8ToUTF16(response_details.expiration_month),
@@ -101,6 +101,9 @@ CreateVcn3dsAuthenticationResponse(
         base::UTF8ToUTF16(response_details.expiration_year));
     card.set_cvc(base::UTF8ToUTF16(response_details.dcvv));
     response.card = std::move(card);
+  } else {
+    response.result = PaymentsWindowManager::Vcn3dsAuthenticationResult::
+        kAuthenticationFailed;
   }
   return response;
 }

@@ -50,11 +50,10 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   TestUnderlyingSource(SourceType source_type,
                        ScriptState* script_state,
                        Vector<int> sequence)
-      : TestUnderlyingSource(
-            source_type,
-            script_state,
-            std::move(sequence),
-            ScriptPromiseUntyped::CastUndefined(script_state)) {}
+      : TestUnderlyingSource(source_type,
+                             script_state,
+                             std::move(sequence),
+                             ToResolvedUndefinedPromise(script_state)) {}
   ~TestUnderlyingSource() override = default;
 
   ScriptPromiseUntyped Start(ScriptState* script_state,
@@ -72,22 +71,22 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   ScriptPromiseUntyped Pull(ScriptState* script_state,
                             ExceptionState&) override {
     if (type_ == SourceType::kPush) {
-      return ScriptPromiseUntyped::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
     if (index_ == sequence_.size()) {
       Controller()->Close();
-      return ScriptPromiseUntyped::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
     EnqueueOrError(script_state, sequence_[index_]);
     ++index_;
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
   ScriptPromiseUntyped Cancel(ScriptState* script_state,
                               ScriptValue reason,
                               ExceptionState&) override {
     cancelled_ = true;
     cancel_reason_ = reason;
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   bool IsStarted() const { return started_; }

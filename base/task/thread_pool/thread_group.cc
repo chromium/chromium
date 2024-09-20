@@ -14,7 +14,6 @@
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/com_init_check_hook.h"
@@ -54,7 +53,7 @@ constexpr TimeDelta kBackgroundMayBlockThreshold = Seconds(10);
 constexpr TimeDelta kBackgroundBlockedWorkersPoll = Seconds(12);
 
 // ThreadGroup that owns the current thread, if any.
-ABSL_CONST_INIT thread_local const ThreadGroup* current_thread_group = nullptr;
+constinit thread_local const ThreadGroup* current_thread_group = nullptr;
 
 }  // namespace
 

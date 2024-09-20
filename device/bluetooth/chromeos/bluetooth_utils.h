@@ -208,6 +208,9 @@ DEVICE_BLUETOOTH_EXPORT void MaybeRecordConnectionToastShownCount(
     bool triggered_by_connect);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+DEVICE_BLUETOOTH_EXPORT void RecordFlossManagerClientInit(
+    bool success,
+    base::TimeDelta duration);
 }  // namespace device
 
 #endif  // DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_

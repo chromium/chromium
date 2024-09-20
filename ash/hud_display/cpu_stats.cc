@@ -7,6 +7,7 @@
 #include <cinttypes>
 #include <cstdio>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
@@ -30,9 +31,7 @@ std::string ReadProcFile(const base::FilePath& path) {
 CpuStats GetProcStatCPU() {
   const std::string stat = ReadProcFile(base::FilePath(kProcStatFile));
   // First string should be total Cpu statistics.
-  if (!base::StartsWith(stat, "cpu ", base::CompareCase::SENSITIVE)) {
-    NOTREACHED();
-  }
+  CHECK(base::StartsWith(stat, "cpu ", base::CompareCase::SENSITIVE));
   const size_t newline_pos = stat.find('\n');
   if (newline_pos == std::string::npos) {
     NOTREACHED();

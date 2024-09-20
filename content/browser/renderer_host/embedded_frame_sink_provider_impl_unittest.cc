@@ -98,6 +98,7 @@ class StubEmbeddedFrameSinkClient
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id) override {
     last_received_local_surface_id_ = local_surface_id;
   }
+  void OnOpacityChanged(bool opacity) override {}
 
   mojo::Receiver<blink::mojom::SurfaceEmbedder> surface_embedder_receiver_{
       this};

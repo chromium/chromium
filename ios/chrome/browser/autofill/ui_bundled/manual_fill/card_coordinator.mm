@@ -9,6 +9,7 @@
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_view_controller.h"
@@ -76,11 +77,10 @@
     _cardViewController = [[CardViewController alloc] init];
     _reauthenticationModule = reauthenticationModule;
 
-    // Service must use regular browser state, even if the Browser has an
-    // OTR browser state.
-    _personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            super.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+    // Service must use regular profile, even if the Browser has an
+    // OTR profile.
+    _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(
+        super.browser->GetProfile()->GetOriginalProfile());
     CHECK(_personalDataManager);
 
     _cardMediator = [[ManualFillCardMediator alloc]
@@ -92,8 +92,7 @@
     _cardMediator.consumer = _cardViewController;
 
     _cardRequester = [[ManualFillFullCardRequester alloc]
-        initWithBrowserState:super.browser->GetBrowserState()
-                                 ->GetOriginalChromeBrowserState()
+        initWithBrowserState:super.browser->GetProfile()->GetOriginalProfile()
                 webStateList:super.browser->GetWebStateList()
               resultDelegate:_cardMediator];
     _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
@@ -124,24 +123,30 @@
   }];
 }
 
-- (void)openCardDetails:(const autofill::CreditCard*)card
-             inEditMode:(BOOL)editMode {
+- (void)openCardDetails:(autofill::CreditCard)card inEditMode:(BOOL)editMode {
   CHECK(_personalDataManager);
-  if (card->record_type() == autofill::CreditCard::RecordType::kLocalCard &&
+  if (card.record_type() == autofill::CreditCard::RecordType::kLocalCard &&
       _personalDataManager->payments_data_manager()
           .IsPaymentMethodsMandatoryReauthEnabled() &&
       [_reauthenticationModule canAttemptReauth]) {
-    NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
-    auto completionHandler = ^(ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        [self didTriggerOpenCardDetails:card inEditMode:editMode];
-      }
-    };
+    NSString* reason = l10n_util::GetNSString(
+        IDS_PAYMENTS_AUTOFILL_SETTINGS_EDIT_MANDATORY_REAUTH);
 
+    __weak __typeof(self) weakSelf = self;
+    auto callback = base::BindOnce(
+        [](__weak __typeof(self) weak_self, autofill::CreditCard card,
+           BOOL edit_mode, ReauthenticationResult result) {
+          if (result != ReauthenticationResult::kFailure) {
+            [weak_self didTriggerOpenCardDetails:std::move(card)
+                                      inEditMode:edit_mode];
+          }
+        },
+        weakSelf, std::move(card), editMode);
     [_reauthenticationModule
         attemptReauthWithLocalizedReason:reason
                     canReusePreviousAuth:YES
-                                 handler:completionHandler];
+                                 handler:base::CallbackToBlock(
+                                             std::move(callback))];
     return;
   }
 
@@ -159,12 +164,11 @@
                     fieldType:(manual_fill::PaymentFieldType)fieldType {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    if (!weakSelf)
-      return;
-    const autofill::CreditCard* autofillCreditCard =
+    std::optional<const autofill::CreditCard> autofillCreditCard =
         [weakSelf.cardMediator findCreditCardfromGUID:card.GUID];
-    if (!autofillCreditCard)
+    if (!autofillCreditCard) {
       return;
+    }
     [weakSelf.cardRequester requestFullCreditCard:*autofillCreditCard
                            withBaseViewController:weakSelf.baseViewController
                                        recordType:card.recordType
@@ -176,21 +180,25 @@
   [_dispatcher
       openURLInNewTab:[OpenNewTabCommand
                           commandWithURLFromChrome:url.gurl
-                                       inIncognito:self.browser
-                                                       ->GetBrowserState()
+                                       inIncognito:self.browser->GetProfile()
                                                        ->IsOffTheRecord()]];
 }
 
 #pragma mark - Private
 
-- (void)didTriggerOpenCardDetails:(const autofill::CreditCard*)card
+- (void)didTriggerOpenCardDetails:(autofill::CreditCard)card
                        inEditMode:(BOOL)editMode {
   __weak __typeof(self) weakSelf = self;
-  [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate cardCoordinator:weakSelf
-             didTriggerOpenCardDetails:card
-                            inEditMode:editMode];
-  }];
+  auto callback = base::BindOnce(
+      [](__weak __typeof(self) weak_self, autofill::CreditCard card,
+         BOOL edit_mode) {
+        [weak_self.delegate cardCoordinator:weak_self
+                  didTriggerOpenCardDetails:std::move(card)
+                                 inEditMode:edit_mode];
+      },
+      weakSelf, std::move(card), editMode);
+  [self dismissIfNecessaryThenDoCompletion:base::CallbackToBlock(
+                                               std::move(callback))];
 }
 
 @end

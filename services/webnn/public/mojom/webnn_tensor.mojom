@@ -10,38 +10,38 @@ import "services/webnn/public/mojom/webnn_error.mojom";
 
 // A struct is used to represent MLTensorUsageFlags since Mojo does not have
 // the concept of an enum set (see https://crbug.com/40130879#comment11).
-struct BufferUsage {
+struct TensorUsage {
   bool web_gpu_interop;
-  // This buffer can be used with readBuffer().
-  bool read_from;
-  // This buffer can be used with writeBuffer().
-  bool write_to;
+  // This tensor can be used with readTensor().
+  bool read;
+  // This tensor can be used with writeTensor().
+  bool write;
 };
 
 // Description of the WebNNTensor to create.
-struct BufferInfo {
+struct TensorInfo {
   OperandDescriptor descriptor;
-  BufferUsage usage;
+  TensorUsage usage;
 };
 
-// Represents the return value of `ReadBuffer()`. Let it be
+// Represents the return value of `ReadTensor()`. Let it be
 // `buffer` if the buffer was successfully read back and `error` otherwise.
-union ReadBufferResult {
+union ReadTensorResult {
   mojo_base.mojom.BigBuffer buffer;
   Error error;
 };
 
 // WebNNTensor creates memory in the GPU process and is used by the renderer
 // process to execute or transfer data for the computational graph.
-// Buffer creation is performed by calling hardware accelerated OS machine
+// Tensor creation is performed by calling hardware accelerated OS machine
 // learning APIs.
 interface WebNNTensor {
   // Called by the renderer process to carryout reading data from a
   // `WebNNTensor`. The result callback contains a copy of the data being
   // read.
-  ReadBuffer() => (ReadBufferResult result);
+  ReadTensor() => (ReadTensorResult result);
 
   // Called by the renderer process to carryout writing to a `WebNNTensor`.
   // The src_buffer is a BigBuffer representing the data to write from.
-  WriteBuffer(mojo_base.mojom.BigBuffer src_buffer);
+  WriteTensor(mojo_base.mojom.BigBuffer src_buffer);
 };

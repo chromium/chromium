@@ -29,11 +29,6 @@ BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 #endif  // BUILDFLAG(IS_WIN)
 );
 
-// Enables icon in titlebar for web apps.
-BASE_FEATURE(kWebAppIconInTitlebar,
-             "WebAppIconInTitlebar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
 BASE_FEATURE(kChromeLabs, "ChromeLabs", base::FEATURE_ENABLED_BY_DEFAULT);
 const char kChromeLabsActivationParameterName[] =
@@ -112,11 +107,6 @@ BASE_FEATURE(kFewerUpdateConfirmations,
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Enables showing the "Get the most out of Chrome" section in settings.
-BASE_FEATURE(kGetTheMostOutOfChrome,
-             "GetTheMostOutOfChrome",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This feature controls whether the user can be shown the Chrome for iOS promo
 // when saving or updating passwords.
 BASE_FEATURE(kIOSPromoRefreshedPasswordBubble,
@@ -209,11 +199,7 @@ const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload{
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              "PressAndHoldEscToExitBrowserFullscreen",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 #endif
 
@@ -336,6 +322,10 @@ BASE_FEATURE(kTabOrganizationModelStrategy,
              "TabOrganizationModelStrategy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabOrganizationEnableNudgeForEnterprise,
+             "TabOrganizationEnableNudgeForEnterprise",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod{
     &kTabOrganization, "trigger_period", base::Hours(6)};
 
@@ -390,12 +380,6 @@ bool IsToolbarPinningEnabled() {
 }
 #endif
 
-// Controls whether top chrome pages will use the spare renderer if no top
-// chrome renderers are present.
-BASE_FEATURE(kTopChromeWebUIUsesSpareRenderer,
-             "TopChromeWebUIUsesSpareRenderer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables alternate update-related text to be displayed in browser app menu
 // button, menu item and confirmation dialog.
@@ -427,12 +411,6 @@ BASE_FEATURE(kManagementToolbarButtonForTrustedManagementSources,
 
 BASE_FEATURE(kEnterpriseUpdatedProfileCreationScreen,
              "EnterpriseUpdatedProfileCreationScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This enables enables persistence of a WebContents in a 1-to-1 association
-// with the current Profile for WebUI bubbles. See https://crbug.com/1177048.
-BASE_FEATURE(kWebUIBubblePerProfilePersistence,
-             "WebUIBubblePerProfilePersistence",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a web-based tab strip. See https://crbug.com/989131. Note this
@@ -481,5 +459,9 @@ BASE_FEATURE(kUsePortalAccentColor,
 #endif
 
 BASE_FEATURE(kCompactMode, "CompactMode", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection,
+             "PageSpecificDataDialogRelatedInstalledAppsSection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

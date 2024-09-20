@@ -17,6 +17,7 @@ static_library("echo_private") {
     "//base:i18n",
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/chromeos/echo",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",

@@ -7,12 +7,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_writer_create_options.h"
-#include "third_party/blink/renderer/core/dom/abort_signal.h"
-#include "third_party/blink/renderer/modules/ai/ai.h"
+#include "third_party/blink/renderer/modules/ai/ai_mojo_session_create_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_writer.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -25,30 +23,20 @@ const char kExceptionMessageUnableToCreateWriter[] =
 
 class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
                            public mojom::blink::AIManagerCreateWriterClient,
-                           public ContextLifecycleObserver {
+                           public AIMojoSessionCreateClient<AIWriter> {
  public:
   CreateWriterClient(AI* ai,
                      ScriptPromiseResolver<AIWriter>* resolver,
                      AbortSignal* signal,
                      String shared_context_string)
-      : ai_(ai),
+      : AIMojoSessionCreateClient(ai, resolver, signal),
         receiver_(this, ai->GetExecutionContext()),
-        resolver_(resolver),
-        shared_context_string_(shared_context_string),
-        abort_signal_(signal) {
-    CHECK(resolver_);
-    SetContextLifecycleNotifier(ai->GetExecutionContext());
-    if (abort_signal_) {
-      CHECK(!abort_signal_->aborted());
-      abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
-          &CreateWriterClient::OnAborted, WrapWeakPersistent(this)));
-    }
-
+        shared_context_string_(shared_context_string) {
     mojo::PendingRemote<mojom::blink::AIManagerCreateWriterClient>
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    ai_->GetAIRemote()->CreateWriter(
+    GetAI()->GetAIRemote()->CreateWriter(
         std::move(client_remote),
         mojom::blink::AIWriterCreateOptions::New(shared_context_string_));
   }
@@ -58,62 +46,31 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
   CreateWriterClient& operator=(const CreateWriterClient&) = delete;
 
   void Trace(Visitor* visitor) const override {
-    ContextLifecycleObserver::Trace(visitor);
-    visitor->Trace(ai_);
+    AIMojoSessionCreateClient::Trace(visitor);
     visitor->Trace(receiver_);
-    visitor->Trace(resolver_);
-    visitor->Trace(abort_signal_);
-    visitor->Trace(abort_handle_);
   }
 
   void OnResult(mojo::PendingRemote<mojom::blink::AIWriter> writer) override {
-    if (!resolver_) {
+    if (!GetResolver()) {
       return;
     }
     if (writer) {
-      resolver_->Resolve(MakeGarbageCollected<AIWriter>(
-          ai_->GetExecutionContext(), ai_->GetTaskRunner(), std::move(writer),
-          shared_context_string_));
+      GetResolver()->Resolve(MakeGarbageCollected<AIWriter>(
+          GetAI()->GetExecutionContext(), GetAI()->GetTaskRunner(),
+          std::move(writer), shared_context_string_));
     } else {
-      resolver_->Reject(DOMException::Create(
+      GetResolver()->Reject(DOMException::Create(
           kExceptionMessageUnableToCreateWriter,
           DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
     }
-  }
-
-  // ContextLifecycleObserver methods
-  void ContextDestroyed() override { Cleanup(); }
-
- private:
-  void OnAborted() {
-    if (!resolver_) {
-      return;
-    }
-    resolver_->Reject(DOMException::Create(
-        "Aborted", DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
     Cleanup();
   }
 
-  void Cleanup() {
-    resolver_ = nullptr;
-    keep_alive_.Clear();
-    receiver_.reset();
-    if (abort_handle_) {
-      abort_signal_->RemoveAlgorithm(abort_handle_);
-      abort_handle_ = nullptr;
-    }
-  }
-
-  Member<AI> ai_;
+ private:
   HeapMojoReceiver<mojom::blink::AIManagerCreateWriterClient,
                    CreateWriterClient>
       receiver_;
-  // `resolver_` will be reset on Cleanup().
-  Member<ScriptPromiseResolver<AIWriter>> resolver_;
   const String shared_context_string_;
-  SelfKeepAlive<CreateWriterClient> keep_alive_{this};
-  Member<AbortSignal> abort_signal_;
-  Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
 
 }  // namespace
@@ -138,7 +95,7 @@ ScriptPromise<AIWriter> AIWriterFactory::create(
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError, "Aborted");
+    ThrowAbortedException(exception_state);
     return ScriptPromise<AIWriter>();
   }
   auto* resolver =

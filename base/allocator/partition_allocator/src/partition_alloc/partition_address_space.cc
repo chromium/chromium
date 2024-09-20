@@ -80,7 +80,7 @@ PA_NOINLINE void HandlePoolAllocFailure() {
 
 }  // namespace
 
-PartitionAddressSpace::PoolSetup PartitionAddressSpace::setup_;
+PA_CONSTINIT PartitionAddressSpace::PoolSetup PartitionAddressSpace::setup_;
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
 std::ptrdiff_t PartitionAddressSpace::regular_pool_shadow_offset_ = 0;

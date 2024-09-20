@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/constants.h"
+#include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/display/overdraw_tracker.h"
@@ -75,7 +76,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       public mojom::FrameSinksMetricsRecorder,
       public mojom::FrameSinkManagerTestApi,
       public HitTestAggregatorDelegate,
-      public SurfaceManagerDelegate {
+      public SurfaceManagerDelegate,
+      public HitTestDataProvider {
  public:
   struct VIZ_SERVICE_EXPORT InitParams {
     InitParams();
@@ -209,6 +211,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // SurfaceObserver implementation.
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;
 
+  void UpdateHitTestRegionData(
+      const FrameSinkId& frame_sink_id,
+      const std::vector<AggregatedHitTestRegion>& hit_test_data);
+
   // HitTestAggregatorDelegate implementation:
   void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
@@ -218,6 +224,13 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   std::string_view GetFrameSinkDebugLabel(
       const FrameSinkId& frame_sink_id) const override;
   void AggregatedFrameSinksChanged() override;
+
+  // HitTestDataProvider implementation.
+  // This is required to allow RenderWidgetHostInputEventRouter to find target
+  // view synchronously with InputVizard.
+  void AddHitTestRegionObserver(HitTestRegionObserver* observer) override;
+  void RemoveHitTestRegionObserver(HitTestRegionObserver* observer) override;
+  const DisplayHitTestQueryMap& GetDisplayHitTestQuery() const override;
 
   // CompositorFrameSinkSupport, hierarchy, and BeginFrameSource can be
   // registered and unregistered in any order with respect to each other.
@@ -425,6 +438,11 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // descendants.
   void ClearThrottling(const FrameSinkId& id);
 
+  // Clears HitTestQuery stored for |frame_sink_id| in
+  // `display_hit_test_query_` when `InputOnViz` flag is enabled.
+  void MaybeEraseHitTestQuery(const FrameSinkId& frame_sink_id);
+  void MaybeAddHitTestQuery(const FrameSinkId& frame_sink_id);
+
   // SharedBitmapManager for the viz display service for receiving software
   // resources in CompositorFrameSinks.
   const raw_ptr<SharedBitmapManager> shared_bitmap_manager_;
@@ -459,6 +477,11 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   DebugRendererSettings debug_settings_;
 
   base::ProcessId host_process_id_;
+
+  DisplayHitTestQueryMap display_hit_test_query_;
+
+  // List of observers caring about updates to HitTest regions.
+  base::ObserverList<HitTestRegionObserver> hit_test_region_observers_;
 
   // Performance hint session factory of this viz instance.
   const raw_ptr<HintSessionFactory> hint_session_factory_;

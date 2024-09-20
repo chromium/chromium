@@ -25,6 +25,7 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     "//base:base_java",
+    "//chrome/browser/privacy:privacy_preference_manager_java",
     "//chrome/browser/profiles/android:java",
   ]
 

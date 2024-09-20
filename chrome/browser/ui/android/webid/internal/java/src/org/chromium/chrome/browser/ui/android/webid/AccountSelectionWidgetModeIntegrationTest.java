@@ -23,13 +23,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Integration tests for the Account Selection Widget Mode component check that the calls to the
@@ -55,12 +55,9 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);

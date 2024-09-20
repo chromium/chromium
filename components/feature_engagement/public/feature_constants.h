@@ -64,7 +64,6 @@ BASE_DECLARE_FEATURE(kIPHReadingListEntryPointFeature);
 BASE_DECLARE_FEATURE(kIPHReadingListInSidePanelFeature);
 BASE_DECLARE_FEATURE(kIPHReadingModeSidePanelFeature);
 BASE_DECLARE_FEATURE(kIPHShoppingCollectionFeature);
-BASE_DECLARE_FEATURE(kIPHSidePanelGenericMenuFeature);
 BASE_DECLARE_FEATURE(kIPHSidePanelGenericPinnableFeature);
 BASE_DECLARE_FEATURE(kIPHSidePanelLensOverlayPinnableFeature);
 BASE_DECLARE_FEATURE(kIPHSidePanelLensOverlayPinnableFollowupFeature);
@@ -112,6 +111,9 @@ BASE_DECLARE_FEATURE(kIPHContextualPageActionsActionChipFeature);
 BASE_DECLARE_FEATURE(kIPHDataSaverDetailFeature);
 BASE_DECLARE_FEATURE(kIPHDataSaverMilestonePromoFeature);
 BASE_DECLARE_FEATURE(kIPHDataSaverPreviewFeature);
+BASE_DECLARE_FEATURE(kIPHDefaultBrowserPromoMagicStackFeature);
+BASE_DECLARE_FEATURE(kIPHDefaultBrowserPromoMessagesFeature);
+BASE_DECLARE_FEATURE(kIPHDefaultBrowserPromoSettingCardFeature);
 BASE_DECLARE_FEATURE(kIPHDownloadHomeFeature);
 BASE_DECLARE_FEATURE(kIPHDownloadIndicatorFeature);
 BASE_DECLARE_FEATURE(kIPHDownloadPageFeature);
@@ -156,7 +158,6 @@ BASE_DECLARE_FEATURE(kIPHTabGroupsQuicklyComparePagesFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsTapToSeeAnotherTabFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupCreationDialogSyncTextFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupSyncOnStripFeature);
-BASE_DECLARE_FEATURE(kIPHTabGroupsYourTabsAreTogetherFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsDragAndDropFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsRemoteGroupFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsSurfaceFeature);
@@ -236,6 +237,7 @@ BASE_DECLARE_FEATURE(kIPHiOSSavedTabGroupClosed);
 BASE_DECLARE_FEATURE(kIPHiOSContextualPanelSampleModelFeature);
 BASE_DECLARE_FEATURE(kIPHiOSContextualPanelPriceInsightsFeature);
 BASE_DECLARE_FEATURE(kIPHHomeCustomizationMenuFeature);
+BASE_DECLARE_FEATURE(kIPHiOSLensOverlayEntrypointTipFeature);
 
 // A feature flag to enable and parametrize the sliding window of time for a
 // user's eligibility to be shown a default browser promo. This is not an FET

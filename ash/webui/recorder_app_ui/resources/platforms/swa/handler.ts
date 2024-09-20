@@ -19,6 +19,7 @@ import {nothing} from 'chrome://resources/mwc/lit/index.js';
 import {NoArgStringName} from '../../core/i18n.js';
 import {InternalMicInfo} from '../../core/microphone_manager.js';
 import {ModelState} from '../../core/on_device_model/types.js';
+import {PerfLogger} from '../../core/perf.js';
 import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
@@ -27,6 +28,7 @@ import {SodaSession} from '../../core/soda/types.js';
 import {assertInstanceof} from '../../core/utils/assert.js';
 import {parseTopFrameInfo} from '../../core/utils/errors.js';
 
+import {EventsSender} from './metrics.js';
 import {
   mojoModelStateToModelState,
   SummaryModelLoader,
@@ -64,6 +66,12 @@ export class PlatformHandler extends PlatformHandlerBase {
     return loadTimeData.getStringF(id, ...args);
   }
 
+  override readonly canCaptureSystemAudioWithLoopback = signal(false);
+
+  override readonly eventsSender = new EventsSender();
+
+  override perfLogger = new PerfLogger(this.eventsSender);
+
   constructor() {
     super();
     this.summaryModelLoader = new SummaryModelLoader(this.remote);
@@ -86,6 +94,9 @@ export class PlatformHandler extends PlatformHandlerBase {
 
     this.canUseSpeakerLabel.value =
       (await this.remote.canUseSpeakerLabelForCurrentProfile()).supported;
+
+    this.canCaptureSystemAudioWithLoopback.value =
+      (await this.remote.canCaptureSystemAudioWithLoopback()).supported;
 
     const update = (state: MojoModelState) => {
       this.sodaState.value = mojoModelStateToModelState(state);
@@ -178,6 +189,8 @@ export class PlatformHandler extends PlatformHandlerBase {
       video: false,
       audio: {
         autoGainControl: {ideal: false},
+        echoCancellation: {ideal: false},
+        noiseSuppression: {ideal: false},
       },
       systemAudio: 'include',
     });

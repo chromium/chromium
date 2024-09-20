@@ -8,10 +8,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
+#include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -344,6 +346,45 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest, GetAuthError) {
   EXPECT_EQ(
       GoogleServiceAuthError::AuthErrorNone(),
       oauth2_delegate_->GetAuthError(CoreAccountId::FromGaiaId("gaia_2")));
+}
+
+TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest,
+       OnAuthErrorChangedAfterUpdatingCredentials) {
+  // Initialize delegate with an empty list of accounts.
+  oauth2_delegate_->LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
+  ProviderAccount account1 = fake_provider_->AddAccount("gaia_1", "email_1@x");
+  CoreAccountId account_id = GetAccountId(account1);
+  testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver> observer(
+      oauth2_delegate_.get());
+
+  {
+    testing::InSequence in_sequence;
+    base::RunLoop run_loop;
+    // `OnAuthErrorChanged()` is called *before* `OnRefreshTokenAvailable()`
+    // after adding a new account on iOS.
+    EXPECT_CALL(
+        observer,
+        OnAuthErrorChanged(account_id, GoogleServiceAuthError::AuthErrorNone(),
+                           testing::_));
+    EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id))
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    EXPECT_CALL(observer, OnEndBatchChanges());
+    oauth2_delegate_->ReloadAllAccountsFromSystemWithPrimaryAccount(
+        std::nullopt);
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    testing::InSequence in_sequence;
+    // No observer methods are called when a token is updated without changing
+    // its error state.
+    EXPECT_CALL(observer, OnAuthErrorChanged).Times(0);
+    EXPECT_CALL(observer, OnRefreshTokenAvailable).Times(0);
+    EXPECT_CALL(observer, OnEndBatchChanges).Times(0);
+    oauth2_delegate_->AddOrUpdateAccount(account_id);
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
 }
 
 // Tests that ProfileOAuth2TokenServiceIOSDelegate loads credentials when there

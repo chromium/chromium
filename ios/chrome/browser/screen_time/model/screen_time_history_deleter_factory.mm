@@ -14,10 +14,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-ScreenTimeHistoryDeleter* ScreenTimeHistoryDeleterFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+ScreenTimeHistoryDeleter* ScreenTimeHistoryDeleterFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<ScreenTimeHistoryDeleter*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -43,17 +43,16 @@ ScreenTimeHistoryDeleterFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
   return std::make_unique<ScreenTimeHistoryDeleter>(history_service);
 }
 
 web::BrowserState* ScreenTimeHistoryDeleterFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
+  return GetProfileRedirectedInIncognito(context);
 }
 
 bool ScreenTimeHistoryDeleterFactory::ServiceIsNULLWhileTesting() const {

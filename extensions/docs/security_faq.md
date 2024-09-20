@@ -432,6 +432,21 @@ extensions, downloading and executing a native binary, or executing custom
 code outside the sandbox should not be possible for an extension with the
 debugger permission.
 
+### What security does the Native Messaging API provide?
+
+The [Native Messaging API](https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging)
+is not a secure communication channel and if required, secure communication
+between the extension and a native app must be established by the extension
+developer with an additional transport layer.
+
+The JSON files contained in the NativeMessagingHosts folder support an
+`allowed_origins` key. Chrome will not allow an extension to communicate with a
+host unless the extension ID is listed here. However, an extension from outside
+of the Chrome Web Store can easily use an arbitrary ID with the [`key`](https://developer.chrome.com/docs/extensions/reference/manifest/key)
+field, and other binaries on a machine could launch the Native Messaging Host
+and communicate with it. Both of these are outside of Chrome's security model
+which [does not consider physically-local attacks to be security bugs][physically-local-attacks].
+
 ### I've found a security bug in an extension. Is this a security bug in Chromium?
 
 This depends on the extension.

@@ -6,10 +6,14 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 
 #include <optional>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
@@ -90,6 +94,12 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
       content::WebContents* old_web_contents,
       content::WebContents* new_web_contents) override;
 
+  // This is done separately from the ctor since WebAppTabHelper is created
+  // before the TabFeatures infrastructure.
+  // TODO(crbug.com/367362321): Migrate WebAppTabHelper to TabFeatures
+  // infrastructure.
+  void InitForTabFeatures(tabs::TabInterface* tab);
+
  private:
   friend class WebAppAudioFocusBrowserTest;
   friend class content::WebContentsUserData<WebAppTabHelper>;
@@ -101,6 +111,12 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   void OnWebAppWillBeUninstalled(
       const webapps::AppId& uninstalled_app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
+
+  // Bounded callbacks from TabInterface
+  void TabDidEnterForeground(tabs::TabInterface* tab);
+  void TabWillEnterBackground(tabs::TabInterface* tab);
+  void WillDetach(tabs::TabInterface* tab,
+                  tabs::TabInterface::DetachReason reason);
 
   void ResetAppId();
 
@@ -148,6 +164,11 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       observation_{this};
   raw_ptr<WebAppProvider> provider_ = nullptr;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  base::WeakPtrFactory<WebAppTabHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

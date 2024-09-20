@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/profile_value_source.h"
@@ -39,6 +40,16 @@ enum class IsMostRecentSingleUsernameCandidate {
   // Field is candidate for username in Username First Flow and has intermediate
   // fields between candidate and password form.
   kHasIntermediateValuesInBetween = 2,
+};
+
+// Specifies which type of field value is desired from AutofillField::value().
+// TODO: crbug.com/40227496 - Remove together with `value(ValueSemantics)`.
+enum class ValueSemantics {
+  // The field's last known value or the field's value to be filled:
+  // FormFieldData::value().
+  kCurrent,
+  // The field's first known value.
+  kInitial,
 };
 
 class AutofillField : public FormFieldData {
@@ -118,6 +129,15 @@ class AutofillField : public FormFieldData {
   void set_possible_profile_value_sources(
       PossibleProfileValueSources possible_profile_value_sources) {
     possible_profile_value_sources_ = std::move(possible_profile_value_sources);
+  }
+
+  std::optional<ProfileValueSource> assumed_profile_value_source() const {
+    return assumed_profile_value_source_;
+  }
+
+  void set_assumed_profile_value_source(
+      std::optional<ProfileValueSource> value_source) {
+    assumed_profile_value_source_ = value_source;
   }
 
   void SetHtmlType(HtmlFieldType type, HtmlFieldMode mode);
@@ -215,14 +235,53 @@ class AutofillField : public FormFieldData {
   // should be suppressed for this field (independently of the predicted type).
   bool ShouldSuppressSuggestionsAndFillingByDefault() const;
 
+  // Returns the requested current or initial value depending on the
+  // `ValueSemantics`, if `features::kAutofillFixValueSemantics` is enabled.
+  // Otherwise just forwards to `FormFieldData::value().
+  //
+  // Currently, `value(ValueSemantics::kInitial)` is the empty string for fields
+  // of FormControlType::kSelect*.
+  // TODO: crbug.com/40227496 - Let `value(kInitial)` for select elements behave
+  // the same as for non-select elements.
+  //
+  // TODO: crbug.com/40227496 - When kAutofillFixValueSemantics is cleaned up,
+  // replace
+  // - `value(ValueSemantics::kCurrent)` with `FormFieldData::value()`
+  // - `value(ValueSemantics::kInitial)` with `AutofillField::initial_value()`
+  const std::u16string& value(ValueSemantics s) const;
+
+  // Sets the field's current value, if `features::kAutofillFixValueSemantics`
+  // is enabled. Otherwise just forwards to FormFieldData::set_value().
+  void set_initial_value(std::u16string initial_value,
+                         base::PassKey<FormStructure> pass_key);
+
   void set_initial_value_hash(uint32_t value) { initial_value_hash_ = value; }
   std::optional<uint32_t> initial_value_hash() { return initial_value_hash_; }
 
+  // TODO: crbug.com/40227496 - Remove when kAutofillFixValueSemantics is
+  // cleaned up.
   void set_initial_value_changed(std::optional<bool> initial_value_changed) {
     initial_value_changed_ = initial_value_changed;
   }
   std::optional<bool> initial_value_changed() const {
     return initial_value_changed_;
+  }
+
+  void set_value_identified_as_potentially_sensitive(
+      bool potentially_sensitive) {
+    value_identified_as_potentially_sensitive_ = potentially_sensitive;
+  }
+
+  bool value_identified_as_potentially_sensitive() const {
+    return value_identified_as_potentially_sensitive_;
+  }
+
+  void set_field_is_eligible_for_prediction_improvements(
+      std::optional<bool> eligibily) {
+    field_is_eligible_for_prediction_improvements_ = eligibily;
+  }
+  std::optional<bool> field_is_eligible_for_prediction_improvements() const {
+    return field_is_eligible_for_prediction_improvements_;
   }
 
   void set_credit_card_number_offset(size_t position) {
@@ -408,6 +467,18 @@ class AutofillField : public FormFieldData {
   // profile the matching type was detected.
   PossibleProfileValueSources possible_profile_value_sources_;
 
+  // Holds the assumed profile and type of the `value` found in this field.
+  // The assumed source may be derived by using the
+  // `possible_profile_value_sources_` or the `autofill_source_profile_guid_`.
+  // There are no strong guarantees regarding the consistency between those
+  // different fields. The `nullopt` state indicates that no assumed value
+  // source was identified yet.
+  std::optional<ProfileValueSource> assumed_profile_value_source_;
+
+  // The field's initial value. By default, it's the same as the field's
+  // `value()`, but FormStructure::RetrieveFromCache() may override it.
+  std::u16string initial_value_ = value(ValueSemantics::kCurrent);
+
   // A low-entropy hash of the field's initial value before user-interactions or
   // automatic fillings. This field is used to detect static placeholders.
   std::optional<uint32_t> initial_value_hash_;
@@ -416,8 +487,20 @@ class AutofillField : public FormFieldData {
   // it was changed between page load and form submission. Set to `false` if the
   // pre-filled value wasn't changed. Not set if the field didn't have a
   // pre-filled value.
-  // Currently not implemented for <select> fields.
+  // Set for <select> fields only if kAutofillFixInitialValueOfSelect is
+  // enabled. Always set for <textarea> and <input>.
   std::optional<bool> initial_value_changed_;
+
+  // Indicates if the value contained in the field was identified to potentially
+  // contain sensitive data that should be handled with extra caution.
+  // Note that the 'false' state does not guarantee that the data is not
+  // sensitive, it just means that is wasn't identified as such yet.
+  bool value_identified_as_potentially_sensitive_ = false;
+
+  // Indicates if the field was determined to be eligable for prediction
+  // improvements. The `nullopt` state implies that the eligibility has not been
+  // determined yet.
+  std::optional<bool> field_is_eligible_for_prediction_improvements_;
 
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.

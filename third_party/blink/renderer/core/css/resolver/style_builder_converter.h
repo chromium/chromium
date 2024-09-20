@@ -90,7 +90,8 @@ class StyleBuilderConverterBase {
  public:
   static FontSelectionValue ConvertFontStretch(const CSSLengthResolver&,
                                                const CSSValue&);
-  static FontSelectionValue ConvertFontStyle(const CSSValue&);
+  static FontSelectionValue ConvertFontStyle(const CSSLengthResolver&,
+                                             const CSSValue&);
   static FontSelectionValue ConvertFontWeight(const CSSValue&,
                                               FontSelectionValue);
   static FontDescription::FontVariantCaps ConvertFontVariantCaps(
@@ -201,6 +202,8 @@ class StyleBuilderConverter {
                                             const CSSValue&);
   static NGGridTrackList ConvertGridTrackSizeList(StyleResolverState&,
                                                   const CSSValue&);
+  static std::optional<Length> ConvertMasonrySlack(const StyleResolverState&,
+                                                   const CSSValue&);
   static StyleHyphenateLimitChars ConvertHyphenateLimitChars(
       StyleResolverState&,
       const CSSValue&);
@@ -511,18 +514,28 @@ int StyleBuilderConverter::ConvertIntegerOrNone(StyleResolverState& state,
   return NoneValue;
 }
 
+// Parameter bag for `ResolveColorValue()`. Typical usage will be to construct
+// an instance from a Document just prior to calling that function. Not intended
+// for other uses.
+struct ResolveColorValueContext {
+  STACK_ALLOCATED();
+
+ public:
+  const CSSLengthResolver& length_resolver;
+  const TextLinkColors& text_link_colors;
+  const mojom::blink::ColorScheme used_color_scheme =
+      mojom::blink::ColorScheme::kLight;
+  const ui::ColorProvider* color_provider = nullptr;
+  const bool is_in_web_app_scope = false;
+  const bool for_visited_link = false;
+};
+
 // Returns the computed <color> value for `value`. Note that it's expected that
 // `value` is the result of parsing a <color> value.
 // See: https://drafts.csswg.org/css-color/#resolving-color-values
 CORE_EXPORT StyleColor
-ResolveColorValue(const CSSLengthResolver& length_resolver,
-                  const CSSValue& value,
-                  const TextLinkColors& text_link_colors,
-                  mojom::blink::ColorScheme used_color_scheme,
-                  const ui::ColorProvider* color_provider,
-                  bool is_in_web_app_scope,
-                  bool for_visited_link = false);
-
+ResolveColorValue(const CSSValue& value,
+                  const ResolveColorValueContext& context);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_CONVERTER_H_

@@ -70,7 +70,15 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   void SetProgressBarVisibility(bool is_visible);
 
   // Updates the modal dialog to show error messages.
+  // TODO(crbug.com/363720961): Remove once updated error states are launched -
+  // it will then have been superseded by the methods below.
   void ShowErrorStateUI();
+
+  // Updates the icon in the suggested address box to an error icon and shows an
+  // error message below the suggested plus address container.
+  void ShowCreateErrorMessage(bool is_timeout);
+
+  void HideCreateErrorMessage();
 
   // Updates `plus_address_label_` to indicate that a new address is loading,
   // disables `confirm_button_` and informs the controller.
@@ -84,6 +92,11 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   class PlusAddressContainerView;
   raw_ptr<PlusAddressContainerView> plus_address_container_ = nullptr;
 
+  // A single line error message in red.
+  raw_ptr<views::Label> create_error_message_label_ = nullptr;
+
+  // Label with link for error reporting.
+  // TODO(crbug.com/363720961): Remove once updated error states are launched.
   raw_ptr<views::View> error_report_label_ = nullptr;
 
   // The button for confirming the modal dialog.

@@ -11,7 +11,6 @@ include_rules = [
   "+components/browser_ui/sms/android",
   "+components/browser_ui/util/android/url_constants.h",
   "+components/query_tiles",
-  "+components/sensitive_content",
   "+components/session_proto_db",
   "+components/webapk",
   "+device/vr/buildflags/buildflags.h",
@@ -33,9 +32,5 @@ specific_include_rules = {
   # Allowed for test setup.
   "chrome_entry_point_for_test\.cc": [
     "+chrome/utility/chrome_content_utility_client.h",
-  ],
-  # TODO(b/40284908): Remove this after SeedAccountsRevamp is fully rolled out.
-  "signin_manager_android.cc": [
-    "+components/signin/internal/identity_manager",
   ],
 }

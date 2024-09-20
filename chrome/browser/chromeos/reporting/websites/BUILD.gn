@@ -38,7 +38,6 @@ static_library("websites") {
   deps = [
     "//base",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/chromeos/reporting",
     "//chrome/browser/profiles:profile",
     "//components/prefs",
     "//components/reporting/metrics:metrics_data_collection",
@@ -50,10 +49,6 @@ static_library("websites") {
 
   if (is_chromeos_ash) {
     deps += [ "//chromeos/ash/components/login/session" ]
-  }
-
-  if (is_chromeos_lacros) {
-    allow_circular_includes_from = [ "//chrome/browser/chromeos/reporting" ]
   }
 }
 
@@ -86,7 +81,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/reporting",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
@@ -126,7 +120,6 @@ if (is_chromeos_ash) {
       "//chrome/browser/ash/policy/affiliation:test_support",
       "//chrome/browser/ash/policy/core:test_support",
       "//chrome/browser/ash/profiles",
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/reporting",
       "//chrome/browser/profiles:profile",
       "//chrome/test:test_support",

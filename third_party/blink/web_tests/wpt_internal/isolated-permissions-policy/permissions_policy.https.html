@@ -3,6 +3,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="feature-policy-features-listing.js"></script>
 <script>
+
+// This test verifies that in an isolated context, additional permissions
+// policies appear as expected. There is a non-isolated version of this test
+// at:
+// //third_party/blink/web_tests/webexposed/feature-policy-features.html
+
 'use strict';
 
 const non_isolated_policies = [
@@ -92,6 +98,7 @@ const isolated_policies = [
   'all-screens-capture',
   'controlled-frame',
   'direct-sockets',
+  'direct-sockets-private',
   'smart-card',
   'sub-apps',
   'usb-unrestricted',

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
+
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
@@ -10,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -72,8 +74,9 @@ TEST_F(GuestOsWaylandServerTest, NullDelegateCausesFailure) {
   // when borealis is disallowed.
   base::test::TestFuture<borealis::BorealisFeatures::AllowStatus>
       allowedness_future;
-  borealis::BorealisService::GetForProfile(&profile_)->Features().IsAllowed(
-      allowedness_future.GetCallback());
+  borealis::BorealisServiceFactory::GetForProfile(&profile_)
+      ->Features()
+      .IsAllowed(allowedness_future.GetCallback());
   ASSERT_NE(allowedness_future.Get(),
             borealis::BorealisFeatures::AllowStatus::kAllowed);
 

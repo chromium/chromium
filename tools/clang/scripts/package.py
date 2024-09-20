@@ -445,22 +445,6 @@ def main():
         # pylint: disable=line-too-long
         'bin/llvm-symbolizer.exe',
 
-        # AddressSanitizer C runtime (pure C won't link with *_cxx).
-        'lib/clang/$V/lib/windows/clang_rt.asan-x86_64.lib',
-
-        # AddressSanitizer C++ runtime.
-        'lib/clang/$V/lib/windows/clang_rt.asan_cxx-x86_64.lib',
-
-        # Thunk for AddressSanitizer needed for static build of a shared lib.
-        'lib/clang/$V/lib/windows/clang_rt.asan_dll_thunk-x86_64.lib',
-
-        # AddressSanitizer runtime for component build.
-        'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.dll',
-        'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.lib',
-
-        # Thunk for AddressSanitizer for component build of a shared lib.
-        'lib/clang/$V/lib/windows/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib',
-
         # Builtins for C/C++.
         'lib/clang/$V/lib/windows/clang_rt.builtins-i386.lib',
         'lib/clang/$V/lib/windows/clang_rt.builtins-x86_64.lib',
@@ -479,6 +463,51 @@ def main():
 
         # pylint: enable=line-too-long
     ])
+    # The list of asan libraries we need changes with
+    # https://github.com/llvm/llvm-project/pull/107899.
+    # TODO(https://crbug.com/365980757): move back above after clang roll
+    if os.path.exists(
+        os.path.join(
+            LLVM_RELEASE_DIR,
+            'lib/clang/{}/lib/windows/clang_rt.asan-x86_64.lib'.format(
+                RELEASE_VERSION))):
+      # AddressSanitizer C runtime (pure C won't link with *_cxx).
+      runtime_packages.add('lib/clang/$V/lib/windows/clang_rt.asan-x86_64.lib')
+
+      # AddressSanitizer C++ runtime.
+      runtime_packages.add(
+          'lib/clang/$V/lib/windows/clang_rt.asan_cxx-x86_64.lib')
+
+      # Thunk for AddressSanitizer needed for static build of a shared lib.
+      runtime_packages.add(
+          'lib/clang/$V/lib/windows/clang_rt.asan_dll_thunk-x86_64.lib')
+
+      # AddressSanitizer runtime for component build.
+      runtime_packages.add(
+          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.dll')
+      runtime_packages.add(
+          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.lib')
+
+      # Thunk for AddressSanitizer for component build of a shared lib.
+      runtime_packages.add(
+          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib'
+      )
+    else:
+      # AddressSanitizer runtime.
+      runtime_packages.add(
+          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.dll')
+      runtime_packages.add(
+          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.lib')
+
+      # Thunk for AddressSanitizer for component builds.
+      runtime_packages.add(
+          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib'
+      )
+
+      # Thunk for AddressSanitizer for static builds.
+      runtime_packages.add(
+          'lib/clang/$V/lib/windows/clang_rt.asan_static_runtime_thunk-x86_64.lib'
+      )
     want.update(runtime_packages)
 
   # reclient is a tool for executing programs remotely. When uploading the

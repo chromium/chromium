@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
 
+#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -2232,8 +2233,11 @@ TEST_P(PaintControllerTest, DuplicatedSubsequences) {
       EXPECT_TRUE(paint_controller.UseCachedSubsequenceIfPossible(client));
     }
     {
-      // Should not use the cached duplicated subsequence.
+      // Should not use the cached duplicated subsequence. This currently hits a
+      // DUMP_WILL_BE_NOTREACHED_NORETURN(), crashing in non-official builds.
+#if defined(OFFICIAL_BUILD)
       EXPECT_FALSE(paint_controller.UseCachedSubsequenceIfPossible(client));
+#endif  // defined(OFFICIAL_BUILD)
       SubsequenceRecorder r(context, client);
       DrawRect(context, client, kForegroundType, gfx::Rect(100, 100, 100, 100));
     }

@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/saved_tab_groups/pref_names.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -205,6 +206,13 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(kAutofillPerAccountPrefMigrationDone, false);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  registry->RegisterTimePref(
+      prefs::internal::kFirstTimeTriedToMigrateSyncFeaturePausedToSignin,
+      base::Time());
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(prefs::internal::kWipedWebAPkDataForMigration,
+                                false);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(registry);
 
@@ -307,6 +315,10 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
           type_enabled = false;
         }
+      } else if (type == UserSelectableType::kExtensions) {
+        // Extensions require an explicit sign in.
+        type_enabled =
+            pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
       } else {
         // All other types are always enabled by default.
         type_enabled = true;
@@ -447,6 +459,12 @@ void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
   // "accounts on this device".
   SyncTransportDataPrefs::KeepAccountSettingsPrefsOnlyForUsers(
       pref_service_, available_gaia_ids);
+
+  // TODO(crbug.com/363927991): This is *absolutely* not the right place for
+  // clearing not-sync-related prefs. Move this elsewhere once signin code
+  // provides an observer API for "accounts on this device".
+  tab_groups::prefs::KeepAccountSettingsPrefsOnlyForUsers(pref_service_,
+                                                          available_gaia_ids);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -745,8 +763,9 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
           kSyncSharedTabGroupDataInTransportMode);
     case UserSelectableType::kSavedTabGroups:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
-    case UserSelectableType::kApps:
     case UserSelectableType::kExtensions:
+      return base::FeatureList::IsEnabled(kSyncEnableExtensionsInTransportMode);
+    case UserSelectableType::kApps:
     case UserSelectableType::kThemes:
     case UserSelectableType::kCookies:
       // These types are not supported in transport mode yet.
@@ -918,7 +937,6 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
 
 void SyncPrefs::MaybeMigrateCustomPassphrasePref(
     const signin::GaiaIdHash& gaia_id_hash) {
-
   if (pref_service_->GetBoolean(
           kSyncEncryptionBootstrapTokenPerAccountMigrationDone)) {
     return;

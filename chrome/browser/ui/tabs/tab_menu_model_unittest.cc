@@ -23,6 +23,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 
 class TabMenuModelTest : public MenuModelTest,
@@ -94,7 +95,7 @@ TEST_F(TabMenuModelTest, CommerceProductSpecsIncognito) {
   auto* incognito_profile = incognito_profile_builder.BuildIncognito(profile());
 
   Browser::CreateParams native_params(incognito_profile, true);
-  native_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+  native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
   std::unique_ptr<Browser> browser =
       CreateBrowserWithTestWindowForParams(native_params);
   Browser* incognito_browser = browser.get();

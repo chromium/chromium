@@ -7,6 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace password_manager {
 class CredentialsCleanerRunner;
@@ -16,8 +17,11 @@ class CredentialsCleanerRunner;
 class CredentialsCleanerRunnerFactory : public BrowserStateKeyedServiceFactory {
  public:
   static CredentialsCleanerRunnerFactory* GetInstance();
+  static password_manager::CredentialsCleanerRunner* GetForProfile(
+      ProfileIOS* profile);
+  // Deprecated: use GetForProfile(...).
   static password_manager::CredentialsCleanerRunner* GetForBrowserState(
-      web::BrowserState* browser_state);
+      ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<CredentialsCleanerRunnerFactory>;

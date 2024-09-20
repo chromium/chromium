@@ -107,7 +107,7 @@ TableTypes::Column TableTypes::CreateColumn(
   bool is_constrained = inline_size.has_value();
   if (percentage_inline_size && *percentage_inline_size == 0.0f)
     percentage_inline_size.reset();
-  bool is_collapsed = style.Visibility() == EVisibility::kCollapse;
+  bool is_collapsed = style.UsedVisibility() == EVisibility::kCollapse;
   if (is_table_fixed) {
     is_mergeable = false;
   } else {

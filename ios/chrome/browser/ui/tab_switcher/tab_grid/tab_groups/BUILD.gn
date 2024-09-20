@@ -274,12 +274,16 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "tab_group_sync_egtest.mm",
+    "tab_group_sync_signin_egtest.mm",
+    "tab_groups_eg_utils.h",
+    "tab_groups_eg_utils.mm",
     "tab_groups_egtest.mm",
   ]
   deps = [
     ":eg_test_support+eg2",
     ":tab_groups_constant",
     "//base/test:test_support",
+    "//components/sync/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

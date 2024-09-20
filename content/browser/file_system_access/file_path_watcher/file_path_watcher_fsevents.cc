@@ -212,6 +212,11 @@ void FilePathWatcherFSEvents::FSEventsCallback(
                        watcher->weak_factory_.GetWeakPtr(), watcher->target_));
   }
 
+  // The `root_changed_at` value represents the highest-numbered FSEvents event
+  // id, given that FSEvents events have unique + increasing event id values
+  // over time. The highest event id is updated upon receiving an event, and
+  // just before invoking the client's callback
+  // (https://developer.apple.com/documentation/coreservices/1446030-fseventstreamgetlatesteventid).
   FSEventStreamEventId root_change_at = FSEventStreamGetLatestEventId(stream);
   CFArrayRef cf_event_paths = base::apple::CFCast<CFArrayRef>(event_paths);
   std::map<FSEventStreamEventId, ChangeEvent> events;
@@ -219,7 +224,8 @@ void FilePathWatcherFSEvents::FSEventsCallback(
   for (size_t i = 0; i < num_events; i++) {
     const FSEventStreamEventFlags event_flags = flags[i];
 
-    // Ignore this sentinel event, per FSEvents guidelines.
+    // Ignore this sentinel event, per FSEvents guidelines:
+    // (https://developer.apple.com/documentation/coreservices/1455361-fseventstreameventflags/kfseventstreameventflaghistorydone).
     if (event_flags & kFSEventStreamEventFlagHistoryDone) {
       continue;
     }
@@ -331,6 +337,11 @@ void FilePathWatcherFSEvents::DispatchEvents(
         GetFilePathType(event_flags);
     bool event_in_scope = IsPathInScope(target, event_path, recursive_watch_);
 
+    // Use the event flag values to determine which change event to report for a
+    // given FSEvents event. Documentation of the different types of
+    // FSEventStreamEventFlags can be found here:
+    // https://developer.apple.com/documentation/coreservices/file_system_events/1455361-fseventstreameventflags
+    //
     // The `kFSEventStreamEventFlagRootChanged` flag signals that there has been
     // a change along the root path.
     if (event_flags & kFSEventStreamEventFlagRootChanged) {
@@ -371,24 +382,6 @@ void FilePathWatcherFSEvents::DispatchEvents(
     // Use the `kFSEventStreamEventFlagItemRenamed` flag to identify a 'move'
     // event.
     if (event_flags & kFSEventStreamEventFlagItemRenamed) {
-      // Sometimes, FSEvents reports an event with a batch of event flags that
-      // contain both a `kFSEventStreamEventFlagItemRenamed` and a
-      // `kFSEventStreamEventFlagItemXattrMod` flag, which represents writable
-      // file contents being modified.
-      if (event_flags & kFSEventStreamEventFlagItemXattrMod) {
-        // Only report 'modified' change events that are in-scope.
-        if (!event_in_scope) {
-          continue;
-        }
-
-        FilePathWatcher::ChangeInfo change_info = {
-            file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
-        callback_.Run(std::move(change_info),
-                      report_modified_path_ ? event_path : target,
-                      /*error=*/false);
-        continue;
-      }
-
       // Based on testing, moves within-scope for FSEvents will have
       // consecutive event ids that differ by 1, and the event with the higher
       // event id represents the "moved to" part of a move event. This allows
@@ -585,14 +578,22 @@ WatchWithChangeInfoResult FilePathWatcherFSEvents::UpdateEventStream(
   context.release = NULL;
   context.copyDescription = NULL;
 
+  // The parameters of `FSEventStreamCreate` are defined by the FSEvents API:
+  // (https://developer.apple.com/documentation/coreservices/1443980-fseventstreamcreate).
   fsevent_stream_ = FSEventStreamCreate(
       NULL, &FSEventsCallback, &context, watched_paths.get(), start_event,
       kEventLatencySeconds,
       kFSEventStreamCreateFlagWatchRoot | kFSEventStreamCreateFlagFileEvents |
           kFSEventStreamCreateFlagNoDefer | kFSEventStreamCreateFlagUseCFTypes |
           kFSEventStreamCreateFlagUseExtendedData);
+
+  // Schedule the stream on the `queue_`
+  // (https://developer.apple.com/documentation/coreservices/1444164-fseventstreamsetdispatchqueue).
   FSEventStreamSetDispatchQueue(fsevent_stream_, queue_.get());
 
+  // Start the event stream, by attempting to register with the FSEvents service
+  // to receive events, according to the stream parameters
+  // (https://developer.apple.com/documentation/coreservices/1448000-fseventstreamstart).
   if (FSEventStreamStart(fsevent_stream_)) {
     return WatchWithChangeInfoResult::kSuccess;
   }
@@ -614,8 +615,18 @@ void FilePathWatcherFSEvents::ReportError(const base::FilePath& target) {
 }
 
 void FilePathWatcherFSEvents::DestroyEventStream() {
+  // Unregister the FSEvents service. The client callback will not be called for
+  // this stream while it is stopped
+  // (https://developer.apple.com/documentation/coreservices/1447673-fseventstreamstop).
   FSEventStreamStop(fsevent_stream_);
+
+  // Stream will be unscheduled from any run loops or dispatch queues
+  // (https://developer.apple.com/documentation/coreservices/1446990-fseventstreaminvalidate).
   FSEventStreamInvalidate(fsevent_stream_);
+
+  // Decrement the stream's event count. If the refcount reaches zero, the
+  // stream will be deallocated
+  // (https://developer.apple.com/documentation/coreservices/1445989-fseventstreamrelease).
   FSEventStreamRelease(fsevent_stream_);
   fsevent_stream_ = nullptr;
 }

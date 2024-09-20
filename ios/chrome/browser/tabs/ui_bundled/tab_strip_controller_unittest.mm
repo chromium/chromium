@@ -37,8 +37,8 @@ namespace {
 class TabStripControllerTest : public PlatformTest {
  protected:
   TabStripControllerTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
   }
 
   void SetUp() override {
@@ -94,7 +94,7 @@ class TabStripControllerTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::NavigationItem> visible_navigation_item_;
   id mock_application_commands_handler_;

@@ -213,7 +213,7 @@ NonUiSyncableServiceBasedDataTypeController::
                 full_sync_mode_delegate.get())
           : nullptr;
   InitDataTypeController(std::move(full_sync_mode_delegate),
-                          std::move(transport_mode_delegate));
+                         std::move(transport_mode_delegate));
 }
 
 NonUiSyncableServiceBasedDataTypeController::

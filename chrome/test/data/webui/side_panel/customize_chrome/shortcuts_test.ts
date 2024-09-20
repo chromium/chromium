@@ -10,6 +10,7 @@ import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} fro
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {ShortcutsElement} from 'chrome://customize-chrome-side-panel.top-chrome/shortcuts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -85,17 +86,20 @@ suite('ShortcutsTest', () => {
     assertUseMostVisited();
   });
 
-  test('toggling show shortcuts on calls setMostVisitedSettings', async () => {
+  test('turning toggle on updates MV settings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ false);
-    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
+
     customizeShortcutsElement.$.showToggle.click();
-    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    await microtasksFinished();
+
     const selector =
         customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
-
     assertTrue(!!selector);
     assertEquals(true, selector.opened);
+    assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
+    const [customLinksEnabled, shortcutsVisible] =
+        handler.getArgs('setMostVisitedSettings')[0];
     assertFalse(customLinksEnabled);
     assertTrue(shortcutsVisible);
   });
@@ -103,75 +107,121 @@ suite('ShortcutsTest', () => {
   test('turning toggle off hides settings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ true);
-    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
+
     customizeShortcutsElement.$.showToggle.click();
-    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    await microtasksFinished();
+
     const selector =
         customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
-
     assertTrue(!!selector);
     assertEquals(false, selector.opened);
+    assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
+    const [customLinksEnabled, shortcutsVisible] =
+        handler.getArgs('setMostVisitedSettings')[0];
     assertFalse(customLinksEnabled);
     assertFalse(shortcutsVisible);
   });
 
-  test('clicking toggle title calls setMostVisitedSettings', async () => {
+  test('clicking toggle title updates MV settings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ false);
-    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
+
     customizeShortcutsElement.$.showToggleContainer.click();
-    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    await microtasksFinished();
+
     const selector =
         customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
-
     assertTrue(!!selector);
     assertEquals(true, selector.opened);
+    assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
+    const [customLinksEnabled, shortcutsVisible] =
+        handler.getArgs('setMostVisitedSettings')[0];
     assertFalse(customLinksEnabled);
     assertTrue(shortcutsVisible);
   });
 
-  test('clicking custom links label calls setMostVisitedSettings', async () => {
+  test('clicking custom links label updates MV settings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ true);
     assertUseMostVisited();
+
     customizeShortcutsElement.$.customLinksContainer.click();
-    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
-    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    await microtasksFinished();
+
+    assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
+    const [customLinksEnabled, shortcutsVisible] =
+        handler.getArgs('setMostVisitedSettings')[0];
     assertTrue(customLinksEnabled);
     assertTrue(shortcutsVisible);
   });
 
-  test('enabling custom links calls setMostVisitedSettings', async () => {
+  test('clicking custom button label updates MV settings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ true);
     assertUseMostVisited();
+
     customizeShortcutsElement.$.customLinksButton.click();
-    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
-    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    await microtasksFinished();
+
+    assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
+    const [customLinksEnabled, shortcutsVisible] =
+        handler.getArgs('setMostVisitedSettings')[0];
     assertTrue(customLinksEnabled);
     assertTrue(shortcutsVisible);
   });
 
-  test('clicking most visited label calls setMostVisitedSettings', async () => {
+  test('clicking most visited label updates MV settings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ true, /* shortcutsVisible= */ true);
     assertCustomLinksEnabled();
+
     customizeShortcutsElement.$.mostVisitedContainer.click();
-    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
-    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    await microtasksFinished();
+
+    assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
+    const [customLinksEnabled, shortcutsVisible] =
+        handler.getArgs('setMostVisitedSettings')[0];
     assertFalse(customLinksEnabled);
     assertTrue(shortcutsVisible);
   });
 
-  test('enabling most visited calls setMostVisitedSettings', async () => {
+  test('clicking most visited button updates MV settings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ true, /* shortcutsVisible= */ true);
     assertCustomLinksEnabled();
+
     customizeShortcutsElement.$.mostVisitedButton.click();
-    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
-    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+
+    assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
+    const [customLinksEnabled, shortcutsVisible] =
+        handler.getArgs('setMostVisitedSettings')[0];
     assertFalse(customLinksEnabled);
     assertTrue(shortcutsVisible);
+  });
+
+  test('keydown on radio options updates MV settings', async () => {
+    await setInitialSettings(
+        /* customLinksEnabled= */ false, /* shortcutsVisible= */ true);
+    assertUseMostVisited();
+
+    keyDownOn(customizeShortcutsElement.$.mostVisitedButton, 0, [], 'ArrowUp');
+    await microtasksFinished();
+
+    assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
+    const [customLinksEnabled, shortcutsVisible] =
+        handler.getArgs('setMostVisitedSettings')[0];
+    assertTrue(customLinksEnabled);
+    assertTrue(shortcutsVisible);
+
+    keyDownOn(
+        customizeShortcutsElement.$.customLinksButton, 0, [], 'ArrowDown');
+    await microtasksFinished();
+
+    assertEquals(2, handler.getCallCount('setMostVisitedSettings'));
+    const [customLinksEnabled2, shortcutsVisible2] =
+        handler.getArgs('setMostVisitedSettings')[1];
+    assertFalse(customLinksEnabled2);
+    assertTrue(shortcutsVisible2);
   });
 
   test('only animates after initialization', async () => {

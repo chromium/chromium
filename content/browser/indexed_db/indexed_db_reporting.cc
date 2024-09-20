@@ -13,8 +13,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
-namespace content {
-namespace indexed_db {
+namespace content::indexed_db {
 
 namespace {
 
@@ -63,7 +62,7 @@ void ParseAndReportCorruptionDetails(const std::string& histogram_name,
 
 }  // namespace
 
-void ReportOpenStatus(IndexedDBBackingStoreOpenResult result,
+void ReportOpenStatus(BackingStoreOpenResult result,
                       const storage::BucketLocator& bucket_locator) {
   base::UmaHistogramEnumeration("WebCore.IndexedDB.BackingStore.OpenStatus",
                                 result, INDEXED_DB_BACKING_STORE_OPEN_MAX);
@@ -83,8 +82,7 @@ void ReportOpenStatus(IndexedDBBackingStoreOpenResult result,
   }
 }
 
-void ReportInternalError(const char* type,
-                         IndexedDBBackingStoreErrorSource location) {
+void ReportInternalError(const char* type, BackingStoreErrorSource location) {
   base::Histogram::FactoryGet(
       base::StrCat({"WebCore.IndexedDB.BackingStore.", type, "Error"}), 1,
       INTERNAL_ERROR_MAX, INTERNAL_ERROR_MAX + 1,
@@ -122,5 +120,4 @@ void ReportLevelDBError(const std::string& histogram_name,
     ParseAndReportCorruptionDetails(histogram_name, s);
 }
 
-}  // namespace indexed_db
-}  // namespace content
+}  // namespace content::indexed_db

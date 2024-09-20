@@ -52,12 +52,18 @@ UrlData::UrlData(base::PassKey<UrlIndex>,
                  const GURL& url,
                  CorsMode cors_mode,
                  UrlIndex* url_index,
+                 CacheMode cache_lookup_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : UrlData(url, cors_mode, url_index, std::move(task_runner)) {}
+    : UrlData(url,
+              cors_mode,
+              url_index,
+              cache_lookup_mode,
+              std::move(task_runner)) {}
 
 UrlData::UrlData(const GURL& url,
                  CorsMode cors_mode,
                  UrlIndex* url_index,
+                 CacheMode cache_lookup_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : url_(url),
       have_data_origin_(false),
@@ -67,6 +73,7 @@ UrlData::UrlData(const GURL& url,
       length_(kPositionNotSpecified),
       range_supported_(false),
       cacheable_(false),
+      cache_lookup_mode_(cache_lookup_mode),
       multibuffer_(this, url_index_->block_shift_, std::move(task_runner)) {}
 
 UrlData::~UrlData() = default;
@@ -91,6 +98,7 @@ void UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
     // set_length() will not override the length if already known.
     set_length(other->length_);
     cacheable_ |= other->cacheable_;
+    cache_lookup_mode_ = other->cache_lookup_mode_;
     range_supported_ |= other->range_supported_;
     if (last_modified_.is_null()) {
       last_modified_ = other->last_modified_;
@@ -266,21 +274,24 @@ void UrlIndex::RemoveUrlData(const scoped_refptr<UrlData>& url_data) {
 
 scoped_refptr<UrlData> UrlIndex::GetByUrl(const GURL& gurl,
                                           UrlData::CorsMode cors_mode,
-                                          CacheMode cache_mode) {
-  if (cache_mode == kNormal) {
+                                          UrlData::CacheMode cache_mode) {
+  if (cache_mode == UrlData::kNormal) {
     auto i = indexed_data_.find(std::make_pair(gurl, cors_mode));
     if (i != indexed_data_.end() && i->second->Valid()) {
       return i->second;
     }
   }
 
-  return NewUrlData(gurl, cors_mode);
+  return NewUrlData(gurl, cors_mode, cache_mode);
 }
 
-scoped_refptr<UrlData> UrlIndex::NewUrlData(const GURL& url,
-                                            UrlData::CorsMode cors_mode) {
+scoped_refptr<UrlData> UrlIndex::NewUrlData(
+    const GURL& url,
+    UrlData::CorsMode cors_mode,
+    UrlData::CacheMode cache_lookup_mode) {
   return base::MakeRefCounted<UrlData>(base::PassKey<UrlIndex>(), url,
-                                       cors_mode, this, task_runner_);
+                                       cors_mode, this, cache_lookup_mode,
+                                       task_runner_);
 }
 
 void UrlIndex::OnMemoryPressure(
@@ -340,6 +351,11 @@ scoped_refptr<UrlData> UrlIndex::TryInsert(
     if (url_data->Valid()) {
       iter->second = url_data;
     }
+    return url_data;
+  }
+
+  // If the url data should bypass the cache lookup, we want to not merge it.
+  if (url_data->cache_lookup_mode() == UrlData::kCacheDisabled) {
     return url_data;
   }
 

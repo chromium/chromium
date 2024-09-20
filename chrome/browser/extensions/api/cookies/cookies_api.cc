@@ -17,12 +17,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
@@ -480,17 +480,34 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  if (!cookies_helpers::ValidateCrossSiteAncestor(
-          parsed_args_->details.url, parsed_args_->details.partition_key,
-          &error)) {
+  // cookies.set api allows for an partitionKey with a `top_level_site` present
+  // but no value for `has_cross_site_ancestor`. If that is the case, the
+  // browser will calculate the value for `has_cross_site_ancestor`.
+  std::optional<extensions::api::cookies::CookiePartitionKey> api_partition_key;
+  if (parsed_args_->details.partition_key.has_value()) {
+    api_partition_key = parsed_args_->details.partition_key->Clone();
+    if (!api_partition_key->has_cross_site_ancestor.has_value() &&
+        api_partition_key->top_level_site.has_value()) {
+      base::expected<bool, std::string> cross_site_ancestor =
+          cookies_helpers::CalculateHasCrossSiteAncestor(
+              parsed_args_->details.url, api_partition_key);
+      if (!cross_site_ancestor.has_value()) {
+        return RespondNow(Error(std::move(cross_site_ancestor.error())));
+      }
+      api_partition_key->has_cross_site_ancestor = cross_site_ancestor.value();
+    }
+  }
+
+  if (!cookies_helpers::ValidateCrossSiteAncestor(parsed_args_->details.url,
+                                                  api_partition_key, &error)) {
     return RespondNow(Error(std::move(error)));
   }
 
   base::expected<std::optional<net::CookiePartitionKey>, std::string>
-      partition_key = cookies_helpers::ToNetCookiePartitionKey(
-          parsed_args_->details.partition_key);
-  if (!partition_key.has_value()) {
-    return RespondNow(Error(std::move(partition_key.error())));
+      net_partition_key =
+          cookies_helpers::ToNetCookiePartitionKey(api_partition_key);
+  if (!net_partition_key.has_value()) {
+    return RespondNow(Error(std::move(net_partition_key.error())));
   }
 
   if (!parsed_args_->details.store_id)
@@ -540,7 +557,7 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
           parsed_args_->details.http_only.value_or(false),       //
           same_site,                                             //
           net::COOKIE_PRIORITY_DEFAULT,                          //
-          partition_key.value(),                                 //
+          net_partition_key.value(),                             //
           /*status=*/nullptr));
   if (!cc) {
     // Return error through callbacks so that the proper error message
@@ -565,7 +582,8 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
       base::BindOnce(&CookiesSetFunction::SetCanonicalCookieCallback, this));
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
-      net::CookiePartitionKeyCollection::FromOptional(partition_key.value()),
+      net::CookiePartitionKeyCollection::FromOptional(
+          net_partition_key.value()),
       base::BindOnce(&CookiesSetFunction::GetCookieListCallback, this));
 
   // Will finish asynchronously.
@@ -698,11 +716,11 @@ ExtensionFunction::ResponseAction CookiesGetAllCookieStoresFunction::Run() {
   // Iterate through all browser instances, and for each browser,
   // add its tab IDs to either the regular or incognito tab ID list depending
   // whether the browser is regular or incognito.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == original_profile) {
-      cookies_helpers::AppendToTabIdList(browser, original_tab_ids);
-    } else if (browser->profile() == incognito_profile) {
-      cookies_helpers::AppendToTabIdList(browser, incognito_tab_ids);
+  for (WindowController* window : *WindowControllerList::GetInstance()) {
+    if (window->profile() == original_profile) {
+      cookies_helpers::AppendToTabIdList(window, original_tab_ids);
+    } else if (window->profile() == incognito_profile) {
+      cookies_helpers::AppendToTabIdList(window, incognito_tab_ids);
     }
   }
   // Return a list of all cookie stores with at least one open tab.

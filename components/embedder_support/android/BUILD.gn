@@ -148,6 +148,7 @@ android_library("content_view_java") {
     ":embedder_util_java",
     "//base:base_java",
     "//build/android:build_java",
+    "//components/android_autofill/browser:features_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/accessibility:ax_base_java",

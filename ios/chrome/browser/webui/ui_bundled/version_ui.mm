@@ -127,7 +127,7 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
 VersionUI::VersionUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
   web_ui->AddMessageHandler(std::make_unique<VersionHandler>());
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateVersionUIDataSource());
 }
 

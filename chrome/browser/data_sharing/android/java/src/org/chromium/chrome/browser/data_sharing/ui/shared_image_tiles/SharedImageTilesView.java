@@ -17,12 +17,10 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.ui.widget.ChromeImageButton;
 
 /** View logic for SharedImageTiles component. */
 public class SharedImageTilesView extends LinearLayout {
     private final Context mContext;
-    private ChromeImageButton mButtonTileView;
     private TextView mCountTileView;
     private LinearLayout mLastButtonTileView;
 
@@ -40,7 +38,6 @@ public class SharedImageTilesView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mButtonTileView = findViewById(R.id.shared_image_tiles_add);
         mCountTileView = findViewById(R.id.tiles_count);
         mLastButtonTileView = findViewById(R.id.last_tile_container);
     }
@@ -59,8 +56,6 @@ public class SharedImageTilesView extends LinearLayout {
         if (color == SharedImageTilesColor.DYNAMIC) {
             mCountTileView.setTextColor(
                     SemanticColorUtils.getDefaultIconColorOnAccent1Container(mContext));
-            mButtonTileView.setColorFilter(
-                    SemanticColorUtils.getDefaultIconColorOnAccent1Container(mContext));
             setTileBackgroundColor(SemanticColorUtils.getColorPrimaryContainer(mContext));
         }
     }
@@ -71,7 +66,6 @@ public class SharedImageTilesView extends LinearLayout {
         for (int i = 0; i < getChildCount() - 1; i++) {
             removeViewAt(i);
         }
-        mButtonTileView.setVisibility(View.GONE);
         mCountTileView.setVisibility(View.GONE);
         mLastButtonTileView.setVisibility(View.GONE);
 
@@ -91,10 +85,5 @@ public class SharedImageTilesView extends LinearLayout {
         String countText =
                 res.getString(R.string.shared_image_tiles_count, Integer.toString(count));
         mCountTileView.setText(countText);
-    }
-
-    void showButtonTile() {
-        mLastButtonTileView.setVisibility(View.VISIBLE);
-        mButtonTileView.setVisibility(View.VISIBLE);
     }
 }

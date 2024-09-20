@@ -13,6 +13,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/ranges/algorithm.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -204,10 +205,11 @@ aura::Window* GetReferenceWindow(const aura::Window* root_window,
 
 }  // namespace
 
-void GetBoundsAndShowStateForNewWindow(bool is_saved_bounds,
-                                       ui::WindowShowState show_state_in,
-                                       gfx::Rect* bounds_in_out,
-                                       ui::WindowShowState* show_state_out) {
+void GetBoundsAndShowStateForNewWindow(
+    bool is_saved_bounds,
+    ui::mojom::WindowShowState show_state_in,
+    gfx::Rect* bounds_in_out,
+    ui::mojom::WindowShowState* show_state_out) {
   aura::Window* root_window = Shell::GetRootWindowForNewWindows();
   aura::Window* top_window = GetReferenceWindow(
       root_window, nullptr, /*on_hide_remove=*/false, nullptr);
@@ -225,9 +227,9 @@ void GetBoundsAndShowStateForNewWindow(bool is_saved_bounds,
   bool maximized = top_window_state->IsMaximized();
   // We ignore the saved show state, but look instead for the top level
   // window's show state.
-  if (show_state_in == ui::SHOW_STATE_DEFAULT) {
-    *show_state_out =
-        maximized ? ui::SHOW_STATE_MAXIMIZED : ui::SHOW_STATE_DEFAULT;
+  if (show_state_in == ui::mojom::WindowShowState::kDefault) {
+    *show_state_out = maximized ? ui::mojom::WindowShowState::kMaximized
+                                : ui::mojom::WindowShowState::kDefault;
   }
 
   if (maximized || top_window_state->IsFullscreen()) {

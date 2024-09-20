@@ -53,8 +53,7 @@ network::mojom::blink::CSPSourceListPtr CSPSourceListIsolatedCopy(
 
   return network::mojom::blink::CSPSourceList::New(
       std::move(sources), CrossThreadCopier<Vector<String>>::Copy(in->nonces),
-      std::move(hashes), in->allow_self, in->allow_star,
-      in->allow_response_redirects, in->allow_inline,
+      std::move(hashes), in->allow_self, in->allow_star, in->allow_inline,
       in->allow_inline_speculation_rules, in->allow_eval, in->allow_wasm_eval,
       in->allow_wasm_unsafe_eval, in->allow_dynamic, in->allow_unsafe_hashes,
       in->report_sample);

@@ -130,8 +130,6 @@ class DownloadBubbleUIController {
     return last_primary_view_was_partial_;
   }
 
-  void SetDeepScanNoticeSeen();
-
   base::WeakPtr<DownloadBubbleUIController> GetWeakPtr();
 
  private:

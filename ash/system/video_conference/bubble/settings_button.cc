@@ -12,6 +12,7 @@
 #include "ash/style/switch.h"
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/video_conference/video_conference_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -246,10 +247,18 @@ class SettingsButton::MenuController : public ui::SimpleMenuModel::Delegate,
         client->ShowPrivacyAndSecuritySettings();
         break;
       case CommandId::kPortraitRelighting:
+        base::UmaHistogramBoolean(
+            video_conference_utils::GetEffectHistogramNameForClick(
+                VcEffectId::kPortraitRelighting),
+            !IsCommandIdChecked(command_id));
         effects_controller_->OnEffectControlActivated(
             VcEffectId::kPortraitRelighting, /*state=*/std::nullopt);
         break;
       case CommandId::kFaceRetouch:
+        base::UmaHistogramBoolean(
+            video_conference_utils::GetEffectHistogramNameForClick(
+                VcEffectId::kFaceRetouch),
+            !IsCommandIdChecked(command_id));
         effects_controller_->OnEffectControlActivated(VcEffectId::kFaceRetouch,
                                                       /*state=*/std::nullopt);
         break;

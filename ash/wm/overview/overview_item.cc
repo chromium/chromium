@@ -224,10 +224,6 @@ void OverviewItem::OnFocusedViewClosed() {
   overview_session_->OnFocusedItemClosed(this);
 }
 
-void OverviewItem::UpdateItemContentViewForMinimizedWindow() {
-  overview_item_view_->RefreshPreviewView();
-}
-
 void OverviewItem::UpdateRoundedCorners() {
   // TODO(sammiequon): Clean up this function.
 

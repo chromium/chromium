@@ -214,7 +214,7 @@ public class WebApkServiceConnectionManager {
             final Callable<Boolean> backgroundTask, final Callback<Boolean> uiThreadReply) {
         ++mNumPendingPostedTasks;
         getTaskRunner()
-                .postTask(
+                .execute(
                         () -> {
                             Boolean result = false;
                             try {

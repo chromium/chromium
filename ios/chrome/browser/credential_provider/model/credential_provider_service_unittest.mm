@@ -11,6 +11,7 @@
 
 #import "base/location.h"
 #import "base/memory/scoped_refptr.h"
+#import "base/rand_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -782,7 +783,8 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
       {
           .user_name = "new_passkey_username",
           .user_display_name = "new_passkey_display_name",
-      });
+      },
+      /*updated_by_user=*/true);
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);

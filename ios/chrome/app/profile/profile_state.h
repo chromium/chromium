@@ -21,9 +21,9 @@
 // Profile initialisation stage.
 @property(nonatomic, assign) ProfileInitStage initStage;
 
-// The non-incognito ChromeBrowserState used for this Profile. This will be null
-// until `initStage` >= `InitStageProfileLoaded`.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
+// The non-incognito ProfileIOS instance.
+// This will be null until `initStage` >= `InitStageProfileLoaded`.
+@property(nonatomic, assign) ProfileIOS* profile;
 
 // All agents that have been attached. Use -addAgent: and -removeAgent: to
 // add and remove agents.

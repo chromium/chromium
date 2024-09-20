@@ -53,14 +53,24 @@ std::unique_ptr<App> CreateAppFetchPolicies(
     const mojo::NamedPlatformChannel::ServerName& server_name =
         GetServerName());
 
-std::unique_ptr<App> CreateAppInstall(
-    base::OnceCallback<EnterpriseCompanionStatus()> shutdown_remote_task =
-        base::BindOnce([] { return CreateAppShutdown()->Run(); }),
+// AppInstaller is used to implement the install/uninstall apps. It uses
+// caller-provided tasks to shut down the remote server and acquires the global
+// singleton lock. Then, it runs the provided task (e.g. `Install` or
+// `Uninstall`).
+std::unique_ptr<App> CreateAppInstaller(
+    base::OnceCallback<EnterpriseCompanionStatus()> shutdown_remote_task,
     base::OnceCallback<std::unique_ptr<ScopedLock>(base::TimeDelta timeout)>
-        lock_provider = base::BindOnce(&CreateScopedLock),
-    base::OnceCallback<bool()> task = base::BindOnce(&Install));
+        lock_provider,
+    base::OnceCallback<bool()> install_task);
+
+std::unique_ptr<App> CreateAppInstall();
 
 std::unique_ptr<App> CreateAppUninstall();
+
+// AppInstallIfNeeded installs the application if the device requires
+// cloud management and no installation already exists. Otherwise, it exits
+// successfully.
+std::unique_ptr<App> CreateAppInstallIfNeeded();
 
 #if BUILDFLAG(IS_MAC)
 // Creates an App which handles network requests for another process. If

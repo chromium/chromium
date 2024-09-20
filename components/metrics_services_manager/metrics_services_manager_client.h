@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 
 namespace metrics {
+class EnabledStateProvider;
 class MetricsServiceClient;
 class MetricsStateManager;
 }
@@ -47,11 +48,8 @@ class MetricsServicesManagerClient {
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
 
-  // Returns whether metrics reporting is enabled.
-  virtual bool IsMetricsReportingEnabled() = 0;
-
-  // Returns whether metrics consent is given.
-  virtual bool IsMetricsConsentGiven() = 0;
+  // Returns the accessor for checking the metrics enabled state.
+  virtual const metrics::EnabledStateProvider& GetEnabledStateProvider() = 0;
 
   // Returns whether there are any OffTheRecord browsers/tabs open.
   virtual bool IsOffTheRecordSessionActive() = 0;

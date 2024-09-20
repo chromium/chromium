@@ -63,8 +63,9 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     if (result.BfcBlockOffset())
       container_builder_.SetBfcBlockOffset(*result.BfcBlockOffset());
 
-    if (result.LinesUntilClamp())
-      container_builder_.SetLinesUntilClamp(result.LinesUntilClamp());
+    if (result.StateUntilClamp()) {
+      container_builder_.SetStateUntilClamp(result.StateUntilClamp());
+    }
 
     container_builder_.SetExclusionSpace(result.GetExclusionSpace());
 
@@ -96,7 +97,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     DCHECK_EQ(result.BfcLineOffset(), LayoutUnit());
     DCHECK_EQ(result.BfcBlockOffset().value_or(LayoutUnit()), LayoutUnit());
 
-    DCHECK(!result.LinesUntilClamp());
+    DCHECK(!result.StateUntilClamp());
 
     DCHECK(result.GetExclusionSpace().IsEmpty());
 

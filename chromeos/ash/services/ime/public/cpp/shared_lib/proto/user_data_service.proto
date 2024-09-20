@@ -28,6 +28,8 @@ message UserDataRequest {
     RenameJapaneseDictionaryRequest rename_japanese_dictionary = 7;
     // Deletes a japanese dictionary.
     DeleteJapaneseDictionaryRequest delete_japanese_dictionary = 8;
+    // Returns the TSV string that represents a japanese dictionary.
+    ExportJapaneseDictionaryRequest export_japanese_dictionary = 9;
   }
 }
 
@@ -37,5 +39,7 @@ message UserDataResponse {
     FetchJapaneseLegacyConfigResponse fetch_japanese_legacy_config = 2;
     // Get all user dictionary data.
     FetchJapaneseDictionaryResponse fetch_japanese_dictionary = 3;
+    // Dictionary Data as TSV
+    string export_japanese_dictionary = 4;
   }
 }

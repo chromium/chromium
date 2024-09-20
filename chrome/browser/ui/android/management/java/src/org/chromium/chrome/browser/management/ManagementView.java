@@ -142,6 +142,7 @@ public class ManagementView extends ScrollView {
 
     public void setProfileReportingText(SpannableStringBuilder text) {
         mProfileReportDetails.setText(text);
+        mProfileReportDetails.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /** Sets whether legacy tech reporting is enabled. Then updates view accordingly. */

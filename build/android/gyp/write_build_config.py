@@ -583,9 +583,17 @@ class OrderedSet(collections.OrderedDict):
   def add(self, key):
     self[key] = True
 
+  def remove(self, key):
+    if key in self:
+      del self[key]
+
   def update(self, iterable):
     for v in iterable:
       self.add(v)
+
+  def difference_update(self, iterable):
+    for v in iterable:
+      self.remove(v)
 
 
 def _ExtractMarkdownDocumentation(input_text):
@@ -1744,7 +1752,10 @@ def main(argv):
   if is_java_target or options.type == 'android_app_bundle':
     # The classpath to use to run this target (or as an input to ProGuard).
     device_classpath = []
-    if is_java_target and options.device_jar_path:
+    # dist_jar configs should not list their device jar in their own classpath
+    # since the classpath is used to create the device jar itself.
+    if (is_java_target and options.device_jar_path
+        and options.type != 'dist_jar'):
       device_classpath.append(options.device_jar_path)
     device_classpath.extend(
         c.get('device_jar_path') for c in all_library_deps
@@ -1754,13 +1765,7 @@ def main(argv):
         device_classpath.extend(c for c in d.get('device_classpath', [])
                                 if c not in device_classpath)
 
-  if options.type in ('dist_jar', 'java_binary', 'robolectric_binary'):
-    # The classpath to use to run this target.
-    host_classpath = []
-    if options.host_jar_path:
-      host_classpath.append(options.host_jar_path)
-    host_classpath.extend(c['host_jar_path'] for c in all_library_deps)
-    deps_info['host_classpath'] = host_classpath
+  all_dist_jar_deps = deps.All('dist_jar')
 
   # We allow lint to be run on android_apk targets, so we collect lint
   # artifacts for them.
@@ -1967,6 +1972,78 @@ def main(argv):
     deps_info['proguard_all_configs'] = sorted(set(proguard_configs))
     deps_info['proguard_classpath_jars'] = sorted(
         set(extra_proguard_classpath_jars))
+
+  if options.type in ('dist_jar', 'java_binary', 'robolectric_binary'):
+    # The classpath to use to run this target.
+    host_classpath = []
+    if options.host_jar_path:
+      host_classpath.append(options.host_jar_path)
+    host_classpath.extend(c['host_jar_path'] for c in all_library_deps)
+    # Collect all the dist_jar host jars.
+    dist_jar_host_jars = [
+        c['host_jar_path'] for c in all_dist_jar_deps if 'host_jar_path' in c
+    ]
+    # Collect all the jars that went into the dist_jar host jars.
+    dist_jar_host_classpath = set()
+    for c in all_dist_jar_deps:
+      dist_jar_host_classpath.update(c['host_classpath'])
+    # Remove the jars that went into the dist_jar host jars.
+    host_classpath = [
+        p for p in host_classpath if p not in dist_jar_host_classpath
+    ]
+    # Add the dist_jar host jars themselves instead.
+    host_classpath += dist_jar_host_jars
+    deps_info['host_classpath'] = host_classpath
+
+  if is_java_target:
+
+    def _CollectListsFromDeps(deps, key_name):
+      combined = set()
+      for config in deps:
+        combined.update(config.get(key_name, []))
+      return combined
+
+    dist_jar_device_classpath = _CollectListsFromDeps(all_dist_jar_deps,
+                                                      'device_classpath')
+    dist_jar_javac_full_classpath = _CollectListsFromDeps(
+        all_dist_jar_deps, 'javac_full_classpath')
+    dist_jar_javac_full_interface_classpath = _CollectListsFromDeps(
+        all_dist_jar_deps, 'javac_full_interface_classpath')
+    dist_jar_child_dex_files = _CollectListsFromDeps(all_dist_jar_deps,
+                                                     'all_dex_files')
+
+    def _CollectSinglesFromDeps(deps, key_name):
+      return [config[key_name] for config in deps if key_name in config]
+
+    dist_jar_device_jars = _CollectSinglesFromDeps(all_dist_jar_deps,
+                                                   'device_jar_path')
+    dist_jar_combined_dex_files = _CollectSinglesFromDeps(
+        all_dist_jar_deps, 'dex_path')
+    dist_jar_interface_jars = _CollectSinglesFromDeps(all_dist_jar_deps,
+                                                      'interface_jar_path')
+    dist_jar_unprocessed_jars = _CollectSinglesFromDeps(all_dist_jar_deps,
+                                                        'unprocessed_jar_path')
+
+    device_classpath = [
+        p for p in device_classpath if p not in dist_jar_device_classpath
+    ]
+    device_classpath += dist_jar_device_jars
+
+    javac_full_classpath.difference_update(dist_jar_javac_full_classpath)
+    javac_full_classpath.update(dist_jar_unprocessed_jars)
+
+    javac_full_interface_classpath.difference_update(
+        dist_jar_javac_full_interface_classpath)
+    javac_full_interface_classpath.update(dist_jar_interface_jars)
+
+    javac_interface_classpath.update(dist_jar_interface_jars)
+    javac_classpath.update(dist_jar_unprocessed_jars)
+
+    if is_apk_or_module_target or options.type == 'dist_jar':
+      all_dex_files = [
+          p for p in all_dex_files if p not in dist_jar_child_dex_files
+      ]
+      all_dex_files += dist_jar_combined_dex_files
 
   if options.final_dex_path:
     config['final_dex'] = {'path': options.final_dex_path}

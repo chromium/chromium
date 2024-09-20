@@ -27,8 +27,8 @@ class PrefRegistrySyncable;
 
 class PrefProxyConfigTracker;
 
-// This class is the implementation of ChromeBrowserState used for
-// non-incognito browsing.
+// This class is the implementation of ProfileIOS used for non-incognito
+// browsing.
 class ChromeBrowserStateImpl final : public ChromeBrowserState {
  public:
   ChromeBrowserStateImpl(const ChromeBrowserStateImpl&) = delete;
@@ -37,10 +37,17 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   ~ChromeBrowserStateImpl() override;
 
   // ChromeBrowserState:
+  // TODO(crbug.com/358299863): Remove these functions once fully migrated.
   ChromeBrowserState* GetOriginalChromeBrowserState() override;
   bool HasOffTheRecordChromeBrowserState() const override;
   ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
   void DestroyOffTheRecordChromeBrowserState() override;
+
+  // ProfileIOS:
+  ProfileIOS* GetOriginalProfile() override;
+  bool HasOffTheRecordProfile() const override;
+  ProfileIOS* GetOffTheRecordProfile() override;
+  void DestroyOffTheRecordProfile() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
   BrowserStatePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
@@ -66,9 +73,8 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
       CreationMode creation_mode,
       Delegate* delegate);
 
-  // Sets the OffTheRecordChromeBrowserState.
-  void SetOffTheRecordChromeBrowserState(
-      std::unique_ptr<ChromeBrowserState> otr_state);
+  // Sets the OffTheRecordProfileIOS.
+  void SetOffTheRecordProfileIOS(std::unique_ptr<ProfileIOS> otr_state);
 
   // Called when the PrefService is done loading (may be called synchronously
   // if the creation is done with `CreationMode::kSynchronous`).
@@ -76,15 +82,14 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
                      bool is_new_profile,
                      bool success);
 
-  // The ChromeBrowserState::Delegate that will be notified of the progress
+  // The ProfileIOS::Delegate that will be notified of the progress
   // of the initialisation if not null.
   raw_ptr<Delegate> delegate_;
 
-  // The incognito ChromeBrowserState instance that is associated with this
-  // ChromeBrowserState instance. NULL if `GetOffTheRecordChromeBrowserState()`
-  // has never been called or has not been called since
-  // `DestroyOffTheRecordChromeBrowserState()`.
-  std::unique_ptr<ChromeBrowserState> otr_state_;
+  // The incognito ProfileIOS instance that is associated with this ProfileIOS
+  // instance. NULL if `GetOffTheRecordProfile()` has never been called or has
+  // not been called since `DestroyOffTheRecordProfile()`.
+  std::unique_ptr<ProfileIOS> otr_state_;
 
   // !!! BIG HONKING WARNING !!!
   //  The order of the members below is important. Do not change it unless

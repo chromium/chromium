@@ -29,12 +29,10 @@
 #include "ash/components/arc/pay/arc_digital_goods_bridge.h"
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
 #include "ash/components/arc/power/arc_power_bridge.h"
-#include "ash/components/arc/property/arc_property_bridge.h"
 #include "ash/components/arc/sensor/arc_iio_sensor_bridge.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/storage_manager/arc_storage_manager.h"
 #include "ash/components/arc/system_ui/arc_system_ui_bridge.h"
 #include "ash/components/arc/timer/arc_timer_bridge.h"
 #include "ash/components/arc/usb/usb_host_bridge.h"
@@ -305,7 +303,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcPrintSpoolerBridge::GetForBrowserContext(profile);
   ArcPrivacyItemsBridge::GetForBrowserContext(profile);
   ArcProcessService::GetForBrowserContext(profile);
-  ArcPropertyBridge::GetForBrowserContext(profile);
   ArcProvisionNotificationService::GetForBrowserContext(profile);
   ArcResizeLockManager::GetForBrowserContext(profile);
   ArcScreenCaptureBridge::GetForBrowserContext(profile);
@@ -482,12 +479,10 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcPrintSpoolerBridge::EnsureFactoryBuilt();
   ArcPrivacyItemsBridge::EnsureFactoryBuilt();
   ArcProcessService::EnsureFactoryBuilt();
-  ArcPropertyBridge::EnsureFactoryBuilt();
   ArcProvisionNotificationService::EnsureFactoryBuilt();
   ArcResizeLockManager::EnsureFactoryBuilt();
   ArcScreenCaptureBridge::EnsureFactoryBuilt();
   ArcSettingsService::EnsureFactoryBuilt();
-  ArcStorageManager::EnsureFactoryBuilt();
   ArcSharesheetBridge::EnsureFactoryBuilt();
   ArcSurveyService::EnsureFactoryBuilt();
   ArcSystemUIBridge::EnsureFactoryBuilt();

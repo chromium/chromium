@@ -229,10 +229,6 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.VOICE:
                 if (mAndroidPermissionDelegate == null) return true;
                 return VoiceRecognitionUtil.isVoiceSearchEnabled(mAndroidPermissionDelegate);
-            case AdaptiveToolbarButtonVariant.TRANSLATE:
-                return AdaptiveToolbarFeatures.isAdaptiveToolbarTranslateEnabled();
-            case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
-                return AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled();
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(mProfile);
             case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:

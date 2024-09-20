@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <variant>
 
 #include "ash/constants/ash_features.h"
@@ -15,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
@@ -37,6 +39,7 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -50,8 +53,8 @@ namespace {
 inline constexpr char kCampaignComponentName[] = "growth-campaigns";
 
 // A util function to add the `kGrowthCampaignsEventNamePrefix`.
-std::string AddEventPrefix(const std::string& event) {
-  return growth::GetGrowthCampaignsEventNamePrefix() + event;
+std::string AddEventPrefix(std::string_view event) {
+  return base::StrCat({growth::GetGrowthCampaignsEventNamePrefix(), event});
 }
 
 Profile* GetProfile() {
@@ -73,8 +76,12 @@ void CampaignsManagerClientImpl::LoadCampaignsComponent(
     growth::CampaignComponentLoadedCallback callback) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(ash::switches::kGrowthCampaignsPath)) {
-    std::move(callback).Run(base::FilePath(command_line->GetSwitchValueASCII(
-        ash::switches::kGrowthCampaignsPath)));
+    const auto path =
+        command_line->GetSwitchValuePath(ash::switches::kGrowthCampaignsPath);
+    CAMPAIGNS_LOG(DEBUG) << "Switch `kGrowthCampaignsPath` is set. Load "
+                            "campaigns component from file "
+                         << path;
+    std::move(callback).Run(base::FilePath(path));
     return;
   }
 
@@ -179,6 +186,8 @@ growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() {
 void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
     const std::string& trial_name,
     const std::string& group_name) const {
+  CAMPAIGNS_LOG(DEBUG) << "Register synthetic field trial: trial_name: "
+                       << trial_name << " group_name: " << group_name;
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       trial_name, group_name,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
@@ -195,11 +204,22 @@ void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name,
     return;
   }
 
+  CAMPAIGNS_LOG(DEBUG) << "Record event: " << event_name
+                       << " Trigger Campaigns: "
+                       << growth::ToString(trigger_campaigns);
   tracker->NotifyEvent(AddEventPrefix(event_name));
 
-  if (auto* session = CampaignsManagerSession::Get();
-      ash::features::IsGrowthCampaignsTriggerByRecordEventEnabled() &&
-      trigger_campaigns && session) {
+  if (!trigger_campaigns) {
+    return;
+  }
+
+  // If the App Mall app is not enabled, do not trigger by the event.
+  if (event_name == growth::kGrowthCampaignsEventHotseatHover &&
+      !chromeos::features::IsCrosMallSwaEnabled()) {
+    return;
+  }
+
+  if (auto* session = CampaignsManagerSession::Get()) {
     session->MaybeTriggerCampaignsOnEvent(event_name);
   }
 }
@@ -215,6 +235,9 @@ void CampaignsManagerClientImpl::ClearConfig(
     return;
   }
 
+  for (const auto& param : params) {
+    CAMPAIGNS_LOG(DEBUG) << "Clear config: " << param.second;
+  }
   UpdateConfig(params);
   tracker->ClearEventData(feature_engagement::kIPHGrowthFramework);
 }
@@ -296,6 +319,9 @@ void CampaignsManagerClientImpl::OnComponentDownloaded(
     component_updater::ComponentManagerAsh::Error error,
     const base::FilePath& path) {
   if (error != component_updater::ComponentManagerAsh::Error::NONE) {
+    // TODO - b/365582608: Add error metrics.
+    CAMPAIGNS_LOG(ERROR) << "Failed to download campaigns component. Error: "
+                         << static_cast<int>(error);
     std::move(loaded_callback).Run(std::nullopt);
     return;
   }

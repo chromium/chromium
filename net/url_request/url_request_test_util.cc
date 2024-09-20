@@ -14,6 +14,7 @@
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/do_nothing_ct_verifier.h"
@@ -28,6 +29,7 @@
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/quic/quic_context.h"
 #include "net/url_request/static_http_user_agent_settings.h"
+#include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_job.h"
@@ -560,6 +562,12 @@ int TestNetworkDelegate::GetRequestId(URLRequest* request) {
 std::optional<cookie_util::StorageAccessStatus>
 TestNetworkDelegate::OnGetStorageAccessStatus(const URLRequest& request) const {
   return storage_access_status_;
+}
+
+bool TestNetworkDelegate::OnIsStorageAccessHeaderEnabled(
+    const url::Origin* top_frame_origin,
+    const GURL& url) const {
+  return is_storage_access_header_enabled_;
 }
 
 FilteringTestNetworkDelegate::FilteringTestNetworkDelegate() = default;

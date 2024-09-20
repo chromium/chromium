@@ -5,6 +5,7 @@
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 
 #import "base/check.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
 
 // Type of the block used for delivering mocked reauth results.
@@ -31,7 +32,7 @@ typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _shouldReturnSynchronously = YES;
+    _shouldSkipReAuth = YES;
   }
   return self;
 }
@@ -56,8 +57,9 @@ typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
                                              reauthResultHandler {
   self.localizedReasonForAuthentication = localizedReason;
 
-  if (self.shouldReturnSynchronously) {
-    reauthResultHandler(_expectedResult);
+  if (self.shouldSkipReAuth) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(reauthResultHandler, _expectedResult));
   } else {
     if (self.reauthResultHandler) {
       // When multiple reauth requests are done without waiting for the result,
@@ -69,7 +71,7 @@ typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
 }
 
 - (void)returnMockedReauthenticationResult {
-  CHECK(!self.shouldReturnSynchronously);
+  CHECK(!self.shouldSkipReAuth);
 
   // Some test cases set the handler after UI events (e.g. animations).
   // Avoid race conditions by waiting until the handler is set.

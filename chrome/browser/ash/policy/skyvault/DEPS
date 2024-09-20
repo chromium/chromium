@@ -34,4 +34,5 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h",
   "+chromeos/ash/components/system/statistics_provider.h",
   "+chromeos/ash/components/system/fake_statistics_provider.h",
+  "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
 ]

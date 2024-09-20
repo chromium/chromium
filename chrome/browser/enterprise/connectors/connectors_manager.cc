@@ -39,7 +39,6 @@ static constexpr enterprise_connectors::AnalysisConnector
 };
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-constexpr char kReportingConnectorUrlFlag[] = "reporting-connector-url";
 }  // namespace
 
 ConnectorsManager::ConnectorsManager(PrefService* pref_service,
@@ -78,7 +77,7 @@ ConnectorsManager::~ConnectorsManager() = default;
 bool ConnectorsManager::IsAnalysisConnectorEnabled(
     AnalysisConnector connector) const {
   if (analysis_connector_settings_.count(connector) == 0 &&
-      prefs()->HasPrefPath(ConnectorPref(connector))) {
+      prefs()->HasPrefPath(AnalysisConnectorPref(connector))) {
     CacheAnalysisConnectorPolicy(connector);
   }
 
@@ -178,7 +177,7 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   analysis_connector_settings_.erase(connector);
 
   // Connectors with non-existing policies should not reach this code.
-  const char* pref = ConnectorPref(connector);
+  const char* pref = AnalysisConnectorPref(connector);
   DCHECK(pref);
 
   const base::Value::List& policy_value = prefs()->GetList(pref);
@@ -342,7 +341,7 @@ void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
 }
 
 void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
-  const char* pref = ConnectorPref(connector);
+  const char* pref = AnalysisConnectorPref(connector);
   DCHECK(pref);
   if (!pref_change_registrar_.IsObserved(pref)) {
     pref_change_registrar_.Add(
@@ -353,26 +352,6 @@ void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
   }
 }
 
-std::optional<GURL> ConnectorsManager::GetReportingConnectorUrlOverride() {
-  // Ignore this flag on Stable and Beta to avoid abuse.
-  if (!g_browser_process || !g_browser_process->browser_policy_connector()
-                                 ->IsCommandLineSwitchSupported()) {
-    return std::nullopt;
-  }
-
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch(kReportingConnectorUrlFlag)) {
-    GURL url = GURL(cmd->GetSwitchValueASCII(kReportingConnectorUrlFlag));
-    if (url.is_valid()) {
-      return url;
-    } else {
-      VLOG(1) << "--" << kReportingConnectorUrlFlag
-              << " is set to an invalid URL";
-    }
-  }
-
-  return std::nullopt;
-}
 
 const ConnectorsManager::AnalysisConnectorsSettings&
 ConnectorsManager::GetAnalysisConnectorsSettingsForTesting() const {

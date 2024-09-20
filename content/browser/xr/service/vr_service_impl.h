@@ -142,6 +142,11 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
 
   bool InternalSupportsSession(device::mojom::XRSessionOptions* options);
 
+  void DoRequestPermissions(
+      const std::vector<blink::PermissionType> request_permissions,
+      base::OnceCallback<void(
+          const std::vector<blink::mojom::PermissionStatus>&)> result_callback);
+
   // The following steps are ordered in the general flow for "RequestSession"
   // GetPermissionStatus will result in a call to OnPermissionResult which then
   // calls EnsureRuntimeInstalled (with a callback to OnInstallResult), which

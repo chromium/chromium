@@ -34,7 +34,7 @@ import org.chromium.ui.modelutil.PropertyModel;
         } else if (AutofillSaveIbanBottomSheetProperties.TITLE == propertyKey) {
             view.mTitle.setText(model.get(AutofillSaveIbanBottomSheetProperties.TITLE));
         } else if (AutofillSaveIbanBottomSheetProperties.DESCRIPTION == propertyKey) {
-            setTextViewText(
+            setMaybeEmptyText(
                     view.mDescription,
                     model.get(AutofillSaveIbanBottomSheetProperties.DESCRIPTION));
         } else if (AutofillSaveIbanBottomSheetProperties.IBAN_LABEL == propertyKey) {
@@ -56,8 +56,7 @@ import org.chromium.ui.modelutil.PropertyModel;
         } else if (AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE == propertyKey) {
             AutofillSaveIbanBottomSheetProperties.LegalMessage legalMessage =
                     model.get(AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE);
-
-            if (legalMessage == null) {
+            if (legalMessage.mLines.isEmpty()) {
                 view.mLegalMessage.setVisibility(View.GONE);
                 return;
             }
@@ -68,12 +67,13 @@ import org.chromium.ui.modelutil.PropertyModel;
                             legalMessage.mLines,
                             /* underlineLinks= */ true,
                             legalMessage.mLink::accept);
-            setTextViewText(view.mLegalMessage, stringBuilder.toString());
+            view.mLegalMessage.setText(stringBuilder);
+            view.mLegalMessage.setVisibility(View.VISIBLE);
             view.mLegalMessage.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }
 
-    private static void setTextViewText(TextView textView, String text) {
+    private static void setMaybeEmptyText(TextView textView, String text) {
         if (text.isEmpty()) {
             textView.setVisibility(View.GONE);
             return;

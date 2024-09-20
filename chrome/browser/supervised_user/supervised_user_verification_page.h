@@ -34,12 +34,17 @@ enum class FamilyLinkUserReauthenticationInterstitialState : int {
 class SupervisedUserVerificationPage
     : public security_interstitials::SecurityInterstitialPage {
  public:
-  // The purpose of the interstitial determines its layout and displayed texts.
+  // The purpose of the re-authentication interstitial determines its layout and
+  // displayed texts.
   enum class VerificationPurpose {
-    REAUTH_REQUIRED_SITE,  // Show the interstitial for sites requiring
-                           // re-authentication with generic descriptions
-    BLOCKED_SITE  // The interstitial is displayed for a blocked site, for which
-                  // parent's approvals require re-authentication.
+    REAUTH_REQUIRED_SITE,  // Show the interstitial for YouTube, which requires
+                           // authentication to determine content restrictions.
+    DEFAULT_BLOCKED_SITE,  // Show the interstitial for blocked sites.
+                           // Re-authentication is needed so that supervised
+                           // users can ask for parent's approval.
+    SAFE_SITES_BLOCKED_SITE,  // Show the interstitial for sites blocked by the
+                              // explicit sites checker.
+    MANUAL_BLOCKED_SITE,  // Show the interstitial for sites blocked manually.
   };
 
   // The status of the interstitial used for metrics recording purposes.
@@ -62,7 +67,9 @@ class SupervisedUserVerificationPage
       ukm::SourceId source_id,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
-          controller_client);
+          controller_client,
+      bool is_main_frame = true,
+      bool has_second_custodian = false);
 
   SupervisedUserVerificationPage(const SupervisedUserVerificationPage&) =
       delete;
@@ -89,12 +96,15 @@ class SupervisedUserVerificationPage
   void RecordReauthStatusMetrics(Status status);
   void RecordYouTubeReauthStatusUkm(Status status);
   void RecordBlockedUrlReauthStatusUma(Status status);
+  int GetBlockMessageReasonId();
   base::CallbackListSubscription google_auth_state_subscription_;
   const std::string email_to_reauth_;
   const GURL request_url_;
   const VerificationPurpose verification_purpose_;
   raw_ptr<supervised_user::ChildAccountService> child_account_service_;
   ukm::SourceId source_id_;
+  bool is_main_frame_;
+  bool has_second_custodian_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_VERIFICATION_PAGE_H_

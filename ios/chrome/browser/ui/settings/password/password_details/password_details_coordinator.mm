@@ -48,6 +48,10 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
+}  // namespace
+
 @interface PasswordDetailsCoordinator () <
     PasswordDetailsHandler,
     PasswordDetailsMediatorDelegate,
@@ -96,6 +100,14 @@
 
   // For recording visits after successful authentication.
   IOSPasswordManagerVisitsRecorder* _visitsRecorder;
+
+  // Timer that ensures that the spinner displayed during fetching password
+  // sharing data is visible for at least a defined period of time.
+  NSTimer* _shareSpinnerTimer;
+
+  // Whether password sharing coordinator fetched all necessary data to start
+  // the flow.
+  BOOL _shareDataFetched;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -175,9 +187,6 @@
   self.viewController.reauthModule = self.reauthenticationModule;
   if (self.openInEditMode) {
     [self.viewController editButtonPressed];
-  }
-  if (self.showCancelButton) {
-    [self.viewController setupLeftCancelButton];
   }
 
   BOOL requireAuth = [self shouldRequireAuthOnStart];
@@ -364,7 +373,6 @@
           prefs::kPasswordSharingFlowHasBeenEntered)) {
     [self startPasswordSharingCoordinator];
   } else {
-    [self.viewController showShareButton];
     [self.passwordSharingFirstRunCoordinator stop];
     self.passwordSharingFirstRunCoordinator =
         [[PasswordSharingFirstRunCoordinator alloc]
@@ -456,8 +464,16 @@
   }
 }
 
-- (void)shareFlowEntered {
-  [self.viewController showShareButton];
+- (void)shareDataFetched {
+  // If the timer has not fired yet, it's because the request to fetch the data
+  // about sharing recipients finished too quickly (for UX purposes). Defer
+  // moving to the next password sharing screen until the timer fires.
+  if (_shareSpinnerTimer.isValid) {
+    _shareDataFetched = YES;
+  } else {
+    [self.viewController showShareButton];
+    [self.passwordSharingCoordinator showFirstStep];
+  }
 }
 
 #pragma mark - PasswordSharingFirstRunCoordinatorDelegate
@@ -508,8 +524,19 @@
   [_reauthCoordinator start];
 }
 
-// Starts the main coordinator for the password sharing flow.
+// Starts the main coordinator for the password sharing flow. Notifies the view
+// to replace share button with a spinner for the time when password sharing
+// coordinator will be fetching necessary data and starts the timer to ensure
+// the spinner is displayed for at least a defined period of time.
 - (void)startPasswordSharingCoordinator {
+  [self.viewController showSpinnerOnRightNavigationBar];
+  _shareSpinnerTimer =
+      [NSTimer scheduledTimerWithTimeInterval:kShareSpinnerMinTimeInSeconds
+                                       target:self
+                                     selector:@selector(shareSpinnerTimerFired)
+                                     userInfo:nil
+                                      repeats:NO];
+
   [self.passwordSharingCoordinator stop];
   self.passwordSharingCoordinator = [[PasswordSharingCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -562,6 +589,15 @@
   password_manager::PasswordManagerClient* passwordManagerClient =
       PasswordTabHelper::FromWebState(webState)->GetPasswordManagerClient();
   passwordManagerClient->UpdateFormManagers();
+}
+
+// Called when the minimum time for which the password sharing spinner should be
+// displayed passes.
+- (void)shareSpinnerTimerFired {
+  if (_shareDataFetched) {
+    [self.viewController showShareButton];
+    [self.passwordSharingCoordinator showFirstStep];
+  }
 }
 
 @end

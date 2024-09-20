@@ -42,7 +42,7 @@ import java.util.Set;
 
 /**
  * The point of interaction with a locally installed 3rd party native Android payment app.
- * https://developers.google.com/web/fundamentals/payments/payment-apps-developer-guide/android-payment-apps
+ * https://web.dev/articles/android-payment-apps-developers-guide
  */
 public class AndroidPaymentApp extends PaymentApp
         implements IsReadyToPayServiceHelper.ResultHandler {
@@ -53,12 +53,14 @@ public class AndroidPaymentApp extends PaymentApp
     private final String mPackageName;
     private final String mPayActivityName;
     private final String mIsReadyToPayServiceName;
+    private final SupportedDelegations mSupportedDelegations;
+    private final boolean mShowReadyToPayDebugInfo;
+
     private IsReadyToPayCallback mIsReadyToPayCallback;
     private InstrumentDetailsCallback mInstrumentDetailsCallback;
     private IsReadyToPayServiceHelper mIsReadyToPayServiceHelper;
     @Nullable private String mApplicationIdentifierToHide;
     private boolean mBypassIsReadyToPayServiceInTest;
-    private final SupportedDelegations mSupportedDelegations;
     private boolean mIsPreferred;
 
     // Set inside launchPaymentApp and used to validate the received response.
@@ -70,8 +72,17 @@ public class AndroidPaymentApp extends PaymentApp
      */
     public interface Launcher {
         /**
+         * Show an informational dialog about the contents of the given IS_READY_TO_PAY intent.
+         *
+         * @param readyToPayDebugInfo The informational message to display in a dialog for debugging
+         *     purposes.
+         */
+        void showReadyToPayDebugInfo(String readyToPayDebugInfo);
+
+        /**
          * Show a warning about leaving incognito mode with a prompt to continue into the payment
          * app.
+         *
          * @param denyCallback The callback invoked when the user denies or dismisses the prompt.
          * @param approveCallback The callback invoked when the user approves the prompt.
          */
@@ -119,6 +130,17 @@ public class AndroidPaymentApp extends PaymentApp
         private Context getActivityContext() {
             WindowAndroid window = mWebContents.getTopLevelNativeWindow();
             return window == null ? null : window.getActivity().get();
+        }
+
+        @Override
+        public void showReadyToPayDebugInfo(String readyToPayDebugInfo) {
+            Context context = getActivityContext();
+            if (context == null) {
+                return;
+            }
+            new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                    .setMessage(readyToPayDebugInfo)
+                    .show();
         }
 
         // Launcher implementation.
@@ -193,16 +215,18 @@ public class AndroidPaymentApp extends PaymentApp
      * app.
      *
      * @param launcher Helps querying and launching the Android payment app. Overridden in unit
-     *         tests.
+     *     tests.
      * @param packageName The name of the package of the payment app.
      * @param activity The name of the payment activity in the payment app.
-     * @param isReadyToPayService The name of the service that can answer "is ready to pay"
-     *         query, or null of none.
+     * @param isReadyToPayService The name of the service that can answer "is ready to pay" query,
+     *     or null of none.
      * @param label The UI label to use for the payment app.
      * @param icon The icon to use in UI for the payment app.
      * @param isIncognito Whether the user is in incognito mode.
      * @param appToHide The identifier of the application that this app can hide.
      * @param supportedDelegations Delegations which this app can support.
+     * @param showReadyToPayDebugInfo Whether IS_READY_TO_PAY intent should be displayed in a debug
+     *     dialog.
      */
     public AndroidPaymentApp(
             Launcher launcher,
@@ -213,7 +237,8 @@ public class AndroidPaymentApp extends PaymentApp
             Drawable icon,
             boolean isIncognito,
             @Nullable String appToHide,
-            SupportedDelegations supportedDelegations) {
+            SupportedDelegations supportedDelegations,
+            boolean showReadyToPayDebugInfo) {
         super(packageName, label, null, icon);
         ThreadUtils.assertOnUiThread();
         mHandler = new Handler();
@@ -231,6 +256,7 @@ public class AndroidPaymentApp extends PaymentApp
         mIsIncognito = isIncognito;
         mApplicationIdentifierToHide = appToHide;
         mSupportedDelegations = supportedDelegations;
+        mShowReadyToPayDebugInfo = showReadyToPayDebugInfo;
         mIsPreferred = false;
     }
 
@@ -247,6 +273,25 @@ public class AndroidPaymentApp extends PaymentApp
          * @param isReadyToPay Whether the app is ready to pay.
          */
         void onIsReadyToPayResponse(AndroidPaymentApp app, boolean isReadyToPay);
+    }
+
+    private static String buildReadyToPayDebugInfoString(
+            String serviceName, String packageName, Map<String, PaymentMethodData> methodDataMap) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("IS_READY_TO_PAY sent to ");
+        sb.append(serviceName);
+        sb.append(" in ");
+        sb.append(packageName);
+        sb.append(" with [");
+        for (Map.Entry<String, PaymentMethodData> entry : methodDataMap.entrySet()) {
+            sb.append("{");
+            sb.append(entry.getKey());
+            sb.append(": ");
+            sb.append(entry.getValue().stringifiedData);
+            sb.append("}");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     /** Queries the IS_READY_TO_PAY service. */
@@ -269,6 +314,12 @@ public class AndroidPaymentApp extends PaymentApp
         }
 
         assert !mIsIncognito;
+
+        if (mShowReadyToPayDebugInfo) {
+            mLauncher.showReadyToPayDebugInfo(
+                    buildReadyToPayDebugInfoString(
+                            mIsReadyToPayServiceName, mPackageName, methodDataMap));
+        }
 
         Intent isReadyToPayIntent =
                 WebPaymentIntentHelper.createIsReadyToPayIntent(

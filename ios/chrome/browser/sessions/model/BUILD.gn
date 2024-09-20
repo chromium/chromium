@@ -13,7 +13,10 @@ source_set("model") {
     "live_tab_context_browser_agent.h",
     "live_tab_context_browser_agent.mm",
   ]
-  public_deps = [ "//components/sessions" ]
+  public_deps = [
+    "//components/sessions",
+    "//ui/base/mojom:ui_base_types",
+  ]
   deps = [
     ":serialisation",
     ":session_util",
@@ -444,6 +447,7 @@ source_set("unit_tests") {
     "//ios/web/public/navigation",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
+    "//ios/web/public/session/proto:proto_test_util",
     "//ios/web/public/session/proto:proto_util",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

@@ -282,8 +282,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-haspopup-changed.html"));
 }
 
-// crbug.com/1511111 leaving disabled after re-enabling test suite.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaHiddenChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-changed.html"));
 }
@@ -464,11 +463,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAddAlertContentEmptyText) {
-  RunEventTest(FILE_PATH_LITERAL("add-alert-with-empty-text.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAddChild) {
   RunEventTest(FILE_PATH_LITERAL("add-child.html"));
 }
@@ -478,40 +472,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("add-child-of-body.html"));
 }
 
-// TODO(crbug.com/40823869): Flaky on Win7.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsAddDialog DISABLED_AccessibilityEventsAddDialog
-#else
-#define MAYBE_AccessibilityEventsAddDialog AccessibilityEventsAddDialog
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAddDialog) {
+                       AccessibilityEventsAddDialog) {
   RunEventTest(FILE_PATH_LITERAL("add-dialog.html"));
 }
 
-// TODO(crbug.com/40823869): Flaky on Win7.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsAddDialogDescribedBy \
-  DISABLED_AccessibilityEventsAddDialogDescribedBy
-#else
-#define MAYBE_AccessibilityEventsAddDialogDescribedBy \
-  AccessibilityEventsAddDialogDescribedBy
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAddDialogDescribedBy) {
+                       AccessibilityEventsAddDialogDescribedBy) {
   RunEventTest(FILE_PATH_LITERAL("add-dialog-described-by.html"));
 }
 
-// TODO(crbug.com/40823869): Flaky on Win7.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsAddDialogNoInfo \
-  DISABLED_AccessibilityEventsAddDialogNoInfo
-#else
-#define MAYBE_AccessibilityEventsAddDialogNoInfo \
-  AccessibilityEventsAddDialogNoInfo
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAddDialogNoInfo) {
+                       AccessibilityEventsAddDialogNoInfo) {
   RunEventTest(FILE_PATH_LITERAL("add-dialog-no-info.html"));
 }
 
@@ -535,8 +507,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("anonymous-block-children-changed.html"));
 }
 
-// crbug.com/1511111 leaving disabled after re-enabling test suite.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsChildrenChangedOnlyOnAncestor) {
   RunEventTest(FILE_PATH_LITERAL("children-changed-only-on-ancestor.html"));
 }
@@ -625,14 +596,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
       FILE_PATH_LITERAL("aria-expanded-and-collapsed-reparenting.html"));
 }
 
-// crbug.com/1511111 leaving disabled after re-enabling test suite.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaHiddenDescendants) {
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-descendants.html"));
 }
 
-// crbug.com/1511111 leaving disabled after re-enabling test suite.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaHiddenSingleDescendant) {
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-single-descendant.html"));
 }
@@ -644,9 +613,8 @@ IN_PROC_BROWSER_TEST_P(
       FILE_PATH_LITERAL("aria-hidden-single-descendant-display-none.html"));
 }
 
-// crbug.com/1511111 leaving disabled after re-enabling test suite.
 IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTestExceptUIA,
+    DumpAccessibilityEventsTest,
     AccessibilityEventsAriaHiddenSingleDescendantVisibilityHidden) {
   RunEventTest(FILE_PATH_LITERAL(
       "aria-hidden-single-descendant-visibility-hidden.html"));
@@ -731,16 +699,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("focus-listbox-multiselect.html"));
 }
 
-// TODO(crbug.com/40823137): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_AccessibilityEventsIframeSrcChanged \
-  DISABLED_AccessibilityEventsIframeSrcChanged
-#else
-#define MAYBE_AccessibilityEventsIframeSrcChanged \
-  AccessibilityEventsIframeSrcChanged
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsIframeSrcChanged) {
+                       AccessibilityEventsIframeSrcChanged) {
   RunEventTest(FILE_PATH_LITERAL("iframe-src-changed.html"));
 }
 
@@ -1018,10 +978,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-ignored-changed.html"));
 }
 
-// TODO(crbug.com/40762297): Fix flakiness.
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
-    DISABLED_AccessibilityEventsSubtreeReparentedViaAppendChild) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsSubtreeReparentedViaAppendChild) {
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-via-append-child.html"));
 }
 
@@ -1188,16 +1146,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menu-opened-closed.html"));
 }
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-// TODO(crbug.com/40868032): Test is flaky on Windows ASAN and Mac.
-#define MAYBE_AccessibilityEventsMenubarShowHideMenus \
-  DISABLED_AccessibilityEventsMenubarShowHideMenus
-#else
-#define MAYBE_AccessibilityEventsMenubarShowHideMenus \
-  AccessibilityEventsMenubarShowHideMenus
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsMenubarShowHideMenus) {
+                       AccessibilityEventsMenubarShowHideMenus) {
   RunEventTest(FILE_PATH_LITERAL("menubar-show-hide-menus.html"));
 }
 

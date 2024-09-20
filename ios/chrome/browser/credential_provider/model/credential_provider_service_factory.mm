@@ -24,9 +24,15 @@
 
 // static
 CredentialProviderService* CredentialProviderServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+CredentialProviderService* CredentialProviderServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<CredentialProviderService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -75,7 +81,7 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
   affiliations::AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
+      IOSChromeAffiliationServiceFactory::GetForBrowserState(browser_state);
   FaviconLoader* favicon_loader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state);
 

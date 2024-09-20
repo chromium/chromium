@@ -30,6 +30,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final boolean mIsMultilineLabel;
     private final boolean mIsBoldLabel;
     private final boolean mApplyDeactivatedStyle;
+    private final boolean mShouldDisplayTermsAvailable;
     @Nullable private final String mFeatureForIPH;
     private final String mIPHDescriptionText;
     @Nullable private final GURL mCustomIconUrl;
@@ -52,6 +53,8 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param isDeletable Whether the item can be deleted by the user.
      * @param isMultilineLabel Whether the label is displayed over multiple lines.
      * @param isBoldLabel Whether the label is displayed in {@code Typeface.BOLD}.
+     * @param applyDeactivatedStyle Whether to apply deactivated style to the suggestion.
+     * @param shouldDisplayTermsAvailable Whether the terms message is displayed.
      * @param featureForIPH The IPH feature for the autofill suggestion. If present, it'll be
      *     attempted to be shown in the keyboard accessory.
      * @param customIconUrl The {@link GURL} for the custom icon, if any.
@@ -71,6 +74,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             boolean isMultilineLabel,
             boolean isBoldLabel,
             boolean applyDeactivatedStyle,
+            boolean shouldDisplayTermsAvailable,
             @Nullable String featureForIPH,
             String iphDescriptionText,
             @Nullable GURL customIconUrl,
@@ -87,6 +91,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mIsMultilineLabel = isMultilineLabel;
         mIsBoldLabel = isBoldLabel;
         mApplyDeactivatedStyle = applyDeactivatedStyle;
+        mShouldDisplayTermsAvailable = shouldDisplayTermsAvailable;
         mFeatureForIPH = featureForIPH;
         mIPHDescriptionText = iphDescriptionText;
         mCustomIconUrl = customIconUrl;
@@ -181,6 +186,10 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mApplyDeactivatedStyle;
     }
 
+    public boolean shouldDisplayTermsAvailable() {
+        return mShouldDisplayTermsAvailable;
+    }
+
     @Nullable
     public String getFeatureForIPH() {
         return mFeatureForIPH;
@@ -211,6 +220,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mIsMultilineLabel == other.mIsMultilineLabel
                 && this.mIsBoldLabel == other.mIsBoldLabel
                 && this.mApplyDeactivatedStyle == other.mApplyDeactivatedStyle
+                && this.mShouldDisplayTermsAvailable == other.mShouldDisplayTermsAvailable
                 && Objects.equals(this.mFeatureForIPH, other.mFeatureForIPH)
                 && this.mIPHDescriptionText.equals(other.mIPHDescriptionText)
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
@@ -231,6 +241,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 .setIsMultiLineLabel(mIsMultilineLabel)
                 .setIsBoldLabel(mIsBoldLabel)
                 .setApplyDeactivatedStyle(mApplyDeactivatedStyle)
+                .setShouldDisplayTermsAvailable(mShouldDisplayTermsAvailable)
                 .setFeatureForIPH(mFeatureForIPH)
                 .setIPHDescriptionText(mIPHDescriptionText)
                 .setCustomIconUrl(mCustomIconUrl)
@@ -247,6 +258,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         private boolean mIsDeletable;
         private boolean mIsMultiLineLabel;
         private boolean mApplyDeactivatedStyle;
+        private boolean mShouldDisplayTermsAvailable;
         private String mFeatureForIPH;
         private String mIPHDescriptionText;
         private String mItemTag;
@@ -293,6 +305,11 @@ public class AutofillSuggestion extends DropdownItemBase {
 
         public Builder setApplyDeactivatedStyle(boolean applyDeactivatedStyle) {
             this.mApplyDeactivatedStyle = applyDeactivatedStyle;
+            return this;
+        }
+
+        public Builder setShouldDisplayTermsAvailable(boolean shouldDisplayTermsAvailable) {
+            this.mShouldDisplayTermsAvailable = shouldDisplayTermsAvailable;
             return this;
         }
 
@@ -354,6 +371,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mIsMultiLineLabel,
                     mIsBoldLabel,
                     mApplyDeactivatedStyle,
+                    mShouldDisplayTermsAvailable,
                     mFeatureForIPH,
                     mIPHDescriptionText,
                     mCustomIconUrl,

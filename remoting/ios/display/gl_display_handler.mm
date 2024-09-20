@@ -311,8 +311,7 @@ base::WeakPtr<remoting::GlDisplayHandler::Core> Core::GetWeakPtr() {
 
 - (id<GlDisplayHandlerDelegate>)delegate {
   // Implementation is still required for UNAVAILABLE_ATTRIBUTE.
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 @end

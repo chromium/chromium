@@ -12,6 +12,7 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_mode.h"
 #include "url/gurl.h"
 
@@ -39,14 +40,11 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   PageLiveStateDecorator(const PageLiveStateDecorator& other) = delete;
   PageLiveStateDecorator& operator=(const PageLiveStateDecorator&) = delete;
 
-  // Must be called when the connected to USB device state changes.
-  static void OnIsConnectedToUSBDeviceChanged(content::WebContents* contents,
-                                              bool is_connected_to_usb_device);
-
-  // Must be called when the connected to Bluetooth device state changes.
-  static void OnIsConnectedToBluetoothDeviceChanged(
+  // Must be called when the device connection types used by `contents` change.
+  static void OnDeviceConnectionTypesChanged(
       content::WebContents* contents,
-      bool is_connected_to_bluetooth_device);
+      content::WebContentsObserver::DeviceConnectionType connection_type,
+      bool used);
 
   // Functions that should be called by a MediaStreamCaptureIndicator::Observer.
   static void OnIsCapturingVideoChanged(content::WebContents* contents,
@@ -109,6 +107,8 @@ class PageLiveStateDecorator::Data {
 
   virtual bool IsConnectedToUSBDevice() const = 0;
   virtual bool IsConnectedToBluetoothDevice() const = 0;
+  virtual bool IsConnectedToHidDevice() const = 0;
+  virtual bool IsConnectedToSerialPort() const = 0;
   virtual bool IsCapturingVideo() const = 0;
   virtual bool IsCapturingAudio() const = 0;
   virtual bool IsBeingMirrored() const = 0;
@@ -130,6 +130,8 @@ class PageLiveStateDecorator::Data {
 
   virtual void SetIsConnectedToUSBDeviceForTesting(bool value) = 0;
   virtual void SetIsConnectedToBluetoothDeviceForTesting(bool value) = 0;
+  virtual void SetIsConnectedToHidDeviceForTesting(bool value) = 0;
+  virtual void SetIsConnectedToSerialPortForTesting(bool value) = 0;
   virtual void SetIsCapturingVideoForTesting(bool value) = 0;
   virtual void SetIsCapturingAudioForTesting(bool value) = 0;
   virtual void SetIsBeingMirroredForTesting(bool value) = 0;
@@ -160,6 +162,8 @@ class PageLiveStateObserver : public base::CheckedObserver {
   virtual void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) = 0;
   virtual void OnIsConnectedToBluetoothDeviceChanged(
       const PageNode* page_node) = 0;
+  virtual void OnIsConnectedToHidDeviceChanged(const PageNode* page_node) = 0;
+  virtual void OnIsConnectedToSerialPortChanged(const PageNode* page_node) = 0;
   virtual void OnIsCapturingVideoChanged(const PageNode* page_node) = 0;
   virtual void OnIsCapturingAudioChanged(const PageNode* page_node) = 0;
   virtual void OnIsBeingMirroredChanged(const PageNode* page_node) = 0;
@@ -186,6 +190,8 @@ class PageLiveStateObserverDefaultImpl : public PageLiveStateObserver {
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {}
   void OnIsConnectedToBluetoothDeviceChanged(
       const PageNode* page_node) override {}
+  void OnIsConnectedToHidDeviceChanged(const PageNode* page_node) override {}
+  void OnIsConnectedToSerialPortChanged(const PageNode* page_node) override {}
   void OnIsCapturingVideoChanged(const PageNode* page_node) override {}
   void OnIsCapturingAudioChanged(const PageNode* page_node) override {}
   void OnIsBeingMirroredChanged(const PageNode* page_node) override {}

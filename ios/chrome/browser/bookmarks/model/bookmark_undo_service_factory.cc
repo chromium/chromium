@@ -13,17 +13,17 @@
 namespace ios {
 
 // static
-BookmarkUndoService* BookmarkUndoServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+BookmarkUndoService* BookmarkUndoServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<BookmarkUndoService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
-BookmarkUndoService* BookmarkUndoServiceFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+BookmarkUndoService* BookmarkUndoServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   return static_cast<BookmarkUndoService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static

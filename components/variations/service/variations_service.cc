@@ -852,7 +852,9 @@ void VariationsService::OnSimpleLoaderComplete(
   DCHECK(response_body);
 
   std::optional<base::Time> response_date = headers->GetDateValue();
-  if (response_date) {
+  // If the seed was fetched securely, opportunistically update the network time
+  // tracker with the headers time.
+  if (response_date && !last_request_was_http_retry_) {
     DCHECK(!response_date->is_null());
 
     const base::TimeDelta latency = now - last_request_started_time_;

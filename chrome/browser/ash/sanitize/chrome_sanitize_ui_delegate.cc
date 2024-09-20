@@ -25,11 +25,11 @@ ChromeSanitizeUIDelegate::ChromeSanitizeUIDelegate(content::WebUI* web_ui) {
 
 void ChromeSanitizeUIDelegate::PerformSanitizeSettings() {
   ProfileResetter::ResettableFlags to_sanitize =
-      ProfileResetter::DEFAULT_SEARCH_ENGINE | ProfileResetter::HOMEPAGE |
-      ProfileResetter::CONTENT_SETTINGS | ProfileResetter::EXTENSIONS |
-      ProfileResetter::STARTUP_PAGES | ProfileResetter::PINNED_TABS |
-      ProfileResetter::SHORTCUTS | ProfileResetter::NTP_CUSTOMIZATIONS |
-      ProfileResetter::LANGUAGES | ProfileResetter::DNS_CONFIGURATIONS;
+      ProfileResetter::HOMEPAGE | ProfileResetter::CONTENT_SETTINGS |
+      ProfileResetter::EXTENSIONS | ProfileResetter::STARTUP_PAGES |
+      ProfileResetter::PINNED_TABS | ProfileResetter::SHORTCUTS |
+      ProfileResetter::NTP_CUSTOMIZATIONS | ProfileResetter::LANGUAGES |
+      ProfileResetter::DNS_CONFIGURATIONS;
 
   GetResetter()->ResetSettings(
       to_sanitize, nullptr,

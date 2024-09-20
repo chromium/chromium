@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ERROR_STATE_INFO;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import org.junit.Before;
@@ -20,8 +23,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -36,13 +41,29 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public final class PlusAddressCreationMediatorTest {
-
+    private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
+            new PlusAddressCreationNormalStateInfo(
+                    /* title= */ "lorem ipsum title",
+                    /* description= */ "lorem ipsum description",
+                    /* notice= */ "lorem ipsum description <link>test link</link>",
+                    /* proposedPlusAddressPlaceholder= */ "placeholder",
+                    /* confirmText= */ "ok",
+                    /* cancelText= */ "cancel",
+                    /* errorReportInstruction= */ "error! <link>test link</link>",
+                    /* learnMoreUrl= */ new GURL("learn.more.com"),
+                    /* errorReportUrl= */ new GURL("bug.com"));
     private static final int TAB1_ID = 1;
     private static final int TAB2_ID = 2;
-    private static final String PROPOSED_PLUS_ADDRESS = "foo@bar.com";
+    private static final String PLUS_ADDRESS = "foo@bar.com";
     private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
-            new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
+            new PlusAddressCreationErrorStateInfo(
+                    PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT,
+                    "Title",
+                    "Description",
+                    "Ok",
+                    "Cancel");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -52,27 +73,30 @@ public final class PlusAddressCreationMediatorTest {
     @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private PlusAddressCreationViewBridge mBridge;
+    @Mock private PlusAddressCreationDelegate mDelegate;
 
     private PropertyModel mModel;
     private PlusAddressCreationMediator mMediator;
 
     @Before
     public void setUp() {
-        mModel = PlusAddressCreationProperties.createDefaultModel();
+        mModel =
+                PlusAddressCreationCoordinator.createDefaultModel(
+                        FIRST_TIME_USAGE_INFO, mDelegate, /* refreshSupported= */ true);
         mMediator =
                 new PlusAddressCreationMediator(
-                        mModel,
-                        mBottomSheetContent,
+                        RuntimeEnvironment.application,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,
                         mTabModelSelector,
                         mBridge);
+
+        mMediator.setModel(mModel);
     }
 
     @Test
     public void testConstructor_setsUpBottomSheetContentAndAddsObservers() {
-        verify(mBottomSheetContent).setDelegate(mMediator);
         verify(mBottomSheetController).addObserver(mMediator);
         verify(mLayoutStateProvider).addObserver(mMediator);
         verify(mTabModel).addObserver(mMediator);
@@ -87,20 +111,20 @@ public final class PlusAddressCreationMediatorTest {
 
     @Test
     public void testUpdateProposedPlusAddress_callsBottomSheetSetProposedPlusAddress() {
-        mMediator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
-        verify(mBottomSheetContent).setProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        mMediator.updateProposedPlusAddress(PLUS_ADDRESS);
+
+        assertEquals(mModel.get(PROPOSED_PLUS_ADDRESS), PLUS_ADDRESS);
     }
 
     @Test
     public void testShowError_callsBottomSheetShowError() {
         mMediator.showError(ERROR_STATE);
-        verify(mBottomSheetContent).showError(eq(ERROR_STATE));
+        assertEquals(mModel.get(ERROR_STATE_INFO), ERROR_STATE);
     }
 
-    @Test
     public void testHideRefreshButton_callsBottomSheetHideRefreshButton() {
         mMediator.hideRefreshButton();
-        verify(mBottomSheetContent).hideRefreshButton();
+        assertFalse(mModel.get(REFRESH_ICON_VISIBLE));
     }
 
     @Test

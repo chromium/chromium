@@ -18,6 +18,10 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace extensions {
 
 class WebViewGuest;
@@ -101,6 +105,9 @@ class WebViewPermissionHelper {
   void RequestFileSystemPermission(const GURL& url,
                                    bool allowed_by_default,
                                    base::OnceCallback<void(bool)> callback);
+
+  void RequestFullscreenPermission(const url::Origin& requesting_origin,
+                                   PermissionResponseCallback callback);
 
   enum PermissionResponseAction { DENY, ALLOW, DEFAULT };
 

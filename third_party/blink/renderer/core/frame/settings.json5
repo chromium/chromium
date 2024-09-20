@@ -543,10 +543,10 @@
     // Only used by web tests.
     {
       name: "windowShowState",
-      initial: "ui::WindowShowState::SHOW_STATE_DEFAULT",
+      initial: "ui::mojom::blink::WindowShowState::kDefault",
       invalidate: ["MediaQuery"],
-      type: "ui::WindowShowState",
-      include_paths: ["ui/base/ui_base_types.h"],
+      type: "ui::mojom::blink::WindowShowState",
+      include_paths: ["ui/base/mojom/window_show_state.mojom-blink.h"],
     },
 
     // Only used by web tests.

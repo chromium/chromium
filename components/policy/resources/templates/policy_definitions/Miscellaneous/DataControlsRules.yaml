@@ -21,6 +21,8 @@ desc: |-
         - For data leak prevention rules specific to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, see also the <ph name="DATA_LEAK_PREVENTION_RULES_LIST">DataLeakPreventionRulesList</ph> policy.
 
         If the policy is left not set, no restrictions will be applied.
+
+        This policy is available only to users who have an assigned Chrome Enterprise Premium license.
 example_value:
 - description: Block copying from internal sites to the OS clipboard
   name: Block copying from corp sites to OS

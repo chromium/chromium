@@ -33,6 +33,9 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
 
   explicit QuickAnswersControllerImpl(
       chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
+  QuickAnswersControllerImpl(
+      chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller,
+      std::unique_ptr<QuickAnswersState> quick_answers_state);
   QuickAnswersControllerImpl(const QuickAnswersControllerImpl&) = delete;
   QuickAnswersControllerImpl& operator=(const QuickAnswersControllerImpl&) =
       delete;

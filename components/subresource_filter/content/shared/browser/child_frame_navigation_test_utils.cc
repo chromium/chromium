@@ -75,6 +75,7 @@ void ChildFrameNavigationFilteringThrottleTestHarness::SetUp() {
 void ChildFrameNavigationFilteringThrottleTestHarness::TearDown() {
   dealer_handle_.reset();
   ruleset_handle_.reset();
+  navigation_simulator_.reset();
   parent_filter_.reset();
   RunUntilIdle();
   content::RenderViewHostTestHarness::TearDown();

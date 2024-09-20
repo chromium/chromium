@@ -227,10 +227,14 @@ TEST(FileTest, ReadWrite) {
     EXPECT_EQ(data_to_write[i], data_read_1[i]);
 
   // Read again, but using the trivial native wrapper.
-  bytes_read = file.ReadNoBestEffort(0, data_read_1, kTestDataSize);
-  EXPECT_LE(bytes_read, kTestDataSize);
-  for (int i = 0; i < bytes_read; i++)
+  std::optional<size_t> maybe_bytes_read =
+      file.ReadNoBestEffort(0, base::as_writable_byte_span(data_read_1)
+                                   .first(static_cast<size_t>(kTestDataSize)));
+  ASSERT_TRUE(maybe_bytes_read.has_value());
+  EXPECT_LE(maybe_bytes_read.value(), static_cast<size_t>(kTestDataSize));
+  for (size_t i = 0; i < maybe_bytes_read.value(); i++) {
     EXPECT_EQ(data_to_write[i], data_read_1[i]);
+  }
 
   // Write past the end of the file.
   const int kOffsetBeyondEndOfFile = 10;

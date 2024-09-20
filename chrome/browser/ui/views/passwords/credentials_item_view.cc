@@ -162,6 +162,7 @@ CredentialsItemView::CredentialsItemView(
   }
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetInstallFocusRingOnFocus(false);
 }
 
 CredentialsItemView::~CredentialsItemView() = default;
@@ -176,7 +177,8 @@ int CredentialsItemView::GetPreferredHeight() const {
 }
 
 void CredentialsItemView::OnPaintBackground(gfx::Canvas* canvas) {
-  if (GetState() == STATE_PRESSED || GetState() == STATE_HOVERED) {
+  if (GetState() == STATE_PRESSED || GetState() == STATE_HOVERED ||
+      HasFocus()) {
     canvas->DrawColor(
         GetColorProvider()->GetColor(ui::kColorMenuItemBackgroundSelected));
   }

@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <ranges>
 #include <sstream>
 
 #include "base/compiler_specific.h"
@@ -518,9 +519,7 @@ bool ReportingIsEnforcedByPolicy(bool* crash_reporting_enabled) {
 
 void InitializeProcessType() {
   assert(g_process_type == ProcessType::UNINITIALIZED);
-  std::wstring process_type =
-      GetSwitchValueFromCommandLine(::GetCommandLine(), kProcessType);
-  g_process_type = GetProcessType(process_type);
+  g_process_type = GetProcessType(GetCommandLineSwitchValue(kProcessType));
 }
 
 bool IsProcessTypeInitialized() {
@@ -806,22 +805,41 @@ std::vector<std::wstring> TokenizeCommandLineToArray(
   return result;
 }
 
-std::wstring GetSwitchValueFromCommandLine(const std::wstring& command_line,
-                                           const std::wstring& switch_name) {
-  static constexpr wchar_t kSwitchTerminator[] = L"--";
+std::optional<std::wstring> GetCommandLineSwitch(
+    const std::wstring& command_line,
+    std::wstring_view switch_name) {
   assert(!command_line.empty());
   assert(!switch_name.empty());
 
-  std::vector<std::wstring> as_array = TokenizeCommandLineToArray(command_line);
-  std::wstring switch_with_equal = L"--" + switch_name + L"=";
-  auto end = std::find(as_array.cbegin(), as_array.cend(), kSwitchTerminator);
-  for (auto scan = as_array.cbegin(); scan != end; ++scan) {
-    const std::wstring& arg = *scan;
-    if (arg.compare(0, switch_with_equal.size(), switch_with_equal) == 0)
-      return arg.substr(switch_with_equal.size());
+  std::vector<std::wstring> switches = TokenizeCommandLineToArray(command_line);
+
+  // Stop scanning if lone '--' switch prefix is found.
+  auto cend = std::ranges::find(switches, L"--");
+
+  std::wstring switch_with_prefix = L"--" + std::wstring(switch_name);
+  for (auto it = switches.cbegin(); it != cend; ++it) {
+    if (it->starts_with(switch_with_prefix)) {
+      if (it->length() == switch_with_prefix.length()) {
+        return std::wstring();
+      }
+      if ((*it)[switch_with_prefix.length()] == L'=') {
+        return it->substr(switch_with_prefix.length() + 1);
+      }
+    }
   }
 
-  return std::wstring();
+  return std::nullopt;
+}
+
+std::optional<std::wstring> GetCommandLineSwitch(
+    std::wstring_view switch_name) {
+  assert(!switch_name.empty());
+  return GetCommandLineSwitch(::GetCommandLine(), switch_name);
+}
+
+std::wstring GetCommandLineSwitchValue(std::wstring_view switch_name) {
+  assert(!switch_name.empty());
+  return GetCommandLineSwitch(switch_name).value_or(std::wstring());
 }
 
 bool RecursiveDirectoryCreate(const std::wstring& full_path) {

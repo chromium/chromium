@@ -460,6 +460,8 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kFillPredictionImprovements:
+    case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:

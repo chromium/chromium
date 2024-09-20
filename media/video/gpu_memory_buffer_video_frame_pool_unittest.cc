@@ -29,6 +29,22 @@ using ::testing::AtLeast;
 
 namespace media {
 
+// Note that we are continuing to skip some tests when MappableSI is enabled
+// until VideoFrame::WrapSharedImage() and ::WrapMappableSharedImage() is merged
+// into one. Currently we use VideoFrame::WrapSharedImage() in
+// GpuMemoryBufferVideoFramePool::PoolImpl::
+// BindAndCreateMailboxHardwareFrameResource() and do not use
+// VideoFrame::WrapMappableSharedImage() as the VideoFrame's underlying shared
+// image will never be mapped and will be used as native texture shared image.
+// This is keeping the legacy behavior will GpuMemoryBuffer intact.
+// Using ::WrapSharedImage() doesn't tag the VideoFrame as memory mappable and
+// hence tests which were creating and mapping GpuMemoryBuffers could not Map()
+// the shared image obtained from VideoFrame.
+// TODO(crbug.com/366375486): Convert the currently skipped tests when
+// VideoFrame::WrapSharedImage() and ::WrapMappableSharedImage() is merged
+// into one.
+const bool SkipTestWithMappableSI = true;
+
 class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
  public:
   GpuMemoryBufferVideoFramePoolTest() = default;
@@ -318,7 +334,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrame) {
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddSize) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame =
@@ -411,7 +427,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOne10BppHardwareFrame) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOne10BppHardwareFrameWithOddSize) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame =
@@ -548,7 +564,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOneHardwareNV12FrameWithOddSize) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame =
@@ -618,7 +634,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameForNV12Input) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOneHardwareFrameForNV12InputWithOddSize) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame =
@@ -674,7 +690,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30Frame) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
@@ -700,7 +716,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30Frame) {
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
@@ -735,7 +751,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOneHardwareP010FrameWithOddSize) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame =
@@ -792,7 +808,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
@@ -819,7 +835,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT601) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
@@ -846,7 +862,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT601) {
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXB30Frame) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
@@ -909,7 +925,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesMetadata) {
 // This test checks that in that case we don't crash and don't create the
 // textures.
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateGpuMemoryBufferFail) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
@@ -927,7 +943,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateGpuMemoryBufferFail) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateGpuMemoryBufferFailAfterShutdown) {
-  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+  if (SkipTestWithMappableSI) {
     return;
   }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);

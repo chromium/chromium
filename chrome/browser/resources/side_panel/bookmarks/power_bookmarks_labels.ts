@@ -5,7 +5,7 @@
 import '../strings.m.js';
 import './icons.html.js';
 import '//resources/cr_elements/cr_chip/cr_chip.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';

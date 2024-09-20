@@ -157,9 +157,16 @@ BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);
 BASE_DECLARE_FEATURE(kDropUnrecognizedTemplateUrlParameters);
 BASE_DECLARE_FEATURE(kReportApplicationLanguageInSearchRequest);
 
-BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
 BASE_DECLARE_FEATURE(kOmniboxAsyncViewInflation);
 BASE_DECLARE_FEATURE(kUseFusedLocationProvider);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kRetainOmniboxOnFocus);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// `ShortcutsProvider` features.
+BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
+BASE_DECLARE_FEATURE(kOmniboxDeleteOldShortcuts);
 
 }  // namespace omnibox
 

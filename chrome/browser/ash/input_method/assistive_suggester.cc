@@ -232,7 +232,6 @@ AssistiveSuggester::~AssistiveSuggester() = default;
 
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
   return IsEmojiSuggestAdditionEnabled() || IsMultiWordSuggestEnabled() ||
-         IsEnhancedEmojiSuggestEnabled() ||
          IsDiacriticsOnPhysicalKeyboardLongpressEnabled() ||
          features::IsClipboardHistoryLongpressEnabled();
 }
@@ -246,11 +245,6 @@ bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
   return profile_->GetPrefs()->GetBoolean(
              prefs::kEmojiSuggestionEnterpriseAllowed) &&
          profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled);
-}
-
-bool AssistiveSuggester::IsEnhancedEmojiSuggestEnabled() {
-  return IsEmojiSuggestAdditionEnabled() &&
-         base::FeatureList::IsEnabled(features::kAssistEmojiEnhanced);
 }
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
@@ -659,7 +653,7 @@ bool AssistiveSuggester::TrySuggestWithSurroundingText(
     return current_suggester_->TrySuggestWithSurroundingText(text,
                                                              selection_range);
   }
-  if (IsEmojiSuggestAdditionEnabled() && !IsEnhancedEmojiSuggestEnabled() &&
+  if (IsEmojiSuggestAdditionEnabled() &&
       enabled_suggestions.emoji_suggestions &&
       emoji_suggester_.TrySuggestWithSurroundingText(text, selection_range)) {
     current_suggester_ = &emoji_suggester_;

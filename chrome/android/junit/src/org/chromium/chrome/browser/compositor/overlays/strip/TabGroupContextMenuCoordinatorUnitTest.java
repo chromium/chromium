@@ -117,6 +117,9 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Group Context Menu")
     public void testListMenuItems() {
+        // Build custom view first to setup menu view.
+        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
+
         ModelList modelList = new ModelList();
         mTabGroupContextMenuCoordinator.buildMenuActionItems(
                 modelList,
@@ -137,6 +140,9 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Group Context Menu")
     public void testListMenuItems_Incognito() {
+        // Build custom view first to setup menu view.
+        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
+
         ModelList modelList = new ModelList();
         mTabGroupContextMenuCoordinator.buildMenuActionItems(
                 modelList,

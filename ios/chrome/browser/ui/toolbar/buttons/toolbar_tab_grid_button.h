@@ -7,6 +7,11 @@
 
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 
+enum class ToolbarTabGridButtonStyle;
+
+using ToolbarTabGridButtonImageLoader =
+    UIImage* (^)(ToolbarTabGridButtonStyle style);
+
 // ToolbarButton for displaying the number of tab.
 @interface ToolbarTabGridButton : ToolbarButton
 
@@ -14,6 +19,21 @@
 // is more than 99, it shows a smiley instead. But the value stored in tabCount
 // can be bigger than 100.
 @property(nonatomic, assign) int tabCount;
+
+// The current style for the button.
+@property(nonatomic, assign) ToolbarTabGridButtonStyle tabGridButtonStyle;
+
+// Initialized the button with an image loader that can return a different image
+// based on the tab grid button style.
+- (instancetype)initWithStyledImageLoader:
+    (ToolbarTabGridButtonImageLoader)styledImageLoader
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
+    NS_UNAVAILABLE;
+- (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
+          IPHHighlightedImageLoader:
+              (ToolbarButtonImageLoader)IPHHighlightedImageLoader
+    NS_UNAVAILABLE;
 
 @end
 

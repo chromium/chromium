@@ -205,10 +205,22 @@ std::string ComputeUrlEncodedTokenPostData(
                    /*use_plus=*/true);
     }
 
-    for (const auto& pair : params) {
-      query += "&param_" +
-               base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) + "=" +
-               base::EscapeUrlEncodedData(pair.second, /*use_plus=*/true);
+    if (!params.empty()) {
+      base::Value::Dict param_dict;
+      for (const auto& pair : params) {
+        // TODO(crbug.com/368087170): Remove before shipping this.
+        query += "&param_" +
+                 base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) +
+                 "=" +
+                 base::EscapeUrlEncodedData(pair.second, /*use_plus=*/true);
+        // For JSON serialization
+        param_dict.Set(pair.first, pair.second);
+      }
+      std::optional<std::string> json = base::WriteJson(param_dict);
+      if (json) {
+        query +=
+            "&params=" + base::EscapeUrlEncodedData(*json, /*use_plus=*/true);
+      }
     }
   }
 
@@ -363,108 +375,6 @@ base::TimeDelta GetRandomRejectionTime() {
 
 std::string FormatOriginForDisplay(const url::Origin& origin) {
   return webid::FormatUrlForDisplay(origin.GetURL());
-}
-
-FedCmMetrics::NumAccounts ComputeNumMatchingAccounts(
-    size_t accounts_remaining) {
-  if (accounts_remaining == 0u) {
-    return FedCmMetrics::NumAccounts::kZero;
-  }
-  if (accounts_remaining == 1u) {
-    return FedCmMetrics::NumAccounts::kOne;
-  }
-  return FedCmMetrics::NumAccounts::kMultiple;
-}
-
-// Returns whether there are accounts remaining after applying the account label
-// filter.
-bool FilterAccountsWithLabel(const std::string& label,
-                             IdpNetworkRequestManager::AccountList& accounts) {
-  if (label.empty()) {
-    return true;
-  }
-
-  // Filter out all accounts whose labels do not match the requested label.
-  // Note that it is technically possible for us to end up with more than one
-  // account afterwards, in which case the multiple account chooser would be
-  // shown.
-  size_t accounts_remaining = 0u;
-  for (auto& account : accounts) {
-    if (!base::Contains(account.labels, label)) {
-      account.is_filtered_out = true;
-    } else {
-      ++accounts_remaining;
-    }
-  }
-  FedCmMetrics::NumAccounts num_matching =
-      ComputeNumMatchingAccounts(accounts_remaining);
-  base::UmaHistogramEnumeration("Blink.FedCm.AccountLabel.NumMatchingAccounts",
-                                num_matching);
-  return accounts_remaining > 0u;
-}
-
-// Returns whether there are accounts remaining after applying the login hint
-// filter.
-bool FilterAccountsWithLoginHint(
-    const std::string& login_hint,
-    IdpNetworkRequestManager::AccountList& accounts) {
-  if (login_hint.empty()) {
-    return true;
-  }
-
-  // Filter out all accounts whose ID and whose email do not match the login
-  // hint. Note that it is technically possible for us to end up with more than
-  // one account afterwards, in which case the multiple account chooser would be
-  // shown.
-  size_t accounts_remaining = 0u;
-  for (auto& account : accounts) {
-    if (account.is_filtered_out) {
-      continue;
-    }
-    if (!base::Contains(account.login_hints, login_hint)) {
-      account.is_filtered_out = true;
-    } else {
-      ++accounts_remaining;
-    }
-  }
-
-  FedCmMetrics::NumAccounts num_matching =
-      ComputeNumMatchingAccounts(accounts_remaining);
-  base::UmaHistogramEnumeration("Blink.FedCm.LoginHint.NumMatchingAccounts",
-                                num_matching);
-  return accounts_remaining > 0u;
-}
-
-// Returns whether there are accounts remaining after applying the domain hint
-// filter.
-bool FilterAccountsWithDomainHint(
-    const std::string& domain_hint,
-    IdpNetworkRequestManager::AccountList& accounts) {
-  if (domain_hint.empty()) {
-    return true;
-  }
-
-  size_t accounts_remaining = 0u;
-  for (auto& account : accounts) {
-    if (account.is_filtered_out) {
-      continue;
-    }
-    if (domain_hint == FederatedAuthRequestImpl::kWildcardDomainHint) {
-      if (account.domain_hints.empty()) {
-        account.is_filtered_out = true;
-        continue;
-      }
-    } else if (!base::Contains(account.domain_hints, domain_hint)) {
-      account.is_filtered_out = true;
-      continue;
-    }
-    ++accounts_remaining;
-  }
-  FedCmMetrics::NumAccounts num_matching =
-      ComputeNumMatchingAccounts(accounts_remaining);
-  base::UmaHistogramEnumeration("Blink.FedCm.DomainHint.NumMatchingAccounts",
-                                num_matching);
-  return accounts_remaining > 0u;
 }
 
 std::string GetTopFrameOriginForDisplay(const url::Origin& top_frame_origin) {
@@ -1132,9 +1042,8 @@ void FederatedAuthRequestImpl::RequestUserInfo(
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {
   if (!auth_request_token_callback_) {
-    // TODO(crbug.com/40940748): this should only happen with a compromised
-    // renderer process but for some reason that is not the case. We should
-    // investigate what could go wrong about the abort controller.
+    // This can happen if the renderer requested an abort() after the browser
+    // invoked the callback but before the renderer received the callback.
     return;
   }
 
@@ -1436,7 +1345,7 @@ void FederatedAuthRequestImpl::CompleteDisconnectRequest(
 
 void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
-    const IdpNetworkRequestManager::AccountList& accounts,
+    std::vector<IdentityRequestAccountPtr>&& accounts,
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::ClientMetadata client_metadata) {
   client_metadata_fetched_time_ = base::TimeTicks::Now();
@@ -1464,7 +1373,8 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
           "with the provided background color");
     }
   }
-  FetchAccountPictures(std::move(idp_info), accounts, client_metadata);
+  FetchAccountPictures(std::move(idp_info), std::move(accounts),
+                       client_metadata);
 }
 
 std::vector<IdentityRequestDialogDisclosureField>
@@ -1525,7 +1435,7 @@ bool FederatedAuthRequestImpl::CanShowContinueOnPopup() const {
 
 void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
-    const IdpNetworkRequestManager::AccountList& accounts,
+    std::vector<IdentityRequestAccountPtr>&& accounts,
     const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
   fetch_data_.did_succeed_for_at_least_one_idp = true;
 
@@ -1536,14 +1446,26 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
 
   const std::string idp_for_display =
       webid::FormatUrlForDisplay(idp_config_url);
-  idp_info->data =
-      IdentityProviderData(idp_for_display, accounts, idp_info->metadata,
-                           ClientMetadata{client_metadata.terms_of_service_url,
-                                          client_metadata.privacy_policy_url,
-                                          client_metadata.brand_icon_url},
-                           idp_info->rp_context, disclosure_fields,
-                           /*has_login_status_mismatch=*/false);
+  idp_info->data = base::MakeRefCounted<IdentityProviderData>(
+      idp_for_display, idp_info->metadata,
+      ClientMetadata{client_metadata.terms_of_service_url,
+                     client_metadata.privacy_policy_url,
+                     client_metadata.brand_icon_url},
+      idp_info->rp_context, disclosure_fields,
+      /*has_login_status_mismatch=*/false);
+  for (auto& account : accounts) {
+    account->identity_provider = idp_info->data;
+  }
+  // If the IDP data existed before, we need to remove the old accounts data.
+  // This can happen with the 'use other account' feature.
+  if (idp_infos_.find(idp_config_url) != idp_infos_.end()) {
+    std::erase_if(accounts_, [&idp_config_url](const auto& account) {
+      return account->identity_provider->idp_metadata.config_url ==
+             idp_config_url;
+    });
+  }
   idp_infos_[idp_config_url] = std::move(idp_info);
+  idp_accounts_[idp_config_url] = std::move(accounts);
 
   fetch_data_.pending_idps.erase(idp_config_url);
   MaybeShowAccountsDialog();
@@ -1603,58 +1525,52 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // Account" flow or the IDP login mismatch in multiple IDP case.
   idp_data_for_display_.clear();
 
-  // If this method call occurs after a login, we'd like to show the account
-  // that was logged in.
-  std::optional<IdentityProviderData> new_account_idp;
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
-    if (idp_infos_.size() > 1u ||
-        IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kButton)) {
-      if (!login_url_.is_empty() &&
-          login_url_ == idp_info_it->second->metadata.idp_login_url) {
-        std::vector<IdentityRequestAccount> new_accounts_list;
-        std::vector<IdentityRequestAccount> old_accounts_list;
-        for (const auto& account : idp_info_it->second->data->accounts) {
-          if (!account_ids_before_login_.contains(account.id)) {
-            new_accounts_list.emplace_back(account);
-          } else {
-            old_accounts_list.emplace_back(account);
-          }
-        }
-        account_ids_before_login_.clear();
-        if (!new_accounts_list.empty()) {
-          new_account_idp = idp_info_it->second->data;
-          new_account_idp->accounts = new_accounts_list;
-          new_accounts_list.insert(
-              new_accounts_list.end(),
-              std::make_move_iterator(old_accounts_list.begin()),
-              std::make_move_iterator(old_accounts_list.end()));
-          idp_info_it->second->data->accounts = std::move(new_accounts_list);
-        }
-      }
-    }
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
-      idp_data_for_display_.push_back(*idp_info_it->second->data);
+      idp_data_for_display_.push_back(idp_info_it->second->data);
+    }
+    auto accounts_it = idp_accounts_.find(idp);
+    if (accounts_it != idp_accounts_.end()) {
+      accounts_.insert(accounts_.end(),
+                       std::make_move_iterator(accounts_it->second.begin()),
+                       std::make_move_iterator(accounts_it->second.end()));
     }
   }
-
-  // We want to show IDPs in the following order in the UI:
-  // 1. IDPs for which there was a mismatch.
-  // 2. IDPs for which there were returning accounts.
-  // 3. IDPs for which there weren't returning accounts.
-  base::ranges::stable_sort(idp_data_for_display_, [](const auto& idp1,
-                                                      const auto& idp2) {
-    if (idp1.has_login_status_mismatch != idp2.has_login_status_mismatch) {
-      // The IDP with mismatch should go first.
-      return idp1.has_login_status_mismatch > idp2.has_login_status_mismatch;
+  idp_accounts_.clear();
+  std::stable_sort(
+      accounts_.begin(), accounts_.end(),
+      [&](const auto& account1, const auto& account2) {
+        // First, show newly logged in accounts, if any.
+        bool is_account1_new = IsNewlyLoggedIn(*account1);
+        bool is_account2_new = IsNewlyLoggedIn(*account2);
+        if (is_account1_new || is_account2_new) {
+          return !is_account2_new;
+        }
+        // Show returning accounts before non-returning.
+        if (account1->login_state == LoginState::kSignUp ||
+            account2->login_state == LoginState::kSignUp) {
+          return account1->login_state == LoginState::kSignIn;
+        }
+        // Within returning accounts, prefer those with last used
+        // timestamp.
+        if (!account1->last_used_timestamp || !account2->last_used_timestamp) {
+          return !!account1->last_used_timestamp;
+        }
+        // If both have last used timestamp, prefer the latest.
+        return *account1->last_used_timestamp > *account2->last_used_timestamp;
+      });
+  // Copy the newly logged in accounts into `new_accounts_`, if there are any.
+  new_accounts_.clear();
+  for (const auto& account : accounts_) {
+    if (IsNewlyLoggedIn(*account)) {
+      new_accounts_.push_back(account);
+    } else {
+      // Since this is sorted, once not newly logged in, exit.
+      break;
     }
-    LoginState state1 = idp1.accounts.empty() ? LoginState::kSignIn
-                                              : *idp1.accounts[0].login_state;
-    LoginState state2 = idp2.accounts.empty() ? LoginState::kSignIn
-                                              : *idp2.accounts[0].login_state;
-    // LoginState::kSignIn should go first.
-    return state1 < state2;
-  });
+  }
+  account_ids_before_login_.clear();
 
   // TODO(crbug.com/40246099): Handle auto_reauthn_ for multi IDP.
   bool auto_reauthn_enabled =
@@ -1665,8 +1581,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   bool is_auto_reauthn_embargoed = false;
   std::optional<base::TimeDelta> time_from_embargo;
   bool requires_user_mediation = false;
-  const IdentityProviderData* auto_reauthn_idp = nullptr;
-  const IdentityRequestAccount* auto_reauthn_account = nullptr;
+  IdentityProviderDataPtr auto_reauthn_idp = nullptr;
+  IdentityRequestAccountPtr auto_reauthn_account = nullptr;
   bool has_single_returning_account = false;
   if (auto_reauthn_enabled) {
     is_auto_reauthn_setting_enabled =
@@ -1699,7 +1615,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     if (!has_single_returning_account &&
         mediation_requirement_ == MediationRequirement::kSilent) {
       fedcm_metrics_->RecordAutoReauthnMetrics(
-          has_single_returning_account, auto_reauthn_account,
+          has_single_returning_account, auto_reauthn_account.get(),
           dialog_type_ == kAutoReauth, !is_auto_reauthn_setting_enabled,
           is_auto_reauthn_embargoed, time_from_embargo,
           requires_user_mediation);
@@ -1725,10 +1641,10 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     }
 
     if (dialog_type_ == kAutoReauth) {
-      IdentityRequestAccount account{*auto_reauthn_account};
-      IdentityProviderData idp{*auto_reauthn_idp};
-      idp.accounts = {account};
-      idp_data_for_display_ = {idp};
+      accounts_ = {auto_reauthn_account};
+      idp_data_for_display_ = {auto_reauthn_idp};
+      new_accounts_.clear();
+      accounts_[0]->identity_provider = idp_data_for_display_[0];
     }
   }
 
@@ -1743,7 +1659,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   if (auto_reauthn_enabled) {
     fedcm_metrics_->RecordAutoReauthnMetrics(
-        has_single_returning_account, auto_reauthn_account,
+        has_single_returning_account, auto_reauthn_account.get(),
         dialog_type_ == kAutoReauth, !is_auto_reauthn_setting_enabled,
         is_auto_reauthn_embargoed, time_from_embargo, requires_user_mediation);
   }
@@ -1816,10 +1732,10 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // been cleaned up.
   if (!request_dialog_controller_->ShowAccountsDialog(
           GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
-          idp_data_for_display_,
+          idp_data_for_display_, accounts_,
           identity_selection_type_ == kExplicit ? SignInMode::kExplicit
                                                 : SignInMode::kAuto,
-          rp_mode_, new_account_idp,
+          rp_mode_, new_accounts_,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
@@ -1907,10 +1823,10 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
 
   const std::string idp_for_display =
       webid::FormatUrlForDisplay(idp_config_url);
-  idp_info->data = IdentityProviderData(
-      idp_for_display, std::vector<IdentityRequestAccount>(),
-      idp_info->metadata, ClientMetadata{GURL(), GURL(), GURL()},
-      idp_info->rp_context, GetDisclosureFields(*idp_info->provider),
+  idp_info->data = base::MakeRefCounted<IdentityProviderData>(
+      idp_for_display, idp_info->metadata,
+      ClientMetadata{GURL(), GURL(), GURL()}, idp_info->rp_context,
+      GetDisclosureFields(*idp_info->provider),
       /*has_login_status_mismatch=*/true);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
@@ -1955,8 +1871,8 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
 
   // Set `idp_data_for_display_` so it is always the case that we can rely on it
   // to know which IDPs have been seen in the UI.
-  CHECK(idp_info->data.has_value());
-  idp_data_for_display_ = {*idp_info->data};
+  CHECK(idp_info->data);
+  idp_data_for_display_ = {idp_info->data};
 
   // If IdP login status mismatch dialog is already visible, calling
   // ShowFailureDialog() a 2nd time should notify the user that login
@@ -1986,7 +1902,7 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
 
   CHECK(idp_data_for_display_.size() == 1u);
   fedcm_metrics_->RecordSingleIdpMismatchDialogShown(
-      idp_data_for_display_[0], has_shown_mismatch, has_hints);
+      *idp_data_for_display_[0], has_shown_mismatch, has_hints);
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
   has_shown_mismatch_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
@@ -2005,7 +1921,7 @@ void FederatedAuthRequestImpl::CloseModalDialogView() {
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     IdpNetworkRequestManager::FetchStatus status,
-    IdpNetworkRequestManager::AccountList accounts) {
+    std::vector<IdentityRequestAccountPtr> accounts) {
   accounts_fetched_time_ = base::TimeTicks::Now();
 
   GURL idp_config_url = idp_info->provider->config->config_url;
@@ -2108,22 +2024,21 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         return;
       }
       // TODO(crbug.com/354977893): pass filtered out accounts to UI.
-      auto filter = [](const IdentityRequestAccount& account) {
-        return account.is_filtered_out;
+      auto filter = [](const IdentityRequestAccountPtr& account) {
+        return account->is_filtered_out;
       };
       std::erase_if(accounts, filter);
       RecordReadyToShowAccountsSize(accounts.size());
-      ComputeLoginStateAndReorderAccounts(
-          idp_info->provider->config->config_url, accounts);
+      ComputeLoginStates(idp_info->provider->config->config_url, accounts);
 
       bool need_client_metadata = false;
 
       if (!GetDisclosureFields(*idp_info->provider).empty()) {
-        for (const IdentityRequestAccount& account : accounts) {
-          // ComputeLoginStateAndReorderAccounts() should have populated
+        for (const auto& account : accounts) {
+          // ComputeLoginStates() should have populated
           // IdentityRequestAccount::login_state.
-          DCHECK(account.login_state);
-          if (*account.login_state == LoginState::kSignUp) {
+          DCHECK(account->login_state);
+          if (*account->login_state == LoginState::kSignUp) {
             need_client_metadata = true;
             break;
           }
@@ -2149,7 +2064,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                 weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
                 std::move(accounts)));
       } else {
-        FetchAccountPictures(std::move(idp_info), accounts,
+        FetchAccountPictures(std::move(idp_info), std::move(accounts),
                              IdpNetworkRequestManager::ClientMetadata());
       }
     }
@@ -2158,7 +2073,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 
 void FederatedAuthRequestImpl::FetchAccountPictures(
     std::unique_ptr<IdentityProviderInfo> idp_info,
-    const IdpNetworkRequestManager::AccountList& accounts,
+    const std::vector<IdentityRequestAccountPtr>& accounts,
     const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
   auto callback = BarrierClosure(
       accounts.size(),
@@ -2166,12 +2081,12 @@ void FederatedAuthRequestImpl::FetchAccountPictures(
                      weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
                      accounts, client_metadata));
   for (const auto& account : accounts) {
-    if (account.picture.is_valid()) {
+    if (account->picture.is_valid()) {
       network_manager_->DownloadAndDecodeImage(
-          account.picture,
+          account->picture,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountPictureReceived,
                          weak_ptr_factory_.GetWeakPtr(), callback,
-                         account.picture));
+                         account->picture));
     } else {
       // We have to still call the callback to make sure the barrier
       // callback gets the right number of calls.
@@ -2190,32 +2105,34 @@ void FederatedAuthRequestImpl::OnAccountPictureReceived(
 
 void FederatedAuthRequestImpl::OnAllAccountPicturesReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
-    IdpNetworkRequestManager::AccountList accounts,
+    std::vector<IdentityRequestAccountPtr>&& accounts,
     const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
   for (auto& account : accounts) {
-    auto it = downloaded_images_.find(account.picture);
+    auto it = downloaded_images_.find(account->picture);
     if (it != downloaded_images_.end()) {
       // We do not use std::move here in case multiple accounts use the same
       // picture URL, and the underlying gfx::Image data is refcounted anyway.
-      account.decoded_picture = it->second;
+      account->decoded_picture = it->second;
     }
   }
+
   downloaded_images_.clear();
-  OnFetchDataForIdpSucceeded(std::move(idp_info), accounts, client_metadata);
+  OnFetchDataForIdpSucceeded(std::move(idp_info), std::move(accounts),
+                             client_metadata);
 }
 
-void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
+void FederatedAuthRequestImpl::ComputeLoginStates(
     const GURL& idp_config_url,
-    IdpNetworkRequestManager::AccountList& accounts) {
+    std::vector<IdentityRequestAccountPtr>& accounts) {
   url::Origin idp_origin = url::Origin::Create(idp_config_url);
   // Populate the accounts login state.
   for (auto& account : accounts) {
     // Record when IDP and browser have different user sign-in states.
-    bool idp_claimed_sign_in = account.login_state == LoginState::kSignIn;
-    account.last_used_timestamp = permission_delegate_->GetLastUsedTimestamp(
-        origin(), GetEmbeddingOrigin(), idp_origin, account.id);
+    bool idp_claimed_sign_in = account->login_state == LoginState::kSignIn;
+    account->last_used_timestamp = permission_delegate_->GetLastUsedTimestamp(
+        origin(), GetEmbeddingOrigin(), idp_origin, account->id);
 
-    if (idp_claimed_sign_in == account.last_used_timestamp.has_value()) {
+    if (idp_claimed_sign_in == account->last_used_timestamp.has_value()) {
       fedcm_metrics_->RecordSignInStateMatchStatus(
           idp_config_url, SignInStateMatchStatus::kMatch);
     } else if (idp_claimed_sign_in) {
@@ -2229,46 +2146,24 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
     // We set the login state based on the IDP response if it sends
     // back an approved_clients list. If it does not, we need to set
     // it here based on browser state.
-    if (!account.login_state) {
+    if (!account->login_state) {
       // Consider this a sign-in if we have seen a successful sign-up for
       // this account before.
-      account.login_state = account.last_used_timestamp.has_value()
-                                ? LoginState::kSignIn
-                                : LoginState::kSignUp;
+      account->login_state = account->last_used_timestamp.has_value()
+                                 ? LoginState::kSignIn
+                                 : LoginState::kSignUp;
     }
 
     if (webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
             render_frame_host(), /*provider_url=*/idp_config_url,
-            GetEmbeddingOrigin(), origin(), account.id, permission_delegate_,
+            GetEmbeddingOrigin(), origin(), account->id, permission_delegate_,
             api_permission_delegate_)) {
       // At this moment we can trust login_state even though it's controlled
       // by IdP. If it's kSignUp, it could mean that the browser's sharing
       // permission is obsolete.
-      account.browser_trusted_login_state = account.login_state.value();
+      account->browser_trusted_login_state = account->login_state.value();
     }
   }
-
-  // Now that the login states have been computed, order accounts so that the
-  // returning accounts go first and the other accounts go afterwards. Within
-  // returning accounts, most recently used accounts go first. In particular,
-  // returning accounts for which we do not have a last used timestamp go last.
-  // Since the number of accounts is likely very small, sorting by login_state
-  // should be fast.
-  std::stable_sort(accounts.begin(), accounts.end(),
-                   [](const auto& a, const auto& b) {
-                     if (a.login_state != b.login_state) {
-                       return a.login_state < b.login_state;
-                     }
-                     // Within accounts with the same `login_state`, prefer to
-                     // put first those with timestamps, the higher the better.
-                     if (!a.last_used_timestamp) {
-                       return false;
-                     }
-                     if (!b.last_used_timestamp) {
-                       return true;
-                     }
-                     return *a.last_used_timestamp > *b.last_used_timestamp;
-                   });
 }
 
 void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
@@ -2765,7 +2660,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
   if (token_status) {
     int num_idps_mismatch = std::count_if(
         idp_data_for_display_.begin(), idp_data_for_display_.end(),
-        [](auto& provider) { return provider.has_login_status_mismatch; });
+        [](auto& provider) { return provider->has_login_status_mismatch; });
     fedcm_metrics_->RecordRequestTokenStatus(
         *token_status, mediation_requirement_, idp_order_, num_idps_mismatch,
         selected_idp_config_url, rp_mode_);
@@ -2887,6 +2782,9 @@ void FederatedAuthRequestImpl::CleanUp() {
   accounts_dialog_shown_time_ = std::nullopt;
   mismatch_dialog_shown_time_ = std::nullopt;
   has_shown_mismatch_ = false;
+  idp_accounts_.clear();
+  new_accounts_.clear();
+  accounts_.clear();
   idp_login_infos_.clear();
   idp_infos_.clear();
   idp_data_for_display_.clear();
@@ -3194,8 +3092,8 @@ void FederatedAuthRequestImpl::DismissErrorDialogForDevtools() {
 }
 
 bool FederatedAuthRequestImpl::GetAccountForAutoReauthn(
-    const IdentityProviderData** out_idp_data,
-    const IdentityRequestAccount** out_account) {
+    IdentityProviderDataPtr* out_idp_data,
+    IdentityRequestAccountPtr* out_account) {
   for (const auto& idp_info : idp_infos_) {
     if (idp_info.second->data->has_login_status_mismatch) {
       // If we need to show IDP login status mismatch UI, we cannot
@@ -3203,27 +3101,29 @@ bool FederatedAuthRequestImpl::GetAccountForAutoReauthn(
       // account.
       return false;
     }
-    for (const auto& account : idp_info.second->data->accounts) {
-      if (account.login_state == LoginState::kSignUp) {
-        continue;
-      }
-      // account.login_state could be set to kSignIn if the client is on the
-      // `approved_clients` list provided by IDP. However, in this case we have
-      // to trust the browser observed sign-in unless the IDP can be exempted.
-      // For example, they have third party cookies access on the RP site.
-      if (!webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
-              render_frame_host(), /*provider_url=*/idp_info.first,
-              GetEmbeddingOrigin(), origin(), account.id, permission_delegate_,
-              api_permission_delegate_)) {
-        continue;
-      }
-
-      if (*out_account) {
-        return false;
-      }
-      *out_idp_data = &(*idp_info.second->data);
-      *out_account = &account;
+  }
+  for (const auto& account : accounts_) {
+    if (account->login_state == LoginState::kSignUp) {
+      continue;
     }
+    // account.login_state could be set to kSignIn if the client is on the
+    // `approved_clients` list provided by IDP. However, in this case we have
+    // to trust the browser observed sign-in unless the IDP can be exempted.
+    // For example, they have third party cookies access on the RP site.
+    if (!webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+            render_frame_host(),
+            /*provider_url=*/
+            account->identity_provider->idp_metadata.config_url,
+            GetEmbeddingOrigin(), origin(), account->id, permission_delegate_,
+            api_permission_delegate_)) {
+      continue;
+    }
+
+    if (*out_account) {
+      return false;
+    }
+    *out_idp_data = account->identity_provider;
+    *out_account = account;
   }
 
   if (*out_account) {
@@ -3328,12 +3228,9 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
   if (idp_infos_.size() > 1u ||
       IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kButton)) {
     account_ids_before_login_.clear();
-    for (const auto& idp_data : idp_data_for_display_) {
-      if (idp_data.idp_metadata.idp_login_url == login_url) {
-        for (const auto& account : idp_data.accounts) {
-          account_ids_before_login_.insert(account.id);
-        }
-        break;
+    for (const auto& account : accounts_) {
+      if (account->identity_provider->idp_metadata.idp_login_url == login_url) {
+        account_ids_before_login_.insert(account->id);
       }
     }
   }
@@ -3440,6 +3337,95 @@ void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics() {
     fedcm_metrics_ = std::make_unique<FedCmMetrics>(
         render_frame_host().GetPageUkmSourceId());
   }
+}
+
+bool FederatedAuthRequestImpl::IsNewlyLoggedIn(
+    const IdentityRequestAccount& account) {
+  if (idp_infos_.size() <= 1u &&
+      !IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kButton)) {
+    return false;
+  }
+  if (login_url_.is_empty() ||
+      login_url_ != account.identity_provider->idp_metadata.idp_login_url) {
+    return false;
+  }
+  return !account_ids_before_login_.contains(account.id);
+}
+
+bool FederatedAuthRequestImpl::FilterAccountsWithLabel(
+    const std::string& label,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  if (label.empty()) {
+    return true;
+  }
+
+  // Filter out all accounts whose labels do not match the requested label.
+  // Note that it is technically possible for us to end up with more than one
+  // account afterwards, in which case the multiple account chooser would be
+  // shown.
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (!base::Contains(account->labels, label)) {
+      account->is_filtered_out = true;
+    } else {
+      ++accounts_remaining;
+    }
+  }
+  fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "AccountLabel");
+  return accounts_remaining > 0u;
+}
+
+bool FederatedAuthRequestImpl::FilterAccountsWithLoginHint(
+    const std::string& login_hint,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  if (login_hint.empty()) {
+    return true;
+  }
+
+  // Filter out all accounts whose ID and whose email do not match the login
+  // hint. Note that it is technically possible for us to end up with more than
+  // one account afterwards, in which case the multiple account chooser would be
+  // shown.
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (account->is_filtered_out) {
+      continue;
+    }
+    if (!base::Contains(account->login_hints, login_hint)) {
+      account->is_filtered_out = true;
+    } else {
+      ++accounts_remaining;
+    }
+  }
+  fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "LoginHint");
+  return accounts_remaining > 0u;
+}
+
+bool FederatedAuthRequestImpl::FilterAccountsWithDomainHint(
+    const std::string& domain_hint,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  if (domain_hint.empty()) {
+    return true;
+  }
+
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (account->is_filtered_out) {
+      continue;
+    }
+    if (domain_hint == FederatedAuthRequestImpl::kWildcardDomainHint) {
+      if (account->domain_hints.empty()) {
+        account->is_filtered_out = true;
+        continue;
+      }
+    } else if (!base::Contains(account->domain_hints, domain_hint)) {
+      account->is_filtered_out = true;
+      continue;
+    }
+    ++accounts_remaining;
+  }
+  fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "DomainHint");
+  return accounts_remaining > 0u;
 }
 
 }  // namespace content

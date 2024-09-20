@@ -74,7 +74,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: () => [],
       },
 
-      // <if expr="is_win or is_macosx">
+      // <if expr="is_win or is_macosx or is_chromeos">
       isBiometricAuthenticationForFillingToggleVisible_: {
         type: Boolean,
         value() {
@@ -287,7 +287,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     PasswordManagerImpl.getInstance().removeBlockedSite(event.model.item.id);
   }
 
-  // <if expr="is_win or is_macosx">
+  // <if expr="is_win or is_macosx or is_chromeos">
   private switchBiometricAuthBeforeFillingState_(e: Event) {
     const biometricAuthenticationForFillingToggle =
         e!.target as PrefToggleButtonElement;
@@ -347,16 +347,15 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     return this.i18n('removeBlockedAriaDescription', blockedSite.urls.shown);
   }
 
-  private changeAccountStorageOptIn_() {
-    if (this.isOptedInForAccountStorage) {
-      this.optOutFromAccountStorage();
+  private changeAccountStorageEnabled_() {
+    if (this.isAccountStorageEnabled) {
+      this.disableAccountStorage();
     } else {
-      this.optInForAccountStorage();
+      this.enableAccountStorage();
     }
   }
 
-  private getToggleSubLabelForAccountStorageOptIn_(accountEmail: string):
-      string {
+  private getAccountStorageSubLabel_(accountEmail: string): string {
     return this.i18n('accountStorageToggleSubLabel', accountEmail);
   }
 

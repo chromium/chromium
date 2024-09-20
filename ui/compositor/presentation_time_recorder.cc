@@ -238,10 +238,12 @@ void PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
 
 namespace {
 
-base::HistogramBase* CreateTimesHistogram(const char* name,
-                                          base::TimeDelta maximum) {
+base::HistogramBase* CreateTimesHistogram(
+    const char* name,
+    const PresentationTimeRecorder::BucketParams& bucket_params) {
   return base::Histogram::FactoryTimeGet(
-      name, base::Milliseconds(1), maximum, 50,
+      name, bucket_params.min_latency, bucket_params.max_latency,
+      bucket_params.num_buckets,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
@@ -258,13 +260,14 @@ class PresentationTimeHistogramRecorder
       ui::Compositor* compositor,
       const char* presentation_time_histogram_name,
       const char* max_latency_histogram_name,
-      base::TimeDelta maximum,
+      const PresentationTimeRecorder::BucketParams& bucket_params,
       bool emit_trace_event)
       : PresentationTimeRecorderInternal(compositor),
         presentation_time_histogram_(
-            CreateTimesHistogram(presentation_time_histogram_name, maximum)),
+            CreateTimesHistogram(presentation_time_histogram_name,
+                                 bucket_params)),
         max_latency_histogram_name_(max_latency_histogram_name),
-        maximum_(maximum),
+        bucket_params_(bucket_params),
         presentation_time_histogram_name_(
             emit_trace_event ? presentation_time_histogram_name : nullptr) {
     if (presentation_time_histogram_name_) {
@@ -290,7 +293,7 @@ class PresentationTimeHistogramRecorder
  private:
   ~PresentationTimeHistogramRecorder() override {
     if (present_count() > 0 && !max_latency_histogram_name_.empty()) {
-      CreateTimesHistogram(max_latency_histogram_name_.c_str(), maximum_)
+      CreateTimesHistogram(max_latency_histogram_name_.c_str(), bucket_params_)
           ->AddTimeMillisecondsGranularity(
               base::Milliseconds(max_latency_ms()));
     }
@@ -298,24 +301,54 @@ class PresentationTimeHistogramRecorder
 
   raw_ptr<base::HistogramBase> presentation_time_histogram_;
   std::string max_latency_histogram_name_;
-  base::TimeDelta maximum_;
+  const PresentationTimeRecorder::BucketParams bucket_params_;
   // Only set if `emit_trace_event_` is true since that's its only use.
   const char* const presentation_time_histogram_name_ = nullptr;
 };
 
 }  // namespace
 
+// BucketParams ------------------------------------------
+
+PresentationTimeRecorder::BucketParams::BucketParams() = default;
+
+PresentationTimeRecorder::BucketParams::BucketParams(
+    base::TimeDelta min_latency,
+    base::TimeDelta max_latency,
+    int num_buckets)
+    : min_latency(min_latency),
+      max_latency(max_latency),
+      num_buckets(num_buckets) {}
+
+PresentationTimeRecorder::BucketParams::BucketParams(const BucketParams&) =
+    default;
+
+PresentationTimeRecorder::BucketParams&
+PresentationTimeRecorder::BucketParams::operator=(const BucketParams&) =
+    default;
+
+PresentationTimeRecorder::BucketParams::~BucketParams() = default;
+
+// static
+PresentationTimeRecorder::BucketParams
+PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+    base::TimeDelta max_latency) {
+  BucketParams params;
+  params.max_latency = max_latency;
+  return params;
+}
+
 std::unique_ptr<PresentationTimeRecorder>
 CreatePresentationTimeHistogramRecorder(
     ui::Compositor* compositor,
     const char* presentation_time_histogram_name,
     const char* max_latency_histogram_name,
-    base::TimeDelta maximum,
+    PresentationTimeRecorder::BucketParams bucket_params,
     bool emit_trace_event) {
   return std::make_unique<PresentationTimeRecorder>(
       new PresentationTimeHistogramRecorder(
           compositor, presentation_time_histogram_name,
-          max_latency_histogram_name, maximum, emit_trace_event));
+          max_latency_histogram_name, bucket_params, emit_trace_event));
 }
 
 // TestApi --------------------------------------------------------------------

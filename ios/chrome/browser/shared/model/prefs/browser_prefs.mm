@@ -690,8 +690,26 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 0);
 
+  registry->RegisterTimePref(prefs::kLensLastOpened, base::Time());
+
   // Deprecated 09/2024.
   registry->RegisterBooleanPref(kBrowsingDataMigrationHasBeenPossible, false);
+
+  // Register pref used to determine if OS Lockdown Mode is enabled.
+  registry->RegisterBooleanPref(prefs::kOSLockdownModeEnabled, false);
+
+  // Register pref used to determine if Browser Lockdown Mode is enabled.
+  registry->RegisterBooleanPref(prefs::kBrowserLockdownModeEnabled, false);
+
+  // Preferences related to the Safety Check Notifications feature.
+  registry->RegisterIntegerPref(prefs::kIosSafetyCheckNotificationsLastSent,
+                                -1);
+  registry->RegisterIntegerPref(
+      prefs::kIosSafetyCheckNotificationsLastTriggered, -1);
+
+  // List pref that stores the positions of the Safety Check module (with
+  // notifications opt-in) within the Magic Stack.
+  registry->RegisterListPref(prefs::kMagicStackSafetyCheckNotificationsShown);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -850,10 +868,10 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kIosPasswordGenerationBottomSheetDismissCount, 0);
 
-  // Register pref used to determine if Browser Lockdown Mode is enabled.
+  // Deprecated 09/2024.
   registry->RegisterBooleanPref(prefs::kBrowserLockdownModeEnabled, false);
 
-  // Register pref used to determine if OS Lockdown Mode is enabled.
+  // Deprecated 09/2024.
   registry->RegisterBooleanPref(prefs::kOSLockdownModeEnabled, false);
 
   // Register pref used to detect addresses in web page
@@ -1259,6 +1277,14 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 09/2024.
   MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kIosPreRestoreAccountInfo, prefs);
+
+  // Added 09/2024.
+  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
+      prefs::kOSLockdownModeEnabled, prefs);
+
+  // Added 09/2024.
+  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
+      prefs::kBrowserLockdownModeEnabled, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

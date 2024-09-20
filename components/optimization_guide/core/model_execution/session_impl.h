@@ -50,6 +50,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // Called to retrieve connection the managed model.
     virtual mojo::Remote<on_device_model::mojom::OnDeviceModel>&
     GetModelRemote() = 0;
+    // Called to retrieve connection the managed model.
+    virtual mojo::Remote<on_device_model::mojom::TextSafetyModel>&
+    GetTextSafetyModelRemote() = 0;
     // Called to report a successful execution of the model.
     virtual void OnResponseCompleted() = 0;
     // Called to report a timeout reached while waiting for model response.
@@ -144,6 +147,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
   const TokenLimits& GetTokenLimits() const override;
+  const proto::Any& GetOnDeviceFeatureMetadata() const override;
   void AddContext(
       const google::protobuf::MessageLite& request_metadata) override;
   void Score(const std::string& text,
@@ -153,6 +157,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       OptimizationGuideModelExecutionResultStreamingCallback callback) override;
   void GetSizeInTokens(
       const std::string& text,
+      OptimizationGuideModelSizeInTokenCallback callback) override;
+  void GetContextSizeInTokens(
+      const google::protobuf::MessageLite& request_metadata,
       OptimizationGuideModelSizeInTokenCallback callback) override;
   const SamplingParams GetSamplingParams() const override;
 

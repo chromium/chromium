@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/models/list_model.h"
 #include "url/gurl.h"
@@ -127,14 +128,48 @@ enum PlaybackState {
   kNone,
 };
 
-// Data structure that defines the media player playback status. The value flows
-// from the web UI player to the API request classes for playback reporting
-// purpose.
+// Data structure that defines the media segment playback.
+struct ASH_EXPORT MediaSegment {
+  MediaSegment(int media_start,
+               int media_end,
+               const base::Time client_start_time);
+  MediaSegment(const MediaSegment&);
+  MediaSegment& operator=(const MediaSegment&);
+  ~MediaSegment();
+
+  // Start time in seconds of the period that the playback duration covers.
+  int media_start;
+
+  // End time in seconds of the period that the playback duration covers.
+  int media_end;
+
+  // Client start time.
+  base::Time client_start_time;
+
+  std::string ToString() const;
+};
+
+// Define a comparator for `MediaSegment`.
+struct ASH_EXPORT MediaSegmentComparator {
+  bool operator()(const MediaSegment& lhs, const MediaSegment& rhs) const {
+    return lhs.media_start < rhs.media_start && lhs.media_end < rhs.media_end &&
+           lhs.client_start_time < rhs.client_start_time;
+  }
+};
+
+using MediaSegments = base::flat_set<MediaSegment, MediaSegmentComparator>;
+
+// Data structure that defines the media player playback status. The value
+// flows from the web UI player to the API request classes for playback
+// reporting purpose.
 struct ASH_EXPORT PlaybackData {
   PlaybackData(const PlaybackState state,
                const std::string& title,
                const GURL& url,
-               const base::flat_set<std::pair<int, int>>& media_segments,
+               const base::Time client_current_time,
+               int playback_start_offset,
+               int media_time_current,
+               const MediaSegments& media_segments,
                bool initial_playback);
   PlaybackData(const PlaybackData&);
   PlaybackData& operator=(const PlaybackData&);
@@ -158,10 +193,17 @@ struct ASH_EXPORT PlaybackData {
   // Track media url.
   GURL url;
 
-  // Set of integer pairs in the form of {start, end}. It indicates time
-  // segments of the period that the playback event covers. Integer values are
-  // in seconds.
-  base::flat_set<std::pair<int, int>> media_segments;
+  // Client current time.
+  base::Time client_current_time;
+
+  // Playback start offset in seconds.
+  int playback_start_offset;
+
+  // Media current time in seconds.
+  int media_time_current;
+
+  // Set of media segments.
+  MediaSegments media_segments;
 
   // Indicate if it's the initial playback, i.e. first playback after loading.
   bool initial_playback;

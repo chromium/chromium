@@ -51,22 +51,6 @@ ActiveMediaSessionController::ActiveMediaSessionController(
 
 ActiveMediaSessionController::~ActiveMediaSessionController() = default;
 
-void ActiveMediaSessionController::RebindMojoForNewID(
-    base::UnguessableToken request_id) {
-  media_controller_remote_.reset();
-  media_controller_observer_receiver_.reset();
-
-  // Don't think this is necessary for browser as we pass it to
-  // Start/StopWatchingMediaKey which only uses it for PWAs, but probably good
-  // to keep it up to date.
-  request_id_ = request_id;
-
-  controller_manager_remote_->CreateMediaControllerForSession(
-      media_controller_remote_.BindNewPipeAndPassReceiver(), request_id);
-  media_controller_remote_->AddObserver(
-      media_controller_observer_receiver_.BindNewPipeAndPassRemote());
-}
-
 void ActiveMediaSessionController::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
   MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =

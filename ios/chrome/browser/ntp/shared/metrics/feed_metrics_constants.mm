@@ -74,6 +74,7 @@ const char kDiscoverFeedBrokenNTPHierarchy[] =
     "ContentSuggestions.Feed.BrokenNTPHierarchy";
 const char kDiscoverFeedRefreshTrigger[] =
     "ContentSuggestions.Feed.RefreshTrigger";
+const char kDiscoverUniformityFlag[] = "ContentSuggestions.Feed.UniformityFlag";
 const char kFeedUserSettingsOnStart[] =
     "ContentSuggestions.Feed.UserSettingsOnStart";
 const char kFollowingFeedSortType[] =

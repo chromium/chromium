@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/chrome_supervised_user_web_content_handler_base.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -35,7 +36,7 @@ class SupervisedUserWebContentHandlerImpl
       content::WebContents* web_contents,
       const GURL& url,
       favicon::LargeIconService& large_icon_service,
-      int frame_id,
+      content::FrameTreeNodeId frame_id,
       int64_t interstitial_navigation_id);
 
   SupervisedUserWebContentHandlerImpl(

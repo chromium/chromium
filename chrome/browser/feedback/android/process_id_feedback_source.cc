@@ -90,7 +90,7 @@ ScopedJavaLocalRef<jlongArray> ProcessIdFeedbackSource::GetProcessIdsForType(
   for (size_t i = 0; i < size; i++)
     pids[i] = process_ids_[process_type][i];
 
-  return base::android::ToJavaLongArray(env, pids.data(), size);
+  return base::android::ToJavaLongArray(env, pids);
 }
 
 }  // namespace android

@@ -69,6 +69,8 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
+#include "third_party/webrtc/modules/video_coding/svc/simulcast_to_svc_converter.h"
+#include "third_party/webrtc/modules/video_coding/utility/simulcast_utility.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace {
@@ -367,6 +369,11 @@ BASE_FEATURE(kKeepEncoderInstanceOnRelease,
              "KeepEncoderInstanceOnRelease",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, the supports_simulcast will be always reported to webrtc
+// and incoming simulcast codec config will be rewritten as an SVC config.
+BASE_FEATURE(kRtcVideoEncoderConvertSimulcastToSvc,
+             "RtcVideoEncoderConvertSimulcastToSvc",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace {
@@ -727,6 +734,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   void Drain(SignaledValue event);
   void DrainCompleted(bool success);
 
+  void SetSimulcastToSvcConverter(std::optional<webrtc::SimulcastToSvcConverter>
+                                      simulcast_to_svc_converter);
+
  private:
   // proxy to pass weak reference to webrtc which could be invalidated when
   // frame size changes and new output buffers are allocated.
@@ -929,6 +939,10 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   raw_ptr<webrtc::EncodedImageCallback> encoded_image_callback_
       GUARDED_BY(lock_){nullptr};
 
+  // Used to rewrite the encoded image metadata to look like simulcast
+  // instead of SVC. Set only when simulcat config is emulated by SVC one.
+  std::optional<webrtc::SimulcastToSvcConverter> simulcast_to_svc_converter_;
+
   // They are bound to |gpu_task_runner_|, which is sequence checked by
   // |sequence_checker|.
   base::WeakPtr<Impl> weak_this_;
@@ -1123,6 +1137,11 @@ void RTCVideoEncoder::Impl::DrainCompleted(bool success) {
     NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderInitializationError,
                        "Failed to flush VideoEncodeAccelerator"});
   }
+}
+
+void RTCVideoEncoder::Impl::SetSimulcastToSvcConverter(
+    std::optional<webrtc::SimulcastToSvcConverter> simulcast_to_svc_converter) {
+  simulcast_to_svc_converter_ = std::move(simulcast_to_svc_converter);
 }
 
 void RTCVideoEncoder::Impl::UseOutputBitstreamBuffer(
@@ -1653,6 +1672,10 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       break;
   }
 
+  if (simulcast_to_svc_converter_) {
+    simulcast_to_svc_converter_->ConvertFrame(image, info);
+  }
+
   base::AutoLock lock(lock_);
   if (!encoded_image_callback_)
     return;
@@ -1871,6 +1894,10 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   }
   pending_output_buffers_.clear();
 
+  if (simulcast_to_svc_converter_) {
+    simulcast_to_svc_converter_->EncodeStarted(frame_chunk.force_keyframe);
+  }
+
   frames_in_encoder_count_++;
   DVLOG(3) << "frames_in_encoder_count=" << frames_in_encoder_count_;
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
@@ -2079,7 +2106,13 @@ RTCVideoEncoder::RTCVideoEncoder(
   encoder_info_.fps_allocation[0] = {
       webrtc::VideoEncoder::EncoderInfo::kMaxFramerateFraction};
   DCHECK(encoder_info_.resolution_bitrate_limits.empty());
-  encoder_info_.supports_simulcast = false;
+  // Simulcast is supported for VP9 codec if svc is supported.
+  // Since this encoder is used for all codecs, need to always
+  // report true.
+  encoder_info_.supports_simulcast =
+      media::IsVp9kSVCHWEncodingEnabled() &&
+      base::FeatureList::IsEnabled(
+          features::kRtcVideoEncoderConvertSimulcastToSvc);
   encoder_info_.preferred_pixel_formats = {
       webrtc::VideoFrameBuffer::Type::kI420};
 
@@ -2229,15 +2262,42 @@ int32_t RTCVideoEncoder::InitEncode(
            << ", height=" << codec_settings->height
            << ", startBitrate=" << codec_settings->startBitrate;
 
+  // Try to rewrite the simulcast config as SVC one.
+  webrtc::VideoCodec converted_settings;
+  std::optional<webrtc::SimulcastToSvcConverter> simulcast_to_svc_converter;
+
+  int32_t initialization_error_message = WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+
+  if (codec_settings->numberOfSimulcastStreams > 1) {
+    // No VEA currently supports simulcast. It, however, can be
+    // emulated with SVC VP9 if the streams have the same temporal
+    // settings and 4:2:1 scaling.
+    if (codec_settings->codecType != webrtc::kVideoCodecVP9 ||
+        !base::FeatureList::IsEnabled(
+            features::kRtcVideoEncoderConvertSimulcastToSvc) ||
+        !webrtc::SimulcastUtility::ValidSimulcastParameters(
+            *codec_settings, codec_settings->numberOfSimulcastStreams)) {
+      return WEBRTC_VIDEO_CODEC_ERR_SIMULCAST_PARAMETERS_NOT_SUPPORTED;
+    }
+    simulcast_to_svc_converter.emplace(*codec_settings);
+    converted_settings = simulcast_to_svc_converter->GetConfig();
+    // If we've rewritten config, never report software fallback on errors.
+    // Let the WebRTC try to initialize each simulcast stream separately.
+    initialization_error_message =
+        WEBRTC_VIDEO_CODEC_ERR_SIMULCAST_PARAMETERS_NOT_SUPPORTED;
+  } else {
+    converted_settings = *codec_settings;
+  }
+
   if (impl_) {
     if (!impl_initialized_ || has_error_ || !frame_size_change_supported_ ||
-        !CodecSettingsUsableForFrameSizeChange(*codec_settings)) {
+        !CodecSettingsUsableForFrameSizeChange(converted_settings)) {
       DVLOG(3) << __func__ << " ReleaseImpl";
       ReleaseImpl();
     }
   }
 
-  codec_settings_ = *codec_settings;
+  codec_settings_ = converted_settings;
 
   // Several HW encoders are known to yield worse quality compared to SW
   // encoders for smaller resolutions such as 180p. (270p should also be a
@@ -2252,24 +2312,24 @@ int32_t RTCVideoEncoder::InitEncode(
   //
   // H.265 does not support SW fallback, so it is excluded from low resoloution
   // fallback.
-  if (codec_settings->codecType != webrtc::kVideoCodecH265 &&
+  if (codec_settings_.codecType != webrtc::kVideoCodecH265 &&
       base::FeatureList::IsEnabled(features::kForceSoftwareForLowResolutions)) {
     uint16_t force_sw_height = 359;
     if (base::FeatureList::IsEnabled(features::kForcingSoftwareIncludes360)) {
       force_sw_height = 360;
     }
-    if (codec_settings->height <= force_sw_height) {
+    if (codec_settings_.height <= force_sw_height) {
       LOG(WARNING)
           << "Fallback to SW due to low resolution being less than 360p ("
-          << codec_settings->width << "x" << codec_settings->height << ")";
-      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+          << codec_settings_.width << "x" << codec_settings_.height << ")";
+      return initialization_error_message;
     }
   }
 
-  if (codec_settings->codecType == webrtc::kVideoCodecH264 &&
-      (codec_settings->width % 2 != 0 || codec_settings->height % 2 != 0)) {
-    LOG(ERROR) << "Input video size is " << codec_settings->width << "x"
-               << codec_settings->height << ", "
+  if (codec_settings_.codecType == webrtc::kVideoCodecH264 &&
+      (codec_settings_.width % 2 != 0 || codec_settings_.height % 2 != 0)) {
+    LOG(ERROR) << "Input video size is " << codec_settings_.width << "x"
+               << codec_settings_.height << ", "
                << "but hardware H.264 encoder only supports even sized frames.";
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
   }
@@ -2278,9 +2338,9 @@ int32_t RTCVideoEncoder::InitEncode(
 
   uint32_t bitrate_bps = 0;
   // Check for overflow converting bitrate (kilobits/sec) to bits/sec.
-  if (!ConvertKbpsToBps(codec_settings->startBitrate, &bitrate_bps)) {
+  if (!ConvertKbpsToBps(codec_settings_.startBitrate, &bitrate_bps)) {
     LOG(ERROR) << "Overflow converting bitrate from kbps to bps: bps="
-               << codec_settings->startBitrate;
+               << codec_settings_.startBitrate;
     return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
   }
 
@@ -2288,15 +2348,15 @@ int32_t RTCVideoEncoder::InitEncode(
   std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
       spatial_layers;
   auto inter_layer_pred = media::SVCInterLayerPredMode::kOff;
-  if (!CreateSpatialLayersConfig(*codec_settings, &spatial_layers,
+  if (!CreateSpatialLayersConfig(codec_settings_, &spatial_layers,
                                  &inter_layer_pred, &input_visible_size)) {
-    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+    return initialization_error_message;
   }
 
   // Fallback to SW if VEA does not support VP9 SVC encoding.
-  if (codec_settings->codecType == webrtc::kVideoCodecVP9 &&
-      (codec_settings->VP9().numberOfTemporalLayers > 1 ||
-       codec_settings->VP9().numberOfSpatialLayers > 1)) {
+  if (codec_settings_.codecType == webrtc::kVideoCodecVP9 &&
+      (codec_settings_.VP9()->numberOfTemporalLayers > 1 ||
+       codec_settings_.VP9()->numberOfSpatialLayers > 1)) {
     const auto vea_supported_profiles =
         gpu_factories_->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
             media::VideoEncodeAccelerator::SupportedProfiles());
@@ -2316,7 +2376,7 @@ int32_t RTCVideoEncoder::InitEncode(
               [scalability_mode](const media::SVCScalabilityMode& value) {
                 return value == scalability_mode;
               })) {
-        return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+        return initialization_error_message;
       }
     }
   }
@@ -2337,7 +2397,7 @@ int32_t RTCVideoEncoder::InitEncode(
                    << ") beyond accelerator limits ("
                    << vea_profile.min_resolution.ToString() << " - "
                    << vea_profile.max_resolution.ToString() << ")";
-        return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+        return initialization_error_message;
       }
     }
   }
@@ -2345,7 +2405,7 @@ int32_t RTCVideoEncoder::InitEncode(
   auto webrtc_content_type = webrtc::VideoContentType::UNSPECIFIED;
   auto vea_content_type =
       media::VideoEncodeAccelerator::Config::ContentType::kCamera;
-  if (codec_settings->mode == webrtc::VideoCodecMode::kScreensharing) {
+  if (codec_settings_.mode == webrtc::VideoCodecMode::kScreensharing) {
     webrtc_content_type = webrtc::VideoContentType::SCREENSHARE;
     vea_content_type =
         media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
@@ -2365,7 +2425,7 @@ int32_t RTCVideoEncoder::InitEncode(
     impl_ = std::make_unique<Impl>(
         gpu_factories_, encoder_metrics_provider_factory_,
         ProfileToWebRtcVideoCodecType(profile_),
-        codec_settings->GetScalabilityMode(), webrtc_content_type,
+        codec_settings_.GetScalabilityMode(), webrtc_content_type,
         update_encoder_info_callback, execute_software_fallback, weak_impl_);
   }
 
@@ -2381,12 +2441,12 @@ int32_t RTCVideoEncoder::InitEncode(
   media::VideoEncodeAccelerator::Config vea_config(
       pixel_format, input_visible_size, profile_,
       media::Bitrate::ConstantBitrate(bitrate_bps),
-      codec_settings->maxFramerate, storage_type, vea_content_type);
+      codec_settings_.maxFramerate, storage_type, vea_content_type);
   vea_config.is_constrained_h264 = is_constrained_h264_;
   vea_config.spatial_layers = spatial_layers;
   vea_config.inter_layer_pred = inter_layer_pred;
   vea_config.drop_frame_thresh_percentage =
-      GetDropFrameThreshold(*codec_settings);
+      GetDropFrameThreshold(codec_settings_);
   // When we don't have built in H264 software encoding, allow usage of any
   // software encoders provided by the platform.
 #if !BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(RTC_USE_H264)
@@ -2401,6 +2461,8 @@ int32_t RTCVideoEncoder::InitEncode(
   if (initialization_ret != WEBRTC_VIDEO_CODEC_OK) {
     ReleaseImpl();
     CHECK(!impl_);
+  } else {
+    impl_->SetSimulcastToSvcConverter(std::move(simulcast_to_svc_converter));
   }
   return initialization_ret;
 }
@@ -2553,7 +2615,12 @@ void RTCVideoEncoder::UpdateEncoderInfo(
       media_enc_info.has_trusted_rate_controller;
   encoder_info_.is_hardware_accelerated =
       media_enc_info.is_hardware_accelerated;
-  encoder_info_.supports_simulcast = media_enc_info.supports_simulcast;
+  // Simulcast is supported via VP9 SVC
+  encoder_info_.supports_simulcast =
+      media_enc_info.supports_simulcast ||
+      (media::IsVp9kSVCHWEncodingEnabled() &&
+       base::FeatureList::IsEnabled(
+           features::kRtcVideoEncoderConvertSimulcastToSvc));
   encoder_info_.is_qp_trusted = media_enc_info.reports_average_qp;
   encoder_info_.requested_resolution_alignment =
       media_enc_info.requested_resolution_alignment;

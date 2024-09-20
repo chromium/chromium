@@ -42,17 +42,6 @@ export class AutoTabGroupsFailureElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  getTitle(error: TabOrganizationError): string {
-    switch (error) {
-      case TabOrganizationError.kGrouping:
-        return loadTimeData.getString('failureTitleGrouping');
-      case TabOrganizationError.kGeneric:
-        return loadTimeData.getString('failureTitleGeneric');
-      default:
-        return '';
-    }
-  }
-
   protected getBody_(): string {
     switch (this.error) {
       case TabOrganizationError.kGrouping:

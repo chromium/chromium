@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXCEPTION_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXCEPTION_CONTEXT_H_
 
+#include <variant>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
@@ -89,6 +91,13 @@ class PLATFORM_EXPORT ExceptionContext final {
     DCHECK(!property_name_ || property_name_string_.IsNull());
     return property_name_ ? String(property_name_)
                           : property_name_string_;
+  }
+  std::variant<const char*, String> GetPropertyNameVariant() const {
+    DCHECK(!property_name_ || property_name_string_.IsNull());
+    if (property_name_) {
+      return property_name_;
+    }
+    return property_name_string_;
   }
   int16_t GetArgumentIndex() const { return argument_index_; }
 

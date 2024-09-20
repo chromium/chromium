@@ -193,6 +193,8 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
       other_scored_url_row,
   };
   embeddings_result.query = "search query";
+  embeddings_result.answerer_result.status =
+      history_embeddings::ComputeAnswerStatus::SUCCESS;
   embeddings_result.answerer_result.answer.set_text("the answer");
   embeddings_result.answerer_result.url = "http://other.com";
   embeddings_result.answerer_result.text_directives = {"text fragment"};
@@ -200,10 +202,12 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   base::test::TestFuture<history_embeddings::mojom::SearchResultPtr> future;
   EXPECT_CALL(page_, SearchResultChanged)
       .WillOnce(base::test::InvokeFuture(future));
-  handler_->OnReceivedSearchResult(std::move(embeddings_result));
+  handler_->PublishResultToPageForTesting(std::move(embeddings_result));
 
   auto mojo_result = future.Take();
   EXPECT_EQ(mojo_result->query, "search query");
+  EXPECT_EQ(mojo_result->answer_status,
+            history_embeddings::mojom::AnswerStatus::kSuccess);
   EXPECT_EQ(mojo_result->answer, "the answer");
   ASSERT_EQ(mojo_result->items.size(), 2u);
   EXPECT_EQ(mojo_result->items[0]->title, "my title");

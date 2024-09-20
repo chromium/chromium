@@ -31,7 +31,6 @@
 
 namespace update_client {
 
-class ActionRunner;
 class Configurator;
 struct CrxUpdateItem;
 struct UpdateContext;
@@ -340,16 +339,15 @@ class Component {
     void DoHandle() override;
 
     void ActionRunComplete(bool succeeded, int error_code, int extra_code1);
-
-    // Runs the action referred by the |action_run_| member of the Component
-    // class.
-    std::unique_ptr<ActionRunner> action_runner_;
   };
 
   // Returns true is the update payload for this component can be downloaded
   // by a downloader which can do bandwidth throttling on the client side.
   // The decision may be predicated on the expected size of the download.
   bool CanDoBackgroundDownload(int64_t size) const;
+
+  // Returns true if the component has a differential update.
+  bool HasDiffUpdate() const;
 
   void AppendEvent(base::Value::Dict event);
 

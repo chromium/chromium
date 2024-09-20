@@ -21,7 +21,6 @@ export enum ToolbarEvent {
   FONT = 'font-change',
   RATE = 'rate-change',
   PLAY_PAUSE = 'play-pause-click',
-  HIGHLIGHT_TOGGLE = 'highlight-toggle',
   HIGHLIGHT_CHANGE = 'highlight-change',
   NEXT_GRANULARITY = 'next-granularity-click',
   PREVIOUS_GRANULARITY = 'previous-granularity-click',
@@ -40,6 +39,7 @@ export interface SettingsPrefs {
   theme: number;
   speechRate: number;
   font: string;
+  highlightGranularity: number;
 }
 
 const ACTIVE_CSS_CLASS = 'active';

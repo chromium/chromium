@@ -23,8 +23,8 @@ class PolicyUI : public web::WebUIIOSController {
   PolicyUI(const PolicyUI&) = delete;
   PolicyUI& operator=(const PolicyUI&) = delete;
 
-  static bool ShouldLoadTestPage(ChromeBrowserState* browser_state);
-  static base::Value GetSchema(ChromeBrowserState* browser_state);
+  static bool ShouldLoadTestPage(ProfileIOS* profile);
+  static base::Value GetSchema(ProfileIOS* profile);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_POLICY_POLICY_UI_H_

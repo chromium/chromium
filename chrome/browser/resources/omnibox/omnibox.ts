@@ -10,9 +10,9 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import type {OmniboxPageHandlerRemote, OmniboxResponse} from './omnibox.mojom-webui.js';
-import {AutocompleteControllerType, OmniboxPageCallbackRouter, OmniboxPageHandler} from './omnibox.mojom-webui.js';
 import type {DisplayInputs, OmniboxInput, QueryInputs} from './omnibox_input.js';
+import type {OmniboxPageHandlerRemote, OmniboxResponse} from './omnibox_internals.mojom-webui.js';
+import {AutocompleteControllerType, OmniboxPageCallbackRouter, OmniboxPageHandler} from './omnibox_internals.mojom-webui.js';
 import type {OmniboxOutput} from './omnibox_output.js';
 
 /**

@@ -83,6 +83,9 @@ interface URLLoaderClient {
   // writing the body, so that the client knows when it is done reading.
   // Optionally, the response can contain cached metadata, such as a V8 code
   // cache.
+  // The client must not discard the data pipe until the OnComplete IPC arrives,
+  // even if it knows the body is empty. Otherwise, the request will be handled
+  // as cancelled.
   OnReceiveResponse(URLResponseHead head,
                     handle<data_pipe_consumer>? body,
                     mojo_base.mojom.BigBuffer? cached_metadata);

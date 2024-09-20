@@ -26,6 +26,7 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
@@ -46,6 +47,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -353,7 +355,8 @@ void PasswordAccessoryControllerImpl::CreateForWebContents(
             web_contents, credential_cache, nullptr,
             ChromePasswordManagerClient::FromWebContents(web_contents),
             base::BindRepeating(GetPasswordManagerDriver),
-            base::BindRepeating(&local_password_migration::ShowWarning))));
+            base::BindRepeating(&local_password_migration::ShowWarning),
+            std::make_unique<PasswordAccessLossWarningBridgeImpl>())));
   }
 }
 
@@ -364,7 +367,9 @@ void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
     base::WeakPtr<ManualFillingController> manual_filling_controller,
     password_manager::PasswordManagerClient* password_client,
     PasswordDriverSupplierForFocusedFrame driver_supplier,
-    ShowMigrationWarningCallback show_migration_warning_callback) {
+    ShowMigrationWarningCallback show_migration_warning_callback,
+    std::unique_ptr<PasswordAccessLossWarningBridge>
+        access_loss_warning_bridge) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
   DCHECK(manual_filling_controller);
@@ -375,7 +380,8 @@ void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
       base::WrapUnique(new PasswordAccessoryControllerImpl(
           web_contents, credential_cache, std::move(manual_filling_controller),
           password_client, std::move(driver_supplier),
-          std::move(show_migration_warning_callback))));
+          std::move(show_migration_warning_callback),
+          std::move(access_loss_warning_bridge))));
 }
 
 void PasswordAccessoryControllerImpl::OnOptionSelected(
@@ -566,7 +572,8 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
     base::WeakPtr<ManualFillingController> manual_filling_controller,
     password_manager::PasswordManagerClient* password_client,
     PasswordDriverSupplierForFocusedFrame driver_supplier,
-    ShowMigrationWarningCallback show_migration_warning_callback)
+    ShowMigrationWarningCallback show_migration_warning_callback,
+    std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PasswordAccessoryControllerImpl>(
           *web_contents),
@@ -576,6 +583,7 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
       driver_supplier_(std::move(driver_supplier)),
       show_migration_warning_callback_(
           std::move(show_migration_warning_callback)),
+      access_loss_warning_bridge_(std::move(access_loss_warning_bridge)),
       plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext())) {}
 
@@ -857,6 +865,18 @@ void PasswordAccessoryControllerImpl::FillSelection(
         Profile::FromBrowserContext(GetWebContents().GetBrowserContext()),
         password_manager::metrics_util::PasswordMigrationWarningTriggers::
             kKeyboardAcessorySheet);
+  }
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
+    Profile* profile =
+        Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+    if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
+                       profile->GetPrefs(), /*called_at_startup=*/false)) {
+      access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
+          profile->GetPrefs(), GetWebContents().GetTopLevelNativeWindow(),
+          profile, /*called_at_startup=*/false);
+    }
   }
 }
 

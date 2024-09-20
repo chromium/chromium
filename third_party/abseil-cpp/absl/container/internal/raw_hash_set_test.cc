@@ -2093,7 +2093,7 @@ TEST(Table, MoveSelfAssign) {
   t = std::move(*&t);
   if (SwisstableGenerationsEnabled()) {
     // NOLINTNEXTLINE(bugprone-use-after-move)
-    EXPECT_DEATH_IF_SUPPORTED(t.contains("a"), "");
+    EXPECT_DEATH_IF_SUPPORTED(t.contains("a"), "self-move-assigned");
   }
   // As long as we don't crash, it's fine.
 }
@@ -3685,18 +3685,30 @@ TEST(Table, MovedFromCallsFail) {
   }
 
   {
-    ABSL_ATTRIBUTE_UNUSED IntTable t1, t2;
+    ABSL_ATTRIBUTE_UNUSED IntTable t1, t2, t3;
     t1.insert(1);
     t2 = std::move(t1);
     // NOLINTNEXTLINE(bugprone-use-after-move)
-    EXPECT_DEATH_IF_SUPPORTED(t1.contains(1), "");
+    EXPECT_DEATH_IF_SUPPORTED(t1.contains(1), "moved-from");
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    EXPECT_DEATH_IF_SUPPORTED(t1.swap(t3), "moved-from");
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    EXPECT_DEATH_IF_SUPPORTED(t1.merge(t3), "moved-from");
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    EXPECT_DEATH_IF_SUPPORTED(IntTable{t1}, "moved-from");
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    EXPECT_DEATH_IF_SUPPORTED(t1.begin(), "moved-from");
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    EXPECT_DEATH_IF_SUPPORTED(t1.end(), "moved-from");
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    EXPECT_DEATH_IF_SUPPORTED(t1.size(), "moved-from");
   }
   {
     ABSL_ATTRIBUTE_UNUSED IntTable t1;
     t1.insert(1);
     ABSL_ATTRIBUTE_UNUSED IntTable t2(std::move(t1));
     // NOLINTNEXTLINE(bugprone-use-after-move)
-    EXPECT_DEATH_IF_SUPPORTED(t1.contains(1), "");
+    EXPECT_DEATH_IF_SUPPORTED(t1.contains(1), "moved-from");
     t1.clear();  // Clearing a moved-from table is allowed.
   }
 }

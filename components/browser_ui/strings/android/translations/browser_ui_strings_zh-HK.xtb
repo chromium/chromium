@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">你在 <ph name="RECENCY" />看過</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5048398596102334565">允許網站存取動作感應器 (建議)</translation>
+<translation id="5048841907079026162">管理瀏覽資料</translation>
 <translation id="5050380848339752099">此網站即將退出無痕模式並與外部應用程式分享資料。</translation>
 <translation id="5063480226653192405">使用狀況</translation>
 <translation id="5091013926750941408">流動網站</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">允許網站執行 JavaScript (建議)</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344522958567249764">管理廣告私隱權</translation>
+<translation id="5373874281522292782">已儲存分頁群組</translation>
 <translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資料</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="757524316907819857">禁止網站播放受保護內容</translation>
 <translation id="7594634374516752650">已連線至藍牙裝置</translation>
+<translation id="7617547684249261169">你可以刪除部分或全部記錄、Cookie、網站資料等</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">《綠野仙蹤》</translation>

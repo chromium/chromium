@@ -53,7 +53,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace blink {
 
@@ -83,16 +83,15 @@ class Canvas2DLayerBridgeTest : public Test {
       RasterModeHint raster_mode,
       OpacityMode opacity_mode,
       std::unique_ptr<FakeCanvasResourceHost> custom_host = nullptr) {
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>();
     if (custom_host)
       host_ = std::move(custom_host);
     if (!host_)
       host_ = std::make_unique<FakeCanvasResourceHost>(size);
+    std::unique_ptr<Canvas2DLayerBridge> bridge =
+        std::make_unique<Canvas2DLayerBridge>(host_.get());
     host_->SetPreferred2DRasterMode(raster_mode);
     host_->AlwaysEnableRasterTimersForTesting();
     host_->SetOpacityMode(opacity_mode);
-    bridge->SetCanvasResourceHost(host_.get());
     host_->GetOrCreateCanvasResourceProvider(raster_mode);
     host_->GetOrCreateCcLayerIfNeeded();
     return bridge;
@@ -142,17 +141,6 @@ class Canvas2DLayerBridgeTest : public Test {
       accelerated_compositing_scope_;
 };
 
-TEST_F(Canvas2DLayerBridgeTest, DisableAcceleration) {
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferCPU, kNonOpaque);
-
-  bool has_backend_texture = bridge->NewImageSnapshot(FlushReason::kTesting)
-                                 ->PaintImageForCurrentFrame()
-                                 .IsTextureBacked();
-
-  EXPECT_FALSE(has_backend_texture);
-}
-
 TEST_F(Canvas2DLayerBridgeTest, NoDrawOnContextLost) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
@@ -172,38 +160,15 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
 
   EXPECT_TRUE(GetRasterMode(bridge.get()) == RasterMode::kGPU);
-  bridge->FinalizeFrame(FlushReason::kTesting);  // Trigger the creation
-                                                 // of a backing store
-  // When the context is lost we are not sure if we should still be producing
-  // GL frames for the compositor or not, so fail to generate frames.
-  test_context_provider_->TestContextGL()->set_context_lost(true);
 
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
-  EXPECT_FALSE(Host()->PrepareTransferableResource(nullptr, &resource,
-                                                   &release_callback));
-}
+  EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
+                                                  &release_callback));
 
-TEST_F(Canvas2DLayerBridgeTest,
-       PrepareMailboxWhenContextIsLostWithFailedRestore) {
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-
-  bridge->GetOrCreateResourceProvider();
-  EXPECT_TRUE(Host()->IsResourceValid());
   // When the context is lost we are not sure if we should still be producing
   // GL frames for the compositor or not, so fail to generate frames.
   test_context_provider_->TestContextGL()->set_context_lost(true);
-  EXPECT_FALSE(Host()->IsResourceValid());
-
-  // Restoration will fail because
-  // Platform::createSharedOffscreenGraphicsContext3DProvider() is stubbed
-  // in unit tests.  This simulates what would happen when attempting to
-  // restore while the GPU process is down.
-  bridge->Restore();
-
-  viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
   EXPECT_FALSE(Host()->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback));
 }
@@ -214,7 +179,6 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
         MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-    bridge->FinalizeFrame(FlushReason::kTesting);
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;
     EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
@@ -232,7 +196,6 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
     {
       std::unique_ptr<Canvas2DLayerBridge> bridge = MakeBridge(
           gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-      bridge->FinalizeFrame(FlushReason::kTesting);
       Host()->PrepareTransferableResource(nullptr, &resource,
                                           &release_callback);
       // |bridge| goes out of scope and would normally be destroyed, but
@@ -255,7 +218,6 @@ TEST_F(Canvas2DLayerBridgeTest, ReleaseCallbackWithNullContextProviderWrapper) {
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
         MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-    bridge->FinalizeFrame(FlushReason::kTesting);
     EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
                                                     &release_callback));
   }
@@ -347,11 +309,10 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
     GrDirectContext* gr = SharedGpuContext::ContextProviderWrapper()
                               ->ContextProvider()
                               ->GetGrContext();
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>();
     host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
     host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-    bridge->SetCanvasResourceHost(host_.get());
+    std::unique_ptr<Canvas2DLayerBridge> bridge =
+        std::make_unique<Canvas2DLayerBridge>(host_.get());
     host_->AlwaysEnableRasterTimersForTesting();
     EXPECT_EQ(GetRasterMode(bridge.get()),
               RasterMode::kGPU);  // We don't yet know that
@@ -863,68 +824,6 @@ TEST_F(Canvas2DLayerBridgeTest,
   EXPECT_FALSE(Host()->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback2));
   EXPECT_FALSE(release_callback2);
-}
-
-class CustomFakeCanvasResourceHost : public FakeCanvasResourceHost {
- public:
-  explicit CustomFakeCanvasResourceHost(const gfx::Size& size)
-      : FakeCanvasResourceHost(size) {}
-  void InitializeForRecording(cc::PaintCanvas* canvas) const override {
-    // Restore the canvas stack to hold a simple matrix transform.
-    canvas->save();
-    canvas->translate(5, 0);
-  }
-};
-
-TEST_F(Canvas2DLayerBridgeTest, WritePixelsRestoresClipStack) {
-  gfx::Size size(300, 300);
-  auto host = std::make_unique<CustomFakeCanvasResourceHost>(size);
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(size, RasterModeHint::kPreferGPU, kOpaque, std::move(host));
-  cc::PaintFlags flags;
-
-  // MakeBridge() results in a call to restore the matrix. So we already have 1.
-  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
-  // Drawline so WritePixels has something to flush
-  Canvas().drawLine(0, 0, 2, 2, flags);
-
-  // WritePixels flushes recording. Post flush, a new drawing canvas is created
-  // that should have the matrix restored onto it.
-  bridge->WritePixels(SkImageInfo::MakeN32Premul(10, 10), nullptr, 10, 0, 0);
-  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
-
-  Canvas().drawLine(0, 0, 2, 2, flags);
-  // Standard flush recording. Post flush, a new drawing canvas is created that
-  // should have the matrix restored onto it.
-  DrawSomething(bridge.get());
-
-  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
-}
-
-TEST_F(Canvas2DLayerBridgeTest, DisplayedCanvasIsRateLimited) {
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  EXPECT_TRUE(Host()->IsResourceValid());
-  Host()->SetIsDisplayed(true);
-  EXPECT_FALSE(!!Host()->RateLimiter());
-  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
-  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
-  EXPECT_TRUE(!!Host()->RateLimiter());
-}
-
-TEST_F(Canvas2DLayerBridgeTest, NonDisplayedCanvasIsNotRateLimited) {
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  EXPECT_TRUE(Host()->IsResourceValid());
-  Host()->SetIsDisplayed(true);
-  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
-  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
-  EXPECT_TRUE(!!Host()->RateLimiter());
-  Host()->SetIsDisplayed(false);
-  EXPECT_FALSE(!!Host()->RateLimiter());
-  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
-  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
-  EXPECT_FALSE(!!Host()->RateLimiter());
 }
 
 TEST_F(Canvas2DLayerBridgeTest, SoftwareCanvasIsCompositedIfImageChromium) {

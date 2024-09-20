@@ -14,7 +14,7 @@ namespace blink {
 class AudioContext;
 class V8UnionAudioSinkOptionsOrString;
 
-class SetSinkIdResolver : public GarbageCollected<SetSinkIdResolver> {
+class SetSinkIdResolver final : public GarbageCollected<SetSinkIdResolver> {
  public:
   SetSinkIdResolver(ScriptState*,
                     AudioContext&,
@@ -23,19 +23,16 @@ class SetSinkIdResolver : public GarbageCollected<SetSinkIdResolver> {
   SetSinkIdResolver& operator=(const SetSinkIdResolver&) = delete;
   ~SetSinkIdResolver() = default;
 
+  void Trace(Visitor*) const;
+
   void Start();
 
-  ScriptPromiseResolver<IDLUndefined>* Resolver() { return resolver_; }
-
-  void Trace(Visitor*) const;
+  ScriptPromiseResolver<IDLUndefined>* Resolver();
 
  private:
   // This callback function is passed to 'AudioDestinationNode::SetSinkId()'.
   // When the device status is okay, 'NotifySetSinkIdIsDone()' gets invoked.
   void OnSetSinkIdComplete(media::OutputDeviceStatus status);
-
-  // This will update 'AudioContext::sink_id_' and dispatch event.
-  void NotifySetSinkIdIsDone();
 
   WeakMember<AudioContext> audio_context_;
   Member<ScriptPromiseResolver<IDLUndefined>> resolver_;

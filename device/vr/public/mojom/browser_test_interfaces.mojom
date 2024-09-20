@@ -5,6 +5,7 @@
 module device_test.mojom;
 
 import "device/vr/public/mojom/openxr_interaction_profile_type.mojom";
+import "device/vr/public/mojom/xr_hand_tracking_data.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
@@ -76,6 +77,7 @@ struct ControllerFrameData {
   array<ControllerAxisData, 5> axis_data;
   PoseFrameData pose_data;
   ControllerRole role = kControllerRoleInvalid;
+  device.mojom.XRHandTrackingData? hand_data;
   bool is_valid;
 };
 

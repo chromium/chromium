@@ -748,15 +748,14 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
   }
 
   for (const auto& track : tracks->tracks()) {
-    if (track->type() == MediaTrack::Type::kAudio) {
-      client_->AddAudioTrack(track->track_id().value(), track->label().value(),
-                             track->language().value(), track->enabled());
-    } else if (track->type() == MediaTrack::Type::kVideo) {
-      client_->AddVideoTrack(track->track_id().value(), track->label().value(),
-                             track->language().value(), track->enabled());
-    } else {
-      // Text tracks are not supported through this code path.
-      NOTREACHED_IN_MIGRATION();
+    switch (track->type()) {
+      case MediaTrack::Type::kAudio:
+      case MediaTrack::Type::kVideo:
+        client_->AddMediaTrack(*track);
+        break;
+      default:
+        // Text tracks are not supported through this code path.
+        break;
     }
   }
 }

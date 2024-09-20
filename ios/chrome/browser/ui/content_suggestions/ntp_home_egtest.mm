@@ -193,6 +193,13 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
         feature_engagement::kIPHWhatsNewUpdatedFeature.name));
   }
 
+  if ([self isRunningTest:@selector(testSignInSignOutScrolledToTop)]) {
+    config.features_disabled.push_back(kIdentityDiscAccountMenu);
+  } else if ([self isRunningTest:@selector
+                   (testSignInSignOutScrolledToTop_AccountMenu)]) {
+    config.features_enabled.push_back(kIdentityDiscAccountMenu);
+  }
+
   return config;
 }
 
@@ -209,6 +216,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 - (void)tearDown {
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [SearchEnginesAppInterface setSearchEngineTo:self.defaultSearchEngine];
+
+  [self resetCustomizationPrefs];
 
   [super tearDown];
 }
@@ -1052,6 +1061,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Test to ensure that feed can be collapsed/shown and that feed header changes
 // accordingly.
 - (void)testToggleFeedVisible {
+  // Disable customization.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_disabled.push_back(kHomeCustomization);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
 
@@ -1279,6 +1294,47 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Test that signing in and signing out results in the NTP scrolled to the top
+// and not in some unexpected layout state.
+- (void)testSignInSignOutScrolledToTop_AccountMenu {
+// TODO(crbug.com/40903244): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:identity];
+  [SigninEarlGrey signinWithFakeIdentity:identity];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Verify Identity Disc is visible since it is the top-most element and should
+  // be showing now.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityLabel(l10n_util::GetNSStringF(
+              IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
+              base::SysNSStringToUTF16(identity.userFullName),
+              base::SysNSStringToUTF16(identity.userEmail)))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [SigninEarlGreyUI signOut];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Test that the omnibox remains focused with some inputted text after
 // backgrounding and foregrounding the app.
 - (void)testRetainOmniboxFocusOnBackground {
@@ -1350,12 +1406,18 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests the "new search" menu item from the new tab menu after disabling the
 // feed.
 - (void)testNewSearchFromNewTabMenuAfterTogglingFeed {
+  // Enable customization.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kHomeCustomization);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }
 
-  // Hide feed.
-  [self hideFeedFromNTPMenu];
+  // Disable feed.
+  [self disableFeedFromCustomizationMenu];
 
   [ChromeEarlGreyUI openNewTabMenu];
   [[EarlGrey selectElementWithMatcher:
@@ -1378,7 +1440,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
   // Fakebox should be mostly covered.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:mostlyNotVisible()];
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
@@ -1637,29 +1699,19 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the customization menu can be used to toggle the visibility of
 // Home surface modules.
 - (void)testToggleModuleVisiblityInCustomizationMenu {
-  // Customization is not yet supported on iPads.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    return;
-  }
-
-  [self resetCustomizationPrefs];
-
-  // Enable customization and reset state so the test can run repeatedly.
-  // TODO(crbug.com/350990359): Remove this when feature is enabled by default.
+  // Enable customization.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kHomeCustomization);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  // Open the Home customization menu and expand it to view all its content.
+  [self resetCustomizationPrefs];
+
+  // Open the Home customization menu.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID([HomeCustomizationHelper
-                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Check for a toggle cell for Shortcuts, Magic Stack and Discover, and ensure
   // that they're all on.
@@ -1759,24 +1811,19 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the toggles in the main page of the customization menu can be used
 // to navigate to their respective submenus.
 - (void)testNavigateInCustomizationMenu {
-  [self resetCustomizationPrefs];
-
-  // Enable customization and reset state so the test can run repeatedly.
-  // TODO(crbug.com/350990359): Remove this when feature is enabled by default.
+  // Enable customization.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kHomeCustomization);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  // Open the Home customization menu and expand it to view all its content.
+  [self resetCustomizationPrefs];
+
+  // Open the Home customization menu.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID([HomeCustomizationHelper
-                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Tap the Most Visited cell which shouldn't prompt a navigation.
   [[EarlGrey selectElementWithMatcher:
@@ -1821,24 +1868,19 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests the Discover submenu of the Home customization menu.
 - (void)testCustomizationDiscoverSubmenu {
-  [self resetCustomizationPrefs];
-
-  // Enable customization and reset state so the test can run repeatedly.
-  // TODO(crbug.com/350990359): Remove this when feature is enabled by default.
+  // Enable customization.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kHomeCustomization);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  // Open the Home customization menu and expand it to view all its content.
+  [self resetCustomizationPrefs];
+
+  // Open the Home customization menu.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID([HomeCustomizationHelper
-                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Navigate to the Discover submenu.
   [[EarlGrey
@@ -2050,6 +2092,27 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kHomeCustomizationMagicStackEnabled];
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kArticlesForYouEnabled];
+}
+
+// Disables the Discover feed from the Home Customization menu.
+- (void)disableFeedFromCustomizationMenu {
+  // Open the customization menu.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNTPCustomizationMenuButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Disable the Discover feed.
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleDiscoverIdentifier)]
+      performAction:grey_turnSwitchOn(NO)];
+
+  // Close the customization menu.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNavigationBarDismissButtonIdentifier)]
+      performAction:grey_tap()];
 }
 
 #pragma mark - Matchers

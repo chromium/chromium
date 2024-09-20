@@ -19,9 +19,11 @@ namespace dom_distiller {
 
 class DomDistillerServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
+  static DomDistillerService* GetForBrowserState(ProfileIOS* profile);
+
+  static DomDistillerService* GetForProfile(ProfileIOS* profile);
   static DomDistillerServiceFactory* GetInstance();
-  static DomDistillerService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
 
   DomDistillerServiceFactory(const DomDistillerServiceFactory&) = delete;
 

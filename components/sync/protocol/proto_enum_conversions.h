@@ -58,6 +58,9 @@ const char* ProtoEnumToString(
     sync_pb::CommitResponse::ResponseType response_type);
 
 const char* ProtoEnumToString(
+    sync_pb::ContactInfoSpecifics::AddressType address_type);
+
+const char* ProtoEnumToString(
     sync_pb::ContactInfoSpecifics::VerificationStatus verification_status);
 
 const char* ProtoEnumToString(

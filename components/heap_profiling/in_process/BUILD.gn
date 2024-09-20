@@ -69,6 +69,7 @@ source_set("unit_tests") {
       "//components/variations",
       "//components/version_info",
       "//mojo/core/test:test_support",
+      "//mojo/public/cpp/base:protobuf_support",
       "//mojo/public/cpp/bindings",
     ]
   }

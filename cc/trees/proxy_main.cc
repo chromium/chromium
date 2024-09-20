@@ -136,6 +136,9 @@ void ProxyMain::BeginMainFrame(
   const viz::BeginFrameArgs& frame_args =
       begin_main_frame_state->begin_frame_args;
   TRACE_EVENT("cc,benchmark", "ProxyMain::BeginMainFrame",
+              // "begin_frame_id" is used by the rendering benchmarks in
+              // Telemetry.
+              "begin_frame_id", frame_args.frame_id.sequence_number,
               [&](perfetto::EventContext ctx) {
                 EmitMainFramePipelineStep(
                     ctx, begin_main_frame_state->trace_id,

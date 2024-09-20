@@ -1040,16 +1040,6 @@ namespace autotestPrivate {
     // Remove printer.
     static void removePrinter(DOMString printerId);
 
-    // Start ARC directly, note this differs from |setPlayStoreEnabled|. It is
-    // used to restart ARC in tests.
-    // |callback|: Called when the operation has completed.
-    static void startArc(VoidCallback callback);
-
-    // Stop ARC directly, note this differs from |setPlayStoreEnabled|. It is
-    // used to restart ARC in tests. Note, this preserves ARC data.
-    // |callback|: Called when the operation has completed.
-    static void stopArc(VoidCallback callback);
-
     // Enable/disable the Play Store.
     // |enabled|: if set, enable the Play Store.
     // |callback|: Called when the operation has completed.
@@ -1696,6 +1686,12 @@ namespace autotestPrivate {
     // A restart is required for this change to take effect.
     // |value|: the locale of the language.
     static void setDeviceLanguage(DOMString locale, VoidCallback callback);
+
+    // Gets the chrome://device-log entries for a given type or all types.
+    // |type|: A string like "printer" to fetch a specific type, or an empty
+    // string to fetch all entries.
+    // |callback|: Called with the logs as a single string.
+    static void getDeviceEventLog(DOMString type, DOMStringCallback callback);
   };
 
   interface Events {

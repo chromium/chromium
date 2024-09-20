@@ -58,8 +58,8 @@ URLVisitAggregate::Tab MakeAggregateTabFromWebState(
 }  // namespace
 
 IOSTabModelURLVisitDataFetcher::IOSTabModelURLVisitDataFetcher(
-    ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {}
+    ProfileIOS* profile)
+    : profile_(profile) {}
 
 IOSTabModelURLVisitDataFetcher::~IOSTabModelURLVisitDataFetcher() {}
 
@@ -68,11 +68,10 @@ void IOSTabModelURLVisitDataFetcher::FetchURLVisitData(
     const FetcherConfig& config,
     FetchResultCallback callback) {
   // OTR URL should never be processed.
-  CHECK(!browser_state_->IsOffTheRecord());
+  CHECK(!profile_->IsOffTheRecord());
 
   std::map<URLMergeKey, URLVisitAggregate::TabData> url_visit_tab_data_map;
-  const BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_);
+  const BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   for (Browser* browser : browser_list->BrowsersOfType(
            BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* web_state_list = browser->GetWebStateList();

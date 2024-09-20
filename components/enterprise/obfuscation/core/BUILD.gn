@@ -1,5 +1,7 @@
 source_set("enterprise_obfuscation") {
   sources = [
+    "download_obfuscator.cc",
+    "download_obfuscator.h",
     "utils.cc",
     "utils.h",
   ]
@@ -13,7 +15,10 @@ source_set("enterprise_obfuscation") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "utils_unittest.cc" ]
+  sources = [
+    "download_obfuscator_unittest.cc",
+    "utils_unittest.cc",
+  ]
 
   deps = [
     ":enterprise_obfuscation",

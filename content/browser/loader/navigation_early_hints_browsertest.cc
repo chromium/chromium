@@ -351,8 +351,9 @@ class NavigationEarlyHintsTest : public DevToolsProtocolTest {
                                               const std::string& title) {
     std::u16string title16 = base::ASCIIToUTF16(title);
     TitleWatcher title_watcher(shell()->web_contents(), title16);
-    if (!NavigateToURL(shell(), url, expected_commit_url))
+    if (!NavigateToURL(shell(), url, expected_commit_url)) {
       return false;
+    }
     return title16 == title_watcher.WaitAndGetTitle();
   }
 
@@ -368,8 +369,9 @@ class NavigationEarlyHintsTest : public DevToolsProtocolTest {
   PreloadedResources WaitForPreloadedResources(RenderFrameHostImpl* rfh) {
     base::RunLoop loop;
     PreloadedResources result;
-    if (!GetEarlyHintsManager(rfh))
+    if (!GetEarlyHintsManager(rfh)) {
       return result;
+    }
 
     GetEarlyHintsManager(rfh)->WaitForPreloadsFinishedForTesting(
         base::BindLambdaForTesting([&](PreloadedResources preloaded_resources) {
@@ -420,8 +422,9 @@ class NavigationEarlyHintsTest : public DevToolsProtocolTest {
       return std::move(response);
     }
 
-    if (relative_url.path() != kHintedScriptPath)
+    if (relative_url.path() != kHintedScriptPath) {
       return nullptr;
+    }
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
@@ -753,8 +756,9 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NetworkAnonymizationKey) {
       base::BindLambdaForTesting(
           [&](const GURL& request_url,
               const network::URLLoaderCompletionStatus& status) {
-            if (request_url != kHintedScriptUrl)
+            if (request_url != kHintedScriptUrl) {
               return;
+            }
             is_cached = status.exists_in_cache;
           }),
       base::NullCallback());

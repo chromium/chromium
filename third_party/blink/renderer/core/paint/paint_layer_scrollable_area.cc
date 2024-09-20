@@ -2187,9 +2187,10 @@ gfx::Rect PaintLayerScrollableArea::ScrollCornerAndResizerRect() const {
 bool PaintLayerScrollableArea::IsAbsolutePointInResizeControl(
     const gfx::Point& absolute_point,
     ResizerHitTestType resizer_hit_test_type) const {
-  if (GetLayoutBox()->StyleRef().Visibility() != EVisibility::kVisible ||
-      !GetLayoutBox()->CanResize())
+  if (GetLayoutBox()->StyleRef().UsedVisibility() != EVisibility::kVisible ||
+      !GetLayoutBox()->CanResize()) {
     return false;
+  }
 
   gfx::Point local_point = ToRoundedPoint(
       GetLayoutBox()->AbsoluteToLocalPoint(PhysicalOffset(absolute_point)));
@@ -2199,9 +2200,10 @@ bool PaintLayerScrollableArea::IsAbsolutePointInResizeControl(
 bool PaintLayerScrollableArea::IsLocalPointInResizeControl(
     const gfx::Point& local_point,
     ResizerHitTestType resizer_hit_test_type) const {
-  if (GetLayoutBox()->StyleRef().Visibility() != EVisibility::kVisible ||
-      !GetLayoutBox()->CanResize())
+  if (GetLayoutBox()->StyleRef().UsedVisibility() != EVisibility::kVisible ||
+      !GetLayoutBox()->CanResize()) {
     return false;
+  }
 
   return ResizerCornerRect(resizer_hit_test_type).Contains(local_point);
 }
@@ -2417,7 +2419,7 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
           : 0;
 
   PhysicalRect local_expose_rect =
-      GetLayoutBox()->AbsoluteToLocalRect(absolute_rect, flag);
+      GetLayoutBox()->AbsoluteToLocalRect(absolute_rect);
   ScrollOffset target_offset = scroll_into_view_util::GetScrollOffsetToExpose(
       *this, local_expose_rect, scroll_margin, *params->align_x.get(),
       *params->align_y.get());
@@ -2504,7 +2506,7 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   }
 
   bool is_visible =
-      GetLayoutBox()->StyleRef().Visibility() == EVisibility::kVisible;
+      GetLayoutBox()->StyleRef().UsedVisibility() == EVisibility::kVisible;
   bool did_scroll_overflow = scrolls_overflow_;
   if (auto* layout_view = DynamicTo<LayoutView>(GetLayoutBox())) {
     mojom::blink::ScrollbarMode h_mode;

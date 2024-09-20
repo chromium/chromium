@@ -39,6 +39,11 @@ class UpdateChannelId {
   static base::expected<UpdateChannelId, absl::monostate> Create(
       std::string input);
 
+  UpdateChannelId(const UpdateChannelId&);
+  UpdateChannelId(UpdateChannelId&&);
+  UpdateChannelId& operator=(const UpdateChannelId&);
+  UpdateChannelId& operator=(UpdateChannelId&&);
+
   ~UpdateChannelId();
 
   bool operator==(const UpdateChannelId& other) const;

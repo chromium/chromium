@@ -46,6 +46,7 @@ using signin_metrics::PromoAction;
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // ConsistencyPromoSigninCoordinator.
   registry->RegisterIntegerPref(prefs::kSigninWebSignDismissalCount, 0);
+  registry->RegisterDictionaryPref(prefs::kSigninHasAcceptedManagementDialog);
 }
 
 + (instancetype)

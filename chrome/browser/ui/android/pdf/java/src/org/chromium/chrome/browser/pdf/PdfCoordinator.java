@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.pdf;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -25,6 +27,7 @@ public class PdfCoordinator {
     private static boolean sSkipLoadPdfForTesting;
     private final View mView;
     private final FragmentManager mFragmentManager;
+    private String mTabId;
 
     /** A unique id to identity the FragmentContainerView in the current PdfPage. */
     private final int mFragmentContainerViewId;
@@ -40,14 +43,18 @@ public class PdfCoordinator {
 
     private ChromePdfViewerFragment mChromePdfViewerFragment;
 
+    private int mFindInPageCount;
+
     /**
      * Creates a PdfCoordinator for the PdfPage.
      *
      * @param profile The current Profile.
      * @param activity The current Activity.
      * @param filepath The pdf filepath.
+     * @param tabId The id of the tab.
      */
-    public PdfCoordinator(Profile profile, Activity activity, String filepath) {
+    public PdfCoordinator(Profile profile, Activity activity, String filepath, int tabId) {
+        mTabId = String.valueOf(tabId);
         mView = LayoutInflater.from(activity).inflate(R.layout.pdf_page, null);
         mView.setBackgroundColor(
                 ChromeColors.getPrimaryBackgroundColor(activity, profile.isOffTheRecord()));
@@ -65,6 +72,11 @@ public class PdfCoordinator {
         mFragmentContainerViewId = View.generateViewId();
         fragmentContainerView.setId(mFragmentContainerViewId);
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
+        // TODO(b/360717802): Reuse fragment from savedInstance.
+        Fragment fragment = mFragmentManager.findFragmentByTag(mTabId);
+        if (fragment != null) {
+            mFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
+        }
         // Create PdfViewerFragment to start showing the loading spinner.
         mChromePdfViewerFragment = new ChromePdfViewerFragment();
         loadPdfFile(filepath);
@@ -75,15 +87,19 @@ public class PdfCoordinator {
         /** Whether the pdf has been loaded successfully. */
         boolean mIsLoadDocumentSuccess;
 
+        /** The timestamp when the pdf document starts to load. */
+        long mDocumentLoadStartTimestamp;
+
         @Override
         public void onLoadDocumentSuccess() {
             mIsLoadDocumentSuccess = true;
-            // TODO: capture metrics
+            PdfUtils.recordPdfLoadTime(SystemClock.elapsedRealtime() - mDocumentLoadStartTimestamp);
+            PdfUtils.recordPdfLoadResult(true);
         }
 
         @Override
         public void onLoadDocumentError(@NonNull Throwable throwable) {
-            // TODO: capture metrics
+            PdfUtils.recordPdfLoadResult(false);
         }
     }
 
@@ -100,6 +116,7 @@ public class PdfCoordinator {
     boolean findInPage() {
         if (mChromePdfViewerFragment != null && mChromePdfViewerFragment.mIsLoadDocumentSuccess) {
             mChromePdfViewerFragment.setTextSearchActive(true);
+            PdfUtils.recordFindInPage(mFindInPageCount++);
             return true;
         }
         return false;
@@ -109,6 +126,11 @@ public class PdfCoordinator {
      * Called after a pdf page has been removed from the view hierarchy and will no longer be used.
      */
     void destroy() {
+        if (mChromePdfViewerFragment == null) {
+            PdfUtils.recordHasFilepathWithoutFragmentOnDestroy(mPdfFilePath != null);
+            Log.w(TAG, "Fragment is null when pdf page is destroyed.");
+            return;
+        }
         if (!mFragmentManager.isDestroyed()) {
             mFragmentManager
                     .beginTransaction()
@@ -154,9 +176,12 @@ public class PdfCoordinator {
                     // Committing the fragment
                     // TODO(b/360717802): Reuse fragment from savedInstance.
                     FragmentTransaction transaction = mFragmentManager.beginTransaction();
-                    transaction.add(mFragmentContainerViewId, mChromePdfViewerFragment);
+                    transaction.add(mFragmentContainerViewId, mChromePdfViewerFragment, mTabId);
                     transaction.commitAllowingStateLoss();
                     mFragmentManager.executePendingTransactions();
+                    PdfUtils.recordPdfLoad();
+                    mChromePdfViewerFragment.mDocumentLoadStartTimestamp =
+                            SystemClock.elapsedRealtime();
                     mChromePdfViewerFragment.setDocumentUri(uri);
                 }
             } catch (NullPointerException e) {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import {Config, Course, Identity, PageHandlerRemote, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {Config, Course, Identity, PageHandlerRemote, SessionResult, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -48,7 +48,8 @@ class MockRemoteHandler extends PageHandlerRemote {
         {
           sessionDuration: {
             // BigInt serialized as string.
-            microseconds: 7200000000n,
+            // TODO(b/365141108) Fix this after we remove hard-coded duration.
+            microseconds: 120000000n,
           },
           students: [
             {id: '1', name: 'cat', email: 'cat@gmail.com'},
@@ -83,6 +84,49 @@ class MockRemoteHandler extends PageHandlerRemote {
         },
         config);
     return Promise.resolve({success: true});
+  }
+
+  override getSession(): Promise<{result: SessionResult}> {
+    return Promise.resolve({
+      result: {
+        config: {
+          sessionDuration: {
+            microseconds: 120000000n,
+          },
+          teacher: {id: '0', name: 'teacher', email: 'teacher@gmail.com'},
+          students: [
+            {id: '1', name: 'cat', email: 'cat@gmail.com'},
+            {id: '2', name: 'dog', email: 'dog@gmail.com'},
+          ],
+          onTaskConfig: {
+            isLocked: true,
+            tabs: [
+              {
+                tab: {
+                  url: {url: 'http://google.com/'},
+                  title: 'google',
+                  favicon: 'data/image',
+                },
+                navigationType: 0,
+              },
+              {
+                tab: {
+                  url: {url: 'http://youtube.com/'},
+                  title: 'youtube',
+                  favicon: 'data/image',
+                },
+                navigationType: 1,
+              },
+            ],
+          },
+          captionConfig: {
+            captionEnabled: true,
+            transcriptionEnabled: true,
+            localOnly: true,
+          },
+        },
+      },
+    });
   }
 }
 
@@ -186,4 +230,48 @@ suite('ClientDelegateTest', function() {
         });
         assertTrue(result);
       });
+
+  test('client delegate should properly translate get session', async () => {
+    const result = await clientDelegateImpl.getInstance().getSession();
+    assertDeepEquals(
+        {
+          sessionConfig: {
+            sessionDurationInMinutes: 2,
+            teacher: {id: '0', name: 'teacher', email: 'teacher@gmail.com'},
+            students: [
+              {id: '1', name: 'cat', email: 'cat@gmail.com'},
+              {id: '2', name: 'dog', email: 'dog@gmail.com'},
+            ],
+            onTaskConfig: {
+              isLocked: true,
+              tabs: [
+                {
+                  tab: {
+                    title: 'google',
+                    url: 'http://google.com/',
+                    favicon: 'data/image',
+                  },
+                  navigationType: 0,
+                },
+                {
+                  tab: {
+                    title: 'youtube',
+                    url: 'http://youtube.com/',
+                    favicon: 'data/image',
+                  },
+                  navigationType: 1,
+                },
+              ],
+            },
+            captionConfig: {
+              captionEnabled: true,
+              localOnly: true,
+              transcriptionEnabled: true,
+            },
+          },
+          activity: [],
+        },
+        result);
+  });
+
 });

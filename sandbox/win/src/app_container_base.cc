@@ -176,27 +176,6 @@ class ProfileLock {
 // static
 std::unique_ptr<AppContainerBase> AppContainerBase::CreateProfile(
     const wchar_t* package_name,
-    const wchar_t* display_name,
-    const wchar_t* description) {
-  PSID package_sid_ptr = nullptr;
-  HRESULT hr = ::CreateAppContainerProfile(
-      package_name, display_name, description, nullptr, 0, &package_sid_ptr);
-  if (hr == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS))
-    return Open(package_name);
-
-  if (FAILED(hr))
-    return nullptr;
-  std::unique_ptr<void, FreeSidDeleter> sid_deleter(package_sid_ptr);
-  auto package_sid = base::win::Sid::FromPSID(package_sid_ptr);
-  if (!package_sid)
-    return nullptr;
-  return std::make_unique<AppContainerBase>(
-      package_name, std::move(*package_sid), AppContainerType::kProfile);
-}
-
-// static
-std::unique_ptr<AppContainerBase> AppContainerBase::CreateProfileNoFirewall(
-    const wchar_t* package_name,
     const wchar_t* display_name) {
   auto package_sid = DerivePackageSid(package_name);
   if (!package_sid) {
@@ -260,11 +239,6 @@ bool AppContainerBase::ProfileExists(const wchar_t* package_name) {
 
 // static
 bool AppContainerBase::Delete(const wchar_t* package_name) {
-  return SUCCEEDED(::DeleteAppContainerProfile(package_name));
-}
-
-// static
-bool AppContainerBase::DeleteNoFirewall(const wchar_t* package_name) {
   auto package_sid = DerivePackageSid(package_name);
   if (!package_sid) {
     return false;

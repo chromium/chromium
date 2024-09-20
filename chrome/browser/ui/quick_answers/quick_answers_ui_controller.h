@@ -43,7 +43,6 @@ class QuickAnswersUiController {
 
   // TODO(b/335701090): extract those browser actions to
   // QuickAnswersBrowserDelegate.
-  using FakeOpenSettingsCallback = base::RepeatingCallback<void()>;
   using FakeOpenFeedbackPageCallback =
       base::RepeatingCallback<void(const std::string&)>;
   using FakeOpenWebUrlCallback = base::RepeatingCallback<void(const GURL&)>;
@@ -108,8 +107,6 @@ class QuickAnswersUiController {
   // Invoked when user clicks the settings button on Quick-Answers related
   // views.
   void OnSettingsButtonPressed();
-  void SetFakeOpenSettingsCallbackForTesting(
-      FakeOpenSettingsCallback fake_open_settings_callback);
 
   // Invoked when user clicks the report query button on Quick Answers view.
   void OnReportQueryButtonPressed();
@@ -152,7 +149,6 @@ class QuickAnswersUiController {
   }
 
  private:
-  void OpenSettings();
   void OpenFeedbackPage(const std::string& feedback_template);
   void OpenWebUrl(const GURL& url);
   void OnUserConsentNoThanksPressed();
@@ -183,7 +179,6 @@ class QuickAnswersUiController {
   std::string query_;
 
   FakeOnRetryLabelPressedCallback fake_on_retry_label_pressed_callback_;
-  FakeOpenSettingsCallback fake_open_settings_callback_;
   FakeOpenFeedbackPageCallback fake_open_feedback_page_callback_;
   FakeOpenWebUrlCallback fake_open_web_url_callback_;
 

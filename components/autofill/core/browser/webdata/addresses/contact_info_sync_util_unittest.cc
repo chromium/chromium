@@ -327,6 +327,7 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
   ContactInfoSpecifics specifics;
 
   specifics.set_guid(kGuid);
+  specifics.set_address_type(ContactInfoSpecifics::REGULAR);
   specifics.set_use_count(123);
   specifics.set_use_date_unix_epoch_seconds(kUseDate.ToTimeT());
   specifics.set_use_date2_unix_epoch_seconds(kUseDate2.ToTimeT());
@@ -762,6 +763,27 @@ TEST_F(ContactInfoSyncUtilTest,
             nullptr);
 }
 
+// Tests that H/W record types are converted to
+// ContactInfoSpecifics::address_type correctly.
+TEST_F(ContactInfoSyncUtilTest,
+       CreateContactInfoEntityDataFromAutofillProfile_HWRecordTypes) {
+  AutofillProfile profile = ConstructBaseProfile();
+
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
+                profile, /*base_contact_info_specifics=*/{})
+                ->specifics.contact_info()
+                .address_type(),
+            ContactInfoSpecifics::HOME);
+
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccountWork);
+  EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
+                profile, /*base_contact_info_specifics=*/{})
+                ->specifics.contact_info()
+                .address_type(),
+            ContactInfoSpecifics::WORK);
+}
+
 // Test that supported fields and nested messages are successfully trimmed.
 TEST_F(ContactInfoSyncUtilTest, TrimAllSupportedFieldsFromRemoteSpecifics) {
   sync_pb::ContactInfoSpecifics contact_info_specifics;
@@ -850,6 +872,23 @@ TEST_F(ContactInfoSyncUtilTest,
   specifics.set_guid(kInvalidGuid);
   EXPECT_FALSE(
       CreateAutofillProfileFromContactInfoSpecifics(specifics).has_value());
+}
+
+// Tests that H/W address types are converted to
+// AutofillProfile::RecordType correctly.
+TEST_F(ContactInfoSyncUtilTest,
+       CreateAutofillProfileFromContactInfoSpecifics_AddressTypes) {
+  ContactInfoSpecifics specifics = ConstructBaseSpecifics();
+
+  specifics.set_address_type(ContactInfoSpecifics::HOME);
+  EXPECT_EQ(
+      CreateAutofillProfileFromContactInfoSpecifics(specifics)->record_type(),
+      AutofillProfile::RecordType::kAccountHome);
+
+  specifics.set_address_type(ContactInfoSpecifics::WORK);
+  EXPECT_EQ(
+      CreateAutofillProfileFromContactInfoSpecifics(specifics)->record_type(),
+      AutofillProfile::RecordType::kAccountWork);
 }
 
 // Tests that if a token's `value` changes by external means, its observations

@@ -132,7 +132,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.FEDERATED_IDENTITY_API:
       case ContentSettingsTypes.IMAGES:
       case ContentSettingsTypes.JAVASCRIPT:
-      case ContentSettingsTypes.JAVASCRIPT_JIT:
+      case ContentSettingsTypes.JAVASCRIPT_OPTIMIZER:
       case ContentSettingsTypes.MIXEDSCRIPT:
       case ContentSettingsTypes.PAYMENT_HANDLER:
       case ContentSettingsTypes.POPUPS:
@@ -162,10 +162,12 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.NOTIFICATIONS:
       case ContentSettingsTypes.POINTER_LOCK:
       case ContentSettingsTypes.SERIAL_PORTS:
+      case ContentSettingsTypes.SMART_CARD_READERS:
       case ContentSettingsTypes.STORAGE_ACCESS:
       case ContentSettingsTypes.USB_DEVICES:
       case ContentSettingsTypes.VR:
       case ContentSettingsTypes.WINDOW_MANAGEMENT:
+      case ContentSettingsTypes.WEB_APP_INSTALLATION:
       case ContentSettingsTypes.WEB_PRINTING:
         // "Ask" vs "Blocked".
         return ContentSetting.ASK;

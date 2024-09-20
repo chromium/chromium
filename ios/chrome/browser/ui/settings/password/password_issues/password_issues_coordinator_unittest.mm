@@ -89,7 +89,7 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
     mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
     // Delay auth result so auth doesn't pass right after starting coordinator.
     // Needed for verifying behavior when auth is required.
-    mock_reauth_module_.shouldReturnSynchronously = NO;
+    mock_reauth_module_.shouldSkipReAuth = NO;
     mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
 
     coordinator_ = [[PasswordIssuesCoordinator alloc]

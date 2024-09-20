@@ -114,7 +114,7 @@ dictionary CheckVisibilityOptions {
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
     // https://github.com/w3c/pointerlock/pull/49
-    [MeasureAs=ElementRequestPointerLock, CallWith=ScriptState, RaisesException] any requestPointerLock(optional PointerLockOptions options = {});
+    [MeasureAs=ElementRequestPointerLock, CallWith=ScriptState, RaisesException] Promise<undefined> requestPointerLock(optional PointerLockOptions options = {});
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extension-to-the-element-interface

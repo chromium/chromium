@@ -39,6 +39,10 @@
 
 namespace chromeos {
 
+DeviceLogUIConfig::DeviceLogUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIDeviceLogHost) {}
+
 namespace {
 
 class DeviceLogMessageHandler : public content::WebUIMessageHandler {

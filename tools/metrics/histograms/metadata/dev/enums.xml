@@ -805,6 +805,19 @@ Called by update_protocol_commands_enum.py.-->
   <int value="157" label="Console insight onboarding moving to next page"/>
   <int value="158" label="Console insight onboarding moving to previous page"/>
   <int value="159" label="Console insight onboarding disabling feature"/>
+  <int value="160" label="Console insight opt-in teaser shown"/>
+  <int value="161"
+      label="Console insight opt-in teaser link to settings clicked"/>
+  <int value="162"
+      label="Console insight opt-in teaser confirmed via settings"/>
+  <int value="163" label="Console insight reminder teaser shown"/>
+  <int value="164" label="Console insight reminder teaser confirmed"/>
+  <int value="165" label="Console insight reminder teaser canceled"/>
+  <int value="166"
+      label="Console insight reminder teaser link to settings clicked"/>
+  <int value="167"
+      label="Console insight reminder teaser aborted via settings"/>
+  <int value="168" label="Console insight generated skipping disclaimers"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">

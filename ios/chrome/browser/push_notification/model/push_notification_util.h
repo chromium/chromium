@@ -35,10 +35,11 @@ enum class SettingsAuthorizationStatus {
 // didRegisterForNotificationsWithDeviceToken function is called if the device
 // was successfully registered with APNS. If the device's registration was
 // unsuccessful, then AppDelegate's didRegisterForNotificationsWithError
-// function is called. `contentNotificationAvailability` is YES when content
-// notification is enabled or need to be registered.
-+ (void)registerDeviceWithAPNSWithContentNotificationsAvailable:
-    (BOOL)contentNotificationAvailability;
+// function is called. `provisionalNotificationsAvailable` is YES when a
+// notification type that can deliver provisional notifications (Content or
+// SendTab) notification is enabled or need to be registered.
++ (void)registerDeviceWithAPNSWithProvisionalNotificationsAvailable:
+    (BOOL)provisionalNotificationsAvailable;
 
 // The function registers the set of `UNNotificationCategory` objects with iOS'
 // UNNotificationCenter.
@@ -88,6 +89,11 @@ enum class SettingsAuthorizationStatus {
 // difference between the prefService's previous value and the new value, the
 // change is logged to UMA.
 + (void)updateAuthorizationStatusPref:(UNAuthorizationStatus)status;
+
+// Returns the corresponding SettingsAuthorizationStatus value for the given
+// `status`.
++ (push_notification::SettingsAuthorizationStatus)
+    getNotificationSettingsStatusFrom:(UNAuthorizationStatus)status;
 @end
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_UTIL_H_

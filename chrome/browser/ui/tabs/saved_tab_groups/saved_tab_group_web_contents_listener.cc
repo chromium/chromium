@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -55,43 +57,32 @@ bool IsUserTriggeredMainFrameNavigation(
   return true;
 }
 
-// Returns whether URL is in a redirect chain.
-bool IsURLInRedirectChain(const GURL& url,
-                          const std::vector<GURL>& redirect_chain) {
-  for (const auto& redirect_url : redirect_chain) {
-    if (redirect_url.GetWithoutRef().spec() == url.GetWithoutRef().spec()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 }  // namespace
 
-SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
-    content::WebContents* web_contents,
-    const LocalTabID& saved_tab_group_tab_id,
-    TabGroupSyncService* service)
-    : saved_tab_group_tab_id_(saved_tab_group_tab_id),
-      web_contents_(web_contents),
-      service_(service) {
-  Observe(web_contents_);
+void SavedTabGroupWebContentsListener::OnTabDiscarded(
+    tabs::TabInterface* tab_interface,
+    content::WebContents* old_content,
+    content::WebContents* new_content) {
+  Observe(new_content);
 }
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
-    content::WebContents* web_contents,
-    content::NavigationHandle* navigation_handle,
+    TabGroupSyncService* service,
     const LocalTabID& saved_tab_group_tab_id,
-    TabGroupSyncService* service)
-    : saved_tab_group_tab_id_(saved_tab_group_tab_id),
-      web_contents_(web_contents),
-      service_(service),
+    tabs::TabModel* local_tab,
+    content::NavigationHandle* navigation_handle)
+    : service_(service),
+      saved_tab_group_tab_id_(saved_tab_group_tab_id),
+      local_tab_(local_tab),
       handle_from_sync_update_(navigation_handle) {
-  Observe(web_contents_);
+  tab_discard_subscription_ = local_tab->RegisterWillDiscardContents(
+      base::BindRepeating(&SavedTabGroupWebContentsListener::OnTabDiscarded,
+                          base::Unretained(this)));
+  Observe(local_tab->contents());
 }
 
 SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() {
-  TabGroupSyncTabState::Reset(web_contents());
+  TabGroupSyncTabState::Reset(contents());
 }
 
 void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
@@ -100,12 +91,12 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
   }
 
   std::optional<SavedTabGroup> group = saved_group();
-  SavedTabGroupTab* tab = group->GetTab(saved_tab_group_tab_id_);
-  CHECK(tab);
+  SavedTabGroupTab* saved_tab = group->GetTab(saved_tab_group_tab_id_);
+  CHECK(saved_tab);
 
   // If the URL is inside current tab URL's redirect chain, there is no need to
   // navigate as the navigation will end up with the current tab URL.
-  if (IsURLInRedirectChain(url, tab->redirect_url_chain())) {
+  if (saved_tab->IsURLInRedirectChain(url)) {
     return;
   }
 
@@ -115,11 +106,15 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
   }
 
   content::NavigationHandle* navigation_handle =
-      web_contents()
+      contents()
           ->GetController()
           .LoadURLWithParams(content::NavigationController::LoadURLParams(url))
           .get();
   handle_from_sync_update_ = navigation_handle;
+}
+
+content::WebContents* SavedTabGroupWebContentsListener::contents() const {
+  return local_tab_->contents();
 }
 
 void SavedTabGroupWebContentsListener::DidFinishNavigation(
@@ -131,13 +126,13 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   if (navigation_handle == handle_from_sync_update_) {
     handle_from_sync_update_ = nullptr;
     // Create a tab state to indicate that the tab is restricted.
-    TabGroupSyncTabState::Create(web_contents());
+    TabGroupSyncTabState::Create(contents());
     return;
   }
 
   if (IsUserTriggeredMainFrameNavigation(navigation_handle)) {
     // Once the tab state is remove, restrictions will be removed from it.
-    TabGroupSyncTabState::Reset(web_contents());
+    TabGroupSyncTabState::Reset(contents());
   }
 
   if (!TabGroupSyncUtils::IsSaveableNavigation(navigation_handle)) {
@@ -152,12 +147,12 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     // TODO(crbug.com/359715038): Implement in TGSS then remove cast.
     static_cast<TabGroupSyncServiceProxy*>(service_)->SetFaviconForTab(
         group->local_group_id().value(), saved_tab_group_tab_id_,
-        favicon::TabFaviconFromWebContents(web_contents_));
+        favicon::TabFaviconFromWebContents(contents()));
   }
 
   SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetURL(web_contents_->GetURL());
-  tab_builder.SetTitle(web_contents_->GetTitle());
+  tab_builder.SetURL(contents()->GetURL());
+  tab_builder.SetTitle(contents()->GetTitle());
 
   service_->UpdateTab(group->local_group_id().value(), saved_tab_group_tab_id_,
                       std::move(tab_builder));
@@ -165,7 +160,7 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
 
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(
     const blink::WebInputEvent& event) {
-  TabGroupSyncTabState::Reset(web_contents());
+  TabGroupSyncTabState::Reset(contents());
 }
 
 void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
@@ -175,11 +170,10 @@ void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
   }
 
   std::optional<SavedTabGroup> group = saved_group();
-
   SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetRedirectURLChain(navigation_handle->GetRedirectChain());
   service_->UpdateTab(group->local_group_id().value(), saved_tab_group_tab_id_,
-                      std::move(tab_builder));
+                      tab_builder);
 }
 
 const SavedTabGroup SavedTabGroupWebContentsListener::saved_group() {

@@ -14,6 +14,7 @@
 #define CHROME_INSTALLER_UTIL_L10N_STRING_UTIL_H_
 
 #include <string>
+#include <vector>
 
 namespace installer {
 
@@ -37,6 +38,11 @@ void SetTranslationDelegate(TranslationDelegate* delegate);
 // IDS_INBOUND_MDNS_RULE_NAME is mapped to IDS_INBOUND_MDNS_RULE_NAME_CANARY for
 // canary Chrome).
 std::wstring GetLocalizedString(int base_message_id);
+
+// Returns a formatted version of the localized string using `replacements` for
+// the placeholders within `base_message_id`.
+std::wstring GetLocalizedStringF(int base_message_id,
+                                 std::vector<std::wstring> replacements);
 
 // Given the system language, return a url that points to the localized eula.
 // The empty string is returned on failure.

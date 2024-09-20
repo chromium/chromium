@@ -207,13 +207,11 @@ class BASE_EXPORT File {
   // (relative to the start) or -1 in case of error.
   int64_t Seek(Whence whence, int64_t offset);
 
-  // Simplified versions of Read() and friends (see below) that check the int
+  // Simplified versions of Read() and friends (see below) that check the
   // return value and just return a boolean. They return true if and only if
-  // the function read in / wrote out exactly |data.size()| bytes of data.
+  // the function read in exactly |data.size()| bytes of data.
   bool ReadAndCheck(int64_t offset, span<uint8_t> data);
   bool ReadAtCurrentPosAndCheck(span<uint8_t> data);
-  bool WriteAndCheck(int64_t offset, span<const uint8_t> data);
-  bool WriteAtCurrentPosAndCheck(span<const uint8_t> data);
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
   // given offset. Returns the number of bytes read, or -1 on error. Note that
@@ -230,13 +228,22 @@ class BASE_EXPORT File {
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
   // given offset, but does not make any effort to read all data on all
-  // platforms. Returns the number of bytes read, or -1 on error.
+  // platforms. Returns the number of bytes read, or -1/std::nullopt on error.
   UNSAFE_BUFFER_USAGE int ReadNoBestEffort(int64_t offset,
                                            char* data,
                                            int size);
+  std::optional<size_t> ReadNoBestEffort(int64_t offset,
+                                         base::span<uint8_t> data);
 
   // Same as above but without seek.
   UNSAFE_BUFFER_USAGE int ReadAtCurrentPosNoBestEffort(char* data, int size);
+  std::optional<size_t> ReadAtCurrentPosNoBestEffort(base::span<uint8_t> data);
+
+  // Simplified versions of Write() and friends (see below) that check the
+  // return value and just return a boolean. They return true if and only if
+  // the function wrote out exactly |data.size()| bytes of data.
+  bool WriteAndCheck(int64_t offset, span<const uint8_t> data);
+  bool WriteAtCurrentPosAndCheck(span<const uint8_t> data);
 
   // Writes the given buffer into the file at the given offset, overwritting any
   // data that was previously there. Returns the number of bytes written, or -1
@@ -252,9 +259,12 @@ class BASE_EXPORT File {
   std::optional<size_t> WriteAtCurrentPos(base::span<const uint8_t> data);
 
   // Save as above but does not make any effort to write all data on all
-  // platforms. Returns the number of bytes written, or -1 on error.
+  // platforms. Returns the number of bytes written, or -1/std::nullopt
+  // on error.
   UNSAFE_BUFFER_USAGE int WriteAtCurrentPosNoBestEffort(const char* data,
                                                         int size);
+  std::optional<size_t> WriteAtCurrentPosNoBestEffort(
+      base::span<const uint8_t> data);
 
   // Returns the current size of this file, or a negative number on failure.
   int64_t GetLength() const;
@@ -281,7 +291,9 @@ class BASE_EXPORT File {
   // Updates the file times.
   bool SetTimes(Time last_access_time, Time last_modified_time);
 
-  // Returns some basic information for the given file.
+  // Returns some basic information for the given file. Code that needs to
+  // support android Content-URIs should use base::GetFileInfo(FilePath)
+  // which is able to use the path (URI) to populate Info via Java APIs.
   bool GetInfo(Info* info);
 
 #if !BUILDFLAG( \

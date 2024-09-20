@@ -28,7 +28,7 @@ class CreditCard;
 // Opens the details of the given card. `editMode` indicates whether the details
 // page should be opened in edit mode.
 - (void)cardCoordinator:(CardCoordinator*)cardCoordinator
-    didTriggerOpenCardDetails:(const autofill::CreditCard*)card
+    didTriggerOpenCardDetails:(autofill::CreditCard)card
                    inEditMode:(BOOL)editMode;
 
 @end

@@ -134,17 +134,6 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
       ash::standalone_browser::migrator_util::PolicyInitState
           policy_init_state);
 
-  // MaybeRestartToMigrateBack checks if backward migration should be
-  // triggered. Migration is started by adding extra flags to Chrome using
-  // session_manager and then restarting.
-  // Returns true if Chrome needs to restart to trigger backward migration.
-  // May block to check if the lacros folder is present.
-  static bool MaybeRestartToMigrateBack(
-      const AccountId& account_id,
-      const std::string& user_id_hash,
-      ash::standalone_browser::migrator_util::PolicyInitState
-          policy_init_state);
-
   // CancelMigration is called when the user chooses to cancel the migration
   // from OOBE and it cleans up the in-progress migration.
   void CancelMigration(

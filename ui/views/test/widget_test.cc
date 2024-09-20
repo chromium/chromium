@@ -186,8 +186,12 @@ TestDesktopWidgetDelegate::TestDesktopWidgetDelegate()
     : TestDesktopWidgetDelegate(nullptr) {}
 
 TestDesktopWidgetDelegate::TestDesktopWidgetDelegate(Widget* widget)
-    : widget_(widget ? widget : new Widget) {
+    : widget_(widget) {
   SetFocusTraversesOut(true);
+  if (!widget_) {
+    owned_widget_ = std::make_unique<Widget>();
+    widget_ = owned_widget_.get();
+  }
 }
 
 TestDesktopWidgetDelegate::~TestDesktopWidgetDelegate() {
@@ -228,16 +232,15 @@ bool TestDesktopWidgetDelegate::OnCloseRequested(
 }
 
 TestInitialFocusWidgetDelegate::TestInitialFocusWidgetDelegate(
-    gfx::NativeWindow context)
-    : view_(new View) {
-  view_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-
-  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+    gfx::NativeWindow context) {
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_WINDOW);
   params.context = context;
   params.delegate = this;
   GetWidget()->Init(std::move(params));
-  GetWidget()->GetContentsView()->AddChildView(view_.get());
+  view_ =
+      GetWidget()->GetContentsView()->AddChildView(std::make_unique<View>());
+  view_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 }
 
 TestInitialFocusWidgetDelegate::~TestInitialFocusWidgetDelegate() = default;

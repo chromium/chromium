@@ -42,6 +42,7 @@ default_chrome_public_jinja_variables = [
   "enable_vr=$enable_vr",
   "enable_openxr=$enable_openxr",
   "enable_arcore=$enable_arcore",
+  "is_desktop_android=$is_desktop_android",
   "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
 
@@ -279,9 +280,6 @@ template("chrome_common_apk_or_module_tmpl") {
 
     if (_is_bundle) {
       is_base_module = true
-
-      # Sets ISOLATED_SPLITS_ENABLED in BuildConfig.java.
-      isolated_splits_enabled = true
     }
 
     product_config_java_packages = [ "org.chromium.chrome.browser" ]
@@ -502,11 +500,6 @@ template("chrome_common_apk_or_module_tmpl") {
         asset_deps += [ "//chrome/android:chrome_public_non_pak_assets" ]
       }
       if (_is_bundle) {
-        deps += [
-          # deps in delegate_public_impl_java are put into the Chrome module, but the language deps
-          # are needed by the base module.
-          "//components/language/android:ulp_delegate_public_java",
-        ]
         if (_is_monochrome) {
           # WebView needs these in the base module.
           deps += [
@@ -529,8 +522,6 @@ template("chrome_common_apk_or_module_tmpl") {
     # See //third_party/android_sdk/window_extensions/README.md
     assert_no_deps = [
       "//third_party/android_deps:org_jetbrains_kotlin_kotlin_parcelize_runtime",
-      "//third_party/androidx:androidx_window_extensions_core_core_java",
-      "//third_party/androidx:androidx_window_sidecar_sidecar_java",
       "//third_party/androidx:androidx_window_window_java_java",
     ]
     if (defined(invoker.assert_no_deps)) {
@@ -738,7 +729,6 @@ template("chrome_common_apk_or_module_tmpl") {
     }
 
     if (_is_test) {
-      bundles_supported = true
       deps += [ "//third_party/androidx:androidx_test_runner_java" ]
 
       # For EmbeddedTestServer.

@@ -18,12 +18,10 @@ namespace ios {
 // states.
 class AboutSigninInternalsFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the instance of AboutSigninInternals associated with this browser
-  // state, creating one if none exists.
-  static AboutSigninInternals* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static AboutSigninInternals* GetForBrowserState(ProfileIOS* profile);
 
-  // Returns an instance of the AboutSigninInternalsFactory singleton.
+  static AboutSigninInternals* GetForProfile(ProfileIOS* profile);
   static AboutSigninInternalsFactory* GetInstance();
 
   AboutSigninInternalsFactory(const AboutSigninInternalsFactory&) = delete;

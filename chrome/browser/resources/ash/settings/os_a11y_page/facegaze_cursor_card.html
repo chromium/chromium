@@ -107,6 +107,30 @@
       </settings-slider>
     </div>
   </template>
+  <!--
+    TODO(b/322510917): Add these strings to the .grd file once they're finalized
+    by UX writing.
+  -->
+  <div class="settings-box">
+    <div class="start settings-box-text">
+      <div class="label" aria-hidden="true" id="faceGazeVelocityThresholdLabel">
+        Movement threshold
+      </div>
+      <div class="secondary label">
+        Adjust the cursor movement threshold - small thresholds will cause the
+        mouse to be more reactive - large thresholds will cause the mouse to be
+        more stable, but will require more effort to move
+      </div>
+    </div>
+    <settings-slider
+        id="velocityThresholdSlider"
+        pref="{{prefs.settings.a11y.face_gaze.velocity_threshold}}"
+        min="1" max="20"
+        label-aria="movement threshold"
+        label-min="Reactive"
+        label-max="Stable">
+    </settings-slider>
+  </div>
   <div class="settings-box">
     <div class="start settings-box-text">
       <div class="label" aria-hidden="true" id="faceGazeCursorSmoothingLabel">

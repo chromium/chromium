@@ -22,6 +22,23 @@ BASE_FEATURE(kAutofillEnableAndroidNKeyForFidoAuthentication,
              "AutofillEnableAndroidNKeyForFidoAuthentication",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, buy now pay later (BNPL) in Autofill will be offered through
+// Affirm.
+BASE_FEATURE(kAutofillEnableBuyNowPayLaterForAffirm,
+             "AutofillEnableBuyNowPayLaterForAffirm",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, buy now pay later (BNPL) in Autofill will be offered through
+// Zip.
+BASE_FEATURE(kAutofillEnableBuyNowPayLaterForZip,
+             "AutofillEnableBuyNowPayLaterForZip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, buy now pay later (BNPL) data will be synced to Chrome clients.
+BASE_FEATURE(kAutofillEnableBuyNowPayLaterSyncing,
+             "AutofillEnableBuyNowPayLaterSyncing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, card art images (instead of network icons) will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardArtImage,
@@ -94,6 +111,14 @@ BASE_FEATURE(kAutofillEnableLocalIban,
              "AutofillEnableLocalIban",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// When enabled, a form event will log to all of the parsed forms of the same
+// type on a webpage. This means credit card form events will log to all credit
+// card form types and address form events will log to all address form types."
+// TODO(crbug.com/359934323): Clean up when launched
+BASE_FEATURE(kAutofillEnableLogFormEventsToAllParsedFormTypes,
+             "AutofillEnableLogFormEventsToAllParsedFormTypes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the merchant_domain field is included in requests to unmask a
 // card.
@@ -207,7 +232,7 @@ BASE_FEATURE(kAutofillEnableVirtualCardEnrollMetricsLogger,
 // When enabled, Verve-branded card art will be shown for Verve cards.
 BASE_FEATURE(kAutofillEnableVerveCardSupport,
              "AutofillEnableVerveCardSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Chrome will show metadata along with other card information
 // when the virtual card is presented to users.

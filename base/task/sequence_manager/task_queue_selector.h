@@ -40,8 +40,6 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   TaskQueueSelector& operator=(const TaskQueueSelector&) = delete;
   ~TaskQueueSelector() override;
 
-  static void InitializeFeatures();
-
   // Called to register a queue that can be selected. This function is called
   // on the main thread.
   void AddQueue(internal::TaskQueueImpl* queue,
@@ -112,10 +110,6 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   // starved by delayed tasks.
   void SetImmediateStarvationCountForTest(int immediate_starvation_count);
 
-  // Maximum number of delayed tasks tasks which can be run while there's a
-  // waiting non-delayed task.
-  static const int kDefaultMaxDelayedStarvationTasks = 3;
-
   // Tracks which priorities are currently active, meaning there are pending
   // runnable tasks with that priority. Because there are only a handful of
   // priorities, and because we always run tasks in order from highest to lowest
@@ -172,8 +166,12 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
 
   template <typename SetOperation>
   WorkQueue* ChooseWithPriority(TaskQueue::QueuePriority priority) const {
+    // Maximum number of delayed tasks tasks which can be run while there's a
+    // waiting non-delayed task.
+    static const int kMaxDelayedStarvationTasks = 3;
+
     // Select an immediate work queue if we are starving immediate tasks.
-    if (immediate_starvation_count_ >= g_max_delayed_starvation_tasks) {
+    if (immediate_starvation_count_ >= kMaxDelayedStarvationTasks) {
       WorkQueue* queue =
           ChooseImmediateOnlyWithPriority<SetOperation>(priority);
       if (queue)

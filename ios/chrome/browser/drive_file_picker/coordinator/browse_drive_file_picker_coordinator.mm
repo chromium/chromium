@@ -9,11 +9,12 @@
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
-#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -24,7 +25,10 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-@interface BrowseDriveFilePickerCoordinator () <DriveFilePickerMediatorDelegate>
+@interface BrowseDriveFilePickerCoordinator () <
+    DriveFilePickerMediatorDelegate,
+    DriveFilePickerTableViewControllerDelegate,
+    BrowseDriveFilePickerCoordinatorDelegate>
 
 @end
 
@@ -111,6 +115,7 @@
   _viewController = [[DriveFilePickerTableViewController alloc] init];
   _mediator = [[DriveFilePickerMediator alloc]
            initWithWebState:_webState.get()
+                     isRoot:NO
                    identity:_identity
                       title:_title
                       query:_query
@@ -125,6 +130,7 @@
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
   _viewController.mutator = _mediator;
+  _viewController.delegate = self;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _mediator.driveFilePickerHandler = driveFilePickerHandler;
@@ -133,10 +139,12 @@
 
 - (void)stop {
   [_mediator disconnect];
+  if (![_viewController isMovingFromParentViewController]) {
+    [_viewController.navigationController popViewControllerAnimated:YES];
+  }
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
   _mediator = nil;
-  [_baseNavigationController popViewControllerAnimated:YES];
   _viewController = nil;
 
   _identity = nil;
@@ -165,7 +173,37 @@
                            sortingCriteria:sortingCriteria
                           sortingDirection:sortingDirection
                                   identity:_identity];
+  _childBrowseCoordinator.delegate = self;
   [_childBrowseCoordinator start];
+}
+
+- (void)mediatorDidSubmitFileSelection:(DriveFilePickerMediator*)mediator {
+  __weak id<DriveFilePickerCommands> driveFilePickerHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                         DriveFilePickerCommands);
+  [self.baseNavigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [driveFilePickerHandler hideDriveFilePicker];
+                         }];
+}
+
+- (void)browseToParentWithMediator:(DriveFilePickerMediator*)mediator {
+  [self.delegate coordinatorShouldStop:self];
+}
+
+#pragma mark - DriveFilePickerTableViewControllerDelegate
+
+- (void)viewControllerDidDisappear:(UIViewController*)viewController {
+  [self.delegate coordinatorShouldStop:self];
+}
+
+#pragma mark - BrowseDriveFilePickerCoordinatorDelegate
+
+- (void)coordinatorShouldStop:(ChromeCoordinator*)coordinator {
+  CHECK(coordinator == _childBrowseCoordinator);
+  [_childBrowseCoordinator stop];
+  _childBrowseCoordinator = nil;
 }
 
 @end

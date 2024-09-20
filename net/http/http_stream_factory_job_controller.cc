@@ -28,6 +28,7 @@
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_switching_info.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -1511,7 +1512,11 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool(
 
   if (is_preconnect_) {
     int rv = session_->http_stream_pool()->Preconnect(
-        stream_key, num_streams_, alternative_service_info_, quic_version,
+        HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
+                                    quic_version,
+                                    request_info_.is_http1_allowed,
+                                    request_info_.load_flags, proxy_info_),
+        num_streams_,
         base::BindOnce(&JobController::OnPoolPreconnectsComplete,
                        ptr_factory_.GetWeakPtr()));
     if (rv != ERR_IO_PENDING) {
@@ -1543,8 +1548,10 @@ void HttpStreamFactory::JobController::CallOnSwitchesToHttpStreamPool(
   CHECK(delegate_);
 
   // `request_` and `delegate_` will be reset later.
-  delegate_->OnSwitchesToHttpStreamPool(
-      std::move(stream_key), std::move(alternative_service_info), quic_version);
+
+  delegate_->OnSwitchesToHttpStreamPool(HttpStreamPoolSwitchingInfo(
+      std::move(stream_key), std::move(alternative_service_info), quic_version,
+      request_info_.is_http1_allowed, request_info_.load_flags, proxy_info_));
 }
 
 }  // namespace net

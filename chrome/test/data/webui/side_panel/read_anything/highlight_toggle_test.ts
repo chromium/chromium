@@ -8,13 +8,15 @@ import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/c
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('HighlightToggle', () => {
+  let app: AppElement;
   let toolbar: ReadAnythingToolbarElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let highlightButton: CrIconButtonElement;
@@ -28,16 +30,21 @@ suite('HighlightToggle', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
-
-    toolbar = document.createElement('read-anything-toolbar');
-    document.body.appendChild(toolbar);
+    app = document.createElement('read-anything-app');
+    document.body.appendChild(app);
     flush();
+
+    toolbar = app.$.toolbar;
     highlightButton =
-        toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#highlight')!;
+        toolbar.$.toolbarContainer.querySelector<CrIconButtonElement>(
+            '#highlight')!;
+
+    assertNotEquals(toolbar, null, 'toolbar null');
+    assertNotEquals(highlightButton, null, 'highlight button null');
 
     highlightEmitted = false;
     document.addEventListener(
-        ToolbarEvent.HIGHLIGHT_TOGGLE, () => highlightEmitted = true);
+        ToolbarEvent.HIGHLIGHT_CHANGE, () => highlightEmitted = true);
   });
 
   suite('by default', () => {

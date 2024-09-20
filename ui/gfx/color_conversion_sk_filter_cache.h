@@ -14,15 +14,8 @@
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/hdr_metadata.h"
 
-class GrDirectContext;
-class SkImage;
 class SkColorFilter;
 class SkRuntimeEffect;
-struct SkGainmapInfo;
-
-namespace skgpu::graphite {
-class Recorder;
-}
 
 namespace gfx {
 
@@ -47,34 +40,6 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
                            std::optional<gfx::HDRMetadata> src_hdr_metadata,
                            float dst_sdr_max_luminance_nits,
                            float dst_max_luminance_relative);
-
-  // Return if ApplyToneCurve can be called on `image`.
-  static bool UseToneCurve(sk_sp<SkImage> image);
-
-  // Perform global tone mapping on `image`, using `dst_sdr_max_luminance_nits`,
-  // `dst_max_luminance_relative`, and `src_hdr_metadata`. The resulting image
-  // will be in Rec2020 linear space, and will not have mipmaps.
-  sk_sp<SkImage> ApplyToneCurve(sk_sp<SkImage> image,
-                                std::optional<HDRMetadata> src_hdr_metadata,
-                                float dst_sdr_max_luminance_nits,
-                                float dst_max_luminance_relative,
-                                GrDirectContext* gr_context,
-                                skgpu::graphite::Recorder* graphite_recorder);
-
-  // Apply the gainmap in `gainmap_image` to `base_image`, using the parameters
-  // in `gainmap_info` and `dst_max_luminance_relative`, and return the
-  // resulting image.
-  // * If `context` is non-nullptr, then `base_image` and `gainmap_image` must
-  //   be texture-backed and on `context`, and the result will be texture backed
-  //   and on `context`.
-  // * If `context` is nullptr, then the arguments should be bitmaps, and the
-  //   result will be a bitmap.
-  sk_sp<SkImage> ApplyGainmap(sk_sp<SkImage> base_image,
-                              sk_sp<SkImage> gainmap_image,
-                              const SkGainmapInfo& gainmap_info,
-                              float dst_max_luminance_relative,
-                              GrDirectContext* gr_context,
-                              skgpu::graphite::Recorder* graphite_recorder);
 
  public:
   struct Key {

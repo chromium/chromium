@@ -2189,6 +2189,19 @@ void RenderFrameImpl::BindNavigationClient(
   navigation_client_impl_->Bind(std::move(receiver));
 }
 
+void RenderFrameImpl::BindNavigationClientWithParams(
+    mojo::PendingAssociatedReceiver<mojom::NavigationClient> receiver,
+    blink::mojom::BeginNavigationParamsPtr begin_params,
+    blink::mojom::CommonNavigationParamsPtr common_params,
+    bool is_duplicate_navigation) {
+  if (navigation_client_impl_) {
+    navigation_client_impl_->ResetForNewNavigation(is_duplicate_navigation);
+  }
+  navigation_client_impl_ = std::make_unique<NavigationClient>(
+      this, std::move(begin_params), std::move(common_params));
+  navigation_client_impl_->Bind(std::move(receiver));
+}
+
 // Unload this RenderFrame so the frame can navigate to a document rendered by
 // a different process. We also allow this process to exit if there are no other
 // active RenderFrames in it.
@@ -4458,7 +4471,7 @@ base::UnguessableToken RenderFrameImpl::GetDevToolsFrameToken() {
   return devtools_frame_token_;
 }
 
-void RenderFrameImpl::AbortClientNavigation() {
+void RenderFrameImpl::AbortClientNavigation(bool for_new_navigation) {
   CHECK(in_frame_tree_);
   is_requesting_navigation_ = false;
   if (mhtml_body_loader_client_) {
@@ -4470,7 +4483,12 @@ void RenderFrameImpl::AbortClientNavigation() {
   // Note: This might not actually cancel the navigation if the navigation is
   // already in the process of committing to a different RenderFrame.
 
-  navigation_client_impl_->ResetForAbort();
+  if (for_new_navigation) {
+    navigation_client_impl_->ResetForNewNavigation(
+        /*is_duplicate_navigation=*/false);
+  } else {
+    navigation_client_impl_->ResetForAbort();
+  }
   navigation_client_impl_.reset();
 }
 
@@ -5335,7 +5353,24 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
     // If this is marked as a same document load but we haven't committed
     // anything, we can't proceed with the load. The browser shouldn't let this
     // happen.
-    CHECK(!GetWebFrame()->GetCurrentHistoryItem().IsNull());
+    // TODO(crbug.com/41489044): A same-document history navigation was
+    // performed but the renderer does not have a history item. Diagnose this,
+    // make it a CHECK again, and drop the Restart.
+    DCHECK(!GetWebFrame()->GetCurrentHistoryItem().IsNull());
+    if (GetWebFrame()->GetCurrentHistoryItem().IsNull()) {
+      SCOPED_CRASH_KEY_BOOL("history_no_item", "is_main_frame", IsMainFrame());
+      SCOPED_CRASH_KEY_NUMBER("history_no_item", "renderer_commit_state",
+                              (int)navigation_commit_state_);
+      SCOPED_CRASH_KEY_NUMBER("history_no_item", "browser_history_offset",
+                              commit_params.current_history_list_offset);
+      SCOPED_CRASH_KEY_NUMBER("history_no_item", "browser_history_len",
+                              commit_params.current_history_list_length);
+      SCOPED_CRASH_KEY_NUMBER("history_no_item", "renderer_history_len",
+                              GetWebView()->HistoryBackListCount() +
+                                  GetWebView()->HistoryForwardListCount() + 1);
+      base::debug::DumpWithoutCrashing();
+      return blink::mojom::CommitResult::RestartCrossDocument;
+    }
 
     // Additionally, if the current history item's document sequence number
     // doesn't match the one sent from the browser, it is possible that this
@@ -5561,7 +5596,7 @@ void RenderFrameImpl::BeginNavigation(
     // All frames in a WebUI process must have the same enabled_bindings_, so
     // we can do a per-frame check here rather than a process-wide check.
     bool should_fork = HasWebUIScheme(url) || HasWebUIScheme(old_url) ||
-                       !enabled_bindings_.empty();
+                       enabled_bindings_.HasAny(kWebUIBindingsPolicySet);
     if (should_fork) {
       OpenURL(std::move(info));
       return;  // Suppress the load here.
@@ -6204,7 +6239,7 @@ void RenderFrameImpl::BeginNavigationInternal(
               info->url_request.HasUserGesture(), info->initiator_frame_is_ad,
               info->is_ad_script_in_stack);
 
-  blink::mojom::BeginNavigationParamsPtr begin_navigation_params =
+  blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New(
           info->initiator_frame_token,
           blink::GetWebURLRequestHeadersAsString(info->url_request).Latin1(),
@@ -6223,15 +6258,6 @@ void RenderFrameImpl::BeginNavigationInternal(
           info->is_container_initiated, info->storage_access_api_status,
           info->has_rel_opener);
 
-  mojo::PendingAssociatedRemote<mojom::NavigationClient>
-      navigation_client_remote;
-  BindNavigationClient(
-      navigation_client_remote.InitWithNewEndpointAndPassReceiver());
-  mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
-      renderer_cancellation_listener_receiver;
-  navigation_client_impl_->SetUpRendererInitiatedNavigation(
-      renderer_cancellation_listener_receiver.InitWithNewPipeAndPassRemote());
-
   bool current_frame_has_download_sandbox_flag = !frame_->IsAllowedToDownload();
   bool has_download_sandbox_flag =
       info->initiator_frame_has_download_sandbox_flag ||
@@ -6245,13 +6271,58 @@ void RenderFrameImpl::BeginNavigationInternal(
   network::mojom::RequestDestination request_destination =
       blink::GetRequestDestinationForWebURLRequest(info->url_request);
 
-  GetFrameHost()->BeginNavigation(
+  blink::mojom::CommonNavigationParamsPtr common_params =
       MakeCommonNavigationParams(frame_->GetSecurityOrigin(), std::move(info),
                                  load_flags, has_download_sandbox_flag, from_ad,
                                  is_history_navigation_in_new_child_frame,
-                                 request_destination),
-      std::move(begin_navigation_params), std::move(blob_url_token),
-      std::move(navigation_client_remote),
+                                 request_destination);
+
+  bool is_duplicate_navigation = false;
+  if (navigation_client_impl_ &&
+      navigation_client_impl_->HasBeginNavigationParams()) {
+    // We ignore navigations that are identical to the ongoing navigation. This
+    // is because the navigation is likely to be accidental (e.g. user clicked
+    // the same link multiple times, etc).
+    auto& prev_begin_params = navigation_client_impl_->begin_params();
+    auto& prev_common_params = navigation_client_impl_->common_params();
+    if (common_params->navigation_start - prev_common_params.navigation_start <=
+            features::kDuplicateNavThreshold.Get() &&
+        begin_params->was_initiated_by_link_click ==
+            prev_begin_params.was_initiated_by_link_click &&
+        common_params->url == prev_common_params.url &&
+        common_params->method == "GET" && prev_common_params.method == "GET" &&
+        common_params->initiator_origin ==
+            prev_common_params.initiator_origin &&
+        common_params->has_user_gesture ==
+            prev_common_params.has_user_gesture &&
+        common_params->referrer == prev_common_params.referrer &&
+        common_params->transition == prev_common_params.transition &&
+        common_params->should_replace_current_entry ==
+            prev_common_params.should_replace_current_entry &&
+        begin_params->headers == prev_begin_params.headers &&
+        begin_params->has_rel_opener == prev_begin_params.has_rel_opener) {
+      is_duplicate_navigation = true;
+    }
+  }
+  base::UmaHistogramBoolean("Navigation.RendererInitiated.IsDuplicate",
+                            is_duplicate_navigation);
+  if (is_duplicate_navigation &&
+      base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+    return;
+  }
+
+  mojo::PendingAssociatedRemote<mojom::NavigationClient>
+      navigation_client_remote;
+  BindNavigationClientWithParams(
+      navigation_client_remote.InitWithNewEndpointAndPassReceiver(),
+      begin_params.Clone(), common_params.Clone(), is_duplicate_navigation);
+  mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
+      renderer_cancellation_listener_receiver;
+  navigation_client_impl_->SetUpRendererInitiatedNavigation(
+      renderer_cancellation_listener_receiver.InitWithNewPipeAndPassRemote());
+  GetFrameHost()->BeginNavigation(
+      std::move(common_params), std::move(begin_params),
+      std::move(blob_url_token), std::move(navigation_client_remote),
       std::move(initiator_navigation_state_keep_alive_handle),
       std::move(renderer_cancellation_listener_receiver));
 }

@@ -28,6 +28,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -513,25 +514,25 @@ bool IsValidWindowState(const std::string& window_state) {
   return base::Contains(kValidWindowStates, window_state);
 }
 
-// Convert JSON string WindowState `state` to ui::WindowShowState used by
+// Convert JSON string WindowState `state` to ui::mojom::WindowShowState used by
 // the app_restore::WindowInfo struct.
-ui::WindowShowState ToUiWindowState(const std::string& window_state) {
+ui::mojom::WindowShowState ToUiWindowState(const std::string& window_state) {
   if (window_state == kWindowStateNormal)
-    return ui::WindowShowState::SHOW_STATE_NORMAL;
+    return ui::mojom::WindowShowState::kNormal;
   else if (window_state == kWindowStateMinimized)
-    return ui::WindowShowState::SHOW_STATE_MINIMIZED;
+    return ui::mojom::WindowShowState::kMinimized;
   else if (window_state == kWindowStateMaximized)
-    return ui::WindowShowState::SHOW_STATE_MAXIMIZED;
+    return ui::mojom::WindowShowState::kMaximized;
   else if (window_state == kWindowStateFullscreen)
-    return ui::WindowShowState::SHOW_STATE_FULLSCREEN;
+    return ui::mojom::WindowShowState::kFullscreen;
   else if (window_state == kWindowStatePrimarySnapped)
-    return ui::WindowShowState::SHOW_STATE_NORMAL;
+    return ui::mojom::WindowShowState::kNormal;
   else if (window_state == kWindowStateSecondarySnapped)
-    return ui::WindowShowState::SHOW_STATE_NORMAL;
+    return ui::mojom::WindowShowState::kNormal;
   // We should never reach here unless we have been passed an invalid window
   // state
   DCHECK(IsValidWindowState(window_state));
-  return ui::WindowShowState::SHOW_STATE_NORMAL;
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 // Convert JSON string WindowState `state` to chromeos::WindowStateType used by
@@ -732,17 +733,18 @@ std::string ChromeOsWindowStateToString(
   }
 }
 
-// Convert ui::WindowShowState `state` to JSON used by the base::Value
+// Convert ui::mojom::WindowShowState `state` to JSON used by the base::Value
 // representation.
-std::string UiWindowStateToString(const ui::WindowShowState& window_state) {
+std::string UiWindowStateToString(
+    const ui::mojom::WindowShowState& window_state) {
   switch (window_state) {
-    case ui::WindowShowState::SHOW_STATE_NORMAL:
+    case ui::mojom::WindowShowState::kNormal:
       return kWindowStateNormal;
-    case ui::WindowShowState::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       return kWindowStateMinimized;
-    case ui::WindowShowState::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       return kWindowStateMaximized;
-    case ui::WindowShowState::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       return kWindowStateFullscreen;
     default:
       // available states in JSON representation is a subset
@@ -1348,26 +1350,26 @@ SyncWindowOpenDisposition FromBaseWindowOpenDisposition(
   }
 }
 
-// Convert Sync proto WindowState `state` to ui::WindowShowState used by
+// Convert Sync proto WindowState `state` to ui::mojom::WindowShowState used by
 // the app_restore::WindowInfo struct.
-ui::WindowShowState ToUiWindowState(WindowState state) {
+ui::mojom::WindowShowState ToUiWindowState(WindowState state) {
   switch (state) {
     case WindowState::WorkspaceDeskSpecifics_WindowState_UNKNOWN_WINDOW_STATE:
-      return ui::WindowShowState::SHOW_STATE_NORMAL;
+      return ui::mojom::WindowShowState::kNormal;
     case WindowState::WorkspaceDeskSpecifics_WindowState_NORMAL:
-      return ui::WindowShowState::SHOW_STATE_NORMAL;
+      return ui::mojom::WindowShowState::kNormal;
     case WindowState::WorkspaceDeskSpecifics_WindowState_MINIMIZED:
-      return ui::WindowShowState::SHOW_STATE_MINIMIZED;
+      return ui::mojom::WindowShowState::kMinimized;
     case WindowState::WorkspaceDeskSpecifics_WindowState_MAXIMIZED:
-      return ui::WindowShowState::SHOW_STATE_MAXIMIZED;
+      return ui::mojom::WindowShowState::kMaximized;
     case WindowState::WorkspaceDeskSpecifics_WindowState_FULLSCREEN:
-      return ui::WindowShowState::SHOW_STATE_FULLSCREEN;
+      return ui::mojom::WindowShowState::kFullscreen;
     case WindowState::WorkspaceDeskSpecifics_WindowState_PRIMARY_SNAPPED:
-      return ui::WindowShowState::SHOW_STATE_NORMAL;
+      return ui::mojom::WindowShowState::kNormal;
     case WindowState::WorkspaceDeskSpecifics_WindowState_SECONDARY_SNAPPED:
-      return ui::WindowShowState::SHOW_STATE_NORMAL;
+      return ui::mojom::WindowShowState::kNormal;
     case WindowState::WorkspaceDeskSpecifics_WindowState_FLOATED:
-      return ui::WindowShowState::SHOW_STATE_NORMAL;
+      return ui::mojom::WindowShowState::kNormal;
   }
 }
 
@@ -1420,19 +1422,19 @@ WindowState FromChromeOsWindowState(chromeos::WindowStateType state) {
   }
 }
 
-// Convert ui::WindowShowState to Sync proto WindowState.
-WindowState FromUiWindowState(ui::WindowShowState state) {
+// Convert ui::mojom::WindowShowState to Sync proto WindowState.
+WindowState FromUiWindowState(ui::mojom::WindowShowState state) {
   switch (state) {
-    case ui::WindowShowState::SHOW_STATE_DEFAULT:
-    case ui::WindowShowState::SHOW_STATE_NORMAL:
-    case ui::WindowShowState::SHOW_STATE_INACTIVE:
-    case ui::WindowShowState::SHOW_STATE_END:
+    case ui::mojom::WindowShowState::kDefault:
+    case ui::mojom::WindowShowState::kNormal:
+    case ui::mojom::WindowShowState::kInactive:
+    case ui::mojom::WindowShowState::kEnd:
       return WindowState::WorkspaceDeskSpecifics_WindowState_NORMAL;
-    case ui::WindowShowState::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       return WindowState::WorkspaceDeskSpecifics_WindowState_MINIMIZED;
-    case ui::WindowShowState::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       return WindowState::WorkspaceDeskSpecifics_WindowState_MAXIMIZED;
-    case ui::WindowShowState::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       return WindowState::WorkspaceDeskSpecifics_WindowState_FULLSCREEN;
   }
 }

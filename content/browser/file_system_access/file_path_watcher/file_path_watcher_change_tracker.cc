@@ -107,6 +107,29 @@ FilePathWatcherChangeTracker::~FilePathWatcherChangeTracker() = default;
 
 void FilePathWatcherChangeTracker::AddChange(base::FilePath path,
                                              DWORD win_change_type) {
+  // Attempt to coalesce an overwrite into a single move event.
+  //
+  // Windows reports overwrites as a delete then a move.
+  if (last_deleted_change_) {
+    bool is_overwrite_event = win_change_type == FILE_ACTION_RENAMED_NEW_NAME &&
+                              last_deleted_change_->modified_path == path;
+    bool next_event_could_be_overwrite_event =
+        win_change_type == FILE_ACTION_RENAMED_OLD_NAME;
+
+    // If it's not an overwrite and the next event couldn't be an overwrite
+    // event, then report the `last_deleted_change_` event instead of
+    // coalescing.
+    if (!is_overwrite_event && !next_event_could_be_overwrite_event) {
+      changes_.push_back(*std::exchange(last_deleted_change_, std::nullopt));
+    }
+
+    // Coalesce the overwrite event by dropping the last deleted change.
+    if (!next_event_could_be_overwrite_event) {
+      last_deleted_change_ = std::nullopt;
+    }
+  }
+
+  // Attempt to coalesce move.
   if (win_change_type == FILE_ACTION_RENAMED_OLD_NAME) {
     last_moved_from_path_ = path;
     return;
@@ -150,15 +173,20 @@ void FilePathWatcherChangeTracker::MayHaveMissedChanges() {
 
 std::vector<FilePathWatcher::ChangeInfo>
 FilePathWatcherChangeTracker::PopChanges(bool next_change_soon) {
-  if (!next_change_soon &&
-      target_status_ == ExistenceStatus::kMayHaveMovedIntoPlace) {
-    // Decide whether the target moved into place or not.
-    ExistenceStatus status =
-        GetFilePathType(target_path_) == FilePathWatcher::FilePathType::kUnknown
-            ? ExistenceStatus::kGone
-            : ExistenceStatus::kExists;
+  if (!next_change_soon) {
+    if (target_status_ == ExistenceStatus::kMayHaveMovedIntoPlace) {
+      // Decide whether the target moved into place or not.
+      ExistenceStatus status = GetFilePathType(target_path_) ==
+                                       FilePathWatcher::FilePathType::kUnknown
+                                   ? ExistenceStatus::kGone
+                                   : ExistenceStatus::kExists;
 
-    HandleChangeEffect(status, status);
+      HandleChangeEffect(status, status);
+    }
+
+    if (last_deleted_change_) {
+      changes_.push_back(*std::exchange(last_deleted_change_, std::nullopt));
+    }
   }
   return std::move(changes_);
 }
@@ -212,7 +240,7 @@ void FilePathWatcherChangeTracker::HandleSelfChange(ChangeInfo change) {
       break;
     case ChangeType::kDeleted:
       HandleChangeEffect(ExistenceStatus::kExists, ExistenceStatus::kGone);
-      changes_.push_back(std::move(change));
+      last_deleted_change_ = std::move(change);
       break;
     case ChangeType::kModified:
       HandleChangeEffect(ExistenceStatus::kExists, ExistenceStatus::kExists);
@@ -252,6 +280,12 @@ void FilePathWatcherChangeTracker::HandleDescendantChange(
       change.file_path_type == FilePathWatcher::FilePathType::kDirectory) {
     return;
   }
+
+  if (change.change_type == ChangeType::kDeleted) {
+    last_deleted_change_ = std::move(change);
+    return;
+  }
+
   if (change.change_type == ChangeType::kMoved) {
     ConvertMoveToCreateIfOutOfScope(change);
   }

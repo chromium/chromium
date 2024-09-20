@@ -16,7 +16,7 @@
 #include "services/network/public/cpp/net_adapters.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 
-namespace content {
+namespace content::indexed_db {
 
 namespace {
 
@@ -164,4 +164,4 @@ void MakeFileStreamAdapterAndRead(
                                  std::move(completion_callback), read_length);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

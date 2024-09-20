@@ -123,6 +123,10 @@ class MODULES_EXPORT RealtimeAudioDestinationHandler final
     allow_pulling_audio_graph_.store(false, std::memory_order_release);
   }
 
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
+  void SendLogMessage(const char* const function_name,
+                      const String& message) const;
+
   // Stores a sink descriptor for sink transition.
   WebAudioSinkDescriptor sink_descriptor_;
 

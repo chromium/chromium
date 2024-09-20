@@ -139,7 +139,10 @@ class DeviceStatusListenerTest : public testing::Test {
 
   // Simulates a battery change call.
   void SimulateBatteryChange(bool on_battery_power) {
-    power_source_.GeneratePowerStateEvent(on_battery_power);
+    power_source_.GeneratePowerStateEvent(
+        on_battery_power
+            ? base::PowerStateObserver::BatteryPowerStatus::kBatteryPower
+            : base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
   }
 
   void ChangeBatteryPercentage(int percentage) {

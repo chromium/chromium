@@ -16,26 +16,10 @@
 
 namespace base {
 
-std::string StringPrintf(const char* format, ...) {
-  va_list ap;
-  va_start(ap, format);
-  std::string result;
-  StringAppendV(&result, format, ap);
-  va_end(ap);
-  return result;
-}
-
 std::string StringPrintV(const char* format, va_list ap) {
   std::string result;
   StringAppendV(&result, format, ap);
   return result;
-}
-
-void StringAppendF(std::string* dst, const char* format, ...) {
-  va_list ap;
-  va_start(ap, format);
-  StringAppendV(dst, format, ap);
-  va_end(ap);
 }
 
 void StringAppendV(std::string* dst, const char* format, va_list ap) {

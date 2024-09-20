@@ -7,6 +7,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -36,7 +37,8 @@ CGFloat GetFaviconSize() {
 @interface ManualFillPlusAddressItem ()
 
 // The plus address for this item.
-@property(nonatomic, strong, readonly) ManualFillPlusAddress* plusAddress;
+@property(nonatomic, strong, readonly)
+    ManualFillPlusAddress* manualFillPlusAddress;
 
 // The delegate for this item.
 @property(nonatomic, weak, readonly) id<ManualFillContentInjector>
@@ -61,7 +63,7 @@ CGFloat GetFaviconSize() {
         cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
-    _plusAddress = plusAddress;
+    _manualFillPlusAddress = plusAddress;
     _contentInjector = contentInjector;
     _menuActions = menuActions;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
@@ -73,18 +75,22 @@ CGFloat GetFaviconSize() {
 - (void)configureCell:(ManualFillPlusAddressCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  [cell setUpWithPlusAddress:self.plusAddress
+  [cell setUpWithPlusAddress:self.manualFillPlusAddress
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
       cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel];
 }
 
 - (const GURL&)faviconURL {
-  return self.plusAddress.URL;
+  return self.manualFillPlusAddress.URL;
 }
 
 - (NSString*)uniqueIdentifier {
-  return base::SysUTF8ToNSString(self.plusAddress.URL.spec());
+  return base::SysUTF8ToNSString(self.manualFillPlusAddress.URL.spec());
+}
+
+- (NSString*)plusAddress {
+  return self.manualFillPlusAddress.plusAddress;
 }
 
 @end
@@ -172,7 +178,7 @@ CGFloat GetFaviconSize() {
 
   // Header.
   NSAttributedString* attributedText =
-      CreateSiteNameLabelAttributedText(plusAddress);
+      CreateSiteNameLabelAttributedText(plusAddress, /*should_show_host=*/YES);
   self.siteNameLabel.attributedText = attributedText;
   if (IsKeyboardAccessoryUpgradeEnabled()) {
     self.siteNameLabel.numberOfLines = 0;
@@ -263,6 +269,12 @@ CGFloat GetFaviconSize() {
 
   self.siteNameLabel = CreateLabel();
   self.overflowMenuButton = CreateOverflowMenuButton();
+  // In the tests, the overflow menu of the chips for the other data types, can
+  // have the same accessibility identifier, therefore, override for the plus
+  // address ones to distinguish them.
+  self.overflowMenuButton.accessibilityIdentifier =
+      manual_fill::kExpandedManualFillPlusAddressOverflowMenuID;
+
   self.headerView = CreateHeaderView(self.faviconView, self.siteNameLabel,
                                      self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];
@@ -283,7 +295,11 @@ CGFloat GetFaviconSize() {
 }
 
 - (void)userDidTapPlusAddressButton:(UIButton*)button {
-  // TODO(crbug.com/327838014): Implement.
+  base::RecordAction(
+      base::UserMetricsAction("ManualFallback_PlusAddress_SelectPlusAddress"));
+  [self.contentInjector userDidPickContent:self.plusAddress.plusAddress
+                             passwordField:NO
+                             requiresHTTPS:NO];
 }
 
 // Configure the favicon with the given `attributes`.

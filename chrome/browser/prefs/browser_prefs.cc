@@ -1071,6 +1071,10 @@ constexpr char kContentSettingsWindowLastTabIndex[] =
 constexpr char kSyncPasswordHash[] = "profile.sync_password_hash";
 constexpr char kSyncPasswordLengthAndHashSalt[] =
     "profile.sync_password_length_and_hash_salt";
+constexpr char kSafeBrowsingAutomaticDeepScanningIPHSeen[] =
+    "safebrowsing.automatic_deep_scanning_iph_seen";
+constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
+    "safe_browsing.automatic_deep_scan_performed";
 
 // Deprecated 09/2024
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1078,6 +1082,24 @@ constexpr char kDemoModeResourcesRemoved[] = "demo_mode_resources_removed";
 constexpr char kAccumulatedUsagePref[] =
     "demo_mode_resources_remover.accumulated_device_usage_s";
 #endif
+
+// Deprecated 09/2024
+#if !BUILDFLAG(IS_ANDROID)
+constexpr char kPasswordGenerationNudgePasswordDismissCount[] =
+    "password_generation_nudge_password_dismiss_count";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Deprecated 09/2024
+#if !BUILDFLAG(IS_ANDROID)
+const char kTranslateKitRootDir[] =
+    "on_device_translation.translate_kit_root_dir";
+#endif
+
+// Deprecated 09/2024
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kPrivacySandboxActivityTypeRecord[] =
+    "privacy_sandbox.activity_type.record";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1506,6 +1528,25 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kContentSettingsWindowLastTabIndex, 0);
   registry->RegisterStringPref(kSyncPasswordHash, std::string());
   registry->RegisterStringPref(kSyncPasswordLengthAndHashSalt, std::string());
+  registry->RegisterBooleanPref(kSafeBrowsingAutomaticDeepScanningIPHSeen,
+                                false);
+  registry->RegisterBooleanPref(kSafeBrowsingAutomaticDeepScanPerformed, false);
+
+// Deprecated 09/2024.
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(kPasswordGenerationNudgePasswordDismissCount,
+                                0);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Deprecated 09/2024.
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterFilePathPref(kTranslateKitRootDir, base::FilePath());
+#endif
+
+// Deprecated 09/2024
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterListPref(kPrivacySandboxActivityTypeRecord);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2142,6 +2183,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::EduCoexistenceLoginHandler::RegisterProfilePrefs(registry);
   ash::SigninErrorNotifier::RegisterPrefs(registry);
   ash::ServicesCustomizationDocument::RegisterProfilePrefs(registry);
+  ash::SecureDnsManager::RegisterProfilePrefs(registry);
   ash::settings::OSSettingsUI::RegisterProfilePrefs(registry);
   ash::StartupUtils::RegisterOobeProfilePrefs(registry);
   ash::user_image::prefs::RegisterProfilePrefs(registry);
@@ -2827,6 +2869,23 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kContentSettingsWindowLastTabIndex);
   profile_prefs->ClearPref(kSyncPasswordHash);
   profile_prefs->ClearPref(kSyncPasswordLengthAndHashSalt);
+  profile_prefs->ClearPref(kSafeBrowsingAutomaticDeepScanningIPHSeen);
+  profile_prefs->ClearPref(kSafeBrowsingAutomaticDeepScanPerformed);
+
+// Added 09/2024
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kPasswordGenerationNudgePasswordDismissCount);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Added 09/2024.
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kTranslateKitRootDir);
+#endif
+
+// Added 09/2024
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kPrivacySandboxActivityTypeRecord);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

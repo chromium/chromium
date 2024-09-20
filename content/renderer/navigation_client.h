@@ -21,6 +21,9 @@ class RenderFrameImpl;
 class NavigationClient : mojom::NavigationClient {
  public:
   explicit NavigationClient(RenderFrameImpl* render_frame);
+  NavigationClient(RenderFrameImpl* render_frame,
+                   blink::mojom::BeginNavigationParamsPtr begin_params,
+                   blink::mojom::CommonNavigationParamsPtr common_params);
   ~NavigationClient() override;
 
   // mojom::NavigationClient implementation:
@@ -84,7 +87,18 @@ class NavigationClient : mojom::NavigationClient {
 
   void ResetWithoutCancelling();
 
+  void ResetForNewNavigation(bool is_duplicate_navigation);
+
   void ResetForAbort();
+
+  bool HasBeginNavigationParams() const { return !!begin_params_; }
+
+  const blink::mojom::BeginNavigationParams& begin_params() const {
+    return *begin_params_;
+  }
+  const blink::mojom::CommonNavigationParams& common_params() const {
+    return *common_params_;
+  }
 
  private:
   // OnDroppedNavigation is bound from BeginNavigation till CommitNavigation.
@@ -105,6 +119,11 @@ class NavigationClient : mojom::NavigationClient {
   raw_ptr<RenderFrameImpl, DanglingUntriaged> render_frame_;
   // See NavigationState::was_initiated_in_this_frame for details.
   bool was_initiated_in_this_frame_ = false;
+
+  // If the navigation is initiated by this renderer, this will be set to the
+  // params sent on the
+  blink::mojom::BeginNavigationParamsPtr begin_params_;
+  blink::mojom::CommonNavigationParamsPtr common_params_;
 
   base::WeakPtrFactory<NavigationClient> weak_ptr_factory_{this};
 };

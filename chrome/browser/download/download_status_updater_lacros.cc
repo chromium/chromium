@@ -222,32 +222,6 @@ class DeepScanNoticeNotificationDelegate
   base::WeakPtr<Browser> browser_;
 };
 
-void ShowDeepScanPromptNotification(Profile* profile) {
-  Browser* browser = chrome::FindTabbedBrowser(
-      profile,
-      /*match_original_profiles=*/false, display::kInvalidDisplayId,
-      /*ignore_closing_browsers=*/true);
-  message_center::RichNotificationData optional_fields;
-  optional_fields.small_image = gfx::Image(gfx::CreateVectorIcon(
-      vector_icons::kNotificationDownloadIcon, 20, gfx::kGoogleBlue800));
-  message_center::Notification notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, "download_deep_scan_notice",
-      /*title=*/u"",
-      l10n_util::GetStringUTF16(IDS_DEEP_SCANNING_PROMPT_REMOVAL_NOTIFICATION),
-      ui::ImageModel(),
-      l10n_util::GetStringUTF16(IDS_DOWNLOAD_NOTIFICATION_DISPLAY_SOURCE),
-      GURL(),
-      message_center::NotifierId(message_center::NotifierType::APPLICATION,
-                                 "download_manager"),
-      std::move(optional_fields),
-      base::MakeRefCounted<DeepScanNoticeNotificationDelegate>(
-          browser->AsWeakPtr()));
-  NotificationDisplayService::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, notification, nullptr);
-  profile->GetPrefs()->SetBoolean(
-      prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen, true);
-}
-
 }  // namespace
 
 // DownloadStatusUpdater::Delegate ---------------------------------------------
@@ -508,13 +482,6 @@ void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
         download,
         DownloadItemWarningData::WarningSurface::DOWNLOAD_NOTIFICATION,
         DownloadItemWarningData::WarningAction::SHOWN);
-  }
-
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(download));
-  if (profile &&
-      ShouldShowDeepScanPromptNotice(profile, download->GetDangerType())) {
-    ShowDeepScanPromptNotification(profile);
   }
 }
 

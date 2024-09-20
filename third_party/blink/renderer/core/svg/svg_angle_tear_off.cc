@@ -50,7 +50,7 @@ void SVGAngleTearOff::setValue(float value, ExceptionState& exception_state) {
     return;
   }
   Target()->SetValue(value);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGAngleTearOff::setValueInSpecifiedUnits(
@@ -61,7 +61,7 @@ void SVGAngleTearOff::setValueInSpecifiedUnits(
     return;
   }
   Target()->SetValueInSpecifiedUnits(value);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGAngleTearOff::newValueSpecifiedUnits(uint16_t unit_type,
@@ -81,7 +81,7 @@ void SVGAngleTearOff::newValueSpecifiedUnits(uint16_t unit_type,
   }
   Target()->NewValueSpecifiedUnits(
       static_cast<SVGAngle::SVGAngleType>(unit_type), value_in_specified_units);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGAngleTearOff::convertToSpecifiedUnits(uint16_t unit_type,
@@ -106,7 +106,7 @@ void SVGAngleTearOff::convertToSpecifiedUnits(uint16_t unit_type,
   }
   Target()->ConvertToSpecifiedUnits(
       static_cast<SVGAngle::SVGAngleType>(unit_type));
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGAngleTearOff::setValueAsString(const String& value,
@@ -127,7 +127,7 @@ void SVGAngleTearOff::setValueAsString(const String& value,
         "The value provided ('" + value + "') is invalid.");
     return;
   }
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 SVGAngleTearOff* SVGAngleTearOff::CreateDetached() {

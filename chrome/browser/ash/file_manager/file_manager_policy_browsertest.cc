@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_utils.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
@@ -37,8 +39,11 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/textarea/textarea.h"
+
+using file_manager::test::TestCase;
 
 namespace file_manager {
 namespace {
@@ -1119,6 +1124,87 @@ IN_PROC_BROWSER_TEST_P(DlpAndEnterpriseConnectorsFilesAppBrowserTest, Test) {
   StartTest();
 }
 
+// A version of FilesAppBrowserTest with SkyVault restrictions.
+class SkyVaultFilesAppBrowserTest
+    : public FileManagerBrowserTestBase,
+      public ::testing::WithParamInterface<file_manager::test::TestCase> {
+ public:
+  SkyVaultFilesAppBrowserTest(const SkyVaultFilesAppBrowserTest&) = delete;
+  SkyVaultFilesAppBrowserTest& operator=(const SkyVaultFilesAppBrowserTest&) =
+      delete;
+
+ protected:
+  SkyVaultFilesAppBrowserTest() = default;
+  ~SkyVaultFilesAppBrowserTest() override = default;
+
+  void TearDown() override {
+    FileManagerBrowserTestBase::TearDown();
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+  }
+
+  bool HandleSkyVaultCommands(const std::string& name,
+                              const base::Value::Dict& value,
+                              std::string* output) override {
+    if (name == "skyvault:mountMyFiles") {
+      my_files_dir_ = profile()->GetPath().Append("MyFiles");
+      {
+        base::ScopedAllowBlockingForTesting allow_blocking;
+        CHECK(base::CreateDirectory(my_files_dir_));
+      }
+      std::string mount_point_name =
+          file_manager::util::GetDownloadsMountPointName(profile());
+      storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+          mount_point_name);
+      CHECK(
+          storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+              mount_point_name, storage::kFileSystemTypeLocal,
+              storage::FileSystemMountOption(), my_files_dir_));
+      file_manager::VolumeManager::Get(profile())
+          ->RegisterDownloadsDirectoryForTesting(my_files_dir_);
+      return true;
+    }
+
+    if (name == "skyvault:addLocalFiles") {
+      const base::FilePath my_files = profile()->GetPath().Append("MyFiles");
+
+      base::FilePath source_dir;
+      CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
+      const base::FilePath test_file_path = source_dir.AppendASCII("chrome")
+                                                .AppendASCII("test")
+                                                .AppendASCII("data")
+                                                .AppendASCII("chromeos")
+                                                .AppendASCII("file_manager")
+                                                .AppendASCII("text.txt");
+
+      CHECK(base::CopyFile(test_file_path, my_files.AppendASCII("hello.txt")));
+      return true;
+    }
+
+    return false;
+  }
+
+  const char* GetTestCaseName() const override { return GetParam().name; }
+
+  std::string GetFullTestCaseName() const override {
+    return GetParam().GetFullName();
+  }
+
+  const char* GetTestExtensionManifestName() const override {
+    return "file_manager_test_manifest.json";
+  }
+
+  FileManagerBrowserTestBase::Options GetOptions() const override {
+    return GetParam().options;
+  }
+
+ private:
+  base::FilePath my_files_dir_;
+};
+
+IN_PROC_BROWSER_TEST_P(SkyVaultFilesAppBrowserTest, Test) {
+  StartTest();
+}
+
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DLP, /* dlp.ts */
     DlpFilesAppBrowserTest,
@@ -1235,5 +1321,28 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 
 #undef FILE_TRANSFER_TEST_CASE
 #undef FILE_TRANSFER_TEST_CASE_NEW_UX
+
+WRAPPED_INSTANTIATE_TEST_SUITE_P(
+    SkyVault, /* skyvault.ts */
+    SkyVaultFilesAppBrowserTest,
+    ::testing::Values(TestCase("fileDisplayLocalFilesDisabledUnmountRemovable")
+                          .DontMountVolumes()
+                          .EnableSkyVault(),
+                      // TODO(b/347643334): Enable.
+                      // TestCase("fileDisplayLocalFilesDisableInMyFiles")
+                      //     .DontMountVolumes()
+                      //     .EnableSkyVault(),
+                      // TestCase("fileDisplayOneDrivePlaceholder")
+                      //     .DontMountVolumes()
+                      //     .EnableSkyVault(),
+                      TestCase("fileDisplayFileSystemDisabled")
+                          .DontMountVolumes()
+                          .EnableSkyVault(),
+                      TestCase("fileDisplaySkyVaultMigrationToGoogleDrive")
+                          .DontMountVolumes()
+                          .EnableSkyVault(),
+                      TestCase("fileDisplaySkyVaultMigrationToOneDrive")
+                          .DontMountVolumes()
+                          .EnableSkyVault()));
 
 }  // namespace file_manager

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -63,5 +64,24 @@ void ToastService::RegisterToasts(
                                },
                                base::Unretained(browser_window_interface)))
           .AddCloseButton()
+          .Build());
+
+  // TODO(crbug.com/357929158): This registration only partially implements the
+  // Chromnient toast and will need to handle alternate icons and strings.
+  toast_registry_->RegisterToast(
+      ToastId::kLensOverlay,
+      ToastSpecification::Builder(vector_icons::kSearchChromeRefreshIcon,
+                                  IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE)
+          .AddPersistance()
+          .Build());
+
+  // TODO(crbug.com/357930023): This registration only partially implements the
+  // non-milestone update toast for testing purposes and will need to be
+  // updated.
+  toast_registry_->RegisterToast(
+      ToastId::kNonMilestoneUpdate,
+      ToastSpecification::Builder(kLinkChromeRefreshIcon,
+                                  IDS_LINK_COPIED_TOAST_BODY)
+          .AddGlobalScoped()
           .Build());
 }

@@ -299,7 +299,7 @@ class PasswordManager : public PasswordManagerInterface {
   // last call is provisionally saved. Multiple calls is possible because it is
   // called on any user keystroke. If there is no PasswordFormManager that
   // manages |form|, the new one is created. If |is_manual_fallback| is true
-  // and the matched form manager has not recieved yet response from the
+  // and the matched form manager has not received yet response from the
   // password store, then nullptr is returned. Returns manager which manages
   // |form|.
   PasswordFormManager* ProvisionallySaveForm(const autofill::FormData& form,

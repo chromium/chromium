@@ -487,8 +487,11 @@ Error BuildValue(Cursor<CharType>* cursor,
       break;
     case kNumber: {
       bool ok;
-      double value = CharactersToDouble(token_start.pos,
-                                        cursor->pos - token_start.pos, &ok);
+      double value = CharactersToDouble(
+          base::span<const CharType>(
+              token_start.pos.get(),
+              static_cast<size_t>(cursor->pos - token_start.pos)),
+          &ok);
       if (!ok || std::isinf(value)) {
         *cursor = token_start;
         return Error::kSyntaxError;

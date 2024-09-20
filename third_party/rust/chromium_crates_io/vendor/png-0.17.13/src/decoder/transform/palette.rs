@@ -5,7 +5,7 @@
 //!
 //! To achieve higher throughput, `create_rgba_palette` combines entries from
 //! `PLTE` and `trNS` chunks into a single lookup table.  This is based on the
-//! ideas explored in https://crbug.com/706134.
+//! ideas explored in <https://crbug.com/706134>.
 //!
 //! Memoization is a trade-off:
 //! * On one hand, memoization requires spending X ns before starting to call

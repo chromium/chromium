@@ -14,12 +14,15 @@
 class FaviconLoader;
 
 // Singleton that owns all FaviconLoaders and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class IOSChromeFaviconLoaderFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static FaviconLoader* GetForBrowserState(ChromeBrowserState* browser_state);
-  static FaviconLoader* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static FaviconLoader* GetForBrowserState(ProfileIOS* profile);
+
+  static FaviconLoader* GetForProfile(ProfileIOS* profile);
+  static FaviconLoader* GetForProfileIfExists(ProfileIOS* profile);
+
   static IOSChromeFaviconLoaderFactory* GetInstance();
   // Returns the default factory used to build FaviconLoader. Can be registered
   // with SetTestingFactory to use the FaviconService instance during testing.

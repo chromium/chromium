@@ -522,6 +522,41 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallError) {
   EXPECT_CALL(scheduler(), Stop()).Times(1);
 }
 
+TEST_F(ComponentInstallerTest, GetInstalledFile) {
+  auto installer = base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<MockInstallerPolicy>());
+
+  Unpack(
+      update_client::GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"));
+
+  const auto unpack_path = result().unpack_path;
+  EXPECT_TRUE(base::DirectoryExists(unpack_path));
+  EXPECT_EQ(update_client::jebg_public_key, result().public_key);
+
+  base::ScopedPathOverride scoped_path_override(DIR_COMPONENT_USER);
+  base::FilePath base_dir;
+  EXPECT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
+  base_dir = base_dir.Append(relative_install_dir);
+  EXPECT_TRUE(base::CreateDirectory(base_dir));
+  base::RunLoop runloop;
+  installer->Install(
+      unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&](const update_client::CrxInstaller::Result& result) {
+            EXPECT_EQ(result.result.category_,
+                      update_client::ErrorCategory::kNone);
+            runloop.Quit();
+          }));
+  runloop.Run();
+
+  EXPECT_EQ(installer->GetInstalledFile("a"),
+            base_dir.AppendASCII("1.0").AppendASCII("a"));
+  EXPECT_EQ(installer->GetInstalledFile("../a"), std::nullopt);
+
+  EXPECT_CALL(update_client(), Stop()).Times(1);
+  EXPECT_CALL(scheduler(), Stop()).Times(1);
+}
+
 TEST_F(ComponentInstallerTest, SelectComponentVersion) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<MockInstallerPolicy>());

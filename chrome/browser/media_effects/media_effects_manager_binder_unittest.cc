@@ -10,6 +10,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/public/cpp/video_effects_service_host.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "services/video_effects/test/fake_video_effects_service.h"
@@ -63,7 +64,8 @@ TEST_F(MediaEffectsManagerBinderTest, BindVideoEffectsProcessor) {
   mojo::Remote<video_effects::mojom::VideoEffectsService> service;
   video_effects::FakeVideoEffectsService fake_effects_service(
       service.BindNewPipeAndPassReceiver());
-  auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
+  auto service_reset =
+      video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
   auto effects_processor_future =
       fake_effects_service.GetEffectsProcessorCreationFuture();

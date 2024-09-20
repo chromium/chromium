@@ -34,11 +34,6 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
   //   about to expire; otherwise refresh the access token only when
   //   CallWithToken() is called while the cached token has expired.
   OAuthTokenGetterImpl(
-      std::unique_ptr<OAuthIntermediateCredentials> intermediate_credentials,
-      const OAuthTokenGetter::CredentialsUpdatedCallback& on_credentials_update,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      bool auto_refresh);
-  OAuthTokenGetterImpl(
       std::unique_ptr<OAuthAuthorizationCredentials> authorization_credentials,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool auto_refresh);
@@ -57,16 +52,15 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
                            int expires_seconds) override;
   void OnRefreshTokenResponse(const std::string& access_token,
                               int expires_in_seconds) override;
-  void OnGetUserEmailResponse(const std::string& user_email) override;
+  void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
 
   void UpdateAccessToken(const std::string& access_token, int expires_seconds);
   void NotifyTokenCallbacks(Status status,
                             const std::string& user_email,
-                            const std::string& access_token);
-  void NotifyUpdatedCallbacks(const std::string& user_email,
-                              const std::string& refresh_token);
+                            const std::string& access_token,
+                            const std::string& scopes);
   void GetOauthTokensFromAuthCode();
   void RefreshAccessToken();
 
@@ -78,11 +72,11 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
   std::unique_ptr<OAuthIntermediateCredentials> intermediate_credentials_;
   std::unique_ptr<OAuthAuthorizationCredentials> authorization_credentials_;
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
-  OAuthTokenGetter::CredentialsUpdatedCallback credentials_updated_callback_;
 
   bool email_verified_ = false;
   bool email_discovery_ = false;
   std::string oauth_access_token_;
+  std::string scopes_;
   base::Time access_token_expiry_time_;
   base::queue<OAuthTokenGetter::TokenCallback> pending_callbacks_;
   std::unique_ptr<base::OneShotTimer> refresh_timer_;

@@ -36,19 +36,11 @@ class TestGuestViewManager : public GuestViewManager {
   // While the GuestViewBase directly represents a guest view, the
   // RenderFrameHost version exposes the guest view's main frame for the ease of
   // testing.
-  //
-  // All the WebContents versions APIs (here and on) will be removed during the
-  // MPArch migration. Consider using GuestViewBase or RenderFrameHost versions,
-  // unless necessary.
-  //
-  // TODO(crbug.com/40202416): Remove all the WebContents version.
   GuestViewBase* WaitForSingleGuestViewCreated();
   content::RenderFrameHost* WaitForSingleGuestRenderFrameHostCreated();
-  content::WebContents* DeprecatedWaitForSingleGuestCreated();
 
   GuestViewBase* WaitForNextGuestViewCreated();
   content::RenderFrameHost* WaitForNextGuestRenderFrameHostCreated();
-  content::WebContents* DeprecatedWaitForNextGuestCreated();
 
   void WaitForNumGuestsCreated(size_t count);
 
@@ -56,7 +48,6 @@ class TestGuestViewManager : public GuestViewManager {
 
   GuestViewBase* GetLastGuestViewCreated();
   content::RenderFrameHost* GetLastGuestRenderFrameHostCreated();
-  content::WebContents* DeprecatedGetLastGuestCreated();
 
   void WaitUntilAttached(GuestViewBase* guest_view);
 

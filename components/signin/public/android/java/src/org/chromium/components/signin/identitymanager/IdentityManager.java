@@ -43,10 +43,6 @@ public class IdentityManager {
         default void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {}
     }
 
-    /** A simple callback for getAccessToken. */
-    public interface GetAccessTokenCallback
-            extends ProfileOAuth2TokenServiceDelegate.GetAccessTokenCallback {}
-
     private long mNativeIdentityManager;
     private final ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
 

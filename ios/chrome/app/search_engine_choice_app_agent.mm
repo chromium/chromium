@@ -147,7 +147,7 @@ enum class SkipScreenDecision {
     // that case, the method won't be called again.
     if (!ShouldDisplaySearchEngineChoiceScreen(
             *browserProvider.browser->GetBrowserState(),
-            search_engines::ChoicePromo::kDialog,
+            /*is_first_run_entrypoint=*/false,
             [self startupHadExternalIntent])) {
       _skipScreenDecision = SkipScreenDecision::kSkip;
       [self.appState queueTransitionToNextInitStage];

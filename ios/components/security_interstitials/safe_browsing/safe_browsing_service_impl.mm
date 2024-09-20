@@ -192,7 +192,8 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       hash_real_time_selection,
-      /*is_async_check=*/false, SessionID::InvalidValue());
+      /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
+      SessionID::InvalidValue());
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -236,7 +237,8 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       hash_real_time_selection,
-      /*is_async_check=*/true, SessionID::InvalidValue());
+      /*is_async_check=*/true, /*check_allowlist_before_hash_database=*/false,
+      SessionID::InvalidValue());
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -266,7 +268,8 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
       /*hash_realtime_service=*/nullptr,
       /*hash_realtime_selection=*/
       safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*is_async_check=*/false, SessionID::InvalidValue());
+      /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
+      SessionID::InvalidValue());
 }
 
 // Checks if async check should be created.

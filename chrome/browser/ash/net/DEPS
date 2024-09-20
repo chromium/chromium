@@ -3,7 +3,7 @@ include_rules = [
   # details.
   "-chrome",
 
-  "+chromeos/components/kcer",
+  "+ash/components/kcer",
 
   # This directory is in //chrome, which violates the rule above. Allow this
   # directory to #include its own files.
@@ -35,6 +35,7 @@ include_rules = [
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/sync",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/network",
   "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser.h",

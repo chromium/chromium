@@ -216,18 +216,18 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // Calls the callback with the allowlist match result previously set by
   // |SetAllowlistLookupDetailsForUrl|. Returns std::nullopt. It crashes if
   // the allowlist match result is not set in advance for the |gurl|.
-  std::optional<
-      SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
-  CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& gurl,
-      base::OnceCallback<void(bool)> callback) override {
+      CheckUrlForHighConfidenceAllowlistCallback callback) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_allowlist_match_, url));
 
     ui_task_runner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), urls_allowlist_match_[url]));
-    return std::nullopt;
+        base::BindOnce(
+            std::move(callback),
+            /*url_on_high_confidence_allowlist=*/urls_allowlist_match_[url],
+            /*logging_details=*/std::nullopt));
   }
 
   void SetAllowlistLookupDetailsForUrl(const GURL& gurl, bool match) {
@@ -1736,8 +1736,10 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
     SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
     SetFeatures({kSafeBrowsingAsyncRealTimeCheck}, {});
 
-    AsyncCheckTracker::CreateForWebContents(web_contents(),
-                                            /*ui_manager=*/nullptr);
+    AsyncCheckTracker::CreateForWebContents(
+        web_contents(),
+        /*ui_manager=*/nullptr,
+        /*should_sync_checker_check_allowlist=*/false);
     csd_host_->RegisterAsyncCheckTracker();
   }
 
@@ -1766,7 +1768,8 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
 
   void CompleteAsyncCheck() {
     auto* tracker = AsyncCheckTracker::GetOrCreateForWebContents(
-        web_contents(), /*ui_manager=*/nullptr);
+        web_contents(), /*ui_manager=*/nullptr,
+        /*should_sync_checker_check_allowlist=*/false);
     auto checker = std::make_unique<UrlCheckerHolder>(
         /*delegate_getter=*/base::NullCallback(), content::FrameTreeNodeId(),
         /*navigation_id=*/0,
@@ -1780,7 +1783,8 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
         /*hash_realtime_service=*/nullptr,
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone,
-        /*is_async_check=*/true, SessionID::InvalidValue());
+        /*is_async_check=*/true, /*check_allowlist_before_hash_database=*/false,
+        SessionID::InvalidValue());
     tracker->TransferUrlChecker(std::move(checker));
     // all_checks_completed must be set to true to notify
     // ClientSideDetectionHost.

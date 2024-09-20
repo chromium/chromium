@@ -12,46 +12,48 @@
 
 namespace media {
 
-DecoderBuffer::TimeInfo::TimeInfo() = default;
-DecoderBuffer::TimeInfo::~TimeInfo() = default;
-DecoderBuffer::TimeInfo::TimeInfo(const TimeInfo&) = default;
-DecoderBuffer::TimeInfo& DecoderBuffer::TimeInfo::operator=(const TimeInfo&) =
-    default;
+namespace {
 
-DecoderBuffer::DecoderBuffer(size_t size) : size_(size) {
-  Initialize();
-}
+template <class T>
+class ExternalSharedMemoryAdapter : public DecoderBuffer::ExternalMemory {
+ public:
+  explicit ExternalSharedMemoryAdapter(T mapping)
+      : mapping_(std::move(mapping)) {}
+
+  const base::span<const uint8_t> Span() const override {
+    return mapping_.template GetMemoryAsSpan<const uint8_t>();
+  }
+
+ private:
+  T mapping_;
+};
+
+}  // namespace
+
+DecoderBuffer::DecoderBuffer(size_t size)
+    : data_(base::HeapArray<uint8_t>::Uninit(size)) {}
 
 DecoderBuffer::DecoderBuffer(base::span<const uint8_t> data)
-    : size_(data.size()) {
-  Initialize();
-  data_.copy_from(data);
-}
+    : data_(base::HeapArray<uint8_t>::CopiedFrom(data)) {}
 
 DecoderBuffer::DecoderBuffer(base::HeapArray<uint8_t> data)
-    : data_(std::move(data)), size_(data_.size()) {}
-
-DecoderBuffer::DecoderBuffer(base::ReadOnlySharedMemoryMapping mapping,
-                             size_t size)
-    : size_(size), read_only_mapping_(std::move(mapping)) {}
-
-DecoderBuffer::DecoderBuffer(base::WritableSharedMemoryMapping mapping,
-                             size_t size)
-    : size_(size), writable_mapping_(std::move(mapping)) {}
+    : data_(std::move(data)) {}
 
 DecoderBuffer::DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory)
-    : size_(external_memory->Span().size()),
-      external_memory_(std::move(external_memory)) {}
+    : external_memory_(std::move(external_memory)) {}
 
-DecoderBuffer::DecoderBuffer(DecoderBufferType decoder_buffer_type)
+DecoderBuffer::DecoderBuffer(DecoderBufferType decoder_buffer_type,
+                             std::optional<ConfigVariant> next_config)
     : is_end_of_stream_(decoder_buffer_type ==
-                        DecoderBufferType::kEndOfStream) {}
+                        DecoderBufferType::kEndOfStream) {
+  if (next_config) {
+    DCHECK(end_of_stream());
+    side_data_ = std::make_unique<DecoderBufferSideData>();
+    side_data_->next_config = std::move(next_config);
+  }
+}
 
 DecoderBuffer::~DecoderBuffer() = default;
-
-void DecoderBuffer::Initialize() {
-  data_ = base::HeapArray<uint8_t>::Uninit(size_);
-}
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::CopyFrom(
@@ -78,7 +80,11 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromSharedMemoryRegion(
   if (!mapping.IsValid()) {
     return nullptr;
   }
-  return base::WrapRefCounted(new DecoderBuffer(std::move(mapping), size));
+
+  return FromExternalMemory(
+      std::make_unique<
+          ExternalSharedMemoryAdapter<base::WritableSharedMemoryMapping>>(
+          std::move(mapping)));
 }
 
 // static
@@ -93,7 +99,11 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromSharedMemoryRegion(
   if (!mapping.IsValid()) {
     return nullptr;
   }
-  return base::WrapRefCounted(new DecoderBuffer(std::move(mapping), size));
+
+  return FromExternalMemory(
+      std::make_unique<
+          ExternalSharedMemoryAdapter<base::ReadOnlySharedMemoryMapping>>(
+          std::move(mapping)));
 }
 
 // static
@@ -107,9 +117,10 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromExternalMemory(
 }
 
 // static
-scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer() {
-  return base::WrapRefCounted(
-      new DecoderBuffer(DecoderBufferType::kEndOfStream));
+scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer(
+    std::optional<ConfigVariant> next_config) {
+  return base::WrapRefCounted(new DecoderBuffer(DecoderBufferType::kEndOfStream,
+                                                std::move(next_config)));
 }
 
 // static
@@ -133,37 +144,38 @@ bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& buffer) {
 
 base::span<const uint8_t> DecoderBuffer::AsSpan() const {
   DCHECK(!end_of_stream());
-  if (read_only_mapping_.IsValid()) {
-    return read_only_mapping_.GetMemoryAsSpan<const uint8_t>().first(size_);
+  return external_memory_ ? external_memory_->Span() : data_;
+}
+
+void DecoderBuffer::set_discard_padding(const DiscardPadding& discard_padding) {
+  DCHECK(!end_of_stream());
+  if (!side_data_ && discard_padding == DiscardPadding()) {
+    return;
   }
-  if (writable_mapping_.IsValid()) {
-    return writable_mapping_.GetMemoryAsSpan<const uint8_t>().first(size_);
-  }
-  if (external_memory_) {
-    return external_memory_->Span().first(size_);
-  }
-  return data_.first(size_);
+  WritableSideData().discard_padding = discard_padding;
 }
 
 DecoderBufferSideData& DecoderBuffer::WritableSideData() {
-  if (!side_data_.has_value()) {
-    side_data_.emplace();
+  DCHECK(!end_of_stream());
+  if (!has_side_data()) {
+    side_data_ = std::make_unique<DecoderBufferSideData>();
   }
-  return side_data_.value();
+  return *side_data_;
+}
+
+void DecoderBuffer::set_side_data(
+    std::optional<DecoderBufferSideData> side_data) {
+  DCHECK(!end_of_stream());
+  if (!side_data) {
+    side_data_.reset();
+    return;
+  }
+  WritableSideData() = *side_data;
 }
 
 bool DecoderBuffer::MatchesMetadataForTesting(
     const DecoderBuffer& buffer) const {
-  if (end_of_stream() != buffer.end_of_stream())
-    return false;
-
-  // It is illegal to call any member function if eos is true.
-  if (end_of_stream())
-    return true;
-
-  if (timestamp() != buffer.timestamp() || duration() != buffer.duration() ||
-      is_key_frame() != buffer.is_key_frame() ||
-      discard_padding() != buffer.discard_padding()) {
+  if (end_of_stream() != buffer.end_of_stream()) {
     return false;
   }
 
@@ -171,7 +183,18 @@ bool DecoderBuffer::MatchesMetadataForTesting(
     return false;
   }
 
-  if (has_side_data() && !side_data()->Matches(buffer.side_data().value())) {
+  // Note: We use `side_data_` directly to avoid DCHECKs for EOS buffers.
+  if (has_side_data() && !side_data_->Matches(*buffer.side_data_)) {
+    return false;
+  }
+
+  // None of the following methods may be called on an EOS buffer.
+  if (end_of_stream()) {
+    return true;
+  }
+
+  if (timestamp() != buffer.timestamp() || duration() != buffer.duration() ||
+      is_key_frame() != buffer.is_key_frame()) {
     return false;
   }
 
@@ -200,18 +223,21 @@ std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
 
   std::ostringstream s;
 
-  s << "{timestamp=" << time_info_.timestamp.InMicroseconds()
-    << " duration=" << time_info_.duration.InMicroseconds() << " size=" << size_
+  s << "{timestamp=" << timestamp_.InMicroseconds()
+    << " duration=" << duration_.InMicroseconds() << " size=" << size()
     << " is_key_frame=" << is_key_frame_
     << " encrypted=" << (decrypt_config_ != nullptr);
 
   if (verbose) {
-    s << " has_side_data=" << has_side_data() << " discard_padding (us)=("
-      << time_info_.discard_padding.first.InMicroseconds() << ", "
-      << time_info_.discard_padding.second.InMicroseconds() << ")";
-
-    if (decrypt_config_)
+    s << " has_side_data=" << has_side_data();
+    if (has_side_data()) {
+      s << " discard_padding (us)=("
+        << side_data_->discard_padding.first.InMicroseconds() << ", "
+        << side_data_->discard_padding.second.InMicroseconds() << ")";
+    }
+    if (decrypt_config_) {
       s << " decrypt_config=" << (*decrypt_config_);
+    }
   }
 
   s << "}";
@@ -221,7 +247,7 @@ std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
 
 void DecoderBuffer::set_timestamp(base::TimeDelta timestamp) {
   DCHECK(!end_of_stream());
-  time_info_.timestamp = timestamp;
+  timestamp_ = timestamp;
 }
 
 size_t DecoderBuffer::GetMemoryUsage() const {

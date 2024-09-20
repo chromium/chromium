@@ -177,7 +177,9 @@ interface Session {
 
   // Gets the size of the given text in tokens. Will return 0 if the text is
   // empty or error occurred.
-  GetSizeInTokens@2(string text) => (uint32 size);
+  [MinVersion=2]
+  GetSizeInTokens@5(Input input) => (uint32 size);
+  GetSizeInTokensDeprecated@2(string text) => (uint32 size);
 
   // Gets the probability score of the first token in `text` on top of the
   // current context.
@@ -216,6 +218,17 @@ interface OnDeviceModel {
   LoadAdaptation@3(
       LoadAdaptationParams params,
       pending_receiver<OnDeviceModel> model) => (LoadModelResult result);
+};
+
+interface TextSafetyModel {
+  // Infers multiclass safety scores for the given `text` using this model's
+  // underlying safety classifier, if any. Returns null if classification fails
+  // or there is no classifier available.
+  ClassifyTextSafety@1(string text) => (SafetyInfo? safety_info);
+
+  // Detects the language of the text using the language classifier. Returns
+  // null if there is no classifier available.
+  DetectLanguage@2(string text) => (LanguageDetectionResult? result);
 };
 
 // Classifies the device based on how fast it is estimated to be able to run a

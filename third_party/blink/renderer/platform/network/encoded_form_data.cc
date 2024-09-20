@@ -244,8 +244,7 @@ void EncodedFormData::Flatten(Vector<char>& data) const {
 String EncodedFormData::FlattenToString() const {
   Vector<char> bytes;
   Flatten(bytes);
-  return Latin1Encoding().Decode(reinterpret_cast<const char*>(bytes.data()),
-                                 bytes.size());
+  return Latin1Encoding().Decode(base::as_byte_span(bytes));
 }
 
 uint64_t EncodedFormData::SizeInBytes() const {

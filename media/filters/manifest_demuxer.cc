@@ -639,13 +639,12 @@ void ManifestDemuxer::OnDemuxerStreamRead(
 
 void ManifestDemuxer::MapDemuxerStreams(
     TrackChangeCB cb,
-    DemuxerStream::Type type,
     const std::vector<DemuxerStream*>& streams) {
   std::vector<DemuxerStream*> mapped_streams;
   for (const auto* const stream : streams) {
     mapped_streams.push_back(streams_.at(stream).get());
   }
-  std::move(cb).Run(type, mapped_streams);
+  std::move(cb).Run(mapped_streams);
 }
 
 std::vector<MediaTrack::Id> ManifestDemuxer::MapTrackIds(

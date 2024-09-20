@@ -296,6 +296,8 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   EXPECT_TRUE(prefs->FindPreference(
       prefs::kAccessibilityFaceGazeCursorUseAcceleration));
   EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFaceGazeGesturesToKeyCombos));
+  EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityFaceGazeGesturesToMacros));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityFaceGazeGesturesToConfidence));
@@ -305,6 +307,8 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityFaceGazeActionsEnabled));
   EXPECT_TRUE(prefs->FindPreference(
       prefs::kAccessibilityFaceGazeAdjustSpeedSeparately));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFaceGazeVelocityThreshold));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityCaretBlinkInterval));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityFlashNotificationsEnabled));

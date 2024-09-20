@@ -153,8 +153,8 @@ TEST_F(BookmarkSpotlightManagerTest, testParentFolderNamesForNode) {
   NSMutableArray* folderNames = [manager parentFolderNamesForNode:eNode];
 
   EXPECT_EQ([folderNames count], 2u);
-  EXPECT_TRUE([[folderNames objectAtIndex:0] isEqualToString:@"2"]);
-  EXPECT_TRUE([[folderNames objectAtIndex:1] isEqualToString:@"21"]);
+  EXPECT_NSEQ([folderNames objectAtIndex:0], @"2");
+  EXPECT_NSEQ([folderNames objectAtIndex:1], @"21");
 
   [manager shutdown];
 }

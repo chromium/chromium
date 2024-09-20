@@ -18,6 +18,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -35,11 +37,15 @@ namespace ash {
 
 namespace {
 
+constexpr char kTemporaryServiceConfiguredButNotUsable[] =
+    "Temporary service configured but not usable";
+
 // Strip surrounding "" from keys (if present).
 std::string StripQuotations(const std::string& in_str) {
   size_t len = in_str.length();
-  if (len >= 2 && in_str[0] == '"' && in_str[len - 1] == '"')
+  if (len >= 2 && in_str[0] == '"' && in_str[len - 1] == '"') {
     return in_str.substr(1, len - 2);
+  }
   return in_str;
 }
 
@@ -74,8 +80,9 @@ void LogConfigProperties(const std::string& desc,
                          const base::Value::Dict& properties) {
   for (auto iter : properties) {
     std::string v = "******";
-    if (shill_property_util::IsLoggableShillProperty(iter.first))
+    if (shill_property_util::IsLoggableShillProperty(iter.first)) {
       base::JSONWriter::Write(iter.second, &v);
+    }
     NET_LOG(USER) << desc << ": " << path + "." + iter.first + "=" + v;
   }
 }
@@ -84,9 +91,18 @@ void LogConfigProperties(const std::string& desc,
 // TODO(stevenjb): Expand this list and update
 // network_element::AddErrorLocalizedStrings.
 std::string GetErrorName(const std::string& dbus_error_name,
+                         const std::string& dbus_error_message,
                          const std::string& default_error_name) {
-  if (dbus_error_name == shill::kErrorResultInvalidPassphrase)
+  if (dbus_error_name == shill::kErrorResultInvalidPassphrase) {
     return dbus_error_name;
+  }
+  // TODO(b/365490226): do not rely on the `dbus_error_message` and return newly
+  // created `dbus_error_name`.
+  if ((dbus_error_name == shill::kErrorResultNotFound) &&
+      (dbus_error_message == kTemporaryServiceConfiguredButNotUsable)) {
+    return base::StrCat({"Config.CreateConfiguration ",
+                         kTemporaryServiceConfiguredButNotUsable});
+  }
   return default_error_name;
 }
 
@@ -203,11 +219,13 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
   }
 
   void RunCallbackIfDone() {
-    if (!profile_delete_entries_.empty())
+    if (!profile_delete_entries_.empty()) {
       return;
+    }
     // Run the callback if this is the last pending deletion.
-    if (!callback_.is_null())
+    if (!callback_.is_null()) {
       std::move(callback_).Run();
+    }
     // ProfileEntryDeleterCompleted will delete this.
     owner_->ProfileEntryDeleterCompleted(service_path_, guid_,
                                          true /* success */);
@@ -285,8 +303,9 @@ void NetworkConfigurationHandler::SetShillProperties(
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   if (shill_properties.empty()) {
-    if (!callback.is_null())
+    if (!callback.is_null()) {
       std::move(callback).Run();
+    }
     return;
   }
   NET_LOG(USER) << "SetShillProperties: " << NetworkPathId(service_path);
@@ -325,8 +344,9 @@ void NetworkConfigurationHandler::ClearShillProperties(
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   if (names.empty()) {
-    if (!callback.is_null())
+    if (!callback.is_null()) {
       std::move(callback).Run();
+    }
     return;
   }
   NET_LOG(USER) << "ClearShillProperties: " << NetworkPathId(service_path);
@@ -428,18 +448,21 @@ void NetworkConfigurationHandler::RemoveConfigurationFromProfile(
   std::string guid;
   const NetworkState* network_state =
       network_state_handler_->GetNetworkState(service_path);
-  if (network_state)
+  if (network_state) {
     guid = network_state->guid();
+  }
   NET_LOG(USER) << "Remove Configuration: " << NetworkPathId(service_path)
                 << " from profiles: "
                 << (!profile_path.empty() ? profile_path : "all");
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnBeforeConfigurationRemoved(service_path, guid);
+  }
   ProfileEntryDeleter* deleter = new ProfileEntryDeleter(
       this, service_path, guid, std::move(remove_confirmer),
       std::move(callback), std::move(error_callback));
-  if (!profile_path.empty())
+  if (!profile_path.empty()) {
     deleter->RestrictToProfilePath(profile_path);
+  }
   profile_entry_deleters_[service_path] = base::WrapUnique(deleter);
   deleter->Run();
 }
@@ -493,8 +516,9 @@ void NetworkConfigurationHandler::NetworkListChanged() {
 void NetworkConfigurationHandler::OnShuttingDown() {
   network_state_handler_observer_.Reset();
   network_state_handler_ = nullptr;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnShuttingDown();
+  }
 }
 
 // NetworkConfigurationHandler Private methods
@@ -504,8 +528,9 @@ NetworkConfigurationHandler::NetworkConfigurationHandler()
 
 NetworkConfigurationHandler::~NetworkConfigurationHandler() {
   // Make sure that this has been removed as a NetworkStateHandler observer.
-  if (network_state_handler_)
+  if (network_state_handler_) {
     OnShuttingDown();
+  }
 }
 
 void NetworkConfigurationHandler::Init(
@@ -522,8 +547,8 @@ void NetworkConfigurationHandler::ConfigurationFailed(
     network_handler::ErrorCallback error_callback,
     const std::string& dbus_error_name,
     const std::string& dbus_error_message) {
-  std::string error_name =
-      GetErrorName(dbus_error_name, "Config.CreateConfiguration Failed");
+  std::string error_name = GetErrorName(dbus_error_name, dbus_error_message,
+                                        "Config.CreateConfiguration Failed");
   network_handler::ShillErrorCallbackFunction(
       error_name, "", std::move(error_callback), dbus_error_name,
       dbus_error_message);
@@ -558,11 +583,13 @@ void NetworkConfigurationHandler::NotifyConfigurationCompleted(
     network_handler::ServiceResultCallback callback,
     const std::string& service_path,
     const std::string& guid) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnConfigurationCreated(service_path, guid);
+  }
 
-  if (callback.is_null())
+  if (callback.is_null()) {
     return;
+  }
 
   std::move(callback).Run(service_path, guid);
 }
@@ -576,8 +603,9 @@ void NetworkConfigurationHandler::ProfileEntryDeleterCompleted(
     // that the UI does not display stale errors from a previous configuration.
     network_state_handler_->ClearLastErrorForNetwork(service_path);
 
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnConfigurationRemoved(service_path, guid);
+    }
   }
   auto iter = profile_entry_deleters_.find(service_path);
   DCHECK(iter != profile_entry_deleters_.end());
@@ -588,8 +616,9 @@ void NetworkConfigurationHandler::SetNetworkProfileCompleted(
     const std::string& service_path,
     const std::string& profile_path,
     base::OnceClosure callback) {
-  if (!callback.is_null())
+  if (!callback.is_null()) {
     std::move(callback).Run();
+  }
 }
 
 void NetworkConfigurationHandler::GetPropertiesCallback(
@@ -628,12 +657,14 @@ void NetworkConfigurationHandler::SetPropertiesSuccessCallback(
     const std::string& service_path,
     base::Value::Dict set_properties,
     base::OnceClosure callback) {
-  if (!callback.is_null())
+  if (!callback.is_null()) {
     std::move(callback).Run();
+  }
   const NetworkState* network_state =
       network_state_handler_->GetNetworkState(service_path);
-  if (!network_state)
+  if (!network_state) {
     return;  // Network no longer exists, do not notify or request update.
+  }
 
   for (auto& observer : observers_) {
     observer.OnConfigurationModified(service_path, network_state->guid(),
@@ -648,8 +679,8 @@ void NetworkConfigurationHandler::SetPropertiesErrorCallback(
     network_handler::ErrorCallback error_callback,
     const std::string& dbus_error_name,
     const std::string& dbus_error_message) {
-  std::string error_name =
-      GetErrorName(dbus_error_name, "Config.SetProperties Failed");
+  std::string error_name = GetErrorName(dbus_error_name, dbus_error_message,
+                                        "Config.SetProperties Failed");
   network_handler::ShillErrorCallbackFunction(
       error_name, service_path, std::move(error_callback), dbus_error_name,
       dbus_error_message);
@@ -668,8 +699,9 @@ void NetworkConfigurationHandler::ClearPropertiesSuccessCallback(
 
   for (size_t i = 0; i < result.size(); ++i) {
     bool success = false;
-    if (result[i].is_bool())
+    if (result[i].is_bool()) {
       success = result[i].GetBool();
+    }
     if (!success) {
       // If a property was cleared that has never been set, the clear will fail.
       // We do not track which properties have been set, so just log the error.
@@ -678,8 +710,9 @@ void NetworkConfigurationHandler::ClearPropertiesSuccessCallback(
     }
   }
 
-  if (!callback.is_null())
+  if (!callback.is_null()) {
     std::move(callback).Run();
+  }
   network_state_handler_->RequestUpdateForNetwork(service_path);
 }
 

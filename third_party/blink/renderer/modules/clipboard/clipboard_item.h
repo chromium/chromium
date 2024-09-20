@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class Blob;
 class ScriptState;
 
 // A `ClipboardItem` holds data that was read from or will be written to the
@@ -48,17 +49,17 @@ class ClipboardItem final : public ScriptWrappable {
   // retrieve. `exception_state`: The exception state to be updated if an error
   // occurs. Spec:
   // https://w3c.github.io/clipboard-apis/#dom-clipboarditem-gettype
-  ScriptPromiseUntyped getType(ScriptState* script_state,
-                               const String& type,
-                               ExceptionState& exception_state) const;
+  ScriptPromise<Blob> getType(ScriptState* script_state,
+                              const String& type,
+                              ExceptionState& exception_state) const;
 
   // Checks if a particular MIME type is supported by the Async Clipboard API.
   // `type` refers to a MIME type or a custom MIME type with a "web " prefix.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboarditem-supports
   static bool supports(const String& type);
 
-  const HeapVector<std::pair<String, ScriptPromiseUntyped>>&
-  GetRepresentations() const {
+  const HeapVector<std::pair<String, ScriptPromise<Blob>>>& GetRepresentations()
+      const {
     return representations_;
   }
 
@@ -70,7 +71,7 @@ class ClipboardItem final : public ScriptWrappable {
 
  private:
   // Stores built-in and web custom MIME types.
-  HeapVector<std::pair<String, ScriptPromiseUntyped>> representations_;
+  HeapVector<std::pair<String, ScriptPromise<Blob>>> representations_;
   // The vector of custom MIME types that have a "web " prefix.
   Vector<String> custom_format_types_;
 };

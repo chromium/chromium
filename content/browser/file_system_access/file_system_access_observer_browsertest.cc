@@ -629,8 +629,10 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  histogram_tester.ExpectUniqueSample(kAttemptToObserveSymlinkHistogram,
-                                      /*sample=*/false, 1);
+  if (GetTestFileSystemType() == TestFileSystemType::kLocal) {
+    histogram_tester.ExpectUniqueSample(kAttemptToObserveSymlinkHistogram,
+                                        /*sample=*/false, 1);
+  }
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
@@ -866,14 +868,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-// TODO(crbug.com/343961295): Windows reports two events when a swap file
-// is closed: a "disappeared" for the target file being overwritten, and a
-// "appeared" for the swap file being moved to the target file.
-//
-// TODO(crbug.com/357134621): Like on Windows, FSEvents (Mac) also reports two
-// events when the swap file is closed. This test fails due to a "disappear"
-// event being reported.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+// TODO(crbug.com/357134621): FSEvents (Mac) reports two events when the swap
+// file is closed. This test fails due to a "disappear" event being reported.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsType) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -1253,13 +1250,9 @@ IN_PROC_BROWSER_TEST_P(
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-// TODO(crbug.com/343961295): Windows reports two events when a swap file
-// is closed: a "disappeared" for the target file being overwritten, and a
-// "appeared" for the swap file being moved to the target file.
-//
 // TODO(b/321980270): Filter out changes to swap files reported by FSEvents,
 // and re-enable this test on Mac.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        WritableReportsSingleModifiedEventOnClose) {
   base::FilePath dir_path = CreateDirectoryToBePicked();

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_impl.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -49,37 +50,6 @@ crosapi::mojom::IntentPtr CreateCrosapiShareIntent(
   return intent;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Result of the CrOS Sharesheet, i.e. whether the user selects a share target
-// after opening the Sharesheet.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with
-// SharingHubSharesheetResult in src/tools/metrics/histograms/enums.xml.
-enum class SharingHubSharesheetResult {
-  SUCCESS = 0,
-  CANCELED = 1,
-  kMaxValue = CANCELED,
-};
-
-const char kSharesheetResult[] =
-    "Sharing.SharingHubDesktop.CrOSSharesheetResult";
-
-SharingHubSharesheetResult GetSharesheetResultHistogram(
-    sharesheet::SharesheetResult result) {
-  switch (result) {
-    case sharesheet::SharesheetResult::kSuccess:
-      return SharingHubSharesheetResult::SUCCESS;
-    case sharesheet::SharesheetResult::kCancel:
-    case sharesheet::SharesheetResult::kErrorAlreadyOpen:
-    case sharesheet::SharesheetResult::kErrorWindowClosed:
-      return SharingHubSharesheetResult::CANCELED;
-  }
-}
-
-void LogCrOSSharesheetResult(sharesheet::SharesheetResult result) {
-  UMA_HISTOGRAM_ENUMERATION(kSharesheetResult,
-                            GetSharesheetResultHistogram(result));
-}
 
 }  // namespace
 
@@ -205,8 +175,7 @@ void SharingHubBubbleControllerChromeOsImpl::ShowSharesheetAsh() {
   sharesheet_service->ShowBubble(
       &GetWebContents(), std::move(intent),
       sharesheet::LaunchSource::kOmniboxShare,
-      base::BindOnce(&SharingHubBubbleControllerChromeOsImpl::OnShareDelivered,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce([](sharesheet::SharesheetResult result) {}),
       base::BindOnce(
           &SharingHubBubbleControllerChromeOsImpl::OnSharesheetClosed,
           weak_ptr_factory_.GetWeakPtr()));
@@ -258,11 +227,6 @@ void SharingHubBubbleControllerChromeOsImpl::OnSharesheetClosedLacros() {
   OnSharesheetClosed(views::Widget::ClosedReason::kUnspecified);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-void SharingHubBubbleControllerChromeOsImpl::OnShareDelivered(
-    sharesheet::SharesheetResult result) {
-  LogCrOSSharesheetResult(result);
-}
 
 void SharingHubBubbleControllerChromeOsImpl::OnSharesheetClosed(
     views::Widget::ClosedReason reason) {

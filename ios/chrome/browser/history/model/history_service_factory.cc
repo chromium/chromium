@@ -47,32 +47,37 @@ std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
 
 // static
 history::HistoryService* HistoryServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
-  // If saving history is disabled, only allow explicit access.
-  if (access_type != ServiceAccessType::EXPLICIT_ACCESS &&
-      browser_state->GetPrefs()->GetBoolean(
-          prefs::kSavingBrowserHistoryDisabled)) {
-    return nullptr;
-  }
-
-  return static_cast<history::HistoryService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+  return GetForProfile(profile, access_type);
 }
 
 // static
-history::HistoryService* HistoryServiceFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state,
+history::HistoryService* HistoryServiceFactory::GetForProfile(
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
   // If saving history is disabled, only allow explicit access.
   if (access_type != ServiceAccessType::EXPLICIT_ACCESS &&
-      browser_state->GetPrefs()->GetBoolean(
-          prefs::kSavingBrowserHistoryDisabled)) {
+      profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
     return nullptr;
   }
 
   return static_cast<history::HistoryService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+history::HistoryService* HistoryServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile,
+    ServiceAccessType access_type) {
+  // If saving history is disabled, only allow explicit access.
+  if (access_type != ServiceAccessType::EXPLICIT_ACCESS &&
+      profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
+    return nullptr;
+  }
+
+  return static_cast<history::HistoryService*>(
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

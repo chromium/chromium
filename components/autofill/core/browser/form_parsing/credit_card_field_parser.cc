@@ -36,12 +36,12 @@ namespace {
 
 base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
                                                    ParsingContext& context) {
-  return GetMatchPatterns(name, context.page_language, context.pattern_source);
+  return GetMatchPatterns(name, context.page_language, context.pattern_file);
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(FieldType type,
                                                    ParsingContext& context) {
-  return GetMatchPatterns(type, context.page_language, context.pattern_source);
+  return GetMatchPatterns(type, context.page_language, context.pattern_file);
 }
 
 // Returns true if a field that has |max_length| can fit the data for a field of

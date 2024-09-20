@@ -225,7 +225,10 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
       weakSelf.showScrollHint = NO;
     }
   };
-  [self.formInputAccessoryView layoutIfNeeded];
+  // Check if the view is in the current hierarchy before performing the layout.
+  if (self.formInputAccessoryView.window) {
+    [self.formInputAccessoryView layoutIfNeeded];
+  }
   [self.formSuggestionView
           updateSuggestions:suggestions
              showScrollHint:self.showScrollHint

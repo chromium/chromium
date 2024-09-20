@@ -100,7 +100,10 @@ class PrivacySandboxService : public KeyedService {
     kRestrictedNoticeClosedNoInteraction = 19,
     kRestrictedNoticeMoreButtonClicked = 20,
 
-    kMaxValue = kRestrictedNoticeMoreButtonClicked,
+    // Privacy policy interactions
+    kPrivacyPolicyLinkClicked = 21,
+
+    kMaxValue = kPrivacyPolicyLinkClicked,
   };
 
   // If during the trials a previous consent decision was made, or the notice

@@ -228,8 +228,8 @@ class PageInfoBubbleViewTestApi {
     EXPECT_TRUE(view);
     ui::AXNodeData data;
     view->GetAccessibleNodeData(&data);
-    std::string name;
-    data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name);
+    const std::string& name =
+        data.GetStringAttribute(ax::mojom::StringAttribute::kName);
     return base::ASCIIToUTF16(name);
   }
 
@@ -239,8 +239,8 @@ class PageInfoBubbleViewTestApi {
     EXPECT_TRUE(cookie_button());
     ui::AXNodeData data;
     cookie_button()->GetAccessibleNodeData(&data);
-    std::string name;
-    data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name);
+    const std::string& name =
+        data.GetStringAttribute(ax::mojom::StringAttribute::kName);
     return base::ASCIIToUTF16(name);
   }
 

@@ -14,7 +14,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ui/ash/login_screen_shown_observer.h"
+#include "chromeos/ash/experiences/login/login_screen_shown_observer.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {

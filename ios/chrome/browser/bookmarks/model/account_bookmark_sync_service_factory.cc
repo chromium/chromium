@@ -17,10 +17,15 @@ namespace ios {
 
 // static
 sync_bookmarks::BookmarkSyncService*
-AccountBookmarkSyncServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+AccountBookmarkSyncServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+sync_bookmarks::BookmarkSyncService*
+AccountBookmarkSyncServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<sync_bookmarks::BookmarkSyncService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -43,11 +48,10 @@ AccountBookmarkSyncServiceFactory::~AccountBookmarkSyncServiceFactory() =
 std::unique_ptr<KeyedService>
 AccountBookmarkSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::unique_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service(
       new sync_bookmarks::BookmarkSyncService(
-          BookmarkUndoServiceFactory::GetForBrowserStateIfExists(browser_state),
+          BookmarkUndoServiceFactory::GetForProfileIfExists(profile),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways));
   return bookmark_sync_service;
 }

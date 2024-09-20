@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -85,17 +86,21 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarTabGridButton*)tabGridButton {
-  auto loadImageBlock = ^UIImage* {
-    return CustomSymbolWithPointSize(kSquareNumberSymbol,
-                                     kSymbolToolbarPointSize);
+  auto styledImageBlock = ^UIImage*(ToolbarTabGridButtonStyle style) {
+    switch (style) {
+      case ToolbarTabGridButtonStyle::kNormal:
+        return CustomSymbolWithPointSize(kSquareNumberSymbol,
+                                         kSymbolToolbarPointSize);
+      case ToolbarTabGridButtonStyle::kTabGroup:
+        return DefaultSymbolWithPointSize(kSquareFilledOnSquareSymbol,
+                                          kSymbolToolbarPointSize);
+    }
   };
 
   ToolbarTabGridButton* tabGridButton =
-      [[ToolbarTabGridButton alloc] initWithImageLoader:loadImageBlock];
+      [[ToolbarTabGridButton alloc] initWithStyledImageLoader:styledImageBlock];
 
   [self configureButton:tabGridButton width:kAdaptiveToolbarButtonWidth];
-  SetA11yLabelAndUiAutomationName(tabGridButton, IDS_IOS_TOOLBAR_SHOW_TABS,
-                                  kToolbarStackButtonIdentifier);
   [tabGridButton addTarget:self.actionHandler
                     action:@selector(tabGridTouchDown)
           forControlEvents:UIControlEventTouchDown];

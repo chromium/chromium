@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -21,10 +22,6 @@
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 
 class Profile;
-
-namespace {
-class NetworkMonitor;
-}
 
 namespace ash {
 

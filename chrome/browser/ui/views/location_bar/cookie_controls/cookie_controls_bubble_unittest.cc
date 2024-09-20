@@ -20,6 +20,7 @@
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/tracking_protection_feature.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -139,8 +140,6 @@ TEST_F(CookieControlsBubbleCoordinatorTest, ShowBubbleTest) {
 class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeaturesAndParameters(EnabledFeatures(), {});
-
     TestWithBrowserView::SetUp();
 
     const GURL url = GURL("http://a.com");
@@ -221,14 +220,10 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
                           : base::Time();
     view_controller()->OnStatusChanged(
         controls_visible_, protections_on_, enforcement_, blocking_status_,
-        expiration, tracking_protection_features_);
+        expiration, GetTrackingProtectionFeatures());
   }
 
  protected:
-  // This function is virtual to allow derived classes to override it.
-  virtual std::vector<base::test::FeatureRefAndParams> EnabledFeatures() {
-    return {};
-  }
   // Overriding `base::Time::Now()` to obtain a consistent X days until
   // exception expiration calculation regardless of the time the test runs.
   base::subtle::ScopedTimeClockOverrides time_override_{
@@ -248,8 +243,6 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
       CookieControlsEnforcement::kNoEnforcement;
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
-  std::vector<content_settings::TrackingProtectionFeature>
-      tracking_protection_features_;
 };
 
 TEST_F(CookieControlsBubbleViewControllerTest,
@@ -263,35 +256,45 @@ TEST_F(CookieControlsBubbleViewControllerTest, WidgetClosesOnTpcdEnforcement) {
   EXPECT_CALL(*mock_bubble_view(), CloseWidget());
   enforcement_ = CookieControlsEnforcement::kEnforcedByTpcdGrant;
   blocking_status_ = CookieBlocking3pcdStatus::kLimited;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
-
   OnStatusChanged();
 }
 
 class CookieControlsBubbleViewController3pcdBubbleTitleTest
-    : public CookieControlsBubbleViewControllerTest,
-      public testing::WithParamInterface<
-          testing::tuple</*protections_on*/ bool,
-                         CookieBlocking3pcdStatus,
-                         /*is_permanent_exception*/ bool>> {};
+    : public CookieControlsBubbleViewControllerTest {
+ public:
+  CookieControlsBubbleViewController3pcdBubbleTitleTest() {
+    feature_list_.InitAndDisableFeature(
+        privacy_sandbox::kTrackingProtection3pcdUx);
+  }
+};
 
-TEST_P(CookieControlsBubbleViewController3pcdBubbleTitleTest,
-       AlwaysDisplaysTrackingProtectionTitle) {
-  EXPECT_CALL(*mock_bubble_view(), UpdateTitle(l10n_util::GetStringUTF16(
-                                       IDS_TRACKING_PROTECTION_BUBBLE_TITLE)));
-  protections_on_ = testing::get<0>(GetParam());
-  blocking_status_ = testing::get<1>(GetParam());
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
-  OnStatusChanged(testing::get<2>(GetParam()) ? kDaysToExpiration : 0);
+TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
+       DisplaysThirdPartyCookiesBlockedTitle) {
+  EXPECT_CALL(*mock_bubble_view(),
+              UpdateTitle(l10n_util::GetStringUTF16(
+                  IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE)));
+  blocking_status_ = CookieBlocking3pcdStatus::kAll;
+  OnStatusChanged();
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    CookieControlsBubbleViewController3pcdBubbleTitleTest,
-    testing::Combine(testing::Bool(),
-                     testing::Values(CookieBlocking3pcdStatus::kLimited,
-                                     CookieBlocking3pcdStatus::kAll),
-                     testing::Bool()));
+TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
+       DisplaysThirdPartyCookiesLimitedTitle) {
+  EXPECT_CALL(*mock_bubble_view(),
+              UpdateTitle(l10n_util::GetStringUTF16(
+                  IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE)));
+  blocking_status_ = CookieBlocking3pcdStatus::kLimited;
+  OnStatusChanged();
+}
+
+TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
+       DisplaysThirdPartyCookiesAllowedTitle) {
+  EXPECT_CALL(*mock_bubble_view(),
+              UpdateTitle(l10n_util::GetStringUTF16(
+                  IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE)));
+  blocking_status_ = CookieBlocking3pcdStatus::kLimited;
+  protections_on_ = false;
+  OnStatusChanged(kDaysToExpiration);
+}
 
 class CookieControlsBubbleViewController3pcdStatusesTest
     : public CookieControlsBubbleViewControllerTest,
@@ -309,7 +312,6 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
                   IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE)));
   blocking_status_ = GetParam();
   protections_on_ = false;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged();
 }
 
@@ -325,7 +327,6 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
                       ? IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE
                       : IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE)));
   blocking_status_ = GetParam();
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged();
 }
 
@@ -335,7 +336,6 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(true));
   blocking_status_ = GetParam();
   protections_on_ = false;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged();
 }
 
@@ -343,7 +343,6 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
        FeedbackSectionIsNotVisibleWhenCookiesBlockedOnSite) {
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(false));
   blocking_status_ = GetParam();
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged();
 }
 
@@ -358,7 +357,6 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
           l10n_util::GetStringUTF16(
               IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)));
   blocking_status_ = GetParam();
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged();
 }
 
@@ -374,7 +372,6 @@ TEST_F(CookieControlsBubbleViewControllerTest,
               IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)));
   blocking_status_ = CookieBlocking3pcdStatus::kLimited;
   protections_on_ = false;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged(kDaysToExpiration);
 }
 
@@ -390,7 +387,6 @@ TEST_F(CookieControlsBubbleViewControllerTest,
               IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)));
   blocking_status_ = CookieBlocking3pcdStatus::kAll;
   protections_on_ = false;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged(kDaysToExpiration);
 }
 
@@ -405,7 +401,6 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
               IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)));
   blocking_status_ = GetParam();
   protections_on_ = false;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged();
 }
 
@@ -449,7 +444,6 @@ TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
   blocking_status_ = testing::get<0>(GetParam());
   enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
   protections_on_ = false;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged(testing::get<1>(GetParam()) ? kDaysToExpiration : 0);
 }
 
@@ -461,7 +455,6 @@ TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
   blocking_status_ = testing::get<0>(GetParam());
   enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
   protections_on_ = false;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged(testing::get<1>(GetParam()) ? kDaysToExpiration : 0);
 }
 
@@ -472,7 +465,6 @@ TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
   blocking_status_ = testing::get<0>(GetParam());
   enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
   protections_on_ = false;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged(testing::get<1>(GetParam()) ? kDaysToExpiration : 0);
 }
 
@@ -485,9 +477,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 class CookieControlsBubbleViewControllerPre3pcdTest
     : public CookieControlsBubbleViewControllerTest {
-  std::vector<base::test::FeatureRefAndParams> EnabledFeatures() override {
-    return {
-        {content_settings::features::kUserBypassUI, {{"expiration", "30d"}}}};
+ public:
+  CookieControlsBubbleViewControllerPre3pcdTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        content_settings::features::kUserBypassUI, {{"expiration", "30d"}});
   }
 };
 
@@ -511,7 +504,6 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
   EXPECT_CALL(*mock_content_view(),
               SetToggleIcon(testing::Field(
                   &gfx::VectorIcon::name, views::kEyeCrossedRefreshIcon.name)));
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged();
 }
 
@@ -536,7 +528,6 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
               SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
                                            views::kEyeRefreshIcon.name)));
   protections_on_ = false;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged();
 }
 
@@ -562,7 +553,6 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
               SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
                                            views::kEyeRefreshIcon.name)));
   protections_on_ = false;
-  tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged(kDaysToExpiration);
 }
 

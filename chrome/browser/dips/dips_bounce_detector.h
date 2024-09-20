@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/supports_user_data.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
@@ -37,6 +38,10 @@ namespace base {
 class Clock;
 class TickClock;
 }  // namespace base
+
+namespace content {
+class WebContents;
+}
 
 namespace url {
 class Origin;
@@ -156,7 +161,8 @@ class DIPSRedirectContext {
   // only sites in `allowed_sites` should be included.
   std::map<std::string, std::pair<GURL, bool>> GetRedirectHeuristicURLs(
       const GURL& first_party_url,
-      std::optional<std::set<std::string>> allowed_sites) const;
+      base::optional_ref<std::set<std::string>> allowed_sites,
+      bool require_current_interaction) const;
 
  private:
   void AppendClientRedirect(DIPSRedirectInfoPtr client_redirect);
@@ -439,11 +445,21 @@ class DIPSWebContentsObserver
       public content::WebContentsUserData<DIPSWebContentsObserver>,
       public content::SharedWorkerService::Observer,
       public content::DedicatedWorkerService::Observer,
-      public RedirectChainDetector::Observer {
+      public RedirectChainDetector::Observer,
+      public base::SupportsUserData {
  public:
   static void MaybeCreateForWebContents(content::WebContents* web_contents);
 
   ~DIPSWebContentsObserver() override;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override;
+    virtual void OnStatefulBounce(content::WebContents*) {}
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(const Observer* observer);
 
   // Use the passed handler instead of DIPSWebContentsObserver::EmitDIPSIssue().
   void SetIssueReportingCallbackForTesting(
@@ -473,7 +489,7 @@ class DIPSWebContentsObserver
   void RecordEvent(DIPSRecordedEvent event,
                    const GURL& url,
                    const base::Time& time);
-  void IncrementPageSpecificBounceCount(const GURL& final_url);
+  void OnStatefulBounce(const GURL& final_url);
 
   // Start RedirectChainDetector::Observer overrides:
   void ReportRedirectors(const std::set<std::string>& sites) override;
@@ -543,6 +559,7 @@ class DIPSWebContentsObserver
   std::optional<base::Time> last_storage_timestamp_;
   std::optional<base::Time> last_interaction_timestamp_;
 
+  base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<DIPSWebContentsObserver> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

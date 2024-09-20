@@ -43,24 +43,6 @@ const char kBrowserDataMigrationForceMigration[] = "force-migration";
 
 base::RepeatingClosure* g_attempt_restart = nullptr;
 
-// Checks if the disk space is enough to run profile migration.
-// Returns the bytes required to be freed. Specifically, on success
-// returns 0.
-uint64_t DiskCheck(const base::FilePath& profile_data_dir) {
-  using browser_data_migrator_util::GetTargetItems;
-  using browser_data_migrator_util::ItemType;
-  using browser_data_migrator_util::TargetItems;
-  TargetItems deletable_items =
-      GetTargetItems(profile_data_dir, ItemType::kDeletable);
-
-  const int64_t required_size =
-      browser_data_migrator_util::EstimatedExtraBytesCreated(profile_data_dir) -
-      deletable_items.total_size;
-
-  return browser_data_migrator_util::ExtraBytesRequiredToBeFreed(
-      required_size, profile_data_dir);
-}
-
 }  // namespace
 
 ScopedRestartAttemptForTesting::ScopedRestartAttemptForTesting(
@@ -75,20 +57,6 @@ ScopedRestartAttemptForTesting::~ScopedRestartAttemptForTesting() {
   g_attempt_restart = nullptr;
 }
 
-bool BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
-    PrefService* local_state,
-    const AccountId& account_id,
-    const std::string& user_id_hash,
-    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
-  if (!MoveMigrator::ResumeRequired(local_state, user_id_hash)) {
-    return false;
-  }
-
-  LOG(WARNING) << "Calling RestartToMigrate() to resume move migration.";
-  return RestartToMigrate(account_id, user_id_hash, local_state,
-                          policy_init_state);
-}
-
 // static
 void BrowserDataMigratorImpl::AttemptRestart() {
   if (g_attempt_restart) {
@@ -97,50 +65,6 @@ void BrowserDataMigratorImpl::AttemptRestart() {
   }
 
   chrome::AttemptRestart();
-}
-
-// static
-bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
-    const AccountId& account_id,
-    const std::string& user_id_hash,
-    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
-  if (!MaybeRestartToMigrateInternal(account_id, user_id_hash,
-                                     policy_init_state)) {
-    return false;
-  }
-  return RestartToMigrate(account_id, user_id_hash,
-                          user_manager::UserManager::Get()->GetLocalState(),
-                          policy_init_state);
-}
-
-void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
-    const AccountId& account_id,
-    const std::string& user_id_hash,
-    base::OnceCallback<void(bool, const std::optional<uint64_t>&)> callback) {
-  if (!MaybeRestartToMigrateInternal(account_id, user_id_hash,
-                                     ash::standalone_browser::migrator_util::
-                                         PolicyInitState::kAfterInit)) {
-    std::move(callback).Run(false, std::nullopt);
-    return;
-  }
-
-  base::FilePath user_data_dir;
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
-    LOG(DFATAL) << "Could not get the original user data dir path.";
-    std::move(callback).Run(false, std::nullopt);
-    return;
-  }
-
-  const base::FilePath profile_data_dir =
-      user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&DiskCheck, profile_data_dir),
-      base::BindOnce(&BrowserDataMigratorImpl::
-                         MaybeRestartToMigrateWithDiskCheckAfterDiskCheck,
-                     account_id, user_id_hash, std::move(callback)));
 }
 
 void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(

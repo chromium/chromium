@@ -21,16 +21,16 @@ class BrowserState;
 namespace ios {
 
 // A factory to create a unique `AutocompleteScoringModelService` per
-// ChromeBrowserState. Has dependency on `OptimizationGuideKeyedServiceFactory`.
+// profile. Has a dependency on `OptimizationGuideKeyedServiceFactory`.
 class AutocompleteScoringModelServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // Gets the singleton instance of `AutocompleteScoringModelServiceFactory`.
-  static AutocompleteScoringModelServiceFactory* GetInstance();
-
-  // Gets the `AutocompleteScoringModelService` for the browser state.
+  // TODO(crbug.com/358301380): remove this method.
   static AutocompleteScoringModelService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static AutocompleteScoringModelService* GetForProfile(ProfileIOS* profile);
+  static AutocompleteScoringModelServiceFactory* GetInstance();
 
   // Disallow copy/assign.
   AutocompleteScoringModelServiceFactory(

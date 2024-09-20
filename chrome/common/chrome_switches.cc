@@ -290,6 +290,9 @@ const char kEnablePotentiallyAnnoyingSecurityFeatures[] =
 // list of port numbers.
 const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
 
+// Name of the command line flag to allow the ai data collection extension API.
+const char kExtensionAiDataCollection[] = "extension-ai-data-collection";
+
 // Name of the command line flag to force content verification to be on in one
 // of various modes.
 const char kExtensionContentVerification[] = "extension-content-verification";
@@ -530,7 +533,10 @@ const char kProxyBypassList[] = "proxy-bypass-list";
 // Uses the pac script at the given URL
 const char kProxyPacUrl[] = "proxy-pac-url";
 
-// Porvides a list of addresses to discover DevTools remote debugging targets.
+// Uses a specified proxy server, overrides system settings.
+const char kProxyServer[] = "proxy-server";
+
+// Provides a list of addresses to discover DevTools remote debugging targets.
 // The format is <host>:<port>,...,<host>:port.
 const char kRemoteDebuggingTargets[] = "remote-debugging-targets";
 

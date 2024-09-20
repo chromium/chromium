@@ -416,7 +416,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.Eligible" enum="Boolean"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -434,7 +434,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.IneligibilityReason"
-    enum="ShoppingFeatureIneligibilityReason" expires_after="2025-01-05">
+    enum="ShoppingFeatureIneligibilityReason" expires_after="2025-03-09">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -462,7 +462,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPStateWithLocalMeta"
-    enum="ShoppingPDPDetectionMethod" expires_after="2025-01-05">
+    enum="ShoppingPDPDetectionMethod" expires_after="2025-03-09">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -501,7 +501,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelCreated" enum="Boolean"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -513,7 +513,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.SystemNotificationEnabled" enum="Boolean"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -679,7 +679,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.EmailNotificationsEnabled"
-    enum="PriceNotificationEmailState" expires_after="2025-01-05">
+    enum="PriceNotificationEmailState" expires_after="2025-03-09">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.org</owner>
@@ -868,83 +868,104 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.CloseReason"
-    enum="BottomSheet.StateChangeReason" expires_after="2023-04-25">
+    enum="BottomSheet.StateChangeReason" expires_after="2025-04-25">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the reason that the merchant trust bottom sheet is closed. Recorded
     when the bottom sheet is closed. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.DurationFullyOpened" units="ms"
-    expires_after="2023-04-25">
+    expires_after="2025-04-25">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the duration in milliseconds that the merchant trust bottom sheet is
     left fully expanded. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.DurationHalfOpened" units="ms"
-    expires_after="2023-04-25">
+    expires_after="2025-04-25">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the duration in milliseconds that the merchant trust bottom sheet is
     left half expanded. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.DurationPeeked" units="ms"
-    expires_after="2023-04-25">
+    expires_after="2025-04-25">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the duration in milliseconds that the merchant trust bottom sheet is
     peeking. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.IsFullyViewed" enum="Boolean"
-    expires_after="2023-04-25">
+    expires_after="2025-04-25">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the merchant trust bottom sheet is fully expanded. Recorded
     when the bottom sheet is closed. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.IsHalfViewed" enum="Boolean"
-    expires_after="2023-04-25">
+    expires_after="2025-04-25">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the merchant trust bottom sheet is half expanded. Recorded
     when the bottom sheet is closed. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.OpenSource"
-    enum="MerchantTrustBottomSheetOpenedSource" expires_after="2023-04-25">
+    enum="MerchantTrustBottomSheetOpenedSource" expires_after="2025-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records which ui the bottom sheet is opened from. Recorded when the bottom
     sheet is opened. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="MerchantTrust.Message.ClearReason"
-    enum="MerchantTrustMessageClearReason" expires_after="2023-04-25">
+    enum="MerchantTrustMessageClearReason" expires_after="2025-04-25">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -953,28 +974,37 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     the prepared message is cleared. Implemented for Android. In M96 and later
     this includes MESSAGE_CONTEXT_NO_LONGER_VALID and
     SWITCH_TO_DIFFERENT_WEBCONTENTS.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="MerchantTrust.Message.DismissReason"
-    enum="MessageDismissReason" expires_after="2023-04-25">
+    enum="MessageDismissReason" expires_after="2025-04-25">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the reason that the merchant trust message is dismissed. Implemented
     for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="MerchantTrust.Message.DurationPrepared" units="ms"
-    expires_after="2023-04-25">
+    expires_after="2025-04-25">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the duration in milliseconds from the merchant trust message being
     prepared to it being shown or cleared. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -986,11 +1016,14 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <summary>
     Records the duration in milliseconds that the merchant trust message is
     shown. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="MerchantTrust.MessageImpact.BrowsingTime" units="ms"
-    expires_after="2023-04-25">
+    expires_after="2025-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -998,12 +1031,15 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     Records the user browsing time in milliseconds in a tab on the same host
     after a message shows. Recorded when user navigates to another host or the
     tab gets hid/closed. Recorded for all messages. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="MerchantTrust.MessageImpact.BrowsingTime.Rating{MessageStarRating}"
-    units="ms" expires_after="2023-04-25">
+    units="ms" expires_after="2025-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -1012,12 +1048,15 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     after a message shows. Recorded when user navigates to another host or the
     tab gets hid/closed. Recorded for message with {MessageStarRating}.
     Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
   <token key="MessageStarRating" variants="MerchantTrustMessageStarRating"/>
 </histogram>
 
 <histogram name="MerchantTrust.MessageImpact.NavigationCount"
-    units="navigations" expires_after="2023-04-25">
+    units="navigations" expires_after="2025-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -1025,12 +1064,15 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     Records the user navigation count in a tab on the same host after a message
     shows. Recorded when user navigates to another host or the tab gets
     hid/closed. Recorded for all messages. Implemented for Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="MerchantTrust.MessageImpact.NavigationCount.Rating{MessageStarRating}"
-    units="navigations" expires_after="2023-04-25">
+    units="navigations" expires_after="2025-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -1039,12 +1081,15 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     shows. Recorded when user navigates to another host or the tab gets
     hid/closed. Recorded for message with {MessageStarRating}. Implemented for
     Android.
+
+    Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
   </summary>
   <token key="MessageStarRating" variants="MerchantTrustMessageStarRating"/>
 </histogram>
 
 <histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"
-    enum="BooleanVisible" expires_after="2025-02-10">
+    enum="BooleanVisible" expires_after="2025-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>

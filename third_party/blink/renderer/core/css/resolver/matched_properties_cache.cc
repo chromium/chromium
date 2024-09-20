@@ -54,7 +54,7 @@ CachedMatchedProperties::CachedMatchedProperties(
   matched_properties_types.ReserveInitialCapacity(properties.size());
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
-    matched_properties_types.push_back(new_matched_properties.types_);
+    matched_properties_types.push_back(new_matched_properties.data_);
   }
 }
 
@@ -68,7 +68,7 @@ void CachedMatchedProperties::Set(const ComputedStyle* style,
   matched_properties_types.clear();
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
-    matched_properties_types.push_back(new_matched_properties.types_);
+    matched_properties_types.push_back(new_matched_properties.data_);
   }
 }
 
@@ -173,27 +173,27 @@ bool CachedMatchedProperties::operator==(
     if (properties[i].properties != matched_properties[i]) {
       return false;
     }
-    if (properties[i].types_.link_match_type !=
+    if (properties[i].data_.link_match_type !=
         matched_properties_types[i].link_match_type) {
       return false;
     }
-    if (properties[i].types_.tree_order !=
+    if (properties[i].data_.tree_order !=
         matched_properties_types[i].tree_order) {
       return false;
     }
-    if (properties[i].types_.layer_order !=
+    if (properties[i].data_.layer_order !=
         matched_properties_types[i].layer_order) {
       return false;
     }
-    if (properties[i].types_.valid_property_filter !=
+    if (properties[i].data_.valid_property_filter !=
         matched_properties_types[i].valid_property_filter) {
       return false;
     }
-    if (properties[i].types_.is_inline_style !=
+    if (properties[i].data_.is_inline_style !=
         matched_properties_types[i].is_inline_style) {
       return false;
     }
-    if (properties[i].types_.is_try_style !=
+    if (properties[i].data_.is_try_style !=
         matched_properties_types[i].is_try_style) {
       return false;
     }

@@ -29,6 +29,12 @@ BASE_FEATURE(kEnablePixPayments,
              "EnablePixPayments",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Chrome will offer to pay with accounts supporting Pix to users
+// using their devices in landscape mode. Chrome always offers to pay with Pix
+// accounts for users using their devices in portrait mode.
+BASE_FEATURE(kEnablePixPaymentsInLandscapeMode,
+             "EnablePixPaymentsInLandscapeMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, Chrome will offer to pay with eWallet accounts if a payment
 // link is detected.

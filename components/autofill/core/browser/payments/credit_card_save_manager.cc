@@ -178,7 +178,7 @@ bool CreditCardSaveManager::ShouldOfferCvcSave(
   }
 
   // We will only offer CVC-only save if the card is known to Autofill.
-  CreditCard* existing_credit_card = nullptr;
+  const CreditCard* existing_credit_card = nullptr;
   if (credit_card_import_type ==
       FormDataImporter::CreditCardImportType::kLocalCard) {
     existing_credit_card =
@@ -218,7 +218,7 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
   if (payments_data_manager().IsPaymentCvcStorageEnabled() &&
       !card.cvc().empty()) {
     // We will only offer CVC-only save if the card is known to Autofill.
-    CreditCard* existing_credit_card = nullptr;
+    const CreditCard* existing_credit_card = nullptr;
     if (card.record_type() == CreditCard::RecordType::kLocalCard) {
       existing_credit_card =
           payments_data_manager().GetCreditCardByGUID(card.guid());
@@ -282,14 +282,14 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 
   for (const auto& field : submitted_form) {
     const bool is_valid_cvc = IsValidCreditCardSecurityCode(
-        field->value(), upload_request_.card.network());
+        field->value(ValueSemantics::kCurrent), upload_request_.card.network());
     if (field->Type().GetStorableType() == CREDIT_CARD_VERIFICATION_CODE) {
       found_cvc_field_ = true;
-      if (!field->value().empty()) {
+      if (!field->value(ValueSemantics::kCurrent).empty()) {
         found_value_in_cvc_field_ = true;
       }
       if (is_valid_cvc) {
-        upload_request_.cvc = field->value();
+        upload_request_.cvc = field->value(ValueSemantics::kCurrent);
         break;
       }
     } else if (is_valid_cvc &&
@@ -1154,7 +1154,7 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
             base::NumberToString(card_save_candidate_.instrument_id()));
       }
       CHECK(card_save_candidate_.instrument_id());
-      if (CreditCard* old_credit_card =
+      if (const CreditCard* old_credit_card =
               payments_data_manager().GetCreditCardByInstrumentId(
                   card_save_candidate_.instrument_id())) {
         CHECK(old_credit_card->cvc() != card_save_candidate_.cvc());

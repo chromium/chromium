@@ -105,6 +105,7 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "url/gurl.h"
+
 namespace {
 // The tag describing the product name with a placeholder for the version.
 const char kProductTagWithPlaceholder[] = "CriOS/%s";
@@ -161,8 +162,10 @@ NSString* GetHttpsOnlyModeErrorPageHtml(web::WebState* web_state,
   // Fetch the HTTP URL from the container.
   HttpsOnlyModeContainer* container =
       HttpsOnlyModeContainer::FromWebState(web_state);
-  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
-      web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  HttpsUpgradeService* service =
+      HttpsUpgradeServiceFactory::GetForProfile(profile);
 
   // Construct the blocking page and associate it with the WebState.
   std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =
@@ -197,12 +200,12 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
           std::move(interstitial), /*controller_client=*/nullptr, container,
           web_state);
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   std::string error_page_content =
       supervised_user::SupervisedUserInterstitial::GetHTMLContents(
-          SupervisedUserServiceFactory::GetForProfile(browser_state),
-          browser_state->GetPrefs(), error_info->filtering_behavior_reason(),
+          SupervisedUserServiceFactory::GetForProfile(profile),
+          profile->GetPrefs(), error_info->filtering_behavior_reason(),
           container->IsRemoteApprovalPendingForUrl(url),
           error_info->is_main_frame(),
           GetApplicationContext()->GetApplicationLocale());
@@ -327,9 +330,9 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
     features.push_back(PasswordProtectionJavaScriptFeature::GetInstance());
   }
 
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   JavaScriptConsoleFeature* java_script_console_feature =
-      JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
-          browser_state);
+      JavaScriptConsoleFeatureFactory::GetForProfile(profile);
   features.push_back(java_script_console_feature);
 
   features.push_back(print_feature.get());
@@ -465,19 +468,17 @@ bool ChromeWebClient::EnableWebInspector(
     return false;
   }
 
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  return chrome_browser_state->GetPrefs()->GetBoolean(
-      prefs::kWebInspectorEnabled);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+  return profile->GetPrefs()->GetBoolean(prefs::kWebInspectorEnabled);
 }
 
 web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
     web::WebState* web_state,
     const GURL& url) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   HostContentSettingsMap* settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+      ios::HostContentSettingsMapFactory::GetForProfile(profile);
 
   bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, settings_map);
   return use_desktop_agent ? web::UserAgentType::DESKTOP
@@ -486,10 +487,10 @@ web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
 
 void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
                                           const GURL& url) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   HostContentSettingsMap* settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+      ios::HostContentSettingsMapFactory::GetForProfile(profile);
   bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, settings_map);
   base::UmaHistogramBoolean("IOS.PageLoad.DefaultModeMobile",
                             !use_desktop_agent);
@@ -516,9 +517,8 @@ void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {
 void ChromeWebClient::WillDisplayMediaCapturePermissionPrompt(
     web::WebState* web_state) const {
   // When a prendered page displays a prompt, cancel the prerender.
-  PrerenderService* prerender_service =
-      PrerenderServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+  PrerenderService* prerender_service = PrerenderServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   if (prerender_service &&
       prerender_service->IsWebStatePrerendered(web_state)) {
     prerender_service->CancelPrerender();
@@ -532,29 +532,21 @@ bool ChromeWebClient::IsPointingToSameDocument(const GURL& url1,
   return url_to_compare1 == url_to_compare2;
 }
 
-bool ChromeWebClient::IsBrowserLockdownModeEnabled(
-    web::BrowserState* browser_state) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  PrefService* prefs = chrome_browser_state->GetPrefs();
-  return prefs->GetBoolean(prefs::kBrowserLockdownModeEnabled);
+bool ChromeWebClient::IsBrowserLockdownModeEnabled() {
+  return GetApplicationContext()->GetLocalState()->GetBoolean(
+      prefs::kBrowserLockdownModeEnabled);
 }
 
-void ChromeWebClient::SetOSLockdownModeEnabled(web::BrowserState* browser_state,
-                                               bool enabled) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  PrefService* prefs = chrome_browser_state->GetPrefs();
-  prefs->SetBoolean(prefs::kOSLockdownModeEnabled, enabled);
+void ChromeWebClient::SetOSLockdownModeEnabled(bool enabled) {
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kOSLockdownModeEnabled, enabled);
 }
 
 bool ChromeWebClient::IsInsecureFormWarningEnabled(
     web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  if (!chrome_browser_state->GetPrefs()->GetBoolean(
-          prefs::kInsecureFormWarningsEnabled) &&
-      chrome_browser_state->GetPrefs()->IsManagedPreference(
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+  if (!profile->GetPrefs()->GetBoolean(prefs::kInsecureFormWarningsEnabled) &&
+      profile->GetPrefs()->IsManagedPreference(
           prefs::kInsecureFormWarningsEnabled)) {
     return false;
   }

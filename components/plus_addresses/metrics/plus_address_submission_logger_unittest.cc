@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -37,8 +38,7 @@ using ::autofill::SuggestionType;
 using ::autofill::test::FormDescription;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
-using PasswordFormType =
-    autofill::AutofillClient::PasswordFormClassification::Type;
+using PasswordFormType = autofill::PasswordFormClassification::Type;
 using SuggestionContext =
     autofill::AutofillPlusAddressDelegate::SuggestionContext;
 

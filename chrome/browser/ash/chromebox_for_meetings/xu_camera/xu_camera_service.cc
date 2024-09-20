@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_util.h"
+#include "base/types/fixed_array.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "components/media_device_salt/media_device_salt_service.h"
@@ -363,7 +364,7 @@ void XuCameraService::MapCtrlWithDevicePath(
     return;
   }
 
-  struct uvc_menu_info uvc_menus[mapping_ctrl->menu_entries->menu_info.size()];
+  base::FixedArray<struct uvc_menu_info> uvc_menus(mapping_ctrl->menu_entries->menu_info.size());
 
   int index = 0;
   for (auto menu_info = mapping_ctrl->menu_entries->menu_info.begin();
@@ -385,7 +386,7 @@ void XuCameraService::MapCtrlWithDevicePath(
       .offset = mapping_ctrl->offset,
       .v4l2_type = mapping_ctrl->v4l2_type,
       .data_type = mapping_ctrl->data_type,
-      .menu_info = uvc_menus,
+      .menu_info = uvc_menus.data(),
       .menu_count = static_cast<uint32_t>(index),
   };
 

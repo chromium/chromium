@@ -506,7 +506,6 @@
   E(kActionVisitDesktopOfLruUser5, IDC_VISIT_DESKTOP_OF_LRU_USER_5) \
   E(kActionVisitDesktopOfLruUserNext, IDC_VISIT_DESKTOP_OF_LRU_USER_NEXT) \
   E(kActionVisitDesktopOfLruUserLast, IDC_VISIT_DESKTOP_OF_LRU_USER_LAST) \
-  E(kActionLacrosDataMigration, IDC_LACROS_DATA_MIGRATION) \
   /* Quick Answers context menu items. */ \
   E(kActionContentContextQuickAnswersInlineAnswer, \
     IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_ANSWER) \

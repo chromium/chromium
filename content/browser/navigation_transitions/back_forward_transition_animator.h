@@ -128,7 +128,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // transition.
     kAnimationAborted,
   };
-  static std::string ToString(State state);
+  static const char* StateToString(State state);
 
   // Indicates the animation abort reason for UMA metrics.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -169,6 +169,13 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     kCompositorDetached = 16,
 
     kMaxValue = kCompositorDetached
+  };
+
+  // Indicates what animation state caused input event suppression.
+  enum class IgnoringInputReason {
+    kAnimationInvokedOccurred = 0,
+    kAnimationCanceledOccurred = 1,
+    kNoOccurrence = 2
   };
 
   // To create the `BackForwardTransitionAnimator`. Tests can override this
@@ -303,7 +310,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // or aborted by the user). Terminal state 3/3.
     kCancelled,
   };
-  static std::string ToString(NavigationState state);
+  static const char* NavigationStateToString(NavigationState state);
 
   ui::BackGestureEventSwipeEdge initiating_edge() const {
     return initiating_edge_;
@@ -318,13 +325,6 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       cc::RenderFrameMetadata::kInvalidItemSequenceNumber;
 
  private:
-  // Indicates what animation state caused input event suppression.
-  enum class IgnoringInputReason {
-    kAnimationInvokedOccurred = 0,
-    kAnimationCanceledOccurred = 1,
-    kNoOccurrence = 2
-  };
-
   // Initializes `effect_` for the scrim and cross-fade animation.
   void InitializeEffectForGestureProgressAnimation();
   void InitializeEffectForCrossfadeAnimation();

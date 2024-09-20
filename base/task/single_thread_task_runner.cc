@@ -14,13 +14,12 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/run_loop.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
 namespace {
 
-ABSL_CONST_INIT thread_local SingleThreadTaskRunner::CurrentDefaultHandle*
+constinit thread_local SingleThreadTaskRunner::CurrentDefaultHandle*
     current_default_handle = nullptr;
 
 // This function can be removed, and the calls below replaced with direct

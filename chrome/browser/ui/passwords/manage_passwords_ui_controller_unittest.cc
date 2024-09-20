@@ -19,8 +19,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/password_manager/password_manager_test_util.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
@@ -40,20 +38,14 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
-#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
@@ -854,6 +846,13 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedToNonWebbyURL) {
   EXPECT_TRUE(controller()->GetOrigin().opaque());
 
   ExpectIconAndControllerStateIs(password_manager::ui::INACTIVE_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       OnBiometricAuthTransitionWhenStateInactive) {
+  ExpectIconAndControllerStateIs(password_manager::ui::INACTIVE_STATE);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  ASSERT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
 }
 
 TEST_F(ManagePasswordsUIControllerTest, BlocklistedElsewhere) {
@@ -2087,7 +2086,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyNotAcceptedBubble) {
       password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ManagePasswordsUIControllerTest,
        ShouldShowBiometricAuthenticationForFillingPromo) {
   std::vector<PasswordForm> best_matches;
@@ -2456,145 +2455,3 @@ TEST_F(ManagePasswordsUIControllerWithBrowserTest,
   EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
   EXPECT_FALSE(controller()->IsAutomaticallyOpeningBubble());
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class TestPasswordManagerClientWithStores
-    : public password_manager::StubPasswordManagerClient {
- public:
-  void CreateStores(TestingProfile* profile) {
-    profile_password_store_ = CreateAndUseTestPasswordStore(profile);
-    account_password_store_ = CreateAndUseTestAccountPasswordStore(profile);
-  }
-
-  password_manager::TestPasswordStore* GetAccountPasswordStore()
-      const override {
-    return account_password_store_.get();
-  }
-
-  password_manager::TestPasswordStore* GetProfilePasswordStore()
-      const override {
-    return profile_password_store_.get();
-  }
-
- private:
-  scoped_refptr<password_manager::TestPasswordStore> account_password_store_;
-  scoped_refptr<password_manager::TestPasswordStore> profile_password_store_;
-};
-
-class ManagePasswordsUIControllerWithBrowserTestExplicitBrowserSignin
-    : public ChromeRenderViewHostTestHarness {
- public:
-  void SetUp() override;
-
-  TestPasswordManagerClientWithStores& client() { return client_with_stores_; }
-  const password_manager::PasswordForm& form() { return password_form_; }
-
-  TestManagePasswordsUIController* controller() {
-    return static_cast<TestManagePasswordsUIController*>(
-        ManagePasswordsUIController::FromWebContents(web_contents()));
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-
-  password_manager::PasswordForm password_form_;
-  TestPasswordManagerClientWithStores client_with_stores_;
-};
-
-void ManagePasswordsUIControllerWithBrowserTestExplicitBrowserSignin::SetUp() {
-  ChromeRenderViewHostTestHarness::SetUp();
-
-  password_form_.url = GURL("http://example.com/login");
-  password_form_.signon_realm = kExampleUrl;
-  password_form_.username_element = u"username_element";
-  password_form_.username_value = u"username_value";
-  password_form_.password_element = u"password_element";
-  password_form_.password_value = u"password_value";
-  password_form_.in_store =
-      password_manager::PasswordForm::Store::kProfileStore;
-
-  client_with_stores_.CreateStores(profile());
-
-  new ::testing::NiceMock<TestManagePasswordsUIController>(
-      web_contents(), &client_with_stores_);
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                             GURL(kExampleUrl));
-}
-
-MATCHER_P(FormMatches, form, "") {
-  return form.signon_realm == arg.signon_realm && form.url == arg.url &&
-         form.action == arg.action &&
-         form.username_element == arg.username_element &&
-         form.username_value == arg.username_value &&
-         form.password_element == arg.password_element &&
-         form.password_value == arg.password_value;
-}
-
-TEST_F(ManagePasswordsUIControllerWithBrowserTestExplicitBrowserSignin,
-       MovePasswordUponSigninWithExistingAccount) {
-  // Set up form manager and save password to profile store.
-  std::vector<PasswordForm> matches;
-  auto test_form_manager = CreateFormManagerWithBestMatches(matches, &form());
-  EXPECT_CALL(*test_form_manager, Save()).WillOnce(testing::Invoke([this] {
-    client().GetProfilePasswordStore()->AddLogin(form());
-  }));
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-
-  auto profile_store_waiter =
-      password_manager::PasswordStoreWaiter(client().GetProfilePasswordStore());
-  controller()->SavePassword(form().username_value, form().password_value);
-  profile_store_waiter.WaitOrReturn();
-
-  // Check if password was properly saved to profile store.
-  EXPECT_EQ(1u, client().GetProfilePasswordStore()->stored_passwords().size());
-  EXPECT_EQ(0u, client().GetAccountPasswordStore()->stored_passwords().size());
-
-  // This is done in order to override the mocked method in
-  // TestManagePasswordsUIController.
-  EXPECT_CALL(*controller(),
-              CreateMovePasswordToAccountStoreHelper(
-                  _,
-                  password_manager::metrics_util::MoveToAccountStoreTrigger::
-                      kUserOptedInAfterSavingLocally,
-                  _))
-      .Times(Exactly(1))
-      .WillOnce(Return(
-          std::make_unique<password_manager::MovePasswordToAccountStoreHelper>(
-              form(), &client(),
-              password_manager::metrics_util::MoveToAccountStoreTrigger::
-                  kUserOptedInAfterSavingLocally,
-              base::DoNothing())));
-
-  // Simulate a sign in to the web.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-
-  AccountInfo account_info = signin::MakeAccountAvailable(
-      identity_manager,
-      signin::AccountAvailabilityOptionsBuilder()
-          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
-          .Build("test@gmail.com"));
-
-  // This should sign in the user to Chrome directly, as there is already an
-  // account on the web.
-  auto account_store_waiter =
-      password_manager::PasswordStoreWaiter(client().GetAccountPasswordStore());
-  controller()->SignIn(account_info, form());
-  account_store_waiter.WaitOrReturn();
-
-  // Check that the user was signed in to Chrome.
-  ASSERT_TRUE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  // Check that password was moved to account store.
-  EXPECT_EQ(0u, client().GetProfilePasswordStore()->stored_passwords().size());
-  EXPECT_EQ(1u, client().GetAccountPasswordStore()->stored_passwords().size());
-
-  auto found =
-      client().GetAccountPasswordStore()->stored_passwords().find(kExampleUrl);
-  ASSERT_NE(client().GetAccountPasswordStore()->stored_passwords().end(),
-            found);
-  EXPECT_THAT(found->second, ElementsAre(FormMatches(form())));
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

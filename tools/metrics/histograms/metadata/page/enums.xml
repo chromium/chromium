@@ -179,6 +179,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kNewHistoryNavigation"/>
   <int value="12" label="kNewOtherNavigationBrowserInitiated"/>
   <int value="13" label="kNewOtherNavigationRendererInitiated"/>
+  <int value="14" label="kNewDuplicateNavigation"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:AbandonReason) -->
@@ -291,25 +292,6 @@ chromium-metrics-reviews@google.com.
 <enum name="PageLoadPrerenderEvent">
   <int value="0" label="Prerendered Main Frame Navigation"/>
   <int value="1" label="Prerender Activation Navigation"/>
-</enum>
-
-<enum name="PageLoadPrerenderObserverEvent">
-  <int value="0" label="OnPrerenderStart"/>
-  <int value="1" label="DidActivatePrerenderedPage"/>
-  <int value="2" label="OnFirstPaintInPage"/>
-  <int value="3" label="OnFirstContentfulPaintInPage"/>
-  <int value="4" label="OnFirstInputInPage"/>
-  <int value="5" label="OnComplete"/>
-  <int value="6" label="FlushMetricsOnAppEnterBackground"/>
-  <int value="7" label="RecordSessionEndHistograms"/>
-  <int value="8" label="RecordLayoutShiftScoreMetrics"/>
-  <int value="9" label="RecordNormalizedResponsivenessMetrics"/>
-</enum>
-
-<enum name="PageLoadPrerenderVisibilityAtActivation">
-  <int value="0" label="Hidden"/>
-  <int value="1" label="Occluded"/>
-  <int value="2" label="Visible"/>
 </enum>
 
 <!-- LINT.IfChange(PageLoadTimingStatus) -->

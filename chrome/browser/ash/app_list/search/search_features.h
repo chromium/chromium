@@ -18,11 +18,6 @@ BASE_DECLARE_FEATURE(kLauncherKeywordExtractionScoring);
 // Federated analytics for launcher queries, via Private Heavy Hitters (PHH).
 BASE_DECLARE_FEATURE(kLauncherQueryFederatedAnalyticsPHH);
 
-// Change relevance score in Drive Files, Local Files, Help App, Keyboard
-// shortcuts, OS Settings and personalization app to all be based on a fuzzy
-// match.
-BASE_DECLARE_FEATURE(kLauncherFuzzyMatchAcrossProviders);
-
 // Enables a fuzzy match between the query and title in Omnibox result to
 // calculate the relevance.
 BASE_DECLARE_FEATURE(kLauncherFuzzyMatchForOmnibox);
@@ -71,7 +66,6 @@ bool IsLauncherImageSearchIcaEnabled();
 bool IsLauncherImageSearchOcrEnabled();
 bool IsLauncherImageSearchIndexingLimitEnabled();
 bool IsLauncherImageSearchDebugEnabled();
-bool IsLauncherFuzzyMatchAcrossProvidersEnabled();
 bool IsLauncherFuzzyMatchForOmniboxEnabled();
 bool IsLauncherSystemInfoAnswerCardsEnabled();
 bool IsLauncherSearchFileScanEnabled();

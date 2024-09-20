@@ -11,7 +11,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "lens_preselection_bubble.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -96,6 +96,18 @@ void LensPreselectionBubble::Init() {
                               kLensPreselectionBubbleExitButtonElementId);
   }
   NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+}
+
+void LensPreselectionBubble::SetLabelText(int string_id) {
+  // If the bubble had offline state, we don't want to reset the text.
+  if (offline_) {
+    return;
+  }
+
+  const std::u16string new_toast_text = l10n_util::GetStringUTF16(string_id);
+  SetAccessibleTitle(new_toast_text);
+  label_->SetText(new_toast_text);
+  SizeToContents();
 }
 
 gfx::Rect LensPreselectionBubble::GetBubbleBounds() {

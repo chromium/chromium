@@ -25,6 +25,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 
@@ -147,7 +148,7 @@ void ConvertTabGroupsToTabGroupInfos(
 
 void CreateBrowserWithProfile(
     const gfx::Rect& bounds,
-    const ui::WindowShowState show_state,
+    const ui::mojom::WindowShowState show_state,
     crosapi::mojom::DeskTemplateStatePtr additional_state,
     Profile* profile) {
   if (!profile) {
@@ -191,7 +192,7 @@ void CreateBrowserWithProfile(
 
   SetPinnedTabs(additional_state->first_non_pinned_index, browser);
 
-  if (show_state == ui::SHOW_STATE_MINIMIZED) {
+  if (show_state == ui::mojom::WindowShowState::kMinimized) {
     // TODO(crbug.com/329800621): This behavior difference between `Show()` and
     // `ShowInactive()` is confusing and should be fixed.
     // Calling `Show()` for a widget created as a minimized widget keeps the
@@ -240,7 +241,7 @@ DeskTemplateClientLacros::~DeskTemplateClientLacros() = default;
 
 void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
     const gfx::Rect& bounds,
-    const ui::WindowShowState show_state,
+    const ui::mojom::WindowShowState show_state,
     crosapi::mojom::DeskTemplateStatePtr additional_state) {
   LoadSpecificOrMainProfile(
       additional_state->lacros_profile_id,

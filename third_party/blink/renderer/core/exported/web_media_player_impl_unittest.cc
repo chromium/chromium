@@ -457,11 +457,9 @@ class WebMediaPlayerImplTest
         std::move(factory_selector), url_index_.get(), std::move(compositor),
         std::move(media_log), player_id, WebMediaPlayerBuilder::DeferLoadCB(),
         audio_sink_, media_thread_.task_runner(), media_thread_.task_runner(),
-        media_thread_.task_runner(), media_thread_.task_runner(),
-        WTF::BindRepeating(&WebMediaPlayerImplTest::OnAdjustAllocatedMemory,
-                           WTF::Unretained(this)),
-        nullptr, media::RequestRoutingTokenCallback(),
-        mock_observer_.AsWeakPtr(), false, false, provider.Unbind(),
+        media_thread_.task_runner(), media_thread_.task_runner(), nullptr,
+        media::RequestRoutingTokenCallback(), mock_observer_.AsWeakPtr(), false,
+        false, provider.Unbind(),
         WTF::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
                       base::Unretained(this)),
         viz::TestContextProvider::Create(),
@@ -478,11 +476,6 @@ class WebMediaPlayerImplTest
 
   WebLocalFrame* GetWebLocalFrame() {
     return web_view_helper_.LocalMainFrame();
-  }
-
-  int64_t OnAdjustAllocatedMemory(int64_t delta) {
-    reported_memory_ += delta;
-    return 0;
   }
 
   void SetNetworkState(WebMediaPlayer::NetworkState state) {
@@ -973,9 +966,6 @@ class WebMediaPlayerImplTest
   // verifying a subset of potential media logs.
   NiceMock<media::MockMediaLog>* media_log_ = nullptr;
 
-  // Total memory in bytes allocated by the WebMediaPlayerImpl instance.
-  int64_t reported_memory_ = 0;
-
   // Raw pointer of the media::RendererFactorySelector owned by |wmpi_|.
   media::RendererFactorySelector* renderer_factory_selector_ = nullptr;
 
@@ -1009,7 +999,9 @@ TEST_F(WebMediaPlayerImplTest, LoadAndDestroy) {
   // usage to ensure we're getting audio buffer and demuxer usage too.
   const int64_t data_source_size = GetDataSourceMemoryUsage();
   EXPECT_GT(data_source_size, 0);
-  EXPECT_GT(reported_memory_ - data_source_size, 0);
+  EXPECT_GT(
+      task_environment_.isolate()->AdjustAmountOfExternalAllocatedMemory(0),
+      data_source_size);
 }
 
 // Verify LoadAndWaitForCurrentData() functions without issue.
@@ -1112,7 +1104,9 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspend) {
   // usage to ensure there's no other memory usage.
   const int64_t data_source_size = GetDataSourceMemoryUsage();
   EXPECT_GT(data_source_size, 0);
-  EXPECT_EQ(reported_memory_ - data_source_size, 0);
+  EXPECT_EQ(
+      task_environment_.isolate()->AdjustAmountOfExternalAllocatedMemory(0),
+      data_source_size);
 }
 
 // Verify that Play() before kReadyStateHaveEnough doesn't increase buffer size.
@@ -1189,7 +1183,9 @@ TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
   // usage to ensure there's no other memory usage.
   const int64_t data_source_size = GetDataSourceMemoryUsage();
   EXPECT_GT(data_source_size, 0);
-  EXPECT_EQ(reported_memory_ - data_source_size, 0);
+  EXPECT_EQ(
+      task_environment_.isolate()->AdjustAmountOfExternalAllocatedMemory(0),
+      data_source_size);
 
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
 }
@@ -1231,7 +1227,9 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoVideoMemoryUsage) {
   // usage to ensure there's no other memory usage.
   const int64_t data_source_size = GetDataSourceMemoryUsage();
   EXPECT_GT(data_source_size, 0);
-  EXPECT_EQ(reported_memory_ - data_source_size, 0);
+  EXPECT_EQ(
+      task_environment_.isolate()->AdjustAmountOfExternalAllocatedMemory(0),
+      data_source_size);
 
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
 }

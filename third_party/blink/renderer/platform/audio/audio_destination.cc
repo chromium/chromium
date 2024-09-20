@@ -230,7 +230,7 @@ void AudioDestination::OnRenderError() {
 void AudioDestination::Start() {
   DCHECK(IsMainThread());
   TRACE_EVENT0("webaudio", "AudioDestination::Start");
-  SendLogMessage(String::Format("%s", __func__));
+  SendLogMessage(__func__, "");
 
   if (device_state_ != DeviceState::kStopped) {
     return;
@@ -242,7 +242,7 @@ void AudioDestination::Start() {
 void AudioDestination::Stop() {
   DCHECK(IsMainThread());
   TRACE_EVENT0("webaudio", "AudioDestination::Stop");
-  SendLogMessage(String::Format("%s", __func__));
+  SendLogMessage(__func__, "");
 
   if (device_state_ == DeviceState::kStopped) {
     return;
@@ -260,7 +260,7 @@ void AudioDestination::Stop() {
 void AudioDestination::Pause() {
   DCHECK(IsMainThread());
   TRACE_EVENT0("webaudio", "AudioDestination::Pause");
-  SendLogMessage(String::Format("%s", __func__));
+  SendLogMessage(__func__, "");
 
   if (device_state_ != DeviceState::kRunning) {
     return;
@@ -272,7 +272,7 @@ void AudioDestination::Pause() {
 void AudioDestination::Resume() {
   DCHECK(IsMainThread());
   TRACE_EVENT0("webaudio", "AudioDestination::Resume");
-  SendLogMessage(String::Format("%s", __func__));
+  SendLogMessage(__func__, "");
 
   if (device_state_ != DeviceState::kPaused) {
     return;
@@ -301,7 +301,7 @@ void AudioDestination::StartWithWorkletTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> worklet_task_runner) {
   DCHECK(IsMainThread());
   TRACE_EVENT0("webaudio", "AudioDestination::StartWithWorkletTaskRunner");
-  SendLogMessage(String::Format("%s", __func__));
+  SendLogMessage(__func__, "");
 
   if (device_state_ != DeviceState::kStopped) {
     return;
@@ -345,8 +345,8 @@ void AudioDestination::SetDetectSilence(bool detect_silence) {
   DCHECK(IsMainThread());
   TRACE_EVENT1("webaudio", "AudioDestination::SetDetectSilence",
                "detect_silence", detect_silence);
-  SendLogMessage(
-      String::Format("%s({detect_silence=%d})", __func__, detect_silence));
+  SendLogMessage(__func__,
+                 String::Format("({detect_silence=%d})", detect_silence));
 
   web_audio_device_->SetDetectSilence(detect_silence);
 }
@@ -385,15 +385,16 @@ AudioDestination::AudioDestination(
           features::kWebAudioBypassOutputBuffering)) {
   CHECK(web_audio_device_);
 
-  SendLogMessage(String::Format("%s({output_channels=%u})", __func__,
-                                number_of_output_channels));
-  SendLogMessage(
-      String::Format("%s => (FIFO size=%u bytes)", __func__, fifo_->length()));
+  SendLogMessage(__func__, String::Format("({output_channels=%u})",
+                                          number_of_output_channels));
+  SendLogMessage(__func__,
+                 String::Format("=> (FIFO size=%u bytes)", fifo_->length()));
 
-  SendLogMessage(String::Format("%s => (device callback buffer size=%u frames)",
-                                __func__, callback_buffer_size_));
-  SendLogMessage(String::Format("%s => (device sample rate=%.0f Hz)", __func__,
-                                web_audio_device_->SampleRate()));
+  SendLogMessage(__func__,
+                 String::Format("=> (device callback buffer size=%u frames)",
+                                callback_buffer_size_));
+  SendLogMessage(__func__, String::Format("=> (device sample rate=%.0f Hz)",
+                                          web_audio_device_->SampleRate()));
 
   TRACE_EVENT1("webaudio", "AudioDestination::AudioDestination",
                "sink information",
@@ -419,8 +420,9 @@ AudioDestination::AudioDestination(
 
   if (context_sample_rate_ != web_audio_device_->SampleRate()) {
     scale_factor = context_sample_rate_ / web_audio_device_->SampleRate();
-    SendLogMessage(String::Format("%s => (resampling from %0.f Hz to %0.f Hz)",
-                                  __func__, context_sample_rate.value(),
+    SendLogMessage(__func__,
+                   String::Format("=> (resampling from %0.f Hz to %0.f Hz)",
+                                  context_sample_rate.value(),
                                   web_audio_device_->SampleRate()));
 
     resampler_ = std::make_unique<MediaMultiChannelResampler>(
@@ -434,9 +436,10 @@ AudioDestination::AudioDestination(
     }
     resampler_bus_->set_frames(render_bus_->length());
   } else {
-    SendLogMessage(String::Format(
-        "%s => (no resampling: context sample rate set to %0.f Hz)", __func__,
-        context_sample_rate_));
+    SendLogMessage(
+        __func__,
+        String::Format("=> (no resampling: context sample rate set to %0.f Hz)",
+                       context_sample_rate_));
   }
 
   // Record the sizes if we successfully created an output device.
@@ -516,7 +519,7 @@ void AudioDestination::RequestRender(
   metric_reporter_.BeginTrace();
 
   if (frames_elapsed_ == 0) {
-    SendLogMessage(String::Format("%s => (rendering is now alive)", __func__));
+    SendLogMessage(__func__, String::Format("=> (rendering is now alive)"));
   }
 
   // FIFO contains audio at the output device sample rate.
@@ -582,13 +585,6 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
   PullFromCallback(dest, adjusted_delay);
 }
 
-void AudioDestination::SendLogMessage(const String& message) const {
-  WebRtcLogMessage(String::Format("[WA]AD::%s [state=%s]",
-                                  message.Utf8().c_str(),
-                                  DeviceStateToString(device_state_))
-                       .Utf8());
-}
-
 void AudioDestination::PullFromCallback(AudioBus* destination_bus,
                                         base::TimeDelta delay) {
   callback_->Render(destination_bus, render_quantum_frames_, output_position_,
@@ -599,6 +595,14 @@ void AudioDestination::PullFromCallback(AudioBus* destination_bus,
 media::OutputDeviceStatus AudioDestination::MaybeCreateSinkAndGetStatus() {
   TRACE_EVENT0("webaudio", "AudioDestination::MaybeCreateSinkAndGetStatus");
   return web_audio_device_->MaybeCreateSinkAndGetStatus();
+}
+
+void AudioDestination::SendLogMessage(const char* const function_name,
+                                      const String& message) const {
+  WebRtcLogMessage(String::Format("[WA]AD::%s %s [state=%s]", function_name,
+                                  message.Utf8().c_str(),
+                                  DeviceStateToString(device_state_))
+                       .Utf8());
 }
 
 }  // namespace blink

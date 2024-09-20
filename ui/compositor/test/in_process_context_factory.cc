@@ -63,6 +63,61 @@ namespace {
 // This should not conflict with ids from RenderWidgetHostImpl or WindowService.
 constexpr uint32_t kDefaultClientId = std::numeric_limits<uint32_t>::max() / 2;
 
+class StandaloneBeginFrameObserver : public viz::BeginFrameObserverBase {
+ public:
+  StandaloneBeginFrameObserver() = default;
+  StandaloneBeginFrameObserver(const StandaloneBeginFrameObserver&) = delete;
+  StandaloneBeginFrameObserver& operator=(const StandaloneBeginFrameObserver&) =
+      delete;
+  ~StandaloneBeginFrameObserver() override { SetBeginFrameSource(nullptr); }
+
+  // BeginFrameObserverBase:
+  bool OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) override {
+    if (remote_observer_.is_bound()) {
+      remote_observer_->OnStandaloneBeginFrame(args);
+    }
+    return true;
+  }
+  void OnBeginFrameSourcePausedChanged(bool paused) override {}
+  bool IsRoot() const override { return true; }
+
+  void SetBeginFrameSource(viz::BeginFrameSource* begin_frame_source) {
+    TearDownObservation();
+    begin_frame_source_ = begin_frame_source;
+    SetUpObservation();
+  }
+
+  void SetStandaloneObserver(
+      mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) {
+    TearDownObservation();
+    remote_observer_.reset();
+    remote_observer_.Bind(std::move(observer));
+    SetUpObservation();
+  }
+
+ private:
+  void SetUpObservation() {
+    if (begin_frame_source_ && remote_observer_.is_bound() &&
+        !is_observing_begin_frame_source_) {
+      is_observing_begin_frame_source_ = true;
+      begin_frame_source_->AddObserver(this);
+    }
+  }
+
+  void TearDownObservation() {
+    if (!is_observing_begin_frame_source_) {
+      return;
+    }
+    begin_frame_source_->RemoveObserver(this);
+    begin_frame_source_ = nullptr;
+    is_observing_begin_frame_source_ = false;
+  }
+
+  mojo::Remote<viz::mojom::BeginFrameObserver> remote_observer_;
+  raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;
+  bool is_observing_begin_frame_source_ = false;
+};
+
 }  // namespace
 
 // TODO(rivr): This class is managed heavily by InProcessTransportFactory.
@@ -119,7 +174,9 @@ class InProcessContextFactory::PerCompositorData
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override {}
   void SetStandaloneBeginFrameObserver(
-      mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) override {}
+      mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) override {
+    standalone_begin_frame_observer_.SetStandaloneObserver(std::move(observer));
+  }
 
   void SetSurfaceHandle(gpu::SurfaceHandle surface_handle) {
     surface_handle_ = surface_handle;
@@ -127,6 +184,8 @@ class InProcessContextFactory::PerCompositorData
   void SetBeginFrameSource(
       std::unique_ptr<viz::BeginFrameSource> begin_frame_source) {
     begin_frame_source_ = std::move(begin_frame_source);
+    standalone_begin_frame_observer_.SetBeginFrameSource(
+        begin_frame_source_.get());
   }
   void SetDisplay(std::unique_ptr<viz::Display> display) {
     display_ = std::move(display);
@@ -173,6 +232,7 @@ class InProcessContextFactory::PerCompositorData
   gpu::SurfaceHandle surface_handle_ = gpu::kNullSurfaceHandle;
   std::unique_ptr<viz::BeginFrameSource> begin_frame_source_;
   std::unique_ptr<viz::Display> display_;
+  StandaloneBeginFrameObserver standalone_begin_frame_observer_;
 
   SkM44 output_color_matrix_;
   gfx::DisplayColorSpaces display_color_spaces_;

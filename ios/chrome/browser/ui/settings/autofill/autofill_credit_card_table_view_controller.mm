@@ -236,7 +236,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     [model addSectionWithIdentifier:SectionIdentifierCards];
     [model setHeader:[self cardSectionHeader]
         forSectionWithIdentifier:SectionIdentifierCards];
-    for (autofill::CreditCard* creditCard : creditCards) {
+    for (const autofill::CreditCard* creditCard : creditCards) {
       DCHECK(creditCard);
       [model addItem:[self itemForCreditCard:*creditCard]
           toSectionWithIdentifier:SectionIdentifierCards];

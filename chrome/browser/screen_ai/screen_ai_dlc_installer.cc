@@ -18,6 +18,8 @@
 
 namespace {
 
+using screen_ai::dlc_installer::DlcInstallResult;
+
 constexpr char kScreenAIDlcName[] = "screen-ai";
 
 // Retry delay will exponentially increase.
@@ -27,24 +29,8 @@ constexpr int kMaxInstallRetries = 5;
 constexpr int kUninstallDelayInSeconds = 300;
 
 struct InstallMetadata {
-  bool dlc_available_from_before_this_session = false;
   int install_retries = 0;
   int retry_delay_in_seconds = kBaseRetryDelayInSeconds;
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// If any value is added, please update `DlcInstallResult` in `enums.xml`.
-enum class DlcInstallResult {
-  kSuccess = 0,
-  kErrorInternal = 1,
-  kErrorBusy = 2,
-  kErrorNeedReboot = 3,
-  kErrorInvalidDlc = 4,
-  kErrorAllocation = 5,
-  kErrorNoImageFound = 6,
-
-  kMaxValue = kErrorNoImageFound,
 };
 
 void RecordDlcInstallResult(std::string_view result_string) {
@@ -96,13 +82,6 @@ void OnInstallCompleted(
     return;
   }
 
-  // Record metric only for new installs.
-  if (!metadata.dlc_available_from_before_this_session) {
-    screen_ai::ScreenAIInstallState::RecordComponentInstallationResult(
-        /*install=*/true,
-        /*successful=*/install_result.error == dlcservice::kErrorNone);
-  }
-
   RecordDlcInstallResult(install_result.error);
 
   if (install_result.error != dlcservice::kErrorNone) {
@@ -121,16 +100,6 @@ void OnInstallCompleted(
 
   base::UmaHistogramCounts100("Accessibility.ScreenAI.Component.InstallRetries",
                               metadata.install_retries);
-}
-
-void OnUninstallCompleted(std::string_view err) {
-  screen_ai::ScreenAIInstallState::RecordComponentInstallationResult(
-      /*install=*/false,
-      /*successful=*/err == dlcservice::kErrorNone);
-
-  if (err != dlcservice::kErrorNone) {
-    VLOG(0) << "Unistall failed: " << err;
-  }
 }
 
 void OnInstallProgress(double progress) {
@@ -182,22 +151,17 @@ namespace screen_ai::dlc_installer {
 void Install() {
   screen_ai::ScreenAIInstallState::GetInstance()->SetState(
       screen_ai::ScreenAIInstallState::State::kDownloading);
-
-  // Need to know installation state for metrics.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&CheckIfDlcExistsOnNonUIThread),
-      base::BindOnce([](bool dlc_exists) {
-        InstallMetadata metadata;
-        metadata.dlc_available_from_before_this_session = dlc_exists;
-        InstallInternal(metadata);
-      }));
+  InstallMetadata metadata;
+  InstallInternal(metadata);
 }
 
 void Uninstall() {
   ash::DlcserviceClient::Get()->Uninstall(
-      kScreenAIDlcName, base::BindOnce(&OnUninstallCompleted));
+      kScreenAIDlcName, base::BindOnce([](std::string_view err) {
+        if (err != dlcservice::kErrorNone) {
+          VLOG(0) << "Unistall failed: " << err;
+        }
+      }));
 }
 
 void ManageInstallation(PrefService* local_state) {

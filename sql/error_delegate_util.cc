@@ -4,7 +4,7 @@
 
 #include "sql/error_delegate_util.h"
 
-#include <ostream>  // Needed to compile NOTREACHED_IN_MIGRATION() with operator <<.
+#include <ostream>  // Needed to compile NOTREACHED() with operator <<.
 #include <string>
 
 #include "base/files/file_path.h"
@@ -31,10 +31,8 @@ bool IsErrorCatastrophic(int sqlite_error_code) {
     case SQLITE_FORMAT:    // Not currently used, according to SQLite docs.
     case SQLITE_NOTICE:    // Only used as an argument to sqlite3_log().
     case SQLITE_WARNING:   // Only used as an argument to sqlite3_log().
-      NOTREACHED_IN_MIGRATION()
-          << "SQLite returned result code marked for internal use: "
-          << sqlite_error_code;
-      [[fallthrough]];
+      NOTREACHED() << "SQLite returned result code marked for internal use: "
+                   << sqlite_error_code;
 
     // Group of error codes that may only be returned by SQLite (given Chrome's
     // usage patterns) if a database is corrupted. DCHECK would not be
@@ -106,9 +104,7 @@ bool IsErrorCatastrophic(int sqlite_error_code) {
     case SQLITE_OK:    // Most used success code.
     case SQLITE_ROW:   // The statement produced a row of output.
     case SQLITE_DONE:  // A step has completed in a multi-step operation.
-      NOTREACHED_IN_MIGRATION()
-          << "Called with non-error result code " << sqlite_error_code;
-      [[fallthrough]];
+      NOTREACHED() << "Called with non-error result code " << sqlite_error_code;
 
     // Group of error codes that should not be returned by SQLite given Chrome's
     // usage patterns, even if the database gets corrupted. In development, we
@@ -121,46 +117,32 @@ bool IsErrorCatastrophic(int sqlite_error_code) {
       // In theory, SQLITE_LOCKED could also signal a conflict between different
       // connections (in the same process) sharing a page cache, but Chrome only
       // uses private page caches.
-      NOTREACHED_IN_MIGRATION()
-          << "Conflict between concurrently executing SQL statements";
-      [[fallthrough]];
+      NOTREACHED() << "Conflict between concurrently executing SQL statements";
     case SQLITE_NOMEM:
       // Out of memory. This is most likely a transient error.
       //
       // There's a small chance that the error is caused by trying to exchange
       // too much data with SQLite. Most such errors result in SQLITE_TOOBIG.
-      NOTREACHED_IN_MIGRATION()
-          << "SQLite reported out-of-memory: " << sqlite_error_code;
-      [[fallthrough]];
+      NOTREACHED() << "SQLite reported out-of-memory: " << sqlite_error_code;
     case SQLITE_INTERRUPT:
       // Chrome features don't use sqlite3_interrupt().
-      NOTREACHED_IN_MIGRATION()
-          << "SQLite returned INTERRUPT code: " << sqlite_error_code;
-      [[fallthrough]];
+      NOTREACHED() << "SQLite returned INTERRUPT code: " << sqlite_error_code;
     case SQLITE_NOTFOUND:
       // Unknown opcode in sqlite3_file_control(). Chrome's features only use a
       // few built-in opcodes.
-      NOTREACHED_IN_MIGRATION()
-          << "SQLite returned NOTFOUND code: " << sqlite_error_code;
-      [[fallthrough]];
+      NOTREACHED() << "SQLite returned NOTFOUND code: " << sqlite_error_code;
     case SQLITE_MISUSE:
       // SQLite API misuse, such as trying to use a prepared statement after it
       // was finalized. In development, we DCHECK to flag this Chrome bug. In
       // production, we hope this is a race condition, and therefore transient.
-      NOTREACHED_IN_MIGRATION()
-          << "SQLite returned MISUSE code: " << sqlite_error_code;
-      [[fallthrough]];
+      NOTREACHED() << "SQLite returned MISUSE code: " << sqlite_error_code;
     case SQLITE_AUTH:
       // Chrome features don't install an authorizer callback. Only WebSQL does.
-      NOTREACHED_IN_MIGRATION()
-          << "SQLite returned AUTH code: " << sqlite_error_code;
-      [[fallthrough]];
+      NOTREACHED() << "SQLite returned AUTH code: " << sqlite_error_code;
     case SQLITE_RANGE:
       // Chrome uses DCHECKs to ensure the validity of column indexes passed to
       // sqlite3_bind() and sqlite3_column().
-      NOTREACHED_IN_MIGRATION()
-          << "SQLite returned RANGE code: " << sqlite_error_code;
-      [[fallthrough]];
+      NOTREACHED() << "SQLite returned RANGE code: " << sqlite_error_code;
 
     // Group of error codes that should may be returned by SQLite given Chrome's
     // usage patterns, even without database corruption. In development, we
@@ -259,9 +241,7 @@ bool IsErrorCatastrophic(int sqlite_error_code) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "SQLite returned unknown result code: " << sqlite_error_code;
-  return false;
+  NOTREACHED() << "SQLite returned unknown result code: " << sqlite_error_code;
 }
 
 std::string GetCorruptFileDiagnosticsInfo(

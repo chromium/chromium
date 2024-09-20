@@ -16,19 +16,18 @@ static_library("kcer") {
 
   deps = [
     "//ash",
+    "//ash/components/kcer",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/kcer/nssdb_migration",
-    "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/tpm",
-    "//chromeos/components/kcer",
     "//components/account_id",
     "//components/pref_registry",
     "//components/prefs",
@@ -37,10 +36,7 @@ static_library("kcer") {
     "//crypto",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/kcer/nssdb_migration",
-    "//chrome/browser/ash/platform_keys:platform_keys",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/kcer/nssdb_migration" ]
 }
 
 source_set("browser_tests") {
@@ -55,6 +51,7 @@ source_set("browser_tests") {
 
   deps = [
     ":kcer",
+    "//ash/components/kcer",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -65,7 +62,6 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
-    "//chromeos/components/kcer",
     "//components/user_manager",
     "//content/test:test_support",
     "//crypto:test_support",

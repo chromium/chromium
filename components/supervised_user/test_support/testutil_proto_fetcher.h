@@ -15,7 +15,7 @@ namespace supervised_user {
 // std::string specialization for fetchers that are not interested in parsing
 // the message.
 template <>
-void TypedProtoFetcher<std::string>::OnResponse(
+void TypedFetchProcess<std::string>::OnResponse(
     std::unique_ptr<std::string> response_body);
 
 }  // namespace supervised_user

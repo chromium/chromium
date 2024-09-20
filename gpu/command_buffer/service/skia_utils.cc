@@ -24,11 +24,9 @@
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
-#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
-#include "third_party/skia/include/gpu/vk/VulkanTypes.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -43,6 +41,8 @@
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
+#include "third_party/skia/include/gpu/vk/VulkanTypes.h"
 #endif
 
 namespace gpu {
@@ -486,10 +486,9 @@ CreateVulkanYcbcrConversionInfo(
   gr_ycbcr_info.fFormatFeatures = format_features;
 
   if (!gr_ycbcr_info.fExternalFormat &&
-      (si_format == viz::LegacyMultiPlaneFormat::kYV12 ||
-       (si_format.is_multi_plane() &&
-        si_format.plane_config() ==
-            viz::SharedImageFormat::PlaneConfig::kY_V_U))) {
+      (si_format.is_multi_plane() &&
+       si_format.plane_config() ==
+           viz::SharedImageFormat::PlaneConfig::kY_V_U)) {
     switch (vk_format) {
       case VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM:
       case VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16:

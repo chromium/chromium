@@ -83,7 +83,7 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
   base::ScopedMockElapsedTimersForTest mock_timer;
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
-  const uint32_t shared_image_usage_flags =
+  const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   std::unique_ptr<CanvasResourceProvider> provider =
@@ -124,8 +124,7 @@ TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       kInfo, cc::PaintFlags::FilterQuality::kMedium,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, RasterMode::kGPU,
-      /*shared_image_usage_flags=*/0u);
+      context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());
 
   ASSERT_TRUE(!!provider);
 

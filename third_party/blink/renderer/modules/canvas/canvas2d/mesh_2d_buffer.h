@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "v8/include/v8-isolate.h"
 
 namespace cc {
@@ -36,8 +37,9 @@ class Mesh2DBuffer : public ScriptWrappable {
   Mesh2DBuffer& operator=(const Mesh2DBuffer&) = delete;
 
   ~Mesh2DBuffer() override {
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        -base::checked_cast<int64_t>(buffer_->data().size() * sizeof(T)));
+    external_memory_accounter_.Decrease(
+        v8::Isolate::GetCurrent(),
+        base::checked_cast<int64_t>(buffer_->data().size() * sizeof(T)));
   }
 
   scoped_refptr<cc::RefCountedBuffer<T>> GetBuffer() const { return buffer_; }
@@ -45,12 +47,15 @@ class Mesh2DBuffer : public ScriptWrappable {
  protected:
   explicit Mesh2DBuffer(scoped_refptr<cc::RefCountedBuffer<T>> buffer)
       : buffer_(std::move(buffer)) {
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+    external_memory_accounter_.Increase(
+        v8::Isolate::GetCurrent(),
         base::checked_cast<int64_t>(buffer_->data().size() * sizeof(T)));
   }
 
  private:
   scoped_refptr<cc::RefCountedBuffer<T>> buffer_;
+
+  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };
 
 }  // namespace blink

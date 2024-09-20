@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">तपाईंले <ph name="RECENCY" /> खोल्नुभएको थियो</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="5048398596102334565">साइटहरूलाई चालसम्बन्धी सेन्सरहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्‌ (सिफारिस गरिएको)</translation>
+<translation id="5048841907079026162">आफ्नो ब्राउजिङ डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5050380848339752099">यो साइटले इन्कोग्निटो मोडबाहिरको एपसँग जानकारी सेयर गर्न लागिरहेको छ।</translation>
 <translation id="5063480226653192405">उपयोग</translation>
 <translation id="5091013926750941408">मोबाइल साइट</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">साइटहरूलाई JavaScript सञ्चालन गर्न अनुमति दिने (सिफारिस गरिएको)</translation>
 <translation id="534295439873310000">NFC यन्त्रहरू</translation>
 <translation id="5344522958567249764">विज्ञापनको गोपनीयतासम्बन्धी सेटिङ व्यवस्थापन गर्नुहोस्</translation>
+<translation id="5373874281522292782">तपाईंका ट्याब समूहहरू सेभ गरिन्छन्</translation>
 <translation id="5389626883706033615">साइटहरूले तपाईंका बारेमा सेभ गरिएको जानकारी प्रयोग गर्ने अनुमति माग्न सक्दैनन्</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ १ थप)}other{(+ # थप)}}</translation>
 <translation id="5403592356182871684">नामहरू</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">सधैं</translation>
 <translation id="757524316907819857">साइटहरूलाई संरक्षित सामग्री प्ले गर्न रोक लगाउनुहोस्</translation>
 <translation id="7594634374516752650">कुनै ब्लुटुथ डिभाइसमा कनेक्ट गरिएको छ</translation>
+<translation id="7617547684249261169">तपाईं आफ्ना केही वा सबै हिस्ट्री, कुकी, साइट डेटा र अन्य कुरा मेटाउन सक्नुहुन्छ</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>

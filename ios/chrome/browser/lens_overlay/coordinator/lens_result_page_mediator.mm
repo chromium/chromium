@@ -4,19 +4,26 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import <memory>
 
 #import "base/functional/bind.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
+#import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
@@ -32,7 +39,8 @@ namespace {
 BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   std::string_view host = URL.host_piece();
   return base::EqualsCaseInsensitiveASCII(host, "google.com") ||
-         base::EqualsCaseInsensitiveASCII(host, "www.google.com");
+         base::EqualsCaseInsensitiveASCII(host, "www.google.com") ||
+         base::EqualsCaseInsensitiveASCII(host, "translate.google.com");
 }
 
 /// Detect special URL that requests the bottom sheet resize.
@@ -77,11 +85,19 @@ const CGFloat kProgressBarEmpty = 0.0f;
 // Value of a full progress bar.
 const CGFloat kProgressBarFull = 1.0f;
 
+// Query parameter for dark mode.
+inline constexpr char kDarkModeParameterKey[] = "cs";
+inline constexpr char kDarkModeParameterLightValue[] = "0";
+inline constexpr char kDarkModeParameterDarkValue[] = "1";
+
 }  // namespace
 
 @interface LensResultPageMediator () <CRWWebStateDelegate,
                                       CRWWebStateObserver,
                                       CRWWebStatePolicyDecider>
+
+/// Whether the interface is in dark mode.
+@property(nonatomic, assign) BOOL isDarkMode;
 
 @end
 
@@ -100,11 +116,14 @@ const CGFloat kProgressBarFull = 1.0f;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   /// Whether the inflight request was initiated by Lens.
   BOOL _isInflightRequestLensInitiated;
+  /// WebStateList of the presenting browser.
+  base::WeakPtr<WebStateList> _webStateList;
 }
 
 - (instancetype)
      initWithWebStateParams:(const web::WebState::CreateParams&)params
     browserWebStateDelegate:(web::WebStateDelegate*)browserWebStateDelegate
+               webStateList:(WebStateList*)webStateList
                 isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
@@ -115,6 +134,9 @@ const CGFloat kProgressBarFull = 1.0f;
         std::make_unique<web::WebStateObserverBridge>(self);
     [self attachWebState:web::WebState::Create(params)];
     _isIncognito = isIncognito;
+    if (webStateList) {
+      _webStateList = webStateList->AsWeakPtr();
+    }
   }
   return self;
 }
@@ -124,7 +146,6 @@ const CGFloat kProgressBarFull = 1.0f;
   CHECK(_webState, kLensOverlayNotFatalUntil);
   _webState->SetWebUsageEnabled(true);
   [self.consumer setWebView:_webState->GetView()];
-  [self updateBackgroundColor];
 }
 
 - (void)setWebStateDelegate:
@@ -149,6 +170,12 @@ const CGFloat kProgressBarFull = 1.0f;
 
 - (void)loadResultsURL:(GURL)URL {
   CHECK(_webState, kLensOverlayNotFatalUntil);
+
+  // Add light/dark mode query parameter.
+  URL = net::AppendOrReplaceQueryParameter(URL, kDarkModeParameterKey,
+                                           self.isDarkMode
+                                               ? kDarkModeParameterDarkValue
+                                               : kDarkModeParameterLightValue);
 
   _isInflightRequestLensInitiated = YES;
   [_consumer setLoadingProgress:kProgressBarLensResponseReceived];
@@ -201,11 +228,6 @@ const CGFloat kProgressBarFull = 1.0f;
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
   _isInflightRequestLensInitiated = NO;
-  [self updateBackgroundColor];
-}
-
-- (void)webStateDidChangeUnderPageBackgroundColor:(web::WebState*)webState {
-  [self updateBackgroundColor];
 }
 
 - (void)webState:(web::WebState*)webState
@@ -231,13 +253,26 @@ const CGFloat kProgressBarFull = 1.0f;
     contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
                     completionHandler:(void (^)(UIContextMenuConfiguration*))
                                           completionHandler {
-  completionHandler(nil);
-  // TODO(crbug.com/349100642): Add context menu configuration.
+  UIContextMenuConfiguration* configuration =
+      [self.contextMenuProvider contextMenuConfigurationForWebState:webState
+                                                             params:params];
+  completionHandler(configuration);
 }
 
 - (void)webState:(web::WebState*)webState
     contextMenuWillCommitWithAnimator:
         (id<UIContextMenuInteractionCommitAnimating>)animator {
+  GURL URLToLoad = [self.contextMenuProvider URLToLoad];
+  if (!URLToLoad.is_valid()) {
+    return;
+  }
+  if (_webState) {
+    web::Referrer referrer(_webState->GetLastCommittedURL(),
+                           web::ReferrerPolicyDefault);
+    _webState->OpenURL(web::WebState::OpenURLParams(
+        URLToLoad, referrer, WindowOpenDisposition::CURRENT_TAB,
+        ui::PAGE_TRANSITION_LINK, false));
+  }
 }
 
 - (UIView*)webViewContainerForWebState:(web::WebState*)webState {
@@ -294,6 +329,24 @@ const CGFloat kProgressBarFull = 1.0f;
   return _browserWebStateDelegate->GetResponderInputView(webState);
 }
 
+#pragma mark - ContextMenuConfigurationProviderDelegate
+
+- (void)contextMenuConfigurationProvider:
+            (ContextMenuConfigurationProvider*)configurationProvider
+        didOpenNewTabInBackgroundWithURL:(GURL)URL {
+  MDCSnackbarMessage* snackbarMessage =
+      CreateSnackbarMessage(@"**New tab created**");
+  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  __weak __typeof__(self) weakSelf = self;
+  action.handler = ^() {
+    [weakSelf activateWebStateWithURL:URL];
+  };
+  action.title = @"**Open**";
+  action.accessibilityLabel = @"**Open**";
+  snackbarMessage.action = action;
+  [self.snackbarHandler showSnackbarMessage:snackbarMessage bottomOffset:0];
+}
+
 #pragma mark - LensWebProvider
 
 - (web::WebState*)webState {
@@ -334,11 +387,13 @@ const CGFloat kProgressBarFull = 1.0f;
   [self.webStateDelegate lensResultPageDidChangeActiveWebState:_webState.get()];
 }
 
-/// Updates the consumer's background color.
-- (void)updateBackgroundColor {
-  UIColor* backgroundColor = _webState->GetUnderPageBackgroundColor();
-  if (backgroundColor) {
-    [self.consumer setBackgroundColor:backgroundColor];
+/// Activates the web state with the given `URL`.
+- (void)activateWebStateWithURL:(GURL)URL {
+  if (WebStateList* webStateList = _webStateList.get()) {
+    int index = webStateList->GetIndexOfWebStateWithURL(URL);
+    if (index != WebStateList::kInvalidIndex) {
+      webStateList->ActivateWebStateAt(index);
+    }
   }
 }
 

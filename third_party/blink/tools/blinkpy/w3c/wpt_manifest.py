@@ -359,6 +359,10 @@ class WPTManifest:
         wpt_path = fs.join(port.web_tests_dir(), path)
         manifest_path = fs.join(wpt_path, MANIFEST_NAME)
 
+        def is_cog() -> bool:
+            """Checks the environment is cog."""
+            return fs.getcwd().startswith('/google/cog/cloud')
+
         # Unconditionally delete local MANIFEST.json to avoid regenerating the
         # manifest from scratch (when version is bumped) or invalid/out-of-date
         # local manifest breaking the runner.
@@ -377,6 +381,14 @@ class WPTManifest:
                 _log.debug('Copying base manifest from "%s" to "%s".',
                            base_manifest_path, manifest_path)
                 fs.copyfile(base_manifest_path, manifest_path)
+                # TODO(https://github.com/web-platform-tests/wpt/issues/47350):
+                # This is a workaround to handle the hanging issue when running
+                # WPTs in Cider. Not updating WPT manifest usually is not OK
+                # unless the change is not fundamental.
+                # We should eventually allow partial update to the manifest.
+                if is_cog():
+                    _log.info('Skip manifest generation in Cog.')
+                    return
             else:
                 _log.error('Manifest base not found at "%s".',
                            base_manifest_path)

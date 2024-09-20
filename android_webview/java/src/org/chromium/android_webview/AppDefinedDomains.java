@@ -20,10 +20,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ public class AppDefinedDomains {
     private static final String ASSET_STATEMENTS_IDENTIFIER = "asset_statements";
     private static final String TARGET_IDENTIFIER = "target";
     private static final String DOMAIN_IDENTIFIER = "site";
+    private static final String INCLUDE_IDENTIFIER = "include";
 
     private static final String APP_MANIFEST = "AndroidManifest.xml";
     private static final String INTENT_ATTRIBUTE_ACTION = "action";
@@ -64,7 +67,7 @@ public class AppDefinedDomains {
     @CalledByNative
     private static String[] getDomainsFromAssetStatements() {
         List<String> domains = fetchAssetStatementDomainsForApp();
-        return domains.toArray(new String[domains.size()]);
+        return domains.toArray(new String[0]);
     }
 
     @CalledByNative
@@ -75,7 +78,7 @@ public class AppDefinedDomains {
         }
         List<String> domains =
                 fetchDomainsFromDomainVerificationManager(/* needsVerification= */ true);
-        return domains.toArray(new String[domains.size()]);
+        return domains.toArray(new String[0]);
     }
 
     @CalledByNative
@@ -86,7 +89,7 @@ public class AppDefinedDomains {
         } else {
             domains = fetchDomainsFromDomainVerificationManager(/* needsVerification= */ false);
         }
-        return domains.toArray(new String[domains.size()]);
+        return domains.toArray(new String[0]);
     }
 
     @CalledByNative
@@ -99,7 +102,29 @@ public class AppDefinedDomains {
             domains.addAll(
                     fetchDomainsFromDomainVerificationManager(/* needsVerification= */ false));
         }
-        return domains.toArray(new String[domains.size()]);
+        return domains.toArray(new String[0]);
+    }
+
+    @CalledByNative
+    private static String[] getIncludeLinksFromAssetStatements() {
+        JSONArray statements = fetchAssetStatementsFromManifest();
+        List<String> domains = new ArrayList<>();
+
+        for (int i = 0; i < statements.length(); i++) {
+            try {
+                JSONObject statement = statements.getJSONObject(i);
+                if (statement.has(INCLUDE_IDENTIFIER)) {
+                    domains.add(statement.getString(INCLUDE_IDENTIFIER));
+                }
+            } catch (JSONException ignored) {
+                // If an element is not an object, just ignore it.
+            }
+        }
+        RecordHistogram.recordCount100Histogram(
+                "Android.WebView.DigitalAssetLinks.AssetIncludes.LinksInManifest", domains.size());
+        // Include statements should be limit to a maximum of 10 as per
+        // https://developers.google.com/digital-asset-links/v1/statements#scaling-to-dozens-of-statements-or-more
+        return domains.subList(0, Math.min(domains.size(), 10)).toArray(new String[0]);
     }
 
     private static Set<String> getHostsFromIntentFilter(XmlResourceParser parser)
@@ -222,33 +247,13 @@ public class AppDefinedDomains {
     }
 
     private static List<String> fetchAssetStatementDomainsForApp() {
-        ApplicationInfo appInfo;
-        Resources resources;
         JSONArray statements;
-        List<String> domains = new ArrayList<String>();
         try {
-            appInfo = getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-        } catch (NameNotFoundException e) {
+            statements = fetchAssetStatementsFromManifest();
+        } catch (Resources.NotFoundException e) {
             return new ArrayList<>();
         }
-        if (appInfo == null || appInfo.metaData == null) {
-            return new ArrayList<>();
-        }
-
-        int resourceIdentifier = appInfo.metaData.getInt(ASSET_STATEMENTS_IDENTIFIER);
-        if (resourceIdentifier == 0) {
-            return new ArrayList<>();
-        }
-        try {
-            resources = getResourcesForApplication(appInfo);
-        } catch (NameNotFoundException e) {
-            return new ArrayList<>();
-        }
-        try {
-            statements = new JSONArray(resources.getString(resourceIdentifier));
-        } catch (Resources.NotFoundException | JSONException e) {
-            return new ArrayList<>();
-        }
+        List<String> domains = new ArrayList<>();
         for (int i = 0; i < statements.length(); i++) {
             String site;
             try {
@@ -269,6 +274,36 @@ public class AppDefinedDomains {
             }
         }
         return domains;
+    }
+
+    private static JSONArray fetchAssetStatementsFromManifest() {
+        ApplicationInfo appInfo;
+        try {
+            appInfo = getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+        } catch (NameNotFoundException e) {
+            return new JSONArray();
+        }
+        if (appInfo == null || appInfo.metaData == null) {
+            return new JSONArray();
+        }
+
+        int resourceIdentifier = appInfo.metaData.getInt(ASSET_STATEMENTS_IDENTIFIER);
+        if (resourceIdentifier == 0) {
+            return new JSONArray();
+        }
+        Resources resources;
+        try {
+            resources = getResourcesForApplication(appInfo);
+        } catch (NameNotFoundException e) {
+            return new JSONArray();
+        }
+        JSONArray statements;
+        try {
+            statements = new JSONArray(resources.getString(resourceIdentifier));
+        } catch (Resources.NotFoundException | JSONException e) {
+            return new JSONArray();
+        }
+        return statements;
     }
 
     @RequiresApi(Build.VERSION_CODES.S)

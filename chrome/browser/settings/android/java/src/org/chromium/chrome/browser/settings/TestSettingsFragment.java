@@ -11,25 +11,13 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.settings.SettingsPage;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
-/** A TestSettingsFragment that has several preference inside. */
-public class TestSettingsFragment extends PreferenceFragmentCompat
-        implements SettingsPage, BackPressHandler {
+/** An embeddable settings fragment that has several preference inside. */
+public class TestSettingsFragment extends PreferenceFragmentCompat implements SettingsPage {
     public static final String EXTRA_TITLE = "title";
 
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>();
-
-    private final CallbackHelper mBackPressCallback = new CallbackHelper();
-
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
-
-    public CallbackHelper getBackPressCallback() {
-        return mBackPressCallback;
-    }
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -49,16 +37,5 @@ public class TestSettingsFragment extends PreferenceFragmentCompat
     @Override
     public ObservableSupplier<String> getPageTitle() {
         return mPageTitle;
-    }
-
-    @Override
-    public int handleBackPress() {
-        mBackPressCallback.notifyCalled();
-        return BackPressResult.SUCCESS;
-    }
-
-    @Override
-    public ObservableSupplierImpl<Boolean> getHandleBackPressChangedSupplier() {
-        return mBackPressStateSupplier;
     }
 }

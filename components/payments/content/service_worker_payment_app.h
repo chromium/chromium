@@ -65,11 +65,8 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   ~ServiceWorkerPaymentApp() override;
 
   // The callback for ValidateCanMakePayment.
-  // The callback takes two parameters: a weak pointer to the corresponding
-  // ServiceWorkerPaymentApp and a boolean representing the result.
-  // When invoked, it returns void.
   using ValidateCanMakePaymentCallback =
-      base::OnceCallback<void(base::WeakPtr<ServiceWorkerPaymentApp>, bool)>;
+      base::OnceCallback<void(base::WeakPtr<ServiceWorkerPaymentApp>)>;
 
   // Validates whether this payment app can be used for this payment request. It
   // fires CanMakePaymentEvent to the payment app to do validation. The result

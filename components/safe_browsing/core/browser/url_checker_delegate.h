@@ -12,6 +12,7 @@
 #include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace content {
 class WebContents;
@@ -87,6 +88,13 @@ class UrlCheckerDelegate
   // detected. |web_contents_getter| is used to determine which tab the site
   // was detected on.
   virtual void NotifySuspiciousSiteDetected(
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) = 0;
+
+  // Send a CSBRR through UI manager to report the discrepancy info from URL
+  // real-time and hash real-time lookups.
+  virtual void SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) = 0;
 

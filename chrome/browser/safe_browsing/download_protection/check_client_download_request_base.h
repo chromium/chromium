@@ -122,10 +122,11 @@ class CheckClientDownloadRequestBase {
       const ClientDownloadResponse::TailoredVerdict& tailored_verdict) = 0;
 
   // Called when a valid response has been received from the server.
-  virtual void MaybeStorePingsForDownload(DownloadCheckResult result,
-                                          bool upload_requested,
-                                          const std::string& request_data,
-                                          const std::string& response_body) = 0;
+  virtual void MaybeBeginFeedbackForDownload(
+      DownloadCheckResult result,
+      bool upload_requested,
+      const std::string& request_data,
+      const std::string& response_body) = 0;
 
   // Returns whether or not the file should be uploaded to Safe Browsing for
   // deep scanning. Returns the settings to apply for analysis if the file
@@ -145,10 +146,8 @@ class CheckClientDownloadRequestBase {
                                      DownloadCheckResultReason reason) = 0;
 
   // Called when finishing the download, to decide whether to
-  // immediately start deep scanning or not. Implementations should log
-  // metrics only when `log_metrics` is true.
-  virtual bool ShouldImmediatelyDeepScan(bool server_requests_prompt,
-                                         bool log_metrics) const = 0;
+  // immediately start deep scanning or not.
+  virtual bool ShouldImmediatelyDeepScan(bool server_requests_prompt) const = 0;
 
   // Called when finishing the download, to decide whether to prompt the user
   // for deep scanning or not.

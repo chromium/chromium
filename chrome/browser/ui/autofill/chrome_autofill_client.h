@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
-#include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
@@ -30,19 +29,27 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #else
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
+
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/364089352): When //c/b/ui/android/autofill gets modularized,
+// //c/b/ui/autofill/ can depend directly on it. Now, forward declare the
+// SaveUpdateAddressProfileFlowManager.
+class SaveUpdateAddressProfileFlowManager;
+#endif
 
 class AutofillOptimizationGuide;
 class FormFieldData;
@@ -98,6 +105,11 @@ class ChromeAutofillClient : public ContentAutofillClient,
   GetAutofillPredictionImprovementsDelegate() override;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 PlusAddressCallback callback) override;
+  void ShowPlusAddressError(PlusAddressErrorDialogType error_dialog_type,
+                            base::OnceClosure on_accepted) override;
+  void ShowPlusAddressAffiliationError(std::u16string affiliated_domain,
+                                       std::u16string affiliated_plus_address,
+                                       base::OnceClosure on_accepted) override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
@@ -162,6 +174,11 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const FormFieldData& field) override;
   void HideAutofillFieldIphForManualFallbackFeature() override;
   void NotifyAutofillManualFallbackUsed() override;
+  void ShowSaveAutofillPredictionImprovementsBubble(
+      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+          to_be_upserted_entries,
+      base::OnceCallback<void(bool prompt_was_accepted)>
+          prompt_acceptance_callback) override;
   void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
   base::span<const AutofillProfile> GetTestAddresses() const override;
   PasswordFormClassification ClassifyAsPasswordForm(
@@ -222,7 +239,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // the test machine, that may normally cause the popup to be hidden
   bool keep_popup_open_for_testing_ = false;
 #if BUILDFLAG(IS_ANDROID)
-  SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
+  std::unique_ptr<SaveUpdateAddressProfileFlowManager>
+      save_update_address_profile_flow_manager_;
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
 #endif
   std::unique_ptr<AutofillFieldPromoController>

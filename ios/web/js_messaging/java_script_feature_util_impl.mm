@@ -19,7 +19,8 @@
 #import "ios/web/js_features/error_page/error_page_java_script_feature.h"
 #import "ios/web/js_features/fullscreen/fullscreen_java_script_feature.h"
 #import "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
-#import "ios/web/js_features/window_error/window_error_java_script_feature.h"
+#import "ios/web/js_features/window_error/error_event_listener_java_script_feature.h"
+#import "ios/web/js_features/window_error/script_error_message_handler_java_script_feature.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/navigation_java_script_feature.h"
 #import "ios/web/navigation/session_restore_java_script_feature.h"
@@ -45,11 +46,13 @@ FaviconJavaScriptFeature* GetFaviconJavaScriptFeature() {
   return favicon_feature.get();
 }
 
-WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
+ScriptErrorMessageHandlerJavaScriptFeature*
+GetScriptErrorMessageHandlerJavaScriptFeature() {
   // Static storage is ok for `window_error_feature` as it holds no state.
-  static base::NoDestructor<WindowErrorJavaScriptFeature> window_error_feature(
-      base::BindRepeating(^(
-          WindowErrorJavaScriptFeature::ErrorDetails error_details) {
+  static base::NoDestructor<ScriptErrorMessageHandlerJavaScriptFeature>
+      script_error_message_handler_feature(base::BindRepeating(^(
+          ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails
+              error_details) {
         // Displays the JavaScript error details in the following format:
         //   _________ JavaScript error: _________
         //     {error_message}
@@ -58,13 +61,14 @@ WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
         const char* frame_description = error_details.is_main_frame
                                             ? kMainFrameDescription
                                             : kIframeDescription;
-        DLOG(ERROR) << "\n_________ JavaScript error: _________"
-                    << "\n  " << base::SysNSStringToUTF8(error_details.message)
-                    << "\n  " << error_details.url.spec() << " | "
+        DLOG(ERROR) << "\n_________ JavaScript error: _________" << "\n  "
+                    << base::SysNSStringToUTF8(error_details.message) << "\n"
+                    << base::SysNSStringToUTF8(error_details.stack) << "\n  "
+                    << error_details.url.spec() << " | "
                     << base::SysNSStringToUTF8(error_details.filename) << ":"
                     << error_details.line_number << "\n  " << frame_description;
       }));
-  return window_error_feature.get();
+  return script_error_message_handler_feature.get();
 }
 
 }  // namespace
@@ -83,7 +87,8 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       FullscreenJavaScriptFeature::GetInstance(),
       GetFaviconJavaScriptFeature(),
       GetScrollHelperJavaScriptFeature(),
-      GetWindowErrorJavaScriptFeature(),
+      ErrorEventListenerJavaScriptFeature::GetInstance(),
+      GetScriptErrorMessageHandlerJavaScriptFeature(),
       NavigationJavaScriptFeature::GetInstance(),
       SessionRestoreJavaScriptFeature::FromBrowserState(browser_state),
       TextFragmentsJavaScriptFeature::GetInstance(),

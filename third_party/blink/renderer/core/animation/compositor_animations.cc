@@ -178,7 +178,7 @@ void DefaultToUnsupportedProperty(
 
 // True if it is either a no-op background-color animation, or a no-op custom
 // property animation.
-bool IsNoOpBGColorOrVariableAnimation(const PropertyHandle& property,
+bool IsNoOpPaintWorkletOrVariableAnimation(const PropertyHandle& property,
                                       const LayoutObject* layout_object) {
   // If the background color paint worklet was painted, a unique id will be
   // generated. See BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams
@@ -192,9 +192,12 @@ bool IsNoOpBGColorOrVariableAnimation(const PropertyHandle& property,
   bool is_no_op_bgcolor_anim =
       RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       property.GetCSSProperty().PropertyID() == CSSPropertyID::kBackgroundColor;
+  bool is_no_op_clip_anim =
+      RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
+      property.GetCSSProperty().PropertyID() == CSSPropertyID::kClipPath;
   bool is_no_op_variable_anim =
       property.GetCSSProperty().PropertyID() == CSSPropertyID::kVariable;
-  return is_no_op_variable_anim || is_no_op_bgcolor_anim;
+  return is_no_op_variable_anim || is_no_op_clip_anim || is_no_op_bgcolor_anim;
 }
 
 bool CompositedAnimationRequiresProperties(const PropertyHandle& property,
@@ -432,13 +435,11 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           continue;
       }
 
-      // The compositor animation for clip path animations do not snapshot the
-      // individual keyframes. Instead the keyframes are interpolated within the
-      // worklet based on the overall animation progress.
-      // TODO(crbug.com/1399323): Do this for composited background color
-      // animations as well.
+      // The compositor animation for paint worklet animations do not snapshot
+      // the individual keyframes. Instead the keyframes are interpolated within
+      // the worklet based on the overall animation progress.
       const bool needs_compositor_keyframe_value =
-          property.GetCSSProperty().PropertyID() != CSSPropertyID::kClipPath;
+          CompositedPropertyRequiresSnapshot(property);
       // If an element does not have style, then it will never have taken a
       // snapshot of its (non-existent) value for the compositor to use.
       if (needs_compositor_keyframe_value &&
@@ -965,9 +966,13 @@ void AddKeyframesForPaintWorkletAnimation(
 
 bool CompositorAnimations::CompositedPropertyRequiresSnapshot(
     const PropertyHandle& property) {
-  // TODO(crbug.com/1374390): Refactor composited animations so that
-  // custom timing functions work for bgcolor animations as well
-  return property.GetCSSProperty().PropertyID() != CSSPropertyID::kClipPath;
+  switch (property.GetCSSProperty().PropertyID()) {
+    case CSSPropertyID::kClipPath:
+    case CSSPropertyID::kBackgroundColor:
+      return false;
+    default:
+      return true;
+  }
 }
 
 void CompositorAnimations::GetAnimationOnCompositor(
@@ -1076,11 +1081,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
                 : CompositorPaintWorkletInput::NativePropertyType::kClipPath;
         auto float_curve = gfx::KeyframedFloatAnimationCurve::Create();
 
-        if (CompositedPropertyRequiresSnapshot(property)) {
-          AddKeyframesToCurve(*float_curve, values);
-        } else {
-          AddKeyframesForPaintWorkletAnimation(*float_curve);
-        }
+        AddKeyframesForPaintWorkletAnimation(*float_curve);
 
         float_curve->SetTimingFunction(timing.timing_function->CloneToCC());
         float_curve->set_scaled_duration(scale);
@@ -1130,12 +1131,12 @@ void CompositorAnimations::GetAnimationOnCompositor(
 
     // By default, it is a kInvalidElementId.
     CompositorElementId id;
-    if (!IsNoOpBGColorOrVariableAnimation(property,
-                                          target_element.GetLayoutObject())) {
+    if (!IsNoOpPaintWorkletOrVariableAnimation(
+            property, target_element.GetLayoutObject())) {
       id = CompositorElementIdFromUniqueObjectId(
-          target_element.GetLayoutObject()->UniqueId(),
-          CompositorElementNamespaceForProperty(
-              property.GetCSSProperty().PropertyID()));
+              target_element.GetLayoutObject()->UniqueId(),
+              CompositorElementNamespaceForProperty(
+                  property.GetCSSProperty().PropertyID()));
     }
     keyframe_model->set_element_id(id);
     keyframe_model->set_iterations(compositor_timing.adjusted_iteration_count);

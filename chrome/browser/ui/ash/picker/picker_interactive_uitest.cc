@@ -8,6 +8,8 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
+#include "ash/picker/views/picker_image_item_row_view.h"
+#include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
@@ -29,6 +31,8 @@
 #include "ui/views/view_observer.h"
 
 namespace {
+
+using ::testing::SizeIs;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWebInputFieldFocusedEvent);
@@ -109,6 +113,10 @@ class PickerInteractiveUiTest : public InteractiveAshTest {
   };
 
   PickerInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kPicker,
+                              ash::features::kPickerGrid},
+        /*disabled_features=*/{});
     ash::PickerController::DisableFeatureKeyCheck();
     ash::PickerController::DisableFeatureTourForTesting();
   }
@@ -158,7 +166,7 @@ class PickerInteractiveUiTest : public InteractiveAshTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{ash::features::kPicker};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Searches for 'thumbs up', checks the top emoji result is '👍', and inserts it
@@ -409,6 +417,47 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFile) {
       PressButton(kFileResultName), WaitForHide(ash::kPickerElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFileCategory) {
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
+  // TODO: b/360229206 - Use a contenteditable input field so the file can be
+  // inserted.
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kFileCategoryResultName = "FileCategoryResult";
+  constexpr std::string_view kFileResultName = "FileResult";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      // Search for the file category
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"file"),
+      WaitForShow(ash::kPickerSearchResultsPageElementId),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      NameDescendantViewByProperty(
+          ash::kPickerSearchResultsPageElementId, kFileCategoryResultName,
+          &ash::PickerListItemView::GetPrimaryTextForTesting, u"Files"),
+      // Press the file category and check the file grid.
+      PressButton(kFileCategoryResultName),
+      WaitForShow(ash::kPickerSearchResultsImageItemElementId),
+      // Search for a file and insert it.
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"t"),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      NameDescendantViewByProperty(
+          ash::kPickerSearchResultsPageElementId, kFileResultName,
+          &ash::PickerListItemView::GetPrimaryTextForTesting, u"test.png"),
+      PressButton(kFileResultName), WaitForHide(ash::kPickerElementId));
+}
+
 // Searches for 'today', checks the top result is the date, and inserts it
 // into a web input field.
 IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
@@ -479,6 +528,46 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, DISABLED_SearchAndInsertMath) {
           &ash::PickerListItemView::GetPrimaryTextForTesting, kExpectedResult),
       PressButton(kMathResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedResult)));
+}
+
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, ZeroStateShowsSuggestions) {
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test1.png"));
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test2.png"));
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test3.png"));
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kFile1Name = "File1";
+  constexpr std::string_view kFile2Name = "File2";
+  constexpr std::string_view kFile3Name = "File3";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      WaitForShow(ash::kPickerSearchResultsImageRowElementId),
+      WaitForViewProperty(ash::kPickerSearchResultsImageRowElementId,
+                          ash::PickerImageItemRowView, Items, SizeIs(3)),
+      NameDescendantViewByType<ash::PickerImageItemView>(ash::kPickerElementId,
+                                                         kFile1Name, 0),
+      NameDescendantViewByType<ash::PickerImageItemView>(ash::kPickerElementId,
+                                                         kFile2Name, 1),
+      NameDescendantViewByType<ash::PickerImageItemView>(ash::kPickerElementId,
+                                                         kFile3Name, 2),
+      CheckViewProperty(kFile1Name, &views::View::GetAccessibleName,
+                        u"Insert test1.png"),
+      CheckViewProperty(kFile2Name, &views::View::GetAccessibleName,
+                        u"Insert test2.png"),
+      CheckViewProperty(kFile3Name, &views::View::GetAccessibleName,
+                        u"Insert test3.png"));
 }
 
 // Navigates through the zero-state UI using only the keyboard.

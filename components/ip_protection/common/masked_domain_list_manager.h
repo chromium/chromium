@@ -5,6 +5,12 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_MANAGER_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_MANAGER_H_
 
+#include <map>
+#include <optional>
+#include <set>
+#include <string>
+
+#include "base/time/time.h"
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/network_anonymization_key.h"
@@ -57,14 +63,8 @@ class MaskedDomainListManager {
                               const std::vector<std::string>& exclusion_list);
 
  private:
-  // Policy that determines which domains are bypassed from IP Protection.
-  network::mojom::IpProtectionProxyBypassPolicy proxy_bypass_policy_;
-
-  // Contains match rules from the Masked Domain List.
-  UrlMatcherWithBypass url_matcher_with_bypass_;
-
-  // Matcher which matches against the public suffix list domains.
-  net::SchemeHostPortMatcher public_suffix_list_matcher_;
+  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListManagerBaseTest,
+                           ExclusionSetDomainsRemovedFromMDL);
 
   // Removes domains from the MDL which are either part of the exclusion list
   // themselves or are subdomains of an entry in the exclusion list.
@@ -80,8 +80,19 @@ class MaskedDomainListManager {
   // Add domains to the `public_suffix_list_matcher_`.
   void AddPublicSuffixListRules(const std::set<std::string>& domains);
 
-  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListManagerBaseTest,
-                           ExclusionSetDomainsRemovedFromMDL);
+  // Policy that determines which domains are bypassed from IP Protection.
+  network::mojom::IpProtectionProxyBypassPolicy proxy_bypass_policy_;
+
+  // Contains match rules from the Masked Domain List.
+  UrlMatcherWithBypass url_matcher_with_bypass_;
+
+  // Matcher which matches against the public suffix list domains.
+  net::SchemeHostPortMatcher public_suffix_list_matcher_;
+
+  // If UpdateMaskedDomainList has not yet been called, stores the time at which
+  // the manager was created. The first call to UpdateMaskedDomainList clears
+  // this to nullopt on entry.
+  std::optional<base::TimeTicks> creation_time_for_mdl_update_metric_;
 };
 
 }  // namespace ip_protection

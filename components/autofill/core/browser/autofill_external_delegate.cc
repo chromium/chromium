@@ -18,6 +18,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -51,6 +52,7 @@
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -244,6 +246,8 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
+    case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       return false;
   }
 }
@@ -386,6 +390,51 @@ AutofillExternalDelegate::CreateUpdateSuggestionsCallback() {
             /*is_update=*/true);
       },
       GetWeakPtr(), *session_id);
+}
+
+base::OnceCallback<void(SuggestionHidingReason)>
+AutofillExternalDelegate::CreateHideSuggestionsCallback() {
+  using SessionId = AutofillClient::SuggestionUiSessionId;
+  const std::optional<SessionId> session_id =
+      manager_->client().GetSessionIdForCurrentAutofillSuggestions();
+  if (!session_id) {
+    return base::DoNothing();
+  }
+  return base::BindOnce(
+      [](base::WeakPtr<AutofillExternalDelegate> self, SessionId session_id,
+         SuggestionHidingReason hiding_reason) {
+        if (!self) {
+          return;
+        }
+        if (self->manager_->client()
+                .GetSessionIdForCurrentAutofillSuggestions()
+                .value_or(SessionId()) != session_id) {
+          return;
+        }
+        self->manager_->client().HideAutofillSuggestions(hiding_reason);
+      },
+      GetWeakPtr(), *session_id);
+}
+
+base::RepeatingCallback<void(const std::u16string&)>
+AutofillExternalDelegate::CreateSingleFieldFillCallback(
+    SuggestionType suggestion_type,
+    std::optional<FieldType> field_type_used) {
+  return base::BindRepeating(
+      [](base::WeakPtr<AutofillExternalDelegate> self, const FormData& form,
+         const FormFieldData& field, SuggestionType suggestion_type,
+         std::optional<FieldType> field_type_used,
+         const std::u16string& value) {
+        if (!self) {
+          return;
+        }
+        self->manager_->FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                           mojom::FieldActionType::kReplaceAll,
+                                           form, field, value, suggestion_type,
+                                           field_type_used);
+      },
+      GetWeakPtr(), query_form_, query_field_, suggestion_type,
+      field_type_used);
 }
 
 SuggestionType
@@ -625,30 +674,32 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       // TODO(crbug.com/361414075): Implement previewing prediction
       // improvements.
       break;
-    case SuggestionType::kRetrievePredictionImprovements:
-    case SuggestionType::kPredictionImprovementsLoadingState:
-    case SuggestionType::kEditAddressProfile:
-    case SuggestionType::kDeleteAddressProfile:
-    case SuggestionType::kManageAddress:
-    case SuggestionType::kManageCreditCard:
-    case SuggestionType::kManageIban:
-    case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
     case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification:
-    case SuggestionType::kDatalistEntry:
-    case SuggestionType::kShowAccountCards:
-    case SuggestionType::kInsecureContextPaymentDisabledMessage:
-    case SuggestionType::kScanCreditCard:
     case SuggestionType::kCreateNewPlusAddress:
-    case SuggestionType::kPlusAddressError:
-    case SuggestionType::kSeePromoCodeDetails:
-    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kEditAddressProfile:
+    case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kPlusAddressError:
+    case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kShowAccountCards:
       break;
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
@@ -752,27 +803,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             AutofillPlusAddressDelegate::SuggestionEvent::
                 kCreateNewPlusAddressChosen);
       }
-      PlusAddressCallback callback = base::BindOnce(
-          [](base::WeakPtr<AutofillExternalDelegate> delegate,
-             const FormData& form, const FormFieldData& field,
-             const std::string& plus_address) {
-            if (delegate) {
-              delegate->manager_->FillOrPreviewField(
-                  mojom::ActionPersistence::kFill,
-                  mojom::FieldActionType::kReplaceAll, form, field,
-                  base::UTF8ToUTF16(plus_address),
-                  SuggestionType::kCreateNewPlusAddress, EMAIL_ADDRESS);
-            }
-          },
-          GetWeakPtr(), query_form_, query_field_);
       manager_->client().OfferPlusAddressCreation(
           manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
-          std::move(callback));
+          CreatePlusAddressCallback(SuggestionType::kCreateNewPlusAddress));
       break;
     }
     case SuggestionType::kCreateNewPlusAddressInline:
-      // TODO(crbug.com/362445807): Implement.
-      break;
+      DidAcceptCreateNewPlusAddressInlineSuggestion(suggestion);
+      // The delegate handles hiding the popup.
+      return;
     case SuggestionType::kPlusAddressError:
       break;
     case SuggestionType::kComposeResumeNudge:
@@ -806,12 +845,14 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kRetrievePredictionImprovements:
-      // TODO(crbug.com/361414075): Implement retrieving prediction
-      // improvements.
-      break;
+      if (AutofillPredictionImprovementsDelegate* delegate =
+              manager_->client().GetAutofillPredictionImprovementsDelegate()) {
+        delegate->OnClickedTriggerSuggestion(query_form_, query_field_,
+                                             CreateUpdateSuggestionsCallback());
+      }
+      return;
     case SuggestionType::kFillPredictionImprovements:
-      // TODO(crbug.com/361414075): Implement filling prediction
-      // improvements.
+      FillPredictionImprovements(suggestion);
       break;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
@@ -836,6 +877,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       NOTREACHED();  // Should be handled elsewhere.
   }
   // Note that some suggestion types return early.
@@ -869,9 +912,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
             CreateUpdateSuggestionsCallback());
       }
       return;
-    // TODO(crbug.com/362468426): Update the suggestion type in case it is
-    // decided that feedback will be its own suggestion.
-    case SuggestionType::kFillPredictionImprovements: {
+    case SuggestionType::kPredictionImprovementsFeedback: {
       AutofillPredictionImprovementsDelegate* delegate =
           manager_->client().GetAutofillPredictionImprovementsDelegate();
       if (!delegate) {
@@ -895,6 +936,21 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
           delegate->UserClickedLearnMore();
           break;
       }
+      break;
+    }
+    case SuggestionType::kPredictionImprovementsDetails: {
+      AutofillPredictionImprovementsDelegate* delegate =
+          manager_->client().GetAutofillPredictionImprovementsDelegate();
+      if (!delegate) {
+        break;
+      }
+      CHECK(absl::holds_alternative<PredictionImprovementsButtonActions>(
+          button_action));
+      PredictionImprovementsButtonActions action =
+          absl::get<PredictionImprovementsButtonActions>(button_action);
+      CHECK_EQ(action, PredictionImprovementsButtonActions::kLearnMoreClicked);
+
+      delegate->UserClickedLearnMore();
       break;
     }
     default:
@@ -969,6 +1025,8 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
+    case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       return false;
   }
 }
@@ -1305,6 +1363,29 @@ void AutofillExternalDelegate::FillAutofillFormData(
   }
 }
 
+void AutofillExternalDelegate::FillPredictionImprovements(
+    const Suggestion& suggestion) {
+  // Single field filling.
+  if (absl::holds_alternative<Suggestion::ValueToFill>(suggestion.payload)) {
+    const std::u16string value_to_fill =
+        suggestion.GetPayload<Suggestion::ValueToFill>().value();
+    manager_->FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                 mojom::FieldActionType::kReplaceAll,
+                                 query_form_, query_field_, value_to_fill,
+                                 SuggestionType::kFillPredictionImprovements,
+                                 /*field_type_used=*/std::nullopt);
+  } else {
+    // Full form filling.
+    Suggestion::PredictionImprovementsPayload payload =
+        suggestion.GetPayload<Suggestion::PredictionImprovementsPayload>();
+    manager_->FillOrPreviewFormExperimental(
+        mojom::ActionPersistence::kFill,
+        FillingProduct::kPredictionImprovements, payload.field_types_to_fill,
+        payload.ignorable_skip_reasons, query_form_, query_field_,
+        payload.values_to_fill);
+  }
+}
+
 void AutofillExternalDelegate::InsertDataListValues(
     std::vector<Suggestion>& suggestions) const {
   if (datalist_.empty()) {
@@ -1582,6 +1663,80 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
             ? AutofillMetrics::SCAN_CARD_ITEM_SELECTED
             : AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED);
   }
+}
+
+PlusAddressCallback AutofillExternalDelegate::CreatePlusAddressCallback(
+    SuggestionType suggestion_type) {
+  return base::BindRepeating(
+             [](const std::string& s) { return base::UTF8ToUTF16(s); })
+      .Then(CreateSingleFieldFillCallback(suggestion_type, EMAIL_ADDRESS));
+}
+
+void AutofillExternalDelegate::DidAcceptCreateNewPlusAddressInlineSuggestion(
+    const Suggestion& suggestion) {
+  AutofillPlusAddressDelegate* delegate =
+      manager_->client().GetPlusAddressDelegate();
+  if (!delegate) {
+    return;
+  }
+
+  base::span<const Suggestion> suggestions =
+      manager_->client().GetAutofillSuggestions();
+  // TODO(crbug.com/362445807): Change the signature of DidAcceptSuggestion to
+  // pass all suggestions and an index of the currently focused one.
+  auto it = std::ranges::find(suggestions, suggestion);
+  CHECK(it != suggestions.end());
+
+  auto show_affiliation_error = base::BindOnce(
+      [](base::WeakPtr<AutofillExternalDelegate> self,
+         base::OnceCallback<void(const std::u16string&)> fill_callback,
+         std::u16string affiliated_domain,
+         std::u16string affiliated_plus_address) {
+        if (!self) {
+          return;
+        }
+        base::OnceClosure bound_fill_callback =
+            base::BindOnce(std::move(fill_callback), affiliated_plus_address);
+        self->manager_->client().ShowPlusAddressAffiliationError(
+            std::move(affiliated_domain), std::move(affiliated_plus_address),
+            std::move(bound_fill_callback));
+      },
+      GetWeakPtr(),
+      CreateSingleFieldFillCallback(SuggestionType::kCreateNewPlusAddressInline,
+                                    /*field_type_used=*/EMAIL_ADDRESS));
+
+  auto show_error = base::BindOnce(
+      [](base::WeakPtr<AutofillExternalDelegate> self,
+         AutofillClient::PlusAddressErrorDialogType error_dialog_type,
+         base::OnceClosure on_accepted) {
+        if (!self) {
+          return;
+        }
+        self->manager_->client().ShowPlusAddressError(error_dialog_type,
+                                                      std::move(on_accepted));
+      },
+      GetWeakPtr());
+
+  base::OnceClosure reshow_suggestions = base::BindOnce(
+      [](base::WeakPtr<AutofillExternalDelegate> self, FieldGlobalId field) {
+        if (!self) {
+          return;
+        }
+        // Manual fallbacks are used as a trigger source to guarantee that a
+        // plus address suggestion will show.
+        self->manager_->driver().RendererShouldTriggerSuggestions(
+            field,
+            AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
+      },
+      GetWeakPtr(), query_field_.global_id());
+
+  delegate->OnAcceptedInlineSuggestion(
+      manager_->client().GetLastCommittedPrimaryMainFrameOrigin(), suggestions,
+      /*current_suggestion_index=*/it - suggestions.begin(),
+      CreateUpdateSuggestionsCallback(), CreateHideSuggestionsCallback(),
+      CreatePlusAddressCallback(SuggestionType::kCreateNewPlusAddressInline),
+      std::move(show_affiliation_error), std::move(show_error),
+      std::move(reshow_suggestions));
 }
 
 }  // namespace autofill

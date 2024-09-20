@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_ID" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Súbor crx sa nepodarilo nahradiť. Skontrolujte, či je súbor používaný.</translation>
 <translation id="3163201441334626963">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Rozšírenie sa nepodarilo rozbaliť. Aby bolo rozbalenie rozšírenia bezpečné, musíte zadať cestu k profilovému adresáru, ktorá začína písmenom jednotky a neobsahuje žiadny styčný bod, bod prepojenia ani odkaz symlink. Pre váš profil nie je k dispozícii žiadna takáto cesta.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_ID" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vstupná hodnota pre súkromný kľúč musí byť platná cesta.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Správca tohto počítača vyžaduje, aby bolo nainštalované rozšírenie <ph name="EXTENSION_NAME" />. Nedá sa odinštalovať.</translation>
 <translation id="6027032947578871493">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_NAME" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Rozšírenie sa nepodarilo rozbaliť. Aby bolo rozbalenie rozšírenia bezpečné, musíte zadať cestu k profilovému adresáru, ktorá neobsahuje žiadny odkaz symlink. Pre váš profil nie je k dispozícii žiadna takáto cesta.</translation>
 <translation id="6322279351188361895">Prečítanie súkromného kľúča zlyhalo.</translation>
 <translation id="6391538222494443604">Vstupný adresár musí existovať.</translation>
 <translation id="641087317769093025">Rozšírenie sa nepodarilo rozbaliť</translation>

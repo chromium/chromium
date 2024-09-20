@@ -12,6 +12,7 @@
 
 namespace content {
 class WebContents;
+class RenderFrameHost;
 }  // namespace content
 
 namespace optimization_guide {
@@ -38,6 +39,10 @@ class ChromeFacilitatedPaymentsClient
   void LoadRiskData(base::OnceCallback<void(const std::string&)>
                         on_risk_data_loaded_callback) override;
 
+  payments::facilitated::ContentFacilitatedPaymentsDriver*
+  GetFacilitatedPaymentsDriverForFrame(
+      content::RenderFrameHost* render_frame_host);
+
   virtual void SetFacilitatedPaymentsControllerForTesting(
       std::unique_ptr<FacilitatedPaymentsController> controller);
 
@@ -52,6 +57,7 @@ class ChromeFacilitatedPaymentsClient
   GetFacilitatedPaymentsNetworkInterface() override;
   // This returns std::nullopt if the `Profile` associated is null.
   std::optional<CoreAccountInfo> GetCoreAccountInfo() override;
+  bool IsInLandscapeMode() override;
   bool ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)

@@ -58,8 +58,9 @@ SVGParsingError SVGNumberList::SetValueAsString(const String& value) {
   // Don't call |clear()| if an error is encountered. SVG policy is to use
   // valid items before error.
   // Spec: http://www.w3.org/TR/SVG/single-page.html#implnote-ErrorProcessing
-  return WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
-    return Parse(chars, chars + length);
+  return WTF::VisitCharacters(value, [&](auto chars) {
+    const auto* start = chars.data();
+    return Parse(start, start + chars.size());
   });
 }
 

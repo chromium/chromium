@@ -29,7 +29,11 @@ class SyncService;
 @property(nonatomic, assign) AuthenticationService* authService;
 
 // The per BrowserState PrefService.
+// TODO(crbug.com/358299863): Remove when fully migrated.
 @property(nonatomic, assign) PrefService* browserStatePrefService;
+
+// The per Profile PrefService.
+@property(nonatomic, assign) PrefService* profilePrefService;
 
 // The global PrefService.
 @property(nonatomic, assign) PrefService* localStatePrefService;

@@ -605,124 +605,125 @@ source_set("test_support") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "api/commands/commands_manifest_unittest.cc",
+    "api/declarative/declarative_manifest_unittest.cc",
+    "api/declarative_net_request/dnr_manifest_unittest.cc",
+    "api/messaging/messaging_endpoint_unittest.cc",
+    "api/printer_provider/usb_printer_manifest_unittest.cc",
+    "api/scripts_internal/script_serialization_unittest.cc",
+    "api/sockets/sockets_manifest_permission_unittest.cc",
+    "command_unittest.cc",
+    "component_extension_url_pattern_unittest.cc",
+    "crash_keys_unittest.cc",
+    "csp_validator_unittest.cc",
+    "error_utils_unittest.cc",
+    "event_filter_unittest.cc",
+    "extension_builder_unittest.cc",
+    "extension_l10n_util_unittest.cc",
+    "extension_resource_path_normalizer_unittest.cc",
+    "extension_resource_unittest.cc",
+    "extension_set_unittest.cc",
+    "extension_unittest.cc",
+    "extension_urls_unittest.cc",
+    "feature_switch_unittest.cc",
+    "features/complex_feature_unittest.cc",
+    "features/feature_provider_unittest.cc",
+    "features/simple_feature_unittest.cc",
+    "file_util_unittest.cc",
+    "hashed_extension_id_unittest.cc",
+    "icons/extension_icon_set_unittest.cc",
+    "image_util_unittest.cc",
+    "manifest_handler_perf_test.cc",
+    "manifest_handler_unittest.cc",
+    "manifest_handlers/content_capabilities_manifest_unittest.cc",
+    "manifest_handlers/csp_info_unittest.cc",
+    "manifest_handlers/default_locale_manifest_unittest.cc",
+    "manifest_handlers/extension_action_handler_unittest.cc",
+    "manifest_handlers/extension_action_page_action_unittest.cc",
+    "manifest_handlers/extension_manifests_icon_variants_unittest.cc",
+    "manifest_handlers/externally_connectable_unittest.cc",
+    "manifest_handlers/homepage_url_unittest.cc",
+    "manifest_handlers/icons_handler_unittest.cc",
+    "manifest_handlers/incognito_manifest_unittest.cc",
+    "manifest_handlers/kiosk_mode_info_unittest.cc",
+    "manifest_handlers/manifest_url_about_unittest.cc",
+    "manifest_handlers/manifest_v3_permissions_unittest.cc",
+    "manifest_handlers/mime_types_handler_unittest.cc",
+    "manifest_handlers/oauth2_manifest_unittest.cc",
+    "manifest_handlers/replacement_apps_unittest.cc",
+    "manifest_handlers/requirements_unittest.cc",
+    "manifest_handlers/shared_module_manifest_unittest.cc",
+    "manifest_handlers/trial_tokens_unittest.cc",
+    "manifest_handlers/update_url_unittest.cc",
+    "manifest_unittest.cc",
+    "message_bundle_unittest.cc",
+    "mojom/message_port_mojom_traits_unittest.cc",
+    "mojom/permission_set_mojom_traits_unittest.cc",
+    "mojom/url_pattern_set_mojom_traits_unittest.cc",
+    "permissions/api_permission_set_unittest.cc",
+    "permissions/api_permission_unittest.cc",
+    "permissions/base_set_operators_unittest.cc",
+    "permissions/manifest_permission_set_unittest.cc",
+    "permissions/socket_permission_unittest.cc",
+    "permissions/usb_device_permission_unittest.cc",
+    "stack_frame_unittest.cc",
+    "url_pattern_set_unittest.cc",
+    "url_pattern_unittest.cc",
+    "user_script_unittest.cc",
+    "utils/extension_types_utils_unittest.cc",
+    "value_counter_unittest.cc",
+  ]
+
+  deps = [
+    ":common",
+    ":test_support",
+    "//base",
+    "//base:i18n",
+    "//base/test:test_support",
+    "//build:android_buildflags",
+    "//components/crx_file",
+    "//components/version_info:version_info",
+    "//content/test:test_support",
+    "//extensions:extensions_resources",
+    "//extensions/common:mojom",
+    "//extensions/common/api",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//tools/json_schema_compiler:generated_api_util",
+
+    # TODO(brettw) these tests should not be including headers from browser.
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/strings",
+    "//ipc",
+    "//services/device/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "manifest_handlers/file_handler_manifest_unittest.cc" ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [ "manifest_handlers/action_handlers_handler_unittest.cc" ]
+  }
+
+  data = [
+    "//extensions/common/mojom/api_permission_id.mojom",
+    "//tools/metrics/histograms/metadata/extensions/enums.xml",
+  ]
+}
+
 # TODO(https://crbug.com/356905053): Gradually include more of these sources
 # in the desktop-android build.
 if (enable_extensions) {
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
-      "api/commands/commands_manifest_unittest.cc",
-      "api/declarative/declarative_manifest_unittest.cc",
-      "api/declarative_net_request/dnr_manifest_unittest.cc",
-      "api/messaging/messaging_endpoint_unittest.cc",
-      "api/printer_provider/usb_printer_manifest_unittest.cc",
-      "api/scripts_internal/script_serialization_unittest.cc",
-      "api/sockets/sockets_manifest_permission_unittest.cc",
-      "command_unittest.cc",
-      "component_extension_url_pattern_unittest.cc",
-      "crash_keys_unittest.cc",
-      "csp_validator_unittest.cc",
-      "error_utils_unittest.cc",
-      "event_filter_unittest.cc",
-      "extension_builder_unittest.cc",
-      "extension_l10n_util_unittest.cc",
-      "extension_resource_path_normalizer_unittest.cc",
-      "extension_resource_unittest.cc",
-      "extension_set_unittest.cc",
-      "extension_unittest.cc",
-      "extension_urls_unittest.cc",
-      "feature_switch_unittest.cc",
-      "features/complex_feature_unittest.cc",
-      "features/feature_provider_unittest.cc",
-      "features/simple_feature_unittest.cc",
-      "file_util_unittest.cc",
-      "hashed_extension_id_unittest.cc",
-      "icons/extension_icon_set_unittest.cc",
-      "image_util_unittest.cc",
-      "manifest_handler_perf_test.cc",
-      "manifest_handler_unittest.cc",
-      "manifest_handlers/content_capabilities_manifest_unittest.cc",
-      "manifest_handlers/csp_info_unittest.cc",
-      "manifest_handlers/default_locale_manifest_unittest.cc",
-      "manifest_handlers/extension_action_handler_unittest.cc",
-      "manifest_handlers/extension_action_page_action_unittest.cc",
-      "manifest_handlers/extension_manifests_icon_variants_unittest.cc",
-      "manifest_handlers/externally_connectable_unittest.cc",
-      "manifest_handlers/homepage_url_unittest.cc",
-      "manifest_handlers/icons_handler_unittest.cc",
-      "manifest_handlers/incognito_manifest_unittest.cc",
-      "manifest_handlers/kiosk_mode_info_unittest.cc",
-      "manifest_handlers/manifest_url_about_unittest.cc",
-      "manifest_handlers/manifest_v3_permissions_unittest.cc",
-      "manifest_handlers/mime_types_handler_unittest.cc",
-      "manifest_handlers/oauth2_manifest_unittest.cc",
-      "manifest_handlers/replacement_apps_unittest.cc",
-      "manifest_handlers/requirements_unittest.cc",
-      "manifest_handlers/shared_module_manifest_unittest.cc",
-      "manifest_handlers/trial_tokens_unittest.cc",
-      "manifest_handlers/update_url_unittest.cc",
-      "manifest_unittest.cc",
-      "message_bundle_unittest.cc",
-      "mojom/message_port_mojom_traits_unittest.cc",
-      "mojom/permission_set_mojom_traits_unittest.cc",
-      "mojom/url_pattern_set_mojom_traits_unittest.cc",
-      "permissions/api_permission_set_unittest.cc",
-      "permissions/api_permission_unittest.cc",
-      "permissions/base_set_operators_unittest.cc",
-      "permissions/manifest_permission_set_unittest.cc",
-      "permissions/socket_permission_unittest.cc",
-      "permissions/usb_device_permission_unittest.cc",
-      "stack_frame_unittest.cc",
-      "url_pattern_set_unittest.cc",
-      "url_pattern_unittest.cc",
-      "user_script_unittest.cc",
-      "utils/extension_types_utils_unittest.cc",
-      "value_counter_unittest.cc",
-    ]
-
-    deps = [
-      ":common",
-      ":test_support",
-      "//base",
-      "//base:i18n",
-      "//base/test:test_support",
-      "//components/crx_file",
-      "//components/version_info:version_info",
-      "//content/test:test_support",
-      "//extensions:extensions_resources",
-      "//extensions/common:mojom",
-      "//extensions/common/api",
-      "//mojo/public/cpp/test_support:test_utils",
-      "//tools/json_schema_compiler:generated_api_util",
-
-      # TODO(brettw) these tests should not be including headers from browser.
-      "//extensions:test_support",
-      "//extensions/browser",
-      "//extensions/strings",
-      "//ipc",
-      "//services/device/public/cpp:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/zlib/google:compression_utils",
-      "//ui/base",
-      "//ui/gfx",
-      "//url",
-    ]
-
-    if (is_chromeos) {
-      sources += [ "manifest_handlers/file_handler_manifest_unittest.cc" ]
-    }
-
-    if (is_chromeos_ash) {
-      sources += [ "manifest_handlers/action_handlers_handler_unittest.cc" ]
-    }
-
-    data = [
-      "//extensions/common/mojom/api_permission_id.mojom",
-      "//tools/metrics/histograms/metadata/extensions/enums.xml",
-    ]
-  }
-
   fuzzer_test("extension_fuzzer") {
     sources = [ "extension_fuzzer.cc" ]
     deps = [

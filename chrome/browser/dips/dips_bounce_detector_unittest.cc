@@ -1468,8 +1468,7 @@ TEST(DIPSRedirectContextTest, GetRedirectHeuristicURLs_NoRequirements) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       content_settings::features::kTpcdHeuristicsGrants,
-      {{"TpcdRedirectHeuristicRequireABAFlow", "false"},
-       {"TpcdRedirectHeuristicRequireCurrentInteraction", "false"}});
+      {{"TpcdRedirectHeuristicRequireABAFlow", "false"}});
 
   UrlAndSourceId first_party_url = MakeUrlAndId("http://a.test/");
   UrlAndSourceId current_interaction_url = MakeUrlAndId("http://b.test/");
@@ -1492,8 +1491,9 @@ TEST(DIPSRedirectContextTest, GetRedirectHeuristicURLs_NoRequirements) {
   ASSERT_EQ(context.size(), 2u);
 
   std::map<std::string, std::pair<GURL, bool>>
-      sites_to_url_and_current_interaction =
-          context.GetRedirectHeuristicURLs(first_party_url.url, std::nullopt);
+      sites_to_url_and_current_interaction = context.GetRedirectHeuristicURLs(
+          first_party_url.url, std::nullopt,
+          /*require_current_interaction=*/false);
   EXPECT_THAT(
       sites_to_url_and_current_interaction,
       testing::UnorderedElementsAre(
@@ -1507,8 +1507,7 @@ TEST(DIPSRedirectContextTest, GetRedirectHeuristicURLs_RequireABAFlow) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       content_settings::features::kTpcdHeuristicsGrants,
-      {{"TpcdRedirectHeuristicRequireABAFlow", "true"},
-       {"TpcdRedirectHeuristicRequireCurrentInteraction", "false"}});
+      {{"TpcdRedirectHeuristicRequireABAFlow", "true"}});
 
   UrlAndSourceId first_party_url = MakeUrlAndId("http://a.test/");
   GURL aba_url("http://b.test/");
@@ -1530,8 +1529,9 @@ TEST(DIPSRedirectContextTest, GetRedirectHeuristicURLs_RequireABAFlow) {
   std::set<std::string> allowed_sites = {GetSiteForDIPS(aba_url)};
 
   std::map<std::string, std::pair<GURL, bool>>
-      sites_to_url_and_current_interaction =
-          context.GetRedirectHeuristicURLs(first_party_url.url, allowed_sites);
+      sites_to_url_and_current_interaction = context.GetRedirectHeuristicURLs(
+          first_party_url.url, allowed_sites,
+          /*require_current_interaction=*/false);
   EXPECT_THAT(sites_to_url_and_current_interaction,
               testing::UnorderedElementsAre(
                   std::pair<std::string, std::pair<GURL, bool>>(
@@ -1543,8 +1543,7 @@ TEST(DIPSRedirectContextTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       content_settings::features::kTpcdHeuristicsGrants,
-      {{"TpcdRedirectHeuristicRequireABAFlow", "false"},
-       {"TpcdRedirectHeuristicRequireCurrentInteraction", "true"}});
+      {{"TpcdRedirectHeuristicRequireABAFlow", "false"}});
 
   UrlAndSourceId first_party_url = MakeUrlAndId("http://a.test/");
   UrlAndSourceId current_interaction_url = MakeUrlAndId("http://b.test/");
@@ -1567,8 +1566,9 @@ TEST(DIPSRedirectContextTest,
   ASSERT_EQ(context.size(), 2u);
 
   std::map<std::string, std::pair<GURL, bool>>
-      sites_to_url_and_current_interaction =
-          context.GetRedirectHeuristicURLs(first_party_url.url, std::nullopt);
+      sites_to_url_and_current_interaction = context.GetRedirectHeuristicURLs(
+          first_party_url.url, std::nullopt,
+          /*require_current_interaction=*/true);
   EXPECT_THAT(
       sites_to_url_and_current_interaction,
       testing::UnorderedElementsAre(

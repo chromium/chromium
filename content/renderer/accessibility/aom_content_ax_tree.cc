@@ -222,10 +222,9 @@ bool AomContentAxTree::GetStringAttributeForAXNode(
     blink::WebAOMStringAttribute attr,
     blink::WebString* out_param) {
   ui::AXNode* node = tree_.GetFromId(ax_id);
-  std::string out_string;
-
-  if (node && node->GetStringAttribute(GetCorrespondingAXAttribute(attr),
-                                       &out_string)) {
+  ax::mojom::StringAttribute attribute = GetCorrespondingAXAttribute(attr);
+  if (node && node->HasStringAttribute(attribute)) {
+    const std::string& out_string = node->GetStringAttribute(attribute);
     *out_param = blink::WebString::FromUTF8(out_string.c_str());
     return true;
   }

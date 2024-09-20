@@ -37,7 +37,8 @@
 
   <!-- Date and Time subpages -->
   <template is="dom-if" route-path="/dateTime/timeZone">
-    <os-settings-subpage page-title="$i18n{timeZoneSubpageTitle}">
+    <os-settings-subpage page-title="$i18n{timeZoneSubpageTitle}"
+        learn-more-url="$i18n{timeZoneSettingsLearnMoreURL}">
       <timezone-subpage prefs="{{prefs}}"
           active-time-zone-display-name="{{activeTimeZoneDisplayName_}}">
       </timezone-subpage>

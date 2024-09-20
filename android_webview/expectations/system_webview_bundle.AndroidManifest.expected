@@ -166,6 +166,7 @@
         android:name="org.chromium.android_webview.services.StartupFeatureMetadataHolder"
         android:enabled="false"
         android:exported="true">
+      <meta-data android:name="STARTUP_FEATURE_CONFIGURE_PARTITIONED_COOKIES" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DATA_DIRECTORY_SUFFIX" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DIRECTORY_BASE_PATH" android:value="true"/>
     </service>  # DIFF-ANCHOR: c52936d7

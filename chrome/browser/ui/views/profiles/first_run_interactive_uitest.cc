@@ -563,7 +563,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
+// TODO(crbug.com/366082752): Re-enable this test
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
+                       DISABLED_SignInAndSync) {
   if (SyncButtonsFeatureConfig() ==
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Sync not possible until buttons stop loading";
@@ -712,7 +714,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
+// TODO(crbug.com/366082752): Re-enable this test
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
+                       DISABLED_DeclineSync) {
   if (SyncButtonsFeatureConfig() ==
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Decline is not possible until buttons stop loading";
@@ -871,8 +875,14 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
+// TODO(crbug.com/366119368): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PeekAndDeclineSignIn DISABLED_PeekAndDeclineSignIn
+#else
+#define MAYBE_PeekAndDeclineSignIn PeekAndDeclineSignIn
+#endif
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
-                       PeekAndDeclineSignIn) {
+                       MAYBE_PeekAndDeclineSignIn) {
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
@@ -922,8 +932,14 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
+// TODO(crbug.com/366119368): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DeclineProfileManagement DISABLED_DeclineProfileManagement
+#else
+#define MAYBE_DeclineProfileManagement DeclineProfileManagement
+#endif
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
-                       DeclineProfileManagement) {
+                       MAYBE_DeclineProfileManagement) {
   base::test::TestFuture<bool> proceed_future;
 
   policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(

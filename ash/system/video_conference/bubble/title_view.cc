@@ -4,6 +4,8 @@
 
 #include "ash/system/video_conference/bubble/title_view.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -22,12 +24,16 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -39,6 +45,7 @@ constexpr gfx::Size kIconSize{20, 20};
 constexpr char kSidetoneNudgeId[] = "video_conference_tray_nudge_ids.sidetone";
 constexpr auto kTitleChildSpacing = 8;
 constexpr auto kTitleViewPadding = gfx::Insets::TLBR(16, 16, 0, 16);
+constexpr auto kMicTestButtonPadding = gfx::Insets::TLBR(6, 6, 6, 6);
 
 }  // namespace
 
@@ -73,31 +80,10 @@ TitleView::TitleView(base::OnceClosure close_bubble_callback) {
                                         *title_label);
   SetFlexForView(title_column, 1);
 
-  auto* mic_test_column =
-      AddChildView(views::Builder<views::BoxLayoutView>()
-                       .SetVisible(VideoConferenceTrayController::Get()
-                                       ->GetHasMicrophonePermissions())
-                       .Build());
-
-  if (features::IsVcTrayMicIndicatorEnabled()) {
-    mic_test_column->AddChildView(std::make_unique<MicIndicator>());
+  if (features::IsVcTrayTitleHeaderEnabled()) {
+    AddChildView(std::make_unique<MicTestButton>());
+    VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
   }
-
-  sidetone_button_ = mic_test_column->AddChildView(std::make_unique<IconButton>(
-      base::BindRepeating(&TitleView::OnSidetoneButtonClicked,
-                          weak_ptr_factory_.GetWeakPtr()),
-      IconButton::Type::kMedium, &kVideoConferenceSidetoneIcon,
-      IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP,
-      /*is_toggleable=*/true,
-      /*has_border=*/false));
-
-  sidetone_button_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  sidetone_button_->SetBackgroundToggledColor(
-      cros_tokens::kCrosSysSystemPrimaryContainer);
-  sidetone_button_->SetToggled(
-      VideoConferenceTrayController::Get()->GetSidetoneEnabled());
-
-  VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
 
   if (features::IsVcStudioLookEnabled()) {
     AddChildView(
@@ -105,7 +91,39 @@ TitleView::TitleView(base::OnceClosure close_bubble_callback) {
   }
 }
 
-void TitleView::OnSidetoneButtonClicked(const ui::Event& event) {
+TitleView::~TitleView() {
+  auto* controller = VideoConferenceTrayController::Get();
+  if (controller->GetSidetoneEnabled()) {
+    controller->SetSidetoneEnabled(false);
+  }
+}
+
+BEGIN_METADATA(TitleView)
+END_METADATA
+
+MicTestButton::MicTestButton() {
+  background_view_ = AddChildView(std::make_unique<View>());
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  auto* background_layer = background_view_->layer();
+  background_layer->SetRoundedCornerRadius(gfx::RoundedCornersF(16));
+  background_layer->SetFillsBoundsOpaquely(false);
+
+  AddChildView(std::make_unique<MicTestButtonContainer>(base::BindRepeating(
+      &MicTestButton::OnMicTestButtonClicked, base::Unretained(this))));
+}
+
+void MicTestButton::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  SkColor color = GetColorProvider()->GetColor(
+      VideoConferenceTrayController::Get()->GetSidetoneEnabled()
+          ? cros_tokens::kCrosSysSystemPrimaryContainer
+          : cros_tokens::kCrosSysSystemOnBase);
+  background_view_->layer()->SetColor(color);
+}
+
+void MicTestButton::OnMicTestButtonClicked(const ui::Event& event) {
   auto* controller = VideoConferenceTrayController::Get();
   const bool enabled = !controller->GetSidetoneEnabled();
 
@@ -114,18 +132,17 @@ void TitleView::OnSidetoneButtonClicked(const ui::Event& event) {
     ShowSidetoneBubble(supported);
 
     if (supported) {
-      sidetone_button_->SetToggled(enabled);
       controller->SetSidetoneEnabled(enabled);
     }
   } else {
     CloseSidetoneBubble();
-
-    sidetone_button_->SetToggled(enabled);
     controller->SetSidetoneEnabled(enabled);
   }
+
+  OnThemeChanged();
 }
 
-void TitleView::ShowSidetoneBubble(const bool supported) {
+void MicTestButton::ShowSidetoneBubble(const bool supported) {
   NudgeCatalogName catalog_name =
       supported ? NudgeCatalogName::kVideoConferenceTraySidetoneEnabled
                 : NudgeCatalogName::kVideoConferenceTraySidetoneNotSupported;
@@ -135,7 +152,7 @@ void TitleView::ShowSidetoneBubble(const bool supported) {
                 : IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_BODY);
 
   AnchoredNudgeData nudge_data(kSidetoneNudgeId, catalog_name, body_str,
-                               sidetone_button_);
+                               /*anchor_view=*/this);
   nudge_data.title_text = l10n_util::GetStringUTF16(
       supported ? IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE
                 : IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_TITLE);
@@ -158,23 +175,47 @@ void TitleView::ShowSidetoneBubble(const bool supported) {
   }
 }
 
-void TitleView::CloseSidetoneBubble() {
+void MicTestButton::CloseSidetoneBubble() {
   auto* nudge_manager = AnchoredNudgeManager::Get();
   if (nudge_manager) {
     nudge_manager->Cancel(kSidetoneNudgeId);
   }
 }
 
-TitleView::~TitleView() {
-  auto* controller = VideoConferenceTrayController::Get();
-  if (controller->GetSidetoneEnabled()) {
-    controller->SetSidetoneEnabled(false);
+MicTestButton::~MicTestButton() = default;
+
+BEGIN_METADATA(MicTestButton)
+END_METADATA
+
+MicTestButtonContainer::MicTestButtonContainer(PressedCallback callback)
+    : Button(std::move(callback)) {
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  sidetone_icon_ = AddChildView(
+      views::Builder<views::ImageView>()
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kVideoConferenceSidetoneIcon, cros_tokens::kCrosSysOnSurface))
+          .SetImageSize(kIconSize)
+          .Build());
+  if (features::IsVcTrayMicIndicatorEnabled()) {
+    mic_indicator_ = AddChildView(std::make_unique<MicIndicator>());
   }
 
-  CloseSidetoneBubble();
+  SetBorder(views::CreateEmptyBorder(kMicTestButtonPadding));
+  // Paints this view to a layer so it will be on top of the
+  // `background_view_` of MicTestButton.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP));
+  SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP));
 }
 
-BEGIN_METADATA(TitleView)
+MicTestButtonContainer::~MicTestButtonContainer() = default;
+
+BEGIN_METADATA(MicTestButtonContainer)
 END_METADATA
 
 }  // namespace ash::video_conference

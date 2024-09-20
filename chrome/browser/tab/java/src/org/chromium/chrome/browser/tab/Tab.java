@@ -402,12 +402,9 @@ public interface Tab extends TabLifecycle {
      */
     long getLastNavigationCommittedTimestampMillis();
 
-    /**
-     * @return launch type at creation
-     */
-    @Nullable
+    /** Returns launch type at creation. May be {@link TabLaunchType.UNSET} if unknown. */
     @TabLaunchType
-    Integer getTabLaunchTypeAtCreation();
+    int getTabLaunchTypeAtCreation();
 
     /** Sets the TabLaunchType for tabs launched with an unset launch type. */
     void setTabLaunchType(@TabLaunchType int launchType);

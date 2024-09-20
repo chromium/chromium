@@ -22,7 +22,7 @@ promise_setup(async () => {
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
-  const operandType = {dataType: 'float32', dimensions: [1]};
+  const operandType = {dataType: 'float32', shape: [1]};
   const input_operand = builder.input('input', operandType);
   const const_operand = builder.constant(operandType, Float32Array.from([2]));
   const output_operand = builder.mul(input_operand, const_operand);
@@ -34,7 +34,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
-  const operandType = {dataType: 'float32', dimensions: [1]};
+  const operandType = {dataType: 'float32', shape: [1]};
   const input_operand = builder.input('input', operandType);
   const const_operand = builder.constant(operandType, Float32Array.from([2]));
   const output_operand = builder.mul(input_operand, const_operand);
@@ -49,7 +49,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
-  const operandType = {dataType: 'float32', dimensions: [1]};
+  const operandType = {dataType: 'float32', shape: [1]};
   const input_operand = builder.input('input', operandType);
   const const_operand = builder.constant(operandType, Float32Array.from([2]));
   const output_operand = builder.mul(input_operand, const_operand);
@@ -63,7 +63,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
-  const operandType = {dataType: 'float32', dimensions: [1]};
+  const operandType = {dataType: 'float32', shape: [1]};
   const input_operand = builder.input('input', operandType);
   const const_operand = builder.constant(operandType, Float32Array.from([2]));
   const output_operand = builder.mul(input_operand, const_operand);
@@ -78,22 +78,22 @@ promise_test(async t => {
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
-  const operandType = {dataType: 'float32', dimensions: [1]};
+  const operandType = {dataType: 'float32', shape: [1]};
   const lhsOperand = builder.input('lhs', operandType);
   const rhsOperand = builder.input('rhs', operandType);
   const graph =
       await builder.build({'output': builder.mul(lhsOperand, rhsOperand)});
 
-  const lhsBuffer = await context.createBuffer(operandType);
-  const rhsBuffer = await context.createBuffer(operandType);
-  const dispatchOutputs = {'output': await context.createBuffer(operandType)};
+  const lhsTensor = await context.createTensor(operandType);
+  const rhsTensor = await context.createTensor(operandType);
+  const dispatchOutputs = {'output': await context.createTensor(operandType)};
 
   graph.destroy();
   assert_throws_dom('InvalidStateError', () => {
     context.dispatch(
         graph, {
-          'lhs': lhsBuffer,
-          'rhs': rhsBuffer,
+          'lhs': lhsTensor,
+          'rhs': rhsTensor,
         },
         dispatchOutputs);
   });
@@ -101,41 +101,41 @@ promise_test(async t => {
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
-  const operandType = {dataType: 'float32', dimensions: [1]};
+  const operandType = {dataType: 'float32', shape: [1]};
   const lhsOperand = builder.input('lhs', operandType);
   const rhsOperand = builder.input('rhs', operandType);
   const graph =
       await builder.build({'output': builder.mul(lhsOperand, rhsOperand)});
 
-  const lhsBuffer = await context.createBuffer({
+  const lhsTensor = await context.createTensor({
     dataType: 'float32',
-    dimensions: [1],
-    usage: MLTensorUsage.WRITE_TO,
+    shape: [1],
+    usage: MLTensorUsage.WRITE,
   });
-  const rhsBuffer = await context.createBuffer({
+  const rhsTensor = await context.createTensor({
     dataType: 'float32',
-    dimensions: [1],
-    usage: MLTensorUsage.WRITE_TO,
+    shape: [1],
+    usage: MLTensorUsage.WRITE,
   });
-  const outputBuffer = await context.createBuffer({
+  const outputTensor = await context.createTensor({
     dataType: 'float32',
-    dimensions: [1],
-    usage: MLTensorUsage.READ_FROM,
+    shape: [1],
+    usage: MLTensorUsage.READ,
   });
   // Initialize inputs
   const inputData = new Float32Array(1).fill(2.0);
-  context.writeBuffer(lhsBuffer, inputData);
-  context.writeBuffer(rhsBuffer, inputData);
+  context.writeTensor(lhsTensor, inputData);
+  context.writeTensor(rhsTensor, inputData);
   context.dispatch(
       graph, {
-        'lhs': lhsBuffer,
-        'rhs': rhsBuffer,
+        'lhs': lhsTensor,
+        'rhs': rhsTensor,
       },
-      {'output': outputBuffer});
+      {'output': outputTensor});
 
   graph.destroy();
-  const outputData = await context.readBuffer(outputBuffer);
+  const outputData = await context.readTensor(outputTensor);
   assert_array_equals(
       new Float32Array(outputData), [4],
-      'Read buffer data equals expected data.');
-}, 'Destroying graph after dispatch() and before readBuffer() is OK.');
+      'Read tensor data equals expected data.');
+}, 'Destroying graph after dispatch() and before readTensor() is OK.');

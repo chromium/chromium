@@ -17,15 +17,15 @@ import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomShee
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_TEXT;
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_TITLE;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -54,24 +54,27 @@ public class PriceInsightsBottomSheetViewBinder {
                     /* end= */ Resources.ID_NULL,
                     /* bottom= */ Resources.ID_NULL);
         } else if (PRICE_TRACKING_BUTTON_FOREGROUND_COLOR == propertyKey) {
-            priceTrackingButton.setTextColor(
-                    ContextCompat.getColor(
-                            priceTrackingButton.getContext(),
-                            model.get(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR)));
+            priceTrackingButton.setTextColor(model.get(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR));
             TextViewCompat.setCompoundDrawableTintList(
                     priceTrackingButton,
-                    AppCompatResources.getColorStateList(
-                            priceTrackingButton.getContext(),
-                            model.get(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR)));
+                    ColorStateList.valueOf(model.get(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR)));
         } else if (PRICE_TRACKING_BUTTON_BACKGROUND_COLOR == propertyKey) {
             ViewCompat.setBackgroundTintList(
                     priceTrackingButton,
-                    AppCompatResources.getColorStateList(
-                            priceTrackingButton.getContext(),
-                            model.get(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR)));
+                    ColorStateList.valueOf(model.get(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR)));
         } else if (PRICE_TRACKING_BUTTON_ENABLED == propertyKey) {
             priceTrackingButton.setEnabled(model.get(PRICE_TRACKING_BUTTON_ENABLED));
         } else if (PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER == propertyKey) {
+            ViewCompat.replaceAccessibilityAction(
+                    priceTrackingButton,
+                    AccessibilityActionCompat.ACTION_CLICK,
+                    priceTrackingButton
+                            .getContext()
+                            .getResources()
+                            .getString(
+                                    R.string
+                                            .price_insights_content_price_tracking_button_action_description),
+                    null);
             priceTrackingButton.setOnClickListener(
                     model.get(PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER));
         } else if (PRICE_HISTORY_TITLE == propertyKey) {

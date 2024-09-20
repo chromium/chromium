@@ -58,6 +58,7 @@ source_set("impl") {
     ]
 
     deps += [
+      "//chrome/browser/ui:browser_list",
       "//components/guest_view/browser",
       "//extensions/common:common_constants",
     ]

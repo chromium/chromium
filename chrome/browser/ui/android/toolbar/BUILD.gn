@@ -76,6 +76,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonView.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonViewBinder.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/ShrinkTransition.java",
+    "java/src/org/chromium/chrome/browser/toolbar/settings/AddressBarPreference.java",
+    "java/src/org/chromium/chrome/browser/toolbar/settings/AddressBarSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ActionModeController.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/CaptureReadinessResult.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/NavigationPopup.java",
@@ -267,6 +269,7 @@ android_resources("java_resources") {
     "java/res/drawable/toolbar_button_ripple.xml",
     "java/res/drawable/toolbar_menu_button_ripple.xml",
     "java/res/layout/adaptive_toolbar_header_preference.xml",
+    "java/res/layout/address_bar_preference.xml",
     "java/res/layout/bottom_control_container.xml",
     "java/res/layout/control_container.xml",
     "java/res/layout/menu_button.xml",
@@ -284,6 +287,7 @@ android_resources("java_resources") {
     "java/res/values/styles.xml",
     "java/res/values/values.xml",
     "java/res/xml/adaptive_toolbar_preference.xml",
+    "java/res/xml/address_bar_settings.xml",
   ]
 
   deps = [
@@ -316,6 +320,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonViewTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/settings/AddressBarSettingsFragmentUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/OptionalBrowsingModeButtonControllerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/PhoneCaptureStateTokenTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TabletCaptureStateTokenTest.java",
@@ -378,6 +383,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_fragment_fragment_testing_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_jvm_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",

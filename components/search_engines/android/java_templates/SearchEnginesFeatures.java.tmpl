@@ -22,18 +22,6 @@ public final class SearchEnginesFeatures {{
         return SearchEnginesFeatureMap.isEnabled(featureName);
     }}
 
-    /**
-     * Convenience method to get search engines component feature field trial params, see {{@link
-     * FeatureMap#getFieldTrialParamByFeature(String, String)}}.
-     *
-     * <p>Note: Features queried through this API must be added to the array
-     * `kFeaturesExposedToJava` in
-     * //components/search_engines/android/search_engines_feature_map.cc.
-     */
-    public static String getFieldTrialParamByFeature(String featureName, String paramName) {{
-        return SearchEnginesFeatureMap.getInstance().getFieldTrialParamByFeature(featureName, paramName);
-    }}
-
     // Do not instantiate this class.
     private SearchEnginesFeatures() {{}}
 }}

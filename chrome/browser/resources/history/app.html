@@ -159,8 +159,11 @@
               hidden$="[[!enableHistoryEmbeddings_]]"
               narrow$="[[hasDrawer_]]">
             $i18n{historyEmbeddingsDisclaimer}
-            <a href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank"
-                aria-describedby="historyEmbeddingsDisclaimer">
+            <a id="historyEmbeddingsDisclaimerLink"
+                href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank"
+                aria-describedby="historyEmbeddingsDisclaimer"
+                on-click="onHistoryEmbeddingsDisclaimerLinkClick_"
+                on-auxclick="onHistoryEmbeddingsDisclaimerLinkClick_">
               $i18n{learnMore}
             </a>
           </div>
@@ -193,7 +196,8 @@
                       num-chars-for-query="[[numCharsTypedInSearch_]]"
                       on-more-from-site-click="onHistoryEmbeddingsItemMoreFromSiteClick_"
                       on-remove-item-click="onHistoryEmbeddingsItemRemoveClick_"
-                      on-is-empty-changed="onHistoryEmbeddingsIsEmptyChanged_">
+                      on-is-empty-changed="onHistoryEmbeddingsIsEmptyChanged_"
+                      force-suppress-logging="[[historyEmbeddingsDisclaimerLinkClicked_]]">
                   </cr-history-embeddings>
                 </template>
               </div>

@@ -109,6 +109,11 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // the overlay on the display with the requirement only.
   virtual void RegisterOverlayRequirement(bool requires_overlay) {}
 
+  // Disable overlay if there has been a copy request in the last 10 frames
+  // 10 was chosen because worst case the copy request might be 15 fps and
+  // we might have display with 120 Hz.
+  static const int kCopyRequestSkipOverlayFrames = 10;
+
  protected:
   virtual gfx::Rect GetOverlayDamageRectForOutputSurface(
       const OverlayCandidate& overlay) const;
@@ -207,6 +212,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       std::vector<gfx::Rect>* content_bounds,
       gfx::Rect* incoming_damage);
 
+  // Skips overlay when we have recently had copy output requests
+  // on root render pass to avoid flickering during screen capture
+  bool BlockForCopyRequests(const AggregatedRenderPass* root_render_pass);
+
   // Determines if we should attempt multiple overlays. This is based on
   // `max_overlays_considered_`, the strategies proposed, and if any of the
   // candidates require an overlay.
@@ -281,6 +290,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   OverlayStatusMap curr_overlays_;
 
   OverlayCombinationCache overlay_combination_cache_;
+
+  // Used to count the number of frames we should wait until enabling overlay
+  // again.
+  int copy_request_counter_ = 0;
 };
 
 }  // namespace viz

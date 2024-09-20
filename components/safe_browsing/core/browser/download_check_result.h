@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_CHECK_RESULT_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_CHECK_RESULT_H_
 
+#include <string_view>
+
 namespace safe_browsing {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -36,6 +38,8 @@ enum class DownloadCheckResult {
   IMMEDIATE_DEEP_SCAN = 20,
   kMaxValue = IMMEDIATE_DEEP_SCAN,
 };
+
+std::string_view DownloadCheckResultToString(DownloadCheckResult result);
 
 }  // namespace safe_browsing
 

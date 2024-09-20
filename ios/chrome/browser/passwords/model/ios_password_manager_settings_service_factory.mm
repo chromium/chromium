@@ -29,9 +29,15 @@ IOSPasswordManagerSettingsServiceFactory::GetInstance() {
 // static
 password_manager::PasswordManagerSettingsService*
 IOSPasswordManagerSettingsServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+password_manager::PasswordManagerSettingsService*
+IOSPasswordManagerSettingsServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<password_manager::PasswordManagerSettingsService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 std::unique_ptr<KeyedService>

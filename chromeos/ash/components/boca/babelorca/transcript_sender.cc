@@ -18,16 +18,17 @@
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/boca/babelorca/proto/babel_orca_message.pb.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon_common.pb.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon_enums.pb.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper_impl.h"
+#include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_utils.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -76,7 +77,7 @@ std::string CreateRequestString(BabelOrcaMessage message,
   send_request.mutable_message()->mutable_sender_id()->set_type(IdType::EMAIL);
   send_request.mutable_message()->mutable_sender_id()->set_app(kTachyonAppName);
   send_request.mutable_message()->set_message_type(InboxMessage::GROUP);
-  send_request.mutable_message()->set_message_class(InboxMessage::USER);
+  send_request.mutable_message()->set_message_class(InboxMessage::EPHEMERAL);
 
   send_request.set_fanout_sender(MessageFanout::OTHER_SENDER_DEVICES);
 
@@ -88,17 +89,18 @@ std::string CreateRequestString(BabelOrcaMessage message,
 TranscriptSender::TranscriptSender(
     TachyonAuthedClient* authed_client,
     TachyonRequestDataProvider* request_data_provider,
+    base::Time init_timestamp,
     std::string_view sender_email,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     Options options,
     base::OnceClosure failure_cb)
     : authed_client_(authed_client),
       request_data_provider_(request_data_provider),
+      init_timestamp_ms_(init_timestamp.InMillisecondsSinceUnixEpoch()),
       sender_email_(sender_email),
       network_traffic_annotation_(network_traffic_annotation),
       options_(std::move(options)),
-      failure_cb_(std::move(failure_cb)),
-      sender_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
+      failure_cb_(std::move(failure_cb)) {}
 
 TranscriptSender::~TranscriptSender() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -134,7 +136,8 @@ BabelOrcaMessage TranscriptSender::GenerateMessage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BabelOrcaMessage message;
   // Set main message metadata.
-  message.set_sender_uuid(sender_uuid_);
+  message.set_session_id(request_data_provider_->session_id());
+  message.set_init_timestamp_ms(init_timestamp_ms_);
   message.set_order(message_order_);
   ++message_order_;
 
@@ -191,18 +194,17 @@ void TranscriptSender::Send(int max_retries, std::string request_string) {
     return;
   }
 
-  auto response_callback_wrapper =
-      std::make_unique<ResponseCallbackWrapperImpl<InboxSendResponse>>(
-          base::BindOnce(&TranscriptSender::OnSendResponse,
-                         weak_ptr_factory.GetWeakPtr()));
+  auto response_callback_wrapper = base::BindOnce(
+      &TranscriptSender::OnSendResponse, weak_ptr_factory.GetWeakPtr());
   authed_client_->StartAuthedRequestString(
-      network_traffic_annotation_, std::move(request_string), kSendMessageUrl,
-      max_retries, std::move(response_callback_wrapper));
+      std::make_unique<RequestDataWrapper>(
+          network_traffic_annotation_, kSendMessageUrl, max_retries,
+          std::move(response_callback_wrapper)),
+      std::move(request_string));
 }
 
 void TranscriptSender::OnSendResponse(
-    base::expected<InboxSendResponse,
-                   ResponseCallbackWrapper::TachyonRequestError> response) {
+    base::expected<std::string, TachyonRequestError> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (response.has_value()) {
     errors_num_ = 0;

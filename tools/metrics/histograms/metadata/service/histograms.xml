@@ -58,8 +58,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ServiceWorkerCacheClientType">
-  <variant name="BackgroundSyncManager"
-      summary="Collected from a BackgroundSyncManager instance"/>
   <variant name="Cache" summary="Collected from a CacheStorageCache instance"/>
   <variant name="CacheStorage"
       summary="Collected from a CacheStorage instance"/>
@@ -461,7 +459,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.DataTransfer.{Action}"
     enum="ServiceWorkerRaceNetworkRequestDataTransferMojoResult"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -505,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.FetchHandler.SkipReason"
-    enum="ServiceWorkerFetchHandlerSkipReason" expires_after="2025-01-05">
+    enum="ServiceWorkerFetchHandlerSkipReason" expires_after="2025-03-09">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1351,7 +1349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.SkipCallingFindRegistrationForClientUrl"
-    enum="BooleanSkipped" expires_after="2025-01-05">
+    enum="BooleanSkipped" expires_after="2025-03-09">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

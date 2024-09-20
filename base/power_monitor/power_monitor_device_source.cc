@@ -8,11 +8,6 @@
 
 namespace base {
 
-bool PowerMonitorDeviceSource::IsOnBatteryPower() const {
-  return GetBatteryPowerStatus() ==
-         PowerStateObserver::BatteryPowerStatus::kBatteryPower;
-}
-
 PowerMonitorDeviceSource::PowerMonitorDeviceSource() {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   PlatformInit();

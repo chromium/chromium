@@ -308,7 +308,7 @@ class USBHandler implements Closeable {
                 if (!readAll(message)) {
                     return;
                 }
-                mTaskRunner.postTask(() -> this.didRead(message));
+                mTaskRunner.execute(() -> this.didRead(message));
             }
         }
     }
@@ -320,7 +320,7 @@ class USBHandler implements Closeable {
     private void readLoop() {
         readLoopInner();
         Log.i(TAG, "Read loop has exited.");
-        mTaskRunner.postTask(() -> this.didRead(null));
+        mTaskRunner.execute(() -> this.didRead(null));
     }
 
     /** Called with each message read from USB, or null on transport error. */

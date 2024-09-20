@@ -36,6 +36,7 @@ static_library("capture_mode") {
     "//chrome/common",
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/experiences/screenshot_area",
     "//chromeos/ash/services/recording/public/mojom",
     "//components/drive",
     "//content/public/browser",

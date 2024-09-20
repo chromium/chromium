@@ -13,7 +13,7 @@
 set -e  # makes the script quit on any command failure
 set -u  # unset variables are quit-worthy errors
 
-PLATFORMS="${1:-linux,android,chromeos-ash,chromeos-lacros,win,mac}"
+PLATFORMS="${1:-linux,fuchsia,android,chromeos-ash,chromeos-lacros,win,mac}"
 
 COMPILE_DIRS=.
 EDIT_DIRS=.
@@ -30,7 +30,6 @@ mv third_party/llvm-build third_party/llvm-build-upstream
 echo "*** Building the rewriter ***"
 time tools/clang/scripts/build.py \
     --with-android \
-    --without-fuchsia \
     --extra-tools rewrite_raw_ptr_fields
 tools/clang/rewrite_raw_ptr_fields/tests/run_all_tests.py
 
@@ -74,6 +73,20 @@ EOF
     linux)
         cat <<EOF
 target_os = "linux"
+clang_use_chrome_plugins = false
+dcheck_always_on = true
+is_chrome_branded = true
+is_debug = false
+is_official_build = true
+use_remoteexec = false
+chrome_pgo_phase = 0
+force_enable_raw_ptr_exclusion = true
+EOF
+        ;;
+
+    fuchsia)
+        cat <<EOF
+target_os = "fuchsia"
 clang_use_chrome_plugins = false
 dcheck_always_on = true
 is_chrome_branded = true

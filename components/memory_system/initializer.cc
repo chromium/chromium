@@ -16,7 +16,7 @@ Initializer::~Initializer() = default;
 
 Initializer& Initializer::SetGwpAsanParameters(bool boost_sampling,
                                                std::string_view process_type) {
-  gwp_asan_parameters_.emplace(boost_sampling, std::move(process_type));
+  gwp_asan_parameters_.emplace(boost_sampling, process_type);
   return *this;
 }
 

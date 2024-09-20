@@ -184,12 +184,14 @@ source_set("browser_tests") {
     "//chrome/browser/devtools",
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/webui",
     "//chrome/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",
@@ -224,10 +226,11 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash",
+      "//ash/webui/boca_ui",
+      "//ash/webui/shimless_rma",
+      "//ash/webui/vc_background_ui",
       "//chrome/browser/ash/crostini:test_support",
       "//chrome/browser/ash/extended_updates/test:test_support",
-      "//chrome/browser/ash/login/ui",
       "//chrome/browser/ash/ownership",
       "//chrome/browser/ash/system_web_apps/apps/personalization_app",
       "//chrome/browser/ash/system_web_apps/apps/personalization_app:test_support",

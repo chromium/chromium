@@ -310,7 +310,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      ManagementStatus::UNMANAGED)));
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
-  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+  SetPrefs(kOnSecurityEventPref, kOnSecurityEventScopePref,
            kNormalReportingSettingsPref);
 
   auto settings =
@@ -509,11 +509,11 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        DeviceReporting) {
-  SetPrefs(ConnectorPref(FILE_ATTACHED), ConnectorScopePref(FILE_ATTACHED),
-           settings_value(), /*profile_scope*/ false);
-  SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
-           ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
-           settings_value(), /*profile_scope*/ false);
+  SetPrefs(AnalysisConnectorPref(FILE_ATTACHED),
+           AnalysisConnectorScopePref(FILE_ATTACHED), settings_value(),
+           /*profile_scope*/ false);
+  SetPrefs(kOnSecurityEventPref, kOnSecurityEventScopePref, settings_value(),
+           /*profile_scope*/ false);
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
@@ -557,10 +557,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        ProfileReporting) {
-  SetPrefs(ConnectorPref(FILE_DOWNLOADED), ConnectorScopePref(FILE_DOWNLOADED),
-           settings_value());
-  SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
-           ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
+  SetPrefs(AnalysisConnectorPref(FILE_DOWNLOADED),
+           AnalysisConnectorScopePref(FILE_DOWNLOADED), settings_value());
+  SetPrefs(kOnSecurityEventPref, kOnSecurityEventScopePref,
            kNormalReportingSettingsPref);
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
@@ -653,7 +652,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        NoReporting) {
-  SetPrefs(ConnectorPref(PRINT), ConnectorScopePref(PRINT), settings_value());
+  SetPrefs(AnalysisConnectorPref(PRINT), AnalysisConnectorScopePref(PRINT),
+           settings_value());
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), PRINT);
@@ -758,8 +758,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 // is cleaned up.
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        Affiliation) {
-  SetPrefs(ConnectorPref(BULK_DATA_ENTRY), ConnectorScopePref(BULK_DATA_ENTRY),
-           settings_value());
+  SetPrefs(AnalysisConnectorPref(BULK_DATA_ENTRY),
+           AnalysisConnectorScopePref(BULK_DATA_ENTRY), settings_value());
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), BULK_DATA_ENTRY);

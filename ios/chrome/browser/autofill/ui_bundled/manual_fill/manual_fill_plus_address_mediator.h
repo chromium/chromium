@@ -21,6 +21,14 @@ namespace plus_addresses {
 class PlusAddressService;
 }
 
+// Delegate for the ManualFillPlusAddressMediator.
+@protocol ManualFillPlusAddressMediatorDelegate
+
+// The mediator will attempt to inject content.
+- (void)manualFillPlusAddressMediatorWillInjectContent;
+
+@end
+
 // Responsible for fetching plus addresses relevant for the manual fill view.
 @interface ManualFillPlusAddressMediator
     : NSObject <TableViewFaviconDataSource, UISearchResultsUpdating>
@@ -32,6 +40,8 @@ class PlusAddressService;
 @property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
 // The delegate in charge of navigation.
 @property(nonatomic, weak) id<PlusAddressListNavigator> navigator;
+// The delegate for this object.
+@property(nonatomic, weak) id<ManualFillPlusAddressMediatorDelegate> delegate;
 
 - (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
                    plusAddressService:

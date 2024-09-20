@@ -54,13 +54,15 @@ class _Formatter(Formatter):
 # Default formatter
 _default_formatter = _Formatter()
 
+def _record_time(exc: ExceptionOccurrence):
+  exc.occurred_time.GetCurrentTime()
 
 def register(exc: Exception,
              formatter: Formatter = _default_formatter) -> ExceptionOccurrence:
   """Create and register an ExceptionOccurrence record."""
   ret = ExceptionOccurrence(name=formatter.format_name(exc),
                             stacktrace=formatter.format_stacktrace(exc))
-  ret.occurred_time.GetCurrentTime()
+  _record_time(ret)
   _records.append(ret)
   return ret
 

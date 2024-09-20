@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_feature_promo_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
@@ -221,7 +222,7 @@ void ProfilePicker::SwitchToDiceSignIn(
 // static
 void ProfilePicker::SwitchToReauth(
     Profile* profile,
-    base::OnceCallback<void(ReauthUIError)> on_error_callback) {
+    base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback) {
   if (g_profile_picker_view) {
     g_profile_picker_view->SwitchToReauth(profile,
                                           std::move(on_error_callback));
@@ -543,6 +544,10 @@ content::WebContentsDelegate* ProfilePickerView::GetWebContentsDelegate() {
 web_modal::WebContentsModalDialogHost*
 ProfilePickerView::GetWebContentsModalDialogHost() {
   return this;
+}
+
+void ProfilePickerView::Reset(StepSwitchFinishedCallback callback) {
+  flow_controller_->Reset(std::move(callback));
 }
 
 void ProfilePickerView::SwitchToSignedOutPostIdentityFlow(
@@ -892,7 +897,7 @@ void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
 
 void ProfilePickerView::SwitchToReauth(
     Profile* profile,
-    base::OnceCallback<void(ReauthUIError)> on_error_callback) {
+    base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback) {
   GetProfilePickerFlowController()->SwitchToReauth(
       profile, std::move(on_error_callback));
 }
@@ -1145,6 +1150,21 @@ void ProfilePicker::NotifyAccountSelected(const std::string& gaia_id) {
   g_profile_picker_view->NotifyAccountSelected(gaia_id);
 }
 #endif
+
+void ProfilePickerView::ShowForceSigninErrorDialog(
+    const ForceSigninUIError& error,
+    bool switch_step_success) {
+  if (!switch_step_success) {
+    return;
+  }
+
+  CHECK(signin_util::IsForceSigninEnabled());
+  ProfilePickerUI* web_ui = web_view_->GetWebContents()
+                                ->GetWebUI()
+                                ->GetController()
+                                ->GetAs<ProfilePickerUI>();
+  web_ui->ShowForceSigninErrorDialog(error);
+}
 
 BEGIN_METADATA(ProfilePickerView)
 END_METADATA

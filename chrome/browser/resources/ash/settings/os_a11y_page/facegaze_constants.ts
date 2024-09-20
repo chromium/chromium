@@ -14,6 +14,12 @@ export const FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT =
 export const FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF =
     `prefs.${FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT}.value`;
 
+export const FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF_DICT =
+    'settings.a11y.face_gaze.gestures_to_key_combos';
+
+export const FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF =
+    `prefs.${FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF_DICT}.value`;
+
 // Currently supported macros in FaceGaze.
 export const FaceGazeActions: MacroName[] = [
   MacroName.MOUSE_CLICK_LEFT,
@@ -33,9 +39,25 @@ export const FaceGazeActions: MacroName[] = [
 // Values are extracted here for ease of use.
 export const FaceGazeGestures = Object.values(FacialGesture);
 
+export interface KeyCombination {
+  key: number;
+  keyDisplay: string;
+  modifiers?: {
+    ctrl?: boolean,
+    alt?: boolean,
+    shift?: boolean,
+    search?: boolean,
+  };
+}
+
 export class FaceGazeCommandPair {
   action: MacroName;
   gesture: FacialGesture|null;
+
+  // This will only be assigned and valid if this.action ===
+  // MacroName.CUSTOM_KEY_COMBINATION. Otherwise, it should be undefined and
+  // never null.
+  assignedKeyCombo?: AssignedKeyCombo;
 
   constructor(action: MacroName, gesture: FacialGesture|null) {
     this.action = action;
@@ -43,7 +65,40 @@ export class FaceGazeCommandPair {
   }
 
   equals(other: FaceGazeCommandPair): boolean {
-    return this.action === other.action && this.gesture === other.gesture;
+    if (this.action !== other.action || this.gesture !== other.gesture) {
+      // If the action and gesture do not match, then these objects cannot be
+      // equal.
+      return false;
+    }
+
+    if (!this.assignedKeyCombo && !other.assignedKeyCombo) {
+      // If neither objects have key combinations to compare, then these objects
+      // must be equal.
+      return true;
+    }
+
+    // Compare the existence and contents of the key combinations.
+    return !!this.assignedKeyCombo && !!other.assignedKeyCombo &&
+        this.assignedKeyCombo.equals(other.assignedKeyCombo);
+  }
+}
+
+export class AssignedKeyCombo {
+  prefString: string;
+  keyCombo: KeyCombination;
+
+  constructor(prefString: string) {
+    this.prefString = prefString;
+    this.keyCombo = JSON.parse(prefString) as KeyCombination;
+
+    if (!this.keyCombo) {
+      throw new Error(
+          `FaceGaze expected valid key combination from ${prefString}.`);
+    }
+  }
+
+  equals(other: AssignedKeyCombo): boolean {
+    return this.prefString === other.prefString;
   }
 }
 
@@ -56,48 +111,47 @@ export const FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME =
 export class FaceGazeUtils {
   /**
    * @param gesture The FacialGesture for which to return the display text.
-   * @returns a string containing the user-friendly display text for the
-   *     gesture.
+   * @returns the name of the string containing user-friendly display text for
+   *     the gesture.
    */
-  static getGestureDisplayText(gesture: FacialGesture|null): string {
-    // TODO(b:341770655): Localize these strings.
+  static getGestureDisplayTextName(gesture: FacialGesture|null): string {
     switch (gesture) {
       case FacialGesture.BROW_INNER_UP:
-        return 'Raise eyebrows';
+        return 'faceGazeGestureLabelBrowInnerUp';
       case FacialGesture.BROWS_DOWN:
-        return 'Lower eyebrows';
+        return 'faceGazeGestureLabelBrowsDown';
       case FacialGesture.EYE_SQUINT_LEFT:
-        return 'Squint left eye';
+        return 'faceGazeGestureLabelEyeSquintLeft';
       case FacialGesture.EYE_SQUINT_RIGHT:
-        return 'Squint right eye';
+        return 'faceGazeGestureLabelEyeSquintRight';
       case FacialGesture.EYES_BLINK:
-        return 'Blink both eyes';
+        return 'faceGazeGestureLabelEyesBlink';
       case FacialGesture.EYES_LOOK_DOWN:
-        return 'Look down';
+        return 'faceGazeGestureLabelEyesLookDown';
       case FacialGesture.EYES_LOOK_LEFT:
-        return 'Look left';
+        return 'faceGazeGestureLabelEyesLookLeft';
       case FacialGesture.EYES_LOOK_RIGHT:
-        return 'Look right';
+        return 'faceGazeGestureLabelEyesLookRight';
       case FacialGesture.EYES_LOOK_UP:
-        return 'Look up';
+        return 'faceGazeGestureLabelEyesLookUp';
       case FacialGesture.JAW_LEFT:
-        return 'Open mouth shift left';
+        return 'faceGazeGestureLabelJawLeft';
       case FacialGesture.JAW_OPEN:
-        return 'Open your mouth wide';
+        return 'faceGazeGestureLabelJawOpen';
       case FacialGesture.JAW_RIGHT:
-        return 'Open mouth shift right';
+        return 'faceGazeGestureLabelJawRight';
       case FacialGesture.MOUTH_FUNNEL:
-        return 'Mouth funnel shape';
+        return 'faceGazeGestureLabelMouthFunnel';
       case FacialGesture.MOUTH_LEFT:
-        return 'Stretch left corner of your mouth';
+        return 'faceGazeGestureLabelMouthLeft';
       case FacialGesture.MOUTH_PUCKER:
-        return 'Put lips together (like a kiss)';
+        return 'faceGazeGestureLabelMouthPucker';
       case FacialGesture.MOUTH_RIGHT:
-        return 'Stretch right corner of your mouth';
+        return 'faceGazeGestureLabelMouthRight';
       case FacialGesture.MOUTH_SMILE:
-        return 'Smile';
+        return 'faceGazeGestureLabelMouthSmile';
       case FacialGesture.MOUTH_UPPER_UP:
-        return 'Wrinkle your nose';
+        return 'faceGazeGestureLabelMouthUpperUp';
       default:
         console.error(
             'Display text requested for unsupported FacialGesture ' + gesture);
@@ -193,7 +247,6 @@ export class FaceGazeUtils {
    */
   static getMacroDisplaySubLabel(macro: MacroName): string|null {
     // TODO(b:341770655): Localize this string.
-    // TODO(b/355662619): Add a sub-label for custom key combination macro.
     switch (macro) {
       case MacroName.TOGGLE_SCROLL_MODE:
         return 'Once in scroll mode, use head movement to scroll';

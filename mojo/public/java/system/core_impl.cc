@@ -182,13 +182,13 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(
     return Java_CoreImpl_newReadMessageResult(env, result, nullptr, nullptr);
 
   // Extend handles to 64-bit values if necessary.
-  std::vector<jlong> java_handles(handles.size());
+  std::vector<int64_t> java_handles(handles.size());
   base::ranges::copy(handles, java_handles.begin());
   return Java_CoreImpl_newReadMessageResult(
       env, result,
       base::android::ToJavaByteArray(env, static_cast<uint8_t*>(buffer),
                                      num_bytes),
-      base::android::ToJavaLongArray(env, java_handles.data(), num_handles));
+      base::android::ToJavaLongArray(env, java_handles));
 }
 
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadData(

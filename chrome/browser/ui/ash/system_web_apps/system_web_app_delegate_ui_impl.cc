@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -59,7 +60,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
         /*user_gesture=*/true);
     create_params.restore_id = params.restore_id;
     create_params.omit_from_session_restore = kOmitFromSessionRestore;
-    create_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+    create_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
     create_params.can_resize = ShouldAllowResize();
     create_params.can_maximize = ShouldAllowMaximize();
     create_params.can_fullscreen = ShouldAllowFullscreen();

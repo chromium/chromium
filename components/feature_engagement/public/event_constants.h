@@ -162,6 +162,10 @@ extern const char kBlueDotPromoSettingsDismissed[];
 // showing.
 extern const char kBlueDotOverflowMenuCustomized[];
 
+// The user has dismissed the blue dot default browser promo on the overflow
+// carousel.
+extern const char kBlueDotPromoOverflowMenuDismissed[];
+
 // The user snoozed the Credential Provider Extension Promo.
 extern const char kCredentialProviderExtensionPromoSnoozed[];
 
@@ -299,6 +303,9 @@ extern const char
 
 // The user has tapped the Home customization menu's entrypoint.
 extern const char kHomeCustomizationMenuUsed[];
+
+// The user has tapped on the lens overlay entrypoint.
+extern const char kLensOverlayEntrypointUsed[];
 
 #endif  // BUILDFLAG(IS_IOS)
 

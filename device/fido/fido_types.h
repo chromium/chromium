@@ -88,6 +88,9 @@ enum class LargeBlobSupportType {
   // The `largeBlob` extension that includes blob data directly in getAssertion
   // commands.
   kExtension,
+  // An authenticator-specific, non-CTAP way to support large blobs. E.g. the
+  // Windows API large blob options.
+  kBespoke,
 };
 
 // AuthenticatorType enumerates the different types of authenticators that this

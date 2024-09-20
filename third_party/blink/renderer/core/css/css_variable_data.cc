@@ -10,10 +10,12 @@
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 
 #include "base/ranges/algorithm.h"
+#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -83,6 +85,7 @@ CSSVariableData* CSSVariableData::Create(const String& original_text,
 }
 
 String CSSVariableData::Serialize() const {
+  const bool is_tainted = IsAttrTainted(OriginalText());
   if (length_ > 0 && OriginalText()[length_ - 1] == '\\') {
     // https://drafts.csswg.org/css-syntax/#consume-escaped-code-point
     // '\' followed by EOF is consumed as U+FFFD.
@@ -119,14 +122,25 @@ String CSSVariableData::Serialize() const {
       serialized_text.Append(')');
     }
 
-    return serialized_text.ReleaseString();
+    return is_tainted ? RemoveAttrTaintToken(serialized_text.ReleaseString())
+                      : serialized_text.ReleaseString();
   }
 
-  return OriginalText().ToString();
+  return is_tainted ? RemoveAttrTaintToken(OriginalText())
+                    : OriginalText().ToString();
 }
 
 bool CSSVariableData::operator==(const CSSVariableData& other) const {
   return OriginalText() == other.OriginalText();
+}
+
+bool CSSVariableData::EqualsIgnoringTaint(const CSSVariableData& other) const {
+  if (IsAttrTainted(OriginalText()) || IsAttrTainted(other.OriginalText())) {
+    return Serialize() == other.Serialize();
+  } else {
+    // Faster, since we don't have to allocate a new string.
+    return OriginalText() == other.OriginalText();
+  }
 }
 
 CSSVariableData::CSSVariableData(PassKey,

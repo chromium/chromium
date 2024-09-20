@@ -278,7 +278,7 @@ class DiscardableImageMap::Generator {
 
     if (paint_image.IsPaintWorklet()) {
       map_.paint_worklet_inputs_.emplace_back(
-          paint_image.paint_worklet_input(), paint_image.stable_id());
+          paint_image.paint_worklet_input().value(), paint_image.stable_id());
     }
 
     auto& rects = map_.image_id_to_rects_[paint_image.stable_id()];

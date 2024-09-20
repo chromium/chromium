@@ -418,10 +418,17 @@ TEST_F(CameraEffectsControllerTest, ResourceDependencyFlags) {
   EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
             background_blur->dependency_flags());
 
-  auto* portrait_relight = camera_effects_controller()->GetEffectById(
-      VcEffectId::kPortraitRelighting);
-  EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
-            portrait_relight->dependency_flags());
+  if (features::IsVcStudioLookEnabled()) {
+    auto* studio_look =
+        camera_effects_controller()->GetEffectById(VcEffectId::kStudioLook);
+    EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
+              studio_look->dependency_flags());
+  } else {
+    auto* portrait_relight = camera_effects_controller()->GetEffectById(
+        VcEffectId::kPortraitRelighting);
+    EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
+              portrait_relight->dependency_flags());
+  }
 }
 
 TEST_F(CameraEffectsControllerTest, BackgroundBlurEnums) {
@@ -882,6 +889,75 @@ TEST_F(CameraEffectsControllerTest, NotEligibleForSeaPen) {
   // Verify that only three states are constructed; the forth one is the image
   // button.
   EXPECT_EQ(effects[0]->GetNumStates(), 3);
+}
+
+TEST_F(CameraEffectsControllerTest, UpdateBackgroundBlurImageState) {
+  // Set is_eligible_for_background_replace to false so that the image button
+  // will not be constructed.
+  GetSessionControllerClient()->set_is_eligible_for_background_replace(
+      {false, false});
+  SimulateUserLogin(kTestAccount);
+
+  // Update media status to make the video conference tray visible.
+  VideoConferenceMediaState state;
+  state.has_media_app = true;
+  state.has_camera_permission = true;
+  state.has_microphone_permission = true;
+  state.is_capturing_screen = true;
+  tray_controller()->UpdateWithMediaState(state);
+
+  auto effects = VideoConferenceTrayController::Get()
+                     ->GetEffectsManager()
+                     .GetSetValueEffects();
+
+  EXPECT_EQ(effects.size(), 1u);
+  EXPECT_EQ(effects[0]->label_text(), u"Background");
+  // Verify that only three states are constructed; the forth one is the image
+  // button.
+  EXPECT_EQ(effects[0]->GetNumStates(), 3);
+
+  // Set background replace eligible state to true and enterprise enabled state
+  // to false so that the image button is added but disabled.
+  GetSessionControllerClient()->set_is_eligible_for_background_replace(
+      {true, false});
+  auto* vc_tray = StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+                      ->video_conference_tray();
+
+  // Open the vc bubble to notify bubble opened and update Background Blur
+  // effect.
+  LeftClickOn(vc_tray->toggle_bubble_button());
+
+  effects = VideoConferenceTrayController::Get()
+                ->GetEffectsManager()
+                .GetSetValueEffects();
+
+  // Now four states are constructed and the forth one is the image button.
+  EXPECT_EQ(effects[0]->GetNumStates(), 4) << " four states are constructed";
+  const VcEffectState* imageState = effects[0]->GetState(/*index=*/3);
+  EXPECT_EQ(imageState->view_id(),
+            video_conference::BubbleViewID::kBackgroundBlurImageButton);
+  EXPECT_TRUE(imageState->is_disabled_by_enterprise());
+
+  // Update VC Background enterprise enabled state to true so that the Image
+  // button is enabled.
+  GetSessionControllerClient()->set_is_eligible_for_background_replace(
+      {true, true});
+  // Close the video conference bubble.
+  LeftClickOn(vc_tray->toggle_bubble_button());
+  // Reopen the bubble to trigger updating Background Blur effect again.
+  LeftClickOn(vc_tray->toggle_bubble_button());
+
+  effects = VideoConferenceTrayController::Get()
+                ->GetEffectsManager()
+                .GetSetValueEffects();
+
+  // The image button is now enabled.
+  EXPECT_EQ(effects[0]->GetNumStates(), 4)
+      << "still four states for Background Blur effect";
+  const VcEffectState* newImageState = effects[0]->GetState(/*index=*/3);
+  EXPECT_EQ(newImageState->view_id(),
+            video_conference::BubbleViewID::kBackgroundBlurImageButton);
+  EXPECT_FALSE(newImageState->is_disabled_by_enterprise());
 }
 
 }  // namespace ash

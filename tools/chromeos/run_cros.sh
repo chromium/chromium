@@ -119,6 +119,21 @@ function start_wayland_client {
   exec $*
 }
 
+# Convert the list of panel names into host bounds list.
+function build_display_config {
+  panel_list=$*
+  IFS=,
+  local host_bounds_list=()
+  for panel in ${panel_list}; do
+    if [ -z ${DISPLAY_RES[${panel}]} ]; then
+      return;
+    fi
+    host_bounds_list+=( ${DISPLAY_RES[${panel}]} )
+  done
+  IFS=_
+  echo $(IFS=, ; echo "${host_bounds_list[*]}")
+}
+
 function help {
   exec cat <<EOF
 `basename $0` <command> [options]
@@ -135,10 +150,11 @@ command
   --touch-device-id=<id> Specify the input device to emulate touch. Use id from
                          'show-xinput-device-id'.
   --wayland-debug        Enable WAYLAND_DEBUG=1
-  --panel=<type>         specifies the panel type. Valid opptions are:
+  --panel=<list of type> specifies the panel type. Valid opptions are:
                          wxga(1280x800), fwxga(1355x768), hdp(1600,900),
                          fhd(1920x1080), wuxga(1920,1200), qhd(2560,1440),
                          qhdp(3200,1800), f4k(3840,2160)
+                         multiple panels can be specifid, e.g. "xwga,hdp"
   --<chrome commandline flags>
                          Pass extra command line flags to ash-chrome.
                          The script will reject if the string does not exist in
@@ -178,9 +194,9 @@ do
       ;;
     --panel=*)
       panel=${1:8}
-      DISPLAY_CONFIG=${DISPLAY_RES[${panel}]}
+      DISPLAY_CONFIG=$(build_display_config ${panel})
       if [ -z $DISPLAY_CONFIG ]; then
-        echo "Unknown display panel: $panel"
+        echo "Unknown display panel found in '$panel'"
         help
       fi
       ;;

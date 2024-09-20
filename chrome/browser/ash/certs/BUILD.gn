@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("certs") {
+  sources = [
+    "system_token_cert_db_initializer.cc",
+    "system_token_cert_db_initializer.h",
+  ]
+
+  deps = [
+    "//chrome/browser/ash/login",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/tpm",
+    "//chromeos/ash/components/tpm:buildflags",
+    "//chromeos/dbus/tpm_manager",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "system_token_cert_db_initializer_unittest.cc" ]
+
+  deps = [
+    ":certs",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/tpm",
+    "//chromeos/dbus/tpm_manager",
+    "//content/test:test_support",
+    "//crypto",
+    "//crypto:test_support",
+    "//net",
+  ]
+}

@@ -42,14 +42,16 @@ class CORE_EXPORT FindResults {
     using reference = BufferMatchResult&;
 
     Iterator() = default;
-    Iterator(const FindBuffer& find_buffer, TextSearcherICU* text_searcher);
+    Iterator(const FindBuffer* find_buffer,
+             TextSearcherICU* text_searcher,
+             const Vector<std::unique_ptr<TextSearcherICU>>& extra_searchers);
 
     bool operator==(const Iterator& other) const {
-      return match_.has_value() == other.match_.has_value();
+      return IsAtEnd() == other.IsAtEnd();
     }
 
     bool operator!=(const Iterator& other) const {
-      return match_.has_value() != other.match_.has_value();
+      return IsAtEnd() != other.IsAtEnd();
     }
 
     const BufferMatchResult operator*() const;
@@ -57,15 +59,19 @@ class CORE_EXPORT FindResults {
     void operator++();
 
    private:
-    const FindBuffer* find_buffer_;
-    TextSearcherICU* text_searcher_;
-    std::optional<MatchResultICU> match_;
+    bool IsAtEnd() const;
+    std::optional<MatchResultICU> EarliestMatch() const;
+
+    const FindBuffer* find_buffer_ = nullptr;
+    Vector<TextSearcherICU*, 1> text_searcher_list_;
+    Vector<std::optional<MatchResultICU>, 1> match_list_;
   };
 
   FindResults();
-  FindResults(const FindBuffer& find_buffer,
+  FindResults(const FindBuffer* find_buffer,
               TextSearcherICU* text_searcher,
               const Vector<UChar>& buffer,
+              const Vector<Vector<UChar>>* extra_buffers,
               const String& search_text,
               const FindOptions options);
 
@@ -83,6 +89,7 @@ class CORE_EXPORT FindResults {
   String search_text_;
   const FindBuffer* find_buffer_;
   TextSearcherICU* text_searcher_;
+  Vector<std::unique_ptr<TextSearcherICU>> extra_searchers_;
   bool empty_result_ = false;
 };
 

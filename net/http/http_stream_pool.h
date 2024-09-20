@@ -19,6 +19,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
 #include "net/http/alternative_service.h"
+#include "net/http/http_stream_pool_switching_info.h"
 #include "net/http/http_stream_request.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
@@ -41,6 +42,12 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     : public NetworkChangeNotifier::IPAddressObserver,
       public SSLClientContext::Observer {
  public:
+  // Indicates whether per pool/group limits should be respected or not.
+  enum class RespectLimits {
+    kRespect,
+    kIgnore,
+  };
+
   // Observes events on the HttpStreamPool and may intercept preconnects. Used
   // only for tests.
   class NET_EXPORT_PRIVATE TestDelegate {
@@ -102,21 +109,17 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // Requests an HttpStream.
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
-      const HttpStreamKey& stream_key,
+      HttpStreamPoolSwitchingInfo switching_info,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
       bool enable_alternative_services,
-      AlternativeServiceInfo alternative_service_info,
-      quic::ParsedQuicVersion quic_version,
       const NetLogWithSource& net_log);
 
   // Requests that enough connections/sessions for `num_streams` be opened.
   // `callback` is only invoked when the return value is `ERR_IO_PENDING`.
-  int Preconnect(const HttpStreamKey& stream_key,
+  int Preconnect(HttpStreamPoolSwitchingInfo switching_info,
                  size_t num_streams,
-                 AlternativeServiceInfo alternative_service_info,
-                 quic::ParsedQuicVersion quic_version,
                  CompletionOnceCallback callback);
 
   // Increments/Decrements the total number of idle streams in this pool.

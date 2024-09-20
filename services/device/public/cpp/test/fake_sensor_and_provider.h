@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,6 +20,23 @@ namespace device {
 template <class T>
 struct SensorReadingSharedBufferImpl;
 using SensorReadingSharedBuffer = SensorReadingSharedBufferImpl<void>;
+
+// This encapsulates the pattern of waiting for an event and returning whether
+// that event was received from `Wait`. This makes it easy to do the right thing
+// in Wait, i.e. return with `[[nodiscard]]`.
+class WaiterHelper {
+ public:
+  // Wait until OnEvent is called. Will return true if ended by OnEvent or false
+  // if ended for some other reason (e.g. timeout).
+  [[nodiscard]] bool Wait();
+  // Stops the waiting.
+  void OnEvent();
+
+ private:
+  [[nodiscard]] bool WaitInternal();
+  base::RunLoop run_loop_;
+  bool event_received_ = false;
+};
 
 class FakeSensor : public mojom::Sensor {
  public:
@@ -49,6 +67,8 @@ class FakeSensor : public mojom::Sensor {
   uint64_t GetBufferOffset();
   void SetReading(SensorReading reading);
 
+  bool WaitForSuspend(bool suspend);
+
  private:
   void SensorReadingChanged();
 
@@ -57,6 +77,9 @@ class FakeSensor : public mojom::Sensor {
   bool reading_notification_enabled_ = true;
   mojo::Remote<mojom::SensorClient> client_;
   SensorReading reading_;
+  WaiterHelper suspend_waiter_;
+  WaiterHelper resume_waiter_;
+  base::OnceCallback<void()> suspend_callback_;
 };
 
 class FakeSensorProvider : public mojom::SensorProvider {
@@ -152,6 +175,12 @@ class FakeSensorProvider : public mojom::SensorProvider {
   void UpdateAbsoluteOrientationSensorData(double alpha,
                                            double beta,
                                            double gamma);
+
+  bool WaitForAccelerometerSuspend(bool suspend);
+  bool WaitForAmbientLightSensorSuspend(bool suspend);
+  bool WaitForLinearAccelerationSensorSuspend(bool suspend);
+  bool WaitForGravitySensorSuspend(bool suspend);
+  bool WaitForGyroscopeSuspend(bool suspend);
 
  private:
   bool CreateSharedBufferIfNeeded();

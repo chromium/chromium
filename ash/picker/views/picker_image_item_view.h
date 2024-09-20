@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -30,8 +31,11 @@ class ASH_EXPORT PickerImageItemView : public PickerItemView {
   PickerImageItemView& operator=(const PickerImageItemView&) = delete;
   ~PickerImageItemView() override;
 
+  void SetAction(PickerActionType action);
+
  private:
   raw_ptr<views::ImageView> image_view_ = nullptr;
+  std::u16string accessible_name_;
 };
 
 }  // namespace ash

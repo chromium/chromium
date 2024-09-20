@@ -243,7 +243,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.showOptionsMenu();
         verify(mModel).set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mOptionsMenu, true);
+        verify(mBottomSheetController).requestShowContent(mOptionsMenu, false);
     }
 
     @Test
@@ -251,7 +251,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.showSpeedMenu();
         verify(mModel).set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mSpeedMenu, true);
+        verify(mBottomSheetController).requestShowContent(mSpeedMenu, false);
     }
 
     @Test

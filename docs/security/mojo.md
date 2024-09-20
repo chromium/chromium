@@ -277,7 +277,7 @@ class View : public mojom::View {
 #else
   void UpdateBrowserControlsState(bool enable_hiding, bool enable_showing,
                                   bool animate) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #endif
 };

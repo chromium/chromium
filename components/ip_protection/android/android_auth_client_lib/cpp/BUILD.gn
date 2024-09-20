@@ -28,6 +28,7 @@ source_set("native") {
   deps = [
     ":jni_headers",
     "//base",
+    "//components/ip_protection:get_proxy_config_proto",
     "//net/third_party/quiche:blind_sign_auth_proto",
   ]
 }
@@ -38,6 +39,7 @@ source_set("ip_protection_auth_test_natives") {
     ":native",
     "//base:base_javatests_lib",
     "//base/test:test_support",
+    "//components/ip_protection:get_proxy_config_proto",
     "//components/ip_protection/android/android_auth_client_lib/javatests:jni_headers",
     "//net/third_party/quiche:blind_sign_auth_proto",
     "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",

@@ -558,7 +558,8 @@ def make_blink_to_v8_value(
         assert native_value_tag(idl_type, argument=argument) == "Node"
         execution_context = blink_value_expr + "->GetExecutionContext()"
         creation_context_script_state = _format(
-            "{_1} ? ToScriptState({_1}, {_2}->World()) : {_2}",
+            "{_1} && {_1} != ToExecutionContext({_2}) ? "
+            "ToScriptState({_1}, {_2}->World()) : {_2}",
             _1=execution_context,
             _2=creation_context_script_state)
 
@@ -831,6 +832,8 @@ def make_v8_to_blink_value(blink_var_name,
                 "${exception_state}",
             ]
         if "StringContext" in idl_type.effective_annotations:
+            arguments.append("${class_like_name}")
+            arguments.append("${property_name}")
             arguments.append("${execution_context_of_document_tree}")
         blink_value_expr = _format("NativeValueTraits<{_1}>::{_2}({_3})",
                                    _1=native_value_tag(
@@ -926,6 +929,8 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
         str(v8_array_start_index), "${exception_state}"
     ]
     if "StringContext" in idl_type.element_type.effective_annotations:
+        arguments.append("${class_like_name}")
+        arguments.append("${property_name}")
         arguments.append("${execution_context_of_document_tree}")
     text = _format(
         pattern,

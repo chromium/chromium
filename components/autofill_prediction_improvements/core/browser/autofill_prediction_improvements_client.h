@@ -6,11 +6,16 @@
 #define COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_CLIENT_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 
 class GURL;
 
 namespace optimization_guide::proto {
 class AXTreeUpdate;
+}
+
+namespace user_annotations {
+class UserAnnotationsService;
 }
 
 namespace autofill_prediction_improvements {
@@ -39,6 +44,21 @@ class AutofillPredictionImprovementsClient {
 
   // Returns the last committed URL of the primary main frame.
   virtual const GURL& GetLastCommittedURL() = 0;
+
+  // Returns a pointer to the current profile's `UserAnnotationsService`. Can be
+  // `nullptr`.
+  virtual user_annotations::UserAnnotationsService*
+  GetUserAnnotationsService() = 0;
+
+  // Returns whether `autofill::prefs::kAutofillPredictionImprovementsEnabled`
+  // is enabled.
+  virtual bool IsAutofillPredictionImprovementsEnabledPref() const = 0;
+
+  // Opens the feedback page if the feature is allowed for feedback.
+  virtual void TryToOpenFeedbackPage(const std::string& feedback_id) = 0;
+
+  // Opens the settings page for prediction improvements.
+  virtual void OpenPredictionImprovementsSettings() = 0;
 };
 
 }  // namespace autofill_prediction_improvements

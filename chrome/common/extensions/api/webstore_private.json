@@ -122,7 +122,7 @@
       {
         "id": "MV2DeprecationStatus",
         "type": "string",
-        "enum": ["inactive", "warning", "soft_disable"]
+        "enum": ["inactive", "warning", "soft_disable", "hard_disable"]
       }
     ],
     "functions": [

@@ -52,7 +52,7 @@ class CONTENT_EXPORT SpareRenderProcessHostManager
   SpareRenderProcessHostManager& operator=(
       const SpareRenderProcessHostManager& other) = delete;
 
-  static SpareRenderProcessHostManager& GetInstance();
+  static SpareRenderProcessHostManager& Get();
 
   // Start a spare renderer immediately if there isn't one.
   // If the timeout is given, the spare render process will not be created
@@ -70,20 +70,18 @@ class CONTENT_EXPORT SpareRenderProcessHostManager
   // If the function is called again without a timeout, the current timeout will
   // be cancelled. If the function is called again with a timeout firing after
   // the current timeout, the timeout will be updated.
-  void WarmupSpareRenderProcessHost(
-      BrowserContext* browser_context,
-      std::optional<base::TimeDelta> timeout = std::nullopt);
+  void WarmupSpare(BrowserContext* browser_context,
+                   std::optional<base::TimeDelta> timeout = std::nullopt);
 
-  RenderProcessHost* MaybeTakeSpareRenderProcessHost(
-      BrowserContext* browser_context,
-      SiteInstanceImpl* site_instance);
+  RenderProcessHost* MaybeTakeSpare(BrowserContext* browser_context,
+                                    SiteInstanceImpl* site_instance);
 
   // Prepares for future requests (with an assumption that a future navigation
   // might require a new process for |browser_context|).
   //
   // Note that depending on the caller PrepareForFutureRequests can be called
-  // after the spare_render_process_host_ has either been 1) matched and taken
-  // or 2) mismatched and ignored or 3) matched and ignored.
+  // after the `spare_rph_` has either been 1) matched and taken or 2)
+  // mismatched and ignored or 3) matched and ignored.
   //
   // The creation of new spare renderer will be delayed by `delay` if present.
   // This is used to mitigate resource contention.
@@ -92,13 +90,11 @@ class CONTENT_EXPORT SpareRenderProcessHostManager
       std::optional<base::TimeDelta> delay = std::nullopt);
 
   // Gracefully remove and cleanup a spare RenderProcessHost if it exists.
-  void CleanupSpareRenderProcessHost();
+  void CleanupSpare();
 
-  RenderProcessHost* spare_render_process_host() {
-    return spare_render_process_host_;
-  }
+  RenderProcessHost* spare() { return spare_rph_; }
 
-  base::CallbackListSubscription RegisterSpareRenderProcessHostChangedCallback(
+  base::CallbackListSubscription RegisterSpareChangedCallback(
       const base::RepeatingCallback<void(RenderProcessHost*)>& cb);
 
   void SetDeferTimerTaskRunnerForTesting(
@@ -107,7 +103,7 @@ class CONTENT_EXPORT SpareRenderProcessHostManager
  private:
   // Release ownership of the spare renderer. Called when the spare has either
   // been 1) claimed to be used in a navigation or 2) shutdown somewhere else.
-  void ReleaseSpareRenderProcessHost();
+  void ReleaseSpare();
 
   // RenderProcessHostObserver:
   void RenderProcessReady(RenderProcessHost* host) override;
@@ -118,10 +114,9 @@ class CONTENT_EXPORT SpareRenderProcessHostManager
   // Start a spare renderer at a later time if there isn't one.
   // This is to avoid resource contention between existing renderers and a
   // new spare renderer.
-  void DeferredWarmupSpareRenderProcessHost(
-      BrowserContext* browser_context,
-      base::TimeDelta delay,
-      std::optional<base::TimeDelta> timeout);
+  void DeferredWarmupSpare(BrowserContext* browser_context,
+                           base::TimeDelta delay,
+                           std::optional<base::TimeDelta> timeout);
 
   void StartDestroyTimer(std::optional<base::TimeDelta> timeout);
 
@@ -130,11 +125,11 @@ class CONTENT_EXPORT SpareRenderProcessHostManager
   // The clients who want to know when the spare render process host has
   // changed.
   base::RepeatingCallbackList<void(RenderProcessHost*)>
-      spare_render_process_host_changed_callback_list_;
+      spare_changed_callback_list_;
 
   // This is a bare pointer, because RenderProcessHost manages the lifetime of
   // all its instances; see GetAllHosts().
-  raw_ptr<RenderProcessHost> spare_render_process_host_ = nullptr;
+  raw_ptr<RenderProcessHost> spare_rph_ = nullptr;
 
   // The timer used to track the startup time of the spare renderer process.
   std::unique_ptr<base::ElapsedTimer> process_startup_timer_;

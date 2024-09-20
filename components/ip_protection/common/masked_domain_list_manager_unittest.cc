@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -94,59 +95,58 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
         false,
     },
     // Public suffix list testcases.
-    // Assumes that "public_suffix.com" is on the public suffix list.
+    // Assumes that "googleapis.com" is on the public suffix list.
 
-    // The `public_suffix.com` domain is in the owned_resources of an MDL entry,
+    // The `googleapis.com` domain is in the owned_resources of an MDL entry,
     // but the top level site is not owned by it so this is a 3rd party request
     // and should be proxied.
     ExperimentGroupMatchTest{
         "OnPsl_OnOwnedResources_TopToDifferentDomain",
-        "public_suffix.com",
+        "googleapis.com",
         "top.com",
         "1",
         true,
         true,
     },
 
-    // The `public_suffix.com` domain is in the owned_resources of an MDL entry.
+    // The `googleapis.com` domain is in the owned_resources of an MDL entry.
     // This is a request to a subdomain of an owned_resources (known tracker)
     // The top level site is not owned by the same owner so this is a 3rd
     // party request and should be proxied.
     ExperimentGroupMatchTest{
         "OnPsl_OnOwnedResources_TopToDifferentDomainSubDomain",
-        "sub.public_suffix.com",
+        "sub.googleapis.com",
         "top.com",
         "1",
         true,
         true,
     },
     // Request from a domain to its subdomain.
-    // `public_suffix.com` is listed on the PSL.
-    // An MDL entry claims ownership of `public_suffix.com`
-    // No MDL entry claims ownership of `sub.public_suffix.com`
-    // Should be proxied because `public_suffix.com` is on the MDL and the two
+    // `googleapis.com` is listed on the PSL.
+    // An MDL entry claims ownership of `googleapis.com`
+    // No MDL entry claims ownership of `sub.googleapis.com`
+    // Should be proxied because `googleapis.com` is on the MDL and the two
     // don't belong to the same owner.
     ExperimentGroupMatchTest{
-        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain_"
+        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain"
         "OwnerDoesntClaimSubdomain",
-        "sub.public_suffix.com",
-        "public_suffix.com",
+        "sub.googleapis.com",
+        "googleapis.com",
         "1",
         true,
         true,
     },
-    // Request from a domain to its subdomain.
-    // `other_public_suffix.com` is listed on the PSL.
-    // No MDL entry claims ownership of `other_public_suffix.com`
-    // An MDL entry claims ownership of `sub.other_public_suffix.com`
-    // Should be proxied because `other_public_suffix.com` is listed on the PSL,
-    // therefore 3rd parties can claim subdomains and this is considered a
-    // request to a 3rd party tracker on the MDL.
+    // Request from one site in the PSL rules to another in the PSL rules.
+    // `co.jp` is listed on the PSL.
+    // No MDL entry claims ownership of `co.jp`
+    // An MDL entry claims ownership of `sub.co.jp`
+    // Should be proxied because `co.jp` is listed on the PSL and the
+    // top_frame_site has the same suffix but is not same-site.
     ExperimentGroupMatchTest{
-        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain_"
+        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain"
         "OwnerClaimsSubdomain",
-        "sub.other_public_suffix.com",
-        "other_public_suffix.com",
+        "sub.co.jp",
+        "other.co.jp",
         "1",
         true,
         true,
@@ -154,13 +154,27 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
     // Request from an owned property to an owned resource.
     // The owned resource is a subdomain of a PSL entry.
     // Should be proxied but not if bypass is allowed, because while
-    // `other_public_suffix.com` is listed in the PSL, the subdomain is
+    // `co.jp` is listed in the PSL, the subdomain is
     // privately owned and an MDL entry claims ownership of it and this is a
     // request between an owned property to an owned resource of the same owner.
     ExperimentGroupMatchTest{
         "Psl_MatchingOwnedResources_SubdomainNotOnPsl",
-        "sub.other_public_suffix.com",
+        "sub.co.jp",
         "owned_property.com",
+        "1",
+        true,
+        false,
+    },
+    // Request from one site in the PSL rules to another in the PSL rules.
+    // `co.jp` is listed on the PSL.
+    // No MDL entry claims ownership of `co.jp`
+    // No MDL entry claims ownership of `site.co.jp`
+    // Bypasses the proxy for same-site check of request and top_frame_site.
+    ExperimentGroupMatchTest{
+        "OnPsl_SameSiteRequest"
+        "OwnerClaimsSubdomain",
+        "same.site.co.jp",
+        "site.co.jp",
         "1",
         true,
         false,
@@ -168,6 +182,9 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
 };
 
 constexpr std::string_view kTestDomain = "example.com";
+
+const char kFirstUpdateTimeHistogram[] =
+    "NetworkService.MaskedDomainList.FirstUpdateTime";
 
 }  // namespace
 
@@ -228,7 +245,8 @@ TEST_F(MaskedDomainListManagerBaseTest, AllowListIsNotPopulatedByDefault) {
   EXPECT_FALSE(allow_list.IsPopulated());
 }
 
-TEST_F(MaskedDomainListManagerBaseTest, AllowlistIsPopulatedWhenMDLUsed) {
+TEST_F(MaskedDomainListManagerBaseTest,
+       AllowlistIsPopulated_MdlHasResourceOwners) {
   MaskedDomainListManager allow_list(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
   MaskedDomainList mdl;
@@ -240,6 +258,76 @@ TEST_F(MaskedDomainListManagerBaseTest, AllowlistIsPopulatedWhenMDLUsed) {
       /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_TRUE(allow_list.IsPopulated());
+}
+
+TEST_F(MaskedDomainListManagerBaseTest, AllowlistIsPopulated_MdlHasPslRules) {
+  MaskedDomainListManager allow_list(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl;
+  mdl.add_public_suffix_list_rules()->set_private_domain("example.com");
+  allow_list.UpdateMaskedDomainList(
+      mdl,
+      /*exclusion_list=*/std::vector<std::string>());
+
+  EXPECT_TRUE(allow_list.IsPopulated());
+}
+
+TEST_F(MaskedDomainListManagerBaseTest,
+       AllowlistIsPopulated_MdlHasResourceOwnersAndPslRules) {
+  MaskedDomainListManager allow_list(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl;
+  auto* resource_owner = mdl.add_resource_owners();
+  resource_owner->set_owner_name("foo");
+  resource_owner->add_owned_resources()->set_domain("example.com");
+  mdl.add_public_suffix_list_rules()->set_private_domain("example.com");
+  allow_list.UpdateMaskedDomainList(
+      mdl,
+      /*exclusion_list=*/std::vector<std::string>());
+
+  EXPECT_TRUE(allow_list.IsPopulated());
+}
+
+TEST_F(MaskedDomainListManagerBaseTest, AllowlistAcceptsMultipleUpdates) {
+  base::HistogramTester histogram_tester;
+  MaskedDomainListManager allow_list(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl1;
+  {
+    auto* resource_owner = mdl1.add_resource_owners();
+    resource_owner->set_owner_name("foo");
+    resource_owner->add_owned_resources()->set_domain("example.com");
+  }
+  MaskedDomainList mdl2;
+  {
+    auto* resource_owner = mdl2.add_resource_owners();
+    resource_owner->set_owner_name("foo");
+    resource_owner->add_owned_resources()->set_domain("example.net");
+  }
+  const auto kHttpsRequestUrl1 = GURL("https://example.com");
+  const auto kHttpsRequestUrl2 = GURL("https://example.net");
+  const auto kEmptyNak = net::NetworkAnonymizationKey();
+
+  // No updates yet.
+  histogram_tester.ExpectTotalCount(kFirstUpdateTimeHistogram, 0);
+
+  // First update.
+  allow_list.UpdateMaskedDomainList(
+      mdl1, /*exclusion_list=*/std::vector<std::string>());
+
+  EXPECT_TRUE(allow_list.IsPopulated());
+  EXPECT_TRUE(allow_list.Matches(kHttpsRequestUrl1, kEmptyNak));
+  EXPECT_FALSE(allow_list.Matches(kHttpsRequestUrl2, kEmptyNak));
+  histogram_tester.ExpectTotalCount(kFirstUpdateTimeHistogram, 1);
+
+  // Second update. Removes old rules, adds new ones.
+  allow_list.UpdateMaskedDomainList(
+      mdl2, /*exclusion_list=*/std::vector<std::string>());
+
+  EXPECT_TRUE(allow_list.IsPopulated());
+  EXPECT_FALSE(allow_list.Matches(kHttpsRequestUrl1, kEmptyNak));
+  EXPECT_TRUE(allow_list.Matches(kHttpsRequestUrl2, kEmptyNak));
+  histogram_tester.ExpectTotalCount(kFirstUpdateTimeHistogram, 1);
 }
 
 TEST_F(MaskedDomainListManagerTest, ShouldMatchHttp) {
@@ -433,10 +521,9 @@ TEST_P(MaskedDomainListManagerExperimentGroupMatchTest, Match) {
   resource->add_experiment_group_ids(1);
   resource->add_experiment_group_ids(2);
 
-  // Public Suffix List
-  mdl.add_public_suffix_list_rules()->set_private_domain("public_suffix.com");
-  mdl.add_public_suffix_list_rules()->set_private_domain(
-      "other_public_suffix.com");
+  // Public Suffix List (includes private section)
+  mdl.add_public_suffix_list_rules()->set_private_domain("googleapis.com");
+  mdl.add_public_suffix_list_rules()->set_private_domain("co.jp");
 
   // ResourceOwner 3 - Includes resources which are on the public suffix list.
   resource_owner = mdl.add_resource_owners();
@@ -444,12 +531,12 @@ TEST_P(MaskedDomainListManagerExperimentGroupMatchTest, Match) {
   resource_owner->add_owned_properties("owned_property.com");
   // Claim top level domain on the PSL.
   resource = resource_owner->add_owned_resources();
-  resource->set_domain("public_suffix.com");
+  resource->set_domain("googleapis.com");
   resource->add_experiment_group_ids(1);
 
   // Claim a subdomain on the PSL.
   resource = resource_owner->add_owned_resources();
-  resource->set_domain("sub.other_public_suffix.com");
+  resource->set_domain("sub.co.jp");
   resource->add_experiment_group_ids(1);
 
   allow_list_no_bypass.UpdateMaskedDomainList(

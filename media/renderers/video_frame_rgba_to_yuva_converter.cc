@@ -34,6 +34,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   DCHECK_EQ(dst_video_frame->format(), PIXEL_FORMAT_NV12);
   CHECK_EQ(dst_video_frame->shared_image_format_type(),
            SharedImageFormatType::kSharedImageFormat);
+  CHECK(dst_video_frame->HasTextures());
   auto* ri = provider->RasterInterface();
   DCHECK(ri);
 
@@ -88,9 +89,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   gpu::SyncToken completion_sync_token;
   ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
   SimpleSyncTokenClient simple_client(completion_sync_token);
-  for (size_t plane = 0; plane < dst_video_frame->NumTextures(); ++plane) {
-    dst_video_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
-  }
+  dst_video_frame->UpdateMailboxHolderSyncToken(&simple_client);
   dst_video_frame->UpdateReleaseSyncToken(&simple_client);
   return true;
 }

@@ -16,7 +16,8 @@ class PasswordAccessLossWarningBridge {
   virtual ~PasswordAccessLossWarningBridge() = default;
 
   // Determines if any of the access loss warning sheets should be shown.
-  virtual bool ShouldShowAccessLossNoticeSheet(PrefService* pref_service) = 0;
+  virtual bool ShouldShowAccessLossNoticeSheet(PrefService* pref_service,
+                                               bool called_at_startup) = 0;
   // Tries to call the Java code that will show an access loss warning sheet.
   // Showing the sheet can fail if there is no BottomSheetController or the
   // BottomSheetcontroller suppresses the sheet. Content is suppressed if higher
@@ -24,7 +25,8 @@ class PasswordAccessLossWarningBridge {
   // state, or the browser is in a mode that does not support showing the sheet.
   virtual void MaybeShowAccessLossNoticeSheet(PrefService* pref_service,
                                               const gfx::NativeWindow window,
-                                              Profile* profile) = 0;
+                                              Profile* profile,
+                                              bool called_at_startup) = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCESS_LOSS_PASSWORD_ACCESS_LOSS_WARNING_BRIDGE_H_

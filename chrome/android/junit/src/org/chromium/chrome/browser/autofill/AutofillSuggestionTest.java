@@ -46,6 +46,7 @@ public class AutofillSuggestionTest {
                         /* isMultilineLabel= */ true,
                         /* isBoldLabel= */ true,
                         /* applyDeactivatedStyle= */ false,
+                        /* shouldDisplayTermsAvailable= */ false,
                         "feature_for_iph",
                         "iph_description",
                         mock(GURL.class),

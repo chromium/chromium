@@ -788,10 +788,11 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         : source_(source), exception_context_(exception_context) {}
 
     ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-      ExceptionState exception_state(script_state->GetIsolate(),
-                                     exception_context_);
-      return source_->source2_->Pull(script_state, exception_state)
-          .AsScriptValue();
+      v8::Isolate* isolate = script_state->GetIsolate();
+      ExceptionState exception_state(isolate, exception_context_);
+      return ScriptValue(
+          isolate,
+          source_->source2_->Pull(script_state, exception_state).V8Promise());
     }
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
@@ -891,7 +892,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
       return ScriptPromiseUntyped::Reject(script_state, exception_state);
     }
     DCHECK(reader_for_stream1_);
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   ScriptPromiseUntyped Pull(ScriptState* script_state,

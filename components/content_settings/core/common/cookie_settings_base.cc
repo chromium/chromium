@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -340,13 +341,13 @@ CookieSettingsBase::GetThirdPartyCookieAllowMechanism(
 bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const std::optional<url::Origin>& top_frame_origin,
+    base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides,
     CookieSettingWithMetadata* cookie_settings) const {
   CookieSettingWithMetadata setting = GetCookieSettingInternal(
       url, site_for_cookies,
-      GetFirstPartyURL(site_for_cookies, base::OptionalToPtr(top_frame_origin)),
-      overrides, nullptr);
+      GetFirstPartyURL(site_for_cookies, top_frame_origin.as_ptr()), overrides,
+      nullptr);
 
   if (cookie_settings) {
     *cookie_settings = setting;
@@ -745,7 +746,7 @@ std::optional<net::cookie_util::StorageAccessStatus>
 CookieSettingsBase::GetStorageAccessStatus(
     const GURL& url,
     const net::SiteForCookies& site_for_for_cookies,
-    const std::optional<url::Origin>& top_frame_origin,
+    base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides) const {
   if (!IsThirdPartyRequest(url, site_for_for_cookies)) {
     return std::nullopt;

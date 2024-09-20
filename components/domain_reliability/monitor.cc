@@ -52,10 +52,11 @@ std::unique_ptr<DomainReliabilityBeacon> CreateBeaconFromAttempt(
   auto beacon = std::make_unique<DomainReliabilityBeacon>(beacon_template);
   beacon->status = status;
   beacon->chrome_error = attempt.result;
-  if (!attempt.endpoint.address().empty())
+  if (!attempt.endpoint.address().empty()) {
     beacon->server_ip = attempt.endpoint.ToString();
-  else
+  } else {
     beacon->server_ip = "";
+  }
   return beacon;
 }
 
@@ -243,10 +244,11 @@ void DomainReliabilityMonitor::OnRequestLegComplete(
     return;
 
   int response_code;
-  if (request.response_info.headers)
+  if (request.response_info.headers) {
     response_code = request.response_info.headers->response_code();
-  else
+  } else {
     response_code = -1;
+  }
 
   net::ConnectionAttempt url_request_attempt(request.remote_endpoint,
                                              request.net_error);

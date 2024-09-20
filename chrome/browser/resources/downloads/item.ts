@@ -40,9 +40,7 @@ import {IconLoaderImpl} from './icon_loader.js';
 import {getCss} from './item.css.js';
 import {getHtml} from './item.html.js';
 
-// TODO (rbpotter): Rename this back to DownloadsItemElement when .html.ts file
-// is checked in.
-export interface ItemElement {
+export interface DownloadsItemElement {
   $: {
     'controlled-by': HTMLElement,
     'file-icon': HTMLImageElement,
@@ -52,7 +50,7 @@ export interface ItemElement {
   };
 }
 
-const ItemElementBase = I18nMixinLit(FocusRowMixinLit(CrLitElement));
+const DownloadsItemElementBase = I18nMixinLit(FocusRowMixinLit(CrLitElement));
 
 /**
  * The UI pattern for displaying a download. Computed from DangerType and other
@@ -67,7 +65,7 @@ enum DisplayType {
   ERROR,
 }
 
-export class ItemElement extends ItemElementBase {
+export class DownloadsItemElement extends DownloadsItemElementBase {
   static get is() {
     return 'downloads-item';
   }
@@ -1155,11 +1153,6 @@ export class ItemElement extends ItemElementBase {
     this.getMoreActionsMenu().close();
   }
 
-  private onOpenNowClick_() {
-    this.mojoHandler_!.openDuringScanningRequiringGesture(this.dataId_());
-    this.getMoreActionsMenu().close();
-  }
-
   private dataId_(): string {
     return this.data ? this.data.id : '';
   }
@@ -1333,8 +1326,8 @@ export class ItemElement extends ItemElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'downloads-item': ItemElement;
+    'downloads-item': DownloadsItemElement;
   }
 }
 
-customElements.define(ItemElement.is, ItemElement);
+customElements.define(DownloadsItemElement.is, DownloadsItemElement);

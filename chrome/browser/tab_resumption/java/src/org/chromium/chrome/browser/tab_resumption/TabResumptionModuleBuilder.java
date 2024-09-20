@@ -174,7 +174,7 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                             profile,
                             suggestionBackend,
                             /* servesLocalTabs= */ TabResumptionModuleEnablement.SyncDerived
-                                    .isV2EnabledWithLocalTabs());
+                                    .isV2EnabledWithHistory());
         }
         ++mSuggestionEntrySourceRefCount;
     }
@@ -199,7 +199,7 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                             mSuggestionEntrySource, this::removeRefToSuggestionEntrySource);
         }
 
-        if (TabResumptionModuleEnablement.SyncDerived.isV2EnabledWithLocalTabs()) {
+        if (TabResumptionModuleEnablement.SyncDerived.isV2EnabledWithHistory()) {
             // V2 suggestion does everything: No need for explicit mixing.
             return syncDerivedProvider;
         }

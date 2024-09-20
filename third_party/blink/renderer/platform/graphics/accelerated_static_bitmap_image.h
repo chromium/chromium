@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/resources/release_callback.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -95,7 +96,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // This takes ownership of the mailbox.
   static scoped_refptr<AcceleratedStaticBitmapImage> CreateFromExternalMailbox(
       const gpu::MailboxHolder& mailbox_holder,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       const SkImageInfo& sk_image_info,
       bool is_origin_top_left,
       bool supports_display_compositing,
@@ -162,7 +163,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   SkImageInfo GetSkImageInfo() const override;
 
-  uint32_t GetUsage() const override;
+  gpu::SharedImageUsageSet GetUsage() const override;
 
  private:
   struct ReleaseContext {

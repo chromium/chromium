@@ -2271,12 +2271,8 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
           "Partitioned popins must be opened from https URLs.");
       return nullptr;
     }
-    // We allow an empty protocol as the URL has not yet been normalized (e.g.,
-    // a path with no other components is still valid at this stage). The
-    // browser process validates that the normalization does force https (which
-    // should occur as the current context is https).
-    if (!completed_url.Protocol().empty() &&
-        completed_url.Protocol() != WTF::g_https_atom) {
+    // We prevent redirections via PartitionedPopinsNavigationThrottle.
+    if (completed_url.Protocol() != WTF::g_https_atom) {
       exception_state.ThrowSecurityError(
           "Partitioned popins can only open https URLs.",
           "Partitioned popins can only open https URLs.");

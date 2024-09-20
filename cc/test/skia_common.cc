@@ -112,7 +112,7 @@ PaintImage CreatePaintWorkletPaintImage(
     scoped_refptr<PaintWorkletInput> input) {
   auto paint_image = PaintImageBuilder::WithDefault()
                          .set_id(1)
-                         .set_paint_worklet_input(std::move(input))
+                         .set_deferred_paint_record(std::move(input))
                          .TakePaintImage();
   return paint_image;
 }

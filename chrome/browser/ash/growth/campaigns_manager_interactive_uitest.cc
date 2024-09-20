@@ -153,6 +153,26 @@ base::FilePath GetCampaignsFilePath(const base::ScopedTempDir& dir) {
   return dir.GetPath().Append(kCampaignsFileName);
 }
 
+class TestCampaignsManagerObserver : public growth::CampaignsManager::Observer {
+ public:
+  // Spins a RunLoop until campaigns are loaded.
+  void wait() {
+    if (loaded_) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+  void OnCampaignsLoadCompleted() override {
+    loaded_ = true;
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  bool loaded_ = false;
+};
+
 }  // namespace
 
 // CampaignsManagerInteractiveUiTest -------------------------------------------
@@ -175,6 +195,13 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
                                      temp_dir_.GetPath().value());
 
     InteractiveAshTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveAshTest::SetUpOnMainThread();
+    InteractiveAshTest::SetupContextWidget();
+
+    WaitForCampaignLoaded();
   }
 
   void TearDownOnMainThread() override {
@@ -215,6 +242,14 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
   }
 
  protected:
+  void WaitForCampaignLoaded() {
+    auto* campaigns_manager = growth::CampaignsManager::Get();
+    ASSERT_TRUE(campaigns_manager);
+    observer_ = std::make_unique<TestCampaignsManagerObserver>();
+    campaigns_manager->AddObserver(observer_.get());
+    observer_->wait();
+  }
+
   auto CheckHistogramCounts(const std::string& name,
                             int sample,
                             int expected_count) {
@@ -251,6 +286,7 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
   base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
   ui::ScopedAnimationDurationScaleMode animation_duration_;
+  std::unique_ptr<TestCampaignsManagerObserver> observer_;
   base::WeakPtrFactory<CampaignsManagerInteractiveUiTest> weak_ptr_factory_{
       this};
 };
@@ -326,8 +362,7 @@ class CampaignsManagerInteractiveUiNudgeTest
   }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    InteractiveAshTest::SetupContextWidget();
+    CampaignsManagerInteractiveUiTest::SetUpOnMainThread();
 
     // Use SWA as targets and anchors in the tests.
     InstallSystemApps();
@@ -449,11 +484,6 @@ class CampaignsManagerInteractiveUiNotificationTest
  public:
   CampaignsManagerInteractiveUiNotificationTest() {
     base::WriteFile(GetCampaignsFilePath(temp_dir_), kCampaignsNotification);
-  }
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    InteractiveAshTest::SetupContextWidget();
   }
 
  protected:

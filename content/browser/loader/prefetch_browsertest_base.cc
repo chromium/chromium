@@ -188,12 +188,14 @@ int PrefetchBrowserTestBase::RequestCounter::GetRequestCount() {
 
 void PrefetchBrowserTestBase::RequestCounter::OnRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != path_)
+  if (request.relative_url != path_) {
     return;
+  }
   base::AutoLock lock(lock_);
   ++request_count_;
-  if (waiter_closure_)
+  if (waiter_closure_) {
     std::move(waiter_closure_).Run();
+  }
 }
 
 }  // namespace content

@@ -150,6 +150,21 @@ class SafeBrowsingQueryManagerTest : public PlatformTest {
     return SafeBrowsingQueryManager::FromWebState(web_state_.get());
   }
 
+  // Helper function to run all sync callbacks first then async callbacks.
+  void RunSyncCallbacksThenAsyncCallbacks() {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^() {
+          client_.run_sync_callbacks();
+        }));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^() {
+          client_.run_async_callbacks();
+        }));
+
+    // TODO(crbug.com/359420122): Remove when clean up is complete.
+    base::RunLoop().RunUntilIdle();
+  }
+
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   MockQueryManagerObserver observer_;
@@ -190,7 +205,7 @@ TEST_F(SafeBrowsingQueryManagerTest, SafeURLQueryWithAsyncRealTimeCheck) {
   // Start a URL check query for the safe URL and run the runloop until the
   // result is received.
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
-  base::RunLoop().RunUntilIdle();
+  RunSyncCallbacksThenAsyncCallbacks();
 }
 
 // Tests a query for an unsafe URL.
@@ -239,7 +254,7 @@ TEST_F(SafeBrowsingQueryManagerTest, SyncAndAsyncUnsafeURLQuery) {
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   manager()->StoreUnsafeResource(resource);
-  base::RunLoop().RunUntilIdle();
+  RunSyncCallbacksThenAsyncCallbacks();
 }
 
 // Tests a query for an unsafe URL with async checks enabled, where the URL
@@ -268,7 +283,7 @@ TEST_F(SafeBrowsingQueryManagerTest, AsyncUnsafeURLQuery) {
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   manager()->StoreUnsafeResource(resource);
-  base::RunLoop().RunUntilIdle();
+  RunSyncCallbacksThenAsyncCallbacks();
 }
 
 // Tests that back-to-back queries for the same unsafe URL correctly sets an

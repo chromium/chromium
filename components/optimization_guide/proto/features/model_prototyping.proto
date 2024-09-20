@@ -89,6 +89,8 @@ message ModelPrototypingRequest {
     // The page context of the page the model is acting on.
     PageContext page_context = 1;
 
+    // TODO(b/361790650): Deprecate these fields in favor of the content in
+    // PageContext.
     // The inner text of the page the model is acting on (excluding x-origin
     // frames)
     string inner_text = 2;
@@ -101,6 +103,23 @@ message ModelPrototypingRequest {
     // build a string in Chrome/colab to be used in the prompt. This allows
     // separation of prompt definition and call specific data.
     repeated string custom_data = 4;
+
+    // The form to predict values for. It is expected for the values for each
+    // field to be empty.
+    FormData form_data = 5;
+
+    // The current entries in the user annotations database helpful for filling
+    // out this form.
+    repeated UserAnnotationsEntry entries = 6;
+
+    // The ungrouped tabs that are requested to be organized.
+    repeated Tab tabs = 7;
+
+    // The tab that was active at the time the user requested tab organization.
+    int64 active_tab_id = 8;
+
+    // All pre-existing tab groups.
+    repeated TabGroup pre_existing_tab_groups = 9;
   }
 
   // Next ID: 3

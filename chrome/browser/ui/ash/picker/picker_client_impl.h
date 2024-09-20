@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_client.h"
+#include "ash/picker/picker_web_paste_target.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_client.h"
-#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
@@ -34,7 +34,6 @@ class PickerThumbnailLoader;
 namespace app_list {
 class SearchEngine;
 class SearchProvider;
-struct CategoryMetadata;
 }
 
 namespace ash {
@@ -73,6 +72,7 @@ class PickerClientImpl
   void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) override;
   void GetRecentLocalFileResults(size_t max_files,
+                                 base::TimeDelta now_delta,
                                  RecentFilesCallback callback) override;
   void GetRecentDriveFileResults(size_t max_files,
                                  RecentFilesCallback callback) override;
@@ -151,7 +151,6 @@ class PickerClientImpl
   std::optional<ash::PickerCategory> current_filter_category_;
 
   std::unique_ptr<app_list::RankerManager> ranker_manager_;
-  std::vector<app_list::CategoryMetadata> ranker_categories_;
 
   std::unique_ptr<PickerFileSuggester> file_suggester_;
   std::unique_ptr<PickerLinkSuggester> link_suggester_;

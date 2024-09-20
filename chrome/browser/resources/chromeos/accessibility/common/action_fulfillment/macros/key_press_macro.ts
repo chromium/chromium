@@ -34,9 +34,9 @@ export class KeyPressMacro extends Macro {
     const key = this.keyCombination_.key;
     const modifiers = this.keyCombination_.modifiers || {};
     if (this.runCount_ === 0) {
-      EventGenerator.sendKeyDown(key, modifiers);
+      EventGenerator.sendKeyDown(key, modifiers, /*use_rewriters=*/ true);
     } else if (this.runCount_ === 1) {
-      EventGenerator.sendKeyUp(key, modifiers);
+      EventGenerator.sendKeyUp(key, modifiers, /*use_rewriters=*/ true);
     } else {
       console.error('Key press macro cannot be run more than twice.');
       return this.createRunMacroResult_(

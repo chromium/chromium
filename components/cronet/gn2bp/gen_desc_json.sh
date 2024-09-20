@@ -67,6 +67,24 @@ function setup_chromium_src_repo() (
 )
 
 #######################################
+# Imports intermediate CLs for correct generation of desc_*.json
+# Arguments:
+#   chromium_dir, string
+#######################################
+function cherry_pick_chromium_cls() (
+  cd "${chromium_dir}"
+  # Delete once 130.0.6675.0 is imported.
+  git fetch https://chromium.googlesource.com/chromium/src refs/changes/44/5808944/6 && git cherry-pick FETCH_HEAD
+  # Delete once 130.0.6675.0 is imported.
+  git fetch https://chromium.googlesource.com/chromium/src refs/changes/45/5808945/6 && git cherry-pick FETCH_HEAD
+  # Delete once 130.0.6675.0 is imported.
+  git fetch https://chromium.googlesource.com/chromium/src refs/changes/78/5809278/6 && git cherry-pick FETCH_HEAD
+  # Delete once 130.0.6675.0 is imported.
+  git fetch https://chromium.googlesource.com/chromium/src refs/changes/40/5806340/8 && git cherry-pick FETCH_HEAD
+  # Delete once 130.0.6682.0 is imported.
+  git fetch https://chromium.googlesource.com/chromium/src refs/changes/80/5809380/6 && git cherry-pick FETCH_HEAD
+)
+#######################################
 # Generate desc.json for a specified architecture.
 # Globals:
 #   ANDROID_BUILD_TOP
@@ -142,14 +160,15 @@ if [ -z "${rev}" ]; then
 fi
 
 if [ -z "${ANDROID_BUILD_TOP}" ]; then
-    echo "ANDROID_BUILD_TOP is not set. Please run source build/envsetup.h && lunch"
+    echo "ANDROID_BUILD_TOP is not set. Please run source build/envsetup.sh && lunch"
     exit 1
 fi
 
 
 setup_chromium_src_repo "${rev}" "${chromium_dir}" "${force_reset}"
+cherry_pick_chromium_cls "${chromium_dir}"
 gn_desc x86 "${chromium_dir}"
 gn_desc x64 "${chromium_dir}"
 gn_desc arm "${chromium_dir}"
 gn_desc arm64 "${chromium_dir}"
-
+gn_desc riscv64 "${chromium_dir}"

@@ -18,6 +18,7 @@ ResponseHolder::~ResponseHolder() = default;
 
 OptimizationGuideModelExecutionResultStreamingCallback
 ResponseHolder::callback() {
+  final_status_future_.Clear();
   return base::BindRepeating(&ResponseHolder::OnResponse,
                              weak_ptr_factory_.GetWeakPtr());
 }
@@ -39,6 +40,7 @@ void ResponseHolder::OnResponse(
   }
   if (!result.response.has_value()) {
     response_error_ = result.response.error().error();
+    final_status_future_.SetValue(false);
     return;
   }
   provided_by_on_device_ = result.provided_by_on_device;
@@ -46,6 +48,7 @@ void ResponseHolder::OnResponse(
       ParsedAnyMetadata<proto::ComposeResponse>(result.response->response);
   if (result.response->is_complete) {
     response_received_ = response->output();
+    final_status_future_.SetValue(true);
   } else {
     streamed_responses_.push_back(response->output());
   }

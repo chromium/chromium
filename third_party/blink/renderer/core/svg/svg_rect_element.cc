@@ -116,35 +116,6 @@ Path SVGRectElement::AsPath() const {
   return path;
 }
 
-void SVGRectElement::CollectStyleForPresentationAttribute(
-    const QualifiedName& name,
-    const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
-  if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
-                                            x_->CssValue());
-  } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
-                                            y_->CssValue());
-  } else if (property == width_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
-                                            width_->CssValue());
-  } else if (property == height_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
-                                            height_->CssValue());
-  } else if (property == rx_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kRx,
-                                            rx_->CssValue());
-  } else if (property == ry_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kRy,
-                                            ry_->CssValue());
-  } else {
-    SVGGeometryElement::CollectStyleForPresentationAttribute(name, value,
-                                                             style);
-  }
-}
-
 void SVGRectElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
@@ -199,15 +170,9 @@ void SVGRectElement::SynchronizeAllSVGAttributes() const {
 
 void SVGRectElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  for (auto* property :
-       (SVGAnimatedPropertyBase*[]){x_.Get(), y_.Get(), width_.Get(),
-                                    height_.Get(), rx_.Get(), ry_.Get()}) {
-    DCHECK(property->HasPresentationAttributeMapping());
-    if (property->IsAnimating()) {
-      CollectStyleForPresentationAttribute(property->AttributeName(),
-                                           g_empty_atom, style);
-    }
-  }
+  auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
+      {x_.Get(), y_.Get(), width_.Get(), height_.Get(), rx_.Get(), ry_.Get()});
+  AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
   SVGGeometryElement::CollectExtraStyleForPresentationAttribute(style);
 }
 

@@ -105,15 +105,13 @@ public class SharedImageTilesCoordinator {
     }
 
     private void extractGroupMemberInfo(GroupData groupData) {
-        // TODO(b/361642045): Call showAvatars here.
-        updateTilesCount(groupData.members.size());
-
         List<String> emails = new ArrayList<>();
         for (GroupMember member : groupData.members) {
             if (member.email != null && !member.email.isEmpty()) {
                 emails.add(member.email);
             }
         }
+        updateTilesCount(emails.size());
 
         // Let the UI delegate draw the icon tiles.
         DataSharingUIDelegate dataSharingUIDelegate = mDataSharingService.getUIDelegate();
@@ -156,11 +154,6 @@ public class SharedImageTilesCoordinator {
             mModel.set(
                     SharedImageTilesProperties.REMAINING_TILES,
                     mAvailableTileCount - maxTilesToShowWithNumberTile);
-        } else {
-            if (mType == SharedImageTilesType.CLICKABLE && mIconTilesCount < MAX_TILES_UI_LIMIT) {
-                // Append an add person button.
-                mModel.set(SharedImageTilesProperties.SHOW_ADD_BUTTON, true);
-            }
         }
     }
 
@@ -190,7 +183,6 @@ public class SharedImageTilesCoordinator {
         // TODO(b/325533985): |mAvailableTileCount| should be replace by the actual number of icons
         // needed.
         mAvailableTileCount = count;
-        mModel.set(SharedImageTilesProperties.SHOW_ADD_BUTTON, false);
         mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
         mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
         initializeSharedImageTiles();

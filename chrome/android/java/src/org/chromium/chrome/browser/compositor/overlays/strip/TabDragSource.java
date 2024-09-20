@@ -29,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -177,10 +179,16 @@ public class TabDragSource implements View.OnDragListener {
                                 || MultiWindowUtils.getInstanceCount()
                                         < MultiWindowUtils.getMaxInstances());
 
+        TabGroupModelFilter tabGroupModelFilter =
+                (TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+        boolean isTabInGroup = tabGroupModelFilter.isTabInTabGroup(tabBeingDragged);
+
         // Build shared state with all info.
         ChromeDropDataAndroid dropData =
                 new ChromeDropDataAndroid.Builder()
                         .withTab(tabBeingDragged)
+                        .withTabInGroup(isTabInGroup)
                         .withAllowDragToCreateInstance(allowDragToCreateInstance)
                         .build();
         updateShadowView(tabBeingDragged, dragSourceView, (int) (tabWidthDp / mPxToDp));
@@ -370,8 +378,10 @@ public class TabDragSource implements View.OnDragListener {
         }
         boolean tabDraggedBelongToCurrentModel = doesBelongToCurrentModel(tabBeingDragged);
 
-        // TODO(crbug.com/350811736): The last tab in tab group can be ungrouped through
-        //  re-parenting, we might want to record user action of TabRemovedFromGroup here.
+        // Record user action if a grouped tab is going to be re-parented.
+        recordTabRemovedFromGroupUserAction();
+
+        // Move tab to another window.
         if (!tabDraggedBelongToCurrentModel) {
             mMultiInstanceManager.moveTabToWindow(
                     getActivity(),
@@ -419,6 +429,9 @@ public class TabDragSource implements View.OnDragListener {
             // SysUI.
             sendPositionInfoToSysUI(view, mStartScreenPos.x, mStartScreenPos.y, xPx, yPx);
 
+            // Record user action if a grouped tab is moved to a new window.
+            recordTabRemovedFromGroupUserAction();
+
             // Hence move the tab to a new Chrome window.
             mMultiInstanceManager.moveTabToNewWindow(tabBeingDragged);
         }
@@ -454,6 +467,14 @@ public class TabDragSource implements View.OnDragListener {
         }
 
         return true;
+    }
+
+    private void recordTabRemovedFromGroupUserAction() {
+        DragDropGlobalState globalState = DragDropGlobalState.getState(sDragTrackerToken);
+        if (globalState.getData() instanceof ChromeDropDataAndroid
+                && ((ChromeDropDataAndroid) globalState.getData()).isTabInGroup) {
+            RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
+        }
     }
 
     private boolean onDragExit() {

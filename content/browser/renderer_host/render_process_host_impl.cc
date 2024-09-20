@@ -318,6 +318,8 @@ RenderProcessHostFactory* g_render_process_host_factory_ = nullptr;
 const char kSiteProcessMapKeyName[] = "content_site_process_map";
 
 const void* const kProcessPerSiteUmaLoggedKey = &kProcessPerSiteUmaLoggedKey;
+const void* const kSubframeProcessReuseOverLimitUmaLoggedKey =
+    &kSubframeProcessReuseOverLimitUmaLoggedKey;
 
 RenderProcessHost::AnalyzeHungRendererFunction g_analyze_hung_renderer =
     nullptr;
@@ -479,7 +481,7 @@ bool HasEnoughMemoryForAnotherMainFrame(RenderProcessHost* host,
   // A few definitions:
   // PMF - the private memory footprint of the memory allocated by the
   //       process excluding any shared memory segments.
-  // size_per_top_level_frame - the estimated size of a top level frame,
+  // size_per_top_level_frame - the estimated size of each top level frame,
   //       assuming each top level frame is around the same size. This
   //       is calculated by dividing the PMF by the number of top level frames
   //       in the process. This algorithm treats any OOPIFs being equally
@@ -498,7 +500,7 @@ bool HasEnoughMemoryForAnotherMainFrame(RenderProcessHost* host,
   //       We should try to keep the private memory less than this value.
   //
   // The algorithm:
-  //    Should Use Same Process = (PMF + estimated_size) < process_memory_limit
+  //    Has Enough Room = (PMF + estimated_size) < process_memory_limit
   uint64_t private_memory_footprint = host->GetPrivateMemoryFootprint();
 
   // Zero indicates we didn't obtain a PMF so we should just deny it, because
@@ -547,16 +549,27 @@ bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
                                     SiteInstanceImpl* site_instance,
                                     ProcessReusePolicy process_reuse_policy) {
   if (process_reuse_policy !=
-      ProcessReusePolicy::
-          REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD) {
+          ProcessReusePolicy::
+              REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD &&
+      process_reuse_policy !=
+          ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME) {
+    return true;
+  }
+
+  if (process_reuse_policy ==
+          ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME &&
+      !base::FeatureList::IsEnabled(
+          features::kSubframeProcessReuseThresholds)) {
     return true;
   }
 
   size_t main_frame_count = 0;
+  size_t total_frame_count = 0;
   bool devtools_attached = false;
   host->ForEachRenderFrameHost(
-      [&main_frame_count,
+      [&main_frame_count, &total_frame_count,
        &devtools_attached](RenderFrameHost* render_frame_host) {
+        ++total_frame_count;
         if (static_cast<RenderFrameHostImpl*>(render_frame_host)
                 ->IsOutermostMainFrame()) {
           ++main_frame_count;
@@ -568,24 +581,61 @@ bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
         }
       });
 
-  // If a threshold is specified, don't reuse `host` if it already hosts more
-  // main frames (including BFCached and prerendered) than the threshold.
-  size_t main_frame_threshold = base::checked_cast<size_t>(
-      features::kProcessPerSiteMainFrameThreshold.Get());
-  if (main_frame_count >= main_frame_threshold) {
-    return false;
+  if (process_reuse_policy ==
+      ProcessReusePolicy::
+          REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD) {
+    // If a threshold is specified, don't reuse `host` if it already hosts more
+    // main frames (including BFCached and prerendered) than the threshold.
+    size_t main_frame_threshold = base::checked_cast<size_t>(
+        features::kProcessPerSiteMainFrameThreshold.Get());
+    if (main_frame_count >= main_frame_threshold) {
+      return false;
+    }
+
+    // Don't reuse `host` if DevTools is attached to any frame in that process
+    // since DevTools doesn't work well when a renderer has multiple main
+    // frames.
+    // TODO(crbug.com/40269649): This is just a heuristic and won't work if
+    // DevTools is attached later, and hence this should be eventually removed
+    // and fixed properly in the renderer process.
+    if (devtools_attached) {
+      return false;
+    }
+
+    return HasEnoughMemoryForAnotherMainFrame(host, main_frame_count);
   }
 
-  // Don't reuse `host` if DevTools is attached to any frame in that process
-  // since DevTools doesn't work well when a renderer has multiple main frames.
-  // TODO(crbug.com/40269649): This is just a heuristic and won't work if
-  // DevTools is attached later, and hence this should be eventually removed and
-  // fixed properly in the renderer process.
-  if (devtools_attached) {
-    return false;
+  DCHECK_EQ(process_reuse_policy,
+            ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
+
+  // For subframe process reuse, simply check if the `host` has already exceeded
+  // the memory threshold to decide whether it should be reused for a new
+  // subframe. This simple heuristic should suffice if the memory threshold is
+  // already set conservatively (below the threshold that would actually lead to
+  // OOMs), and avoids the complexity of trying to estimate the size of each
+  // main frame and subframe in the process, how many extra same-site frames
+  // would be necessarily added to `host` later if the current frame were
+  // allowed to reuse it (e.g., as its subframes), etc.
+  uint64_t process_memory_limit = base::saturated_cast<uint64_t>(
+      features::kSubframeProcessReuseMemoryThreshold.Get());
+  if (host->GetPrivateMemoryFootprint() < process_memory_limit) {
+    return true;
   }
 
-  return HasEnoughMemoryForAnotherMainFrame(host, main_frame_count);
+  // Record the total number of frames at the time the subframe memory threshold
+  // is exceeded. A process may enter and exit this condition multiple times,
+  // so to avoid over-recording only record this the first time the threshold
+  // is exceeded.
+  if (!host->GetUserData(kSubframeProcessReuseOverLimitUmaLoggedKey)) {
+    base::UmaHistogramCounts1000(
+        "BrowserRenderProcessHost.SubframeProcessReuseThreshold."
+        "TotalFrames",
+        total_frame_count);
+    host->SetUserData(kSubframeProcessReuseOverLimitUmaLoggedKey,
+                      std::make_unique<base::SupportsUserData::Data>());
+  }
+
+  return false;
 }
 
 // The following class is used to track the sites each RenderProcessHost is
@@ -1315,8 +1365,7 @@ void RenderProcessHost::SetMaxRendererProcessCount(size_t count) {
   g_max_renderer_count_override = count;
 
   if (RenderProcessHostImpl::GetProcessCount() > count) {
-    SpareRenderProcessHostManager::GetInstance()
-        .CleanupSpareRenderProcessHost();
+    SpareRenderProcessHostManager::Get().CleanupSpare();
   }
 }
 
@@ -2575,10 +2624,12 @@ size_t RenderProcessHostImpl::GetShutdownDelayRefCount() const {
 }
 
 void RenderProcessHostImpl::IncrementNavigationStateKeepAliveCount() {
+  CHECK(!are_ref_counts_disabled_);
   navigation_state_keepalive_count_++;
 }
 
 void RenderProcessHostImpl::DecrementNavigationStateKeepAliveCount() {
+  CHECK(!are_ref_counts_disabled_);
   CHECK_GT(navigation_state_keepalive_count_, 0);
   navigation_state_keepalive_count_--;
   if (navigation_state_keepalive_count_ == 0) {
@@ -2978,7 +3029,7 @@ void RenderProcessHostImpl::RemoveExpectedNavigationToSite(
 // static
 void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
     SiteInstance* site_instance) {
-  SpareRenderProcessHostManager::GetInstance().PrepareForFutureRequests(
+  SpareRenderProcessHostManager::Get().PrepareForFutureRequests(
       site_instance->GetBrowserContext(),
       GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
           site_instance->GetSiteURL()));
@@ -2986,8 +3037,7 @@ void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
 
 // static
 RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHost() {
-  return SpareRenderProcessHostManager::GetInstance()
-      .spare_render_process_host();
+  return SpareRenderProcessHostManager::Get().spare();
 }
 
 // static
@@ -2999,13 +3049,12 @@ RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHostForTesting() {
 base::CallbackListSubscription
 RenderProcessHost::RegisterSpareRenderProcessHostChangedCallback(
     const base::RepeatingCallback<void(RenderProcessHost*)>& cb) {
-  return SpareRenderProcessHostManager::GetInstance()
-      .RegisterSpareRenderProcessHostChangedCallback(cb);
+  return SpareRenderProcessHostManager::Get().RegisterSpareChangedCallback(cb);
 }
 
 // static
 void RenderProcessHostImpl::DiscardSpareRenderProcessHostForTesting() {
-  SpareRenderProcessHostManager::GetInstance().CleanupSpareRenderProcessHost();
+  SpareRenderProcessHostManager::Get().CleanupSpare();
 }
 
 // static
@@ -3051,8 +3100,7 @@ bool RenderProcessHostImpl::HostHasNotBeenUsed() {
 }
 
 bool RenderProcessHostImpl::IsSpare() const {
-  return this == SpareRenderProcessHostManager::GetInstance()
-                     .spare_render_process_host();
+  return this == SpareRenderProcessHostManager::Get().spare();
 }
 
 void RenderProcessHostImpl::SetProcessLock(
@@ -4447,8 +4495,7 @@ bool RenderProcessHostImpl::ShouldDelayProcessShutdown() {
 // static
 void RenderProcessHost::WarmupSpareRenderProcessHost(
     content::BrowserContext* browser_context) {
-  SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
-      browser_context);
+  SpareRenderProcessHostManager::Get().WarmupSpare(browser_context);
 }
 
 // static
@@ -4512,9 +4559,7 @@ size_t RenderProcessHostImpl::GetProcessCountForLimit() {
 }
 
 // static
-bool RenderProcessHost::ShouldTryToUseExistingProcessHost(
-    BrowserContext* browser_context,
-    const GURL& url) {
+bool RenderProcessHost::IsProcessLimitReached() {
   if (run_renderer_in_process())
     return true;
 
@@ -4532,8 +4577,7 @@ bool RenderProcessHost::ShouldTryToUseExistingProcessHost(
     return true;
   }
 
-  return GetContentClient()->browser()->ShouldTryToUseExistingProcessHost(
-      browser_context, url);
+  return false;
 }
 
 // static
@@ -4546,8 +4590,7 @@ RenderProcessHost* RenderProcessHostImpl::GetExistingProcessHost(
   for (iterator iter(AllHostsIterator()); !iter.IsAtEnd(); iter.Advance()) {
     // The spare RenderProcessHost will have been considered by this point.
     // Ensure it is not added to the collection of suitable renderers.
-    if (iter.GetCurrentValue() == SpareRenderProcessHostManager::GetInstance()
-                                      .spare_render_process_host()) {
+    if (iter.GetCurrentValue()->IsSpare()) {
       continue;
     }
     if (MayReuseAndIsSuitable(iter.GetCurrentValue(), site_instance))
@@ -4692,12 +4735,23 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
         SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS);
   }
 
-  // See if the spare RenderProcessHost can be used.
-  auto& spare_process_manager = SpareRenderProcessHostManager::GetInstance();
+  // See if the embedder prefers using an existing process.
+  if (!render_process_host &&
+      GetContentClient()->browser()->ShouldTryToUseExistingProcessHost(
+          browser_context, site_info.site_url())) {
+    render_process_host = GetExistingProcessHost(site_instance);
+    if (render_process_host) {
+      site_instance->set_process_assignment(
+          SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS);
+    }
+  }
+
+  // If not (or if none found), see if the spare RenderProcessHost can be used.
+  auto& spare_process_manager = SpareRenderProcessHostManager::Get();
   bool spare_was_taken = false;
   if (!render_process_host) {
-    render_process_host = spare_process_manager.MaybeTakeSpareRenderProcessHost(
-        browser_context, site_instance);
+    render_process_host =
+        spare_process_manager.MaybeTakeSpare(browser_context, site_instance);
     if (render_process_host) {
       site_instance->set_process_assignment(
           SiteInstanceProcessAssignment::USED_SPARE_PROCESS);
@@ -4705,9 +4759,9 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
     }
   }
 
-  // If not (or if none found), see if we should reuse an existing process.
-  if (!render_process_host && ShouldTryToUseExistingProcessHost(
-                                  browser_context, site_info.site_url())) {
+  // If not (or if none found), see if the process limit was reached, in which
+  // case an existing process should be used if possible."
+  if (!render_process_host && IsProcessLimitReached()) {
     render_process_host = GetExistingProcessHost(site_instance);
     if (render_process_host) {
       site_instance->set_process_assignment(

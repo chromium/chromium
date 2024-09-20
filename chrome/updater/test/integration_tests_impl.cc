@@ -25,6 +25,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -51,6 +52,8 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
+#include "chrome/enterprise_companion/global_constants.h"
+#include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
@@ -71,7 +74,6 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,25 +99,26 @@ constexpr char kSelfUpdateCRXName[] = "updater_selfupdate.crx3";
 constexpr char kSelfUpdateCRXRun[] = PRODUCT_FULLNAME_STRING "_test.app";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_dmg.crx";
 constexpr char kDoNothingCRXRun[] = "updater_qualification_app_dmg.dmg";
+constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
+    FILE_PATH_LITERAL("enterprise_companion_test");
 #elif BUILDFLAG(IS_WIN)
 constexpr char kSelfUpdateCRXRun[] = "UpdaterSetup_test.exe";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_exe.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app.exe";
+constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
+    FILE_PATH_LITERAL("enterprise_companion_test.exe");
 #elif BUILDFLAG(IS_LINUX)
 constexpr char kSelfUpdateCRXRun[] = "updater_test";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app";
+constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
+    FILE_PATH_LITERAL("enterprise_companion_test");
 #endif
 
 std::string GetHashHex(const base::FilePath& file) {
-  std::unique_ptr<crypto::SecureHash> hasher(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
   base::MemoryMappedFile mmfile;
   EXPECT_TRUE(mmfile.Initialize(file));  // Note: This fails with an empty file.
-  hasher->Update(mmfile.data(), mmfile.length());
-  uint8_t actual_hash[crypto::kSHA256Length] = {0};
-  hasher->Finish(actual_hash, sizeof(actual_hash));
-  return base::HexEncode(actual_hash);
+  return base::HexEncode(crypto::SHA256Hash(mmfile.bytes()));
 }
 
 std::string GetUpdateResponseForApp(
@@ -345,6 +348,35 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
             base::StringPrintf("%s token=%s", authorization_type.c_str(),
                                authorization_token.c_str())},
            {"Content-Type", "application/x-protobuf"}})};
+  if (target_url) {
+    request_matchers.push_back(request::GetTargetURLMatcher(*target_url));
+  }
+  test_server->ExpectOnce(request_matchers, response, response_status);
+}
+
+void ExpectDeviceManagementRequestViaCompanionApp(
+    ScopedServer* test_server,
+    const std::string& request_type,
+    const std::string& authorization_type,
+    const std::string& authorization_token,
+    net::HttpStatusCode response_status,
+    const std::string& response,
+    std::optional<GURL> target_url = {}) {
+  request::MatcherGroup request_matchers = {
+      request::GetPathMatcher(base::StringPrintf(
+          R"(%s\?.*agent=%sEnterpriseCompanion\+%s&apptype=Chrome)"
+          R"(&deviceid=%s.*&platform=.*&request=%s)",
+          test_server->device_management_path().c_str(), BROWSER_NAME_STRING,
+          kUpdaterVersion,
+          device_management_storage::GetDefaultDMStorage()
+              ->GetDeviceID()
+              .c_str(),
+          request_type.c_str())),
+      request::GetHeaderMatcher(
+          {{"Authorization",
+            base::StringPrintf("%s token=%s", authorization_type.c_str(),
+                               authorization_token.c_str())},
+           {"Content-Type", "application/protobuf"}})};
   if (target_url) {
     request_matchers.push_back(request::GetTargetURLMatcher(*target_url));
   }
@@ -1414,10 +1446,8 @@ void ExpectLastStarted(UpdaterScope updater_scope) {
 
 std::set<base::FilePath::StringType> GetTestProcessNames() {
 #if BUILDFLAG(IS_MAC)
-  return {
-      GetExecutableRelativePath().BaseName().value(),
-      GetSetupExecutablePath().BaseName().value(),
-  };
+  return {GetExecutableRelativePath().BaseName().value(),
+          GetSetupExecutablePath().BaseName().value()};
 #elif BUILDFLAG(IS_WIN)
   return {
       GetExecutableRelativePath().BaseName().value(),
@@ -1434,6 +1464,11 @@ std::set<base::FilePath::StringType> GetTestProcessNames() {
 #else
   return {GetExecutableRelativePath().BaseName().value(), kLauncherName};
 #endif
+}
+
+std::set<base::FilePath::StringType> GetCompanionAppProcessNames() {
+  return {base::FilePath::FromASCII(kCompanionAppExecutableName).value(),
+          kCompanionAppTestExecutableName};
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1552,6 +1587,67 @@ void DMCleanup(UpdaterScope scope) {
 #endif
 }
 
+void InstallEnterpriseCompanionApp(
+    const base::Value::Dict& external_overrides) {
+  std::optional<base::FilePath> json_path =
+      enterprise_companion::GetOverridesFilePath();
+  EXPECT_TRUE(json_path);
+  EXPECT_TRUE(base::CreateDirectory(json_path->DirName()));
+  JSONFileValueSerializer json_serializer(*json_path);
+#if BUILDFLAG(IS_WIN)
+  // Allow admin to access companion app's Mojo service named pipe.
+  EXPECT_TRUE(json_serializer.Serialize(external_overrides.Clone().Set(
+      enterprise_companion::kNamedPipeSecurityDescriptorKey,
+      "D:(A;;GA;;;BA)")));
+#else
+  EXPECT_TRUE(json_serializer.Serialize(external_overrides));
+#endif
+
+  base::FilePath exe_path;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  int exit_code = -1;
+  base::CommandLine command(exe_path.Append(kCompanionAppTestExecutableName));
+  command.AppendSwitch("install");
+  base::Process process = base::LaunchProcess(command, {});
+  EXPECT_TRUE(process.IsValid());
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                             &exit_code));
+  EXPECT_EQ(exit_code, 0);
+  VLOG(1) << "Enterprise companion app installed.";
+}
+
+void UninstallEnterpriseCompanionApp() {
+  std::optional<base::FilePath> install_dir =
+      enterprise_companion::GetInstallDirectory();
+  if (!install_dir) {
+    VLOG(1) << "Cannot find enterprise companion app installation directory, "
+            << "assume it does not exist.";
+    return;
+  }
+
+  base::CommandLine command_line(
+      install_dir->AppendASCII(kCompanionAppExecutableName));
+  command_line.AppendSwitch(kUninstallCompanionAppSwitch);
+  base::Process uninstall_process = base::LaunchProcess(command_line, {});
+  if (!uninstall_process.IsValid()) {
+    VLOG(1) << "Failed to launch enterprise companion app for uninstall, "
+            << "assume it does not exist.";
+    return;
+  }
+
+  if (WaitForProcess(uninstall_process) != 0) {
+    VLOG(1) << "Failed to uninstall companion app, nuke it.";
+    for (const base::FilePath::StringType& process_name :
+         GetCompanionAppProcessNames()) {
+      KillProcesses(process_name, -1);
+      WaitForProcessesToExit(process_name, TestTimeouts::action_timeout());
+      EXPECT_FALSE(IsProcessRunning(process_name)) << process_name;
+    }
+    base::DeletePathRecursively(*install_dir);
+  }
+  VLOG(1) << "Enterprise companion app is removed.";
+}
+
 void ExpectDeviceManagementRegistrationRequest(
     ScopedServer* test_server,
     const std::string& enrollment_token,
@@ -1645,6 +1741,43 @@ void ExpectDeviceManagementPolicyValidationRequest(
     const std::string& dm_token) {
   ExpectDeviceManagementRequest(test_server, "policy_validation_report",
                                 "GoogleDMToken", dm_token, net::HTTP_OK, "");
+}
+
+void ExpectDeviceManagementRegistrationRequestViaCompanionApp(
+    ScopedServer* test_server,
+    const std::string& enrollment_token,
+    const std::string& dm_token) {
+  ExpectDeviceManagementRequestViaCompanionApp(
+      test_server, "register_policy_agent", "GoogleEnrollmentToken",
+      enrollment_token, net::HTTP_OK, [&dm_token] {
+        enterprise_management::DeviceManagementResponse dm_response;
+        dm_response.mutable_register_response()->set_device_management_token(
+            dm_token);
+        return dm_response.SerializeAsString();
+      }());
+}
+
+void ExpectDeviceManagementPolicyFetchRequestViaCompanionApp(
+    ScopedServer* test_server,
+    const std::string& dm_token,
+    const ::wireless_android_enterprise_devicemanagement::
+        OmahaSettingsClientProto& omaha_settings,
+    bool first_request,
+    bool rotate_public_key,
+    std::optional<GURL> target_url) {
+  ExpectDeviceManagementRequestViaCompanionApp(
+      test_server, "policy", "GoogleDMToken", dm_token, net::HTTP_OK,
+      [&dm_token, &omaha_settings, first_request, rotate_public_key] {
+        std::unique_ptr<::enterprise_management::DeviceManagementResponse>
+            dm_response = GetDMResponseForOmahaPolicy(
+                first_request, rotate_public_key,
+                DMPolicyBuilderForTesting::SigningOption::kSignNormally,
+                dm_token,
+                device_management_storage::GetDefaultDMStorage()->GetDeviceID(),
+                omaha_settings);
+        return dm_response->SerializeAsString();
+      }(),
+      target_url);
 }
 
 void ExpectProxyPacScriptRequest(ScopedServer* test_server) {

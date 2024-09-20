@@ -30,9 +30,9 @@ bool IsCSPDirectiveValueCharacter(UChar c) {
 }  // namespace
 
 bool MatchesTheSerializedCSPGrammar(const String& value) {
-  return WTF::VisitCharacters(value, [](const auto* chars, unsigned len) {
-    const auto* it = chars;
-    const auto* end = chars + len;
+  return WTF::VisitCharacters(value, [](auto chars) {
+    const auto* it = chars.data();
+    const auto* end = chars.data() + chars.size();
 
     while (it < end) {
       // Consume any whitespaces.

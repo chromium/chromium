@@ -367,6 +367,13 @@ BASE_FEATURE(kResumeBackgroundVideo,
 BASE_FEATURE(kMacLoopbackAudioForScreenShare,
              "MacLoopbackAudioForScreenShare",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use the built-in MacOS screen-sharing picker (SCContentSharingPicker). This
+// flag will only use the built-in picker on MacOS 15 Sequoia and later where it
+// is required to avoid recurring permission dialogs.
+BASE_FEATURE(kUseSCContentSharingPicker,
+             "UseSCContentSharingPicker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
@@ -421,22 +428,6 @@ BASE_FEATURE(kPlatformAudioEncoder,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-// If enabled, RTCVideoDecoderAdapter will wrap a DecoderStream as a video
-// decoder, rather than using MojoVideoDecoder.  This causes the RTC external
-// decoder to have all the decoder selection / fallback/forward logic of the
-// non-RTC pipeline.
-// TODO(liberato): This also causes the external decoder to use software
-// decoding sometimes, which changes the interpretation of "ExternalDecoder".
-BASE_FEATURE(kUseDecoderStreamForWebRTC,
-             "UseDecoderStreamForWebRTC",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, when RTCVideoDecoderAdapter is used then SW decoders will be
-// exposed directly to WebRTC.
-BASE_FEATURE(kExposeSwDecodersToWebRTC,
-             "ExposeSwDecodersToWebRTC",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // CDM host verification is enabled by default. Can be disabled for testing.
 // Has no effect if ENABLE_CDM_HOST_VERIFICATION buildflag is false.
@@ -846,7 +837,7 @@ BASE_FEATURE(kVSyncMjpegDecoding,
 // all platforms.
 BASE_FEATURE(kV4L2FlatStatefulVideoDecoder,
              "V4L2FlatStatefulVideoDecoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable H264 temporal layer encoding with V4L2 HW encoder on ChromeOS.
 BASE_FEATURE(kV4L2H264TemporalLayerHWEncoding,
              "V4L2H264TemporalLayerHWEncoding",
@@ -885,7 +876,7 @@ BASE_FEATURE(kWebCodecsVideoEncoderFrameDrop,
 // A hardware video encoder is allowed to drop a frame in WebRTC.
 BASE_FEATURE(kWebRTCHardwareVideoEncoderFrameDrop,
              "WebRTCHardwareVideoEncoderFrameDrop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Inform webrtc with correct video color space information whenever
 // possible.
@@ -1080,19 +1071,12 @@ BASE_FEATURE(kHardwareMediaKeyHandling,
 // decoders over software decoders or vice-versa.
 BASE_FEATURE(kResolutionBasedDecoderPriority,
              "ResolutionBasedDecoderPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Forces use of hardware (platform) video decoders in
-// `media::DecoderSelector`.
-BASE_FEATURE(kForceHardwareVideoDecoders,
-             "ForceHardwareVideoDecoders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Forces use of hardware (platform) audio decoders in
-// `media::DecoderSelector`.
-BASE_FEATURE(kForceHardwareAudioDecoders,
-             "ForceHardwareAudioDecoders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Enables low-delay video rendering in media pipeline on "live" stream.
 BASE_FEATURE(kLowDelayVideoRenderingOnLiveStream,
@@ -1144,6 +1128,11 @@ BASE_FEATURE(kMediaCodecBlockModel,
 BASE_FEATURE(kMediaCodecCodedSizeGuessing,
              "MediaCodecCodedSizeGuessing",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Allow EOS buffers to be elided by MediaCodecVideoDecoder.
+BASE_FEATURE(kMediaCodecElideEOS,
+             "MediaCodecElideEOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable a gesture to make the media controls expanded into the display cutout.
 // TODO(beccahughes): Remove this.
@@ -1724,6 +1713,13 @@ BASE_FEATURE(kCastStreamingMacHardwareH264,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Controls whether hardware H264 is default enabled on Windows.
+BASE_FEATURE(kCastStreamingWinHardwareH264,
+             "CastStreamingWinHardwareH264",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
 // Enables use of Fuchsia's Mediacodec service for encoding.
 BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,
@@ -1735,8 +1731,7 @@ BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,
 // smaller than maximum supported decodes as advertiszed by decoder.
 BASE_FEATURE(kVideoDecodeBatching,
              "VideoDecodeBatching",
-             base::FEATURE_DISABLED_BY_DEFAULT
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Safety switch to allow us to revert to the previous behavior of using the
 // restored bounds for PiP windows, rather than the window bounds.  If this

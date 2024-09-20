@@ -6,7 +6,7 @@
 #define ASH_PICKER_VIEWS_PICKER_CATEGORY_TYPE_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/picker/picker_category.h"
+#include "ash/picker/picker_category.h"
 
 namespace ash {
 

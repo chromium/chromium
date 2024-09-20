@@ -117,7 +117,8 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
 
   auto features = BuildPredictionRequestFeatures(request);
   if (!base::FeatureList::IsEnabled(
-          permissions::features::kPermissionPredictionsV3)) {
+          permissions::features::kPermissionPredictionsV3) ||
+      prediction_source == PredictionSource::USE_ONDEVICE) {
     if (features.requested_permission_counts.total() <
         kRequestedPermissionMinimumHistoricalActions) {
       VLOG(1) << "[CPSS] Historic prompt count ("
@@ -241,6 +242,11 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
     features.url = request->requesting_origin().GetWithEmptyPath();
   }
 #endif
+
+  features.experiment_id = base::FeatureList::IsEnabled(
+                               permissions::features::kPermissionPredictionsV3)
+                               ? 1
+                               : 0;
 
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
 

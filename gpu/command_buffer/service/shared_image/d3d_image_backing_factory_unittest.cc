@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 
 #include <dawn/dawn_proc.h>
+#include <dawn/native/D3D12Backend.h>
 #include <dawn/native/DawnNative.h>
 #include <dawn/webgpu_cpp.h>
 
@@ -2214,6 +2215,166 @@ TEST_F(D3DImageBackingFactoryTest, CanProduceDCompTextureOverlay) {
   ASSERT_HRESULT_SUCCEEDED(visual_content.As(&dcomp_texture))
       << "Overlay image visual content is a DComp texture";
   ASSERT_TRUE(dcomp_texture);
+}
+
+class D3DImageBackingFactoryBufferTest : public D3DImageBackingFactoryTestBase {
+ public:
+  void SetUp() override {
+    D3DImageBackingFactoryTestBase::SetUp();
+    scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
+  }
+
+ protected:
+  static constexpr wgpu::FeatureName kRequiredFeatures[] = {
+      // Required for Dawn interop.
+      wgpu::FeatureName::SharedFenceDXGISharedHandle,
+      wgpu::FeatureName::SharedBufferMemoryD3D12Resource,
+  };
+
+  Microsoft::WRL::ComPtr<ID3D12Resource> CreateD3D12UploadBuffer(
+      ID3D12Device* device,
+      uint32_t bufferSize) {
+    D3D12_HEAP_PROPERTIES heap_properties = {D3D12_HEAP_TYPE_UPLOAD,
+                                             D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+                                             D3D12_MEMORY_POOL_UNKNOWN, 0, 0};
+
+    D3D12_RESOURCE_DESC descriptor;
+    descriptor.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+    descriptor.Alignment = 0;
+    descriptor.Width = bufferSize;
+    descriptor.Height = 1;
+    descriptor.DepthOrArraySize = 1;
+    descriptor.MipLevels = 1;
+    descriptor.Format = DXGI_FORMAT_UNKNOWN;
+    descriptor.SampleDesc.Count = 1;
+    descriptor.SampleDesc.Quality = 0;
+    descriptor.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+    descriptor.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+
+    EXPECT_EQ(device->CreateCommittedResource(&heap_properties,
+                                              D3D12_HEAP_FLAG_NONE, &descriptor,
+                                              D3D12_RESOURCE_STATE_GENERIC_READ,
+                                              {}, IID_PPV_ARGS(&resource)),
+              S_OK);
+    return resource;
+  }
+
+  void CheckDawnBuffer(wgpu::Buffer src_buffer,
+                       const wgpu::Instance& instance,
+                       const wgpu::Device& device,
+                       const uint32_t size,
+                       const uint32_t expected_value) const {
+    wgpu::BufferDescriptor buffer_desc{
+        .usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead,
+        .size = size};
+    wgpu::Buffer dst_buffer = device.CreateBuffer(&buffer_desc);
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    encoder.CopyBufferToBuffer(src_buffer, 0, dst_buffer, 0, size);
+    wgpu::CommandBuffer commands = encoder.Finish();
+
+    wgpu::Queue queue = device.GetQueue();
+    queue.Submit(1, &commands);
+
+    wgpu::FutureWaitInfo wait_info{
+        dst_buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
+                            wgpu::CallbackMode::WaitAnyOnly,
+                            [&](wgpu::MapAsyncStatus status, const char*) {
+                              ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
+                            })};
+    wgpu::WaitStatus status =
+        instance.WaitAny(1, &wait_info, std::numeric_limits<uint64_t>::max());
+    EXPECT_EQ(status, wgpu::WaitStatus::Success);
+
+    const uint32_t* dst_value =
+        reinterpret_cast<const uint32_t*>(dst_buffer.GetConstMappedRange());
+
+    EXPECT_EQ(expected_value, *dst_value);
+  }
+
+  scoped_refptr<SharedContextState> context_state_;
+};
+
+// Verifies successful creation of a Dawn buffer created from D3DImageBacking.
+TEST_F(D3DImageBackingFactoryBufferTest, ReadDawnBufferFromD3D12Resource) {
+  WGPUInstanceDescriptor instance_desc = {
+      .features =
+          {
+              .timedWaitAnyEnable = true,
+          },
+  };
+  dawn::native::Instance instance(&instance_desc);
+  wgpu::RequestAdapterOptions adapter_options;
+  adapter_options.backendType = wgpu::BackendType::D3D12;
+
+  // allow_unsafe_apis is required to use Dawn's SharedBufferMemory feature.
+  std::array<const char*, 1> adapter_enabled_toggles;
+  adapter_enabled_toggles[0] = "allow_unsafe_apis";
+
+  wgpu::DawnTogglesDescriptor adapter_toggles_desc;
+  adapter_toggles_desc.enabledToggles = adapter_enabled_toggles.data();
+  adapter_toggles_desc.enabledToggleCount = adapter_enabled_toggles.size();
+  adapter_options.nextInChain = &adapter_toggles_desc;
+
+  std::vector<dawn::native::Adapter> adapters =
+      instance.EnumerateAdapters(&adapter_options);
+  ASSERT_GT(adapters.size(), 0u);
+
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeatureCount = std::size(kRequiredFeatures);
+  device_descriptor.requiredFeatures = kRequiredFeatures;
+
+  wgpu::Device device =
+      wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
+
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device =
+      dawn::native::d3d12::GetD3D12Device(device.Get());
+
+  // Create a D3D12 buffer resource and write data to it.
+  constexpr uint32_t kBufferSize = 4;
+  constexpr uint32_t kBufferData = 0x12345678;
+  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_upload_buffer =
+      CreateD3D12UploadBuffer(d3d12_device.Get(), kBufferSize);
+
+  void* mapped_buffer_begin;
+  D3D12_RANGE range;
+  range.Begin = 0;
+  range.End = kBufferSize;
+  ASSERT_EQ(d3d12_upload_buffer->Map(0, &range, &mapped_buffer_begin), S_OK);
+  memcpy(mapped_buffer_begin, &kBufferData, kBufferSize);
+  d3d12_upload_buffer->Unmap(0, &range);
+
+  // Create a D3DImageBacking from the D3D12 buffer resource.
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                   gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+                                   gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
+  const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  std::unique_ptr<SharedImageBacking> shared_image_backing =
+      D3DImageBacking::CreateFromD3D12Resource(
+          mailbox, kBufferSize, usage, "TestLabel", d3d12_upload_buffer);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(shared_image_backing),
+                                     memory_type_tracker_.get());
+
+  // Import the D3D12 buffer resource into Dawn.
+  auto dawn_representation =
+      shared_image_representation_factory_->ProduceDawnBuffer(
+          mailbox, device, wgpu::BackendType::D3D12);
+  ASSERT_NE(dawn_representation, nullptr);
+
+  auto scoped_access =
+      dawn_representation->BeginScopedAccess(wgpu::BufferUsage::CopySrc);
+  ASSERT_TRUE(scoped_access);
+
+  wgpu::Buffer buffer(scoped_access->buffer());
+
+  // Check that the contents of the imported D3D12 resource within Dawn.
+  CheckDawnBuffer(buffer, instance.Get(), device, kBufferSize, kBufferData);
+
+  factory_ref.reset();
 }
 
 }  // namespace gpu

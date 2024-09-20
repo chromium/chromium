@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_attr_type.h"
+#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -125,8 +126,8 @@ const TreeScope& TreeScopeAt(const MatchResult& result, uint32_t position) {
   wtf_size_t matched_properties_index = DecodeMatchedPropertiesIndex(position);
   const MatchedProperties& properties =
       result.GetMatchedProperties()[matched_properties_index];
-  DCHECK_EQ(properties.types_.origin, CascadeOrigin::kAuthor);
-  return result.ScopeFromTreeOrder(properties.types_.tree_order);
+  DCHECK_EQ(properties.data_.origin, CascadeOrigin::kAuthor);
+  return result.ScopeFromTreeOrder(properties.data_.tree_order);
 }
 
 const CSSValue* EnsureScopedValue(const Document& document,
@@ -200,6 +201,7 @@ bool IsInterpolation(CascadePriority priority) {
 
 // https://drafts.csswg.org/css-values-5/#attr-substitution-value
 std::optional<CSSParserToken> GetAttrSubstitutionValue(
+    CSSParserTokenStream& stream,
     const String& attribute_value,
     const CSSAttrType& attribute_type,
     const CSSParserContext& context) {
@@ -218,8 +220,6 @@ std::optional<CSSParserToken> GetAttrSubstitutionValue(
   if (attribute_type.category == CSSAttrType::Category::kString) {
     return CSSParserToken(kStringToken, attribute_value);
   }
-
-  CSSParserTokenStream stream(attribute_value);
 
   std::optional<CSSSyntaxDefinition> syntax_definition =
       attribute_type.ConvertToCSSSyntaxDefinition();
@@ -960,17 +960,31 @@ bool StyleCascade::TokenSequence::AppendFallback(const TokenSequence& sequence,
     return false;
   }
 
+  String new_text;
+
   StringView other_text = sequence.original_text_;
-  other_text =
+  StringView stripped_text =
       CSSVariableParser::StripTrailingWhitespaceAndComments(other_text);
 
-  CSSTokenizer tokenizer(other_text);
+  StringView trailer = StringView(other_text, stripped_text.length());
+  if (IsAttrTainted(trailer)) {
+    // We stripped away the taint token from the fallback value,
+    // so add it back here. This is a somewhat slower path,
+    // but should be rare.
+    StringBuilder sb;
+    sb.Append(stripped_text);
+    sb.Append(GetCSSAttrTaintToken());
+    new_text = sb.ReleaseString();
+    stripped_text = new_text;
+  }
+
+  CSSTokenizer tokenizer(stripped_text);
   CSSParserToken first_token = tokenizer.TokenizeSingleWithComments();
 
   if (NeedsInsertedComment(last_token_, first_token)) {
     original_text_.Append("/**/");
   }
-  original_text_.Append(other_text);
+  original_text_.Append(stripped_text);
   last_token_ = last_non_whitespace_token_ =
       sequence.last_non_whitespace_token_;
 
@@ -1323,9 +1337,25 @@ const CSSValue* StyleCascade::ResolveAppearanceAutoBaseSelect(
   // on select elements, which is currently the only element which supports
   // appearance:base-select.
   CHECK(IsA<HTMLSelectElement>(state_.GetElement()));
-  const CSSValue& selected = state_.StyleBuilder().HasBaseSelectAppearance()
-                                 ? value.Second()
-                                 : value.First();
+  bool has_base_appearance = state_.StyleBuilder().HasBaseSelectAppearance();
+  if (state_.IsForPseudoElement()) {
+    CHECK_EQ(state_.GetPseudoElement()->GetPseudoId(), kPseudoIdAfter)
+        << " -internal-appearance-base-select() is only supported on "
+           "select::after right now.";
+    // There is a rule in the UA sheet for select::after which uses
+    // -internal-appearance-auto-base-select(), so for that rule we have to
+    // account for this here by checking the style of the select element instead
+    // of this state_ which is for ::after.
+    // Both state_.LayoutParentStyle() and
+    // state_.GetElement().GetComputedStyle() seem to have the correct
+    // appearance value set.
+    // TODO(crbug.com/1511354): LayoutParentStyle might not be the right thing
+    // to call for all pseudo-elements.
+    has_base_appearance = state_.LayoutParentStyle()->EffectiveAppearance() ==
+                          ControlPart::kBaseSelectPart;
+  }
+  const CSSValue& selected =
+      has_base_appearance ? value.Second() : value.First();
   return Resolve(property, selected, priority, origin, resolver);
 }
 
@@ -1569,7 +1599,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     return false;
   }
   // Urggg
-  CSSParserTokenStream ret_value_stream(ret_value->CssText());
+  String ret_string = ret_value->CssText();
+  CSSParserTokenStream ret_value_stream(ret_string);
   return ResolveTokensInto(ret_value_stream, resolver, context,
                            FunctionContext{}, out);
 }
@@ -1671,9 +1702,18 @@ bool StyleCascade::ResolveArgInto(CSSParserTokenStream& stream,
     return false;
   }
 
-  CSSParserTokenStream arg_value_stream(it->value->CssText());
+  String arg_value = it->value->CssText();
+  CSSParserTokenStream arg_value_stream(arg_value);
   return ResolveTokensInto(arg_value_stream, resolver, context,
                            FunctionContext{}, out);
+}
+
+// Mark the value as tainted, so that ConsumeUrl() and similar can check
+// that they should not create URLs from it. Note that we do this _after_
+// the value, not before, so that we are sure that lookahead does not
+// accidentally consume it.
+void StyleCascade::AppendTaintToken(TokenSequence& out) {
+  out.Append(CSSParserToken(kCommentToken), GetCSSAttrTaintToken());
 }
 
 bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
@@ -1685,8 +1725,9 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
   const String& attribute_value =
       state_.GetElement().getAttribute(attribute_name);
 
-  std::optional<CSSParserToken> substitution_value =
-      GetAttrSubstitutionValue(attribute_value, attribute_type, context);
+  CSSParserTokenStream attribute_value_stream(attribute_value);
+  std::optional<CSSParserToken> substitution_value = GetAttrSubstitutionValue(
+      attribute_value_stream, attribute_value, attribute_type, context);
 
   // Validate fallback value.
   if (ConsumeComma(stream)) {
@@ -1698,6 +1739,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
       return false;
     }
     if (!substitution_value.has_value()) {
+      AppendTaintToken(out);
       return out.AppendFallback(fallback, CSSVariableData::kMaxVariableBytes);
     }
   }
@@ -1708,6 +1750,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     // the empty string if omitted.
     // https://drafts.csswg.org/css-values-5/#funcdef-attr
     out.Append(CSSParserToken(kStringToken, g_empty_atom), g_empty_atom);
+    AppendTaintToken(out);
     return true;
   }
 
@@ -1715,6 +1758,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     StringBuilder serialized_substitution_value;
     substitution_value->Serialize(serialized_substitution_value);
     out.Append(*substitution_value, serialized_substitution_value);
+    AppendTaintToken(out);
     return true;
   }
 

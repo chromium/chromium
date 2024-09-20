@@ -25,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/events/ozone/device/device_event.h"
@@ -359,6 +360,7 @@ void DrmDisplayHostManager::RemoveDelegate(DrmNativeDisplayDelegate* delegate) {
 
 void DrmDisplayHostManager::TakeDisplayControl(
     display::DisplayControlCallback callback) {
+  TRACE_EVENT0("drm", "DrmDisplayHostManager::TakeDisplayControl");
   if (display_control_change_pending_) {
     LOG(ERROR) << "TakeDisplayControl called while change already pending";
     std::move(callback).Run(false);
@@ -380,6 +382,7 @@ void DrmDisplayHostManager::TakeDisplayControl(
 
 void DrmDisplayHostManager::RelinquishDisplayControl(
     display::DisplayControlCallback callback) {
+  TRACE_EVENT0("drm", "DrmDisplayHostManager::RelinquishDisplayControl");
   if (display_control_change_pending_) {
     LOG(ERROR)
         << "RelinquishDisplayControl called while change already pending";

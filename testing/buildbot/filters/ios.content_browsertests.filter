@@ -688,3 +688,24 @@
 # TODO(crbug.com/347803432): Timeout happens in these tests.
 -All/NavigationBrowserTestPaintHoldingSubframe.CrashSubframe/0
 -All/NavigationBrowserTestPaintHoldingSubframe.CrashSubframe/1
+
+# TODO(crbug.com/365355384): The test has been failing since
+# https://crrev.com/c/5588626.
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDAllFrames_BFCacheDisabled
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDAllFrames_BFCacheEnabled
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDCrashedFrame_BFCacheDisabled
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDCrashedFrame_BFCacheEnabled
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDAllFrames_BFCacheDisabled
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDAllFrames_BFCacheEnabled
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDCrashedFrame_BFCacheDisabled
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDCrashedFrame_BFCacheEnabled
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDAllFrames_BFCacheDisabled
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDAllFrames_BFCacheEnabled
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDCrashedFrame_BFCacheDisabled
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDCrashedFrame_BFCacheEnabled
+
+# TODO(crbug.com/365913979): The test has been failing since
+# https://crrev.com/c/5571105.
+-SecurityExploitBrowserTest.InvalidBeginNavigationOpaqueInitiator
+-SecurityExploitBrowserTest.PostMessageOpaqueSourceOrigin
+-SecurityExploitViaDisabledWebSecurityTest.ValidateInitiatorBaseUrlNotEmpty

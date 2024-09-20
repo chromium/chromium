@@ -81,6 +81,15 @@ bool SavedTabGroupTab::IsSyncEquivalent(const SavedTabGroupTab& other) const {
          title() == other.title() && position() == other.position();
 }
 
+bool SavedTabGroupTab::IsURLInRedirectChain(const GURL& url) const {
+  for (const auto& redirect_url : redirect_url_chain_) {
+    if (redirect_url.GetWithoutRef().spec() == url.GetWithoutRef().spec()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 SavedTabGroupTabBuilder::SavedTabGroupTabBuilder() = default;
 
 SavedTabGroupTabBuilder::~SavedTabGroupTabBuilder() = default;

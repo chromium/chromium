@@ -31,6 +31,8 @@ TEST_F(ProtoFetcherStatusTest, CreateAuthErrorStatusWithTransientError) {
   EXPECT_EQ(error_status.state(),
             ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR);
   EXPECT_EQ(error_status.http_status_or_net_error().value(), 0);
+  EXPECT_EQ(error_status.google_service_auth_error().state(),
+            GoogleServiceAuthError::State::CONNECTION_FAILED);
 }
 
 TEST_F(ProtoFetcherStatusTest, CreateAuthErrorStatusWithPersistentError) {
@@ -43,6 +45,8 @@ TEST_F(ProtoFetcherStatusTest, CreateAuthErrorStatusWithPersistentError) {
   EXPECT_EQ(error_status.state(),
             ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR);
   EXPECT_EQ(error_status.http_status_or_net_error().value(), 0);
+  EXPECT_EQ(error_status.google_service_auth_error().state(),
+            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
 }
 
 TEST_F(ProtoFetcherStatusTest, CreateHttpStatusOrNetError) {

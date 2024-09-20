@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Tuntematon tuote <ph name="PRODUCT_ID" /> toimittajalta <ph name="VENDOR_ID" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX-tiedoston korvaaminen epäonnistui. Tarkista, onko tiedosto käytössä.</translation>
 <translation id="3163201441334626963">Tuntematon tuote <ph name="PRODUCT_ID" /> toimittajalta <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Laajennuksen purkaminen epäonnistui. Voit purkaa laajennuksen määrittämällä polun profiilihakemistoon, joka alkaa kiintolevyn kirjaimella eikä sisällä liitos- tai liityntäkohtaa tai symlink-määritettä. Profiilissasi ei ole kyseistä polkua.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> toimittajalta <ph name="VENDOR_ID" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Yksityisen avaimen syötearvon täytyy olla kelvollinen polku.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Tämän laitteen järjestelmänvalvoja on määrittänyt, että laitteessa täytyy olla <ph name="EXTENSION_NAME" />. Laajennusta ei voi poistaa.</translation>
 <translation id="6027032947578871493">Tuntematon laite <ph name="PRODUCT_ID" /> toimittajalta <ph name="VENDOR_NAME" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> toimittajalta <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Laajennuksen purkaminen epäonnistui. Voit purkaa laajennuksen määrittämällä polun profiilihakemistoon, joka ei sisällä symlink-määritettä. Profiilissasi ei ole kyseistä polkua.</translation>
 <translation id="6322279351188361895">Yksityisen avaimen lukeminen epäonnistui.</translation>
 <translation id="6391538222494443604">Syöttöhakemistoa ei ole olemassa.</translation>
 <translation id="641087317769093025">Laajennuksen purkaminen epäonnistui</translation>

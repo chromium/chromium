@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
@@ -39,21 +40,25 @@
   self.tableView.accessibilityIdentifier =
       kGoogleServicesSettingsViewIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE);
-}
 
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  // Close popover when font size changed for accessibility because it does not
-  // resize properly and the arrow is not aligned.
-  if (self.bubbleViewController) {
-    [self.bubbleViewController dismissViewControllerAnimated:YES
-                                                  completion:nil];
-    UIButton* buttonView = base::apple::ObjCCastStrict<UIButton>(
-        self.bubbleViewController.popoverPresentationController.sourceView);
-    buttonView.enabled = YES;
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.self ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(closePopoverOnTraitChange)];
   }
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  [self closePopoverOnTraitChange];
+}
+#endif
 
 #pragma mark - Private
 
@@ -102,6 +107,19 @@
   [self presentViewController:self.bubbleViewController
                      animated:YES
                    completion:nil];
+}
+
+// Close popover when font size changed for accessibility. The font does not
+// resize properly and the arrow is not aligned.
+- (void)closePopoverOnTraitChange {
+  if (!self.bubbleViewController) {
+    return;
+  }
+
+  [self.bubbleViewController dismissViewControllerAnimated:YES completion:nil];
+  UIButton* buttonView = base::apple::ObjCCastStrict<UIButton>(
+      self.bubbleViewController.popoverPresentationController.sourceView);
+  buttonView.enabled = YES;
 }
 
 #pragma mark - UITableViewDataSource

@@ -17,14 +17,12 @@
 
 namespace blink {
 
-// TODO(crbug.com/355003172): The default value of checked_iter should be true.
-template <typename T, wtf_size_t inlineCapacity = 0, bool checked_iter = false>
-class HeapVector final
-    : public GarbageCollected<HeapVector<T, inlineCapacity, checked_iter>>,
-      public Vector<T, inlineCapacity, HeapAllocator, checked_iter> {
+template <typename T, wtf_size_t inlineCapacity = 0>
+class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
+                         public Vector<T, inlineCapacity, HeapAllocator> {
   DISALLOW_NEW();
 
-  using BaseVector = Vector<T, inlineCapacity, HeapAllocator, checked_iter>;
+  using BaseVector = Vector<T, inlineCapacity, HeapAllocator>;
 
  public:
   HeapVector() = default;
@@ -34,32 +32,44 @@ class HeapVector final
   HeapVector(wtf_size_t size, const T& val) : BaseVector(size, val) {}
 
   template <wtf_size_t otherCapacity>
-  HeapVector(const HeapVector<T, otherCapacity, checked_iter>& other)  // NOLINT
+  HeapVector(const HeapVector<T, otherCapacity>& other)  // NOLINT
       : BaseVector(other) {}
 
   HeapVector(const HeapVector& other)
       : BaseVector(static_cast<const BaseVector&>(other)) {}
 
+  template <typename Collection,
+            typename =
+                typename std::enable_if<std::is_class<Collection>::value>::type>
+  explicit HeapVector(const Collection& other) : BaseVector(other) {}
+
+  // Projection-based initialization. This way of initialization can avoid write
+  // barriers even in the presence of GC due to allocations in `Proj`.
+  //
+  // This works because of the  following:
+  // 1) During initialization the vector is reachable from the stack and will
+  //    thus always be found and fully processed at the end of marking.
+  // 2) The backing store is created via initializing store and thus does not
+  //    escape to the object graph via write barrier.
+  // 3) GCs triggered through allocations in `Proj` will never find the backing
+  //    store as it's only reachable from stack or an in-construction HeapVector
+  //    which is always delayed till the end of GC.
   template <
       typename Proj,
       typename = std::enable_if_t<
           std::is_invocable_v<Proj, typename BaseVector::const_reference>>>
   HeapVector(const HeapVector& other, Proj proj)
       : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {}
-
-  template <
-      typename U,
-      wtf_size_t otherSize,
-      typename Proj,
-      typename = std::enable_if_t<
-          std::is_invocable_v<Proj, typename BaseVector::const_reference>>>
-  HeapVector(const HeapVector<U, otherSize, checked_iter>& other, Proj proj)
-      : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {}
-
-  template <typename Collection,
-            typename =
-                typename std::enable_if<std::is_class<Collection>::value>::type>
-  explicit HeapVector(const Collection& other) : BaseVector(other) {}
+  template <typename U,
+            wtf_size_t otherSize,
+            typename Proj,
+            typename = std::enable_if_t<std::is_invocable_v<
+                Proj,
+                typename HeapVector<U, otherSize>::const_reference>>>
+  HeapVector(const HeapVector<U, otherSize>& other, Proj proj)
+      : BaseVector(
+            static_cast<const Vector<U, otherSize, HeapAllocator>&>(other),
+            std::move(proj)) {}
 
   HeapVector& operator=(const HeapVector& other) {
     BaseVector::operator=(other);
@@ -101,9 +111,8 @@ class HeapVector final
 template <typename T>
 concept IsHeapVector = requires { typename HeapVector<T>; };
 
-template <typename T, wtf_size_t inlineCapacity, bool checked_iter>
-constexpr HeapVector<T, inlineCapacity, checked_iter>::TypeConstraints::
-    TypeConstraints() {
+template <typename T, wtf_size_t inlineCapacity>
+constexpr HeapVector<T, inlineCapacity>::TypeConstraints::TypeConstraints() {
   static_assert(std::is_trivially_destructible_v<HeapVector> || inlineCapacity,
                 "HeapVector must be trivially destructible.");
   static_assert(!WTF::IsWeak<T>::value,

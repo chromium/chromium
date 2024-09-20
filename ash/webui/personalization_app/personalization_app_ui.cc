@@ -165,8 +165,12 @@ void AddStrings(content::WebUIDataSource* source) {
       {"tooltipAutoColorMode", IDS_PERSONALIZATION_APP_TOOLTIP_AUTO_COLOR_MODE},
       {"errorTooltipAutoColorMode",
        IDS_PERSONALIZATION_APP_ERROR_TOOLTIP_AUTO_COLOR_MODE},
+      {"managedErrorTooltipAutoColorMode",
+       IDS_PERSONALIZATION_APP_MANAGED_ERROR_TOOLTIP_AUTO_COLOR_MODE},
       {"geolocationWarningTextForWeather",
        IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER},
+      {"geolocationWarningManagedTextForWeather",
+       IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_MANAGED_TEXT_FOR_WEATHER},
       {"autoModeGeolocationDialogText",
        IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_DIALOG_BODY},
       {"autoModeGeolocationDialogConfirmButton",
@@ -562,7 +566,8 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenUseExptTemplateEnabled());
   source->AddBoolean("isManagedSeaPenEnabled",
-                     sea_pen_provider_->IsManagedSeaPenEnabled());
+                     common_sea_pen_requirements &&
+                         sea_pen_provider_->IsManagedSeaPenEnabled());
   source->AddBoolean("isManagedSeaPenFeedbackEnabled",
                      sea_pen_provider_->IsManagedSeaPenFeedbackEnabled());
   source->AddBoolean("isLacrosEnabled",

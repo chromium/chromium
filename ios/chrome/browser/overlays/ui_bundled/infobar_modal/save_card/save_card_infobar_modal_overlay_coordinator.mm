@@ -15,7 +15,8 @@
 
 @interface SaveCardInfobarModalOverlayCoordinator ()
 // Redefine ModalConfiguration properties as readwrite.
-@property(nonatomic, strong, readwrite) OverlayRequestMediator* modalMediator;
+@property(nonatomic, strong, readwrite)
+    SaveCardInfobarModalOverlayMediator* modalMediator;
 @property(nonatomic, strong, readwrite) UIViewController* modalViewController;
 // The request's config.
 @property(nonatomic, assign, readonly)
@@ -78,6 +79,8 @@
     if (delegate) {
       delegate->OnLegalMessageLinkClicked(self.pendingURLToLoad);
     }
+  } else {
+    [self.modalMediator dismissOverlay];
   }
   self.modalMediator = nil;
   self.modalViewController = nil;

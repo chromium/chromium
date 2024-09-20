@@ -199,10 +199,10 @@ base::File::Error ReadDirectoryOnBlockingPoolThread(
     return error;
 
   while (!(current = file_enum->Next()).empty()) {
-    entries->emplace_back(storage::VirtualPath::BaseName(current),
-                          file_enum->IsDirectory()
-                              ? filesystem::mojom::FsFileType::DIRECTORY
-                              : filesystem::mojom::FsFileType::REGULAR_FILE);
+    entries->emplace_back(
+        storage::VirtualPath::BaseName(current), base::FilePath(),
+        file_enum->IsDirectory() ? filesystem::mojom::FsFileType::DIRECTORY
+                                 : filesystem::mojom::FsFileType::REGULAR_FILE);
   }
   return error;
 }

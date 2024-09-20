@@ -25,7 +25,15 @@ void MetadataDataSource::Register() {
 
 void MetadataDataSource::OnStart(const StartArgs&) {}
 
+void MetadataDataSource::OnFlush(const FlushArgs&) {
+  WriteMetadata();
+}
+
 void MetadataDataSource::OnStop(const StopArgs&) {
+  WriteMetadata();
+}
+
+void MetadataDataSource::WriteMetadata() {
   Trace([&](TraceContext ctx) {
     auto packet = ctx.NewTracePacket();
     packet->set_timestamp(
@@ -60,6 +68,7 @@ void MetadataDataSource::OnStop(const StopArgs&) {
     }
   });
 }
+
 }  // namespace tracing
 
 PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS_WITH_ATTRS(

@@ -81,7 +81,7 @@ PageInfoBubbleViewIsolatedWebAppBrowserTest.*
 *PasswordAutomaticSaveBubbleBrowserTest.*
 *PasswordCrossDomainConfirmationPopupViewBrowsertest.*
 *PasswordGenerationPopupViewBrowsertest.*
-*PasswordGenerationPopupViewWithExperimentsBrowsertest.*
+*PasswordGenerationPopupViewWithSoftNudgeBrowsertest.*
 *PasswordManagementRevampedBubbleInteractiveUiTest.*
 PasswordBubbleInteractiveUiTest.NavigateToManagementDetailsViewAndTakeScreenshot
 PasswordBubbleInteractiveUiTest.NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot
@@ -93,6 +93,7 @@ PermissionRequestChipBrowserUiTest.*
 *PermissionPromptBubble*View*BrowserTest.InvokeUi_*
 PermissionPromptPreviewBrowserTest.InvokeUi_*
 *PlusAddressCreationDialogUiVariationsTest*
+*PlusAddressCreationDialogUiVariationsOnboardingErrorStatesTest*
 PlusAddressCreationDialogWithNoticeTest.ShowNoticeAndCancel
 *PopupViewViewsBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*

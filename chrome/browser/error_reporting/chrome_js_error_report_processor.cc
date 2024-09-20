@@ -109,13 +109,14 @@ std::string TruncateErrorMessage(const std::string& message) {
                        message.substr(begin_end_fragment)});
 }
 
-std::string MapWindowTypeToString(WindowType window_type) {
+std::string MapWindowTypeToString(
+    JavaScriptErrorReport::WindowType window_type) {
   switch (window_type) {
-    case WindowType::kRegularTabbed:
+    case JavaScriptErrorReport::WindowType::kRegularTabbed:
       return kRegularTabbedWindow;
-    case WindowType::kWebApp:
+    case JavaScriptErrorReport::WindowType::kWebApp:
       return kWebAppWindow;
-    case WindowType::kSystemWebApp:
+    case JavaScriptErrorReport::WindowType::kSystemWebApp:
       return kSystemWebAppWindow;
     default:
       return kNoBrowserNoWindow;

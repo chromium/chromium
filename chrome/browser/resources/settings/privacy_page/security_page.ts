@@ -289,13 +289,14 @@ export class SettingsSecurityPageElement extends
       });
     }
 
-    if (routes.SITE_SETTINGS_JAVASCRIPT_JIT) {
-      this.focusConfig.set(routes.SITE_SETTINGS_JAVASCRIPT_JIT.path, () => {
-        const toFocus =
-            this.shadowRoot!.querySelector<HTMLElement>('#v8-setting-link');
-        assert(toFocus);
-        focusWithoutInk(toFocus);
-      });
+    if (routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER) {
+      this.focusConfig.set(
+          routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER.path, () => {
+            const toFocus =
+                this.shadowRoot!.querySelector<HTMLElement>('#v8-setting-link');
+            assert(toFocus);
+            focusWithoutInk(toFocus);
+          });
     }
   }
 
@@ -542,7 +543,7 @@ export class SettingsSecurityPageElement extends
   }
 
   private onV8SettingsClick_() {
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_JAVASCRIPT_JIT);
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER);
   }
 
   private onSecurityKeysClick_() {

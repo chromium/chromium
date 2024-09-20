@@ -145,8 +145,8 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
 + (BOOL)isURLBlocked:(NSString*)URL {
   GURL gurl = GURL(base::SysNSStringToUTF8(URL));
   PolicyBlocklistService* service =
-      PolicyBlocklistServiceFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
+      PolicyBlocklistServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile());
   return service->GetURLBlocklistState(gurl) ==
          policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
 }

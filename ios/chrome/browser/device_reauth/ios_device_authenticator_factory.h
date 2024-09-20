@@ -21,13 +21,14 @@ class DeviceAuthParams;
 @protocol ReauthenticationProtocol;
 
 // Singleton that owns all DeviceAuthenticatorProxy and associates them with
-// ChromeBrowserState.
+// profiles.
 class DeviceAuthenticatorProxyFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static DeviceAuthenticatorProxyFactory* GetInstance();
+  // TODO(crbug.com/358301380): remove this method.
+  static DeviceAuthenticatorProxy* GetForBrowserState(ProfileIOS* profile);
 
-  static DeviceAuthenticatorProxy* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static DeviceAuthenticatorProxy* GetForProfile(ProfileIOS* profile);
+  static DeviceAuthenticatorProxyFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<DeviceAuthenticatorProxyFactory>;

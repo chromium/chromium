@@ -99,6 +99,11 @@ class ProfileManagementFlowController {
   // screen (if the original EntryPoint was to open the picker).
   virtual void CancelPostSignInFlow() = 0;
 
+  // Clears the current state and reset it to the initial state that shows the
+  // main screen. When calling this function the state should not be the
+  // initial one. Executes `callback` when the initial state is shown.
+  void Reset(StepSwitchFinishedCallback callback);
+
   // Returns a string to use as title for the window, for accessibility
   // purposes. It is used in case the host is not able to obtain a title from
   // the content it's rendering. As a final fallback, if this value is empty

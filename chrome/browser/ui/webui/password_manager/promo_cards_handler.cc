@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo.h"
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/password_manager/promo_cards/screenlock_reauth_promo.h"
 #endif
 
@@ -80,7 +80,7 @@ std::vector<std::unique_ptr<PasswordPromoCardBase>> GetAllPromoCardsForProfile(
       std::make_unique<RelaunchChromePromo>(profile->GetPrefs()));
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   promo_cards.push_back(std::make_unique<ScreenlockReauthPromo>(profile));
 #endif
   return promo_cards;

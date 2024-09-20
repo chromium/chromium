@@ -17,6 +17,7 @@ proto_library("tflite_proto") {
   proto_in_dir = "src"
   sources = [
     "src/tensorflow/lite/acceleration/configuration/configuration.proto",
+    "src/tensorflow/lite/profiling/proto/model_runtime_info.proto",
     "src/tensorflow/lite/profiling/proto/profiling_info.proto",
     "src/third_party/xla/third_party/tsl/tsl/protobuf/coordination_config.proto",
   ]
@@ -177,12 +178,14 @@ tflite_static_library("tflite_builtin_op_resolver") {
     "src/tensorflow/lite/kernels/sign.cc",
     "src/tensorflow/lite/kernels/sign_custom.cc",
     "src/tensorflow/lite/kernels/stablehlo_add.cc",
+    "src/tensorflow/lite/kernels/stablehlo_and.cc",
     "src/tensorflow/lite/kernels/stablehlo_composite.cc",
     "src/tensorflow/lite/kernels/stablehlo_elementwise.cc",
     "src/tensorflow/lite/kernels/stablehlo_min_max.cc",
     "src/tensorflow/lite/kernels/stablehlo_multiply.cc",
     "src/tensorflow/lite/kernels/stablehlo_pad.cc",
     "src/tensorflow/lite/kernels/stablehlo_reduce_window.cc",
+    "src/tensorflow/lite/kernels/stablehlo_shift_left.cc",
     "src/tensorflow/lite/kernels/unsorted_segment.cc",
     "src/tensorflow/lite/kernels/var_handle.cc",
   ]
@@ -217,6 +220,7 @@ tflite_static_library("tflite_builtin_op_resolver") {
 
 source_set("tflite_public_headers") {
   public = [
+    "src/tensorflow/compiler/mlir/lite/schema/schema_generated.h",
     "src/tensorflow/compiler/mlir/lite/schema/schema_utils.h",
     "src/tensorflow/lite/allocation.h",
     "src/tensorflow/lite/arena_planner.h",
@@ -239,7 +243,6 @@ source_set("tflite_public_headers") {
     "src/tensorflow/lite/mutable_op_resolver.h",
     "src/tensorflow/lite/op_resolver.h",
     "src/tensorflow/lite/optional_debug_tools.h",
-    "src/tensorflow/lite/schema/schema_generated.h",
     "src/tensorflow/lite/signature_runner.h",
     "src/tensorflow/lite/stderr_reporter.h",
     "src/tensorflow/lite/string_type.h",
@@ -263,6 +266,7 @@ source_set("tflite_kernel_common_headers") {
     "src/tensorflow/lite/kernels/internal/runtime_shape.h",
     "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
     "src/tensorflow/lite/kernels/op_macros.h",
+    "src/tensorflow/lite/kernels/stablehlo_elementwise.h",
   ]
 
   configs += [ ":tflite_flags" ]
@@ -698,6 +702,8 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/profiling/memory_info.h",
     "src/tensorflow/lite/profiling/memory_usage_monitor.cc",
     "src/tensorflow/lite/profiling/memory_usage_monitor.h",
+    "src/tensorflow/lite/profiling/model_runtime_info.cc",
+    "src/tensorflow/lite/profiling/model_runtime_info.h",
     "src/tensorflow/lite/profiling/platform_profiler.cc",
     "src/tensorflow/lite/profiling/platform_profiler.h",
     "src/tensorflow/lite/profiling/profile_buffer.cc",
@@ -751,6 +757,8 @@ tflite_static_library("tflite") {
 
   if (build_tflite_with_xnnpack) {
     sources += [
+      "src/tensorflow/lite/delegates/xnnpack/file_util.cc",
+      "src/tensorflow/lite/delegates/xnnpack/file_util.h",
       "src/tensorflow/lite/delegates/xnnpack/quantization_util.cc",
       "src/tensorflow/lite/delegates/xnnpack/quantization_util.h",
       "src/tensorflow/lite/delegates/xnnpack/weight_cache.cc",

@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.{ModalType}.Events"
-    enum="PlusAddressModalEvent2" expires_after="2024-12-31">
+    enum="PlusAddressModalEvent2" expires_after="2025-03-09">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.{ModalType}.{Status}.Refreshes"
-    units="refreshes" expires_after="2024-12-31">
+    units="refreshes" expires_after="2025-03-09">
   <owner>jkeitel@google.com</owner>
   <owner>brunobraga@google.com</owner>
   <summary>

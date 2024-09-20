@@ -8,12 +8,12 @@
 
 namespace ash::babelorca {
 
-std::string FakeTachyonRequestDataProvider::client_uuid() {
-  return "client-uuid";
+std::string FakeTachyonRequestDataProvider::session_id() {
+  return "session-id";
 }
 
 std::string FakeTachyonRequestDataProvider::tachyon_token() {
-  return "tachyon_token";
+  return "tachyon-token";
 }
 
 std::string FakeTachyonRequestDataProvider::group_id() {

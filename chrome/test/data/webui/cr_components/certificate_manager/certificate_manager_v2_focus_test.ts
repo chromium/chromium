@@ -46,6 +46,7 @@ suite('CertificateManagerV2FocusTest', () => {
             {
               sha256hashHex: 'deadbeef',
               displayName: 'cert1',
+              isDeletable: false,
             },
           ],
         };
@@ -78,6 +79,7 @@ suite('CertificateManagerV2FocusTest', () => {
             {
               sha256hashHex: 'deadbeef2',
               displayName: 'cert2',
+              isDeletable: false,
             },
           ],
         };
@@ -118,6 +120,7 @@ suite('CertificateManagerV2FocusTest', () => {
             {
               sha256hashHex: 'deadbeef3',
               displayName: 'cert3',
+              isDeletable: false,
             },
           ],
         };
@@ -153,6 +156,7 @@ suite('CertificateManagerV2FocusTest', () => {
             {
               sha256hashHex: 'deadbeef4',
               displayName: 'cert4',
+              isDeletable: false,
             },
           ],
         };
@@ -181,7 +185,9 @@ suite('CertificateManagerV2FocusTest', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 5,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
+      // </if>
       numPolicyCerts: 0,
     };
     testProxy.handler.setCertManagementMetadata(metadata);

@@ -5,7 +5,10 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 
 #include <optional>
+#include <string_view>
+#include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
@@ -14,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
@@ -38,8 +42,6 @@ CampaignsManager* g_instance = nullptr;
 inline constexpr char kCampaignFileName[] = "campaigns.json";
 
 inline constexpr char kEventKey[] = "event_to_be_cleared";
-inline constexpr char kEventTemplate[] =
-    "name:%s;comparator:any;window:3650;storage:3650";
 
 inline constexpr char kOobeCompleteFlagFilePath[] =
     "/home/chronos/.oobe_completed";
@@ -124,7 +126,6 @@ base::Time GetOobeTimestampBackground() {
 
 // static
 CampaignsManager* CampaignsManager::Get() {
-  DCHECK(g_instance);
   return g_instance;
 }
 
@@ -149,6 +150,13 @@ CampaignsManager::~CampaignsManager() {
 
 void CampaignsManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
+
+  if (campaigns_loaded_) {
+    // Do not notify the observer immediately in case blocking.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&CampaignsManager::NotifyCampaignsLoaded,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 void CampaignsManager::RemoveObserver(Observer* observer) {
@@ -162,8 +170,14 @@ void CampaignsManager::SetPrefs(PrefService* prefs) {
 
 void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback,
                                      bool in_oobe) {
+  CAMPAIGNS_LOG(DEBUG) << "Start loading campaigns. `in_oobe`: "
+                       << ToString(in_oobe);
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(ash::switches::kGrowthCampaigns)) {
+    CAMPAIGNS_LOG(DEBUG)
+        << "Switch `kGrowthCampaigns` is set. Loading campaigns from "
+           "encoded campaigns string.";
     const auto& value =
         command_line->GetSwitchValueASCII(ash::switches::kGrowthCampaigns);
     std::string decoded_str;
@@ -187,15 +201,19 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
       << "Getting campaign before campaigns finish loading";
   const auto match_start = base::TimeTicks::Now();
   auto* match_result = matcher_.GetCampaignBySlot(slot);
-  if (match_result) {
-    RecordGetCampaignBySlot(slot);
+  RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
+  if (!match_result) {
+    CAMPAIGNS_LOG(DEBUG) << "No campaign is selected for slot "
+                         << static_cast<int>(slot);
+    return nullptr;
   }
 
-  RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
+  CAMPAIGNS_LOG(DEBUG) << "Campaign: "
+                       << growth::GetCampaignId(match_result).value()
+                       << " is selected for slot " << static_cast<int>(slot);
+  RecordGetCampaignBySlot(slot);
   LogCampaignInSystemLog(match_result, slot);
-
   RegisterTrialForCampaign(match_result);
-
   return match_result;
 }
 
@@ -211,12 +229,11 @@ const std::string& CampaignsManager::GetOpenedAppId() const {
   return matcher_.opened_app_id();
 }
 
-void CampaignsManager::SetOpenedApp(const std::string& app_id) {
-  matcher_.SetOpenedApp(app_id);
-
+void CampaignsManager::SetOpenedApp(std::string app_id) {
   if (!app_id.empty()) {
     RecordEvent(GetEventName(CampaignEvent::kAppOpened, app_id));
   }
+  matcher_.SetOpenedApp(std::move(app_id));
 }
 
 const Trigger& CampaignsManager::GetTrigger() const {
@@ -284,21 +301,31 @@ void CampaignsManager::PerformAction(int campaign_id,
           action_type));
 }
 
-void CampaignsManager::ClearEvent(CampaignEvent event, const std::string& id) {
+void CampaignsManager::ClearEvent(CampaignEvent event, std::string_view id) {
   ClearEvent(GetEventName(event, id));
 }
 
-void CampaignsManager::ClearEvent(const std::string& event) {
+void CampaignsManager::ClearEvent(std::string_view event) {
   std::map<std::string, std::string> conditions_params;
   // Event can be put in any key starting with `event_`.
   // Please see `components/feature_engagement/README.md#featureconfig`.
-  conditions_params[kEventKey] =
-      base::StringPrintf(kEventTemplate, event.c_str());
+  conditions_params[kEventKey] = base::StrCat(
+      {"name:", event, ";comparator:any;window:3650;storage:3650"});
   client_->ClearConfig(conditions_params);
 }
 
 void CampaignsManager::RecordEvent(const std::string& event,
                                    bool trigger_campaigns) {
+  // TODO: b/366053058 - Implementing the logic to wait for `campaigns_loaded_`.
+  if (!campaigns_loaded_) {
+    return;
+  }
+
+  if (trigger_campaigns &&
+      !ash::features::IsGrowthCampaignsTriggerByRecordEventEnabled()) {
+    return;
+  }
+
   client_->RecordEvent(event, trigger_campaigns);
 }
 
@@ -316,7 +343,9 @@ void CampaignsManager::OnCampaignsComponentLoaded(
     return;
   }
 
+  CAMPAIGNS_LOG(DEBUG) << "Getting device registered time.";
   if (const auto registered_time = GetRegisteredTimeForTesting()) {
+    CAMPAIGNS_LOG(DEBUG) << "Registered time for test is set.";
     OnOobeTimestampLoaded(std::move(load_callback), path,
                           registered_time.value());
     return;
@@ -342,6 +371,7 @@ void CampaignsManager::OnCampaignsLoaded(
   }
 
   // Load campaigns into `CampaignMatcher` for selecting campaigns.
+  CAMPAIGNS_LOG(DEBUG) << "Filter and set campaigns.";
   matcher_.FilterAndSetCampaigns(&campaigns_);
 
   campaigns_loaded_ = true;
@@ -354,8 +384,11 @@ void CampaignsManager::OnOobeTimestampLoaded(
     base::OnceClosure load_callback,
     const std::optional<const base::FilePath>& path,
     base::Time oobe_time) {
+  CAMPAIGNS_LOG(DEBUG) << "Device registered time is: "
+                       << oobe_time.InSecondsFSinceUnixEpoch();
   matcher_.SetOobeCompleteTime(oobe_time);
 
+  CAMPAIGNS_LOG(DEBUG) << "Initializing feature_engagement::Tracker.";
   if (tracker_initialized_for_test_) {
     OnTrackerInitialized(std::move(load_callback), path,
                          /*init_success=*/true);
@@ -378,6 +411,7 @@ void CampaignsManager::OnTrackerInitialized(
         CampaignsManagerError::kTrackerInitializationFail);
   }
 
+  CAMPAIGNS_LOG(DEBUG) << "Initialized feature_engagement::Tracker.";
   // Read the campaigns file from component mounted path.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&ReadCampaignsFile, *path),
@@ -412,6 +446,9 @@ std::optional<base::Time> CampaignsManager::GetRegisteredTimeForTesting() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(
           ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch)) {
+    CAMPAIGNS_LOG(DEBUG)
+        << "Switch `kGrothCampaignsRegisteredTimeSecondsSinceUnixEpoch` is "
+           "set.";
     const auto& value = command_line->GetSwitchValueASCII(
         ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch);
 
@@ -448,9 +485,9 @@ void CampaignsManager::RegisterTrialForCampaign(
 
   client_->RegisterSyntheticFieldTrial(trial_name, group_name);
 
-  std::optional<bool> register_with_app_id =
+  std::optional<bool> register_with_trigger_event =
       ShouldRegisterTrialWithTriggerEventName(campaign);
-  if (!register_with_app_id.value_or(false)) {
+  if (!register_with_trigger_event.value_or(false)) {
     return;
   }
 
@@ -462,7 +499,12 @@ void CampaignsManager::RegisterTrialForCampaign(
     return;
   }
 
-  group_name += GetTrigger().event;
+  // The first event name is used to register the synthetic field trail.
+  // TODO: b/367838684 - Currently, this is only used for the G1 campaigns,
+  // where it triggers at app open and has only one event. Extend this to
+  // support multiple events.
+  CHECK(!GetTrigger().events.empty());
+  group_name += GetTrigger().events[0];
   client_->RegisterSyntheticFieldTrial(trial_name, group_name);
 }
 

@@ -19,10 +19,13 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Log;
+import org.chromium.components.ip_protection_auth.GetProxyConfigRequest;
+import org.chromium.components.ip_protection_auth.GetProxyConfigResponse;
 import org.chromium.components.ip_protection_auth.common.IErrorCode;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthAndSignCallback;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthService;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionGetInitialDataCallback;
+import org.chromium.components.ip_protection_auth.common.IIpProtectionGetProxyConfigCallback;
 
 /** Mock implementation of the IP Protection Auth Service */
 public final class IpProtectionAuthServiceMock extends Service {
@@ -85,6 +88,39 @@ public final class IpProtectionAuthServiceMock extends Service {
                         AuthAndSignResponse response =
                                 AuthAndSignResponse.newBuilder().setApnType(TEST_STRING).build();
                         callback.reportResult(response.toByteArray());
+                    } catch (RemoteException ex) {
+                        // TODO(abhijithnair): Handle this exception correctly.
+                        throw new RuntimeException(ex);
+                    } catch (InvalidProtocolBufferException ex) {
+                        // TODO(abhijithnair): Handle this exception correctly.
+                        throw new RuntimeException(ex);
+                    }
+                }
+
+                @Override
+                public void getProxyConfig(
+                        byte[] bytes, IIpProtectionGetProxyConfigCallback callback) {
+                    Log.i(TAG, "got getProxyConfig request");
+                    try {
+                        GetProxyConfigRequest request =
+                                GetProxyConfigRequest.parser().parseFrom(bytes);
+                        if (!request.getServiceType().equals(EXPECTED_SERVICE_TYPE)) {
+                            Log.e(
+                                    TAG,
+                                    "expected service type %s, got: %s",
+                                    EXPECTED_SERVICE_TYPE,
+                                    request.getServiceType());
+                            callback.reportError(
+                                    IErrorCode.IP_PROTECTION_AUTH_SERVICE_TRANSIENT_ERROR);
+                            return;
+                        }
+                        callback.reportResult(
+                                GetProxyConfigResponse.newBuilder()
+                                        .addProxyChain(
+                                                GetProxyConfigResponse.ProxyChain.newBuilder()
+                                                        .setProxyA(TEST_STRING))
+                                        .build()
+                                        .toByteArray());
                     } catch (RemoteException ex) {
                         // TODO(abhijithnair): Handle this exception correctly.
                         throw new RuntimeException(ex);

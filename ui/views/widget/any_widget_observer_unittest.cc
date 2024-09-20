@@ -4,6 +4,7 @@
 
 #include "ui/views/widget/any_widget_observer.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,9 @@ TEST_F(AnyWidgetObserverTest, ObservesInitialize) {
       base::BindLambdaForTesting([&](Widget*) { initialized = true; }));
 
   EXPECT_FALSE(initialized);
-  WidgetAutoclosePtr w0(WidgetTest::CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> w0 =
+      base::WrapUnique(WidgetTest::CreateTopLevelPlatformWidget(
+          Widget::InitParams::CLIENT_OWNS_WIDGET));
   EXPECT_TRUE(initialized);
 }
 
@@ -42,7 +45,12 @@ TEST_F(AnyWidgetObserverTest, ObservesClose) {
       base::BindLambdaForTesting([&](Widget*) { closing = true; }));
 
   EXPECT_FALSE(closing);
-  { WidgetAutoclosePtr w0(WidgetTest::CreateTopLevelPlatformWidget()); }
+  {
+    std::unique_ptr<Widget> w0 =
+        base::WrapUnique(WidgetTest::CreateTopLevelPlatformWidget(
+            Widget::InitParams::CLIENT_OWNS_WIDGET));
+    w0->CloseNow();
+  }
   EXPECT_TRUE(closing);
 }
 
@@ -55,7 +63,9 @@ TEST_F(AnyWidgetObserverTest, ObservesShow) {
       base::BindLambdaForTesting([&](Widget*) { shown = true; }));
 
   EXPECT_FALSE(shown);
-  WidgetAutoclosePtr w0(WidgetTest::CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> w0 =
+      base::WrapUnique(WidgetTest::CreateTopLevelPlatformWidget(
+          Widget::InitParams::CLIENT_OWNS_WIDGET));
   w0->Show();
   EXPECT_TRUE(shown);
 }
@@ -69,7 +79,9 @@ TEST_F(AnyWidgetObserverTest, ObservesHide) {
       base::BindLambdaForTesting([&](Widget*) { hidden = true; }));
 
   EXPECT_FALSE(hidden);
-  WidgetAutoclosePtr w0(WidgetTest::CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> w0 =
+      base::WrapUnique(WidgetTest::CreateTopLevelPlatformWidget(
+          Widget::InitParams::CLIENT_OWNS_WIDGET));
   w0->Hide();
   EXPECT_TRUE(hidden);
 }
@@ -79,13 +91,13 @@ class NamedWidgetShownWaiterTest : public views::test::WidgetTest {
   NamedWidgetShownWaiterTest() = default;
   ~NamedWidgetShownWaiterTest() override = default;
 
-  views::Widget* CreateNamedWidget(const std::string& name) {
-    Widget* widget = new Widget;
+  std::unique_ptr<views::Widget> CreateNamedWidget(const std::string& name) {
+    auto widget = std::make_unique<Widget>();
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                      Widget::InitParams::TYPE_WINDOW);
     params.native_widget = views::test::CreatePlatformNativeWidgetImpl(
-        widget, views::test::kStubCapture, nullptr);
+        widget.get(), views::test::kStubCapture, nullptr);
     params.name = name;
     widget->Init(std::move(params));
     return widget;
@@ -96,7 +108,7 @@ TEST_F(NamedWidgetShownWaiterTest, ShownAfterWait) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "TestWidget");
 
-  WidgetAutoclosePtr w0(CreateNamedWidget("TestWidget"));
+  std::unique_ptr<Widget> w0 = CreateNamedWidget("TestWidget");
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce([](views::Widget* widget) { widget->Show(); },
                                 base::Unretained(w0.get())));
@@ -106,7 +118,7 @@ TEST_F(NamedWidgetShownWaiterTest, ShownAfterWait) {
 TEST_F(NamedWidgetShownWaiterTest, ShownBeforeWait) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "TestWidget");
-  WidgetAutoclosePtr w0(CreateNamedWidget("TestWidget"));
+  std::unique_ptr<Widget> w0 = CreateNamedWidget("TestWidget");
   w0->Show();
   EXPECT_EQ(waiter.WaitIfNeededAndGet(), w0.get());
 }
@@ -114,7 +126,7 @@ TEST_F(NamedWidgetShownWaiterTest, ShownBeforeWait) {
 TEST_F(NamedWidgetShownWaiterTest, ShownInactive) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "TestWidget");
-  WidgetAutoclosePtr w0(CreateNamedWidget("TestWidget"));
+  std::unique_ptr<Widget> w0 = CreateNamedWidget("TestWidget");
   w0->ShowInactive();
   EXPECT_EQ(waiter.WaitIfNeededAndGet(), w0.get());
 }
@@ -122,8 +134,8 @@ TEST_F(NamedWidgetShownWaiterTest, ShownInactive) {
 TEST_F(NamedWidgetShownWaiterTest, OtherWidgetShown) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "TestWidget");
-  WidgetAutoclosePtr w0(CreateNamedWidget("NotTestWidget"));
-  WidgetAutoclosePtr w1(CreateNamedWidget("TestWidget"));
+  std::unique_ptr<Widget> w0 = CreateNamedWidget("NotTestWidget");
+  std::unique_ptr<Widget> w1 = CreateNamedWidget("TestWidget");
   w0->Show();
   w1->Show();
   EXPECT_EQ(waiter.WaitIfNeededAndGet(), w1.get());

@@ -82,27 +82,33 @@ class SimLockInteractiveUiTest : public EsimInteractiveUiTestBase {
         /*notify_changed=*/true);
   }
 
-  void CheckSimLockState(const std::string& type,
-                         const int retries_left,
-                         const bool lock_enabled) {
-    auto* device_test = ShillDeviceClient::Get()->GetTestInterface();
-    ASSERT_TRUE(device_test);
-    const auto& sim_lock_status =
-        device_test
-            ->GetDeviceProperty(device_path_, shill::kSIMLockStatusProperty)
-            ->GetDict();
-    const auto* type_value =
-        sim_lock_status.FindString(shill::kSIMLockTypeProperty);
-    ASSERT_TRUE(type_value);
-    EXPECT_EQ(*type_value, type);
-    const auto retries_left_value =
-        sim_lock_status.FindInt(shill::kSIMLockRetriesLeftProperty);
-    ASSERT_TRUE(retries_left_value.has_value());
-    EXPECT_EQ(*retries_left_value, retries_left);
-    const auto lock_enabled_value =
-        sim_lock_status.FindBool(shill::kSIMLockEnabledProperty);
-    ASSERT_TRUE(lock_enabled_value.has_value());
-    EXPECT_EQ(*lock_enabled_value, lock_enabled);
+  ui::test::internal::InteractiveTestPrivate::MultiStep CheckSimLockState(
+      const std::string& type,
+      const int retries_left,
+      const bool lock_enabled) {
+    return Steps(CheckSimLockStateProperty(shill::kSIMLockTypeProperty,
+                                           base::Value(type)),
+                 CheckSimLockStateProperty(shill::kSIMLockRetriesLeftProperty,
+                                           base::Value(retries_left)),
+                 CheckSimLockStateProperty(shill::kSIMLockEnabledProperty,
+                                           base::Value(lock_enabled)));
+  }
+
+  InteractiveTestApi::StepBuilder CheckSimLockStateProperty(
+      const char* property,
+      base::Value expected_value) {
+    return Check([this, property,
+                  expected_value = std::move(expected_value)]() {
+      auto* const device_test = ShillDeviceClient::Get()->GetTestInterface();
+      auto* const value =
+          device_test ? device_test
+                            ->GetDeviceProperty(device_path_,
+                                                shill::kSIMLockStatusProperty)
+                            ->GetDict()
+                            .Find(property)
+                      : nullptr;
+      return value && *value == expected_value;
+    });
   }
 
   void RestrictSimLockFromPolicy(bool allow_sim_lock) {
@@ -163,12 +169,10 @@ class SimLockInteractiveUiTest : public EsimInteractiveUiTestBase {
         WaitForToggleState(kOSSettingsId,
                            settings::cellular::CellularSimLockToggle(),
                            /*is_checked=*/false),
-        Do([this]() {
-          CheckSimLockState(
-              /*type=*/"",
-              /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
-              /*lock_enabled=*/false);
-        }),
+        CheckSimLockState(
+            /*type=*/"",
+            /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
+            /*lock_enabled=*/false),
 
         Log("Checking that the change SIM lock PIN button is hidden"),
 
@@ -194,12 +198,10 @@ class SimLockInteractiveUiTest : public EsimInteractiveUiTestBase {
         WaitForToggleState(kOSSettingsId,
                            settings::cellular::CellularSimLockToggle(),
                            /*is_checked=*/true),
-        Do([this]() {
-          CheckSimLockState(
-              /*type=*/"",
-              /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
-              /*lock_enabled=*/true);
-        }));
+        CheckSimLockState(
+            /*type=*/"",
+            /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
+            /*lock_enabled=*/true));
   }
 
   // Disables SIM lock with the provided `pin`, checking that SIM lock is
@@ -232,12 +234,10 @@ class SimLockInteractiveUiTest : public EsimInteractiveUiTestBase {
         WaitForToggleState(kOSSettingsId,
                            settings::cellular::CellularSimLockToggle(),
                            /*is_checked=*/false),
-        Do([this]() {
-          CheckSimLockState(
-              /*type=*/"",
-              /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
-              /*lock_enabled=*/false);
-        }));
+        CheckSimLockState(
+            /*type=*/"",
+            /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
+            /*lock_enabled=*/false));
   }
 
   const SimInfo& esim_info() const { return *esim_info_; }
@@ -303,12 +303,10 @@ IN_PROC_BROWSER_TEST_F(SimLockInteractiveUiTest, ChangePin) {
       WaitForElementDoesNotExist(
           kOSSettingsId,
           settings::cellular::CellularSimLockChangePinDialogButton()),
-      Do([this]() {
-        CheckSimLockState(
-            /*type=*/"",
-            /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
-            /*lock_enabled=*/true);
-      }),
+      CheckSimLockState(
+          /*type=*/"",
+          /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
+          /*lock_enabled=*/true),
 
       Log("Closing the Settings app"),
 
@@ -358,10 +356,8 @@ IN_PROC_BROWSER_TEST_F(SimLockInteractiveUiTest, LockUnlockPuk) {
           l10n_util::GetStringFUTF8(
               IDS_SETTINGS_INTERNET_NETWORK_SIM_ERROR_INCORRECT_PIN_PLURAL,
               base::NumberToString16(2))),
-      Do([this]() {
-        CheckSimLockState(/*type=*/"", /*retries_left=*/2,
-                          /*lock_enabled=*/true);
-      }),
+      CheckSimLockState(/*type=*/"", /*retries_left=*/2,
+                        /*lock_enabled=*/true),
 
       Log("Entering incorrect PIN #2"),
 
@@ -375,10 +371,8 @@ IN_PROC_BROWSER_TEST_F(SimLockInteractiveUiTest, LockUnlockPuk) {
           settings::cellular::CellularSimLockEnterPinDialogSubtext(),
           l10n_util::GetStringUTF8(
               IDS_SETTINGS_INTERNET_NETWORK_SIM_ERROR_INCORRECT_PIN)),
-      Do([this]() {
-        CheckSimLockState(/*type=*/"", /*retries_left=*/1,
-                          /*lock_enabled=*/true);
-      }),
+      CheckSimLockState(/*type=*/"", /*retries_left=*/1,
+                        /*lock_enabled=*/true),
 
       Log("Entering incorrect PIN #3"),
 
@@ -393,10 +387,8 @@ IN_PROC_BROWSER_TEST_F(SimLockInteractiveUiTest, LockUnlockPuk) {
       WaitForElementExists(
           kOSSettingsId,
           settings::cellular::CellularSimLockUnlockPukDialogPuk()),
-      Do([this]() {
-        CheckSimLockState(/*type=*/shill::kSIMLockPuk, /*retries_left=*/10,
-                          /*lock_enabled=*/true);
-      }),
+      CheckSimLockState(/*type=*/shill::kSIMLockPuk, /*retries_left=*/10,
+                        /*lock_enabled=*/true),
 
       Log("Entering PUK information"),
 
@@ -423,12 +415,10 @@ IN_PROC_BROWSER_TEST_F(SimLockInteractiveUiTest, LockUnlockPuk) {
       WaitForToggleState(kOSSettingsId,
                          settings::cellular::CellularSimLockToggle(),
                          /*is_checked=*/true),
-      Do([this]() {
-        CheckSimLockState(
-            /*type=*/"",
-            /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
-            /*lock_enabled=*/true);
-      }),
+      CheckSimLockState(
+          /*type=*/"",
+          /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
+          /*lock_enabled=*/true),
 
       Log("Closing the Settings app"),
 
@@ -507,12 +497,10 @@ IN_PROC_BROWSER_TEST_F(SimLockInteractiveUiTest, ProhibitWithPolicy) {
                          /*is_checked=*/false),
       WaitForElementDisabled(kOSSettingsId,
                              settings::cellular::CellularSimLockToggle()),
-      Do([this]() {
-        CheckSimLockState(
-            /*type=*/"",
-            /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
-            /*lock_enabled=*/false);
-      }),
+      CheckSimLockState(
+          /*type=*/"",
+          /*retries_left=*/FakeShillDeviceClient::kSimPinRetryCount,
+          /*lock_enabled=*/false),
 
       Log("Closing the Settings app"),
 

@@ -74,6 +74,9 @@ LiveCaptionController::LiveCaptionController(
 
   enabled_ = IsLiveCaptionEnabled();
   base::UmaHistogramBoolean("Accessibility.LiveCaption2", enabled_);
+
+  MaybeSetLiveCaptionLanguage();
+
   if (enabled_) {
     StartLiveCaption();
   }
@@ -102,7 +105,9 @@ void LiveCaptionController::RegisterProfilePrefs(
       prefs::kLiveCaptionMaskOffensiveWords, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  // Initially default the language to en-US.
+  // Initially default the language to en-US. The language
+  // preference value will be set to a default language when Live Caption is
+  // enabled for the first time.
   registry->RegisterStringPref(prefs::kLiveCaptionLanguageCode,
                                speech::kUsEnglishLocale,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -305,6 +310,29 @@ void LiveCaptionController::OnCaptionStyleUpdated() {
   caption_style_ = GetCaptionStyleFromUserSettings(profile_prefs_,
                                                    false /* record_metrics */);
   caption_bubble_controller_->UpdateCaptionStyle(caption_style_);
+}
+
+void LiveCaptionController::MaybeSetLiveCaptionLanguage() {
+  // If the current Live Caption language is not installed,
+  // reset the Live Caption language code to the application locale or preferred
+  // language if available.
+  if (speech::SodaInstaller::GetInstance() &&
+      profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode) ==
+          speech::kUsEnglishLocale &&
+      speech::SodaInstaller::GetInstance()
+          ->GetLanguagePath(
+              profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode))
+          .empty()) {
+    speech::SodaInstaller::GetInstance()->UnregisterLanguage(
+        speech::kUsEnglishLocale, global_prefs_);
+    speech::SodaInstaller::GetInstance()->RegisterLanguage(
+        speech::GetDefaultLiveCaptionLanguage(application_locale_,
+                                              profile_prefs_),
+        global_prefs_);
+    profile_prefs_->SetString(prefs::kLiveCaptionLanguageCode,
+                              speech::GetDefaultLiveCaptionLanguage(
+                                  application_locale_, profile_prefs_));
+  }
 }
 
 }  // namespace captions

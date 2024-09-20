@@ -421,14 +421,15 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
       CHECK(!suggestion.metadata.is_single_username_form);
 
       FormSuggestion* suggestionCopy = [FormSuggestion
-                 suggestionWithValue:suggestion.value
-                          minorValue:suggestion.minorValue
-                  displayDescription:suggestion.displayDescription
-                                icon:defaultIcon
-                                type:suggestion.type
-                   backendIdentifier:suggestion.backendIdentifier
-                      requiresReauth:suggestion.requiresReauth
-          acceptanceA11yAnnouncement:suggestion.acceptanceA11yAnnouncement];
+                  suggestionWithValue:suggestion.value
+                           minorValue:suggestion.minorValue
+                   displayDescription:suggestion.displayDescription
+                                 icon:defaultIcon
+                                 type:suggestion.type
+                    backendIdentifier:suggestion.backendIdentifier
+          fieldByFieldFillingTypeUsed:suggestion.fieldByFieldFillingTypeUsed
+                       requiresReauth:suggestion.requiresReauth
+           acceptanceA11yAnnouncement:suggestion.acceptanceA11yAnnouncement];
       // TODO(crbug.com/353663764): Include `featureForIPH` in the
       // `FormSuggestion` constructor.
       suggestionCopy.featureForIPH = suggestion.featureForIPH;
@@ -471,15 +472,14 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
 
 // Resets the password bottom sheet dismiss count to 0.
 - (void)resetPasswordBottomSheetDismissCount {
-  ChromeBrowserState* browserState =
-      _webState
-          ? ChromeBrowserState::FromBrowserState(_webState->GetBrowserState())
-          : nullptr;
-  if (browserState) {
-    int dismissCount = browserState->GetPrefs()->GetInteger(
+  ProfileIOS* profile =
+      _webState ? ProfileIOS::FromBrowserState(_webState->GetBrowserState())
+                : nullptr;
+  if (profile) {
+    int dismissCount = profile->GetPrefs()->GetInteger(
         prefs::kIosPasswordBottomSheetDismissCount);
-    browserState->GetPrefs()->SetInteger(
-        prefs::kIosPasswordBottomSheetDismissCount, 0);
+    profile->GetPrefs()->SetInteger(prefs::kIosPasswordBottomSheetDismissCount,
+                                    0);
     if (dismissCount > 0) {
       // Log how many times the bottom sheet had been dismissed before being
       // re-enabled.

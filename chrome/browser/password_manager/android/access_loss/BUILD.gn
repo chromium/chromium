@@ -1,10 +1,6 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningBridge.java" ]
-}
-
 android_library("enums_java") {
   srcjar_deps = [ "//chrome/browser/password_manager/android:java_enum_srcjar" ]
 
@@ -14,7 +10,12 @@ android_library("enums_java") {
 android_library("helper_java") {
   resources_package = "org.chromium.chrome.browser.access_loss"
 
-  sources = [ "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningHelper.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/access_loss/HelpUrlLauncher.java",
+    "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossNotificationProperties.java",
+    "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningHelper.java",
+    "java/src/org/chromium/chrome/browser/access_loss/PwdAccessLossNotificationCoordinator.java",
+  ]
 
   deps = [
     ":enums_java",
@@ -23,13 +24,14 @@ android_library("helper_java") {
     "//chrome/browser/feedback/android:factory_java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/notifications:java",
-    "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:java_resources",
+    "//chrome/browser/password_manager/android:utils_java",
     "//chrome/browser/password_manager/android/bottom_sheet:java",
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/notifications/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
@@ -40,19 +42,23 @@ android_library("settings_dialog_java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsMediator.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsProperties.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsViewBinder.java",
   ]
 
   deps = [
     ":enums_java",
+    ":helper_java",
     ":settings_dialog_java_resources",
     "//base:base_java",
     "//build/android:build_java",
-    "//chrome/browser/feedback/android:factory_java",
+    "//chrome/browser/feedback/android:java",
     "//chrome/browser/feedback/android:java_resources",
     "//chrome/browser/password_manager/android:java_resources",
+    "//chrome/browser/password_manager/android:utils_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//ui/android:ui_java",
   ]
 }
@@ -63,50 +69,30 @@ android_resources("settings_dialog_java_resources") {
   deps = [ "//components/browser_ui/styles/android:java_resources" ]
 }
 
-android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
-  resources_package = "org.chromium.chrome.browser.access_loss"
-
-  sources = [ "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningBridge.java" ]
-
-  deps = [
-    ":enums_java",
-    ":helper_java",
-    "//base:base_java",
-    "//build/android:build_java",
-    "//chrome/browser/feedback/android:factory_java",
-    "//chrome/browser/feedback/android:java_resources",
-    "//chrome/browser/password_manager/android:java_resources",
-    "//chrome/browser/password_manager/android/bottom_sheet:java",
-    "//chrome/browser/profiles/android:java",
-    "//components/browser_ui/bottomsheet/android:java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
-    "//ui/android:ui_java",
-  ]
-}
-
 robolectric_library("junit") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.access_loss"
 
   sources = [
+    "java/src/org/chromium/chrome/browser/access_loss/HelpUrlLauncherTest.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsCoordinatorTest.java",
-    "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningBridgeTest.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningHelperTest.java",
+    "java/src/org/chromium/chrome/browser/access_loss/PwdAccessLossNotificationCoordinatorTest.java",
   ]
 
   deps = [
     ":helper_java",
-    ":java",
     ":settings_dialog_java",
+    ":settings_dialog_java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_jni_headers_java",
+    "//chrome/browser/feedback/android:java",
+    "//chrome/browser/feedback/android:java_resources",
     "//chrome/browser/flags:java",
     "//chrome/browser/notifications:java",
-    "//chrome/browser/password_manager/android:utils",
+    "//chrome/browser/password_manager/android:utils_java",
     "//chrome/browser/password_manager/android/bottom_sheet:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -114,6 +100,7 @@ robolectric_library("junit") {
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/theme/android:java_resources",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
@@ -130,8 +117,8 @@ source_set("public") {
   ]
 
   deps = [
-    ":jni_headers",
     "//base",
+    "//chrome/android:chrome_jni_headers",
     "//chrome/browser/password_manager/android:utils",
     "//chrome/browser/profiles:profile",
     "//components/password_manager/core/browser/features:password_features",
@@ -149,11 +136,11 @@ android_library("javatests") {
 
   deps = [
     ":helper_java",
-    ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android:utils_java",
     "//chrome/browser/password_manager/android/bottom_sheet:java_resources",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
@@ -197,5 +184,6 @@ source_set("unit_tests") {
     "//components/password_manager/core/common:common",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//content/test:test_support",
   ]
 }

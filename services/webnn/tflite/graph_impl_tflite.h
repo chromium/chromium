@@ -18,7 +18,11 @@
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_graph_impl.h"
 
-namespace webnn::tflite {
+namespace webnn {
+
+class WebNNConstantOperand;
+
+namespace tflite {
 
 class ContextImplTflite;
 
@@ -31,6 +35,8 @@ class GraphImplTflite final : public WebNNGraphImpl {
   static base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
   CreateAndBuild(mojom::GraphInfoPtr graph_info,
                  ComputeResourceInfo compute_resource_info,
+                 base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+                     constant_operands,
                  ContextImplTflite* context);
 
   GraphImplTflite(const GraphImplTflite&) = delete;
@@ -63,6 +69,7 @@ class GraphImplTflite final : public WebNNGraphImpl {
   base::WeakPtrFactory<GraphImplTflite> weak_factory_{this};
 };
 
-}  // namespace webnn::tflite
+}  // namespace tflite
+}  // namespace webnn
 
 #endif  // SERVICES_WEBNN_TFLITE_GRAPH_IMPL_TFLITE_H_

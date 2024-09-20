@@ -57,7 +57,7 @@ dependencies.constraints {
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
-    compile 'com.google.android.material:material:1.11.0-beta01'
+    compile 'com.google.android.material:material:1.13.0-alpha05'
 
     compile 'com.google.android.play:feature-delivery:2.0.1'
 
@@ -86,8 +86,9 @@ dependencies {
     compile 'com.google.android.gms:play-services-vision-common:19.1.3'
     compile 'com.google.android.gms:play-services-vision:20.1.3'
 
-    // Still needed by internal targets.
+    // Needed only by internal targets:
     compile "com.android.support:support-annotations:28.0.0"
+    buildCompile 'com.google.auto.service:auto-service-annotations:1.0-rc6'
 
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'com.google.firebase:firebase-iid:21.0.1'
@@ -112,11 +113,14 @@ dependencies {
     compile 'org.jetbrains.kotlinx:atomicfu-jvm:0.23.2'
     // Needed by androidx and by doubledown targets.
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.1"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.8.1"
+    compile "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.2"
     compile "org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22"
 
+    // Needed by androidx.datastore
+    compile "com.squareup.okio:okio-jvm:3.9.0"
     // Needed by androidx.macrobenchmarks
     androidTestCompile "com.squareup.wire:wire-runtime-jvm:4.4.3"
     // Needed by androidx.benchmark
@@ -143,9 +147,6 @@ dependencies {
     compile 'org.checkerframework:checker-util:3.25.0'
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
-    buildCompile 'com.google.auto:auto-common:1.2.1'
-    buildCompile 'com.google.auto.service:auto-service:1.0-rc6'
-    buildCompile 'com.google.auto.service:auto-service-annotations:1.0-rc6'
     buildCompile 'com.google.code.gson:gson:2.8.0'
     buildCompile 'org.ow2.asm:asm:7.0'
     buildCompile 'org.ow2.asm:asm-commons:7.0'

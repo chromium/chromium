@@ -116,6 +116,87 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS) {
   EXPECT_TRUE(result->end_of_stream());
 }
 
+TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_Video_NextConfig) {
+  // Original.
+  auto buffer = DecoderBuffer::CreateEOSBuffer(TestVideoConfig::Normal());
+
+  // Convert from and back.
+  auto ptr = mojom::DecoderBuffer::From(*buffer);
+  auto result = ptr.To<scoped_refptr<DecoderBuffer>>();
+
+  // Compare.
+  EXPECT_TRUE(result->end_of_stream());
+  ASSERT_TRUE(result->next_config());
+  EXPECT_TRUE(absl::get<VideoDecoderConfig>(*result->next_config())
+                  .Matches(TestVideoConfig::Normal()));
+}
+
+TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_Audio_NextConfig) {
+  // Original.
+  auto buffer = DecoderBuffer::CreateEOSBuffer(TestAudioConfig::Normal());
+
+  // Convert from and back.
+  auto ptr = mojom::DecoderBuffer::From(*buffer);
+  ASSERT_TRUE(ptr);
+  auto result = ptr.To<scoped_refptr<DecoderBuffer>>();
+
+  // Compare.
+  EXPECT_TRUE(result->end_of_stream());
+  ASSERT_TRUE(result->next_config());
+  EXPECT_TRUE(absl::get<AudioDecoderConfig>(*result->next_config())
+                  .Matches(TestAudioConfig::Normal()));
+}
+
+TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_NextConfig_Invalid) {
+  // Original.
+  const uint8_t kData[] = "hello, world";
+  auto buffer = DecoderBuffer::CopyFrom(kData);
+  // Ensure some side data exists.
+  buffer->WritableSideData().secure_handle = 1;
+
+  {
+    auto ptr = mojom::DecoderBuffer::From(*buffer);
+    ASSERT_TRUE(ptr);
+    auto result = ptr.To<scoped_refptr<DecoderBuffer>>();
+    EXPECT_TRUE(result);
+
+    // Next audio config should only be on EOS buffers.
+    ptr->side_data->next_config =
+        mojom::DecoderBufferSideDataNextConfig::NewNextAudioConfig(
+            TestAudioConfig::Normal());
+    result = ptr.To<scoped_refptr<DecoderBuffer>>();
+    EXPECT_FALSE(result);
+  }
+
+  {
+    auto ptr = mojom::DecoderBuffer::From(*buffer);
+    ASSERT_TRUE(ptr);
+    auto result = ptr.To<scoped_refptr<DecoderBuffer>>();
+    EXPECT_TRUE(result);
+
+    // Next video config should only be on EOS buffers.
+    ptr->side_data->next_config =
+        mojom::DecoderBufferSideDataNextConfig::NewNextVideoConfig(
+            TestVideoConfig::Normal());
+    result = ptr.To<scoped_refptr<DecoderBuffer>>();
+    EXPECT_FALSE(result);
+  }
+
+  {
+    buffer = DecoderBuffer::CreateEOSBuffer();
+    auto ptr = mojom::DecoderBuffer::From(*buffer);
+    ASSERT_TRUE(ptr);
+    auto result = ptr.To<scoped_refptr<DecoderBuffer>>();
+    EXPECT_TRUE(result);
+
+    // The only side data allowed on EOS buffers is a next config.
+    ptr->side_data = media::mojom::DecoderBufferSideData::New();
+    ptr->side_data->secure_handle = 3;
+    result = ptr.To<scoped_refptr<DecoderBuffer>>();
+    EXPECT_FALSE(result);
+  }
+}
+
 TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_KeyFrame) {
   const uint8_t kData[] = "hello, world";
   const size_t kDataSize = std::size(kData);

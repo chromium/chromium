@@ -47,7 +47,7 @@ static_library("borealis_installer") {
     "//chrome/browser/resources/chromeos/borealis_installer:resources",
     "//chrome/browser/ui",
     "//chrome/browser/ui/views/borealis",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//components/strings:components_strings",
     "//ui/aura",
     "//ui/base",

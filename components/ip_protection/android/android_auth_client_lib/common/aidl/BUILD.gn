@@ -12,6 +12,7 @@ android_aidl("ip_protection_aidl") {
     "src/org/chromium/components/ip_protection_auth/common/IIpProtectionAuthAndSignCallback.aidl",
     "src/org/chromium/components/ip_protection_auth/common/IIpProtectionAuthService.aidl",
     "src/org/chromium/components/ip_protection_auth/common/IIpProtectionGetInitialDataCallback.aidl",
+    "src/org/chromium/components/ip_protection_auth/common/IIpProtectionGetProxyConfigCallback.aidl",
   ]
 }
 

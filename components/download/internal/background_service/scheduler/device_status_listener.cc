@@ -10,10 +10,18 @@ namespace download {
 
 namespace {
 
-// Converts |on_battery_power| to battery status.
-BatteryStatus ToBatteryStatus(bool on_battery_power) {
-  return on_battery_power ? BatteryStatus::NOT_CHARGING
-                          : BatteryStatus::CHARGING;
+// Converts |battery_power_status| to battery status.
+BatteryStatus ToBatteryStatus(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  switch (battery_power_status) {
+    case base::PowerStateObserver::BatteryPowerStatus::kBatteryPower:
+      return BatteryStatus::NOT_CHARGING;
+    case base::PowerStateObserver::BatteryPowerStatus::kExternalPower:
+      // TODO(339859756): We return CHARGING for kUnknown to preserve the old
+      // behavior.
+    case base::PowerStateObserver::BatteryPowerStatus::kUnknown:
+      return BatteryStatus::CHARGING;
+  }
 }
 
 // Converts a ConnectionType to NetworkStatus.
@@ -92,13 +100,13 @@ void DeviceStatusListener::StartAfterDelay() {
   DCHECK(battery_listener_);
   battery_listener_->Start(this);
   status_.battery_status =
-      ToBatteryStatus(battery_listener_->IsOnBatteryPower());
+      ToBatteryStatus(battery_listener_->GetBatteryPowerStatus());
 
   // Listen to network status changes.
   network_listener_->Start(this);
 
   status_.battery_status =
-      ToBatteryStatus(battery_listener_->IsOnBatteryPower());
+      ToBatteryStatus(battery_listener_->GetBatteryPowerStatus());
   status_.network_status =
       ToNetworkStatus(network_listener_->GetConnectionType());
   pending_network_status_ = status_.network_status;
@@ -159,8 +167,9 @@ void DeviceStatusListener::OnNetworkChanged(
   }
 }
 
-void DeviceStatusListener::OnPowerStateChange(bool on_battery_power) {
-  status_.battery_status = ToBatteryStatus(on_battery_power);
+void DeviceStatusListener::OnPowerStateChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  status_.battery_status = ToBatteryStatus(battery_power_status);
   NotifyStatusChange();
 }
 

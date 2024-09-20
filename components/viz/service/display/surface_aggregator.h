@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -461,6 +462,15 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   // target damage or not, because that allows a frame to be drawn after inking
   // is finished to remove the last drawn ink trail.
   bool last_frame_had_delegated_ink_ = false;
+  // Tracks the timestamp of the delegated ink metadata that is being added to
+  // the aggregated frame in `Aggregate()`. The role of this member is to track
+  // consecutive aggregate frames with the same delegated ink metadata in the
+  // event that there are no new compositor frames but delegated ink points are
+  // still being sent to viz from the browser process.
+  base::TimeTicks previous_ink_metadata_time_;
+  // Tracks the number of consecutive aggregate frames with the same delegated
+  // ink metadata.
+  int identical_ink_metadata_count_ = 0;
 
   // The current surface has zero_damage_rect and is not recorded in
   // surface_damage_rect_list_ . Set by AddSurfaceDamageToDamageList() and read
@@ -469,6 +479,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   // Used to generate new unique render pass ids in the aggregated namespace.
   AggregatedRenderPassId::Generator render_pass_id_generator_;
+
+  // Flow ids for aggregated frames. Used for tracing.
+  std::unordered_set<int64_t> flow_ids_for_resolved_frames_;
 };
 
 }  // namespace viz

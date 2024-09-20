@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32, 66;
+  reserved 11, 12, 16, 29, 32, 66, 72;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -280,11 +280,20 @@ enum OptimizationType {
   // prediction improvements should be triggered on.
   AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST = 68;
   // This optimization helps determine if this merchant page is a good candidate
-  // for buy now pay later provider Affirm to enable amount extraction.
-  AMOUNT_EXTRACTION_ALLOWLIST_AFFIRM = 69;
+  // for enabling buy now pay later flow with Affirm.
+  BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM = 69;
   // This optimization helps determine if this merchant page is a good candidate
-  // for buy now pay later provider Zip to enable amount extraction.
-  AMOUNT_EXTRACTION_ALLOWLIST_ZIP = 70;
+  // for enabling buy now pay later flow with Zip.
+  BUY_NOW_PAY_LATER_ALLOWLIST_ZIP = 70;
+  // Provides information about whether a URL can be synced across devices for
+  // saved tab groups feature.
+  SAVED_TAB_GROUP = 71;
+  // This optimization provides information about whether a URL is eligible for
+  // generating user annotations derived from forms.
+  FORMS_ANNOTATIONS = 73;
+  // This optimization provides information about whether a page is eligible for
+  // text classifier entity detection. This feature is iOS only.
+  TEXT_CLASSIFIER_ENTITY_DETECTION = 74;
 }
 
 // Presents semantics for how page load URLs should be matched.

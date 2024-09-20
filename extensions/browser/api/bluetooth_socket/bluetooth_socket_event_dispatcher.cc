@@ -180,12 +180,14 @@ void BluetoothSocketEventDispatcher::StartReceive(const SocketParams& params) {
       << "Socket has wrong owner.";
 
   // Don't start another read if the socket has been paused.
-  if (socket->paused())
+  if (socket->paused()) {
     return;
+  }
 
   int buffer_size = socket->buffer_size();
-  if (buffer_size <= 0)
+  if (buffer_size <= 0) {
     buffer_size = kDefaultBufferSize;
+  }
   socket->Receive(
       buffer_size,
       base::BindOnce(&BluetoothSocketEventDispatcher::ReceiveCallback, params),
@@ -267,8 +269,9 @@ void BluetoothSocketEventDispatcher::StartAccept(const SocketParams& params) {
       << "Socket has wrong owner.";
 
   // Don't start another accept if the socket has been paused.
-  if (socket->paused())
+  if (socket->paused()) {
     return;
+  }
 
   socket->Accept(
       base::BindOnce(&BluetoothSocketEventDispatcher::AcceptCallback, params),

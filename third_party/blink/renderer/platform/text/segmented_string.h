@@ -294,10 +294,6 @@ class PLATFORM_EXPORT SegmentedString {
     return Advance();
   }
 
-  // Writes the consumed characters into consumedCharacters, which must
-  // have space for at least |count| characters.
-  void Advance(unsigned count, UChar* consumed_characters);
-
   ALWAYS_INLINE int NumberOfCharactersConsumed() const {
     int number_of_pushed_characters = 0;
     return number_of_characters_consumed_prior_to_current_string_ +
@@ -325,6 +321,10 @@ class PLATFORM_EXPORT SegmentedString {
 
   UChar AdvanceSubstring();
 
+  // Consume characters into `characters`, which should not be bigger than
+  // `length()`.
+  void AdvanceAndCollect(base::span<UChar> characters);
+
   inline LookAheadResult LookAheadInline(const String& string,
                                          TextCaseSensitivity case_sensitivity) {
     if (string.length() <= static_cast<unsigned>(current_string_.length())) {
@@ -342,10 +342,10 @@ class PLATFORM_EXPORT SegmentedString {
     unsigned count = string.length();
     if (count > length())
       return kNotEnoughCharacters;
-    UChar* consumed_characters;
+    base::span<UChar> consumed_characters;
     String consumed_string =
         String::CreateUninitialized(count, consumed_characters);
-    Advance(count, consumed_characters);
+    AdvanceAndCollect(consumed_characters);
     LookAheadResult result = kDidNotMatch;
     if (consumed_string.StartsWith(string, case_sensitivity))
       result = kDidMatch;

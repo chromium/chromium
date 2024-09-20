@@ -23,8 +23,11 @@ class CookieSettings;
 }
 
 namespace web {
-class BrowserState;
 class WebState;
+}
+
+namespace network::mojom {
+class CookieManager;
 }
 
 class AccountReconcilor;
@@ -37,8 +40,12 @@ class AccountReconcilor;
 class AccountConsistencyService : public KeyedService,
                                   public signin::IdentityManager::Observer {
  public:
+  // Callback used to get a CookieManager.
+  using CookieManagerCallback =
+      base::RepeatingCallback<network::mojom::CookieManager*()>;
+
   AccountConsistencyService(
-      web::BrowserState* browser_state,
+      CookieManagerCallback cookie_manager_cb,
       AccountReconcilor* account_reconcilor,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       signin::IdentityManager* identity_manager);
@@ -115,8 +122,8 @@ class AccountConsistencyService : public KeyedService,
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
-  // Browser state associated with the service.
-  raw_ptr<web::BrowserState> browser_state_;
+  // Callback used to get CookieManager.
+  CookieManagerCallback cookie_manager_cb_;
   // Service managing accounts reconciliation, notified of GAIA responses with
   // the X-Chrome-Manage-Accounts header
   raw_ptr<AccountReconcilor> account_reconcilor_;

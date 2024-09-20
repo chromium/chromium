@@ -56,7 +56,7 @@ public class ScrollDelegateUnitTest {
     public void testSetClampedScrollOffset_LessThan() {
         // Clamping between -200 and 0. Expect to clamp -300 to -200.
         float newScrollOffset = -300.f;
-        mScrollDelegate.setClampedScrollOffset(newScrollOffset);
+        mScrollDelegate.setScrollOffset(newScrollOffset);
         assertEquals(
                 /* message= */ "Offset should be clamped.",
                 TEST_MIN_SCROLL_OFFSET,
@@ -68,7 +68,7 @@ public class ScrollDelegateUnitTest {
     public void testSetClampedScrollOffset_InBounds() {
         // Clamping between -200 and 0. Expect to not clamp -100.
         float newScrollOffset = -100.f;
-        mScrollDelegate.setClampedScrollOffset(newScrollOffset);
+        mScrollDelegate.setScrollOffset(newScrollOffset);
         assertEquals(
                 /* message= */ "Offset should not be clamped.",
                 newScrollOffset,
@@ -80,7 +80,7 @@ public class ScrollDelegateUnitTest {
     public void testSetClampedScrollOffset_GreaterThan() {
         // Clamping between -200 and 0. Expect to clamp 100 to 0.
         float newScrollOffset = 100.f;
-        mScrollDelegate.setClampedScrollOffset(newScrollOffset);
+        mScrollDelegate.setScrollOffset(newScrollOffset);
         assertEquals(
                 /* message= */ "Offset should be clamped.",
                 /* expected= */ 0,
@@ -103,7 +103,7 @@ public class ScrollDelegateUnitTest {
 
         // Set un-clamped scrollOffset.
         float scrollOffset = 100.f;
-        mScrollDelegate.setScrollOffset(scrollOffset);
+        mScrollDelegate.setNonClampedScrollOffsetForTesting(scrollOffset);
         assertEquals(
                 /* message= */ "ScrollOffset should be un-clamped.",
                 /* expected= */ scrollOffset,

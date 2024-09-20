@@ -904,6 +904,8 @@ interface GPURenderPassEncoder
     method endOcclusionQuery
     method executeBundles
     method insertDebugMarker
+    method multiDrawIndexedIndirect
+    method multiDrawIndirect
     method popDebugGroup
     method pushDebugGroup
     method setBindGroup
@@ -1180,10 +1182,6 @@ interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method addRoutes
     method constructor
-interface LanguageDetector
-    attribute @@toStringTag
-    method constructor
-    method detect
 interface LanguageTranslator
     attribute @@toStringTag
     method constructor
@@ -1758,6 +1756,7 @@ interface Request
     getter cache
     getter credentials
     getter destination
+    getter duplex
     getter headers
     getter integrity
     getter isHistoryNavigation
@@ -1997,10 +1996,8 @@ interface TransformStreamDefaultController
     method terminate
 interface Translation
     attribute @@toStringTag
-    method canDetect
     method canTranslate
     method constructor
-    method createDetector
     method createTranslator
 interface TrustedHTML
     static method fromLiteral

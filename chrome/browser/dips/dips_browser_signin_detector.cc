@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -20,9 +19,15 @@
 const char kIdentityProviderDomain[] = "google.com";
 
 DIPSBrowserSigninDetector::DIPSBrowserSigninDetector(
+    base::PassKey<DIPSBrowserSigninDetectorFactory>,
     DIPSService* dips_service,
     signin::IdentityManager* identity_manager)
     : dips_service_(dips_service), identity_manager_(identity_manager) {
+  CHECK(dips_service_);
+  if (!identity_manager_) {
+    // If there's no identity manager, then don't try to observe it.
+    return;
+  }
   scoped_observation_.Observe(identity_manager_.get());
 
   // No need to check the cookie jar if there's no presence of a primary
@@ -42,6 +47,12 @@ DIPSBrowserSigninDetector::DIPSBrowserSigninDetector(
 }
 
 DIPSBrowserSigninDetector::~DIPSBrowserSigninDetector() = default;
+
+void DIPSBrowserSigninDetector::Shutdown() {
+  scoped_observation_.Reset();
+  dips_service_ = nullptr;
+  identity_manager_ = nullptr;
+}
 
 // Evaluates whether an information is relevant for DIPS. An info is relevant if
 // its core infos are non empty and the |hosted_domain| info is provided.

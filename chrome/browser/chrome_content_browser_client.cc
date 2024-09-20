@@ -51,6 +51,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_features.h"
@@ -101,6 +102,7 @@
 #include "chrome/browser/memory/chrome_browser_main_extra_parts_memory.h"
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/navigation_predictor/anchor_element_preloader.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -277,7 +279,6 @@
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/pdf/common/pdf_util.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
-#include "components/permissions/bluetooth_delegate_impl.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_service.h"
@@ -370,6 +371,7 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/data_url.h"
 #include "net/base/features.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_store.h"
@@ -429,6 +431,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "sandbox/win/src/sandbox_policy.h"
+#include "ui/accessibility/accessibility_features.h"
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part_mac.h"
 #include "chrome/browser/chrome_browser_main_mac.h"
@@ -453,7 +456,7 @@
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_backend_delegate.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_backend_delegate.h"
-#include "chrome/browser/ash/chrome_browser_main_parts_ash.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_session_navigation_throttle.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/drive/fileapi/drivefs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -465,12 +468,12 @@
 #include "chrome/browser/ash/login/signin/merge_session_throttling_utils.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/main_parts/chrome_browser_main_parts_ash.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
-#include "chrome/browser/ash/url_handler/url_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/speech/tts_controller_delegate_impl.h"
@@ -479,6 +482,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/ash/kerberos/kerberos_in_browser_dialog.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -665,6 +669,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/extension_navigation_throttle.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
@@ -688,7 +693,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "content/public/browser/site_isolation_policy.h"
-#include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -1349,44 +1353,6 @@ bool IsErrorPageAutoReloadEnabled() {
   return true;
 }
 
-// Checks whether a render process hosting a top chrome page exists.
-bool IsTopChromeRendererPresent(Profile* profile) {
-  for (auto rph_iterator = content::RenderProcessHost::AllHostsIterator();
-       !rph_iterator.IsAtEnd(); rph_iterator.Advance()) {
-    content::RenderProcessHost* rph = rph_iterator.GetCurrentValue();
-
-    // Consider only valid RenderProcessHosts that belong to the current
-    // profile.
-    if (rph->IsInitializedAndNotDead() &&
-        profile->IsSameOrParent(
-            Profile::FromBrowserContext(rph->GetBrowserContext()))) {
-      bool is_top_chrome_renderer_present = false;
-      rph->ForEachRenderFrameHost(
-          [&is_top_chrome_renderer_present](content::RenderFrameHost* rfh) {
-            is_top_chrome_renderer_present |=
-                IsTopChromeWebUIURL(rfh->GetSiteInstance()->GetSiteURL());
-          });
-
-      // Return true if a rph hosting a top chrome WebUI has been found.
-      if (is_top_chrome_renderer_present)
-        return true;
-    }
-  }
-  return false;
-}
-
-// Return false if a top chrome renderer exists. This is done to ensure the
-// spare renderer is not taken and the existing top chrome renderer is
-// considered instead.
-// TODO(crbug.com/1291351, tluk): This is needed since spare renderers are
-// considered before existing processes for reuse. This can be simplified by
-// migrating to SiteInstanceGroups once the project has landed.
-bool ShouldUseSpareRenderProcessHostForTopChromePage(Profile* profile) {
-  return base::FeatureList::IsEnabled(
-             features::kTopChromeWebUIUsesSpareRenderer) &&
-         !IsTopChromeRendererPresent(profile);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void NotifyMultiCaptureStarted(const std::string& label,
                                content::WebContents* web_contents,
@@ -1596,6 +1562,8 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(prefs::kSitePerProcess, false);
   registry->RegisterBooleanPref(prefs::kTabFreezingEnabled, true);
   registry->RegisterIntegerPref(prefs::kSCTAuditingHashdanceReportCount, 0);
+  registry->RegisterBooleanPref(prefs::kDataURLWhitespacePreservationEnabled,
+                                true);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(prefs::kNativeClientForceAllowed, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -2152,13 +2120,6 @@ ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (!profile) {
     return SpareProcessRefusedByEmbedderReason::NoProfile;
-  }
-
-  // Returning false here will ensure existing Top Chrome WebUI renderers are
-  // considered for process reuse over the spare renderer.
-  if (IsTopChromeWebUIURL(site_url) &&
-      !ShouldUseSpareRenderProcessHostForTopChromePage(profile)) {
-    return SpareProcessRefusedByEmbedderReason::TopFrameChromeWebUI;
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -3103,6 +3064,13 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       heap_profiler_controller->AppendCommandLineSwitchForChildProcess(
           command_line, GetProfilerProcessType(*command_line),
           child_process_id);
+    }
+
+    // Enterprise policies may set the local state. `g_browser_process` is only
+    // available for non-zygote processes.
+    if (!g_browser_process->local_state()->GetBoolean(
+            prefs::kDataURLWhitespacePreservationEnabled)) {
+      command_line->AppendSwitch(net::kRemoveWhitespaceForDataURLs);
     }
   }
 
@@ -4241,13 +4209,6 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   DCHECK(profile);
   *no_javascript_access = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Try to intercept the request and open the URL with Lacros.
-  if (ash::TryOpenUrl(target_url, disposition)) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   // If the opener is trying to create a background window but doesn't have
   // the appropriate permission, fail the attempt.
   if (container_type == content::mojom::WindowContainerType::BACKGROUND) {
@@ -5073,7 +5034,9 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
     case sandbox::mojom::Sandbox::kPrintCompositor:
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kScreenAI:
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     case sandbox::mojom::Sandbox::kVideoEffects:
+#endif
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kPdfConversion:
     case sandbox::mojom::Sandbox::kService:
@@ -5176,7 +5139,9 @@ bool ChromeContentBrowserClient::PreSpawnChild(
 #if !BUILDFLAG(IS_ANDROID)
     case sandbox::mojom::Sandbox::kScreenAI:
 #endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     case sandbox::mojom::Sandbox::kVideoEffects:
+#endif
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
     case sandbox::mojom::Sandbox::kSpeechRecognition:
@@ -5589,6 +5554,12 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   MaybeAddThrottle(
       chromeos::KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(handle),
       &throttles);
+  if (ash::boca_util::IsEnabled()) {
+    MaybeAddThrottle(
+        ash::OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
+            handle),
+        &throttles);
+  }
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -6239,7 +6210,8 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
             AreExtensionsDisabledForProfile(browser_context)) {
       bool is_guest = false;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-      is_guest = !!extensions::WebViewGuest::FromWebContents(web_contents);
+      is_guest =
+          !!extensions::WebViewGuest::FromFrameTreeNodeId(frame_tree_node_id);
 #endif
 
       return extensions::CreateExtensionNavigationURLLoaderFactory(
@@ -6662,7 +6634,7 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
     bool* disable_secure_dns,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   auto* web_request_api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
           browser_context);
@@ -6974,7 +6946,7 @@ bool ChromeContentBrowserClient::ShouldForceDownloadResource(
 
 content::BluetoothDelegate* ChromeContentBrowserClient::GetBluetoothDelegate() {
   if (!bluetooth_delegate_) {
-    bluetooth_delegate_ = std::make_unique<permissions::BluetoothDelegateImpl>(
+    bluetooth_delegate_ = std::make_unique<ChromeBluetoothDelegate>(
         std::make_unique<ChromeBluetoothDelegateImplClient>());
   }
   return bluetooth_delegate_.get();
@@ -7245,7 +7217,9 @@ bool ChromeContentBrowserClient::HandleWebUI(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* tracking_protection_settings =
       TrackingProtectionSettingsFactory::GetForProfile(profile);
-  if (tracking_protection_settings &&
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtection3pcdUx) &&
+      tracking_protection_settings &&
       tracking_protection_settings->IsTrackingProtection3pcdEnabled()) {
     // Redirect from cookies to trackingProtection in experiment.
     if (url->SchemeIs(content::kChromeUIScheme) &&
@@ -7466,7 +7440,9 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
     return nullptr;
   }
   return safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
-      contents, safe_browsing_service_->ui_manager().get());
+      contents, safe_browsing_service_->ui_manager().get(),
+      safe_browsing::AsyncCheckTracker::
+          IsPlatformEligibleForSyncCheckerCheckAllowlist());
 }
 
 void ChromeContentBrowserClient::ReportLegacyTechEvent(
@@ -8263,7 +8239,7 @@ bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
     content::RenderFrameHost* render_frame_host) {
   content::BrowserContext* browser_context =
       render_frame_host->GetBrowserContext();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // An extension could be blocking connections for privacy reasons, so skip
   // optimization if there are any extensions with WebRequest permissions.
   const auto* web_request_api =
@@ -8671,7 +8647,7 @@ void ChromeContentBrowserClient::NotifyMultiCaptureStateChanged(
 
 std::unique_ptr<content::DipsDelegate>
 ChromeContentBrowserClient::CreateDipsDelegate() {
-  return std::make_unique<ChromeDipsDelegate>();
+  return ChromeDipsDelegate::Create();
 }
 
 bool ChromeContentBrowserClient::ShouldSuppressAXLoadComplete(
@@ -8768,6 +8744,56 @@ bool ChromeContentBrowserClient::IsSaveableNavigation(
     content::NavigationHandle* navigation_handle) {
   return tab_groups::TabGroupSyncUtils::IsSaveableNavigation(navigation_handle);
 }
+
+#if BUILDFLAG(IS_WIN)
+void ChromeContentBrowserClient::OnUiaProviderRequested(
+    bool uia_provider_enabled) {
+  if (handled_uia_provider_request_) {
+    return;
+  }
+  handled_uia_provider_request_ = true;
+
+  if (features::kUiaProvider.default_state ==
+      base::FEATURE_ENABLED_BY_DEFAULT) {
+    // Do nothing if the feature has launched.
+    // TODO: Remove all code relating to this synthetic field trial.
+    return;
+  }
+
+  // The "Control_NNNN" and "Enabled_NNNN" groups in the UiaProviderWin study
+  // are equal-sized arms for which the UiaProvider feature is disabled and
+  // enabled, respectively. (The feature may also be disabled in other groups,
+  // such as "Default_NNNN" or preperiod groups.) Analyzing data from users in
+  // these two groups alone does not provide an accurate picture of the impact
+  // of the feature, because the browser must check whether or not the feature
+  // is enable during startup regardless of whether or not a UI automation
+  // client connects to the browser. Filtering data by whether or not
+  // accessibility is enabled is also insufficient, as this will include
+  // browsers for which an MSAA/IAccessible2 client connects. To measure the
+  // impact of the UiaProvider feature, we only want to consider clients where a
+  // UI automation client connected and said connection was either refused
+  // because the client is in the control group, or was accepted because the
+  // client is in the enabled group. We do this by enrolling the client in one
+  // of two groups of a synthetic field trial in only these two situations.
+  if (auto* trial = base::FeatureList::GetFieldTrial(features::kUiaProvider)) {
+    static constexpr std::string_view kControl = "Control";
+    static constexpr std::string_view kEnabled = "Enabled";
+    const auto& trial_group_name = trial->GetGroupNameWithoutActivation();
+    std::string_view group_name;
+
+    if (base::StartsWith(trial_group_name, "Control")) {
+      group_name = kControl;
+    } else if (base::StartsWith(trial_group_name, "Enabled")) {
+      group_name = kEnabled;
+    }
+    if (!group_name.empty()) {
+      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+          "UiaProviderActiveSynthetic", group_name,
+          variations::SyntheticTrialAnnotationMode::kCurrentLog);
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void ChromeContentBrowserClient::SetSamplingProfiler(
     std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler) {

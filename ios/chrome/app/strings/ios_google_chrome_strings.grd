@@ -303,6 +303,12 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_DOCKING_PROMO_TITLE" desc="Title of the fullscreen, instructional Docking Promo which shows users how to add the Chrome app to their iOS dock.">
         Access Chrome faster from your home screen dock
       </message>
+      <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP1" desc="Step 1 of instructions telling the user how to enable Enhanced Safe Browsing.">
+        Open Chrome Settings
+      </message>
+      <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_TITLE" desc="Title of the fullscreen Enhanced Safe Browsing promo which shows users how to enable Enhanced Safe Browsing.">
+        Get Chrome's Strongest Security
+      </message>
       <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Force Sign In) [iOS only]">
           Your organization requires you to sign in to use Chrome.
       </message>

@@ -87,6 +87,7 @@ class CORE_EXPORT LayoutInputNode {
   bool IsFlexItem() const { return IsBlock() && box_->IsFlexItem(); }
   bool IsFlexibleBox() const { return IsBlock() && box_->IsFlexibleBox(); }
   bool IsGrid() const { return IsBlock() && box_->IsLayoutGrid(); }
+  bool IsMasonry() const { return IsBlock() && box_->IsLayoutMasonry(); }
   bool ShouldBeConsideredAsReplaced() const {
     return box_->ShouldBeConsideredAsReplaced();
   }
@@ -107,6 +108,7 @@ class CORE_EXPORT LayoutInputNode {
   bool IsFieldsetContainer() const { return IsBlock() && box_->IsFieldset(); }
   bool IsInitialLetterBox() const { return box_->IsInitialLetterBox(); }
   bool IsMedia() const { return box_->IsMedia(); }
+  bool IsCanvas() const { return box_->IsCanvas(); }
   bool IsRubyColumn() const { return IsBlock() && box_->IsRubyColumn(); }
   bool IsRubyText() const { return box_->IsRubyText(); }
 

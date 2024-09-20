@@ -151,10 +151,11 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
     out->uuids->push_back(uuid.canonical_value());
   }
 
-  if (device.GetInquiryRSSI())
+  if (device.GetInquiryRSSI()) {
     out->inquiry_rssi = device.GetInquiryRSSI().value();
-  else
+  } else {
     out->inquiry_rssi.reset();
+  }
 
   if (device.GetInquiryTxPower()) {
     out->inquiry_tx_power = device.GetInquiryTxPower().value();
@@ -166,10 +167,11 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
   std::optional<device::BluetoothDevice::BatteryInfo> battery_info =
       device.GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
 
-  if (battery_info && battery_info->percentage.has_value())
+  if (battery_info && battery_info->percentage.has_value()) {
     out->battery_percentage = battery_info->percentage.value();
-  else
+  } else {
     out->battery_percentage.reset();
+  }
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

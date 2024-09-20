@@ -100,8 +100,7 @@ void DisplayPerBucketData(
     std::string written = base::StringPrintf(
         "%zu,%lu,%zu,%zu,%zu,%zu\n", i, bucket_size, alloc_nums[i],
         alloc_size[i], alt_alloc_nums[i], alt_alloc_size[i]);
-    if (f.WriteAtCurrentPos(written.data(), written.size()) !=
-        static_cast<int>(written.size())) {
+    if (!f.WriteAtCurrentPosAndCheck(base::as_byte_span(written))) {
       std::cerr << "WARNING: Unable to write to temp file, data will be "
                    "stale/missing.\n";
       return;

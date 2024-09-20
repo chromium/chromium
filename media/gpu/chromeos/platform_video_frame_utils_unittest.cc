@@ -151,7 +151,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
         EXPECT_FALSE(frame->NumDmabufFds() == 0);
         break;
       case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
-        EXPECT_TRUE(frame->GetGpuMemoryBuffer());
+        EXPECT_TRUE(frame->GetGpuMemoryBufferForTesting());
         break;
       default:
         NOTREACHED_IN_MIGRATION();

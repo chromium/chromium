@@ -15,6 +15,7 @@
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-json.h"
@@ -34,10 +35,10 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Context> context,
     base::Time auction_start_time,
-    std::vector<mojom::PreviousWinPtr>& prev_wins) {
+    std::vector<blink::mojom::PreviousWinPtr>& prev_wins) {
   std::sort(prev_wins.begin(), prev_wins.end(),
-            [](const mojom::PreviousWinPtr& prev_win1,
-               const mojom::PreviousWinPtr& prev_win2) {
+            [](const blink::mojom::PreviousWinPtr& prev_win1,
+               const blink::mojom::PreviousWinPtr& prev_win2) {
               return prev_win1->time < prev_win2->time;
             });
   v8::Isolate* isolate = v8_helper->isolate();
@@ -516,7 +517,7 @@ BiddingBrowserSignalsLazyFiller::BiddingBrowserSignalsLazyFiller(
     : PersistedLazyFiller(v8_helper) {}
 
 void BiddingBrowserSignalsLazyFiller::ReInitialize(
-    mojom::BiddingBrowserSignals* bidder_browser_signals,
+    blink::mojom::BiddingBrowserSignals* bidder_browser_signals,
     base::Time auction_start_time) {
   bidder_browser_signals_ = bidder_browser_signals;
   auction_start_time_ = auction_start_time;

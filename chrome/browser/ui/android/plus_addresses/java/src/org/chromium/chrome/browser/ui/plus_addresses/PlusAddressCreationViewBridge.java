@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
-import android.app.Activity;
+import android.content.Context;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -26,7 +26,7 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("plus_addresses")
 public class PlusAddressCreationViewBridge {
     private long mNativePlusAddressCreationPromptAndroid;
-    private Activity mActivity;
+    private Context mContext;
     private BottomSheetController mBottomSheetController;
     private LayoutStateProvider mLayoutStateProvider;
     private final TabModel mTabModel;
@@ -37,14 +37,14 @@ public class PlusAddressCreationViewBridge {
     @VisibleForTesting
     /*package*/ PlusAddressCreationViewBridge(
             long nativePlusAddressCreationPromptAndroid,
-            Activity activity,
+            Context context,
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
             TabModelSelector tabModelSelector,
             CoordinatorFactory coordinatorFactory) {
         mNativePlusAddressCreationPromptAndroid = nativePlusAddressCreationPromptAndroid;
-        mActivity = activity;
+        mContext = context;
         mBottomSheetController = bottomSheetController;
         mLayoutStateProvider = layoutStateProvider;
         mTabModel = tabModel;
@@ -55,7 +55,7 @@ public class PlusAddressCreationViewBridge {
     @VisibleForTesting
     /*package*/ static interface CoordinatorFactory {
         PlusAddressCreationCoordinator create(
-                Activity activity,
+                Context context,
                 BottomSheetController bottomSheetController,
                 LayoutStateProvider layoutStateProvider,
                 TabModel tabModel,
@@ -89,7 +89,7 @@ public class PlusAddressCreationViewBridge {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             mCoordinator =
                     mCoordinatorFactory.create(
-                            mActivity,
+                            mContext,
                             mBottomSheetController,
                             mLayoutStateProvider,
                             mTabModel,
@@ -154,6 +154,15 @@ public class PlusAddressCreationViewBridge {
         }
     }
 
+    public void tryAgainToReservePlusAddress() {
+        if (mNativePlusAddressCreationPromptAndroid != 0) {
+            PlusAddressCreationViewBridgeJni.get()
+                    .tryAgainToReservePlusAddress(
+                            mNativePlusAddressCreationPromptAndroid,
+                            PlusAddressCreationViewBridge.this);
+        }
+    }
+
     public void onConfirmRequested() {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             PlusAddressCreationViewBridgeJni.get()
@@ -182,13 +191,12 @@ public class PlusAddressCreationViewBridge {
         }
     }
 
-    public void setActivityForTesting(Activity activity) {
-        mActivity = activity;
-    }
-
     @NativeMethods
     interface Natives {
         void onRefreshClicked(
+                long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+
+        void tryAgainToReservePlusAddress(
                 long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
 
         void onConfirmRequested(

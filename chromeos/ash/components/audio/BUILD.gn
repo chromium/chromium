@@ -13,8 +13,10 @@ component("audio") {
     "//ash/constants",
     "//ash/strings",
     "//base",
+    "//chromeos/ash/components/audio/public/cpp/sounds",
     "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/dbus/audio",
+    "//chromeos/ash/resources",
     "//components/prefs",
     "//device/bluetooth",
     "//media/base:video_facing",
@@ -49,6 +51,9 @@ component("audio") {
     "cros_audio_config_impl.h",
     "device_activate_type.h",
     "sounds.h",
+    "system_sounds_delegate.h",
+    "system_sounds_delegate_impl.cc",
+    "system_sounds_delegate_impl.h",
   ]
 }
 
@@ -76,6 +81,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//ash/strings",
     "//base/test:test_support",
+    "//chromeos/ash/components/audio/public/cpp/sounds:unit_tests",
     "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/dbus/audio",
     "//components/prefs:test_support",

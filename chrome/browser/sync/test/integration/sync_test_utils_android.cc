@@ -49,19 +49,19 @@ void SignOutForTesting() {
   run_loop.Run();
 }
 
-void SetUpAuthForTesting() {
-  Java_SyncTestSigninUtils_setUpAuthForTesting(
+void SetUpFakeAuthForTesting() {
+  Java_SyncTestSigninUtils_setUpFakeAuthForTesting(
       base::android::AttachCurrentThread());
 }
 
-void TearDownAuthForTesting() {
+void TearDownFakeAuthForTesting() {
   base::RunLoop run_loop;
-  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                             base::BindLambdaForTesting([&]() {
-                               Java_SyncTestSigninUtils_tearDownAuthForTesting(
-                                   base::android::AttachCurrentThread());
-                               run_loop.Quit();
-                             }));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
+        Java_SyncTestSigninUtils_tearDownFakeAuthForTesting(
+            base::android::AttachCurrentThread());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 

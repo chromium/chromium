@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -56,6 +57,10 @@ class SyncService;
 
 namespace ukm {
 class UkmRecorder;
+}
+
+namespace optimization_guide::proto {
+class UserAnnotationsEntry;
 }
 
 namespace version_info {
@@ -248,10 +253,33 @@ class AutofillClient {
   // the window of this tab.
   virtual AutofillPlusAddressDelegate* GetPlusAddressDelegate();
 
-  // Orchestrates UI for enterprise plus address creation; no-op except on
-  // supported platforms.
+  // TODO(crbug.com/365494310): Move these methods to a plus-address-specific
+  // client class.
+
+  // Orchestrates UI for enterprise plus address creation; no-op
+  // except on supported platforms.
   virtual void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                         PlusAddressCallback callback);
+
+  enum class PlusAddressErrorDialogType {
+    kGenericError,
+    // The quota for plus address creation is exhausted (account-wide or
+    // site-specific).
+    kQuotaExhausted,
+    // The network request timed out.
+    kTimeout,
+  };
+  // Shows UI to inform the user about a plus address error (apart from
+  // affiliation errors).
+  virtual void ShowPlusAddressError(
+      PlusAddressErrorDialogType error_dialog_type,
+      base::OnceClosure on_accepted);
+
+  // Shows UI to inform the user about a plus address affiliation error.
+  virtual void ShowPlusAddressAffiliationError(
+      std::u16string affiliated_domain,
+      std::u16string affiliated_plus_address,
+      base::OnceClosure on_accepted);
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;
@@ -466,6 +494,14 @@ class AutofillClient {
   // Notifies the IPH code that the manual fallback feature was used.
   virtual void NotifyAutofillManualFallbackUsed();
 
+  // Shows a bubble asking whether the user wants to save prediction
+  // improvements data.
+  virtual void ShowSaveAutofillPredictionImprovementsBubble(
+      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+          to_be_upserted_entries,
+      base::OnceCallback<void(bool prompt_was_accepted)>
+          prompt_acceptance_callback);
+
   // Stores test addresses provided by devtools and used to help developers
   // debug their forms with a list of well formatted addresses. Differently from
   // other `AutofillProfile`s/addresses, this list is stored in the client,
@@ -474,42 +510,12 @@ class AutofillClient {
 
   virtual base::span<const AutofillProfile> GetTestAddresses() const;
 
-  // `PasswordFormClassification` describes the different outcomes of Password
-  // Manager's form parsing heuristics (see `FormDataParser`). Note that these
-  // are all predictions and may be inaccurate.
-  struct PasswordFormClassification {
-    bool operator==(const PasswordFormClassification&) const = default;
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    enum class Type {
-      // The form is not password-related.
-      kNoPasswordForm = 0,
-      // The form is a predicted to be a login form, i.e. it has a username and
-      // a
-      // password field.
-      kLoginForm = 1,
-      // The form is predicted to be a signup form, i.e. it has a username field
-      // and a new password field.
-      kSignupForm = 2,
-      // The form is predicted to be a change password form, i.e. it has a
-      // current
-      // password field and a new password field.
-      kChangePasswordForm = 3,
-      // The form is predicted to be a reset password form, i.e. it has a new
-      // password field.
-      kResetPasswordForm = 4,
-      // The form is predicted to be the username form of a username-first flow,
-      // i.e. there is only a username field.
-      kSingleUsernameForm = 5
-    } type = Type::kNoPasswordForm;
-    std::optional<FieldGlobalId> username_field;
-  };
   // Returns the heuristics predictions for the renderer form to which
   // `field_id` belongs inside the form with `form_id`. The browser form with
   // `form_id` is decomposed into renderer forms prior to running Password
   // Manager heuristics.
-  // If the form cannot be found, `kNoPasswordForm` is returned.
+  // If the form cannot be found, `PasswordFormClassification::kNoPasswordForm`
+  // is returned.
   virtual PasswordFormClassification ClassifyAsPasswordForm(
       AutofillManager& manager,
       FormGlobalId form_id,

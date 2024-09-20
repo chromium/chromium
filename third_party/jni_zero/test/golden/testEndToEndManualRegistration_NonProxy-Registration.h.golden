@@ -10,7 +10,6 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
-
 // Class Accessors.
 #ifndef org_jni_1zero_SampleNonProxy_clazz_defined
 #define org_jni_1zero_SampleNonProxy_clazz_defined
@@ -43,8 +42,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBo
     jbyteArray favicon,
     jstring title,
     jobject visits);
-JNI_POSSIBLE_BOUNDARY_EXPORT void
-    Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState(
     JNIEnv* env,
     jclass jcaller,
     jbyteArray state,
@@ -57,8 +55,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeFindAl
     JNIEnv* env,
     jobject jcaller,
     jstring find);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobjectArray
-    Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs(
     JNIEnv* env,
     jclass jcaller);
 JNI_POSSIBLE_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry(
@@ -85,8 +82,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
 JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jthrowable
-    Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException(
+JNI_POSSIBLE_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException(
     JNIEnv* env,
     jclass jcaller,
     jthrowable e);
@@ -104,54 +100,77 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRec
     jint sessionId,
     jobjectArray results);
 
+// Helper Methods.
 
-// Method declarations.
+namespace {
 
-static const JNINativeMethod kMethods_org_jni_1zero_SampleNonProxy[] = {
-    { "nativeAddBookmark", "(ILjava/lang/String;Ljava/lang/String;ZJ)J",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark) },
-    { "nativeAddBookmarkFromAPI",
-        "(ILjava/lang/String;Ljava/lang/Long;Ljava/lang/Boolean;Ljava/lang/Long;[BLjava/lang/String;Ljava/lang/Integer;)J",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI) },
-    { "nativeCreateHistoricalTabFromState", "([BI)V",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState)
-        },
-    { "nativeDestroy", "(I)V",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeDestroy) },
-    { "nativeFindAll", "(Ljava/lang/String;)I",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeFindAll) },
-    { "nativeGetAutofillProfileGUIDs", "()[Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs) },
-    { "nativeGetDomainAndRegistry", "(Ljava/lang/String;)Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry) },
-    { "nativeGetInnerClass", "()Lorg/jni_zero/SampleNonProxy$OnFrameAvailableListener;",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass) },
-    { "nativeGetStateAsByteArray", "(Landroid/view/View;)[B",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetStateAsByteArray) },
-    { "nativeGotOrientation", "(IDDD)V",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation) },
-    { "nativeInit", "()I", reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit) },
-    { "nativeInit", "()I", reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit) },
-    { "nativeMessWithJavaException", "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException) },
-    { "nativeQueryBitmap",
-        "(I[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Landroid/graphics/Bitmap;",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap) },
-    { "nativeSetRecognitionResults", "(I[Ljava/lang/String;)V",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults) },
-};
-
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
-  const int kMethods_org_jni_1zero_SampleNonProxySize =
-      std::size(kMethods_org_jni_1zero_SampleNonProxy);
-  if (env->RegisterNatives(
-      org_jni_1zero_SampleNonProxy_clazz(env),
-      kMethods_org_jni_1zero_SampleNonProxy,
-      kMethods_org_jni_1zero_SampleNonProxySize) < 0) {
-    jni_zero::internal::HandleRegistrationError(env,
-        org_jni_1zero_SampleNonProxy_clazz(env),
-        __FILE__);
+bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
+  static const JNINativeMethod kMethods[] = {
+      {
+          nativeAddBookmark",
+          "(ILjava/lang/String;Ljava/lang/String;ZJ)J",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark)
+      }, {
+          nativeAddBookmarkFromAPI",
+          "(ILjava/lang/String;Ljava/lang/Long;Ljava/lang/Boolean;Ljava/lang/Long;[BLjava/lang/String;Ljava/lang/Integer;)J",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI)
+      }, {
+          nativeCreateHistoricalTabFromState",
+          "([BI)V",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState)
+      }, {
+          nativeDestroy",
+          "(I)V",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeDestroy)
+      }, {
+          nativeFindAll",
+          "(Ljava/lang/String;)I",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeFindAll)
+      }, {
+          nativeGetAutofillProfileGUIDs",
+          "()[Ljava/lang/String;",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs)
+      }, {
+          nativeGetDomainAndRegistry",
+          "(Ljava/lang/String;)Ljava/lang/String;",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry)
+      }, {
+          nativeGetInnerClass",
+          "()Lorg/jni_zero/SampleNonProxy$OnFrameAvailableListener;",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass)
+      }, {
+          nativeGetStateAsByteArray",
+          "(Landroid/view/View;)[B",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetStateAsByteArray)
+      }, {
+          nativeGotOrientation",
+          "(IDDD)V",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation)
+      }, {
+          nativeInit",
+          "()I",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit)
+      }, {
+          nativeInit",
+          "()I",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit)
+      }, {
+          nativeMessWithJavaException",
+          "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException)
+      }, {
+          nativeQueryBitmap",
+          "(I[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Landroid/graphics/Bitmap;",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap)
+      }, {
+          nativeSetRecognitionResults",
+          "(I[Ljava/lang/String;)V",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults)
+      }, 
+  };
+  jclass clazz = org_jni_1zero_SampleNonProxy_clazz(env);
+  if (env->RegisterNatives(clazz, kMethods, std::size(kMethods)) < 0) {
+    jni_zero::internal::HandleRegistrationError(env, clazz, __FILE__);
     return false;
   }
 
@@ -159,9 +178,11 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_SampleNonProxy
 }
 
 
-// Registration function.
+}  // namespace
 
-namespace  {
+// Main Register Function.
+
+namespace {
 
 bool RegisterNatives(JNIEnv* env) {
   if (!RegisterNative_org_jni_1zero_SampleNonProxy(env))
@@ -170,8 +191,6 @@ bool RegisterNatives(JNIEnv* env) {
   return true;
 }
 
-}  // namespace 
-
+}  // namespace
 
 #endif  // TEMP_DIR_HEADER_
-

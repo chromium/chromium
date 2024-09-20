@@ -9,9 +9,13 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -46,6 +50,8 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
     private PriceInsightsBottomSheetCoordinator mBottomSheetCoordinator;
     private PriceInsightsBottomSheetCoordinator mBottomSheetCoordinatorForTesting;
 
+    @NonNull Supplier<CommerceBottomSheetContentController> mCommerceBottomSheetContentController;
+
     public PriceInsightsButtonController(
             Context context,
             Supplier<Tab> tabSupplier,
@@ -55,7 +61,10 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
             BottomSheetController bottomSheetController,
             SnackbarManager snackbarManager,
             PriceInsightsDelegate priceInsightsDelegate,
-            Drawable buttonDrawable) {
+            Drawable buttonDrawable,
+            @NonNull
+                    Supplier<CommerceBottomSheetContentController>
+                            commerceBottomSheetContentController) {
         super(
                 tabSupplier,
                 modalDialogManager,
@@ -86,30 +95,36 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
                     }
                 };
         mBottomSheetController.addObserver(mBottomSheetObserver);
+        mCommerceBottomSheetContentController = commerceBottomSheetContentController;
     }
 
     @Override
     public void onClick(View view) {
-        // Close content and destroy previous coordinator.
-        if (mBottomSheetCoordinator != null) {
-            mBottomSheetCoordinator.closeContent();
-            mBottomSheetCoordinator = null;
-        }
-
-        // Create a new coordinator and show content.
-        if (mBottomSheetCoordinatorForTesting != null) {
-            mBottomSheetCoordinator = mBottomSheetCoordinatorForTesting;
+        if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
+            assert mCommerceBottomSheetContentController.get() != null;
+            mCommerceBottomSheetContentController.get().requestShowContent();
         } else {
-            mBottomSheetCoordinator =
-                    new PriceInsightsBottomSheetCoordinator(
-                            mContext,
-                            mBottomSheetController,
-                            mTabSupplier.get(),
-                            mTabModelSelectorSupplier.get(),
-                            mShoppingServiceSupplier.get(),
-                            mPriceInsightsDelegate);
+            // Close content and destroy previous coordinator.
+            if (mBottomSheetCoordinator != null) {
+                mBottomSheetCoordinator.closeContent();
+                mBottomSheetCoordinator = null;
+            }
+
+            // Create a new coordinator and show content.
+            if (mBottomSheetCoordinatorForTesting != null) {
+                mBottomSheetCoordinator = mBottomSheetCoordinatorForTesting;
+            } else {
+                mBottomSheetCoordinator =
+                        new PriceInsightsBottomSheetCoordinator(
+                                mContext,
+                                mBottomSheetController,
+                                mTabSupplier.get(),
+                                mTabModelSelectorSupplier.get(),
+                                mShoppingServiceSupplier.get(),
+                                mPriceInsightsDelegate);
+            }
+            mBottomSheetCoordinator.requestShowContent();
         }
-        mBottomSheetCoordinator.requestShowContent();
     }
 
     @Override

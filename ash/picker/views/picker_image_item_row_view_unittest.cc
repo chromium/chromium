@@ -56,7 +56,7 @@ TEST_F(PickerImageItemRowViewTest, CreatesImageItems) {
   views::View* item2 = item_row.AddImageItem(CreateImageItem());
 
   // Two columns, one item in each column.
-  EXPECT_THAT(item_row.GetItemsForTesting(), ElementsAre(item1, item2));
+  EXPECT_THAT(item_row.GetItems(), ElementsAre(item1, item2));
 }
 
 TEST_F(PickerImageItemRowViewTest, ImageItemsAreResizedToSameWidth) {

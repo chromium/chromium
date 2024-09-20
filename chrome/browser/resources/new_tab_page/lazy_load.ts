@@ -34,6 +34,7 @@ export {CalendarAction} from './modules/v2/calendar/common.js';
 export {googleCalendarDescriptor, GoogleCalendarModuleElement} from './modules/v2/calendar/google_calendar_module.js';
 export {GoogleCalendarProxyImpl} from './modules/v2/calendar/google_calendar_proxy.js';
 export {outlookCalendarDescriptor, OutlookCalendarModuleElement} from './modules/v2/calendar/outlook_calendar_module.js';
+export {OutlookCalendarProxyImpl} from './modules/v2/calendar/outlook_calendar_proxy.js';
 // <if expr="not is_official_build">
 export {FooProxy} from './modules/v2/dummy/foo_proxy.js';
 export {dummyV2Descriptor, ModuleElement as DummyModuleElement} from './modules/v2/dummy/module.js';

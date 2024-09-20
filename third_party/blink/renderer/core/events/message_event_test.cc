@@ -29,9 +29,9 @@ TEST_F(MessageEventTest, AccountForStringMemory) {
 
   // We are only interested in a string of size |string_size|. The content is
   // irrelevant.
-  UChar* tmp;
-  WTF::String data =
-      WTF::String::CreateUninitialized(static_cast<unsigned>(string_size), tmp);
+  base::span<UChar> tmp;
+  String data =
+      String::CreateUninitialized(static_cast<unsigned>(string_size), tmp);
 
   // We read the |AmountOfExternalAllocatedMemory| before and after allocating
   // the |MessageEvent|. The difference has to be at least the string size.

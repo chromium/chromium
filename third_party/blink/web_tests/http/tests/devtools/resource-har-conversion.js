@@ -56,7 +56,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   addCookieHeadersToRequest(test_url);
   addServiceWorkerInfoToRequest(test_url);
   const requests = NetworkTestRunner.networkRequests();
-  var log = await NetworkTestRunner.buildHARLog(requests);
+  var log = await NetworkTestRunner.buildHARLog(requests, {sanitize: false});
   // Filter out favicon.ico requests that only appear on certain platforms.
   log.entries = log.entries.filter(function(entry) {
     return !/favicon\.ico$/.test(entry.request.url);

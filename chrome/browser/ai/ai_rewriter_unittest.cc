@@ -59,7 +59,7 @@ CreateExecutionResult(const std::string_view output, bool is_complete) {
   response.SerializeToString(&serialized_metadata);
   optimization_guide::proto::Any any;
   any.set_value(serialized_metadata);
-  any.set_type_url("type.googleapis.com/" + response.GetTypeName());
+  any.set_type_url(AITestUtils::GetTypeURLForProto(response.GetTypeName()));
   return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
       optimization_guide::StreamingResponse{
           .response = any,

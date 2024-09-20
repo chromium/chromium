@@ -209,7 +209,7 @@ crbug.com/329138770 [ win graphite-enabled ] SwapChainTraceTest_CanvasLowLatency
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
 crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
-crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 

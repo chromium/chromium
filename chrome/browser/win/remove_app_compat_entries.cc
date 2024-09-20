@@ -9,7 +9,6 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -33,14 +32,13 @@ void RemoveAppCompatEntries(const base::FilePath& program) {
     return;
   }
 
-  bool modified = RemoveCompatLayers(layers);
-  if (modified &&
-      (layers.empty() ? key.DeleteValue(program.value().c_str())
-                      : key.WriteValue(program.value().c_str(),
-                                       layers.c_str())) != ERROR_SUCCESS) {
-    modified = false;  // Writing to the registry failed.
+  if (RemoveCompatLayers(layers)) {
+    if (layers.empty()) {
+      key.DeleteValue(program.value().c_str());
+    } else {
+      key.WriteValue(program.value().c_str(), layers.c_str());
+    }
   }
-  base::UmaHistogramBoolean("Windows.AppCompatLayersRemoved", modified);
 }
 
 bool RemoveCompatLayers(std::wstring& layers) {

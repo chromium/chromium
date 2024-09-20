@@ -6,17 +6,19 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/socket/stream_socket.h"
 
 namespace net {
 
-HttpStreamPoolHandle::HttpStreamPoolHandle(HttpStreamPool::Group* group,
-                                           std::unique_ptr<StreamSocket> socket,
-                                           int64_t generation)
-    : group_(group), generation_(generation) {
-  CHECK(group);
+HttpStreamPoolHandle::HttpStreamPoolHandle(
+    base::WeakPtr<HttpStreamPool::Group> group,
+    std::unique_ptr<StreamSocket> socket,
+    int64_t generation)
+    : group_(std::move(group)), generation_(generation) {
+  CHECK(group_);
   CHECK(socket);
 
   // Always considered initialized.
@@ -29,7 +31,7 @@ HttpStreamPoolHandle::~HttpStreamPoolHandle() {
 }
 
 void HttpStreamPoolHandle::Reset() {
-  if (socket()) {
+  if (socket() && group_) {
     group_->ReleaseStreamSocket(PassSocket(), generation_);
   }
 }

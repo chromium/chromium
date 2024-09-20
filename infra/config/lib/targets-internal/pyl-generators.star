@@ -184,6 +184,7 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
     for args_attr in (
         "args",
         "precommit_args",
+        "non_precommit_args",
         "android_args",
         "chromeos_args",
         "desktop_args",
@@ -429,9 +430,10 @@ def _generate_test_suites_pyl(ctx):
 
             # Merge any args from the target with those specified for the test
             # in the suite
-            merged_args = args.listify(target_test_config.args, mixin_values.get("args"))
-            if merged_args:
-                mixin_values["args"] = merged_args
+            for a in ("args", "precommit_args", "non_precommit_args"):
+                merged_args = args.listify(getattr(target_test_config, a), mixin_values.get(a))
+                if merged_args:
+                    mixin_values[a] = merged_args
 
             # merge and resultdb can be set on the binary, but don't override
             # values set on the test in the suite

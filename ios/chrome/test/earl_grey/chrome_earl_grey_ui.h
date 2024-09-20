@@ -143,9 +143,6 @@
 // Opens and clear browsing data from history.
 - (void)openAndClearBrowsingDataFromHistory;
 
-// Clears all browsing data by opening the privacy panel in the settings view.
-- (void)clearAllBrowsingData;
-
 // Asserts that history is empty.
 - (void)assertHistoryHasNoEntries;
 

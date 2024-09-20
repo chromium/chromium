@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">puntuació</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{S'ha afegit <ph name="ONE_ADDED" /> pestanya i se n'ha canviat <ph name="ANY_CHANGED" />}other{S'han afegit <ph name="MANY_ADDED" /> pestanyes i se n'han canviat <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Rebràs una alerta quan hi hagi un preu més baix en una pestanya oberta</translation>
-<translation id="3322827343001922122">Obre el menú d'accions del grup de pestanyes <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Suggeriment: sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="3547352561153509682">Aquesta acció suprimirà el grup de tots els dispositius amb què s'hagi iniciat la sessió a <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Amaga el quadre de diàleg Pestanyes inactives</translation>
@@ -80,7 +79,6 @@
 <translation id="4460014764210899310">Desagrupa</translation>
 <translation id="4590027107044272416">Ara pots obrir una pestanya nova aquí</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Vols tancar 1 pestanya inactiva?}other{Vols tancar <ph name="TAB_COUNT_MANY" /> pestanyes inactives?}}</translation>
-<translation id="4648718555153979859">Les teves pestanyes s'agrupen aquí</translation>
 <translation id="4686942373615810936">Creat ara mateix</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Tanca al cap d'1 dia}other{Tanca al cap de <ph name="DAY_COUNT_MANY" /> dies}}</translation>
 <translation id="4777866634702576038">Vols suprimir el grup de pestanyes?</translation>
@@ -136,6 +134,7 @@
 <translation id="6694634756612002311">Gestiona la compartició</translation>
 <translation id="6744956528665271406">Edita el color del grup</translation>
 <translation id="6856809498882026482">Amaga el mode de multiselecció</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes compartit <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup de pestanyes compartit <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Comparteix la pestanya}other{Comparteix les pestanyes}}</translation>
 <translation id="7129458170538955174">S'ha obert a mitja alçada la informació sobre aquesta botiga</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Tanca el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Tanca el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
@@ -171,6 +170,7 @@
 <translation id="8205266828577616993">Mou la pestanya cap amunt</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8338427544764842461">Els teus grups de pestanyes es desen aquí i s'actualitzen en tots els dispositius en què tens la sessió iniciada</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes compartit de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup de pestanyes compartit de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanca <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Tanca les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="8398929769197326728">Carpeta nova : <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Configuració</translation>

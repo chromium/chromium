@@ -166,6 +166,15 @@ enum WebDXFeature {
   kJsModulesServiceWorkers = 108,
   kJsModulesSharedWorkers = 109,
   kJsModulesWorkers = 110,
+  kTwoValueDisplay = 111,
+  kOverflowShorthand = 112,
+  kFieldSizing = 113,
+  kDetailsName = 114,
+  kElementCheckVisibility = 115,
+  kKeyboardMap = 116,
+  kHiddenUntilFoundAttribute = 117,
+  kScheduler = 118,
+  kKeyboardLock = 119,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

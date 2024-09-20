@@ -87,8 +87,8 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler(
-      web_contents.get(), url, large_icon_service(),
-      /*frame_id=*/0, /*interstitial_navigation_id=*/0);
+      web_contents.get(), url, large_icon_service(), content::FrameTreeNodeId(),
+      /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
@@ -130,8 +130,8 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler(
-      web_contents.get(), url, large_icon_service(),
-      /*frame_id=*/0, /*interstitial_navigation_id=*/0);
+      web_contents.get(), url, large_icon_service(), content::FrameTreeNodeId(),
+      /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
@@ -173,8 +173,8 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler(
-      web_contents.get(), url, large_icon_service(),
-      /*frame_id=*/0, /*interstitial_navigation_id=*/0);
+      web_contents.get(), url, large_icon_service(), content::FrameTreeNodeId(),
+      /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
@@ -214,8 +214,8 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler(
-      web_contents.get(), url, large_icon_service(),
-      /*frame_id=*/0, /*interstitial_navigation_id=*/0);
+      web_contents.get(), url, large_icon_service(), content::FrameTreeNodeId(),
+      /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));

@@ -63,9 +63,6 @@ const base::FilePath::CharType kDevicePolicyExternalDataDir[] =
 const base::FilePath::CharType kDevicePolicyScreensaverDataDir[] =
     FILE_PATH_LITERAL("/var/cache/managed_screensaver");
 
-const base::FilePath::CharType kDeviceLocalAccountFirstPolicyFetchFile[] =
-    FILE_PATH_LITERAL("/run/chrome/device_local_account_first_policy_fetch");
-
 bool PathProvider(int key, base::FilePath* result) {
   switch (key) {
     case FILE_DEFAULT_APP_ORDER:
@@ -82,9 +79,6 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     case FILE_STARTUP_CUSTOMIZATION_MANIFEST:
       *result = base::FilePath(kStartupCustomizationManifestFile);
-      break;
-    case FILE_DEVICE_LOCAL_ACCOUNT_FIRST_POLICY_FETCH:
-      *result = base::FilePath(kDeviceLocalAccountFirstPolicyFetchFile);
       break;
     case DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS:
       *result = base::FilePath(kDeviceLocalAccountExtensionDir);

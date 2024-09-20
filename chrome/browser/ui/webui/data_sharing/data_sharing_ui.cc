@@ -72,6 +72,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src "
       "chrome-untrusted://theme "
+      "'unsafe-inline' "
       "'self';");
 
   // Allow external network connections to be made.
@@ -87,6 +88,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       "trusted-types "
       "goog#html "
       "lit-html "
+      "static-types "
       "webui-test-script;");
 }
 

@@ -12,6 +12,7 @@ android_library("ip_protection_auth_service_mock_java") {
   deps = [
     "//base:log_java",
     "//base:tasks_java",
+    "//components/ip_protection:get_proxy_config_proto_java",
     "//components/ip_protection/android/android_auth_client_lib/common/aidl:ip_protection_aidl_java",
     "//net/third_party/quiche:blind_sign_auth_proto_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",

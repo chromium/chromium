@@ -62,7 +62,6 @@ class AudioServiceAsh;
 class AutomationAsh;
 class BrowserServiceHostAsh;
 class BrowserVersionServiceAsh;
-class GuestOsSkForwarderFactoryAsh;
 class CecPrivateAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
@@ -121,7 +120,6 @@ class MetricsAsh;
 class MetricsReportingAsh;
 class MultiCaptureServiceAsh;
 class NativeThemeServiceAsh;
-class NetworkChangeAsh;
 class NetworkSettingsServiceAsh;
 class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
@@ -141,7 +139,6 @@ class RemotingAsh;
 class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
 class ScreenManagerAsh;
-class SearchControllerFactoryAsh;
 class SearchProviderAsh;
 class SelectFileAsh;
 class SharesheetAsh;
@@ -156,7 +153,6 @@ class WallpaperAsh;
 class WebAppServiceAsh;
 class WebKioskServiceAsh;
 class WebPageInfoFactoryAsh;
-class UrlHandlerAsh;
 class VirtualKeyboardAsh;
 class VolumeManagerAsh;
 class VpnExtensionObserverAsh;
@@ -609,8 +605,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return multi_capture_service_ash_.get();
   }
 
-  NetworkChangeAsh* network_change_ash() { return network_change_ash_.get(); }
-
   NetworkingAttributesAsh* networking_attributes_ash() {
     return networking_attributes_ash_.get();
   }
@@ -643,10 +637,6 @@ class CrosapiAsh : public mojom::Crosapi {
   }
 
   ScreenManagerAsh* screen_manager_ash() { return screen_manager_ash_.get(); }
-
-  SearchControllerFactoryAsh* search_controller_factory_ash() {
-    return search_controller_factory_ash_.get();
-  }
 
   SearchProviderAsh* search_provider_ash() {
     return search_provider_ash_.get();
@@ -713,8 +703,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<AutomationAsh> automation_ash_;
   std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
   std::unique_ptr<BrowserVersionServiceAsh> browser_version_service_ash_;
-  std::unique_ptr<GuestOsSkForwarderFactoryAsh>
-      guest_os_sk_forwarder_factory_ash_;
   std::unique_ptr<CecPrivateAsh> cec_private_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
@@ -780,7 +768,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<MetricsReportingAsh> metrics_reporting_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;
-  std::unique_ptr<NetworkChangeAsh> network_change_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
   std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
   std::unique_ptr<NetworkSettingsServiceAsh> network_settings_service_ash_;
@@ -810,7 +797,6 @@ class CrosapiAsh : public mojom::Crosapi {
       print_preview_webcontents_adapter_ash_;
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
-  std::unique_ptr<SearchControllerFactoryAsh> search_controller_factory_ash_;
   std::unique_ptr<SearchProviderAsh> search_provider_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<SharesheetAsh> sharesheet_ash_;
@@ -821,7 +807,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;
   std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;
   std::unique_ptr<TtsAsh> tts_ash_;
-  std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;

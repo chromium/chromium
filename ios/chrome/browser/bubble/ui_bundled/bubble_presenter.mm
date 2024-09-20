@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -111,6 +112,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       _priceNotificationsWhileBrowsingBubbleTipPresenter;
   BubbleViewControllerPresenter* _lensKeyboardPresenter;
   BubbleViewControllerPresenter* _parcelTrackingTipBubblePresenter;
+  BubbleViewControllerPresenter* _lensOverlayEntrypointBubblePresenter;
 
   // List of existing gestural IPH views.
   GestureInProductHelpView* _pullToRefreshGestureIPH;
@@ -182,6 +184,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_lensKeyboardPresenter dismissAnimated:NO];
   [_defaultPageModeTipBubblePresenter dismissAnimated:NO];
   [_parcelTrackingTipBubblePresenter dismissAnimated:NO];
+  [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
   [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
                                                       kUnknown];
 }
@@ -190,6 +193,14 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [self hideAllGestureInProductHelpViewsForReason:
             IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];
 }
+
+- (void)handleToolbarSwipeGesture {
+  [_toolbarSwipeGestureIPH
+      dismissWithReason:IPHDismissalReasonType::
+                            kSwipedAsInstructedByGestureIPH];
+}
+
+#pragma mark - Bubble presenter methods
 
 - (void)presentShareButtonHelpBubbleWithDeviceSwitcherResultDispatcher:
     (raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>)
@@ -338,7 +349,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 - (void)presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
-    (FeedMetricsRecorder*)recorder {
+            (FeedMetricsRecorder*)recorder
+                                             popupMenuHandler:
+                                                 (id<PopupMenuCommands>)
+                                                     popupMenuHandler {
   if (![self canPresentBubble])
     return;
 
@@ -360,13 +374,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                   IDS_IOS_FOLLOW_WHILE_BROWSING_IPH)
                   anchorPoint:toolsMenuAnchor];
   if (presenter) {
+    [popupMenuHandler notifyIPHBubblePresenting];
     _followWhileBrowsingBubbleTipPresenter = presenter;
   }
   [recorder recordFollowRecommendationIPHShown];
 }
 
 - (void)presentDefaultSiteViewTipBubbleWithSettingsMap:
-    (raw_ptr<HostContentSettingsMap>)settingsMap {
+            (raw_ptr<HostContentSettingsMap>)settingsMap
+                                      popupMenuHandler:(id<PopupMenuCommands>)
+                                                           popupMenuHandler {
   if (![self canPresentBubble]) {
     return;
   }
@@ -395,11 +412,12 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                   anchorPoint:toolsMenuAnchor];
   if (!presenter)
     return;
-
+  [popupMenuHandler notifyIPHBubblePresenting];
   _defaultPageModeTipBubblePresenter = presenter;
 }
 
-- (void)presentWhatsNewBottomToolbarBubble {
+- (void)presentWhatsNewBottomToolbarBubbleWithPopupMenuHandler:
+    (id<PopupMenuCommands>)popupMenuHandler {
   if (![self canPresentBubble]) {
     return;
   }
@@ -420,11 +438,13 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
         voiceOverAnnouncement:l10n_util::GetNSString(IDS_IOS_WHATS_NEW_IPH_TEXT)
                   anchorPoint:toolsMenuAnchor];
   if (presenter) {
+    [popupMenuHandler notifyIPHBubblePresenting];
     _whatsNewBubblePresenter = presenter;
   }
 }
 
-- (void)presentPriceNotificationsWhileBrowsingTipBubble {
+- (void)presentPriceNotificationsWhileBrowsingTipBubbleWithPopupMenuHandler:
+    (id<PopupMenuCommands>)popupMenuHandler {
   if (![self canPresentBubble]) {
     return;
   }
@@ -447,6 +467,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
               voiceOverAnnouncement:text
                         anchorPoint:toolsMenuAnchor];
   if (presenter) {
+    [popupMenuHandler notifyIPHBubblePresenting];
     _priceNotificationsWhileBrowsingBubbleTipPresenter = presenter;
   }
 }
@@ -640,6 +661,51 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   _tabGridIPHBubblePresenter = presenter;
 }
 
+- (void)presentLensOverlayTipBubble {
+  if (![self canPresentBubble]) {
+    return;
+  }
+
+  web::WebState* currentWebState = _webStateList->GetActiveWebState();
+  if (IsUrlNtp(currentWebState->GetVisibleURL())) {
+    return;
+  }
+
+  BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
+                         GetApplicationContext()->GetLocalState()->GetBoolean(
+                             prefs::kBottomOmnibox);
+  BubbleArrowDirection arrowDirection =
+      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+  // TODO(crbug.com/365701607): Localize.
+  NSString* text = @"Open lens overlay [todo:localize]";
+
+  CGPoint lensOverlayEntrypointAnchor =
+      [self anchorPointToGuide:kLensOverlayEntrypointGuide
+                     direction:arrowDirection];
+  // To prevent the bubble from extending beyond the screen's edge, an offset is
+  // added, with the anchor point positioned at the top left corner.
+  // TODO(crbug.com/365049480): Remove this offset once the bubble view margins
+  // are fixed.
+  CGFloat anchorXOffset = UseRTLLayout() ? -2 : 2;
+
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::
+                                  kIPHiOSLensOverlayEntrypointTipFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentTopOrLeading
+                         text:text
+        voiceOverAnnouncement:text
+                  anchorPoint:CGPoint(
+                                  lensOverlayEntrypointAnchor.x + anchorXOffset,
+                                  lensOverlayEntrypointAnchor.y)
+                presentAction:nil
+                dismissAction:nil];
+
+  if (presenter) {
+    _lensOverlayEntrypointBubblePresenter = presenter;
+  }
+}
+
 - (void)
     presentPullToRefreshGestureInProductHelpWithDeviceSwitcherResultDispatcher:
         (raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>)
@@ -788,12 +854,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   [toolbarSwipeGestureIPH startAnimation];
   _toolbarSwipeGestureIPH = toolbarSwipeGestureIPH;
-}
-
-- (void)handleToolbarSwipeGesture {
-  [_toolbarSwipeGestureIPH
-      dismissWithReason:IPHDismissalReasonType::
-                            kSwipedAsInstructedByGestureIPH];
 }
 
 #pragma mark - GestureInProductHelpViewDelegate
@@ -1020,7 +1080,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   // Capture `weakSelf` instead of the feature engagement tracker object
   // because `weakSelf` will safely become `nil` if it is deallocated, whereas
   // the feature engagement tracker will remain pointing to invalid memory if
-  // its owner (the ChromeBrowserState) is deallocated.
+  // its owner (the ProfileIOS) is deallocated.
   __weak BubblePresenter* weakSelf = self;
   CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
       ^(IPHDismissalReasonType IPHDismissalReasonType,

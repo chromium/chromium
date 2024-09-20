@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
@@ -39,10 +41,14 @@
 
 namespace {
 
+using browsing_data::DeleteBrowsingDataDialogAction;
 using chrome_test_util::ButtonWithAccessibilityLabel;
+using chrome_test_util::ClearBrowsingDataButton;
+using chrome_test_util::ClearBrowsingDataView;
 using chrome_test_util::ContainsPartialText;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::CreateTabGroupCreateButton;
+using chrome_test_util::RecentTabsDestinationButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridGroupCellAtIndex;
@@ -91,6 +97,99 @@ void OpenTabGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabCellMatcherAtIndex(0)];
+}
+
+// Returns a matcher for the text in the browsing data summary corresponding to
+// cache.
+id<GREYMatcher> BrowsingDataSummaryWithCache() {
+  return ContainsPartialText(l10n_util::GetNSString(
+      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES));
+}
+
+// Returns a matcher for the row with the `timeRange` on the popup menu.
+id<GREYMatcher> PopupCellMenuItemWithTimeRange(NSString* timeRange) {
+  return grey_allOf(
+      grey_not(grey_accessibilityID(kQuickDeletePopUpButtonIdentifier)),
+      ContextMenuItemWithAccessibilityLabel(timeRange), nil);
+}
+
+// Returns a matcher for the actual button with the `timeRange` inside the time
+// range popup row.
+id<GREYMatcher> PopupCellWithTimeRange(NSString* timeRange) {
+  return grey_allOf(grey_accessibilityID(kQuickDeletePopUpButtonIdentifier),
+                    grey_text(timeRange), nil);
+}
+
+// Matcher for Search history link in the footer.
+id<GREYMatcher> SearchHistoryLink() {
+  return grey_allOf(
+      // The link is within the security footer with ID
+      // `kQuickDeleteFooterIdentifier`.
+      grey_ancestor(grey_accessibilityID(kQuickDeleteFooterIdentifier)),
+      grey_accessibilityLabel(@"Search history"),
+      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
+      // element in the label with attributed string.
+      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
+      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
+}
+
+// Matcher for other forms of activity link in footer.
+id<GREYMatcher> OtherFormsOfActivityLink() {
+  return grey_allOf(
+      // The link is within the security footer with ID
+      // `kQuickDeleteFooterIdentifier`.
+      grey_ancestor(grey_accessibilityID(kQuickDeleteFooterIdentifier)),
+      grey_accessibilityLabel(@"other forms of activity"),
+      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
+      // element in the label with attributed string.
+      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
+      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
+}
+
+// Expects my activity histogram entries for `navigation`.
+void ExpectClearBrowsingDataNavigationHistograms(
+    MyActivityNavigation navigation) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(navigation)
+          forHistogram:@"Settings.ClearBrowsingData.OpenMyActivity"],
+      @"Settings.ClearBrowsingData.OpenMyActivity histogram not logged.");
+}
+
+// Asserts if the Privacy.DeleteBrowsingData.Dialog histogram for bucket of
+// `action` was logged once.
+void ExpectDeleteBrowsingDataDialogHistogram(
+    DeleteBrowsingDataDialogAction action) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(action)
+          forHistogram:base::SysUTF8ToNSString(
+                           browsing_data::kDeleteBrowsingDataDialogHistogram)],
+      @"Privacy.DeleteBrowsingData.Dialog histogram for action %d was not "
+      @"logged.",
+      static_cast<int>(action));
+}
+
+// Asserts if the Privacy.DeleteBrowsingData.Dialog histogram for bucket of
+// `action` was not logged.
+void NoDeleteBrowsingDataDialogHistogram(
+    DeleteBrowsingDataDialogAction action) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:0
+             forBucket:static_cast<int>(action)
+          forHistogram:base::SysUTF8ToNSString(
+                           browsing_data::kDeleteBrowsingDataDialogHistogram)],
+      @"Privacy.DeleteBrowsingData.Dialog histogram for action %d was logged.",
+      static_cast<int>(action));
+}
+
+// Returns the given `string` with the first letter capitalized.
+NSString* CapitalizeFirstLetter(NSString* string) {
+  return [[[string substringToIndex:1] uppercaseString]
+      stringByAppendingString:[string substringFromIndex:1]];
 }
 
 }  // namespace
@@ -157,7 +256,6 @@ void OpenTabGroupAtIndex(int group_cell_index) {
   config.features_enabled.push_back(kIOSQuickDelete);
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
-  config.features_enabled.push_back(kTabGroupsInGrid);
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
   return config;
@@ -244,134 +342,156 @@ void OpenTabGroupAtIndex(int group_cell_index) {
       performAction:grey_tap()];
 }
 
-// Returns a matcher for the title of the Quick Delete bottom sheet.
-- (id<GREYMatcher>)quickDeleteTitle {
-  return grey_allOf(
-      grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier),
-      grey_accessibilityLabel(
-          l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE)),
-      nil);
-}
-
-// Returns a matcher for the text in the browsing data summary corresponding to
-// cache.
-- (id<GREYMatcher>)browsingDataSummaryWithCache {
-  return ContainsPartialText(l10n_util::GetNSString(
-      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES));
-}
-
-// Returns a matcher for the row with the `timeRange` on the popup menu.
-- (id<GREYMatcher>)popupCellMenuItemWithTimeRange:(NSString*)timeRange {
-  return grey_allOf(
-      grey_not(grey_accessibilityID(kQuickDeletePopUpButtonIdentifier)),
-      ContextMenuItemWithAccessibilityLabel(timeRange), nil);
-}
-
-// Returns a matcher for the actual button with the `timeRange` inside the time
-// range popup row.
-- (id<GREYMatcher>)popupCellWithTimeRange:(NSString*)timeRange {
-  return grey_allOf(grey_accessibilityID(kQuickDeletePopUpButtonIdentifier),
-                    grey_text(timeRange), nil);
-}
-
-// Matcher for Search history link in the footer.
-id<GREYMatcher> SearchHistoryLink() {
-  return grey_allOf(
-      // The link is within the security footer with ID
-      // `kQuickDeleteFooterIdentifier`.
-      grey_ancestor(grey_accessibilityID(kQuickDeleteFooterIdentifier)),
-      grey_accessibilityLabel(@"Search history"),
-      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
-      // element in the label with attributed string.
-      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
-      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
-}
-
-// Matcher for other forms of activity link in footer.
-id<GREYMatcher> OtherFormsOfActivityLink() {
-  return grey_allOf(
-      // The link is within the security footer with ID
-      // `kQuickDeleteFooterIdentifier`.
-      grey_ancestor(grey_accessibilityID(kQuickDeleteFooterIdentifier)),
-      grey_accessibilityLabel(@"other forms of activity"),
-      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
-      // element in the label with attributed string.
-      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
-      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
-}
-
-// Expects my activity histogram entries for `navigation`.
-void ExpectClearBrowsingDataNavigationHistograms(
-    MyActivityNavigation navigation) {
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(navigation)
-          forHistogram:@"Settings.ClearBrowsingData.OpenMyActivity"],
-      @"Settings.ClearBrowsingData.OpenMyActivity histogram not logged.");
-}
-
-// Returns the given `string` with the first letter capitalized.
-- (NSString*)capitalizeFirstLetter:(NSString*)string {
-  return [[[string substringToIndex:1] uppercaseString]
-      stringByAppendingString:[string substringFromIndex:1]];
-}
-
 // Tests if the Quick Delete UI is shown correctly from Privacy settings.
 - (void)testOpenAndDismissQuickDeleteFromPrivacySettings {
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kPrivacyEntryPointSelected);
+
   [self openQuickDeleteFromPrivacySettings];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Swipe the bottom sheet down.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that Quick Delete has been dismissed.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_nil()];
 
   // Check that the privacy table is in view.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_SETTINGS_PRIVACY_TITLE))]
       assertWithMatcher:grey_notNil()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kPrivacyEntryPointSelected);
 }
 
 // Tests if the Quick Delete UI is shown correctly from the three dot menu entry
-// point.
-- (void)testOpenAndDismissQuickDeleteFromThreeDotMenu {
+// point and if dismissing implicitly by swipping down works correctly.
+- (void)testOpenAndDismissImplicityQuickDeleteFromThreeDotMenu {
+  // At the beginning of the test, the Delete Browsing Data dialog metrics
+  // should be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDialogDismissedImplicitly);
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kMenuItemEntryPointSelected);
+
+  // Open Quick Delete.
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Swipe the bottom sheet down.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that Quick Delete has been dismissed.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_nil()];
+
+  // Assert that the Delete Browsing Data dialog metrics are populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDialogDismissedImplicitly);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kMenuItemEntryPointSelected);
+}
+
+// Tests if the Quick Delete UI is shown correctly from the three dot menu entry
+// point and if tapping cancel works correctly.
+- (void)testOpenAndCancelQuickDeleteFromThreeDotMenu {
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kCancelSelected);
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap the cancel button.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_CANCEL))];
+
+  // Check that Quick Delete has been dismissed.
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
+      assertWithMatcher:grey_nil()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kCancelSelected);
 }
 
 // Tests if the Quick Delete UI is shown correctly from the history entry point.
 - (void)testOpenAndDismissQuickDeleteFromHistory {
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kHistoryEntryPointSelected);
+
+  // Open Quick Delete.
   [self openQuickDeleteFromHistory];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Swipe the bottom sheet down.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that Quick Delete has been dismissed.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_nil()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kHistoryEntryPointSelected);
+}
+
+// Tests that the browsing data button is disabled if no browsing data type is
+// selected.
+- (void)testDisabledBrowsingDataButtonWhenNoSelection {
+  // Disable selection of all browsing data types.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeletePasswords];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteFormData];
+
+  [self openQuickDeleteFromThreeDotMenu];
+
+  id<GREYMatcher> browsingDataButton = ButtonWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_BUTTON));
+  // Check that the browsing data button is disabled.
+  [[EarlGrey selectElementWithMatcher:browsingDataButton]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Select a browsing data type.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+
+  // Check that the browsing data button is enabled.
+  [[EarlGrey selectElementWithMatcher:browsingDataButton]
+      assertWithMatcher:grey_enabled()];
 }
 
 // Tests the selection time range for the browsing data deletion: the time range
@@ -384,8 +504,13 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   [self openQuickDeleteFromThreeDotMenu];
 
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
+
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the time range row is presented and the correct time range, last
@@ -394,12 +519,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
                  grey_text(l10n_util::GetNSString(
                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          [self
-              popupCellWithTimeRange:
-                  l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR)]]
+  [[EarlGrey selectElementWithMatcher:
+                 PopupCellWithTimeRange(l10n_util::GetNSString(
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on the time range button.
@@ -411,29 +533,23 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // Tap on the last 15 minutes option on the popup menu.
   [[EarlGrey
       selectElementWithMatcher:
-          [self
-              popupCellMenuItemWithTimeRange:
-                  l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
+          PopupCellMenuItemWithTimeRange(l10n_util::GetNSString(
+              IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
       performAction:grey_tap()];
 
   // Make sure the menu was dismissed after the tap.
   [[EarlGrey
       selectElementWithMatcher:
-          [self
-              popupCellMenuItemWithTimeRange:
-                  l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
+          PopupCellMenuItemWithTimeRange(l10n_util::GetNSString(
+              IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
       assertWithMatcher:grey_notVisible()];
 
   // Check that the cell has changed to the correct selection, i.e. is showing
   // the last 15 minutes time range.
   [[EarlGrey
       selectElementWithMatcher:
-          [self
-              popupCellWithTimeRange:
-                  l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
+          PopupCellWithTimeRange(l10n_util::GetNSString(
+              IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Confirm that the pref was saved with the new value of last 15 minutes.
@@ -441,6 +557,10 @@ void ExpectClearBrowsingDataNavigationHistograms(
       [ChromeEarlGrey userIntegerPref:browsing_data::prefs::kDeleteTimePeriod],
       static_cast<int>(browsing_data::TimePeriod::LAST_15_MINUTES),
       @"Incorrect local pref value.");
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
 }
 
 // Tests that the number of browsing history items is shown on the browsing data
@@ -457,8 +577,18 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   [self openQuickDeleteFromThreeDotMenu];
 
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDeletionSelected);
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:0
+                       forBucket:static_cast<int>(
+                                     browsing_data::DeleteBrowsingDataAction::
+                                         kClearBrowsingDataDialog)
+                    forHistogram:@"Privacy.DeleteBrowsingData.Action"],
+                @"Privacy.DeleteBrowsingData.Action histogram was logged.");
+
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row and the browsing history substring are
@@ -472,13 +602,21 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the history entry was deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History entries were not deleted.");
+
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDeletionSelected);
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:1
+                       forBucket:static_cast<int>(
+                                     browsing_data::DeleteBrowsingDataAction::
+                                         kClearBrowsingDataDialog)
+                    forHistogram:@"Privacy.DeleteBrowsingData.Action"],
+                @"Privacy.DeleteBrowsingData.Action histogram was not logged.");
 }
 
 // Tests that the number of browsing history items is shown on the browsing data
@@ -501,7 +639,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row and the browsing history substring are
@@ -515,9 +653,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the history entry was deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
@@ -539,7 +675,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row is present but that the browsing history
@@ -553,9 +689,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the history entry was not deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
@@ -577,8 +711,18 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   [self openQuickDeleteFromThreeDotMenu];
 
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDeletionSelected);
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:0
+                       forBucket:static_cast<int>(
+                                     browsing_data::DeleteBrowsingDataAction::
+                                         kClearBrowsingDataDialog)
+                    forHistogram:@"Privacy.DeleteBrowsingData.Action"],
+                @"Privacy.DeleteBrowsingData.Action histogram was logged.");
+
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row and the tabs substring are presented.
@@ -591,16 +735,14 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the tab has been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
 
   // Check that Quick Delete is not opened.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_nil()];
 
   // Check that tab grid is shown. Quick Delete was opened from the three dot
@@ -608,6 +750,33 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // be visible by the end.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
       performAction:grey_tap()];
+
+  // Go to Recent Tabs.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI tapToolsMenuButton:RecentTabsDestinationButton()];
+
+  // Check that the tabs closed through Quick Delete are not shown in Recent
+  // Tabs.
+  id<GREYMatcher> recentTabsTable = grey_accessibilityID(
+      kRecentTabsTableViewControllerAccessibilityIdentifier);
+  id<GREYMatcher> titleOfPage =
+      grey_allOf(grey_ancestor(recentTabsTable),
+                 chrome_test_util::StaticTextWithAccessibilityLabel(@"Echo"),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:titleOfPage]
+      assertWithMatcher:grey_nil()];
+
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDeletionSelected);
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:1
+                       forBucket:static_cast<int>(
+                                     browsing_data::DeleteBrowsingDataAction::
+                                         kClearBrowsingDataDialog)
+                    forHistogram:@"Privacy.DeleteBrowsingData.Action"],
+                @"Privacy.DeleteBrowsingData.Action histogram was not logged.");
 }
 
 // Tests that when Quick Delete is opened from Privacy Settings and tabs are
@@ -626,13 +795,11 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromPrivacySettings];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the tab has been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
@@ -640,7 +807,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   // Check that Quick Delete is not opened.
   [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:[self quickDeleteTitle]];
+      waitForUIElementToDisappearWithMatcher:ClearBrowsingDataView()];
 
   // Quick Delete was opened from privacy settings, and as such no animation
   // should be triggered, and the privacy settings should still be visible by
@@ -687,7 +854,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row and the tabs substring are presented.
@@ -700,9 +867,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the tabs have been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
@@ -738,7 +903,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row and the tabs substring are presented.
@@ -749,9 +914,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the tab has been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
@@ -799,9 +962,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the delete browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the tabs have been closed in both windows.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
@@ -833,6 +994,11 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
+
   // In the first window, open quick delete and check that time range is set to
   // the last hour.
   [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
@@ -842,12 +1008,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu:0];
 
   // Assess that time range is set to the last hour.
-  [[EarlGrey
-      selectElementWithMatcher:
-          [self
-              popupCellWithTimeRange:
-                  l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR)]]
+  [[EarlGrey selectElementWithMatcher:
+                 PopupCellWithTimeRange(l10n_util::GetNSString(
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // In the second window, open quick delete and check that time range is set to
@@ -859,12 +1022,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu:1];
 
   // Assess that time range is set to the last hour.
-  [[EarlGrey
-      selectElementWithMatcher:
-          [self
-              popupCellWithTimeRange:
-                  l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR)]]
+  [[EarlGrey selectElementWithMatcher:
+                 PopupCellWithTimeRange(l10n_util::GetNSString(
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Focus on the first window.
@@ -880,20 +1040,16 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // Tap on the last 15 minutes option on the popup menu.
   [[EarlGrey
       selectElementWithMatcher:
-          [self
-              popupCellMenuItemWithTimeRange:
-                  l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
+          PopupCellMenuItemWithTimeRange(l10n_util::GetNSString(
+              IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
       performAction:grey_tap()];
 
   // Check that the cell has changed to the correct selection, i.e. is showing
   // the last 15 minutes time range.
   [[EarlGrey
       selectElementWithMatcher:
-          [self
-              popupCellWithTimeRange:
-                  l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
+          PopupCellWithTimeRange(l10n_util::GetNSString(
+              IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Focus on the second window.
@@ -903,11 +1059,13 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // Assess that the time range is also set to the last 15 minutes.
   [[EarlGrey
       selectElementWithMatcher:
-          [self
-              popupCellWithTimeRange:
-                  l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
+          PopupCellWithTimeRange(l10n_util::GetNSString(
+              IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
 }
 
 // Tests that the number of tabs are not shown on the browsing data row when
@@ -926,7 +1084,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row is present but that the tabs substring is
@@ -940,9 +1098,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the tab has not been closed.
   [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
@@ -959,18 +1115,17 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row and the cookie substring are presented.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText([self
-                     capitalizeFirstLetter:
-                         l10n_util::GetNSString(
-                             IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_DATA)])]
+  [[EarlGrey
+      selectElementWithMatcher:
+          ContainsPartialText(CapitalizeFirstLetter(l10n_util::GetNSString(
+              IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_DATA)))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -984,7 +1139,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row is present but that the cookie substring
@@ -992,11 +1147,10 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText([self
-                     capitalizeFirstLetter:
-                         l10n_util::GetNSString(
-                             IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_DATA)])]
+  [[EarlGrey
+      selectElementWithMatcher:
+          ContainsPartialText(CapitalizeFirstLetter(l10n_util::GetNSString(
+              IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_DATA)))]
       assertWithMatcher:grey_nil()];
 }
 
@@ -1012,7 +1166,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row and the cached substring are presented.
@@ -1021,10 +1175,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
-          ContainsPartialText([self
-              capitalizeFirstLetter:
-                  l10n_util::GetNSString(
-                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES)])]
+          ContainsPartialText(CapitalizeFirstLetter(l10n_util::GetNSString(
+              IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES)))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -1040,7 +1192,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row is presented but that the cached substring
@@ -1050,10 +1202,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
-          ContainsPartialText([self
-              capitalizeFirstLetter:
-                  l10n_util::GetNSString(
-                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES)])]
+          ContainsPartialText(CapitalizeFirstLetter(l10n_util::GetNSString(
+              IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES)))]
       assertWithMatcher:grey_nil()];
 }
 
@@ -1073,7 +1223,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row and the passwords substring are presented.
@@ -1088,9 +1238,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the stored password was removed.
   GREYAssertEqual(
@@ -1115,7 +1263,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row is present but that the passwords
@@ -1130,9 +1278,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
                      kPasswordCount))] assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the stored password was not removed.
   GREYAssertEqual(
@@ -1154,7 +1300,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row and the form data substring are presented.
@@ -1167,9 +1313,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the stored card was removed.
   GREYAssertEqual(0, [AutofillAppInterface localCreditCount],
@@ -1190,7 +1334,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row is presented but that the form data
@@ -1204,9 +1348,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Check that the stored card was not removed.
   GREYAssertEqual(1, [AutofillAppInterface localCreditCount],
@@ -1226,7 +1368,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the browsing data row is presented with the placeholder summary
@@ -1249,8 +1391,13 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // Open Quick Delete bottom sheet.
   [self openQuickDeleteFromThreeDotMenu];
 
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kSearchHistoryLinkOpened);
+
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the footer is presented.
@@ -1267,9 +1414,11 @@ void ExpectClearBrowsingDataNavigationHistograms(
                   [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the search activity url.");
 
-  // Validate histogram entry for search history is recorded.
+  // Assert that the metrics are populated.
   ExpectClearBrowsingDataNavigationHistograms(
       MyActivityNavigation::kSearchHistory);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kSearchHistoryLinkOpened);
 }
 
 // Tests the footer other forms of activity link is opened correctly and metrics
@@ -1281,8 +1430,13 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // Open Quick Delete bottom sheet.
   [self openQuickDeleteFromThreeDotMenu];
 
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kMyActivityLinkedOpened);
+
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the footer is presented.
@@ -1299,8 +1453,10 @@ void ExpectClearBrowsingDataNavigationHistograms(
                   [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the search activity url.");
 
-  // Validate histogram entry for top level is recorded.
+  // Assert that the metrics are populated.
   ExpectClearBrowsingDataNavigationHistograms(MyActivityNavigation::kTopLevel);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kMyActivityLinkedOpened);
 }
 
 // Tests the footer discalimer string is hidden when the user is signed out and
@@ -1310,7 +1466,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the footer is hidden.
@@ -1319,11 +1475,11 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_notVisible()];
 
   // Swipe the bottom sheet down.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that Quick Delete has been dismissed.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_nil()];
 
   // Sign in to the browser.
@@ -1333,7 +1489,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Check that the footer is presented.
@@ -1350,9 +1506,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   // Open Quick Delete and delete browsing data.
   [self openQuickDeleteFromThreeDotMenu];
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
@@ -1370,9 +1524,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   // Open Quick Delete and delete browsing data.
   [self openQuickDeleteFromThreeDotMenu];
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
@@ -1389,9 +1541,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   // Open Quick Delete and delete browsing data.
   [self openQuickDeleteFromThreeDotMenu];
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
@@ -1423,7 +1573,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu:0];
 
   // Assess that the browsing data summary contains the "cache" keyword.
-  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataSummaryWithCache()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // In the second window, open quick delete and check that browsing data
@@ -1435,7 +1585,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [self openQuickDeleteFromThreeDotMenu:1];
 
   // Assess that the browsing data summary contains the "cache" keyword.
-  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataSummaryWithCache()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Set the cache preference to false.
@@ -1448,7 +1598,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   // Assess that the summary is updated on the first page (i.e. cache pref is no
   // longer displayed in the summary).
-  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataSummaryWithCache()]
       assertWithMatcher:grey_nil()];
 
   // Focus on the second window.
@@ -1457,7 +1607,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   // Assess that the cache pref is no longer displayed in the summary on the
   // second window.
-  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataSummaryWithCache()]
       assertWithMatcher:grey_nil()];
 }
 

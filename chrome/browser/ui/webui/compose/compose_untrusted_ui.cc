@@ -124,10 +124,6 @@ webui::SetupWebUIDataSource(
       base::FeatureList::IsEnabled(
           compose::features::kEnableComposeOnDeviceDogfoodFooter));
 
-  source->AddBoolean(
-      "enableRefinedUi",
-      base::FeatureList::IsEnabled(compose::features::kComposeUiRefinement));
-
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme "

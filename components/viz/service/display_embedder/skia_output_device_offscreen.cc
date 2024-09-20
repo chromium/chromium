@@ -4,8 +4,10 @@
 
 #include "components/viz/service/display_embedder/skia_output_device_offscreen.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -14,10 +16,13 @@
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/gpu/graphite/TextureInfo.h"
+
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
+#endif
 
 namespace viz {
 
@@ -206,5 +211,55 @@ SkSurface* SkiaOutputDeviceOffscreen::BeginPaint(
 }
 
 void SkiaOutputDeviceOffscreen::EndPaint() {}
+
+void SkiaOutputDeviceOffscreen::ReadbackForTesting(
+    base::OnceCallback<void(SkBitmap)> callback) {
+  CHECK_IS_TEST();
+
+  struct ReadPixelsContext {
+    std::unique_ptr<const SkImage::AsyncReadResult> async_result;
+    bool finished = false;
+    static void OnReadPixelsDone(
+        void* raw_ctx,
+        std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
+      ReadPixelsContext* context =
+          reinterpret_cast<ReadPixelsContext*>(raw_ctx);
+      context->async_result = std::move(async_result);
+      context->finished = true;
+    }
+  };
+
+  ReadPixelsContext context;
+  if (auto* graphite_context = context_state_->graphite_context()) {
+    graphite_context->asyncRescaleAndReadPixels(
+        sk_surface_.get(), sk_surface_->imageInfo(),
+        SkIRect::MakeSize(sk_surface_->imageInfo().dimensions()),
+        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+        &ReadPixelsContext::OnReadPixelsDone, &context);
+  } else {
+    CHECK(context_state_->gr_context());
+    sk_surface_->asyncRescaleAndReadPixels(
+        sk_surface_->imageInfo(),
+        SkIRect::MakeSize(sk_surface_->imageInfo().dimensions()),
+        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+        &ReadPixelsContext::OnReadPixelsDone, &context);
+  }
+
+  context_state_->FlushAndSubmit(true);
+  CHECK(context.finished);
+  CHECK(context.async_result);
+
+  CHECK_EQ(1, context.async_result->count());
+  const SkPixmap src_pixmap(sk_surface_->imageInfo(),
+                            const_cast<void*>(context.async_result->data(0)),
+                            context.async_result->rowBytes(0));
+
+  // Copy the pixels so we don't need to keep |context.async_result| alive.
+  SkBitmap bitmap;
+  bitmap.allocPixels(src_pixmap.info());
+  CHECK(bitmap.writePixels(src_pixmap));
+
+  std::move(callback).Run(std::move(bitmap));
+}
 
 }  // namespace viz

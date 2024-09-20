@@ -211,7 +211,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
   // card so the number of credit cards has to remain equal to one.
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
               SizeIs(1));
-  CreditCard* credit_card =
+  const CreditCard* credit_card =
       personal_data_manager_.payments_data_manager().GetCreditCards()[0];
 
   EXPECT_EQ(credit_card->GetRawInfo(autofill::CREDIT_CARD_NUMBER),

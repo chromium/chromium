@@ -5,7 +5,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/readaloud/android/synthetic_trial.h"
 #include "components/metrics/metrics_service.h"
 
@@ -58,6 +60,18 @@ ScopedJavaLocalRef<jstring> JNI_ReadAloudFeatures_GetMetricsId(JNIEnv* env) {
         env, g_browser_process->metrics_service()->GetClientId());
   }
   return ConvertUTF8ToJavaString(env, "");
+}
+
+ScopedJavaLocalRef<jstring> JNI_ReadAloudFeatures_GetServerExperimentFlag(
+    JNIEnv* env) {
+  base::FieldTrial* trial =
+      base::FeatureList::GetInstance()->GetAssociatedFieldTrialByFeatureName(
+          chrome::android::kReadAloudServerExperiments.name);
+  if (!trial) {
+    return ConvertUTF8ToJavaString(env, "");
+  }
+  return ConvertUTF8ToJavaString(
+      env, base::StrCat({trial->trial_name(), "_", trial->group_name()}));
 }
 
 }  // namespace readaloud

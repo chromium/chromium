@@ -327,9 +327,8 @@ static jint JNI_DialogOverlayImpl_RegisterSurface(
     const JavaParamRef<jobject>& surface) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return gpu::GpuSurfaceTracker::Get()->AddSurfaceForNativeWidget(
-      gpu::GpuSurfaceTracker::SurfaceRecord(
-          gl::ScopedJavaSurface(surface, /*auto_release=*/false),
-          /*can_be_used_with_surface_control=*/false));
+      gpu::SurfaceRecord(gl::ScopedJavaSurface(surface, /*auto_release=*/false),
+                         /*can_be_used_with_surface_control=*/false));
 }
 
 static void JNI_DialogOverlayImpl_UnregisterSurface(
@@ -343,14 +342,15 @@ static ScopedJavaLocalRef<jobject>
 JNI_DialogOverlayImpl_LookupSurfaceForTesting(
     JNIEnv* env,
     jint surfaceId) {
-  bool can_be_used_with_surface_control = false;
-  auto surface_variant = gpu::GpuSurfaceTracker::Get()->AcquireJavaSurface(
-      surfaceId, &can_be_used_with_surface_control);
-  if (!absl::holds_alternative<gl::ScopedJavaSurface>(surface_variant)) {
+  auto surface_record =
+      gpu::GpuSurfaceTracker::Get()->AcquireJavaSurface(surfaceId);
+  if (!absl::holds_alternative<gl::ScopedJavaSurface>(
+          surface_record.surface_variant)) {
     return nullptr;
   }
   return ScopedJavaLocalRef<jobject>(
-      absl::get<gl::ScopedJavaSurface>(surface_variant).j_surface());
+      absl::get<gl::ScopedJavaSurface>(surface_record.surface_variant)
+          .j_surface());
 }
 
 }  // namespace content

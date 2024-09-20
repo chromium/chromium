@@ -797,6 +797,54 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
     return;
   }
 
+  // Ignore potentially duplicated navigations, where the new navigation has the
+  // same params and details as the current ongoing navigations. These
+  // navigations are likely triggered unintentionally (e.g. due to double
+  // clicks).
+  NavigationRequest* ongoing_navigation_request =
+      frame_tree_node->navigation_request();
+  bool is_duplicate_navigation = false;
+  if (ongoing_navigation_request &&
+      request->common_params().navigation_start -
+              ongoing_navigation_request->common_params().navigation_start <=
+          features::kDuplicateNavThreshold.Get() &&
+      ongoing_navigation_request->IsRendererInitiated() ==
+          request->IsRendererInitiated() &&
+      request->GetURL() == ongoing_navigation_request->GetURL() &&
+      request->common_params().method == "GET" &&
+      ongoing_navigation_request->common_params().method == "GET" &&
+      request->GetInitiatorFrameToken() ==
+          ongoing_navigation_request->GetInitiatorFrameToken() &&
+      request->common_params().initiator_origin ==
+          ongoing_navigation_request->common_params().initiator_origin &&
+      request->common_params().has_user_gesture ==
+          ongoing_navigation_request->common_params().has_user_gesture &&
+      request->common_params().should_replace_current_entry ==
+          ongoing_navigation_request->common_params()
+              .should_replace_current_entry &&
+      request->GetNavigationEntryOffset() ==
+          ongoing_navigation_request->GetNavigationEntryOffset() &&
+      request->GetReloadType() == ongoing_navigation_request->GetReloadType() &&
+      request->GetRestoreType() ==
+          ongoing_navigation_request->GetRestoreType() &&
+      request->common_params().referrer ==
+          ongoing_navigation_request->common_params().referrer &&
+      request->common_params().transition ==
+          ongoing_navigation_request->common_params().transition) {
+    is_duplicate_navigation = true;
+  }
+  base::UmaHistogramBoolean("Navigation.IsDuplicate", is_duplicate_navigation);
+  if (is_duplicate_navigation) {
+    if (base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+      request->set_navigation_discard_reason(
+          NavigationDiscardReason::kNeverStarted);
+      return;
+    } else {
+      ongoing_navigation_request->set_navigation_discard_reason(
+          NavigationDiscardReason::kNewDuplicateNavigation);
+    }
+  }
+
   metrics_data_ = std::make_unique<NavigationMetricsData>(
       request->common_params().navigation_start, request->common_params().url,
       GetPageUkmSourceId(*frame_tree_node->current_frame_host()),

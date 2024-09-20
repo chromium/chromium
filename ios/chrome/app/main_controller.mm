@@ -100,14 +100,12 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
-#import "ios/chrome/browser/profile_metrics/model/profile_activity_app_agent.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/model/features.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
@@ -122,6 +120,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -522,22 +521,23 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // Start recording field trial info.
   [[PreviousSessionInfo sharedInstance] beginRecordingFieldTrials];
 
-  const std::vector<ChromeBrowserState*> loadedProfiles =
-      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-  CHECK(!loadedProfiles.empty());
-  for (ChromeBrowserState* chromeBrowserState : loadedProfiles) {
-    [self initializeBrowserState:chromeBrowserState];
+  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
+  for (ProfileIOS* profile : manager->GetLoadedProfiles()) {
+    [self initializeBrowserState:profile];
   }
+  DCHECK(!_profileControllers.empty());
 
-  // TODO(crbug.com/343166723): Support having multiple profiles.
-  ChromeBrowserState* browserState =
-      GetApplicationContext()
-          ->GetProfileManager()
-          ->GetLastUsedProfileDeprecatedDoNotUse();
-  auto iterator = _profileControllers.find(browserState->GetProfileName());
-  DCHECK(iterator != _profileControllers.end());
+  // TODO(crbug.com/343166723): support marking a specific profile to use when
+  // a new Scene is connected instead of picking one at random.
+  ProfileController* defaultProfile = _profileControllers.begin()->second;
 
-  self.appState.mainProfile = iterator->second.state;
+  // TODO(crbug.com/343166723): remove the global mainProfile when it is only
+  // accessed per scene.
+  self.appState.mainProfile = defaultProfile.state;
+
+  for (SceneState* sceneState in self.appState.connectedScenes) {
+    [self attachProfileToSceneState:sceneState];
+  }
 
   // Give tests a chance to prepare for testing.
   tests_hook::SetUpTestsIfPresent();
@@ -569,18 +569,16 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
 
   // TODO(crbug.com/325616341): Update PostRestoreAppAgent for multi-identity.
-  ChromeBrowserState* chromeBrowserState =
-      self.appState.mainProfile.browserState;
+  ProfileIOS* profile = defaultProfile.state.profile;
   [self.appState
-      addAgent:
-          [[PostRestoreAppAgent alloc]
-              initWithPromosManager:PromosManagerFactory::GetForBrowserState(
-                                        chromeBrowserState)
-              authenticationService:AuthenticationServiceFactory::
-                                        GetForBrowserState(chromeBrowserState)
-                    identityManager:IdentityManagerFactory::GetForProfile(
-                                        chromeBrowserState)
-                        prefService:chromeBrowserState->GetPrefs()]];
+      addAgent:[[PostRestoreAppAgent alloc]
+                   initWithPromosManager:PromosManagerFactory::
+                                             GetForBrowserState(profile)
+                   authenticationService:AuthenticationServiceFactory::
+                                             GetForBrowserState(profile)
+                         identityManager:IdentityManagerFactory::GetForProfile(
+                                             profile)
+                             prefService:profile->GetPrefs()]];
 
   if (IsDockingPromoEnabled()) {
     switch (DockingPromoExperimentTypeEnabled()) {
@@ -601,12 +599,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion {
-  // Migrate the session storage based on the feature.
-  const SessionRestorationServiceFactory::StorageFormat requested_format =
-      session::features::UseSessionSerializationOptimizations()
-          ? SessionRestorationServiceFactory::kOptimized
-          : SessionRestorationServiceFactory::kLegacy;
-
   const std::vector<ChromeBrowserState*> loadedProfiles =
       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
 
@@ -620,7 +612,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // startup.
   for (ChromeBrowserState* browserState : loadedProfiles) {
     SessionRestorationServiceFactory::GetInstance()
-        ->MigrateSessionStorageFormat(browserState, requested_format, closure);
+        ->MigrateSessionStorageFormat(
+            browserState, SessionRestorationServiceFactory::kOptimized,
+            closure);
   }
 }
 
@@ -664,7 +658,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
                       spotlightManagerWithBrowserState:chromeBrowserState]];
 
     ShareExtensionService* service =
-        ShareExtensionServiceFactory::GetForBrowserState(chromeBrowserState);
+        ShareExtensionServiceFactory::GetForProfile(chromeBrowserState);
     service->Initialize();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
@@ -736,7 +730,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   DCHECK(!browserState->IsOffTheRecord());
 
   ProfileController* controller = [[ProfileController alloc] init];
-  controller.state.browserState = browserState;
+  controller.state.profile = browserState;
   auto insertion_result = _profileControllers.insert(
       std::make_pair(browserState->GetProfileName(), controller));
   DCHECK(insertion_result.second);
@@ -788,6 +782,10 @@ SEQUENCE_CHECKER(_sequenceChecker);
         [[LaunchScreenViewController alloc] init];
     [sceneState.window setRootViewController:launchScreen];
     [sceneState.window makeKeyAndVisible];
+  }
+
+  if (self.appState.initStage >= InitStageEnterprise) {
+    [self attachProfileToSceneState:sceneState];
   }
 }
 
@@ -908,8 +906,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   if (base::ios::IsMultipleScenesSupported()) {
     [appState addAgent:[[WindowAccessibilityChangeNotifierAppAgent alloc] init]];
   }
-
-  [appState addAgent:[[ProfileActivityAppAgent alloc] init]];
 }
 
 // TODO(crbug.com/325614311): Get rid of this method/property completely.
@@ -1316,7 +1312,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [self scheduleMemoryDebuggingTools];
   [StartupTasks
       scheduleDeferredBrowserStateInitialization:self.appState.mainProfile
-                                                     .browserState];
+                                                     .profile];
   [self sendQueuedFeedback];
   [self scheduleSpotlightResync];
   [self scheduleDeleteTempDownloadsDirectory];
@@ -1625,6 +1621,75 @@ SEQUENCE_CHECKER(_sequenceChecker);
         base::SysNSStringToUTF8(sceneState.sceneSessionID));
   }
   return connectedSessionIDs;
+}
+
+- (void)attachProfileToSceneState:(SceneState*)sceneState {
+  ProfileAttributesStorageIOS* storage = GetApplicationContext()
+                                             ->GetProfileManager()
+                                             ->GetProfileAttributesStorage();
+
+  const std::string sceneID =
+      base::SysNSStringToUTF8(sceneState.sceneSessionID);
+  std::string profileName = storage->GetProfileNameForSceneID(sceneID);
+
+  auto iterator = _profileControllers.find(profileName);
+  if (iterator == _profileControllers.end()) {
+    if (profileName.empty()) {
+      // TODO(crbug.com/41492447): provide an API to mark a profile as the
+      // profile to use by default when a new SceneState is open.
+      const std::string& lastActiveProfileName =
+          GetApplicationContext()
+              ->GetProfileManager()
+              ->GetLastUsedProfileDeprecatedDoNotUse()
+              ->GetProfileName();
+
+      profileName = lastActiveProfileName;
+      iterator = _profileControllers.find(lastActiveProfileName);
+      storage->SetProfileNameForSceneID(sceneID, lastActiveProfileName);
+    }
+
+    DCHECK(!profileName.empty());
+    if (iterator == _profileControllers.end()) {
+      __weak __typeof(self) weakSelf = self;
+      GetApplicationContext()->GetProfileManager()->CreateProfileAsync(
+          profileName, base::BindOnce(^(ProfileIOS* profile) {
+            [weakSelf profileLoaded:profile forSceneState:sceneState];
+          }));
+      return;
+    }
+  }
+
+  DCHECK(iterator != _profileControllers.end());
+  ProfileState* profileState = iterator->second.state;
+
+  // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
+  // (app) InitStage are fully decoupled.
+  InitStage initStage = self.appState.initStage;
+  if (self.appState.initStage >= InitStageBrowserObjectsForBackgroundHandlers) {
+    ProfileInitStage currStage = profileState.initStage;
+    ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);
+    while (currStage != nextStage) {
+      // The ProfileInitStage enum has more values than InitStage, so move
+      // over all stage that have no representation in InitStage to avoid
+      // failing CHECK in -[ProfileState setInitStage:].
+      currStage =
+          static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
+      profileState.initStage = currStage;
+    }
+  }
+
+  sceneState.profileState = profileState;
+  [profileState sceneStateConnected:sceneState];
+
+  storage->SetProfileNameForSceneID(sceneID, iterator->first);
+}
+
+// TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
+// (app) InitStage are fully decoupled.
+- (void)profileLoaded:(ProfileIOS*)profile
+        forSceneState:(SceneState*)sceneState {
+  [self initializeBrowserState:profile];
+  [self attachProfileToSceneState:sceneState];
 }
 
 @end

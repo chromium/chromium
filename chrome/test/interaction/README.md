@@ -40,6 +40,11 @@ present in `InteractiveTestApi`. If a method is introduced in
 introduced in `InteractiveBrowserTestApi`, it will have **[Browser]** next to it
 instead.*
 
+There are also methods marked as **[Interactive]** - these are test actions that
+can only be used in a test which can control the mouse and things like window
+activation. Trying to use these actions in tests where these are not reliable
+will cause a CHECK() failure.
+
 ### Test Sequences
 
 The primary entry point for any test is `RunTestSequence()` [Views] or
@@ -127,14 +132,14 @@ Verbs fall into a number of different categories:
   environments where the test fixture is not running as the only process, so
   prefer to use those in interactive_ui_tests. Examples:
     - `PressButton()`
-    - `SelectMenuItem()`
+    - `SelectMenuItem()` [Interactive]
     - `SelectTab()`
-    - `SelectDropdownItem()`
+    - `SelectDropdownItem()` [Interactive] (with non-default input mode)
     - `EnterText()`
     - `SendAccelerator()`
     - `Confirm()`
     - `DoDefaultAction()`
-    - `ActivateSurface()`
+    - `ActivateSurface()` [Interactive]
       - ActivateSurface is not always reliable on Linux with the Wayland window
         manager; see [Handling Incompatibilities](#handling-incompatibilities)
         for how to correctly deal with this.
@@ -144,10 +149,10 @@ Verbs fall into a number of different categories:
 - **Mouse** verbs simulate mouse input to the entire application, and are
   therefore only reliable in test fixtures that run as exclusive processes (e.g.
   interactive_browser_tests). Examples include:
-    - `MoveMouseTo()` [Views]
-    - `DragMouseTo()` [Views]
-    - `ClickMouse()` [Views]
-    - `ReleaseMouseButton()` [Views]
+    - `MoveMouseTo()` [Views] [Interactive]
+    - `DragMouseTo()` [Views] [Interactive]
+    - `ClickMouse()` [Views] [Interactive]
+    - `ReleaseMouseButton()` [Views] [Interactive]
 - **Name** verbs assign a string name to some UI element which may not be known
   ahead of time, so that it can be referenced later in the test. Examples
   include:
@@ -170,7 +175,7 @@ Verbs fall into a number of different categories:
     - `WaitForWebContentsReady()` [Browser]
     - `WaitForWebContentsNavigation()` [Browser]
     - `WaitForWebContentsPainted()` [Browser]
-    - `FocusWebContents()` [Browser]
+    - `FocusWebContents()` [Browser] [Interactive]
     - `WaitForStateChange()` [Browser]
 - **Javascript** verbs execute javascript in an
   [instrumented WebContents](#webcontents-instrumentation), or verify a result

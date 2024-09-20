@@ -942,15 +942,6 @@ std::u16string AXPlatformNodeBase::GetTextContentUTF16() const {
   return delegate_->GetTextContentUTF16();
 }
 
-// https://crbug.com/40889544 - to be removed once we gather some info on
-// the reason for the macOS exception being thrown.
-std::u16string AXPlatformNodeBase::GetTextContentUTF16WithInvisibles() const {
-  if (!delegate_) {
-    return std::u16string();
-  }
-  return delegate_->GetTextContentUTF16WithInvisibles();
-}
-
 std::u16string
 AXPlatformNodeBase::GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute()
     const {

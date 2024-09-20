@@ -8,10 +8,12 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/task/bind_post_task.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
@@ -44,6 +46,40 @@ NSArray<UNNotificationRequest*>* NotificationsWithIdentifiers(
   return matching_requests;
 }
 
+// Returns `true` if provisional Safety Check notifications are allowed based
+// on:
+//  - The existence of a compromised password notification.
+//  - The current notification authorization status (provisional or not yet
+//  determined).
+bool CanSendProvisionalNotifications(
+    PasswordSafetyCheckState password_check_state,
+    password_manager::InsecurePasswordCounts insecure_password_counts,
+    PrefService* local_pref_service) {
+  CHECK(local_pref_service);
+
+  // Only send provisional notifications for compromised passwords.
+  if (password_check_state !=
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords) {
+    return false;
+  }
+
+  UNNotificationContent* password_notification =
+      NotificationForPasswordCheckState(password_check_state,
+                                        insecure_password_counts);
+
+  // Only send provisional notifications if a password notification actually
+  // exists.
+  if (password_notification == nil) {
+    return false;
+  }
+
+  UNAuthorizationStatus auth_status =
+      [PushNotificationUtil getSavedPermissionSettings];
+
+  return auth_status == UNAuthorizationStatusProvisional ||
+         auth_status == UNAuthorizationStatusNotDetermined;
+}
+
 }  // namespace
 
 SafetyCheckNotificationClient::SafetyCheckNotificationClient(
@@ -59,7 +95,10 @@ bool SafetyCheckNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsSafetyCheckNotification(response.notification.request)) {
+  std::optional<SafetyCheckNotificationType> notification_type =
+      ParseSafetyCheckNotificationType(response.notification.request);
+
+  if (!notification_type.has_value()) {
     return false;
   }
 
@@ -67,6 +106,15 @@ bool SafetyCheckNotificationClient::HandleNotificationInteraction(
   // notification to handle it later when the app becomes foreground active.
   interacted_notification_metadata_ =
       response.notification.request.content.userInfo;
+
+  if (![interacted_notification_metadata_ count]) {
+    base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Interaction",
+                                  SafetyCheckNotificationType::kError);
+    return false;
+  }
+
+  base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Interaction",
+                                notification_type.value());
 
   if (IsSceneLevelForegroundActive()) {
     ClearAndRescheduleSafetyCheckNotifications(
@@ -108,14 +156,6 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/362479882): Exit if the user shouldn't receive a new Safety
-  // Check notification (e.g., notifications disabled, recent notification
-  // already shown).
-  if (!IsPermitted()) {
-    std::move(completion).Run();
-    return;
-  }
-
   // Confirm that `SafetyCheckNotificationClient` is not observing
   // `IOSChromeSafetyCheckManager` before registering itself as an observer for
   // Safety Check updates.
@@ -141,6 +181,14 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
     password_check_state_ = safety_check_manager->GetPasswordCheckState();
     insecure_password_counts_ =
         safety_check_manager->GetInsecurePasswordCounts();
+  }
+
+  // TODO(crbug.com/362479882): Exit if the user shouldn't receive a new Safety
+  // Check notification (e.g., notifications disabled, recent notification
+  // already shown).
+  if (!IsPermitted()) {
+    std::move(completion).Run();
+    return;
   }
 
   ClearAndRescheduleSafetyCheckNotifications(
@@ -237,7 +285,14 @@ bool SafetyCheckNotificationClient::IsPermitted() {
   // TODO(crbug.com/362260014): Replace current opt-in state logic with
   // `GetMobileNotificationPermissionStatusForClient()` once
   // `PushNotificationClient` dependencies are refactored.
+
   PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  if (CanSendProvisionalNotifications(password_check_state_,
+                                      insecure_password_counts_,
+                                      local_pref_service)) {
+    return true;
+  }
 
   return local_pref_service
       ->GetDict(prefs::kAppLevelPushNotificationPermissions)
@@ -257,12 +312,15 @@ void SafetyCheckNotificationClient::OnNotificationsCleared(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (![requests count]) {
-    // TODO(crbug.com/362481419): Add logging to track the state of the
-    // notification (requested, triggered, etc.).
+    LogTriggeredNotifications();
+    LogDismissedNotifications();
+
     interacted_notification_metadata_ = nil;
 
     return;
   }
+
+  LogDismissedNotifications();
 
   interacted_notification_metadata_ = nil;
 
@@ -298,9 +356,6 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     return;
   }
 
-  // TODO(crbug.com/362481419): Add completion handler to log metrics and
-  // actions when Safety Check notifications are requested.
-
   // If `experimental_arm` is `kSuccinct`, only one notification can be
   // scheduled at a time. Otherwise, multiple notifications can be scheduled
   // concurrently.
@@ -314,6 +369,9 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     [UNUserNotificationCenter.currentNotificationCenter
         addNotificationRequest:password_notification
          withCompletionHandler:nil];
+
+    base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Requested",
+                                  SafetyCheckNotificationType::kPasswords);
 
     // In the `kSuccinct` experiment arm, only one notification is allowed at a
     // time. Exit early after scheduling it.
@@ -332,6 +390,9 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
         addNotificationRequest:safe_browsing_notification
          withCompletionHandler:nil];
 
+    base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Requested",
+                                  SafetyCheckNotificationType::kSafeBrowsing);
+
     // In the `kSuccinct` experiment arm, only one notification is allowed at a
     // time. Exit early after scheduling it.
     if (experimental_arm ==
@@ -348,6 +409,9 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     [UNUserNotificationCenter.currentNotificationCenter
         addNotificationRequest:update_chrome_notification
          withCompletionHandler:nil];
+
+    base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Requested",
+                                  SafetyCheckNotificationType::kUpdateChrome);
   }
 
   std::move(completion).Run();
@@ -430,15 +494,96 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
     return;
   }
 
-  // If Password notification, then, depending on `insecure_credentials`,
-  // navigate to the specific page for that insecure credential(s) type.
+  // If Password notification, then, depending on `insecure_credentials` and
+  // `insecure_password_counts`, navigate to the specific page for that insecure
+  // credential(s) type.
   if (notification_metadata[kSafetyCheckPasswordNotificationID]) {
     std::vector<password_manager::CredentialUIEntry> insecure_credentials =
         safety_check_manager->GetInsecureCredentials();
 
-    HandleSafetyCheckPasswordTap(insecure_credentials, applicationHandler,
-                                 settingsHandler);
+    password_manager::InsecurePasswordCounts insecure_password_counts =
+        safety_check_manager->GetInsecurePasswordCounts();
+
+    HandleSafetyCheckPasswordTap(insecure_credentials, insecure_password_counts,
+                                 applicationHandler, settingsHandler);
 
     return;
   }
+}
+
+void SafetyCheckNotificationClient::LogTriggeredNotifications() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  const PrefService::Preference* last_sent = local_pref_service->FindPreference(
+      prefs::kIosSafetyCheckNotificationsLastSent);
+
+  if (last_sent->IsDefaultValue()) {
+    return;
+  }
+
+  SafetyCheckNotificationType type =
+      static_cast<SafetyCheckNotificationType>(last_sent->GetValue()->GetInt());
+
+  base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Triggered",
+                                type);
+
+  local_pref_service->SetInteger(
+      prefs::kIosSafetyCheckNotificationsLastTriggered, int(type));
+
+  local_pref_service->ClearPref(prefs::kIosSafetyCheckNotificationsLastSent);
+}
+
+void SafetyCheckNotificationClient::LogDismissedNotifications() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_);
+
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  if ([interacted_notification_metadata_ count]) {
+    local_pref_service->ClearPref(
+        prefs::kIosSafetyCheckNotificationsLastTriggered);
+
+    return;
+  }
+
+  const PrefService::Preference* last_triggered =
+      local_pref_service->FindPreference(
+          prefs::kIosSafetyCheckNotificationsLastTriggered);
+
+  if (last_triggered->IsDefaultValue()) {
+    return;
+  }
+
+  auto completion = base::CallbackToBlock(base::BindPostTask(
+      task_runner_,
+      base::BindOnce(
+          &SafetyCheckNotificationClient::OnGetDeliveredNotifications,
+          weak_ptr_factory_.GetWeakPtr())));
+
+  [UNUserNotificationCenter.currentNotificationCenter
+      getDeliveredNotificationsWithCompletionHandler:completion];
+}
+
+void SafetyCheckNotificationClient::OnGetDeliveredNotifications(
+    NSArray<UNNotification*>* notifications) {
+  for (UNNotification* notification in notifications) {
+    if (ParseSafetyCheckNotificationType(notification.request).has_value()) {
+      return;
+    }
+  }
+
+  // No Safety Check notification was found, so it must have been dismissed.
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  SafetyCheckNotificationType type =
+      static_cast<SafetyCheckNotificationType>(local_pref_service->GetInteger(
+          prefs::kIosSafetyCheckNotificationsLastTriggered));
+
+  base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Dismissed",
+                                type);
+
+  local_pref_service->ClearPref(
+      prefs::kIosSafetyCheckNotificationsLastTriggered);
 }

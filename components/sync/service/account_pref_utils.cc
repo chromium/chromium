@@ -59,6 +59,18 @@ void SetAccountKeyedPrefDictEntry(PrefService* pref_service,
   account_values->Set(key, std::move(value));
 }
 
+void RemoveAccountKeyedPrefDictEntry(PrefService* pref_service,
+                                     const char* pref_path,
+                                     const signin::GaiaIdHash& gaia_id_hash,
+                                     const char* key) {
+  ScopedDictPrefUpdate update_account_dict(pref_service, pref_path);
+  base::Value::Dict* account_values =
+      update_account_dict->FindDict(gaia_id_hash.ToBase64());
+  if (account_values) {
+    account_values->Remove(key);
+  }
+}
+
 void KeepAccountKeyedPrefValuesOnlyForUsers(
     PrefService* pref_service,
     const char* pref_path,

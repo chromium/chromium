@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/core/layout/replaced_layout_algorithm.h"
 
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
 
@@ -33,6 +36,11 @@ const LayoutResult* ReplacedLayoutAlgorithm::Layout() {
     LayoutMediaChildren();
   }
 
+  if (Node().IsCanvas() &&
+      RuntimeEnabledFeatures::CanvasPlaceElementEnabled()) {
+    LayoutCanvasChildren();
+  }
+
   return container_builder_.ToBoxFragment();
 }
 
@@ -40,6 +48,31 @@ MinMaxSizesResult ReplacedLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   NOTREACHED_IN_MIGRATION();
   return MinMaxSizesResult();
+}
+
+// This is necessary for CanvasRenderingContext2D.placeElement().
+void ReplacedLayoutAlgorithm::LayoutCanvasChildren() {
+  for (LayoutInputNode child = Node().FirstChild(); child;
+       child = child.NextSibling()) {
+    DCHECK(!child.IsFloating());
+    DCHECK(!child.IsOutOfFlowPositioned());
+
+    ConstraintSpaceBuilder space_builder(GetConstraintSpace().GetWritingMode(),
+                                         child.Style().GetWritingDirection(),
+                                         /* is_new_fc= */ true);
+
+    space_builder.SetAvailableSize(ChildAvailableSize());
+    space_builder.SetPercentageResolutionSize(ChildAvailableSize());
+    space_builder.SetIsPaintedAtomically(true);
+
+    const LayoutResult* result =
+        To<BlockNode>(child).Layout(space_builder.ToConstraintSpace());
+    // Since this only works with placeElement(), we ignore relative placement
+    // and put the element at (0,0) because it will be placed explicitly by
+    // the user.
+    container_builder_.AddResult(*result,
+                                 LogicalOffset(LayoutUnit(), LayoutUnit()));
+  }
 }
 
 void ReplacedLayoutAlgorithm::LayoutMediaChildren() {

@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Dialog;
@@ -144,7 +145,8 @@ public final class PrivacySandboxDialogTest {
                     PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
                             sActivityTestRule.getActivity(),
                             sActivityTestRule.getProfile(false),
-                            SurfaceType.BR_APP);
+                            SurfaceType.BR_APP,
+                            sActivityTestRule.getActivity().getWindowAndroid());
                     mDialog = PrivacySandboxDialogController.getDialogForTesting();
                 });
     }
@@ -194,10 +196,50 @@ public final class PrivacySandboxDialogTest {
                                     sActivityTestRule.getActivity(),
                                     new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
                                     false,
-                                    SurfaceType.BR_APP);
+                                    SurfaceType.BR_APP,
+                                    sActivityTestRule.getProfile(false),
+                                    sActivityTestRule.getActivity().getWindowAndroid());
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_consent_dialog");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
+    public void testRenderEEAConsentPrivacyPolicyLink() throws IOException {
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
+        launchDialog();
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        onView(withId(R.id.privacy_sandbox_learn_more_text))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        // Click "Privacy Policy" link
+        onView(withId(R.id.privacy_sandbox_learn_more_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
+        // Validate EEA Consent is not shown
+        onView(withId(R.id.privacy_sandbox_consent_eea_view))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+        // Validate Privacy Policy View is shown
+        onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_policy_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_policy_back_button))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        // Click back button
+        onView(withId(R.id.privacy_policy_back_button)).inRoot(isDialog()).perform(click());
+        // Validate EEA Consent is shown
+        onView(withId(R.id.privacy_sandbox_consent_eea_view))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        // Validate Privacy Policy View is not shown
+        onView(withId(R.id.privacy_policy_view))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -256,7 +298,8 @@ public final class PrivacySandboxDialogTest {
                     PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
                             sActivityTestRule.getActivity(),
                             sActivityTestRule.getProfile(true),
-                            SurfaceType.BR_APP);
+                            SurfaceType.BR_APP,
+                            sActivityTestRule.getActivity().getWindowAndroid());
                 });
         // Verify that nothing is shown.
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());

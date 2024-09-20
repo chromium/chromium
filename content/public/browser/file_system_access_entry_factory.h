@@ -66,6 +66,7 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
       const BindingContext& binding_context,
       PathType path_type,
       const base::FilePath& file_path,
+      const base::FilePath& display_name,
       UserAction user_action) = 0;
 
   // Creates a new FileSystemAccessEntryPtr from the path to a directory.
@@ -74,6 +75,7 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
       const BindingContext& binding_context,
       PathType path_type,
       const base::FilePath& directory_path,
+      const base::FilePath& display_name,
       UserAction user_action) = 0;
 
   // Resolve a FileSystemAccessTransferToken to its FileSystemURL. Invokes the

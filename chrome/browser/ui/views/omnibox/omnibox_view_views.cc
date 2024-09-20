@@ -46,7 +46,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -209,8 +209,6 @@ OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
   } else {
     GetViewAccessibility().SetIsEditable(true);
   }
-
-  UpdateAccessibleTextSelection();
 }
 
 OmniboxViewViews::~OmniboxViewViews() {
@@ -281,7 +279,6 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
       OmniboxState::kKey,
       std::make_unique<OmniboxState>(state, GetRenderText()->GetAllSelections(),
                                      saved_selection_for_focus_change_));
-  UpdateAccessibleTextSelection();
 }
 
 void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
@@ -312,10 +309,18 @@ void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
 }
 
 void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
-    web_contents->SetUserData(OmniboxState::kKey, nullptr);
+  web_contents->SetUserData(OmniboxState::kKey, nullptr);
 }
 
 void OmniboxViewViews::InstallPlaceholderText() {
+  // If `keyword_placeholder()` is set, then the user is in a keyword mode that
+  // has placeholder text. Use that instead of the DSE placeholder text.
+  if (!model()->keyword_placeholder().empty()) {
+    SetPlaceholderText(model()->keyword_placeholder());
+    return;
+  }
+
+  // Otherwise, if a DSE is set, use the DSE placeholder text.
   const TemplateURL* const default_provider = controller()
                                                   ->client()
                                                   ->GetTemplateURLService()
@@ -370,7 +375,6 @@ void OmniboxViewViews::SetUserText(const std::u16string& text,
                                    bool update_popup) {
   saved_selection_for_focus_change_.clear();
   OmniboxView::SetUserText(text, update_popup);
-  UpdateAccessibleTextSelection();
 }
 
 void OmniboxViewViews::SetAdditionalText(
@@ -412,7 +416,6 @@ void OmniboxViewViews::SelectAll(bool reversed) {
 void OmniboxViewViews::RevertAll() {
   saved_selection_for_focus_change_.clear();
   OmniboxView::RevertAll();
-  UpdateAccessibleTextSelection();
 }
 
 void OmniboxViewViews::SetFocus(bool is_user_initiated) {
@@ -627,7 +630,8 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
 void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
-  set_placeholder_text_color(GetColorProvider()->GetColor(kColorOmniboxText));
+  set_placeholder_text_color(
+      GetColorProvider()->GetColor(kColorOmniboxTextDimmed));
   SetSelectionBackgroundColor(
       GetColorProvider()->GetColor(kColorOmniboxSelectionBackground));
   SetSelectionTextColor(
@@ -690,8 +694,6 @@ void OmniboxViewViews::SetSelectedRanges(
   SetSelectedRange(ranges[0]);
   for (size_t i = 1; i < ranges.size(); i++)
     AddSecondarySelectedRange(ranges[i]);
-
-  UpdateAccessibleTextSelection();
 }
 
 std::u16string OmniboxViewViews::GetSelectedText() const {
@@ -719,24 +721,6 @@ void OmniboxViewViews::OnOmniboxPaste() {
   state_before_change_.text.clear();
   InsertOrReplaceText(text);
   OnAfterPossibleChange(true);
-  UpdateAccessibleTextSelection();
-}
-
-void OmniboxViewViews::UpdateAccessibleTextSelection() {
-  std::u16string::size_type entry_start;
-  std::u16string::size_type entry_end;
-
-  if (!saved_selection_for_focus_change_.empty()) {
-    entry_start = saved_selection_for_focus_change_[0].start();
-    entry_end = saved_selection_for_focus_change_[0].end();
-  } else {
-    GetSelectionBounds(&entry_start, &entry_end);
-  }
-
-  GetViewAccessibility().SetTextSelStart(
-      entry_start + friendly_suggestion_text_prefix_length_);
-  GetViewAccessibility().SetTextSelEnd(entry_end +
-                                       friendly_suggestion_text_prefix_length_);
 }
 
 bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
@@ -813,7 +797,6 @@ void OmniboxViewViews::OnTemporaryTextMaybeChanged(
 
   SetWindowTextAndCaretPos(display_text, display_text.length(), false,
                            notify_text_changed);
-  UpdateAccessibleTextSelection();
 }
 
 void OmniboxViewViews::OnInlineAutocompleteTextMaybeChanged(
@@ -861,7 +844,6 @@ void OmniboxViewViews::ClearAccessibilityLabel() {
   friendly_suggestion_text_prefix_length_ = 0;
 
   UpdateAccessibleValue();
-  UpdateAccessibleTextSelection();
 }
 
 void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
@@ -1013,6 +995,10 @@ bool OmniboxViewViews::OnAfterPossibleChange(bool allow_keyword_ui_change) {
   return something_changed;
 }
 
+void OmniboxViewViews::OnKeywordPlaceholderTextChange() {
+  InstallPlaceholderText();
+}
+
 gfx::NativeView OmniboxViewViews::GetNativeView() const {
   return GetWidget()->GetNativeView();
 }
@@ -1135,7 +1121,6 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
     // that happens for things like dragging, which are cases where having
     // invalidated this saved selection is still OK.
     saved_selection_for_focus_change_.clear();
-    UpdateAccessibleTextSelection();
   }
 
   // Show on-focus suggestions if either:
@@ -1246,7 +1231,6 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
     // If we're trying to select all on tap, invalidate any saved selection lest
     // restoring it fights with the "select all" action.
     saved_selection_for_focus_change_.clear();
-    UpdateAccessibleTextSelection();
   }
 
   // Show on-focus suggestions if either:
@@ -1306,6 +1290,22 @@ void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     popup_view_->AddPopupAccessibleNodeData(node_data);
   }
 
+  std::u16string::size_type entry_start;
+  std::u16string::size_type entry_end;
+  // Selection information is saved separately when focus is moved off the
+  // current window - use that when there is no focus and it's valid.
+  if (!saved_selection_for_focus_change_.empty()) {
+    entry_start = saved_selection_for_focus_change_[0].start();
+    entry_end = saved_selection_for_focus_change_[0].end();
+  } else {
+    GetSelectionBounds(&entry_start, &entry_end);
+  }
+  node_data->AddIntAttribute(
+      ax::mojom::IntAttribute::kTextSelStart,
+      entry_start + friendly_suggestion_text_prefix_length_);
+  node_data->AddIntAttribute(
+      ax::mojom::IntAttribute::kTextSelEnd,
+      entry_end + friendly_suggestion_text_prefix_length_);
 }
 
 bool OmniboxViewViews::HandleAccessibleAction(
@@ -1324,7 +1324,6 @@ bool OmniboxViewViews::HandleAccessibleAction(
     }
     InsertOrReplaceText(base::UTF8ToUTF16(action_data.value));
     TextChanged();
-    UpdateAccessibleTextSelection();
     return true;
   } else if (action_data.action == ax::mojom::Action::kSetSelection) {
     // Adjust for friendly text inserted at the start of the url.
@@ -1358,7 +1357,6 @@ void OmniboxViewViews::OnFocus() {
   if (!saved_selection_for_focus_change_.empty()) {
     SetSelectedRanges(saved_selection_for_focus_change_);
     saved_selection_for_focus_change_.clear();
-    UpdateAccessibleTextSelection();
   }
 
   GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
@@ -1444,7 +1442,6 @@ void OmniboxViewViews::OnBlur() {
 
   // |location_bar_view_| can be null in tests.
   if (location_bar_view_) {
-
     location_bar_view_->OnOmniboxBlurred();
 
     // The location bar needs to repaint without a focus ring.
@@ -1550,8 +1547,13 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
 }
 
 bool OmniboxViewViews::ShouldShowPlaceholderText() const {
+  // The DSE placeholder text is visible only if the omnibox is blurred. The
+  // keyword placeholder text is visible even if the omnibox is focused, because
+  // users won't enter keyword mode, blur the omnibox, read the placeholder
+  // text, refocus the omnibox, and begin typing.
   return Textfield::ShouldShowPlaceholderText() &&
-         !model()->is_caret_visible() && !model()->is_keyword_selected();
+         (!model()->is_caret_visible() ||
+          !model()->keyword_placeholder().empty());
 }
 
 void OmniboxViewViews::UpdateAccessibleValue() {
@@ -1915,7 +1917,9 @@ void OmniboxViewViews::OnCompositingStarted(ui::Compositor* compositor,
     latency_histogram_state_ = COMPOSITING_STARTED;
 }
 
-void OmniboxViewViews::OnCompositingAckDeprecated(ui::Compositor* compositor) {
+void OmniboxViewViews::OnDidPresentCompositorFrame(
+    uint32_t frame_token,
+    const gfx::PresentationFeedback& feedback) {
   if (latency_histogram_state_ == COMPOSITING_STARTED) {
     DCHECK(!insert_char_time_.is_null());
     UMA_HISTOGRAM_TIMES("Omnibox.CharTypedToRepaintLatency",

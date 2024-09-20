@@ -52,9 +52,6 @@ constexpr char kHatsSurveyTriggerDownloadWarningPageHeed[] =
     "download-warning-page-heed";
 constexpr char kHatsSurveyTriggerDownloadWarningPageIgnore[] =
     "download-warning-page-ignore";
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr char kHatsSurveyTriggerGetMostChrome[] = "get-most-chrome";
-#endif
 constexpr char kHatsSurveyTriggerM1AdPrivacyPage[] = "m1-ad-privacy-page";
 constexpr char kHatsSurveyTriggerM1TopicsSubpage[] = "m1-topics-subpage";
 constexpr char kHatsSurveyTriggerM1FledgeSubpage[] = "m1-fledge-subpage";
@@ -76,6 +73,12 @@ constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
 // "permission-prompt0", "permission-prompt1", ...
 constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
 constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
+constexpr char kHatsSurveyTriggerSafetyHubOneOffExperimentControl[] =
+    "safety-hub-control";
+constexpr char kHatsSurveyTriggerSafetyHubOneOffExperimentNotification[] =
+    "safety-hub-notification";
+constexpr char kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction[] =
+    "safety-hub-interaction";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 constexpr char kHatsSurveyTriggerSettingsSecurity[] = "settings-security";
@@ -240,11 +243,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
       kHatsSurveyTriggerPrivacyGuide);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  survey_configs.emplace_back(&features::kHappinessTrackingSurveysGetMostChrome,
-                              kHatsSurveyTriggerGetMostChrome);
-#endif
 
   const auto ad_privacy_product_specific_bits_data =
       std::vector<std::string>{"3P cookies blocked", "Topics enabled",
@@ -584,6 +582,24 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           DownloadWarningHatsType::kDownloadsPageIgnore),
       DownloadWarningHatsProductSpecificData::GetStringDataFields(
           DownloadWarningHatsType::kDownloadsPageIgnore));
+
+  survey_configs.emplace_back(
+      &features::kSafetyHubHaTSOneOffSurvey,
+      kHatsSurveyTriggerSafetyHubOneOffExperimentControl,
+      features::kHatsSurveyTriggerSafetyHubOneOffExperimentControlTriggerId
+          .Get());
+  survey_configs.emplace_back(
+      &features::kSafetyHubHaTSOneOffSurvey,
+      kHatsSurveyTriggerSafetyHubOneOffExperimentNotification,
+      features::kHatsSurveyTriggerSafetyHubOneOffExperimentNotificationTriggerId
+          .Get(),
+      sh_psd_fields);
+  survey_configs.emplace_back(
+      &features::kSafetyHubHaTSOneOffSurvey,
+      kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction,
+      features::kHatsSurveyTriggerSafetyHubOneOffExperimentInteractionTriggerId
+          .Get(),
+      sh_psd_fields);
 
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,

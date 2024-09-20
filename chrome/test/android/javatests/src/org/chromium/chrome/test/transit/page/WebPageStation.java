@@ -14,6 +14,7 @@ import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -91,6 +92,20 @@ public class WebPageStation extends PageStation {
     public IncognitoWebPageAppMenuFacility openIncognitoTabAppMenu() {
         assert mIncognito;
         return enterFacilitySync(new IncognitoWebPageAppMenuFacility(), MENU_BUTTON::click);
+    }
+
+    /** Trigger to scroll WebContents to the bottom. */
+    public Transition.Trigger scrollToBottomTrigger() {
+        return () -> {
+            assertSuppliersCanBeUsed();
+            try {
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        mWebContentsSupplier.get(),
+                        "window.scrollTo(0, document.body.scrollHeight)");
+            } catch (TimeoutException e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
     private static class WebContentsPresentCondition extends ConditionWithResult<WebContents> {

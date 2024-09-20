@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -156,7 +157,7 @@ class AccountSelectionMediator {
     private boolean mIsAutoReauthn;
     private @RpContext.EnumType int mRpContext;
     private IdentityCredentialTokenError mError;
-    private boolean mRequestPermission;
+    private @IdentityRequestDialogDisclosureField int[] mDisclosureFields;
     private ImageFetcher mImageFetcher;
 
     // All of the user's accounts.
@@ -363,7 +364,7 @@ class AccountSelectionMediator {
 
     private void handleBackPress() {
         mSelectedAccount = null;
-        showAccountsInternal(/* newAccountsIdp= */ null);
+        showAccountsInternal(/* newAccounts= */ null);
     }
 
     private PropertyModel createHeaderItem(
@@ -546,25 +547,22 @@ class AccountSelectionMediator {
             String rpForDisplay,
             String idpForDisplay,
             List<Account> accounts,
-            IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata,
+            IdentityProviderData idpData,
             boolean isAutoReauthn,
-            @RpContext.EnumType int rpContext,
-            boolean requestPermission,
-            @Nullable IdentityProviderData newAccountsIdp) {
+            List<Account> newAccounts) {
         // On widget mode, show placeholder icon to preserve header text wrapping when icon is
         // fetched.
         if (mRpMode == RpMode.WIDGET) {
-            showPlaceholderIcon(idpMetadata);
+            showPlaceholderIcon(idpData.getIdpMetadata());
         }
         mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mAccounts = accounts;
-        mIdpMetadata = idpMetadata;
-        mClientMetadata = clientMetadata;
+        mIdpMetadata = idpData.getIdpMetadata();
+        mClientMetadata = idpData.getClientMetadata();
         mIsAutoReauthn = isAutoReauthn;
-        mRpContext = rpContext;
-        mRequestPermission = requestPermission;
+        mRpContext = idpData.getRpContext();
+        mDisclosureFields = idpData.getDisclosureFields();
         mSelectedAccount = null;
 
         fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
@@ -573,11 +571,11 @@ class AccountSelectionMediator {
             fetchBrandIcon(mClientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
         }
 
-        if (accounts.size() == 1 && (isAutoReauthn || !idpMetadata.supportsAddAccount())) {
+        if (accounts.size() == 1 && (isAutoReauthn || !mIdpMetadata.supportsAddAccount())) {
             mSelectedAccount = accounts.get(0);
         }
 
-        showAccountsInternal(newAccountsIdp);
+        showAccountsInternal(newAccounts);
         setComponentShowTime(SystemClock.elapsedRealtime());
     }
 
@@ -664,12 +662,10 @@ class AccountSelectionMediator {
         return mHeaderType;
     }
 
-    private void showAccountsInternal(@Nullable IdentityProviderData newAccountsIdp) {
+    private void showAccountsInternal(@Nullable List<Account> newAccounts) {
         // TODO(crbug.com/356665527): Handle multiple newly signed-in accounts.
         Account newlySignedInAccount =
-                newAccountsIdp != null && newAccountsIdp.getAccounts().size() == 1
-                        ? newAccountsIdp.getAccounts().get(0)
-                        : null;
+                newAccounts != null && newAccounts.size() == 1 ? newAccounts.get(0) : null;
 
         if (!mIsAutoReauthn && newlySignedInAccount != null && mRpMode == RpMode.BUTTON) {
             mSelectedAccount = newlySignedInAccount;
@@ -693,7 +689,7 @@ class AccountSelectionMediator {
             // if we do not skip the next dialog. Also skip when request_permission
             // is false (controlled by the fields API).
             boolean shouldShowRequestPermissionDialog =
-                    !newlySignedInAccount.isSignIn() && newAccountsIdp.getRequestPermission();
+                    !newlySignedInAccount.isSignIn() && mDisclosureFields.length > 0;
             if (shouldShowRequestPermissionDialog) {
                 showRequestPermissionSheet(mSelectedAccount);
                 return;
@@ -749,7 +745,8 @@ class AccountSelectionMediator {
         if (mHeaderType == HeaderType.SIGN_IN && mSelectedAccount != null) {
             // Only show the user data sharing consent text for sign up and only
             // if we're asked to request permission.
-            isDataSharingConsentVisible = !mSelectedAccount.isSignIn() && mRequestPermission;
+            isDataSharingConsentVisible =
+                    !mSelectedAccount.isSignIn() && mDisclosureFields.length > 0;
             continueButtonCallback = this::onClickAccountSelected;
         }
 
@@ -791,7 +788,8 @@ class AccountSelectionMediator {
             mModel.set(
                     ItemProperties.DATA_SHARING_CONSENT,
                     isDataSharingConsentVisible
-                            ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
+                            ? createDataSharingConsentItem(
+                                    mIdpForDisplay, mClientMetadata, mDisclosureFields)
                             : null);
         }
         mModel.set(
@@ -808,7 +806,8 @@ class AccountSelectionMediator {
             mModel.set(
                     ItemProperties.DATA_SHARING_CONSENT,
                     isDataSharingConsentVisible
-                            ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
+                            ? createDataSharingConsentItem(
+                                    mIdpForDisplay, mClientMetadata, mDisclosureFields)
                             : null);
         }
         mModel.set(
@@ -968,7 +967,7 @@ class AccountSelectionMediator {
         if ((mRpMode == RpMode.WIDGET && oldSelectedAccount != null)
                 || selectedAccount.isSignIn()
                 || mHeaderType == HeaderType.REQUEST_PERMISSION
-                || !mRequestPermission) {
+                || mDisclosureFields.length == 0) {
             mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), selectedAccount);
             showVerifySheet(selectedAccount);
             return;
@@ -982,7 +981,7 @@ class AccountSelectionMediator {
         }
 
         // At this point, the account is a non-returning user and RP mode is widget.
-        showAccountsInternal(/* newAccountsIdp= */ null);
+        showAccountsInternal(/* newAccounts= */ null);
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
@@ -1036,7 +1035,9 @@ class AccountSelectionMediator {
     }
 
     private PropertyModel createDataSharingConsentItem(
-            String idpForDisplay, ClientIdMetadata metadata) {
+            String idpForDisplay,
+            ClientIdMetadata metadata,
+            @IdentityRequestDialogDisclosureField int[] disclosureFields) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
         properties.mIdpForDisplay = idpForDisplay;
@@ -1057,6 +1058,7 @@ class AccountSelectionMediator {
                             metadata.getPrivacyPolicyUrl());
                 };
         properties.mSetFocusViewCallback = this::setFocusView;
+        properties.mDisclosureFields = disclosureFields;
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

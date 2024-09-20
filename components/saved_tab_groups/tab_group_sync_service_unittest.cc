@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -34,8 +35,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::An;
+using testing::ByRef;
 using testing::Eq;
 using testing::Invoke;
+using testing::Matcher;
 using testing::Return;
 
 namespace tab_groups {
@@ -84,12 +88,44 @@ MATCHER_P(UuidEq, uuid, "") {
   return arg.saved_guid() == uuid;
 }
 
+class MockOptimizationGuideDecider
+    : public optimization_guide::OptimizationGuideDecider {
+ public:
+  MOCK_METHOD(void,
+              RegisterOptimizationTypes,
+              (const std::vector<optimization_guide::proto::OptimizationType>&),
+              (override));
+  MOCK_METHOD(void,
+              CanApplyOptimization,
+              (const GURL&,
+               optimization_guide::proto::OptimizationType,
+               optimization_guide::OptimizationGuideDecisionCallback),
+              (override));
+  MOCK_METHOD(optimization_guide::OptimizationGuideDecision,
+              CanApplyOptimization,
+              (const GURL&,
+               optimization_guide::proto::OptimizationType,
+               optimization_guide::OptimizationMetadata*),
+              (override));
+  MOCK_METHOD(
+      void,
+      CanApplyOptimizationOnDemand,
+      (const std::vector<GURL>&,
+       const base::flat_set<optimization_guide::proto::OptimizationType>&,
+       optimization_guide::proto::RequestContext,
+       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback,
+       std::optional<optimization_guide::proto::RequestContextMetadata>
+           request_context_metadata),
+      (override));
+};
+
 }  // namespace
 
 class TabGroupSyncServiceTest : public testing::Test {
  public:
   TabGroupSyncServiceTest()
       : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
+        decider_(std::make_unique<MockOptimizationGuideDecider>()),
         fake_controller_delegate_(syncer::SAVED_TAB_GROUP),
         group_1_(test::CreateTestSavedTabGroup()),
         group_2_(test::CreateTestSavedTabGroup()),
@@ -107,17 +143,20 @@ class TabGroupSyncServiceTest : public testing::Test {
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
     pref_service_.registry()->RegisterDictionaryPref(prefs::kDeletedTabGroupIds,
                                                      base::Value::Dict());
+    pref_service_.registry()->RegisterDictionaryPref(
+        prefs::kLocallyClosedRemoteTabGroupIds, base::Value::Dict());
 
     auto metrics_logger =
         std::make_unique<TabGroupSyncMetricsLogger>(&device_info_tracker_);
 
+    EXPECT_CALL(*decider_, RegisterOptimizationTypes(_)).Times(1);
     tab_group_sync_service_ = std::make_unique<TabGroupSyncServiceImpl>(
         std::move(model),
         std::make_unique<SyncDataTypeConfiguration>(
             processor_.CreateForwardingProcessor(),
             syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())),
-        nullptr, &pref_service_, std::move(metrics_logger));
+        nullptr, &pref_service_, std::move(metrics_logger), decider_.get());
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(processor_, TrackedCacheGuid())
@@ -219,6 +258,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   std::unique_ptr<MockTabGroupSyncServiceObserver> observer_;
   syncer::FakeDeviceInfoTracker device_info_tracker_;
   raw_ptr<MockTabGroupSyncCoordinator> coordinator_;
+  std::unique_ptr<MockOptimizationGuideDecider> decider_;
   std::unique_ptr<TabGroupSyncServiceImpl> tab_group_sync_service_;
   syncer::FakeDataTypeControllerDelegate fake_controller_delegate_;
 
@@ -859,6 +899,96 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromLocalSource) {
                                             Eq(TriggerSource::LOCAL)))
       .Times(1);
   model_->Remove(group_1_.local_group_id().value());
+}
+
+TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
+  GURL test_url("http://test.com/");
+  optimization_guide::OptimizationMetadata metadata;
+
+  {
+    // False was returned by optimization guide.
+    EXPECT_CALL(
+        *decider_,
+        CanApplyOptimization(
+            test_url, optimization_guide::proto::SAVED_TAB_GROUP,
+            An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillOnce(base::test::RunOnceCallback<2>(
+            optimization_guide::OptimizationGuideDecision::kFalse,
+            ByRef(metadata)));
+    base::RunLoop run_loop;
+    tab_group_sync_service_->GetURLRestriction(
+        test_url,
+        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
+          ASSERT_FALSE(restriction);
+        }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  {
+    // URL was not found by optimization guide.
+    EXPECT_CALL(
+        *decider_,
+        CanApplyOptimization(
+            test_url, optimization_guide::proto::SAVED_TAB_GROUP,
+            An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillOnce(base::test::RunOnceCallback<2>(
+            optimization_guide::OptimizationGuideDecision::kUnknown,
+            ByRef(metadata)));
+    base::RunLoop run_loop;
+    tab_group_sync_service_->GetURLRestriction(
+        test_url,
+        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
+          ASSERT_FALSE(restriction);
+        }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  {
+    // Optimization guide returns an empty metadata.
+    EXPECT_CALL(
+        *decider_,
+        CanApplyOptimization(
+            test_url, optimization_guide::proto::SAVED_TAB_GROUP,
+            An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillOnce(base::test::RunOnceCallback<2>(
+            optimization_guide::OptimizationGuideDecision::kTrue,
+            ByRef(metadata)));
+    base::RunLoop run_loop;
+    tab_group_sync_service_->GetURLRestriction(
+        test_url,
+        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
+          ASSERT_FALSE(restriction);
+        }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  {
+    // Valid response.
+    proto::UrlRestriction url_restriction;
+    url_restriction.set_block_for_sync(true);
+    url_restriction.set_block_for_share(true);
+    optimization_guide::proto::Any any;
+    any.set_type_url(url_restriction.GetTypeName());
+    url_restriction.SerializeToString(any.mutable_value());
+    metadata.set_any_metadata(any);
+    EXPECT_CALL(
+        *decider_,
+        CanApplyOptimization(
+            test_url, optimization_guide::proto::SAVED_TAB_GROUP,
+            An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillOnce(base::test::RunOnceCallback<2>(
+            optimization_guide::OptimizationGuideDecision::kTrue,
+            ByRef(metadata)));
+    base::RunLoop run_loop;
+    tab_group_sync_service_->GetURLRestriction(
+        test_url,
+        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
+          EXPECT_TRUE(restriction);
+          EXPECT_TRUE(restriction->block_for_sync());
+          EXPECT_TRUE(restriction->block_for_share());
+        }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 }
 
 class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {

@@ -30,6 +30,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
+#import "components/plus_addresses/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -146,9 +147,9 @@ const base::Feature* FetchIPHFeatureFromEnum(
 // Active Form Input View Controller.
 @property(nonatomic, strong) UIViewController* formInputViewController;
 
-// The browser state. May return null after the coordinator has been stopped
+// The profile. May return null after the coordinator has been stopped
 // (thus the returned value must be checked for null).
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+@property(nonatomic, readonly) ProfileIOS* profile;
 
 // Bubble view controller presenter for autofill suggestion tip.
 @property(nonatomic, strong) BubbleViewControllerPresenter* bubblePresenter;
@@ -196,19 +197,19 @@ const base::Feature* FetchIPHFeatureFromEnum(
       LayoutGuideCenterForBrowser(self.browser);
   self.formInputAccessoryViewController.layoutGuideCenter = layoutGuideCenter;
 
-  DCHECK(self.browserState);
+  DCHECK(self.profile);
   auto profilePasswordStore =
       IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-          self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
+          self.profile, ServiceAccessType::EXPLICIT_ACCESS);
   auto accountPasswordStore =
       IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-          self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
+          self.profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   // There is no personal data manager in OTR (incognito). Get the original
   // one for manual fallback.
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          self.browserState->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          self.profile->GetOriginalProfile());
 
   __weak id<SecurityAlertCommands> securityAlertHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SecurityAlertCommands);
@@ -221,9 +222,8 @@ const base::Feature* FetchIPHFeatureFromEnum(
         accountPasswordStore:accountPasswordStore
         securityAlertHandler:securityAlertHandler
       reauthenticationModule:self.reauthenticationModule
-           engagementTracker:feature_engagement::TrackerFactory::
-                                 GetForBrowserState(
-                                     self.browser->GetBrowserState())];
+           engagementTracker:feature_engagement::TrackerFactory::GetForProfile(
+                                 self.browser->GetProfile())];
   self.formInputAccessoryViewController.formSuggestionClient =
       self.formInputAccessoryMediator;
 
@@ -563,6 +563,11 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [self stopManualFillAllPlusAddressCoordinator];
 }
 
+- (void)dismissManualFillAllPlusAddressAndOpenManagePlusAddress {
+  [self stopManualFillAllPlusAddressCoordinator];
+  [self openManagePlusAddress];
+}
+
 #pragma mark - CardCoordinatorDelegate
 
 - (void)cardCoordinatorDidTriggerOpenCardSettings:
@@ -581,7 +586,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
 }
 
 - (void)cardCoordinator:(CardCoordinator*)cardCoordinator
-    didTriggerOpenCardDetails:(const autofill::CreditCard*)card
+    didTriggerOpenCardDetails:(autofill::CreditCard)card
                    inEditMode:(BOOL)editMode {
   [self reset];
 
@@ -589,7 +594,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
   if (editMode &&
       [AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:card]) {
     GURL paymentsURL =
-        autofill::payments::GetManageInstrumentUrl(card->instrument_id());
+        autofill::payments::GetManageInstrumentUrl(card.instrument_id());
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
@@ -607,13 +612,13 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
 #pragma mark - AddressCoordinatorDelegate
 
-- (void)openAddressDetailsInEditMode:(const autofill::AutofillProfile*)address
+- (void)openAddressDetailsInEditMode:(autofill::AutofillProfile)address
                offerMigrateToAccount:(BOOL)offerMigrateToAccount {
   [self reset];
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
-  [settingsHandler showAddressDetails:address
+  [settingsHandler showAddressDetails:std::move(address)
                            inEditMode:YES
                 offerMigrateToAccount:offerMigrateToAccount];
 }
@@ -658,6 +663,16 @@ const base::Feature* FetchIPHFeatureFromEnum(
                 injectionHandler:self.injectionHandler];
   _allPlusAddressCoordinator.manualFillAllPlusAddressCoordinatorDelegate = self;
   [_allPlusAddressCoordinator start];
+}
+
+- (void)openManagePlusAddress {
+  OpenNewTabCommand* command = [OpenNewTabCommand
+      commandWithURLFromChrome:
+          GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
+
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationHandler openURLInNewTab:command];
 }
 
 #pragma mark - ExpandedManualFillCoordinatorDelegate
@@ -752,17 +767,17 @@ const base::Feature* FetchIPHFeatureFromEnum(
   self.alertCoordinator = nil;
 }
 
-- (ChromeBrowserState*)browserState {
-  return self.browser ? self.browser->GetBrowserState() : nullptr;
+- (ProfileIOS*)profile {
+  return self.browser ? self.browser->GetProfile() : nullptr;
 }
 
 - (feature_engagement::Tracker*)featureEngagementTracker {
-  ChromeBrowserState* browserState = self.browserState;
-  if (!browserState) {
+  ProfileIOS* profile = self.profile;
+  if (!profile) {
     return nullptr;
   }
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   CHECK(tracker);
   return tracker;
 }
@@ -952,9 +967,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
     (password_manager::CredentialUIEntry)credential {
   id<SettingsCommands> settingsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
-  [settingsHandler showPasswordDetailsForCredential:credential
-                                         inEditMode:YES
-                                   showCancelButton:YES];
+  [settingsHandler showPasswordDetailsForCredential:credential inEditMode:YES];
 }
 
 @end

@@ -19,10 +19,6 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/url_handler/url_handler.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using content::BrowserContext;
 using content::OpenURLParams;
 using content::WebContents;
@@ -46,13 +42,6 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
         navigation_handle_callback) {
   if (!context)
     return nullptr;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Try to intercept the request and open the URL with Lacros.
-  if (ash::TryOpenUrl(params.url, params.disposition)) {
-    return nullptr;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   Profile* profile = Profile::FromBrowserContext(context);
 

@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#include "google_apis/google_api_keys.h"
 
 namespace {
 
@@ -40,11 +41,14 @@ bool IsUserPermittedToFetchFromRemoteOptimizationGuide(
     return true;
   }
 
-  if (!features::IsRemoteFetchingEnabled())
+  if (!features::IsRemoteFetchingEnabled()) {
     return false;
+  }
 
-  if (features::IsRemoteFetchingExplicitlyAllowedForPerformanceInfo())
-    return true;
+  if (!switches::ShouldSkipGoogleApiKeyConfigurationCheck() &&
+      !google_apis::HasAPIKeyConfigured()) {
+    return false;
+  }
 
   return IsUserConsentedToAnonymousDataCollectionAndAllowedToFetchFromRemoteService(
       pref_service);

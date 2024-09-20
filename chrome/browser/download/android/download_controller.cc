@@ -141,6 +141,16 @@ void RemoveDownloadItem(std::unique_ptr<DownloadManagerGetter> getter,
     item->Remove();
 }
 
+void ScheduleRemoveDownloadItem(download::DownloadItem* download) {
+  auto download_manager_getter = std::make_unique<DownloadManagerGetter>(
+      content::DownloadItemUtils::GetBrowserContext(download)
+          ->GetDownloadManager());
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RemoveDownloadItem, std::move(download_manager_getter),
+                     download->GetGuid()));
+}
+
 void OnRequestFileAccessResult(
     const content::WebContents::Getter& web_contents_getter,
     DownloadControllerBase::AcquireFileAccessPermissionCallback cb,
@@ -519,7 +529,8 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
     }
     NewNavigationObserver::GetInstance()->StopObserving(web_contents);
     if (should_cancel_download) {
-      download_item->Cancel(/*user_cancel=*/false);
+      ScheduleRemoveDownloadItem(download_item);
+      download_item->RemoveObserver(this);
       return;
     }
   }
@@ -582,13 +593,7 @@ void DownloadController::OnDownloadDestroyed(download::DownloadItem* item) {
 void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
   WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
   if (!web_contents) {
-    auto download_manager_getter = std::make_unique<DownloadManagerGetter>(
-        content::DownloadItemUtils::GetBrowserContext(item)
-            ->GetDownloadManager());
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RemoveDownloadItem, std::move(download_manager_getter),
-                       item->GetGuid()));
+    ScheduleRemoveDownloadItem(item);
     item->RemoveObserver(this);
     return;
   }
@@ -677,10 +682,6 @@ ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {
 
 bool DownloadController::ShouldShowAppVerificationPrompt(
     download::DownloadItem* item) {
-  if (!base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt)) {
-    return false;
-  }
-
   if (item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
     return false;
   }

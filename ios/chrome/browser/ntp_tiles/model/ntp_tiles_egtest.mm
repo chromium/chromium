@@ -18,7 +18,6 @@
 using chrome_test_util::ClearBrowsingDataCell;
 using chrome_test_util::ClearBrowsingDataView;
 using chrome_test_util::ClearBrowsingDataButton;
-using chrome_test_util::ConfirmClearBrowsingDataButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using web::test::HttpServer;

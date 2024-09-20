@@ -4,33 +4,52 @@
 
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 
+#include "base/check_deref.h"
+#include "chrome/browser/autofill/strike_database_factory.h"
+#include "chrome/browser/feedback/public/feedback_source.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine_impl.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
-#include "components/compose/buildflags.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/base/l10n/l10n_util.h"
 
-// TODO(crbug.com/359116403): Move AX serialization out of `compose`.
-#if BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/compose/compose_ax_serialization_utils.h"
-#endif
+namespace {
+
+const char kPredictionImprovementsSettingsURL[] =
+    "chrome://settings/autofill_prediction_improvements";
+
+}  // namespace
 
 ChromeAutofillPredictionImprovementsClient::
     ChromeAutofillPredictionImprovementsClient(
         content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeAutofillPredictionImprovementsClient>(
           *web_contents),
+      prefs_(CHECK_DEREF(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
+              ->GetPrefs())),
       prediction_improvements_manager_{
-          this, OptimizationGuideKeyedServiceFactory::GetForProfile(
-                    Profile::FromBrowserContext(
-                        GetWebContents().GetBrowserContext()))} {}
+          this,
+          OptimizationGuideKeyedServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(
+                  GetWebContents().GetBrowserContext())),
+          autofill::StrikeDatabaseFactory::GetForProfile(
+              Profile::FromBrowserContext(
+                  GetWebContents().GetBrowserContext())),
+      } {}
 
 ChromeAutofillPredictionImprovementsClient::
     ~ChromeAutofillPredictionImprovementsClient() = default;
@@ -53,10 +72,8 @@ void ChromeAutofillPredictionImprovementsClient::GetAXTree(
   base::OnceCallback<ProtoTreeUpdate(ui::AXTreeUpdate&)> processing_callback =
       base::BindOnce([](ui::AXTreeUpdate& ax_tree_update) {
         ProtoTreeUpdate ax_tree_proto;
-#if BUILDFLAG(ENABLE_COMPOSE)
-        ComposeAXSerializationUtils::PopulateAXTreeUpdate(ax_tree_update,
-                                                          &ax_tree_proto);
-#endif
+        optimization_guide::PopulateAXTreeUpdateProto(ax_tree_update,
+                                                      &ax_tree_proto);
         return ax_tree_proto;
       });
   GetWebContents().RequestAXTreeSnapshot(
@@ -88,6 +105,65 @@ ChromeAutofillPredictionImprovementsClient::GetFillingEngine() {
 
 const GURL& ChromeAutofillPredictionImprovementsClient::GetLastCommittedURL() {
   return GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
+}
+
+user_annotations::UserAnnotationsService*
+ChromeAutofillPredictionImprovementsClient::GetUserAnnotationsService() {
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  return profile ? UserAnnotationsServiceFactory::GetForProfile(profile)
+                 : nullptr;
+}
+
+bool ChromeAutofillPredictionImprovementsClient::
+    IsAutofillPredictionImprovementsEnabledPref() const {
+  return prefs_->GetBoolean(
+      autofill::prefs::kAutofillPredictionImprovementsEnabled);
+}
+
+bool ChromeAutofillPredictionImprovementsClient::CanShowFeedbackPage() {
+  OptimizationGuideKeyedService* opt_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+  if (!opt_guide_keyed_service ||
+      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
+          optimization_guide::proto::LogAiDataRequest::FeatureCase::
+              kFormsPredictions)) {
+    return false;
+  }
+
+  return true;
+}
+
+void ChromeAutofillPredictionImprovementsClient::TryToOpenFeedbackPage(
+    const std::string& feedback_id) {
+  if (!CanShowFeedbackPage()) {
+    return;
+  }
+  base::Value::Dict feedback_metadata;
+  feedback_metadata.Set("log_id", feedback_id);
+
+  chrome::ShowFeedbackPage(
+      GetWebContents().GetLastCommittedURL(),
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()),
+      feedback::kFeedbackSourceAI,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/
+      l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_PLACEHOLDER),
+      /*category_tag=*/"autofill_prediction_improvements",
+      /*extra_diagnostics=*/std::string(),
+      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+}
+
+void ChromeAutofillPredictionImprovementsClient::
+    OpenPredictionImprovementsSettings() {
+  GetWebContents().OpenURL(
+      content::OpenURLParams(
+          GURL(kPredictionImprovementsSettingsURL), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillPredictionImprovementsClient);

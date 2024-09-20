@@ -319,6 +319,9 @@ struct DowncastTraits<StyleColor::UnresolvedRelativeColor> {
 // For debugging only.
 CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
                                      const StyleColor& color);
+CORE_EXPORT std::ostream& operator<<(
+    std::ostream& stream,
+    const StyleColor::UnresolvedColorFunction& unresolved_color_function);
 
 }  // namespace blink
 

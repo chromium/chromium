@@ -12,21 +12,20 @@
 class TailoredSecurityServiceFactoryTest : public PlatformTest {
  protected:
   TailoredSecurityServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : profile_(TestProfileIOS::Builder().Build()) {}
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
 };
 
 // Checks that TailoredSecurityServiceFactory returns a null for an
-// off-the-record browser state, but returns a non-null instance for a regular
-// browser state.
+// off-the-record profile, but returns a non-null instance for a regular
+// profile.
 TEST_F(TailoredSecurityServiceFactoryTest, OffTheRecordReturnsNull) {
-  // The factory should return null for an off-the-record browser state.
-  EXPECT_FALSE(TailoredSecurityServiceFactory::GetForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState()));
+  // The factory should return null for an off-the-record profile.
+  EXPECT_FALSE(TailoredSecurityServiceFactory::GetForProfile(
+      profile_->GetOffTheRecordProfile()));
 
-  // There should be a non-null instance for a regular browser state.
-  EXPECT_TRUE(
-      TailoredSecurityServiceFactory::GetForBrowserState(browser_state_.get()));
+  // There should be a non-null instance for a regular profile.
+  EXPECT_TRUE(TailoredSecurityServiceFactory::GetForProfile(profile_.get()));
 }

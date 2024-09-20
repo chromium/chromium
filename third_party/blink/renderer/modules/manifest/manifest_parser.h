@@ -184,6 +184,11 @@ class MODULES_EXPORT ManifestParser {
                            Enum (*parse_enum)(const std::string&),
                            Enum invalid_value);
 
+  // Parses the 'dir' field of the manifest, as defined in:
+  // https://w3c.github.io/manifest/#dfn-process-the-dir-member
+  // Returns the parsed TextDirection.
+  mojom::blink::Manifest::TextDirection ParseDir(const JSONObject* object);
+
   // Parses the 'name' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-name-member
   // Returns the parsed string if any, a null string if the parsing failed.

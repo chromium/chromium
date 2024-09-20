@@ -634,62 +634,6 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
                                   /*observed_submission=*/true),
               ElementsSerializeSameAs(upload));
 }
-// Tests the EMAIL_ADDRESS exception on `FirstNonCapturedType`, where email is
-// not required as part of the `contained_types`.
-TEST_F(AutofillCrowdsourcingEncoding,
-       EncodeUploadRequest_EmailFieldContentMatched) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillUploadVotesForFieldsWithEmail};
-  FormData form = test::GetFormData(
-      {.fields =
-           {{.label = u"First Name", .name = u"firstname"},
-            {.label = u"Last Name"},
-            // No label or name for the email field, only a valid email value.
-            {.value = u"foo@email.com"}},
-       .url = "http://www.foo.com/"});
-
-  std::vector<FieldTypeSet> possible_field_types;
-  test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
-  test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
-  test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
-
-  std::unique_ptr<FormStructure> form_structure =
-      std::make_unique<FormStructure>(form);
-  for (const std::unique_ptr<autofill::AutofillField>& fs_field :
-       *form_structure) {
-    fs_field->set_host_form_signature(form_structure->form_signature());
-  }
-
-  ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
-
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    form_structure->field(i)->set_possible_types(possible_field_types[i]);
-  }
-
-  // No available EMAIL_ADRESS on field_types.
-  FieldTypeSet available_field_types = {NAME_FIRST, NAME_LAST};
-
-  // Prepare the expected proto string.
-  AutofillUploadContents upload;
-  upload.set_submission(true);
-  upload.set_client_version(
-      std::string(GetProductNameAndVersionForUserAgent()));
-  upload.set_form_signature(form_structure->form_signature().value());
-  upload.set_autofill_used(false);
-  upload.set_data_present("14");
-  upload.set_submission_event(
-      AutofillUploadContents_SubmissionIndicatorEvent_NONE);
-  upload.set_has_form_tag(true);
-
-  test::FillUploadField(upload.add_field_data(), 3763331450U, 3U);
-  test::FillUploadField(upload.add_field_data(), 1318412689U, 5U);
-  test::FillUploadField(upload.add_field_data(), 1318412689U, 9U);
-
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
-                                  /*login_form_signature=*/"",
-                                  /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
-}
 
 // Tests that when the form is the result of flattening multiple forms into one,
 // EncodeUploadRequest() returns multiple uploads: one for the entire form and

@@ -240,7 +240,7 @@
     {
       name: "PseudoElementStyles",
       field_template: "primitive",
-      field_size: 17,
+      field_size: 19,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       reset_on_new_style: true,
@@ -1189,7 +1189,7 @@
     },
     {
       // https://html.spec.whatwg.org/multipage/interaction.html#inert
-      name: "IsInert",
+      name: "IsHTMLInert",
       inherited: true,
       independent: true,
       field_template: "primitive",

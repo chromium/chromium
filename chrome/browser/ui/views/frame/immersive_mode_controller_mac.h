@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/cocoa/immersive_mode_reveal_client.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_observer.h"
@@ -114,7 +116,7 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   // views::ImmersiveModeRevealClient:
   void OnImmersiveModeToolbarRevealChanged(bool is_revealed) override;
-  void OnImmersiveModeMenuBarRevealChanged(float reveal_amount) override;
+  void OnImmersiveModeMenuBarRevealChanged(double reveal_amount) override;
   void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override;
 
   BrowserView* browser_view() { return browser_view_; }
@@ -130,6 +132,8 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   // Returns true if the child should be moved.
   bool ShouldMoveChild(views::Widget* child);
+
+  gfx::Insets GetTabStripRegionViewInsets();
 
   raw_ptr<BrowserView> browser_view_ = nullptr;  // weak
   std::unique_ptr<ImmersiveRevealedLock> focus_lock_;
@@ -162,12 +166,14 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   bool is_revealed_ = false;
   // The proportion of the menubar/topchrome that has been revealed as a result
   // of the user mousing to the top of the screen.
-  float reveal_amount_ = 0;
+  double reveal_amount_ = 0;
   // The height of the menubar, if the menubar should be accounted for when
   // compensating for reveal animations, otherwise 0. Situations where it is
   // not accounted for include screens with notches (where there is always
   // space reserved for it) and the "Always Show Menu Bar" system setting.
   int menu_bar_height_ = 0;
+
+  std::unique_ptr<views::BoundsAnimator> tab_bounds_animator_ = nullptr;
 
   base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
 };

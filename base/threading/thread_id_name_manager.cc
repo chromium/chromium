@@ -12,7 +12,6 @@
 #include "base/memory/singleton.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"  // no-presubmit-check
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace {
@@ -20,7 +19,7 @@ namespace {
 static const char kDefaultName[] = "";
 static std::string* g_default_name;
 
-ABSL_CONST_INIT thread_local const char* thread_name = kDefaultName;
+constinit thread_local const char* thread_name = kDefaultName;
 }
 
 ThreadIdNameManager::Observer::~Observer() = default;

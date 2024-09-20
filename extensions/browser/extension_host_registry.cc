@@ -158,8 +158,9 @@ std::vector<ExtensionHost*> ExtensionHostRegistry::GetHostsForExtension(
     const ExtensionId& extension_id) {
   std::vector<ExtensionHost*> hosts;
   for (ExtensionHost* host : extension_hosts_) {
-    if (host->extension_id() == extension_id)
+    if (host->extension_id() == extension_id) {
       hosts.push_back(host);
+    }
   }
   return hosts;
 }
@@ -170,8 +171,9 @@ ExtensionHost* ExtensionHostRegistry::GetExtensionHostForPrimaryMainFrame(
       << "GetExtensionHostForPrimaryMainFrame() should only be called with "
       << "the primary main frame.";
   for (ExtensionHost* host : extension_hosts_) {
-    if (host->main_frame_host() == render_frame_host)
+    if (host->main_frame_host() == render_frame_host) {
       return host;
+    }
   }
   return nullptr;
 }

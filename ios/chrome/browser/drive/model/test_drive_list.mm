@@ -33,6 +33,10 @@ DriveListResult TestDriveList::GetDriveListResult() const {
   return result;
 }
 
+void TestDriveList::SetDriveListResult(const DriveListResult& result) {
+  drive_list_result_ = result;
+}
+
 void TestDriveList::SetListItemsCompletionQuitClosure(
     base::RepeatingClosure quit_closure) {
   list_items_completion_quit_closure_ = std::move(quit_closure);

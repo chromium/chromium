@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/sync/base/features.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -52,16 +51,12 @@ void OnGotAppsInfo(const JavaRef<jobject>& java_callback,
 
 }  // anonymous namespace
 
-// static
-WebApkSyncService* WebApkSyncService::GetForProfile(Profile* profile) {
-  return WebApkSyncServiceFactory::GetForProfile(profile);
-}
-
-WebApkSyncService::WebApkSyncService(Profile* profile) {
-  database_factory_ = std::make_unique<WebApkDatabaseFactory>(profile);
-  sync_bridge_ = std::make_unique<WebApkSyncBridge>(database_factory_.get(),
+WebApkSyncService::WebApkSyncService(
+    syncer::DataTypeStoreService* data_type_store_service,
+    std::unique_ptr<WebApkRestoreManager> restore_manager) {
+  sync_bridge_ = std::make_unique<WebApkSyncBridge>(data_type_store_service,
                                                     base::DoNothing());
-  restore_manager_ = std::make_unique<WebApkRestoreManager>(profile);
+  restore_manager_ = std::move(restore_manager);
 }
 
 WebApkSyncService::~WebApkSyncService() = default;
@@ -141,7 +136,7 @@ static void JNI_WebApkSyncService_OnWebApkUsed(
     LOG(ERROR) << "failed to parse WebApkSpecifics proto";
     return;
   }
-  WebApkSyncService::GetForProfile(profile)->OnWebApkUsed(
+  WebApkSyncServiceFactory::GetForProfile(profile)->OnWebApkUsed(
       std::move(specifics), static_cast<bool>(is_install));
 }
 
@@ -157,7 +152,7 @@ static void JNI_WebApkSyncService_OnWebApkUninstalled(
     return;
   }
 
-  WebApkSyncService::GetForProfile(profile)->OnWebApkUninstalled(
+  WebApkSyncServiceFactory::GetForProfile(profile)->OnWebApkUninstalled(
       java_manifest_id);
 }
 
@@ -173,7 +168,7 @@ static void JNI_WebApkSyncService_RemoveOldWebAPKsFromSync(
     return;
   }
 
-  WebApkSyncService::GetForProfile(profile)->RemoveOldWebAPKsFromSync(
+  WebApkSyncServiceFactory::GetForProfile(profile)->RemoveOldWebAPKsFromSync(
       static_cast<int64_t>(java_current_time_ms_since_unix_epoch));
 }
 
@@ -187,7 +182,7 @@ static void JNI_WebApkSyncService_FetchRestorableApps(
   }
 
   ScopedJavaGlobalRef<jobject> callback_ref(java_callback);
-  WebApkSyncService::GetForProfile(profile)->PrepareRestorableAppsInfo(
+  WebApkSyncServiceFactory::GetForProfile(profile)->PrepareRestorableAppsInfo(
       base::BindOnce(&OnGotAppsInfo, callback_ref));
 }
 

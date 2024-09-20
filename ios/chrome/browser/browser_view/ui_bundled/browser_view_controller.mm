@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_utils.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
@@ -1011,7 +1012,7 @@ enum HeaderBehaviour {
     }
   }
 
-  // After `-shutdown` is called, browserState is invalid and will cause a
+  // After `-shutdown` is called, profile is invalid and will cause a
   // crash.
   if (_isShutdown) {
     return;
@@ -1323,7 +1324,7 @@ enum HeaderBehaviour {
 }
 
 // Builds the UI parts of tab strip and the toolbar. Does not matter whether
-// or not browser state and browser are valid.
+// or not profile and browser are valid.
 - (void)buildToolbarAndTabStrip {
   DCHECK([self isViewLoaded]);
 
@@ -1825,6 +1826,13 @@ enum HeaderBehaviour {
 - (UIViewController*)popupParentViewControllerForPresenter:
     (OmniboxPopupPresenter*)presenter {
   return self;
+}
+
+- (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter {
+  ToolbarConfiguration* configuration = [[ToolbarConfiguration alloc]
+      initWithStyle:_isOffTheRecord ? ToolbarStyle::kIncognito
+                                    : ToolbarStyle::kNormal];
+  return configuration.backgroundColor;
 }
 
 - (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter {

@@ -48,9 +48,6 @@
 
 namespace {
 
-// Note that the non-touchable icon size is larger than the default to make the
-// management icon easier to read.
-constexpr int kIconSizeForNonTouchUi = 22;
 constexpr int kButtonMaxWidth = 180;
 
 bool CanShowManagementToolbarButton(Profile* profile) {
@@ -262,11 +259,9 @@ void ManagementToolbarButton::ButtonPressed() {
 }
 
 ui::ImageModel ManagementToolbarButton::GetIcon() const {
-  static_assert(kIconSizeForNonTouchUi >
-                ToolbarButton::kDefaultIconSizeChromeRefresh);
   const int icon_size = ui::TouchUiController::Get()->touch_ui()
-                            ? kDefaultIconSizeChromeRefresh
-                            : kIconSizeForNonTouchUi;
+                            ? kDefaultTouchableIconSize
+                            : kDefaultIconSizeChromeRefresh;
   if (management_icon_.IsEmpty()) {
     return ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
                                           ui::kColorMenuIcon, icon_size);

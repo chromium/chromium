@@ -31,12 +31,11 @@ namespace {
 // Returns the management message depending on the levels of the policies that
 // are applied. Returns std::nullopt if there are no policies.
 std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui)->GetOriginalChromeBrowserState();
-  ManagementState state = GetManagementState(
-      IdentityManagerFactory::GetForProfile(browser_state),
-      AuthenticationServiceFactory::GetForBrowserState(browser_state),
-      browser_state->GetPrefs());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui)->GetOriginalProfile();
+  ManagementState state =
+      GetManagementState(IdentityManagerFactory::GetForProfile(profile),
+                         AuthenticationServiceFactory::GetForProfile(profile),
+                         profile->GetPrefs());
 
   if (state.machine_level_domain && state.user_level_domain) {
     if (state.machine_level_domain == state.user_level_domain) {
@@ -106,7 +105,7 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
 
 ManagementUI::ManagementUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateManagementUIHTMLSource(web_ui));
 }
 

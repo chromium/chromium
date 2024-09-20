@@ -34,19 +34,10 @@
 // Object that can open the feed menu.
 @property(nonatomic, weak) id<FeedMenuCommands> feedMenuHandler;
 
-// Initializes header with the Following segment dot visibility as
-// `followingDotVisible`.
-- (instancetype)initWithFollowingDotVisible:(BOOL)followingDotVisible
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
-
-// Toggles the feed header's background blur. Animates the transition if
-// `animated` is YES.
-- (void)toggleBackgroundBlur:(BOOL)blurred animated:(BOOL)animated;
 
 // Returns the height of the feed header.
 - (CGFloat)feedHeaderHeight;
@@ -54,11 +45,6 @@
 // Returns the height of the custom search engine view. Returns 0 if it is not
 // visible.
 - (CGFloat)customSearchEngineViewHeight;
-
-// Updates the unseen content dot in the Following segment. Will only show the
-// dot if there is unseen content and if the user is not currently on the
-// Following feed.
-- (void)updateFollowingDotForUnseenContent:(BOOL)hasUnseenContent;
 
 // Updates the header view and re-applies constraints in response to the default
 // search engine changing.

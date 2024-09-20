@@ -85,7 +85,8 @@ class StubHitTestQuery : public viz::HitTestQuery {
  public:
   StubHitTestQuery(RenderWidgetHostViewBase* hittest_result,
                    bool query_renderer)
-      : hittest_result_(hittest_result->GetWeakPtr()),
+      : HitTestQuery(std::nullopt),
+        hittest_result_(hittest_result->GetWeakPtr()),
         query_renderer_(query_renderer) {}
   ~StubHitTestQuery() override = default;
 

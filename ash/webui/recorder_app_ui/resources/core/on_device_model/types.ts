@@ -29,8 +29,21 @@ export enum ModelResponseError {
   // General error.
   GENERAL = 'GENERAL',
 
+  // The transcription word count is less than the minimum length.
+  UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT =
+    'UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT',
+
+  // The transcription word count is more than the maximum length.
+  UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG =
+    'UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG',
+
   // Filtered by T&S on the request or response string.
   UNSAFE = 'UNSAFE',
+}
+
+export enum GenaiResultType {
+  SUMMARY = 'SUMMARY',
+  TITLE_SUGGESTION = 'TITLE_SUGGESTION',
 }
 
 // prettier-ignore
@@ -50,8 +63,19 @@ export abstract class ModelLoader<T> {
 
   /**
    * Loads the model.
+   *
+   * TODO(pihsun): Currently no usage reuse loaded models, so the
+   * `loadAndExecute` API is sufficient. Define proper "stages" for the model
+   * API when there's need to reuse the loaded model.
+   *
+   * TODO(pihsun): Returns specific error type when the model failed to load.
    */
-  abstract load(): Promise<Model<T>>;
+  protected abstract load(): Promise<Model<T>|null>;
+
+  /**
+   * Loads the model and execute it on an input.
+   */
+  abstract loadAndExecute(content: string): Promise<ModelResponse<T>>;
 
   /**
    * Requests download of the given model.
@@ -63,7 +87,7 @@ export abstract class ModelLoader<T> {
     // consider adding another API for only downloading the model if the
     // overhead is large.
     void this.load().then((model) => {
-      model.close();
+      model?.close();
     });
   }
 }

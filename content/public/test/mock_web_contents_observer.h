@@ -210,8 +210,7 @@ class MockWebContentsObserver : public WebContentsObserver {
   MOCK_METHOD(void,
               InnerWebContentsAttached,
               (WebContents* inner_web_contents,
-               RenderFrameHost* render_frame_host,
-               bool is_full_page),
+               RenderFrameHost* render_frame_host),
               (override));
   MOCK_METHOD(void,
               DidCloneToNewWebContents,
@@ -233,12 +232,8 @@ class MockWebContentsObserver : public WebContentsObserver {
               (RenderFrameHost* rfh, bool audible),
               (override));
   MOCK_METHOD(void,
-              OnIsConnectedToBluetoothDeviceChanged,
-              (bool is_connected_to_bluetooth_device),
-              (override));
-  MOCK_METHOD(void,
-              OnIsConnectedToUsbDeviceChanged,
-              (bool is_connected_to_usb_device),
+              OnDeviceConnectionTypesChanged,
+              (DeviceConnectionType connection_type, bool used),
               (override));
   MOCK_METHOD(void, DidUpdateAudioMutingState, (bool muted), (override));
   MOCK_METHOD(void,

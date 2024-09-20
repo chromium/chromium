@@ -35,6 +35,20 @@
 
 namespace content {
 
+#if BUILDFLAG(IS_WIN)
+namespace {
+
+// Use NV12 as the default video frame output format. Note that NV12 is the
+// preferred 4:2:0 pixel format on Windows according to:
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/display/4-2-0-video-pixel-formats
+// https://learn.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12
+BASE_FEATURE(kUseNV12OutputFormat,
+             "UseNV12OutputFormat",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
+#endif
+
 // static
 std::unique_ptr<GpuVideoAcceleratorFactoriesImpl>
 GpuVideoAcceleratorFactoriesImpl::Create(
@@ -198,6 +212,8 @@ void GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady(
   channel_token_ = token;
   channel_token_callbacks_.Notify(channel_token_);
   DCHECK(channel_token_callbacks_.empty());
+  codec_factory_->OnChannelTokenReady(
+      token, context_provider_->GetCommandBufferProxy()->route_id());
 }
 
 int32_t GpuVideoAcceleratorFactoriesImpl::GetCommandBufferRouteId() {
@@ -334,6 +350,12 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     }
 #endif  // !BUILDFLAG(IS_WIN)
     if (capabilities.texture_rg) {
+#if BUILDFLAG(IS_WIN)
+      // Use NV12 for Windows platform which has the overlay support.
+      if (base::FeatureList::IsEnabled(kUseNV12OutputFormat)) {
+        return OutputFormat::NV12;
+      }
+#endif
       return OutputFormat::YV12;
     }
     return OutputFormat::UNDEFINED;

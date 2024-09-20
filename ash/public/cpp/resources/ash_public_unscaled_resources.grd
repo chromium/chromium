@@ -55,6 +55,8 @@
       <!-- Pine -->
       <structure type="lottie" name="IDR_INFORMED_RESTORE_NUDGE_IMAGE_DM" file="unscaled_resources/informed_restore_nudge_dm.json" compress="gzip" />
       <structure type="lottie" name="IDR_INFORMED_RESTORE_NUDGE_IMAGE_LM" file="unscaled_resources/informed_restore_nudge_lm.json" compress="gzip" />
+      <structure type="lottie" name="IDR_INFORMED_RESTORE_REFRESH_NUDGE_IMAGE_DM" file="unscaled_resources/informed_restore_refresh_nudge_dm.json" compress="gzip" />
+      <structure type="lottie" name="IDR_INFORMED_RESTORE_REFRESH_NUDGE_IMAGE_LM" file="unscaled_resources/informed_restore_refresh_nudge_lm.json" compress="gzip" />
       <structure type="lottie" name="IDR_INFORMED_RESTORE_ONBOARDING_IMAGE" file="unscaled_resources/informed_restore_onboarding.json" compress="gzip" />
       <!-- Focus Mode -->
       <structure type="lottie" name="IDR_FOCUS_MODE_EQUALIZER_ANIMATION" file="unscaled_resources/equalizer.json" compress="gzip" />

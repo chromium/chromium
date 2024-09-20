@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 
 SearchEngineChoiceHandler::SearchEngineChoiceHandler(
     mojo::PendingReceiver<search_engine_choice::mojom::PageHandler> receiver,
@@ -21,8 +20,6 @@ SearchEngineChoiceHandler::SearchEngineChoiceHandler(
       handle_learn_more_clicked_callback_(handle_learn_more_clicked_callback),
       handle_more_button_clicked_callback_(
           std::move(handle_more_button_clicked_callback)) {
-  CHECK(search_engines::IsChoiceScreenFlagEnabled(
-      search_engines::ChoicePromo::kAny));
   CHECK(handle_choice_selected_callback_);
   CHECK(handle_learn_more_clicked_callback_);
   CHECK(handle_more_button_clicked_callback_);

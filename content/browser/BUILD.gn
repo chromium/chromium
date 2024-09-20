@@ -43,9 +43,9 @@ if (is_android) {
       "//content/test:*",
     ]
     deps = [
-      "//third_party/rust/font_types/v0_6:lib",
-      "//third_party/rust/read_fonts/v0_20:lib",
-      "//third_party/rust/skrifa/v0_20:lib",
+      "//third_party/rust/font_types/v0_7:lib",
+      "//third_party/rust/read_fonts/v0_22:lib",
+      "//third_party/rust/skrifa/v0_22:lib",
     ]
   }
 }
@@ -56,6 +56,7 @@ source_set("browser") {
   visibility = [
     ":content_sms_parser_fuzzer",
     ":for_content_tests",  # See top of //content/BUILD.gn for why.
+    ":partitioned_popins_policy_fuzzer",
     "//content/app:*",
     "//content/public/browser:browser_sources",
     "//content/test/fuzzer:ad_auction_headers_util_fuzzer",
@@ -106,7 +107,6 @@ source_set("browser") {
     "//components/link_header_util",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
-    "//components/miracle_parameter/common",
     "//components/network_session_configurator/browser",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core/request_header",
@@ -436,14 +436,14 @@ source_set("browser") {
     "aggregation_service/public_key_parsing_utils.h",
     "aggregation_service/report_scheduler_timer.cc",
     "aggregation_service/report_scheduler_timer.h",
+    "ai/echo_ai_assistant.cc",
+    "ai/echo_ai_assistant.h",
     "ai/echo_ai_manager_impl.cc",
     "ai/echo_ai_manager_impl.h",
     "ai/echo_ai_rewriter.cc",
     "ai/echo_ai_rewriter.h",
     "ai/echo_ai_summarizer.cc",
     "ai/echo_ai_summarizer.h",
-    "ai/echo_ai_text_session.cc",
-    "ai/echo_ai_text_session.h",
     "ai/echo_ai_writer.cc",
     "ai/echo_ai_writer.h",
     "attribution_reporting/aggregatable_attribution_utils.cc",
@@ -1859,6 +1859,10 @@ source_set("browser") {
     "renderer_host/page_impl.h",
     "renderer_host/page_lifecycle_state_manager.cc",
     "renderer_host/page_lifecycle_state_manager.h",
+    "renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.cc",
+    "renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.h",
+    "renderer_host/partitioned_popins/partitioned_popins_policy.cc",
+    "renderer_host/partitioned_popins/partitioned_popins_policy.h",
     "renderer_host/policy_container_host.cc",
     "renderer_host/policy_container_host.h",
     "renderer_host/private_network_access_util.cc",
@@ -3617,4 +3621,14 @@ fuzzer_test("clear_site_data_handler_fuzzer") {
   sources = [ "browsing_data/clear_site_data_handler_fuzzer.cc" ]
   deps = [ "//content/test:test_support" ]
   seed_corpus = "//content/test/data/fuzzer_corpus/clear_site_data/"
+}
+
+fuzzer_test("partitioned_popins_policy_fuzzer") {
+  sources =
+      [ "renderer_host/partitioned_popins/partitioned_popins_policy_fuzzer.cc" ]
+  deps = [
+    ":browser",
+    "//content/public/browser:browser_sources",
+  ]
+  seed_corpus = "//content/test/data/fuzzer_corpus/partitioned_popin_policy/"
 }

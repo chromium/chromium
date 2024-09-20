@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/frame_sinks/video_detector.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -103,7 +99,7 @@ class VideoDetector::ClientInfo {
  private:
   // Circular buffer containing update times of the last (up to
   // |kMinFramesPerSecond|) video-sized updates to this client.
-  base::TimeTicks update_times_[kMinFramesPerSecond];
+  std::array<base::TimeTicks, kMinFramesPerSecond> update_times_;
 
   // Time at which the current sequence of updates that looks like video
   // started. Empty if video isn't currently playing.

@@ -205,4 +205,8 @@ unsigned int TestInProcessContextProvider::GetGrGLTextureFormat(
       format, ContextCapabilities().angle_rgbx_internal_format);
 }
 
+GpuServiceImpl* TestInProcessContextProvider::GpuService() {
+  return TestGpuServiceHolder::GetInstance()->gpu_service();
+}
+
 }  // namespace viz

@@ -70,6 +70,8 @@ class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
 
   HttpStreamPool& pool() { return *http_network_session_->http_stream_pool(); }
 
+  void DestroyHttpNetworkSession() { http_network_session_.reset(); }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   // For creating HttpNetworkSession.
@@ -407,6 +409,17 @@ TEST_F(HttpStreamPoolGroupTest, MemoryPressureDisabled) {
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+}
+
+TEST_F(HttpStreamPoolGroupTest, DestroySessionWhileStreamAlive) {
+  std::unique_ptr<HttpStream> stream = GetTestGroup().CreateTextBasedStream(
+      std::make_unique<FakeStreamSocket>(),
+      StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
+  CHECK(stream);
+
+  // Destroy the session. This should not cause a crash.
+  DestroyHttpNetworkSession();
 }
 
 }  // namespace net

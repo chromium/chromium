@@ -7,8 +7,19 @@
 namespace history_clusters {
 
 QueryClustersFilterParams::QueryClustersFilterParams() = default;
+
 QueryClustersFilterParams::QueryClustersFilterParams(
     const QueryClustersFilterParams&) = default;
+
+QueryClustersFilterParams::QueryClustersFilterParams(
+    QueryClustersFilterParams&&) = default;
+
+QueryClustersFilterParams& QueryClustersFilterParams::operator=(
+    const QueryClustersFilterParams&) = default;
+
+QueryClustersFilterParams& QueryClustersFilterParams::operator=(
+    QueryClustersFilterParams&&) = default;
+
 QueryClustersFilterParams::~QueryClustersFilterParams() = default;
 
 IncompleteVisitContextAnnotations::IncompleteVisitContextAnnotations() =

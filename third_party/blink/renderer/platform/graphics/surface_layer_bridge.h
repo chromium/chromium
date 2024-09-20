@@ -47,6 +47,7 @@ class PLATFORM_EXPORT SurfaceLayerBridge
 
   // Implementation of blink::mojom::blink::SurfaceEmbedder
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id) override;
+  void OnOpacityChanged(bool is_opaque) override;
 
   // Implementation of WebSurfaceLayerBridge.
   cc::Layer* GetCcLayer() const override;
@@ -61,6 +62,37 @@ class PLATFORM_EXPORT SurfaceLayerBridge
 
   void RegisterFrameSinkHierarchy() override;
   void UnregisterFrameSinkHierarchy() override;
+
+  // Update the opacity of `surface_layer_` based on what the embedder expects
+  // and what the embeddee has actually sent to the frame sink.  The idea is
+  // that it's always safe to say "not opaque", since cc will emit quads under
+  // the surface layer which will be overdrawn by the surface layer as needed.
+  // The bad case is if we mark the surface layer as not opaque, when it is not
+  // really opaque; this can cause all sorts of drawing badness since there
+  // might not be anything drawn under it.  Bad cases include:
+  //
+  //  - No frames have been submitted to the viz.  In this case, the surface
+  //    quad will fail during aggregation, causing viz to use the background
+  //    color of the surface quad.  The default is transparent.  While we could
+  //    change this to something opaque, we'd still have to handle the other
+  //    cases so it doesn't buy us much.
+  //  - Frames have been submitted to viz, but they are not opaque.  In this
+  //    case, whichever pixels are not fully opaque may result in undefined
+  //    values in the frame buffer.
+  //
+  // We try to avoid these by letting the embedder tell us when it expects
+  // frames to be opaque via `SetContentsOpaque()`, and also let the embeddee
+  // tell us what it has submitted via `OnOpacityChange()`.  Assuming that the
+  // embedder tells us soon enough that it expects non-opaque content before the
+  // embeddee actually submits a frame that is not opaque, we will have time to
+  // tell the surface layer that it is not opaque and have it emit a new quad.
+  //
+  // This is all heuristic, and has several potential failures.  However, these
+  // failures all require changes from the (default) non-opaque => opaque =>
+  // non-opaque, which should be very rare.
+  //
+  // It is okay to call this without a surface layer.
+  void UpdateSurfaceLayerOpacity();
 
  private:
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
@@ -80,8 +112,11 @@ class PLATFORM_EXPORT SurfaceLayerBridge
   const ContainsVideo contains_video_;
   viz::SurfaceId current_surface_id_;
   const viz::FrameSinkId parent_frame_sink_id_;
-  bool opaque_ = false;
-  bool surface_activated_ = false;
+  // Does the embedder expect our content to be fully opaque?  This is presumed
+  // to lead the frames that are sent by the embedee.
+  bool embedder_expects_opaque_ = false;
+  // Has the embedee submitted opaque frames without later non-opaque ones?
+  bool frames_are_opaque_ = false;
 };
 
 }  // namespace blink

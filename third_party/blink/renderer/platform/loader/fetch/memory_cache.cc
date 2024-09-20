@@ -45,18 +45,10 @@ namespace blink {
 
 static Persistent<MemoryCache>* g_memory_cache;
 
-static const unsigned kCDefaultCacheCapacity = 8192 * 1024;
-static const base::TimeDelta kCMinDelayBeforeLiveDecodedPrune =
-    base::Seconds(1);
-static const base::TimeDelta kCMaxPruneDeferralDelay = base::Milliseconds(500);
 static const base::TimeDelta kCUnloadPageResourceSaveTime = base::Minutes(5);
 
 static constexpr char kPageSavedResourceStrongReferenceSize[] =
     "Blink.MemoryCache.PageSavedResourceStrongReferenceSize";
-
-// Percentage of capacity toward which we prune, to avoid immediately pruning
-// again.
-static const float kCTargetPrunePercentage = .95f;
 
 MemoryCache* ReplaceMemoryCacheForTesting(MemoryCache* cache) {
   MemoryCache::Get();
@@ -91,9 +83,7 @@ MemoryCache* MemoryCache::Get() {
 
 MemoryCache::MemoryCache(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : capacity_(kCDefaultCacheCapacity),
-      delay_before_live_decoded_prune_(kCMinDelayBeforeLiveDecodedPrune),
-      strong_references_prune_duration_(kCUnloadPageResourceSaveTime),
+    : strong_references_prune_duration_(kCUnloadPageResourceSaveTime),
       task_runner_(std::move(task_runner)) {
   MemoryCacheDumpProvider::Instance()->SetMemoryCache(this);
   MemoryPressureListenerRegistry::Instance().RegisterClient(this);
@@ -265,47 +255,6 @@ HeapVector<Member<Resource>> MemoryCache::ResourcesForURL(
   return results;
 }
 
-void MemoryCache::PruneResources(PruneStrategy strategy) {
-  DCHECK(!prune_pending_);
-  const size_t size_limit = (strategy == kMaximalPrune) ? 0 : Capacity();
-  if (size_ <= size_limit)
-    return;
-
-  // Cut by a percentage to avoid immediately pruning again.
-  size_t target_size =
-      static_cast<size_t>(size_limit * kCTargetPrunePercentage);
-
-  // Release the strong referenced cached objects
-  // TODO(crbug.com/1409349): Filter page loading metrics when prune happens.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kMemoryCacheStrongReference)) {
-    ClearStrongReferences();
-  }
-  for (const auto& resource_map_iter : resource_maps_) {
-    for (const auto& resource_iter : *resource_map_iter.value) {
-      Resource* resource = resource_iter.value->GetResource();
-      DCHECK(resource);
-      if (resource->IsLoaded() && resource->DecodedSize()) {
-        // Check to see if the remaining resources are too new to prune.
-        if (strategy == kAutomaticPrune &&
-            prune_frame_time_stamp_.since_origin() <
-                delay_before_live_decoded_prune_) {
-          continue;
-        }
-        resource->Prune();
-        if (size_ <= target_size) {
-          return;
-        }
-      }
-    }
-  }
-}
-
-void MemoryCache::SetCapacity(size_t total_bytes) {
-  capacity_ = total_bytes;
-  Prune();
-}
-
 void MemoryCache::Update(Resource* resource, size_t old_size, size_t new_size) {
   ptrdiff_t delta = new_size - old_size;
   if (Contains(resource)) {
@@ -385,54 +334,22 @@ void MemoryCache::EvictResources() {
   ClearStrongReferences();
 }
 
-void MemoryCache::Prune() {
-  TRACE_EVENT0("renderer", "MemoryCache::prune()");
-
-  if (in_prune_resources_)
-    return;
-  if (size_ <= capacity_)  // Fast path.
-    return;
-
-  // To avoid burdening the current thread with repetitive pruning jobs, pruning
-  // is postponed until the end of the current task. If it has been more than
-  // m_maxPruneDeferralDelay since the last prune, then we prune immediately. If
-  // the current thread's run loop is not active, then pruning will happen
-  // immediately only if it has been over m_maxPruneDeferralDelay since the last
-  // prune.
-  auto current_time = base::TimeTicks::Now();
-  if (prune_pending_) {
-    if (current_time - prune_time_stamp_ >= kCMaxPruneDeferralDelay) {
-      PruneNow(kAutomaticPrune);
-    }
-  } else {
-    if (current_time - prune_time_stamp_ >= kCMaxPruneDeferralDelay) {
-      PruneNow(kAutomaticPrune);  // Delay exceeded, prune now.
-    } else {
-      // Defer.
-      task_runner_->PostTask(
-          FROM_HERE, WTF::BindOnce(&MemoryCache::PruneNow,
-                                   WrapWeakPersistent(this), kAutomaticPrune));
-      prune_pending_ = true;
-    }
-  }
-}
-
 void MemoryCache::PruneAll() {
-  PruneNow(kMaximalPrune);
-}
-
-void MemoryCache::PruneNow(PruneStrategy strategy) {
-  prune_pending_ = false;
-
   base::AutoReset<bool> reentrancy_protector(&in_prune_resources_, true);
 
-  PruneResources(strategy);
-  prune_frame_time_stamp_ = last_frame_paint_time_stamp_;
-  prune_time_stamp_ = base::TimeTicks::Now();
-}
+  // Release the strong referenced cached objects
+  // TODO(crbug.com/1409349): Filter page loading metrics when prune happens.
+  ClearStrongReferences();
 
-void MemoryCache::UpdateFramePaintTimestamp() {
-  last_frame_paint_time_stamp_ = base::TimeTicks::Now();
+  for (const auto& resource_map_iter : resource_maps_) {
+    for (const auto& resource_iter : *resource_map_iter.value) {
+      Resource* resource = resource_iter.value->GetResource();
+      DCHECK(resource);
+      if (resource->IsLoaded() && resource->DecodedSize()) {
+        resource->Prune();
+      }
+    }
+  }
 }
 
 bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,

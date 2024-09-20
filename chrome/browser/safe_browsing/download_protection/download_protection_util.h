@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -170,6 +171,16 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
 std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
     const content::FileSystemAccessWriteItem& item,
     int user_gesture_limit);
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+// Sends dangerous download report if the following conditions are met:
+// (1) it is a dangerous download.
+// (2) user is NOT in incognito mode.
+// (3) user is opted-in for extended reporting.
+// (4) there is a download ping token associated with the download (i.e.
+//     Safe Browsing returns a dangerous verdict).
+bool ShouldSendDangerousDownloadReport(download::DownloadItem* item);
+#endif
 
 }  // namespace safe_browsing
 

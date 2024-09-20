@@ -61,6 +61,7 @@ import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -104,12 +105,9 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA, NEW_BOB),
-                            IDP_METADATA,
-                            mClientIdMetadata,
+                            mIdpData,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
 
@@ -128,12 +126,9 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA, NEW_BOB),
-                            IDP_METADATA,
-                            mClientIdMetadata,
+                            mIdpData,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
@@ -152,12 +147,9 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA,
-                            mClientIdMetadata,
+                            mIdpData,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
 
@@ -229,12 +221,9 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA, NEW_BOB),
-                            IDP_METADATA,
-                            mClientIdMetadata,
+                            mIdpData,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());

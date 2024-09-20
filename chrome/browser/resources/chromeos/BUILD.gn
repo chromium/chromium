@@ -38,6 +38,7 @@ group("resources") {
     "mako:resources",
     "manage_mirrorsync:resources",
     "multidevice_internals:resources",
+    "nearby_internals:resources",
     "nearby_share:resources",
     "network_ui:resources",
     "notification_tester:resources",

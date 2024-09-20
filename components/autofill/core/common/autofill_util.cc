@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 
 namespace autofill {
@@ -173,6 +175,14 @@ bool IsPlusAddressesManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
   return trigger_source ==
          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses;
+}
+
+bool IsAddressFieldSwappingEnabled() {
+#if BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping);
+#else
+  return true;
+#endif
 }
 
 }  // namespace autofill

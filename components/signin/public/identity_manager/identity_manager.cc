@@ -432,11 +432,6 @@ void IdentityManager::PrepareForAddingNewAccount() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject>
-IdentityManager::LegacyGetAccountTrackerServiceJavaObject() {
-  return account_tracker_service_->GetJavaObject();
-}
-
 base::android::ScopedJavaLocalRef<jobject> IdentityManager::GetJavaObject() {
   DCHECK(java_identity_manager_);
   return base::android::ScopedJavaLocalRef<jobject>(java_identity_manager_);
@@ -731,9 +726,7 @@ void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
 
 void IdentityManager::OnAccountRemoved(const AccountInfo& info) {
 #if (BUILDFLAG(IS_ANDROID))
-  if (base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp)) {
     account_fetcher_service_->DestroyFetchers(info.account_id);
-  }
 #endif
   for (auto& observer : observer_list_)
     observer.OnExtendedAccountInfoRemoved(info);

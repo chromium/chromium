@@ -12,22 +12,22 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 
+namespace guest_view {
+
 namespace {
-// Returns the current RFH owned by the FrameTreeNode, denoted by
+
+// Returns the current guest main RFH of the guest associated with the given
 // `frame_tree_node_id`.
 content::RenderFrameHost* GetCurrentGuestMainRenderFrameHost(
     content::FrameTreeNodeId frame_tree_node_id) {
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  DCHECK(web_contents);
-  return web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id);
+  auto* guest = GuestViewBase::FromFrameTreeNodeId(frame_tree_node_id);
+  DCHECK(guest);
+  return guest->GetGuestMainFrame();
 }
-}  // namespace
 
-namespace guest_view {
+}  // namespace
 
 TestGuestViewManager::TestGuestViewManager(
     content::BrowserContext* context,
@@ -56,14 +56,9 @@ TestGuestViewManager::GetLastGuestRenderFrameHostCreated() {
   return nullptr;
 }
 
-content::WebContents* TestGuestViewManager::DeprecatedGetLastGuestCreated() {
-  return content::WebContents::FromRenderFrameHost(
-      GetLastGuestRenderFrameHostCreated());
-}
-
 GuestViewBase* TestGuestViewManager::GetLastGuestViewCreated() {
-  auto* last_guest = DeprecatedGetLastGuestCreated();
-  return GuestViewBase::FromWebContents(last_guest);
+  return GuestViewBase::FromRenderFrameHost(
+      GetLastGuestRenderFrameHostCreated());
 }
 
 void TestGuestViewManager::WaitForAllGuestsDeleted() {
@@ -94,14 +89,9 @@ TestGuestViewManager::WaitForSingleGuestRenderFrameHostCreated() {
   return GetLastGuestRenderFrameHostCreated();
 }
 
-content::WebContents*
-TestGuestViewManager::DeprecatedWaitForSingleGuestCreated() {
-  return content::WebContents::FromRenderFrameHost(
-      WaitForSingleGuestRenderFrameHostCreated());
-}
-
 GuestViewBase* TestGuestViewManager::WaitForSingleGuestViewCreated() {
-  return GuestViewBase::FromWebContents(DeprecatedWaitForSingleGuestCreated());
+  return GuestViewBase::FromRenderFrameHost(
+      WaitForSingleGuestRenderFrameHostCreated());
 }
 
 content::RenderFrameHost*
@@ -111,14 +101,9 @@ TestGuestViewManager::WaitForNextGuestRenderFrameHostCreated() {
   return GetLastGuestRenderFrameHostCreated();
 }
 
-content::WebContents*
-TestGuestViewManager::DeprecatedWaitForNextGuestCreated() {
-  return content::WebContents::FromRenderFrameHost(
-      WaitForNextGuestRenderFrameHostCreated());
-}
-
 GuestViewBase* TestGuestViewManager::WaitForNextGuestViewCreated() {
-  return GuestViewBase::FromWebContents(DeprecatedWaitForNextGuestCreated());
+  return GuestViewBase::FromRenderFrameHost(
+      WaitForNextGuestRenderFrameHostCreated());
 }
 
 void TestGuestViewManager::WaitForNumGuestsCreated(size_t count) {

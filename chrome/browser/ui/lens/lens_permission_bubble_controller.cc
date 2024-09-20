@@ -7,9 +7,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/lens/lens_features.h"
@@ -114,9 +115,11 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel() {
       .SetInternalName(kLensPermissionDialogName)
       .SetTitle(
           l10n_util::GetStringUTF16(IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE))
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       .SetBannerImage(ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LENS_PERMISSION_MODAL_IMAGE)))
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       .AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
           IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION, link))
       .AddOkButton(

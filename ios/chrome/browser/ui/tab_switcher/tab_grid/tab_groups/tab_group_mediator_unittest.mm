@@ -33,8 +33,8 @@
 class TabGroupMediatorTest : public GridMediatorTestClass {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip}, {});
+    scoped_feature_list_.InitWithFeatures({kTabGroupsIPad, kModernTabStrip},
+                                          {});
 
     GridMediatorTestClass::SetUp();
     WebStateList* web_state_list = browser_->GetWebStateList();

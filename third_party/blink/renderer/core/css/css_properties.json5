@@ -3784,6 +3784,21 @@
       invalidate: ["paint"],
     },
     {
+      // TODO(crbug.com/343257585): We might need to alter the spec's grammar to accept
+      // normal | <length-percentage>. With normal, we use `1em` for slack size.
+      name: "masonry-slack",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "external",
+      default_value: "std::nullopt",
+      type_name: "std::optional<Length>",
+      converter: "ConvertMasonrySlack",
+      typedom_types: ["Length", "Percentage"],
+      keywords: ["normal"],
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSMasonryLayout",
+    },
+    {
       name: "masonry-template-tracks",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       layout_dependent: true,
@@ -5987,7 +6002,7 @@
       interpolable: true,
       inherited: true,
       field_template: "keyword",
-      keywords: ["visible", "hidden", "collapse"],
+      keywords: ["visible", "hidden", "collapse", "inert"],
       typedom_types: ["Keyword"],
       default_value: "visible",
       valid_for_first_letter: true,
@@ -5996,6 +6011,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["paint", "visibility"],
+      computed_style_protected_functions: ["getter"],
     },
     {
       name: "x",
@@ -6343,6 +6359,8 @@
       field_group: "*",
       field_template: "primitive",
       default_value: "0",
+      converter: "ConvertIntegerOrNone<0>",
+      keywords: ["none"],
       type_name: "int",
       invalidate: ["layout", "paint"],
       name_for_methods: "WebkitLineClamp",
@@ -6549,7 +6567,6 @@
       default_value: "space-around",
       valid_for_permission_element: true,
       invalidate: ["layout", "paint"],
-      runtime_flag: "CssRubyAlign",
     },
     {
       name: "-webkit-ruby-position",

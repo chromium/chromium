@@ -74,17 +74,24 @@ UrlSettings DataProtectionPageUserData::settings() const {
   if (!rt_lookup_response_ || rt_lookup_response_->threat_info().empty()) {
     return data_controls_settings_;
   }
-  const safe_browsing::RTLookupResponse::ThreatInfo& threat_info =
-      rt_lookup_response_->threat_info(0);
-  if (!threat_info.has_matched_url_navigation_rule()) {
-    return data_controls_settings_;
-  }
-  const safe_browsing::MatchedUrlNavigationRule& rule =
-      threat_info.matched_url_navigation_rule();
   UrlSettings merged_settings;
-  merged_settings.watermark_text = GetWatermarkString(identifier_, rule);
-  merged_settings.allow_screenshots =
-      data_controls_settings_.allow_screenshots && !rule.block_screenshot();
+  const auto& threat_infos = rt_lookup_response_->threat_info();
+
+  merged_settings.allow_screenshots = data_controls_settings_.allow_screenshots;
+  for (const auto& threat_info : threat_infos) {
+    if (!threat_info.has_matched_url_navigation_rule()) {
+      continue;
+    }
+
+    const auto& rule = threat_info.matched_url_navigation_rule();
+    if (merged_settings.watermark_text.empty()) {
+      merged_settings.watermark_text = GetWatermarkString(identifier_, rule);
+    }
+    if (merged_settings.allow_screenshots) {
+      merged_settings.allow_screenshots = !rule.block_screenshot();
+    }
+  }
+
   return merged_settings;
 }
 

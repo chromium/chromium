@@ -25,9 +25,10 @@ class DeviceInfoTracker;
 // ChromeBrowserState.
 class DeviceInfoSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static syncer::DeviceInfoSyncService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static syncer::DeviceInfoSyncService* GetForBrowserState(ProfileIOS* profile);
 
+  static syncer::DeviceInfoSyncService* GetForProfile(ProfileIOS* profile);
   static DeviceInfoSyncServiceFactory* GetInstance();
 
   DeviceInfoSyncServiceFactory(const DeviceInfoSyncServiceFactory&) = delete;

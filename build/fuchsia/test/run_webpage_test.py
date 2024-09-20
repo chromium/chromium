@@ -3,51 +3,67 @@
 # found in the LICENSE file.
 """Implements commands for running webpage tests."""
 
-import argparse
-import logging
+import os
+import subprocess
+import time
 
+from contextlib import suppress
 from typing import List, Optional
 
-from common import catch_sigterm, run_continuous_ffx_command, wait_for_sigterm
+import browser_runner
+from common import catch_sigterm, wait_for_sigterm
 from test_runner import TestRunner
+
+_DEVTOOLS_PORT_FILE = 'webpage_test_runner.devtools.port'
+
+
+def capture_devtools_port(proc: subprocess.Popen, logs_dir: str) -> int:
+    """Returns the devtools port initiated by the running |proc|. This
+    function should only be used when the WebpageTestRunner is executed by a
+    different process."""
+    port_file = os.path.join(logs_dir, _DEVTOOLS_PORT_FILE)
+
+    def try_reading_port():
+        if not os.path.isfile(port_file):
+            return None
+        with open(port_file, encoding='utf-8') as inp:
+            return int(inp.read())
+
+    while True:
+        result = try_reading_port()
+        if result:
+            return result
+        proc.poll()
+        assert not proc.returncode, 'Process stopped.'
+        time.sleep(1)
 
 
 class WebpageTestRunner(TestRunner):
     """Test runner for running GPU tests."""
 
     def __init__(self, out_dir: str, test_args: List[str],
-                 target_id: Optional[str]) -> None:
-        parser = argparse.ArgumentParser()
-        parser.add_argument(
-            '--browser',
-            choices=['web-engine-shell', 'chrome'],
-            help='The browser to use for Telemetry based tests.')
-        args, _ = parser.parse_known_args(test_args)
-
-        if args.browser == 'web-engine-shell':
-            packages = ['web_engine_shell']
+                 target_id: Optional[str], logs_dir: Optional[str]) -> None:
+        super().__init__(out_dir, test_args, ['web_engine_shell'], target_id)
+        self._runner = browser_runner.BrowserRunner(
+            browser_runner.WEB_ENGINE_SHELL, target_id, out_dir)
+        if logs_dir:
+            self.port_file = os.path.join(logs_dir, _DEVTOOLS_PORT_FILE)
         else:
-            packages = ['chrome']
-
-        super().__init__(out_dir, test_args, packages, target_id)
+            self.port_file = None
 
     def run_test(self):
         catch_sigterm()
-        browser_cmd = [
-            'test',
-            'run',
-            '-t',
-            '3600',  # Keep the webpage running for an hour.
-            f'fuchsia-pkg://fuchsia.com/{self._packages[0]}#meta/'
-            f'{self._packages[0]}.cm'
-        ]
-        browser_cmd.extend(
-            ['--', '--web-engine-package-name=web_engine_with_webui'])
-        if self._test_args:
-            browser_cmd.extend(self._test_args)
-        logging.info('Starting %s', self._packages[0])
-        browser_proc = run_continuous_ffx_command(browser_cmd)
+        self._runner.start()
+        if self.port_file:
+            with open(self.port_file, 'w') as out:
+                out.write(str(self._runner.devtools_port))
+        else:
+            print('DevTools is running on ' + str(self._runner.devtools_port))
         try:
             wait_for_sigterm('shutting down the webpage.')
         finally:
-            browser_proc.kill()
+            self._runner.close()
+            if self.port_file:
+                with suppress(OSError):
+                    os.remove(self.port_file)
+        return subprocess.CompletedProcess(args='', returncode=0)

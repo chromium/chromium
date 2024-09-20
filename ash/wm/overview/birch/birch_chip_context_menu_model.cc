@@ -8,6 +8,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "components/prefs/pref_service.h"
@@ -77,6 +78,12 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
           CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kCoral:
+      AddItemWithIcon(base::to_underlying(CommandId::kCoralNewDesk),
+                      u"New Coral Desk", CreateIconForMenuItem(kCoralOpenIcon));
+      AddItemWithIcon(base::to_underlying(CommandId::kCoralSaveForLater),
+                      u"Save Coral For Later",
+                      CreateIconForMenuItem(kSaveDeskForLaterIcon));
+      AddSeparator(ui::NORMAL_SEPARATOR);
       add_hide_suggestion_item();
       // TODO(yulunwu) Replace with product name.
       AddItemWithIcon(base::to_underlying(CommandId::kHideCoralSuggestions),
@@ -98,6 +105,13 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
             l10n_util::GetStringUTF16(
                 is_celsius ? IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_FAHRENHEIT
                            : IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_CELSIUS));
+  }
+
+  // Add feedback menu for Coral
+  if (chip_type == BirchSuggestionType::kCoral) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    AddItemWithIcon(base::to_underlying(CommandId::kProvideFeedback),
+                    u"Send feedback", CreateIconForMenuItem(kFeedbackIcon));
   }
 }
 

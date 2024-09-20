@@ -8,8 +8,12 @@
 #import <stack>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
@@ -33,13 +37,15 @@
 @implementation HistoryElement
 @end
 
-@interface LensOverlayMediator () <CRWWebStateObserver>
+@interface LensOverlayMediator () <CRWWebStateObserver, SearchEngineObserving>
 
 @end
 
 @implementation LensOverlayMediator {
   /// Bridges C++ WebStateObserver methods to this mediator.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+  /// Search engine observer.
+  std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
 
   /// History stack for back navigation.
   NSMutableArray<HistoryElement*>* _historyStack;
@@ -70,15 +76,37 @@
   }
 }
 
+- (void)setTemplateURLService:(TemplateURLService*)templateURLService {
+  _templateURLService = templateURLService;
+  if (_templateURLService) {
+    _searchEngineObserver =
+        std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
+    [self searchEngineChanged];
+  } else {
+    _searchEngineObserver.reset();
+  }
+}
+
 - (void)disconnect {
   if (_webState) {
     _webState->RemoveObserver(_webStateObserverBridge.get());
     _webState = nullptr;
   }
+  _searchEngineObserver.reset();
   _webStateObserverBridge.reset();
   [_historyStack removeAllObjects];
   _currentLensResult = nil;
   _skipLoadingNextLensResultURL = NO;
+}
+
+#pragma mark - SearchEngineObserving
+
+- (void)searchEngineChanged {
+  BOOL isLensAvailable =
+      search_engines::SupportsSearchImageWithLens(_templateURLService);
+  if (!isLensAvailable) {
+    [self.commandsHandler destroyLensUI:YES];
+  }
 }
 
 #pragma mark - Omnibox
@@ -188,6 +216,16 @@
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {
   [self.commandsHandler destroyLensUI:YES];
+}
+
+- (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
+    suggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result {
+  // TODO(crbug.com/366156296): Implement.
+}
+
+- (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
+    didRequestToOpenURL:(GURL)URL {
+  [self.resultConsumer loadResultsURL:URL];
 }
 
 #pragma mark - Private

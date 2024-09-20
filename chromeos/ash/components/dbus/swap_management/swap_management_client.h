@@ -32,23 +32,6 @@ class COMPONENT_EXPORT(SWAP_MANAGEMENT) SwapManagementClient
 
   ~SwapManagementClient() override;
 
-  // Send dbus message to swap_management for enabling zram writeback, targeted
-  // on |size| MiB.
-  virtual void SwapZramEnableWriteback(
-      uint32_t size,
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void SwapZramSetWritebackLimit(
-      uint32_t limit,
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void SwapZramMarkIdle(uint32_t age,
-                                chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void InitiateSwapZramWriteback(
-      swap_management::ZramWritebackMode mode,
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
   virtual void MGLRUSetEnable(uint8_t value,
                               chromeos::VoidDBusMethodCallback callback) = 0;
 

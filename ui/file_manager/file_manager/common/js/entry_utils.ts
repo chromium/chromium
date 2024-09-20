@@ -15,7 +15,7 @@ import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 import {createDOMError} from './dom_utils.js';
 import type {VolumeEntry} from './files_app_entry_types.js';
 import {EntryList, FakeEntryImpl} from './files_app_entry_types.js';
-import {isArcVmEnabled, isPluginVmEnabled} from './flags.js';
+import {isArcVmEnabled, isPluginVmEnabled, isSkyvaultV2Enabled} from './flags.js';
 import {collator, getEntryLabel} from './translations.js';
 import type {TrashEntry} from './trash.js';
 import {FileErrorToDomError} from './util.js';
@@ -1055,4 +1055,40 @@ export function canHaveSubDirectories(fileData: FileData|null) {
   }
 
   return true;
+}
+
+/**
+ * Determines if the given entry can be deleted, considering read-only status
+ * and SkyVault.
+ */
+export function isReadOnlyForDelete(
+    volumeManager: VolumeManager, entry: Entry|FilesAppEntry) {
+  if (isNonModifiable(volumeManager, entry)) {
+    return true;
+  }
+
+  const locationInfo = volumeManager.getLocationInfo(entry);
+  const isReadOnly = locationInfo && locationInfo.isReadOnly;
+
+  if (!isReadOnly || !isSkyvaultV2Enabled()) {
+    // If not read-only, or if SkyVault is disabled, just return
+    return isReadOnly;
+  }
+  // Else, further checks are needed
+  const volumeInfo = locationInfo.volumeInfo;
+  if (!volumeInfo) {
+    return isReadOnly;
+  }
+
+  // Allow deletion even if read-only, when:
+  //  - local storage is disabled
+  //  - the volume is in MyFiles or Downloads
+  const state = getStore().getState();
+  const localUserFilesAllowed = state.preferences?.localUserFilesAllowed;
+  if (!localUserFilesAllowed &&
+      (volumeInfo.volumeType === VolumeType.DOWNLOADS ||
+       volumeInfo.volumeType === VolumeType.MY_FILES)) {
+    return false;
+  }
+  return isReadOnly;
 }

@@ -266,6 +266,12 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE =
             new WritableBooleanPropertyKey();
 
+    /** The minimum horizontal margin used by the dialog relative to the window. */
+    public static final WritableIntPropertyKey HORIZONTAL_MARGIN = new WritableIntPropertyKey();
+
+    /** The minimum vertical margin used by the dialog relative to the window. */
+    public static final WritableIntPropertyKey VERTICAL_MARGIN = new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 CONTROLLER,
@@ -295,6 +301,8 @@ public class ModalDialogProperties {
                 FOCUS_DIALOG,
                 APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
                 BUTTON_TAP_PROTECTION_PERIOD_MS,
-                TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE
+                TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE,
+                HORIZONTAL_MARGIN,
+                VERTICAL_MARGIN,
             };
 }

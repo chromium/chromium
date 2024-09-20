@@ -95,9 +95,10 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_CONST_METHOD0(GetNetworkState, NetworkState());
   MOCK_CONST_METHOD0(WouldTaintOrigin, bool());
   MOCK_METHOD1(SetLatencyHint, void(double));
-  MOCK_METHOD1(SetWasPlayedWithUserActivation, void(bool));
+  MOCK_METHOD1(SetWasPlayedWithUserActivationAndHighMediaEngagement,
+               void(bool));
   MOCK_METHOD1(EnabledAudioTracksChanged, void(const WebVector<TrackId>&));
-  MOCK_METHOD1(SelectedVideoTrackChanged, void(TrackId*));
+  MOCK_METHOD1(SelectedVideoTrackChanged, void(std::optional<TrackId>));
   MOCK_METHOD4(
       Load,
       WebMediaPlayer::LoadTiming(LoadType load_type,
@@ -1664,7 +1665,8 @@ TEST_P(HTMLMediaElementTest, PlayedWithoutUserActivation) {
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
-  EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(false));
+  EXPECT_CALL(*MockMediaPlayer(),
+              SetWasPlayedWithUserActivationAndHighMediaEngagement(false));
   Media()->Play();
 }
 
@@ -1679,7 +1681,25 @@ TEST_P(HTMLMediaElementTest, PlayedWithUserActivation) {
       Media()->GetDocument().GetFrame(),
       mojom::UserActivationNotificationType::kTest);
 
-  EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(true));
+  EXPECT_CALL(*MockMediaPlayer(),
+              SetWasPlayedWithUserActivationAndHighMediaEngagement(false));
+  Media()->Play();
+}
+
+TEST_P(HTMLMediaElementTest, PlayedWithUserActivationAndHighMediaEngagement) {
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  SimulateHighMediaEngagement();
+  test::RunPendingTasks();
+
+  LocalFrame::NotifyUserActivation(
+      Media()->GetDocument().GetFrame(),
+      mojom::UserActivationNotificationType::kTest);
+
+  EXPECT_CALL(*MockMediaPlayer(),
+              SetWasPlayedWithUserActivationAndHighMediaEngagement(true));
   Media()->Play();
 }
 
@@ -1688,7 +1708,9 @@ TEST_P(HTMLMediaElementTest, PlayedWithUserActivationBeforeLoad) {
       Media()->GetDocument().GetFrame(),
       mojom::UserActivationNotificationType::kTest);
 
-  EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(_)).Times(0);
+  EXPECT_CALL(*MockMediaPlayer(),
+              SetWasPlayedWithUserActivationAndHighMediaEngagement(_))
+      .Times(0);
   Media()->Play();
 }
 
@@ -1699,7 +1721,8 @@ TEST_P(HTMLMediaElementTest, CanFreezeWithoutMediaPlayerAttached) {
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
-  EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(false));
+  EXPECT_CALL(*MockMediaPlayer(),
+              SetWasPlayedWithUserActivationAndHighMediaEngagement(false));
   Media()->Play();
 
   ResetWebMediaPlayer();
@@ -1720,7 +1743,8 @@ TEST_P(HTMLMediaElementTest, CanFreezeWithMediaPlayerAttached) {
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
-  EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(false));
+  EXPECT_CALL(*MockMediaPlayer(),
+              SetWasPlayedWithUserActivationAndHighMediaEngagement(false));
   EXPECT_CALL(*MockMediaPlayer(), OnFrozen());
   Media()->Play();
 

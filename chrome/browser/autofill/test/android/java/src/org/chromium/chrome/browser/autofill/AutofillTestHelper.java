@@ -460,12 +460,19 @@ public class AutofillTestHelper {
     }
 
     public static AutofillSuggestion createCreditCardSuggestion(
-            String label, String secondaryLabel, String subLabel, boolean applyDeactivatedStyle) {
+            String label,
+            String secondaryLabel,
+            String subLabel,
+            String secondarySubLabel,
+            boolean applyDeactivatedStyle,
+            boolean shouldDisplayTermsAvailable) {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSecondaryLabel(secondaryLabel)
                 .setSubLabel(subLabel)
+                .setSecondarySubLabel(secondarySubLabel)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
+                .setShouldDisplayTermsAvailable(shouldDisplayTermsAvailable)
                 .build();
     }
 

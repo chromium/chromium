@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/bind.h"
@@ -14,17 +15,19 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -66,7 +69,7 @@ void DeviceInfoCallback(
     return;
   }
   auto* borealis_service =
-      borealis::BorealisService::GetForProfile(profile.get());
+      borealis::BorealisServiceFactory::GetForProfile(profile.get());
   if (!borealis_service) {
     BorealisFeaturesCallback(
         std::move(callback), device_info,
@@ -79,9 +82,7 @@ void DeviceInfoCallback(
 }  // namespace
 
 ChromeHelpAppUIDelegate::ChromeHelpAppUIDelegate(content::WebUI* web_ui)
-    : web_ui_(web_ui),
-      device_info_manager_(std::make_unique<apps::DeviceInfoManager>(
-          Profile::FromWebUI(web_ui))) {}
+    : web_ui_(web_ui) {}
 
 ChromeHelpAppUIDelegate::~ChromeHelpAppUIDelegate() = default;
 
@@ -161,7 +162,11 @@ void ChromeHelpAppUIDelegate::MaybeShowReleaseNotesNotification() {
 void ChromeHelpAppUIDelegate::GetDeviceInfo(
     ash::help_app::mojom::PageHandler::GetDeviceInfoCallback callback) {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  device_info_manager_->GetDeviceInfo(base::BindOnce(
+
+  apps::DeviceInfoManager* device_info_manager =
+      apps::DeviceInfoManagerFactory::GetForProfile(profile);
+  CHECK(device_info_manager);
+  device_info_manager->GetDeviceInfo(base::BindOnce(
       &DeviceInfoCallback, std::move(callback), profile->GetWeakPtr()));
 }
 
@@ -221,6 +226,20 @@ ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog(
   Navigate(&params);
 
   return std::nullopt;
+}
+
+void ChromeHelpAppUIDelegate::OpenSettings(
+    ash::help_app::mojom::SettingsComponent component) {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+
+  switch (component) {
+    case ash::help_app::mojom::SettingsComponent::BLUETOOTH:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
+      return;
+  }
+
+  CHECK(false) << "Invalid settings component value provided";
 }
 
 }  // namespace ash

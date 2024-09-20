@@ -6,6 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/authentication_egtest_util.h"
@@ -124,6 +125,11 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
       waitForUIElementToAppearWithMatcher:paymentsBottomSheetVirtualCard];
   [[EarlGrey selectElementWithMatcher:paymentsBottomSheetVirtualCard]
       performAction:grey_tap()];
+
+  // Wait enough time so the min delay is past before being allowed to fill
+  // credit card information from the sheet.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
                      IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE)]

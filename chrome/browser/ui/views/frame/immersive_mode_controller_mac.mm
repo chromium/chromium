@@ -10,6 +10,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -33,12 +34,14 @@
 
 namespace {
 
-// The width of the traffic lights. Used to layout the tab strip leaving a hole
+// The width of the traffic lights. Used to animate the tab strip leaving a hole
 // for the traffic lights.
 // TODO(crbug.com/40892148): Get this dynamically. Unfortunately the
 // values in BrowserNonClientFrameViewMac::GetCaptionButtonInsets don't account
 // for a window with an NSToolbar.
-const int kTrafficLightsWidth = 70;
+constexpr int kTrafficLightsWidth = 62;
+constexpr int kTabAlignmentInset = 4;
+constexpr base::TimeDelta kTabSlideAnimationDuration = base::Milliseconds(149);
 
 class ImmersiveModeFocusSearchMac : public views::FocusSearch {
  public:
@@ -106,16 +109,8 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
       browser_view_->tab_overlay_view()->AddChildView(
           browser_view_->tab_strip_region_view());
 
-      // Inset the start of |tab_strip_region_view()| by |kTrafficLightsWidth|.
-      // This will leave a hole for the traffic light to appear.
-      // Without this +1 top inset the tabs sit 1px too high. I assume this is
-      // because in fullscreen there is no resize handle.
-      gfx::Insets insets =
-          browser_view_->frame()->GetFrameView()->CaptionButtonsOnLeadingEdge()
-              ? gfx::Insets::TLBR(1, kTrafficLightsWidth, 0, 0)
-              : gfx::Insets::TLBR(1, 0, 0, kTrafficLightsWidth);
       browser_view_->tab_strip_region_view()->SetBorder(
-          views::CreateEmptyBorder(insets));
+          views::CreateEmptyBorder(GetTabStripRegionViewInsets()));
 
       views::NativeWidgetMacNSWindowHost* tab_overlay_host =
           views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
@@ -186,8 +181,15 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // If the window is maximized OnViewBoundsChanged will not be called
     // when transitioning to full screen. Call it now.
     OnViewBoundsChanged(browser_view_->top_container());
+
+    if (separate_tab_strip_) {
+      tab_bounds_animator_ = std::make_unique<views::BoundsAnimator>(
+          browser_view_->tab_overlay_view(), false);
+      tab_bounds_animator_->SetAnimationDuration(kTabSlideAnimationDuration);
+    }
   } else {
     if (separate_tab_strip_) {
+      tab_bounds_animator_.reset();
       browser_view_->tab_overlay_widget()->Hide();
       browser_view_->tab_strip_region_view()->SetBorder(nullptr);
       browser_view_->top_container()->AddChildViewAt(
@@ -226,6 +228,24 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
           nullptr);
     }
   }
+}
+
+gfx::Insets ImmersiveModeControllerMac::GetTabStripRegionViewInsets() {
+  // Inset the start of `tab_strip_region_view` by `kTabAlignmentInset` +
+  // `kTrafficLightsWidth`. This leaves a hole for the traffic lights to appear.
+  // When tab animation is enabled, only inset by `kTabAlignmentInset`, this
+  // keeps the tab strip aligned with the toolbar. The tab strip will slide out
+  // of the way when the traffic lights appear.
+  int right_left_inset =
+      base::FeatureList::IsEnabled(features::kFullscreenAnimateTabs)
+          ? kTabAlignmentInset
+          : kTabAlignmentInset + kTrafficLightsWidth;
+
+  // Without this +1 top inset the tabs sit 1px too high. I assume this is
+  // because in fullscreen there is no resize handle.
+  return browser_view_->frame()->GetFrameView()->CaptionButtonsOnLeadingEdge()
+             ? gfx::Insets::TLBR(1, right_left_inset, 0, 0)
+             : gfx::Insets::TLBR(1, 0, 0, right_left_inset);
 }
 
 bool ImmersiveModeControllerMac::IsEnabled() const {
@@ -439,18 +459,34 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
 void ImmersiveModeControllerMac::OnImmersiveModeToolbarRevealChanged(
     bool is_revealed) {
   is_revealed_ = is_revealed;
-  // TODO(crbug.com/40892148): update tabstrip position so that it occupies full
-  // width when the traffic lights are hidden.
 }
 
 void ImmersiveModeControllerMac::OnImmersiveModeMenuBarRevealChanged(
-    float reveal_amount) {
+    double reveal_amount) {
+  bool should_shift_tabs = reveal_amount == 1 || reveal_amount > reveal_amount_;
   reveal_amount_ = reveal_amount;
   if (!browser_view_->infobar_container()->IsEmpty()) {
     browser_view_->InvalidateLayout();
   }
-  // TODO(crbug.com/40892148): update tabstrip position so that it occupies full
-  // width when the traffic lights are hidden.
+
+  if (!base::FeatureList::IsEnabled(features::kFullscreenAnimateTabs) ||
+      !tab_bounds_animator_.get()) {
+    return;
+  }
+
+  if (should_shift_tabs) {
+    tab_bounds_animator_->AnimateViewTo(
+        browser_view_->tab_strip_region_view(),
+        gfx::Rect(kTrafficLightsWidth, 0,
+                  browser_view_->tab_overlay_view()->size().width() -
+                      kTrafficLightsWidth,
+                  browser_view_->tab_strip_region_view()->height()));
+  } else {
+    tab_bounds_animator_->AnimateViewTo(
+        browser_view_->tab_strip_region_view(),
+        gfx::Rect(0, 0, browser_view_->tab_overlay_view()->size().width(),
+                  browser_view_->tab_strip_region_view()->height()));
+  }
 }
 
 void ImmersiveModeControllerMac::OnAutohidingMenuBarHeightChanged(

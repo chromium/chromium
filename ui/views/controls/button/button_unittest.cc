@@ -1009,6 +1009,21 @@ TEST_F(ButtonTest, AccessibleRole) {
             ax::mojom::Role::kCheckBox);
 }
 
+TEST_F(ButtonTest, AccessibleCheckedState) {
+  ui::AXNodeData data;
+  event_generator()->MoveMouseTo(button()->GetBoundsInScreen().CenterPoint());
+  event_generator()->PressLeftButton();
+  EXPECT_EQ(Button::STATE_PRESSED, button()->GetState());
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  event_generator()->ReleaseLeftButton();
+  EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
+  data = ui::AXNodeData();
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kNone);
+}
+
 TEST_F(ButtonTest, AccessibleDefaultActionVerb) {
   ui::AXNodeData data;
   button()->GetViewAccessibility().GetAccessibleNodeData(&data);

@@ -1,10 +1,14 @@
 <style include="cr-hidden-style">
   :host {
+    --table-min-width: 726px;
     align-items: flex-start;
     display: flex;
     flex-direction: column;
-    max-height: 100%;
     width: fit-content;
+  }
+
+  #appContainer {
+    padding: 24px;
   }
 
   product-specifications-header {
@@ -18,13 +22,16 @@
     border-radius: 12px;
     display: flex;
     min-height: 50px;
-    min-width: 726px;
+    min-width: var(--table-min-width);
     padding: 16px;
     width: fit-content;
   }
 
+  #summaryContainer:has(horizontal-carousel:not([hidden])) {
+    padding-bottom: 2px;
+  }
+
   :host([show-table-data-unavailable-container_]) #summaryContainer {
-    min-height: 621px;
     justify-content: center;
   }
 
@@ -85,7 +92,7 @@
     justify-content: flex-start;
     line-height: 16px;
     margin-top: 20px;
-    max-width: 566px;
+    max-width: var(--table-min-width);
   }
 
   #footer a {
@@ -113,105 +120,108 @@
     opacity: 1;
   }
 </style>
-<product-specifications-header id="header" subtitle="[[setName_]]"
-    menu-button-disabled$="[[loadingState_.loading]]"
-    on-delete-click="deleteSet_"
-    on-name-change="updateSetName_"
-    on-see-all-click="seeAllSets_">
-</product-specifications-header>
+<div id="appContainer">
+  <product-specifications-header id="header" subtitle="[[setName_]]"
+      menu-button-disabled$="[[loadingState_.loading]]"
+      on-delete-click="deleteSet_"
+      on-name-change="updateSetName_"
+      on-see-all-click="seeAllSets_">
+  </product-specifications-header>
 
-<div id="summaryContainer">
-  <div id="tableDataUnavailable"
-      hidden="[[!showTableDataUnavailableContainer_]]">
-    <picture>
-      <source srcset="images/empty_state_dark.svg"
-          media="(prefers-color-scheme: dark)">
-      <img id="emptyImg" src="images/empty_state.svg">
-    </picture>
-    <div id="empty"
-        class="table-data-unavailable-container"
-        hidden$="[[!isAppStateTableEmpty_(appState_)]]">
-      <div class="table-data-unavailable-message">$i18n{emptyStateTitle}</div>
-      <div class="table-data-unavailable-description">
-        $i18n{emptyStateDescription}
-      </div>
-      <product-selector id="productSelector"
-          on-selected-url-change="onUrlAdd_">
-      </product-selector>
-    </div>
-    <div id="syncPromo"
-        class="table-data-unavailable-container"
-        hidden="[[!isAppStateSyncScreen_(appState_)]]">
-      <div class="table-data-unavailable-message">
-        $i18n{compareSyncMessage}
-      </div>
-      <div class="table-data-unavailable-description">
-        $i18n{compareSyncDescription}
-      </div>
-      <cr-button id="turnOnSyncButton" class="action-button"
-          on-click="showSyncSetupFlow_">
-        $i18n{compareSyncButton}
-      </cr-button>
-    </div>
-    <div id="error"
-        class="table-data-unavailable-container"
-        hidden="[[!isAppStateError_(appState_)]]">
-      <div class="table-data-unavailable-message">
-        $i18n{compareErrorMessage}
-      </div>
-      <div class="table-data-unavailable-description">
-        $i18n{compareErrorDescription}
-      </div>
-    </div>
-  </div>
-  <!-- TODO(b/357616541): Give loading state the same max-width as
-       the horizontal-carousel and restyle accordingly. -->
-  <loading-state id="loading" hidden$="[[!isAppStateLoading_(appState_)]]"
-      column-count="[[loadingState_.urlCount]]">
-  </loading-state>
-  <horizontal-carousel id="specs"
-      hidden$="[[!isAppStateTablePopulated_(appState_)]]">
-      <product-specifications-table slot="table"
-          id="summaryTable"
-          columns="[[tableColumns_]]"
-          on-url-change="onUrlChange_"
-          on-url-remove="onUrlRemove_"
-          on-url-order-update="onUrlOrderUpdate_"
-          on-unavailable-action-attempted="showOfflineToast_">
-        <div slot="selectorGradient" id="selectorGradient"></div>
-        <new-column-selector slot="newColumnSelector"
-            id="newColumnSelector"
-            excluded-urls="[[getTableUrls_(tableColumns_)]]"
+  <div id="summaryContainer">
+    <div id="tableDataUnavailable"
+        hidden="[[!showTableDataUnavailableContainer_]]">
+      <picture>
+        <source srcset="images/empty_state_dark.svg"
+            media="(prefers-color-scheme: dark)">
+        <img id="emptyImg" src="images/empty_state.svg">
+      </picture>
+      <div id="empty"
+          class="table-data-unavailable-container"
+          hidden$="[[!isAppStateTableEmpty_(appState_)]]">
+        <div class="table-data-unavailable-message">$i18n{emptyStateTitle}</div>
+        <div class="table-data-unavailable-description">
+          $i18n{emptyStateDescription}
+        </div>
+        <product-selector id="productSelector"
             on-selected-url-change="onUrlAdd_">
-        </new-column-selector>
-      </product-specifications-table>
-  </horizontal-carousel>
-</div>
-<div id="footer" hidden="[[showTableDataUnavailableContainer_]]">
-  <div id="disclaimer">[[getDisclaimerText_()]]
-    <a id="learnMoreLink" href="$i18n{compareLearnMoreUrl}"
-        target="_blank" aria-label="$i18n{learnMoreA11yLabel}">
-      $i18n{learnMore}
-    </a>
-  </div>
-  <template is="dom-if"
-      if="[[canShowFeedbackButtons_(productSpecificationsFeatureState_.*)]]">
-    <div id="feedbackLoading" hidden$="[[!isAppStateLoading_(appState_)]]">
-      <cr-loading-gradient>
-        <svg height="16" width="44" xmlns="http://www.w3.org/2000/svg">
-          <clipPath>
-            <circle cx="8" cy="8" r="8"></circle>
-            <circle cx="36" cy="8" r="8"></circle>
-          </clipPath>
-        </svg>
-      </cr-loading-gradient>
+        </product-selector>
+      </div>
+      <div id="syncPromo"
+          class="table-data-unavailable-container"
+          hidden="[[!isAppStateSyncScreen_(appState_)]]">
+        <div class="table-data-unavailable-message">
+          $i18n{compareSyncMessage}
+        </div>
+        <div class="table-data-unavailable-description">
+          $i18n{compareSyncDescription}
+        </div>
+        <cr-button id="turnOnSyncButton" class="action-button"
+            on-click="showSyncSetupFlow_">
+          $i18n{compareSyncButton}
+        </cr-button>
+      </div>
+      <div id="error"
+          class="table-data-unavailable-container"
+          hidden="[[!isAppStateError_(appState_)]]">
+        <div class="table-data-unavailable-message">
+          $i18n{compareErrorMessage}
+        </div>
+        <div class="table-data-unavailable-description">
+          $i18n{compareErrorDescription}
+        </div>
+      </div>
     </div>
-    <cr-feedback-buttons id="feedbackButtons"
-        hidden$="[[loadingState_.loading]]"
-        on-selected-option-changed="onFeedbackSelectedOptionChanged_">
-    </cr-feedback-buttons>
-  </template>
+    <!-- TODO(b/357616541): Give loading state the same max-width as
+        the horizontal-carousel and restyle accordingly. -->
+    <loading-state id="loading" hidden$="[[!isAppStateLoading_(appState_)]]"
+        column-count="[[loadingState_.urlCount]]">
+    </loading-state>
+    <horizontal-carousel id="specs"
+        hidden$="[[!isAppStateTablePopulated_(appState_)]]">
+        <product-specifications-table slot="table"
+            id="summaryTable"
+            columns="[[tableColumns_]]"
+            on-url-change="onUrlChange_"
+            on-url-remove="onUrlRemove_"
+            on-url-order-update="onUrlOrderUpdate_"
+            on-unavailable-action-attempted="showOfflineToast_">
+          <div slot="selectorGradient" id="selectorGradient"></div>
+          <new-column-selector slot="newColumnSelector"
+              id="newColumnSelector"
+              excluded-urls="[[getTableUrls_(tableColumns_)]]"
+              on-selected-url-change="onUrlAdd_">
+          </new-column-selector>
+        </product-specifications-table>
+    </horizontal-carousel>
+  </div>
+  <div id="footer" hidden="[[showTableDataUnavailableContainer_]]">
+    <div id="disclaimer">[[getDisclaimerText_()]]
+      <a id="learnMoreLink" href="$i18n{compareLearnMoreUrl}"
+          target="_blank" aria-label="$i18n{learnMoreA11yLabel}">
+        $i18n{learnMore}
+      </a>
+    </div>
+    <template is="dom-if"
+        if="[[canShowFeedbackButtons_(productSpecificationsFeatureState_.*)]]">
+      <div id="feedbackLoading" hidden$="[[!isAppStateLoading_(appState_)]]">
+        <cr-loading-gradient>
+          <svg height="16" width="44" xmlns="http://www.w3.org/2000/svg">
+            <clipPath>
+              <circle cx="8" cy="8" r="8"></circle>
+              <circle cx="36" cy="8" r="8"></circle>
+            </clipPath>
+          </svg>
+        </cr-loading-gradient>
+      </div>
+      <cr-feedback-buttons id="feedbackButtons"
+          hidden$="[[loadingState_.loading]]"
+          on-selected-option-changed="onFeedbackSelectedOptionChanged_">
+      </cr-feedback-buttons>
+    </template>
+  </div>
 </div>
+
 <cr-toast id="offlineToast">
   <div>$i18n{offlineMessage}</div>
 </cr-toast>

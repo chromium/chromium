@@ -14,14 +14,43 @@
 #import "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
 namespace {
-bool kAllowInTests = false;
+
+// Returns the country.
+std::optional<std::string> GetCountry() {
+  return safe_browsing::hash_realtime_utils::GetCountryCode(
+      GetApplicationContext()->GetVariationsService());
+}
+
+// Default factory.
+std::unique_ptr<KeyedService> BuildOhttpKeyService(web::BrowserState* context) {
+  SafeBrowsingService* safe_browsing_service =
+      GetApplicationContext()->GetSafeBrowsingService();
+  if (!safe_browsing_service) {
+    return nullptr;
+  }
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  auto url_loader_factory =
+      std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
+          safe_browsing_service->GetURLLoaderFactory());
+  return std::make_unique<safe_browsing::OhttpKeyService>(
+      network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
+      profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      base::BindRepeating(&GetCountry));
+}
+
+}  // namespace
+
+// static
+safe_browsing::OhttpKeyService* OhttpKeyServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return static_cast<safe_browsing::OhttpKeyService*>(
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
 }
 
 // static
 safe_browsing::OhttpKeyService* OhttpKeyServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
-  return static_cast<safe_browsing::OhttpKeyService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static
@@ -30,28 +59,20 @@ OhttpKeyServiceFactory* OhttpKeyServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+OhttpKeyServiceFactory::TestingFactory
+OhttpKeyServiceFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildOhttpKeyService);
+}
+
 OhttpKeyServiceFactory::OhttpKeyServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "OhttpKeyService",
           BrowserStateDependencyManager::GetInstance()) {}
 
 std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  SafeBrowsingService* safe_browsing_service =
-      GetApplicationContext()->GetSafeBrowsingService();
-  if (!safe_browsing_service) {
-    return nullptr;
-  }
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  auto url_loader_factory =
-      std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-          safe_browsing_service->GetURLLoaderFactory());
-  return std::make_unique<safe_browsing::OhttpKeyService>(
-      network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
-      chrome_browser_state->GetPrefs(),
-      GetApplicationContext()->GetLocalState(),
-      base::BindRepeating(&OhttpKeyServiceFactory::GetCountry));
+    web::BrowserState* context) const {
+  return BuildOhttpKeyService(context);
 }
 
 bool OhttpKeyServiceFactory::ServiceIsCreatedWithBrowserState() const {
@@ -60,18 +81,5 @@ bool OhttpKeyServiceFactory::ServiceIsCreatedWithBrowserState() const {
 }
 
 bool OhttpKeyServiceFactory::ServiceIsNULLWhileTesting() const {
-  return !kAllowInTests;
-}
-
-OhttpKeyServiceAllowerForTesting::OhttpKeyServiceAllowerForTesting() {
-  kAllowInTests = true;
-}
-OhttpKeyServiceAllowerForTesting::~OhttpKeyServiceAllowerForTesting() {
-  kAllowInTests = false;
-}
-
-// static
-std::optional<std::string> OhttpKeyServiceFactory::GetCountry() {
-  return safe_browsing::hash_realtime_utils::GetCountryCode(
-      GetApplicationContext()->GetVariationsService());
+  return true;
 }

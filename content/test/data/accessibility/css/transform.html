@@ -3,13 +3,7 @@
 @WIN-ALLOW:location=*
 @UIA-WIN-ALLOW:BoundingRectangle=(0, 50,*
 @MAC-ALLOW:LocalPosition
-
-The closing parenthesis is intentionally omitted from WAIT-FOR because UIA
-represents location as part of BoundingRectangle which has four coordinates.
-@BLINK-WAIT-FOR:(0, 50
-@WIN-WAIT-FOR:(0, 50
-@UIA-WIN-WAIT-FOR:(0, 50
-@MAC-WAIT-FOR:{x: 0, y: 50}
+@WAIT-FOR:done
 -->
 <!DOCTYPE html>
 <html>
@@ -39,6 +33,7 @@ div {
 <script>
   setTimeout(function() {
     document.getElementById("outer").style.transform = "translateY(50px)";
+    document.title = 'done';
   }, 10);
 </script>
 </body>

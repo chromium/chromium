@@ -47,10 +47,13 @@ class ThirdPartyScriptDetector final
     kGoogleAdsLibraries = 1 << 12,
     kFundingChoices = 1 << 13,
     kElementor = 1 << 14,
-    kLast = kElementor
+    kSliderRevolution = 1 << 15,
+    kLast = kSliderRevolution
     // If adding new technologies, add above kLast and shift kLast accordingly.
     // Keep in sync with `ThirdPartyTechnology` in
     // base/tracing/protos/chrome_track_event.proto.
+    // The enum value (n) here is converted to the proto value (m) by
+    // m = bit_width(n) + 1.
     // Max value allowed: 1 << 63. Limited by UKM bitfield.
   };
 

@@ -14,7 +14,6 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/sessions/model/features.h"
 #import "ios/chrome/browser/sessions/model/legacy_session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_migration.h"
@@ -235,9 +234,15 @@ void OnSessionMigrationDone(
 
 // static
 SessionRestorationService* SessionRestorationServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+SessionRestorationService* SessionRestorationServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<SessionRestorationService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -372,9 +377,7 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
   // will have its default value of `SessionStorageFormat::kUnknown`. Use
   // the feature flag to select which implementation to use.
   if (format == SessionStorageFormat::kUnknown) {
-    format = session::features::UseSessionSerializationOptimizations()
-                 ? SessionStorageFormat::kOptimized
-                 : SessionStorageFormat::kLegacy;
+    format = SessionStorageFormat::kOptimized;
   }
 
   // If the optimised session restoration format is not enabled, create a

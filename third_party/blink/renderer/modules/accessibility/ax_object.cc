@@ -4355,7 +4355,7 @@ bool AXObject::ComputeCanSetFocusAttribute() {
 
   // Customizable select: get focusable state from displayed button if present.
   if (auto* select = DynamicTo<HTMLSelectElement>(elem)) {
-    if (auto* button = select->DisplayedButton()) {
+    if (auto* button = select->SlottedButton()) {
       elem = button;
     }
   }
@@ -4712,14 +4712,14 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
   }
 
   if (style) {
-    if (GetLayoutObject())
-      return style->Visibility() != EVisibility::kVisible;
-
+    if (GetLayoutObject()) {
+      return style->UsedVisibility() != EVisibility::kVisible;
+    }
     // TODO(crbug.com/1286465): It's not consistent to only check
     // IsEnsuredInDisplayNone() on layoutless elements.
     return GetNode() && GetNode()->IsElementNode() &&
            (style->IsEnsuredInDisplayNone() ||
-            style->Visibility() != EVisibility::kVisible);
+            style->UsedVisibility() != EVisibility::kVisible);
   }
 
   Node* node = GetNode();
@@ -7189,8 +7189,7 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kSetSequentialFocusNavigationStartingPoint:
       return RequestSetSequentialFocusNavigationStartingPointAction();
     case ax::mojom::blink::Action::kSetValue:
-      return RequestSetValueAction(
-          WTF::String::FromUTF8(action_data.value.c_str()));
+      return RequestSetValueAction(String::FromUTF8(action_data.value));
     case ax::mojom::blink::Action::kShowContextMenu:
       return RequestShowContextMenuAction();
     case ax::mojom::blink::Action::kScrollToMakeVisible:
@@ -7272,7 +7271,7 @@ bool AXObject::OnNativeClickAction() {
   // Forward default action on custom select to its button.
   if (auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
     if (select->IsAppearanceBaseButton()) {
-      if (auto* button = select->DisplayedButton()) {
+      if (auto* button = select->SlottedButton()) {
         element = button;
       }
     }

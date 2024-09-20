@@ -111,16 +111,21 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         float searchPanelWidth = panel.getWidth();
         float searchPanelHeight = panel.getHeight();
 
+        float searchCaptionAnimationPercentage = searchBarControl.getCaptionAnimationPercentage();
+        boolean searchCaptionVisible = searchBarControl.getCaptionVisible();
+
         float searchBarMarginSide = panel.getBarMarginSide();
         float searchBarMarginTop = panel.getBarMarginTop();
-        float searchBarMarginBottom = panel.getBarMarginBottomPx();
+        float baseSearchBarMarginBottom = panel.getBarMarginBottomPx();
+        float searchBarMarginBottom = baseSearchBarMarginBottom * searchCaptionAnimationPercentage;
         float searchBarHeight = panel.getBarHeight();
+        // By default, the search bar height includes the entire bottom margin. Remove any excess
+        // based on the animation percentage.
+        searchBarHeight -=
+                (baseSearchBarMarginBottom * (1 - searchCaptionAnimationPercentage) / mDpToPx);
 
         float searchContextOpacity = searchBarControl.getSearchBarContextOpacity();
         float searchTermOpacity = searchBarControl.getSearchBarTermOpacity();
-
-        float searchCaptionAnimationPercentage = searchBarControl.getCaptionAnimationPercentage();
-        boolean searchCaptionVisible = searchBarControl.getCaptionVisible();
 
         boolean searchBarBorderVisible = panel.isBarBorderVisible();
         float searchBarBorderHeight = panel.getBarBorderHeight();

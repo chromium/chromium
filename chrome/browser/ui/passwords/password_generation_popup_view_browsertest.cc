@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
@@ -21,7 +20,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
@@ -37,10 +35,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
-
 namespace {
-
-using password_manager::features::PasswordGenerationVariation;
 
 const ui::AXPlatformNodeDelegate* FindNode(
     const ui::AXPlatformNodeDelegate* root,
@@ -221,23 +216,32 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
       static_cast<PasswordGenerationPopupViewViews*>(controller->view());
 
   const std::u16string expected_cached_description = l10n_util::GetStringFUTF16(
-      popup_view->GetHelpTextMessageIdForTesting(),
+      IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
       u"");
-
-  if (password_manager::features::kPasswordGenerationExperimentVariationParam
-          .Get() == PasswordGenerationVariation::kCrossDevice) {
-    const std::u16string description =
-        PasswordGenerationPopupViewViews::JoinMultiplePasswordGenerationStrings(
+  EXPECT_EQ(GetPasswordViewAccessibility(popup_view).GetCachedDescription(),
             expected_cached_description);
+}
 
-    EXPECT_EQ(GetPasswordViewAccessibility(popup_view).GetCachedDescription(),
-              description);
-  } else {
-    EXPECT_EQ(GetPasswordViewAccessibility(popup_view).GetCachedDescription(),
-              expected_cached_description);
-  }
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
+                       PasswordGenerationPopupViewAccessibilityProperties) {
+  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
+  client->SetCurrentTargetFrameForTesting(WebContents()->GetPrimaryMainFrame());
+  client->ShowPasswordEditingPopup(gfx::RectF(0, 0, 10, 10), FormData(),
+                                   FieldRendererId(100), u"password123");
+  // Avoid dangling pointers on shutdown.
+  client->SetCurrentTargetFrameForTesting(nullptr);
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      client->generation_popup_controller();
+
+  PasswordGenerationPopupViewViews* popup_view =
+      static_cast<PasswordGenerationPopupViewViews*>(controller->view());
+
+  ui::AXNodeData node_data;
+  popup_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kListBox);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kInvisible));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -246,9 +250,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "PasswordGenerationPopupViewViews");
-  // TODO: handle return value.
-  std::ignore = content::EvalJs(
-      WebContents(), "document.getElementById('password_field').focus()");
+  ASSERT_TRUE(content::ExecJs(
+      WebContents(), "document.getElementById('password_field').focus()"));
   auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
   client->GeneratePassword(
       autofill::password_generation::PasswordGenerationType::kManual);
@@ -287,48 +290,5 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
       node_delegate->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-
-// The test parameter controls the value of kPasswordGenerationExperiment
-// feature param.
-class PasswordGenerationPopupViewWithContentExperimentTest
-    : public PasswordGenerationPopupViewTest,
-      public testing::WithParamInterface<std::string> {
- public:
-  PasswordGenerationPopupViewWithContentExperimentTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{password_manager::features::
-                                   kPasswordGenerationExperiment,
-                               {{"password_generation_variation",
-                                 GetParam()}}}},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewWithContentExperimentTest,
-                       DoesNotCrashShowingGenerationOfferWithModifiedContent) {
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "PasswordGenerationPopupViewViews");
-  // TODO: handle return value.
-  std::ignore = content::EvalJs(
-      WebContents(), "document.getElementById('password_field').focus()");
-  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
-  client->GeneratePassword(
-      autofill::password_generation::PasswordGenerationType::kManual);
-
-  waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(client->generation_popup_controller());
-  EXPECT_TRUE(client->generation_popup_controller()->IsVisible());
-}
-
-INSTANTIATE_TEST_SUITE_P(ContentExperiment,
-                         PasswordGenerationPopupViewWithContentExperimentTest,
-                         testing::Values("trusted_advice",
-                                         "safety_first",
-                                         "try_something_new",
-                                         "convenience",
-                                         "cross_device"));
 
 }  // namespace autofill

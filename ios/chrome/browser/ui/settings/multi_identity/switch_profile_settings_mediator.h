@@ -9,9 +9,20 @@
 
 #import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_delegate.h"
 
+class ChromeAccountManagerService;
+@protocol SwitchProfileSettingsConsumer;
+
 // Mediator for the tabs settings.
 @interface SwitchProfileSettingsMediator
     : NSObject <SwitchProfileSettingsDelegate>
+
+- (instancetype)initWithChromeAccountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                                  activeProfileName:(NSString*)activeProfileName
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+@property(nonatomic, weak) id<SwitchProfileSettingsConsumer> consumer;
 
 @end
 

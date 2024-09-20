@@ -42,6 +42,7 @@ from .protocol import (BaseProtocolPart,
                        BidiScriptProtocolPart,
                        DevicePostureProtocolPart,
                        StorageProtocolPart,
+                       VirtualPressureSourceProtocolPart,
                        merge_dicts)
 
 from typing import List, Optional, Tuple
@@ -568,6 +569,22 @@ class WebDriverStorageProtocolPart(StorageProtocolPart):
     def run_bounce_tracking_mitigations(self):
         return self.webdriver.send_session_command("DELETE", "storage/run_bounce_tracking_mitigations")
 
+class WebDriverVirtualPressureSourceProtocolPart(VirtualPressureSourceProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def create_virtual_pressure_source(self, source_type, metadata):
+        body = {"type": source_type}
+        body.update(metadata)
+        return self.webdriver.send_session_command("POST", "pressuresource", body)
+
+    def update_virtual_pressure_source(self, source_type, sample):
+        body = {"sample": sample}
+        return self.webdriver.send_session_command("POST", "pressuresource/%s" % source_type, body)
+
+    def remove_virtual_pressure_source(self, source_type):
+        return self.webdriver.send_session_command("DELETE", "pressuresource/%s" % source_type)
+
 class WebDriverProtocol(Protocol):
     enable_bidi = False
     implements = [WebDriverBaseProtocolPart,
@@ -589,7 +606,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
                   WebDriverDevicePostureProtocolPart,
-                  WebDriverStorageProtocolPart]
+                  WebDriverStorageProtocolPart,
+                  WebDriverVirtualPressureSourceProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
@@ -625,6 +643,8 @@ class WebDriverProtocol(Protocol):
         self.webdriver.start()
 
     def teardown(self):
+        if not self.webdriver:
+            return
         self.logger.debug("Hanging up on WebDriver session")
         try:
             self.webdriver.end()
@@ -699,23 +719,29 @@ class WebDriverRun(TimedRunner):
             self.result = True, self.func(self.protocol, self.url, self.timeout)
         except (webdriver_error.TimeoutException, webdriver_error.ScriptTimeoutException):
             self.result = False, ("EXTERNAL-TIMEOUT", None)
-        except socket.timeout:
-            # Checking if the browser is alive below is likely to hang, so mark
-            # this case as a CRASH unconditionally.
-            self.result = False, ("CRASH", None)
         except Exception as e:
-            if (isinstance(e, webdriver_error.WebDriverException) and
-                    e.http_status == 408 and
-                    e.status_code == "asynchronous script timeout"):
-                # workaround for https://bugs.chromium.org/p/chromedriver/issues/detail?id=2001
-                self.result = False, ("EXTERNAL-TIMEOUT", None)
-            else:
+            status, message = None, None
+            if isinstance(e, socket.timeout):
+                # Checking if the browser is alive in this case is likely to hang,
+                # so mark it as a CRASH unconditionally.
+                status = "CRASH"
+            elif isinstance(e, webdriver_error.WebDriverException):
+                # In a multiple processes architecture, the browser process might be
+                # alive even when the renderer process has crashed.
+                # TODO(https://github.com/w3c/webdriver/issues/1308): The http
+                # status and status code below are chromium specific. Replace
+                # that with a standarded code once the issue is resolved.
+                if e.http_status == 500 and e.status_code == "disconnected":
+                    status = "CRASH"
+            if status is None:
                 status = "INTERNAL-ERROR" if self.protocol.is_alive() else "CRASH"
+
+            if status != "EXTERNAL-TIMEOUT":
                 message = str(getattr(e, "message", ""))
                 if message:
                     message += "\n"
                 message += traceback.format_exc()
-                self.result = False, (status, message)
+            self.result = False, (status, message)
         finally:
             self.result_flag.set()
 

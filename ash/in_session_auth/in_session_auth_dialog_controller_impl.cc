@@ -37,6 +37,7 @@
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/components/webauthn/webauthn_request_registrar.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -62,7 +63,7 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.delegate = new views::WidgetDelegate();
-  params.show_state = ui::SHOW_STATE_NORMAL;
+  params.show_state = ui::mojom::WindowShowState::kNormal;
   params.parent = nullptr;
   params.name = "AuthDialogWidget";
 

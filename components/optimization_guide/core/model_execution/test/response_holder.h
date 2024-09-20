@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_RESPONSE_HOLDER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 
@@ -17,6 +18,10 @@ class ResponseHolder {
   ~ResponseHolder();
 
   OptimizationGuideModelExecutionResultStreamingCallback callback();
+
+  // Wait for and get the final execution status (true if completed without
+  // error).
+  bool GetFinalStatus() { return final_status_future_.Get(); }
 
   const std::optional<std::string>& value() const { return response_received_; }
   const std::vector<std::string>& streamed() const {
@@ -35,6 +40,7 @@ class ResponseHolder {
  private:
   void OnResponse(OptimizationGuideModelStreamingExecutionResult result);
 
+  base::test::TestFuture<bool> final_status_future_;
   std::vector<std::string> streamed_responses_;
   std::optional<std::string> response_received_;
   std::optional<bool> provided_by_on_device_;

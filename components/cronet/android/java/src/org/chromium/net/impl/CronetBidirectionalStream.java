@@ -7,6 +7,7 @@ package org.chromium.net.impl;
 import static java.lang.Math.max;
 
 import android.os.Build;
+import android.os.Process;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -151,7 +152,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     private boolean mRequestHeadersSent;
 
     // Metrics information. Obtained when request succeeds, fails or is canceled.
-    private RequestFinishedInfo.Metrics mMetrics;
+    private CronetMetrics mMetrics;
     private boolean mQuicConnectionMigrationAttempted;
     private boolean mQuicConnectionMigrationSuccessful;
 
@@ -935,6 +936,30 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             totalLatency = Duration.ofSeconds(0);
         }
 
+        int networkInternalErrorCode = 0;
+        int quicNetworkErrorCode = 0;
+        @ConnectionCloseSource int source = ConnectionCloseSource.UNKNOWN;
+        CronetTrafficInfo.RequestFailureReason failureReason =
+                CronetTrafficInfo.RequestFailureReason.UNKNOWN;
+
+        // Going through the API layer will lead to NoSuchMethodError exceptions
+        // because there is no guarantee that the API will have the method.
+        // It's possible to use an old API of Cronet with a new implementation.
+        // In order to work around this, only impl classes are mentioned
+        // to ensure that the methods will always be found.
+        // See b/361725824 for more information.
+        if (mException instanceof NetworkExceptionImpl networkException) {
+            networkInternalErrorCode = networkException.getCronetInternalErrorCode();
+            failureReason = CronetTrafficInfo.RequestFailureReason.NETWORK;
+        } else if (mException instanceof QuicExceptionImpl quicException) {
+            networkInternalErrorCode = quicException.getCronetInternalErrorCode();
+            quicNetworkErrorCode = quicException.getQuicDetailedErrorCode();
+            source = quicException.getConnectionCloseSource();
+            failureReason = CronetTrafficInfo.RequestFailureReason.NETWORK;
+        } else if (mException != null) {
+            failureReason = CronetTrafficInfo.RequestFailureReason.OTHER;
+        }
+
         return new CronetTrafficInfo(
                 requestHeaderSizeInBytes,
                 requestBodySizeInBytes,
@@ -952,7 +977,13 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 mReadCount,
                 mFlushCount,
                 /* isBidiStream= */ true,
-                mFinalUserCallbackThrew);
+                mFinalUserCallbackThrew,
+                Process.myUid(),
+                networkInternalErrorCode,
+                quicNetworkErrorCode,
+                source,
+                failureReason,
+                mMetrics.getSocketReused());
     }
 
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {

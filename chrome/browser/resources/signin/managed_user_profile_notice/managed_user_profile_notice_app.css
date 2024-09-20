@@ -23,9 +23,16 @@
   position: relative;
 }
 
+:host([use-updated-ui_]:not([is-modal-dialog_])) .main-container {
+  margin-block-start: auto;
+}
+
+:host([use-updated-ui_][is-modal-dialog_]) .main-container {
+  flex: 1 1 auto;
+}
+
 .main-container {
   box-sizing: border-box;
-  flex: 1 1 auto;
   overflow: hidden;
   padding-block-start: 40px;
   width: 100vw;
@@ -99,10 +106,14 @@
   .error-icon {
     content: url(images/enrollment_failure_dark.svg);
   }
+
+  paper-spinner-lite {
+    --paper-spinner-color: var(--google-blue-300);
+  }
 }
 
 paper-spinner-lite {
-  --paper-spinner-stroke-width: 6px;
+  --paper-spinner-stroke-width: 8px;
   height: 60px;
   width: 60px;
 }

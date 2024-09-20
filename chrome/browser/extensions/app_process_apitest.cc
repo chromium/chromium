@@ -5,13 +5,13 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -44,6 +44,7 @@ using content::RenderViewHost;
 using content::SiteInstance;
 using content::WebContents;
 using extensions::Extension;
+using extensions::WindowControllerList;
 
 class AppApiTest : public extensions::ExtensionApiTest {
  protected:
@@ -138,7 +139,9 @@ class AppApiTest : public extensions::ExtensionApiTest {
 
     // Opening tabs with window.open should keep the page in the opener's
     // process.
-    ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+    ASSERT_EQ(1u,
+              extensions::browsertest_util::GetWindowControllerCountInProfile(
+                  browser()->profile()));
     OpenWindow(tab1, base_url.Resolve("path1/empty.html"), true, true, nullptr);
     LOG(INFO) << "WindowOpenHelper 1.";
     OpenWindow(tab2, base_url.Resolve("path2/empty.html"), true, true, nullptr);
@@ -229,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, AppProcess) {
                 ->GetProcess());
 
   // Now let's do the same using window.open. The same should happen.
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
+                    browser()->profile()));
   OpenWindow(tab, base_url.Resolve("path1/empty.html"), true, true, nullptr);
   OpenWindow(tab, base_url.Resolve("path2/empty.html"), true, true, nullptr);
   // TODO(creis): This should open in a new process (i.e., false for the last
@@ -613,10 +617,12 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, OpenWebPopupFromWebIframe) {
   EXPECT_TRUE(process_map->Contains(process->GetID()));
 
   // Popup window should be in the app's process.
-  const BrowserList* active_browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2U, active_browser_list->size());
+  const WindowControllerList* active_window_list =
+      WindowControllerList::GetInstance();
+  EXPECT_EQ(2U, active_window_list->size());
   content::WebContents* popup_contents =
-      active_browser_list->get(1)->tab_strip_model()->GetActiveWebContents();
+      active_window_list->get(1)->GetActiveTab();
+  ASSERT_TRUE(popup_contents);
   EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
 
   content::RenderProcessHost* popup_process =
@@ -672,10 +678,12 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigatePopupFromAppToOutsideApp) {
   EXPECT_TRUE(process_map->Contains(app_instance->GetProcess()->GetID()));
 
   // Popup window should be in the app's process.
-  const BrowserList* active_browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2U, active_browser_list->size());
+  const WindowControllerList* active_window_list =
+      WindowControllerList::GetInstance();
+  EXPECT_EQ(2U, active_window_list->size());
   content::WebContents* popup_contents =
-      active_browser_list->get(1)->tab_strip_model()->GetActiveWebContents();
+      active_window_list->get(1)->GetActiveTab();
+  ASSERT_TRUE(popup_contents);
   EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
 
   SiteInstance* popup_instance = popup_contents->GetSiteInstance();
@@ -717,8 +725,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigatePopupFromAppToOutsideApp) {
   // this in the future as part of https://crbug.com/718516.
   {
     content::TestNavigationObserver observer(popup_contents);
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(active_browser_list->get(1), non_app_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        active_window_list->get(1)->GetBrowser(), non_app_url));
     observer.Wait();
     EXPECT_EQ(app_instance, popup_contents->GetSiteInstance());
     EXPECT_TRUE(
@@ -739,8 +747,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigatePopupFromAppToOutsideApp) {
     content::TestNavigationObserver observer(popup_contents);
     GURL cross_site_url(
         embedded_test_server()->GetURL("foo.com", "/title1.html"));
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(active_browser_list->get(1),
-                                             cross_site_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        active_window_list->get(1)->GetBrowser(), cross_site_url));
     observer.Wait();
     EXPECT_NE(app_instance, popup_contents->GetSiteInstance());
     EXPECT_FALSE(

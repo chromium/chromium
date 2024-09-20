@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1444443021901415601">O Chrome regista tópicos de interesse com base no seu histórico de navegação recente</translation>
 <translation id="2252052615723281030">Quando tem sessão iniciada no Chrome, esta definição ajuda a manter o seu endereço IP privado. Se o Chrome suspeitar que um site pode estar a fazer o acompanhamento do seu perfil, algum do seu tráfego pode ser enviado através de servidores de privacidade.</translation>
+<translation id="2793385791865768072">O Chromium regista tópicos de interesse com base no seu histórico de navegação recente</translation>
 <translation id="33479675708419823">Quando tem sessão iniciada no Chrome, esta definição ajuda a manter o seu endereço IP privado. Se o Chrome suspeitar que um site pode estar a fazer o acompanhamento do seu perfil, algum do seu tráfego pode ser enviado através de servidores de privacidade. Saiba <ph name="LINK_BEGIN" />como funciona a proteção de IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Saiba como ocultar o seu endereço IP</translation>
+<translation id="4041687306270459969">Os tópicos de anúncios com mais de 4 semanas são eliminados automaticamente. Os tópicos incluem, por exemplo, Desporto, Vestuário e muito mais</translation>
+<translation id="4177501066905053472">Tópicos de anúncios</translation>
 <translation id="4301151630239508244">Os tópicos de anúncios são apenas um dos muitos elementos que um site pode usar para personalizar anúncios. Mesmo sem tópicos de anúncios, os sites podem continuar a mostrar-lhe anúncios, mas estes podem ser menos personalizados. Saiba mais sobre a <ph name="BEGIN_LINK_1" />gestão da privacidade dos anúncios<ph name="END_LINK_1" />.</translation>
+<translation id="453692855554576066">Pode ver os seus tópicos de anúncios nas definições do Chromium e bloquear os que não quer partilhar com os sites</translation>
 <translation id="4598427486995631491">Ocultar endereço IP</translation>
+<translation id="4692439979815346597">Pode ver os seus tópicos de anúncios nas definições do Chrome e bloquear os que não quer partilhar com os sites</translation>
+<translation id="5413586988657235240">Os sites que visitar podem pedir ao Chromium tópicos para lhe mostrar anúncios relevantes enquanto protegem o seu histórico de navegação e identidade</translation>
+<translation id="6186536480878693792">Os sites que visita podem pedir ao Chrome tópicos para lhe mostrar anúncios relevantes enquanto protegem o seu histórico de navegação e identidade</translation>
 <translation id="6371812158043974664">Quando tem sessão iniciada no Chromium, esta definição ajuda a manter o seu endereço IP privado. Se o Chromium suspeitar que um site pode estar a fazer o acompanhamento do seu perfil, algum do seu tráfego pode ser enviado através de servidores de privacidade. Saiba <ph name="LINK_BEGIN" />como funciona a proteção de IP<ph name="LINK_END" /></translation>
 <translation id="7040031291654706261">Saiba <ph name="BEGIN_LINK" />como funciona a proteção de IP<ph name="END_LINK" /></translation>
+<translation id="7475768947023614021">Reveja a definição de tópicos de anúncios</translation>
 </translationbundle>

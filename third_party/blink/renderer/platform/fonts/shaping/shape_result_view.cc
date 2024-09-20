@@ -257,8 +257,10 @@ void ShapeResultView::PopulateRunInfoParts(const ShapeResultType& other,
     } else {
       range = run->FindGlyphDataRange(range_start, range_end);
       part_width = std::accumulate(
-          range.begin, range.end, 0.0f,
-          [](float sum, auto& glyph) { return sum + glyph.advance; });
+          range.begin, range.end, InlineLayoutUnit(),
+          [](InlineLayoutUnit sum, const auto& glyph) {
+            return sum + glyph.advance.template To<InlineLayoutUnit>();
+          });
     }
 
     // Adjust start_index for runs to be continuous.
@@ -389,7 +391,7 @@ float ShapeResultView::ForEachGlyphImpl(float initial_advance,
                                         const RunInfoPart& part) const {
   auto glyph_offsets = part.GetGlyphOffsets<has_non_zero_glyph_offsets>();
   const auto& run = part.run_;
-  auto total_advance = initial_advance;
+  auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
   bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run->direction_);
   const SimpleFontData* font_data = run->font_data_.Get();
   const unsigned character_index_offset_for_glyph_data =
@@ -431,7 +433,7 @@ float ShapeResultView::ForEachGlyphImpl(float initial_advance,
                                         void* context,
                                         const RunInfoPart& part) const {
   auto glyph_offsets = part.GetGlyphOffsets<has_non_zero_glyph_offsets>();
-  auto total_advance = initial_advance;
+  auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
   const auto& run = part.run_;
   bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run->direction_);
   const SimpleFontData* font_data = run->font_data_.Get();
@@ -536,18 +538,18 @@ float ShapeResultView::ForEachGraphemeClusters(const StringView& text,
 
       if ((rtl && current_character_index >= to) ||
           (!rtl && current_character_index < from)) {
-        advance_so_far += glyph_data.advance;
+        advance_so_far += glyph_data.advance.ToFloat();
         rtl ? --cluster_start : ++cluster_start;
         continue;
       }
 
-      cluster_advance += glyph_data.advance;
+      cluster_advance += glyph_data.advance.ToFloat();
 
       if (text.Is8Bit()) {
         callback(context, current_character_index, advance_so_far, 1,
                  glyph_data.advance, run->canvas_rotation_);
 
-        advance_so_far += glyph_data.advance;
+        advance_so_far += glyph_data.advance.ToFloat();
       } else if (is_cluster_end) {
         uint16_t cluster_end;
         if (rtl) {
@@ -600,6 +602,7 @@ void ShapeResultView::ComputePartInkBounds(
 #endif
 
   GlyphBoundsAccumulator<is_horizontal_run> bounds;
+  InlineLayoutUnit origin = InlineLayoutUnit::FromFloatCeil(run_advance);
   for (unsigned j = 0; j < num_glyphs; ++j) {
     const HarfBuzzRunGlyphData& glyph_data = part.GlyphAt(j);
 #if BUILDFLAG(IS_APPLE)
@@ -608,8 +611,8 @@ void ShapeResultView::ComputePartInkBounds(
 #else
     gfx::RectF glyph_bounds = gfx::SkRectToRectF(bounds_list[j]);
 #endif
-    bounds.Unite(glyph_bounds, run_advance, *glyph_offsets);
-    run_advance += glyph_data.advance;
+    bounds.Unite(glyph_bounds, origin, *glyph_offsets);
+    origin += glyph_data.advance;
     ++glyph_offsets;
   }
 

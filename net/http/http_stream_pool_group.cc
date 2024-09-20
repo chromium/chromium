@@ -101,16 +101,20 @@ HttpStreamPool::Group::~Group() {
 
 std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
     Job::Delegate* delegate,
-    NextProto expected_protocol) {
+    NextProto expected_protocol,
+    bool is_http1_allowed,
+    ProxyInfo proxy_info) {
   EnsureAttemptManager();
   return std::make_unique<Job>(delegate, attempt_manager_.get(),
-                               expected_protocol);
+                               expected_protocol, is_http1_allowed,
+                               std::move(proxy_info));
 }
 
 void HttpStreamPool::Group::StartJob(
     Job* job,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    RespectLimits respect_limits,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
@@ -135,7 +139,7 @@ void HttpStreamPool::Group::StartJob(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_BOUND, net_log_.source());
   EnsureAttemptManager();
   attempt_manager_->StartJob(
-      job, priority, allowed_bad_certs, enable_ip_based_pooling,
+      job, priority, allowed_bad_certs, respect_limits, enable_ip_based_pooling,
       enable_alternative_services, quic_version, net_log);
 }
 
@@ -149,6 +153,11 @@ int HttpStreamPool::Group::Preconnect(size_t num_streams,
     dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
     return dict;
   });
+
+  if (ActiveStreamSocketCount() >= num_streams) {
+    return OK;
+  }
+
   EnsureAttemptManager();
   return attempt_manager_->Preconnect(num_streams, quic_version,
                                       std::move(callback));
@@ -158,13 +167,11 @@ std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
     std::unique_ptr<StreamSocket> socket,
     StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
-  CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
-
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
 
-  auto handle = std::make_unique<HttpStreamPoolHandle>(this, std::move(socket),
-                                                       generation_);
+  auto handle = std::make_unique<HttpStreamPoolHandle>(
+      weak_ptr_factory_.GetWeakPtr(), std::move(socket), generation_);
   handle->set_connect_timing(connect_timing);
   handle->set_reuse_type(reuse_type);
   return handle;

@@ -69,7 +69,11 @@ class NavigationTransitionData {
     // orientation.
     kCacheMissScreenshotOrientation = 12,
 
-    kMaxValue = kCacheMissScreenshotOrientation
+    // Screenshot is not captured when the page is crashed.
+    kNavigateAwayFromCrashedPage = 13,
+    kNavigateAwayFromCrashedPageNoEarlySwap = 14,
+
+    kMaxValue = kNavigateAwayFromCrashedPageNoEarlySwap
   };
 
   NavigationTransitionData() = default;

@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
@@ -497,9 +498,10 @@ AccountInfo GetSingleAccountForPromos(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 content::WebContents* GetSignInTabWithAccessPoint(
-    const Browser& browser,
+    BrowserWindowInterface* browser_window_interface,
     signin_metrics::AccessPoint access_point) {
-  TabStripModel* tab_strip = browser.tab_strip_model();
+  TabStripModel* tab_strip =
+      browser_window_interface->GetFeatures().tab_strip_model();
   int tab_count = tab_strip->count();
   for (int tab_index = 0; tab_index < tab_count; ++tab_index) {
     content::WebContents* web_contents = tab_strip->GetWebContentsAt(tab_index);

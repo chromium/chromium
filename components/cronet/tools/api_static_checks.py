@@ -62,11 +62,6 @@ ALLOWED_EXCEPTIONS = [
     'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderImpl/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
     'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderImpl/rewind -> org/chromium/net/UploadDataSink/onRewindSucceeded:()V',
     'org.chromium.net.impl.CronetEngineBase/newBidirectionalStreamBuilder -> org/chromium/net/ExperimentalCronetEngine/newBidirectionalStreamBuilder:(Ljava/lang/String;Lorg/chromium/net/BidirectionalStream$Callback;Ljava/util/concurrent/Executor;)Lorg/chromium/net/ExperimentalBidirectionalStream$Builder;',
-    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getSentByteCount:()Ljava/lang/Long;',
-    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getReceivedByteCount:()Ljava/lang/Long;',
-    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestStart:()Ljava/util/Date;',
-    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getResponseStart:()Ljava/util/Date;',
-    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestEnd:()Ljava/util/Date;',
     'org.chromium.net.impl.NetworkExceptionImpl/getMessage -> org/chromium/net/NetworkException/getMessage:()Ljava/lang/String;',
 ]
 

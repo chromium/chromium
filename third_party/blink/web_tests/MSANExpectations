@@ -119,3 +119,4 @@ crbug.com/331926164 [ Linux ] http/tests/inspector-protocol/accessibility/access
 
 # Chrome crashes on start up
 crbug.com/360008882 external/wpt/secure-payment-confirmation/* [ Skip ]
+crbug.com/360008882 wpt_internal/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Skip ]

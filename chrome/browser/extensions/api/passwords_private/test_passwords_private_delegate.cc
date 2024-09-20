@@ -260,14 +260,14 @@ TestPasswordsPrivateDelegate::GetExportProgressStatus() {
   return api::passwords_private::ExportProgressStatus::kInProgress;
 }
 
-bool TestPasswordsPrivateDelegate::IsOptedInForAccountStorage() {
-  return is_opted_in_for_account_storage_;
+bool TestPasswordsPrivateDelegate::IsAccountStorageEnabled() {
+  return is_account_storage_enabled_;
 }
 
-void TestPasswordsPrivateDelegate::SetAccountStorageOptIn(
-    bool opt_in,
+void TestPasswordsPrivateDelegate::SetAccountStorageEnabled(
+    bool enabled,
     content::WebContents* web_contents) {
-  is_opted_in_for_account_storage_ = opt_in;
+  is_account_storage_enabled_ = enabled;
 }
 
 std::vector<api::passwords_private::PasswordUiEntry>
@@ -384,8 +384,8 @@ void TestPasswordsPrivateDelegate::SetProfile(Profile* profile) {
   profile_ = profile;
 }
 
-void TestPasswordsPrivateDelegate::SetOptedInForAccountStorage(bool opted_in) {
-  is_opted_in_for_account_storage_ = opted_in;
+void TestPasswordsPrivateDelegate::SetAccountStorageEnabled(bool enabled) {
+  is_account_storage_enabled_ = enabled;
 }
 
 void TestPasswordsPrivateDelegate::SetIsAccountStoreDefault(bool is_default) {

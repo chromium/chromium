@@ -10,6 +10,8 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -159,11 +161,18 @@ void PasswordSelectionScreen::ProcessOptions() {
       exit_callback_.Run(Result::NOT_APPLICABLE);
       return;
     case WizardContext::AuthChangeFlow::kRecovery:
-      CHECK(auth_factors_config_.HasConfiguredFactor(
-          cryptohome::AuthFactorType::kPassword))
-          << "User need to have a password that should be updated";
-      if (auth::IsLocalPassword(*auth_factors_config_.FindFactorByType(
-              cryptohome::AuthFactorType::kPassword))) {
+      if (!auth_factors_config_.HasConfiguredFactor(
+              cryptohome::AuthFactorType::kPassword)) {
+        // Here if the user does not have any password configured then we can
+        // let them set their password according to the same condition as OOBE.
+        // What is to note here is that after recovery, we already know the GAIA
+        // password so both GAIA and local password factor are possible.
+        LOG(ERROR) << "User does not have password configured when "
+                      "performing recovery unexpectedly.";
+        base::debug::DumpWithoutCrashing();
+        break;
+      } else if (auth::IsLocalPassword(*auth_factors_config_.FindFactorByType(
+                     cryptohome::AuthFactorType::kPassword))) {
         exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
         return;
       } else {
@@ -213,7 +222,6 @@ void PasswordSelectionScreen::ProcessOptions() {
     exit_callback_.Run(Result::GAIA_PASSWORD_ENTERPRISE);
     return;
   }
-
   if (!has_online_password_) {
     LOG(WARNING)
         << "User does not have online password, forcing local password";
@@ -221,6 +229,7 @@ void PasswordSelectionScreen::ProcessOptions() {
     exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
     return;
   }
+
   EstablishKnowledgeFactorGuard(
       base::BindOnce(&PasswordSelectionScreen::ShowPasswordChoice,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -85,7 +85,8 @@ public class GamepadList {
 
     private void attachedToWindow(Context context) {
         if (mAttachedToWindowCounter++ == 0) {
-            mInputManager = (InputManager) context.getSystemService(Context.INPUT_SERVICE);
+            mInputManager = (InputManager) context.getApplicationContext()
+                    .getSystemService(Context.INPUT_SERVICE);
             synchronized (mLock) {
                 initializeDevices();
             }

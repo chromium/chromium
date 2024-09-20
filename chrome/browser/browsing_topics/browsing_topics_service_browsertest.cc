@@ -383,11 +383,15 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
       : prerender_helper_(
             base::BindRepeating(&BrowsingTopicsBrowserTest::web_contents,
                                 base::Unretained(this))) {
-    scoped_feature_list_.InitWithFeatures(
+    // Configure a long epoch_retention_duration to prevent epochs from expiring
+    // during tests where expiration is irrelevant.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {blink::features::kBrowsingTopics,
-         blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
-         features::kPrivacySandboxAdsAPIsOverride},
+        {{blink::features::kBrowsingTopics, {}},
+         {blink::features::kBrowsingTopicsParameters,
+          {{"epoch_retention_duration", "3650000d"}}},
+         {blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck, {}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
         /*disabled_features=*/{});
   }
 
@@ -1729,6 +1733,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Fetch) {
     histogram_tester.ExpectBucketCount(
         "Blink.UseCounter.Features", blink::mojom::WebFeature::kTopicsAPIFetch,
         1);
+    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                    blink::mojom::WebFeature::kTopicsAPIAll,
+                                    1);
   }
 }
 
@@ -2445,15 +2452,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
 // Tests that the Topics API abides by the Privacy Sandbox Enrollment framework.
 class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
  public:
-  AttestationBrowsingTopicsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kBrowsingTopics,
-         blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
-         features::kPrivacySandboxAdsAPIsOverride},
-        /*disabled_features=*/{});
-  }
-
   void SetUpOnMainThread() override {
     // This test suite tests Privacy Sandbox Attestations related behaviors,
     // turn off the setting that makes all APIs considered attested.
@@ -2463,9 +2461,6 @@ class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
   }
 
   ~AttestationBrowsingTopicsBrowserTest() override = default;
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Site a.test is attested for Topics, so it should receive a valid response.

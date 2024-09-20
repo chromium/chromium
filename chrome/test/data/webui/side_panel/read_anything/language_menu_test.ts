@@ -338,21 +338,46 @@ suite('LanguageMenu', () => {
             assertLanguageNotification('', getNotificationItems()[1]!);
           });
 
-      test('shows generic error notification with internet', async () => {
-        enabledLangs = ['Italian', 'English (United States)'];
-        languageMenu.enabledLangs = enabledLangs;
-        document.body.appendChild(languageMenu);
-        languagesToNotificationMap['it'] =
-            VoiceClientSideStatusCode.ERROR_INSTALLING;
-        languageMenu.voicePackInstallStatus = {...languagesToNotificationMap};
-        await microtasksFinished();
+      test(
+          'shows generic error notification with internet and no other voices for this language',
+          async () => {
+            enabledLangs = ['Italian', 'English (United States)'];
+            // Remove the italian voice so we can test when there's no voices
+            // for this language.
+            languageMenu.availableVoices =
+                availableVoices.filter(v => v.lang !== 'it-IT');
+            languageMenu.enabledLangs = enabledLangs;
+            document.body.appendChild(languageMenu);
+            languagesToNotificationMap['it'] =
+                VoiceClientSideStatusCode.ERROR_INSTALLING;
+            languageMenu.voicePackInstallStatus = {
+                ...languagesToNotificationMap};
+            await microtasksFinished();
 
-        assertEquals(3, getNotificationItems().length);
-        assertLanguageNotification('', getNotificationItems()[0]!);
-        assertLanguageNotification('', getNotificationItems()[1]!);
-        assertLanguageNotification(
-            'Download failed', getNotificationItems()[2]!);
-      });
+            assertEquals(3, getNotificationItems().length);
+            assertLanguageNotification('', getNotificationItems()[0]!);
+            assertLanguageNotification('', getNotificationItems()[1]!);
+            assertLanguageNotification(
+                'Download failed', getNotificationItems()[2]!);
+          });
+
+      test(
+          'shows no error notification when other voices for this language are available',
+          async () => {
+            enabledLangs = ['Italian', 'English (United States)'];
+            languageMenu.enabledLangs = enabledLangs;
+            document.body.appendChild(languageMenu);
+            languagesToNotificationMap['it'] =
+                VoiceClientSideStatusCode.ERROR_INSTALLING;
+            languageMenu.voicePackInstallStatus = {
+                ...languagesToNotificationMap};
+            await microtasksFinished();
+
+            assertEquals(3, getNotificationItems().length);
+            assertLanguageNotification('', getNotificationItems()[0]!);
+            assertLanguageNotification('', getNotificationItems()[1]!);
+            assertLanguageNotification('', getNotificationItems()[2]!);
+          });
 
       test('does not show old error notifications', async () => {
         languageMenu.voicePackInstallStatus = {

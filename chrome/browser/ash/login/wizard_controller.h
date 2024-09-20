@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quickstart_controller.h"
 #include "chrome/browser/ash/login/screen_manager.h"
+#include "chrome/browser/ash/login/screens/account_selection_screen.h"
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
@@ -356,6 +357,7 @@ class WizardController : public OobeUI::Observer {
   void ShowPersonalizedRecomendAppsScreen();
   void ShowPerksDiscoveryScreen();
   void ShowSplitModifierKeyboardInfoScreen();
+  void ShowAccountSelectionScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -477,6 +479,7 @@ class WizardController : public OobeUI::Observer {
   void OnDeviceDisabledChecked(bool device_disabled);
   void OnSplitModifierKeyboardInfoScreenExit(
       SplitModifierKeyboardInfoScreen::Result result);
+  void OnAccountSelectionScreenExit(AccountSelectionScreen::Result result);
 
   // Shows update screen and starts update process.
   void InitiateOOBEUpdate();
@@ -544,11 +547,8 @@ class WizardController : public OobeUI::Observer {
   bool SetOnTimeZoneResolvedForTesting(base::OnceClosure callback);
 
   // Start the enrollment screen using the config from
-  // `prescribed_enrollment_config_`. If `force_interactive` is true,
-  // the user will be presented with a manual enrollment screen requiring
-  // Gaia credentials. If it is false, the screen may return after trying
-  // attestation-based enrollment if appropriate.
-  void StartEnrollmentScreen(bool force_interactive);
+  // `prescribed_enrollment_config_`.
+  void StartEnrollmentScreen();
   void ShowEnrollmentScreenIfEligible();
 
   void NotifyScreenChanged();

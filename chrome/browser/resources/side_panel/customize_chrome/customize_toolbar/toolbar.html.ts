@@ -37,11 +37,16 @@ export function getHtml(this: ToolbarElement) {
               this.actions_.map(
                   (action) => action.category === category.id ?
                       html`
-      <div class="toggle-container choose-icons-row">
+      <div
+        class="toggle-container choose-icons-row"
+        @click="${this.getActionToggleHandler_(action.id, !action.pinned)}"
+      >
         <img class="toggle-icon" src="${action.iconUrl.url}"
             aria-hidden="true"></img>
         <div class="toggle-title">${action.displayName}</div>
-        <cr-toggle @change="${this.getActionToggleHandler_(action.id)}"
+        <cr-toggle @change="${
+                          this.getActionToggleHandler_(
+                              action.id, !action.pinned)}"
             ?checked="${action.pinned}" aria-label="${
                           action.displayName}"></cr-toggle>
       </div>

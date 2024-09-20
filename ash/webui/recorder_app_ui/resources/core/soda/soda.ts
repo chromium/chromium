@@ -270,6 +270,12 @@ export class Transcription {
     return this.textTokens.length === 0;
   }
 
+  get wordCount(): number {
+    // TODO(kamchonlathorn): The definition of "word count" can be ambiguous and
+    // the word count for non-English languages can be different.
+    return this.textTokens.filter((token) => token.kind === 'textPart').length;
+  }
+
   /**
    * Concatenates textTokens into the string representation of the
    * transcription.

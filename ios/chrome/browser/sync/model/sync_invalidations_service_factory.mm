@@ -15,10 +15,15 @@
 
 // static
 syncer::SyncInvalidationsService*
-SyncInvalidationsServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+SyncInvalidationsServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+syncer::SyncInvalidationsService*
+SyncInvalidationsServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<syncer::SyncInvalidationsService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

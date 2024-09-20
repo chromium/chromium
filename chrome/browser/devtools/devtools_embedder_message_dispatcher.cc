@@ -89,14 +89,15 @@ bool GetValue(const base::Value& value, ImpressionEvent* event) {
     if (!impression.is_dict()) {
       return false;
     }
-    std::optional<int> id = impression.GetDict().FindInt("id");
+    std::optional<double> id = impression.GetDict().FindDouble("id");
     std::optional<int> type = impression.GetDict().FindInt("type");
     if (!id || !type) {
       return false;
     }
-    event->impressions.emplace_back(VisualElementImpression{*id, *type});
+    event->impressions.emplace_back(
+        VisualElementImpression{static_cast<int64_t>(*id), *type});
 
-    std::optional<int> parent = impression.GetDict().FindInt("parent");
+    std::optional<double> parent = impression.GetDict().FindDouble("parent");
     if (parent) {
       event->impressions.back().parent = *parent;
     }
@@ -121,7 +122,7 @@ bool GetValue(const base::Value& value, ResizeEvent* event) {
     return false;
   }
 
-  std::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<double> veid = value.GetDict().FindDouble("veid");
   if (!veid) {
     return false;
   }
@@ -143,7 +144,7 @@ bool GetValue(const base::Value& value, ClickEvent* event) {
     return false;
   }
 
-  std::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<double> veid = value.GetDict().FindDouble("veid");
   if (!veid) {
     return false;
   }
@@ -169,7 +170,7 @@ bool GetValue(const base::Value& value, HoverEvent* event) {
     return false;
   }
 
-  std::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<double> veid = value.GetDict().FindDouble("veid");
   if (!veid) {
     return false;
   }
@@ -191,7 +192,7 @@ bool GetValue(const base::Value& value, DragEvent* event) {
     return false;
   }
 
-  std::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<double> veid = value.GetDict().FindDouble("veid");
   if (!veid) {
     return false;
   }
@@ -213,7 +214,7 @@ bool GetValue(const base::Value& value, ChangeEvent* event) {
     return false;
   }
 
-  std::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<double> veid = value.GetDict().FindDouble("veid");
   if (!veid) {
     return false;
   }
@@ -231,7 +232,7 @@ bool GetValue(const base::Value& value, KeyDownEvent* event) {
     return false;
   }
 
-  std::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<double> veid = value.GetDict().FindDouble("veid");
   if (veid) {
     event->veid = *veid;
   }

@@ -745,6 +745,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="11" label="Failed on Install"/>
   <int value="12" label="Failed on GetDlcState"/>
   <int value="13" label="Unexpected empty DLC id"/>
+  <int value="14" label="dlcservice returned Internal error"/>
 </enum>
 
 <enum name="ModemfwdDlcUninstallResult">
@@ -770,6 +771,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="6" label="Failure returned by helper"/>
   <int value="7" label="Init journal failure"/>
   <int value="8" label="Non LTE SKU"/>
+  <int value="9" label="Failure returned by helper. Modem never seen"/>
 </enum>
 
 <enum name="ModemfwdFWUpdateLocation">

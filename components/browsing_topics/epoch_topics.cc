@@ -247,4 +247,15 @@ void EpochTopics::ClearContextDomain(
   }
 }
 
+void EpochTopics::ScheduleExpiration(base::OnceClosure on_expiration_callback) {
+  CHECK(!expiration_timer_);
+  expiration_timer_ = std::make_unique<base::WallClockTimer>();
+
+  expiration_timer_->Start(
+      FROM_HERE,
+      calculation_time_ +
+          blink::features::kBrowsingTopicsEpochRetentionDuration.Get(),
+      std::move(on_expiration_callback));
+}
+
 }  // namespace browsing_topics

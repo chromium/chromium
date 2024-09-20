@@ -1,4 +1,7 @@
 <style include="cr-shared-style settings-shared settings-columned-section">
+  .flex {
+    flex: 1;
+  }
   .item-label {
     font-size: 11px;
     line-height: 11px;
@@ -54,16 +57,47 @@
 <template is="dom-if"
     if="[[prefs.autofill.prediction_improvements.enabled.value]]">
   <div id="entriesHeader" class="cr-row">
-    <h2>$i18n{autofillPredictionImprovementsUserAnnotationsHeader}</h2>
+    <h2 class="flex">
+      $i18n{autofillPredictionImprovementsUserAnnotationsHeader}
+    </h2>
+    <cr-button id="deleteAllEntries" class="header-aligned-button"
+        on-click="onDeleteAllEntriesClick_"
+        disabled="[[!userAnnotationsEntries_.length]]">
+      $i18n{autofillPredictionImprovementsDeleteAllEntriesButtonLabel}
+    </cr-button>
   </div>
   <ul id="entries" class="list-frame vertical-list">
     <template is="dom-repeat" items="[[userAnnotationsEntries_]]">
       <li class="list-item">
-        <div>
+        <div class="start">
           <div class="cr-secondary-text item-label">[[item.key]]</div>
           [[item.value]]
         </div>
+        <cr-icon-button iron-icon="cr20:delete"
+            on-click="onDeleteEntryCick_"
+            title="$i18n{autofillPredictionImprovementsDeleteEntryDialogTitle}">
+        </cr-icon-button>
       </li>
     </template>
   </ul>
+</template>
+
+<template is="dom-if" if="[[entryToDelete_]]" restamp>
+  <settings-simple-confirmation-dialog id="deleteEntryDialog"
+      title-text="$i18n{autofillPredictionImprovementsDeleteEntryDialogTitle}"
+      body-text="[[deleteEntryConfirmationText_]]"
+      confirm-text="$i18n{delete}"
+      on-close="onDeleteEntryDialogClose_">
+  </settings-simple-confirmation-dialog>
+</template>
+
+<template is="dom-if" if="[[deleteAllEntriesConfirmationShown_]]" restamp>
+  <settings-simple-confirmation-dialog id="deleteAllEntriesDialog"
+      title-text=
+          "$i18n{autofillPredictionImprovementsDeleteAllEntriesDialogTitle}"
+      body-text=
+          "$i18n{autofillPredictionImprovementsDeleteAllEntriesDialogText}"
+      confirm-text="$i18n{delete}"
+      on-close="onDeleteAllEntriesDialogClose_">
+  </settings-simple-confirmation-dialog>
 </template>

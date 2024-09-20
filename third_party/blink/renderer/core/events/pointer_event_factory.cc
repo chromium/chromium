@@ -302,10 +302,7 @@ void PointerEventFactory::SetEventSpecificFields(
       type != event_type_names::kPointerrawupdate &&
       type != event_type_names::kGotpointercapture &&
       type != event_type_names::kLostpointercapture);
-  pointer_event_init->setComposed(
-      RuntimeEnabledFeatures::NonComposedEnterLeaveEventsEnabled()
-          ? !is_pointer_enter_or_leave
-          : true);
+  pointer_event_init->setComposed(!is_pointer_enter_or_leave);
   pointer_event_init->setDetail(0);
 }
 

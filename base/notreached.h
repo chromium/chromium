@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging_buildflags.h"
 
@@ -36,7 +37,7 @@ namespace logging {
 // This function is used to be able to detect NOTREACHED() failures in stack
 // traces where this symbol is preserved (even if inlined). Its implementation
 // matches logging::CheckFailure() but intentionally uses a different signature.
-[[noreturn]] IMMEDIATE_CRASH_ALWAYS_INLINE void NotReachedFailure() {
+[[noreturn]] NOMERGE IMMEDIATE_CRASH_ALWAYS_INLINE void NotReachedFailure() {
   base::ImmediateCrash();
 }
 

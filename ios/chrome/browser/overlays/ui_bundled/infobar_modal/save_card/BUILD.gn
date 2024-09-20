@@ -36,7 +36,10 @@ source_set("save_card") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "save_card_infobar_modal_overlay_mediator_unittest.mm" ]
+  sources = [
+    "save_card_infobar_modal_overlay_coordinator_unittest.mm",
+    "save_card_infobar_modal_overlay_mediator_unittest.mm",
+  ]
 
   deps = [
     "//base/test:test_support",
@@ -48,6 +51,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/overlays:overlay_type",
     "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test",
     "//ios/chrome/browser/infobars/model/test",
     "//ios/chrome/browser/overlays/model",
@@ -56,9 +60,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/model/test",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card",
     "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test:test",
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/chrome/browser/ui/infobars/modals/test",
     "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",

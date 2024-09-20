@@ -1055,8 +1055,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
 
   if (!remount_delay) {
     if (failed_to_mount && !is_online_) {
-      logger_.Log(logging::LOGGING_WARNING,
-                  "DriveFs failed to start; will retry when online");
+      LOG(WARNING) << "DriveFs failed to start; will retry when online";
       remount_when_online_ = true;
       return;
     }
@@ -1066,8 +1065,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
     ++drivefs_total_failures_count_;
     if (drivefs_total_failures_count_ > 10) {
       mount_failed_ = true;
-      logger_.Log(logging::LOGGING_ERROR,
-                  "DriveFs is too crashy. Leaving it alone.");
+      LOG(ERROR) << "DriveFs is too crashy. Leaving it alone";
       RecordBulkPinningMountFailureReason(
           profile_, BulkPinningMountFailureReason::kMoreThanTenTotalFailures);
       for (Observer& observer : observers_) {
@@ -1078,8 +1076,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
     }
     if (drivefs_consecutive_failures_count_ > 3) {
       mount_failed_ = true;
-      logger_.Log(logging::LOGGING_ERROR,
-                  "DriveFs keeps failing at start. Giving up.");
+      LOG(ERROR) << "DriveFs keeps failing at start. Giving up";
       RecordBulkPinningMountFailureReason(
           profile_, BulkPinningMountFailureReason::kThreeConsecutiveFailures);
       for (Observer& observer : observers_) {
@@ -1090,8 +1087,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
     }
     remount_delay =
         Seconds(5 * (1 << (drivefs_consecutive_failures_count_ - 1)));
-    logger_.Log(logging::LOGGING_WARNING, "DriveFs died, retry in %d seconds",
-                static_cast<int>(remount_delay.value().InSeconds()));
+    LOG(WARNING) << "DriveFs died, retry in " << remount_delay.value();
   }
 
   SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

@@ -56,9 +56,6 @@ BASE_DECLARE_FEATURE(kCreateWarningShownClientSafeBrowsingReports);
 // the current prompt which is a dialog/modal.
 BASE_DECLARE_FEATURE(kDangerousDownloadInterstitial);
 
-// Controls whether we prompt the user on unencrypted deep scans.
-BASE_DECLARE_FEATURE(kDeepScanningPromptRemoval);
-
 // Controls whether we use new broader criteria for deep scans.
 BASE_DECLARE_FEATURE(kDeepScanningCriteria);
 
@@ -150,9 +147,6 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryPotentialPasswordTheft);
 // Extension Telemetry service reports.
 BASE_DECLARE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions);
 
-// Prompt users to re-enable Android app verification on APK download.
-BASE_DECLARE_FEATURE(kGooglePlayProtectPrompt);
-
 // Whether to provide Google Play Protect status in APK telemetry pings
 BASE_DECLARE_FEATURE(kGooglePlayProtectInApkTelemetry);
 
@@ -202,10 +196,6 @@ BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 // enterprise interstitials.
 BASE_DECLARE_FEATURE(kRealTimeUrlFilteringCustomMessage);
 
-// Enables a ripple effect that is triggered when a user enables the enhanced
-// protection radio button on the chrome://settings/security page.
-BASE_DECLARE_FEATURE(kRippleForEnhancedProtection);
-
 // Controls whether asynchronous real-time check is enabled. When enabled, the
 // navigation can be committed before real-time Safe Browsing check is
 // completed.
@@ -216,6 +206,13 @@ BASE_DECLARE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation);
 
 // Controls whether cookies are removed when the access token is present.
 BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
+
+#if BUILDFLAG(IS_ANDROID)
+// Enables sync checker to check allowlist first on Chrome on Android. This is
+// an optimization to improve the speed of Safe Browsing checks.
+// See go/skip-sync-hpd-allowlist-android for details.
+BASE_DECLARE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist);
+#endif
 
 // Automatically revoke abusive notifications in Safety Hub.
 BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);

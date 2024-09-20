@@ -404,14 +404,15 @@ public final class AwBrowserProcess {
     }
 
     /**
-     * Pass Minidumps to a separate Service declared in the WebView provider package.
-     * That Service will copy the Minidumps to its own data directory - at which point we can delete
-     * our copies in the app directory.
+     * Pass Minidumps to a separate Service declared in the WebView provider package. That Service
+     * will copy the Minidumps to its own data directory - at which point we can delete our copies
+     * in the app directory.
+     *
      * @param userApproved whether we have user consent to upload crash data - if we do, copy the
-     * minidumps, if we don't, delete them.
+     *     minidumps, if we don't, delete them.
      */
     public static void handleMinidumps(boolean userApproved) {
-        sSequencedTaskRunner.postTask(() -> handleMinidumpsInternal(userApproved));
+        sSequencedTaskRunner.execute(() -> handleMinidumpsInternal(userApproved));
     }
 
     private static void handleMinidumpsInternal(final boolean userApproved) {
@@ -449,7 +450,7 @@ public final class AwBrowserProcess {
                             mHasConnected = true;
                             // onServiceConnected is called on the UI thread, so punt
                             // this back to the background thread.
-                            sSequencedTaskRunner.postTask(
+                            sSequencedTaskRunner.execute(
                                     () -> {
                                         transmitMinidumps(
                                                 minidumpFiles,

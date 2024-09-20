@@ -210,6 +210,10 @@ void DiscardSystemPagesInternal(uint64_t address, size_t length) {
   PA_ZX_CHECK(status == ZX_OK, status);
 }
 
+bool SealSystemPagesInternal(uint64_t address, size_t length) {
+  return false;
+}
+
 void DecommitSystemPagesInternal(
     uint64_t address,
     size_t length,

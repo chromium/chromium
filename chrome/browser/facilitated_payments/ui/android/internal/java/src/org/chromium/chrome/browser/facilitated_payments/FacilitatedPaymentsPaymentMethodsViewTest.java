@@ -233,11 +233,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(
                 descriptionLine1.getText(),
                 hasToString(
-                        containsString(
-                                "By continuing, you agree to have your precise device location"
-                                    + " collected and shared with your account holder for fraud"
-                                    + " prevention purposes. To turn off Pix in Chrome, go to your"
-                                    + " payment settings")));
+                        containsString("To turn off Pix in Chrome, go to your payment settings")));
     }
 
     @Test

@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -15,12 +18,13 @@
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mutator.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+using browsing_data::DeleteBrowsingDataDialogAction;
 
 // Browing data type icon size.
 const CGFloat kDefaultSymbolSize = 24;
@@ -52,7 +56,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 @interface QuickDeleteBrowsingDataViewController () <
     TableViewLinkHeaderFooterItemDelegate> {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
-  browsing_data::TimePeriod _timeRange;
+
   NSString* _historySummary;
   NSString* _tabsSummary;
   NSString* _cacheSummary;
@@ -85,6 +89,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       UINavigationItemLargeTitleDisplayModeNever;
   self.navigationItem.leftBarButtonItem = [self cancelButton];
   self.navigationItem.rightBarButtonItem = [self confirmButton];
+  [self updateConfirmButtonEnabledStatus];
   self.title = l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_TITLE);
   [self loadModel];
 }
@@ -129,7 +134,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
 
   // Update selection value for the corresponding cell with `itemIdentifier`.
-  [self updateSelectionForItemIdentifier:itemIdentifier];
+  [self toggleSelectionForItemIdentifier:itemIdentifier];
 
   // Update the snapshot for the selected cell.
   [self updateSnapshotForItemIdentifier:itemIdentifier];
@@ -177,21 +182,21 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
   CHECK(url.gurl == kDBDSignOutOfChromeURL);
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kSignoutLinkOpened);
+  base::RecordAction(base::UserMetricsAction("ClearBrowsingData_SignOut"));
   [_delegate signOutAndShowActionSheet];
 }
 
 #pragma mark - QuickDeleteConsumer
 
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange {
-  if (_timeRange == timeRange) {
-    return;
-  }
-  _timeRange = timeRange;
+  // No-op: This ViewController doesn't make user of the selected time range.
 }
 
 - (void)setBrowsingDataSummary:(NSString*)summary {
-  // TODO(crbug.com/353211728): Remove this after refactoring the main page
-  // summary to use the new methods for results & selection.
+  // No-op: This ViewController doesn't show the overall browsing data summary.
 }
 
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter {
@@ -208,38 +213,28 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
-- (void)updateHistoryWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  _historySummary =
-      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+- (void)setHistorySummary:(NSString*)historySummary {
+  _historySummary = historySummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
 }
 
-- (void)updateTabsWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  _tabsSummary =
-      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+- (void)setTabsSummary:(NSString*)tabsSummary {
+  _tabsSummary = tabsSummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierTabs];
 }
 
-- (void)updateCacheWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  _cacheSummary =
-      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+- (void)setCacheSummary:(NSString*)cacheSummary {
+  _cacheSummary = cacheSummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierCache];
 }
 
-- (void)updatePasswordsWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  _passwordsSummary =
-      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+- (void)setPasswordsSummary:(NSString*)passwordsSummary {
+  _passwordsSummary = passwordsSummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierPasswords];
 }
 
-- (void)updateAutofillWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  _autofillSummary =
-      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+- (void)setAutofillSummary:(NSString*)autofillSummary {
+  _autofillSummary = autofillSummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierAutofill];
 }
 
@@ -283,6 +278,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 #pragma mark - Private
 
+// Updates the enabled status of the confirm button. The confirm button should
+// only be enabled if at least one browsing data type is selected for deletion.
+- (void)updateConfirmButtonEnabledStatus {
+  self.navigationItem.rightBarButtonItem.enabled =
+      _historySelected || _tabsSelected || _siteDataSelected ||
+      _cacheSelected || _passwordsSelected || _autofillSelected;
+}
+
 // Returns the cancel button on the navigation bar.
 - (UIBarButtonItem*)cancelButton {
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
@@ -306,12 +309,18 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 // Dismisses the page without saving changes in selection.
 - (void)onCancel:(id)sender {
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kCancelDataTypesSelected);
   [_delegate dismissBrowsingDataPage];
 }
 
 // Notifies the mutator of the confirmation of the browsing data types
 // selection.
 - (void)onConfirm:(id)sender {
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kUpdateDataTypesSelected);
   [_mutator updateHistorySelection:_historySelected];
   [_mutator updateTabsSelection:_tabsSelected];
   [_mutator updateSiteDataSelection:_siteDataSelected];
@@ -412,10 +421,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       [_dataSource snapshot];
   [snapshot reloadItemsWithIdentifiers:@[ @(itemIdentifier) ]];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+
+  [self updateConfirmButtonEnabledStatus];
 }
 
 // Toggles the selection for the given `itemIdentifier`.
-- (void)updateSelectionForItemIdentifier:(ItemIdentifier)itemIdentifier {
+- (void)toggleSelectionForItemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
     case ItemIdentifierHistory: {
       _historySelected = !_historySelected;
@@ -442,6 +453,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       break;
     }
   }
+  [self updateConfirmButtonEnabledStatus];
 }
 
 // Returns the icon for the given `itemIdentifier`.

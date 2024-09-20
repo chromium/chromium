@@ -44,6 +44,7 @@ CodecFactory::CreateVideoEncodeAccelerator() {
   DCHECK(video_encode_accelerator_enabled_);
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(vea_provider_.is_bound());
+  DCHECK(!channel_token_.is_empty());
 
   base::AutoLock lock(supported_profiles_lock_);
   // When |supported_vea_profiles_| is empty, no hw encoder is available or
@@ -55,9 +56,13 @@ CodecFactory::CreateVideoEncodeAccelerator() {
     return nullptr;
   }
 
+  media::mojom::EncodeCommandBufferIdPtr command_buffer_id =
+      media::mojom::EncodeCommandBufferId::New();
+  command_buffer_id->channel_token = channel_token_;
+  command_buffer_id->route_id = route_id_;
   mojo::PendingRemote<media::mojom::VideoEncodeAccelerator> vea;
   vea_provider_->CreateVideoEncodeAccelerator(
-      vea.InitWithNewPipeAndPassReceiver());
+      std::move(command_buffer_id), vea.InitWithNewPipeAndPassReceiver());
 
   if (!vea) {
     return nullptr;
@@ -104,6 +109,18 @@ void CodecFactory::NotifyEncoderSupportKnown(base::OnceClosure callback) {
   base::AutoLock lock(supported_profiles_lock_);
   encoder_support_notifier_.Register(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
+}
+
+void CodecFactory::OnChannelTokenReady(const base::UnguessableToken& token,
+                                       int32_t route_id) {
+  base::AutoLock lock(supported_profiles_lock_);
+  channel_token_ = token;
+  route_id_ = route_id;
+  // If encoder support failed, Notify may have already been
+  // called.  Explicitly check to see if Notify has been called.
+  if (IsEncoderReady() && !encoder_support_notifier_.is_notified()) {
+    encoder_support_notifier_.Notify();
+  }
 }
 
 CodecFactory::Notifier::Notifier() = default;
@@ -154,7 +171,13 @@ void CodecFactory::OnGetVideoEncodeAcceleratorSupportedProfiles(
         supported_profiles) {
   base::AutoLock lock(supported_profiles_lock_);
   supported_vea_profiles_ = supported_profiles;
-  encoder_support_notifier_.Notify();
+  if (IsEncoderReady()) {
+    encoder_support_notifier_.Notify();
+  }
+}
+
+bool CodecFactory::IsEncoderReady() {
+  return supported_vea_profiles_ && !channel_token_.is_empty();
 }
 
 void CodecFactory::BindOnTaskRunner(

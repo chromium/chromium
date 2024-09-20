@@ -71,7 +71,7 @@ class ComponentFiles {
                           const base::FilePath::CharType* files_list_file_name);
   ComponentFiles(const ComponentFiles&) = delete;
   ComponentFiles& operator=(const ComponentFiles&) = delete;
-  ~ComponentFiles() = default;
+  ~ComponentFiles();
 
   static std::unique_ptr<ComponentFiles> Load(
       const base::FilePath::CharType* files_list_file_name);
@@ -120,6 +120,21 @@ ComponentFiles::ComponentFiles(
       return;
     }
   }
+}
+
+ComponentFiles::~ComponentFiles() {
+  if (model_files_.empty()) {
+    return;
+  }
+
+  // Transfer ownership of the file handles to a thread that may block, and let
+  // them get destroyed there.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(
+          [](base::flat_map<base::FilePath, base::File> model_files) {},
+          std::move(model_files_)));
 }
 
 std::unique_ptr<ComponentFiles> ComponentFiles::Load(
@@ -380,7 +395,8 @@ void ScreenAIServiceRouter::InitializeOCR(
     base::TimeTicks request_start_time,
     mojo::PendingReceiver<mojom::OCRService> receiver,
     std::unique_ptr<ComponentFiles> component_files) {
-  if (component_files->model_files_.empty()) {
+  if (component_files->model_files_.empty() ||
+      !screen_ai_service_factory_.is_bound()) {
     ScreenAIServiceRouter::SetLibraryLoadState(Service::kOCR,
                                                request_start_time, false);
     return;
@@ -399,7 +415,8 @@ void ScreenAIServiceRouter::InitializeMainContentExtraction(
     base::TimeTicks request_start_time,
     mojo::PendingReceiver<mojom::MainContentExtractionService> receiver,
     std::unique_ptr<ComponentFiles> component_files) {
-  if (component_files->model_files_.empty()) {
+  if (component_files->model_files_.empty() ||
+      !screen_ai_service_factory_.is_bound()) {
     ScreenAIServiceRouter::SetLibraryLoadState(Service::kMainContentExtraction,
                                                request_start_time, false);
     return;

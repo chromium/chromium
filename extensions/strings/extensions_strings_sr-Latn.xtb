@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zamena crx datoteke nije uspela. Proverite da li se datoteka koristi.</translation>
 <translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Nije moguće otpakovati dodatak. Da biste bezbedno otpakovali dodatak, mora da postoji putanja do direktorijuma profila koja počinje slovom za oznaku jedinice i ne sadrži spoj, tačku povezivanja ili simboličku vezu. Za vaš profil ne postoji takva putanja.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Ulazna vrednost privatnog ključa mora biti važeća putanja.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Administrator ovog računara zahteva da dodatak <ph name="EXTENSION_NAME" /> bude instaliran. Ne možete da ga deinstalirate.</translation>
 <translation id="6027032947578871493">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Nije moguće otpakovati dodatak. Da biste bezbedno otpakovali dodatak, mora da postoji putanja do direktorijuma profila koja ne sadrži simboličku vezu. Za vaš profil ne postoji takva putanja.</translation>
 <translation id="6322279351188361895">Čitanje privatnog ključa nije uspelo.</translation>
 <translation id="6391538222494443604">Ulazni katalog mora da postoji.</translation>
 <translation id="641087317769093025">Nije moguće raspakovati dodatak</translation>

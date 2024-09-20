@@ -40,7 +40,7 @@ void RegisterPrefs(PrefService* pref_service) {
   pref_service->SetBoolean(companion::kExpsOptInStatusGrantedPref, false);
 }
 
-TEST_F(CompanionUtilsTest, PinnedStateCommandlineOverridePinned) {
+TEST_F(CompanionUtilsTest, DISABLED_PinnedStateCommandlineOverridePinned) {
   PrefService* const pref_service = browser()->profile()->GetPrefs();
   RegisterPrefs(pref_service);
 
@@ -56,7 +56,7 @@ TEST_F(CompanionUtilsTest, PinnedStateCommandlineOverridePinned) {
   EXPECT_EQ(0u, pref_service->GetList(prefs::kPinnedActions).size());
 }
 
-TEST_F(CompanionUtilsTest, PinnedStateCommandlineOverrideUnpinned) {
+TEST_F(CompanionUtilsTest, DISABLED_PinnedStateCommandlineOverrideUnpinned) {
   PrefService* const pref_service = browser()->profile()->GetPrefs();
 
   RegisterPrefs(pref_service);

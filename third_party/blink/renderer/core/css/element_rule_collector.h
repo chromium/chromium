@@ -69,28 +69,26 @@ class MatchedRule {
   // RuleData itself never escapes SortAndTransferMatchedRules() -- only
   // the other elements that it points to.
   MatchedRule(const RuleData* rule_data,
-              unsigned layer_order,
+              uint16_t layer_order,
               unsigned proximity,
               unsigned style_sheet_index)
       : rule_data_(rule_data),
-        layer_order_(layer_order),
-        proximity_(proximity),
+        sort_key_((static_cast<uint64_t>(layer_order) << 48) |
+                  (static_cast<uint64_t>(GetRuleData()->Specificity()) << 16) |
+                  (65535 - ClampTo<uint16_t>(proximity))),
         position_((static_cast<uint64_t>(style_sheet_index)
                    << kBitsForPositionInRuleData) +
                   rule_data->GetPosition()) {}
 
  private:
   const RuleData* GetRuleData() const { return rule_data_; }
-  uint64_t GetPosition() const { return position_; }
-  unsigned Specificity() const { return GetRuleData()->Specificity(); }
-  unsigned LayerOrder() const { return layer_order_; }
-  unsigned Proximity() const { return proximity_; }
+  uint16_t LayerOrder() const { return sort_key_ >> 48; }
+  uint64_t SortKey() const { return sort_key_; }
+  uint64_t GetPosition() const { return position_; }  // Secondary sort key.
 
  private:
   const RuleData* rule_data_;
-  unsigned layer_order_;
-  // https://drafts.csswg.org/css-cascade-6/#weak-scoping-proximity
-  unsigned proximity_;
+  uint64_t sort_key_;
   uint64_t position_;
 
   friend class ElementRuleCollector;
@@ -243,7 +241,6 @@ class CORE_EXPORT ElementRuleCollector {
     STACK_ALLOCATED();
 
    public:
-    PartNames* part_names;
     // If this is true, we're matching for a pseudo-element of the part, such as
     // ::placeholder.
     bool for_shadow_pseudo = false;
@@ -287,7 +284,7 @@ class CORE_EXPORT ElementRuleCollector {
              const SelectorChecker::SelectorCheckingContext&,
              MatchResult&);
   void DidMatchRule(const RuleData*,
-                    unsigned layer_order,
+                    uint16_t layer_order,
                     const ContainerQuery*,
                     unsigned proximity,
                     const SelectorChecker::MatchResult&,
@@ -303,8 +300,7 @@ class CORE_EXPORT ElementRuleCollector {
   StyleRuleList* EnsureStyleRuleList();
 
  private:
-  static inline bool CompareRules(const MatchedRule& matched_rule1,
-                                  const MatchedRule& matched_rule2);
+  struct CompareRules;
 
   const ElementResolveContext& context_;
   StyleRecalcContext style_recalc_context_;

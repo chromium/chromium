@@ -10,5 +10,5 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/scalable_iph",
+  "+chrome/browser/ash/scalable_iph",
 ]

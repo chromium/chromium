@@ -19,9 +19,10 @@ class DataTypeStoreService;
 // ChromeBrowserState.
 class DataTypeStoreServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static syncer::DataTypeStoreService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static syncer::DataTypeStoreService* GetForBrowserState(ProfileIOS* profile);
 
+  static syncer::DataTypeStoreService* GetForProfile(ProfileIOS* profile);
   static DataTypeStoreServiceFactory* GetInstance();
 
  private:

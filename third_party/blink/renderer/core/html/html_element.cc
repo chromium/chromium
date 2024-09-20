@@ -35,6 +35,9 @@
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_show_popover_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_toggle_popover_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_togglepopoveroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -212,7 +215,8 @@ class NameInHeapSnapshotBuilder : public MarkupAccumulator {
   NameInHeapSnapshotBuilder()
       : MarkupAccumulator(kDoNotResolveURLs,
                           SerializationType::kHTML,
-                          ShadowRootInclusion()) {}
+                          ShadowRootInclusion(),
+                          MarkupAccumulator::AttributesMode::kUnsynchronized) {}
   String GetStartTag(const Element& element) {
     AppendElement(element);
     return markup_.ToString();
@@ -1386,41 +1390,64 @@ void MarkPopoverInvokersDirty(const HTMLElement& popover) {
 }  // namespace
 
 bool HTMLElement::togglePopover(ExceptionState& exception_state) {
-  if (popoverOpen()) {
-    hidePopover(exception_state);
-  } else {
-    ShowPopoverInternal(/*invoker*/ nullptr, &exception_state);
-  }
-
-  if (GetPopoverData()) {
-    return GetPopoverData()->visibilityState() ==
-           PopoverVisibilityState::kShowing;
-  }
-  return false;
+  return togglePopover(nullptr, exception_state);
 }
 
-bool HTMLElement::togglePopover(bool force, ExceptionState& exception_state) {
-  if (!force && popoverOpen()) {
-    hidePopover(exception_state);
-  } else if (force && !popoverOpen()) {
-    ShowPopoverInternal(/*invoker*/ nullptr, &exception_state);
+// The `force` parameter to `togglePopover()` is specified here:
+// https://html.spec.whatwg.org/multipage/popover.html#dom-togglepopover
+// and is roughly:
+//  - If `force` is provided, and true, then ensure the popover is *shown*.
+//    So if the popover is already showing, do nothing.
+//  - If `force` is provided, and false, then ensure the popover is *hidden*.
+//    So if the popover is already hidden, do nothing.
+//  - If `force` is not provided, just toggle the popover's current state.
+bool HTMLElement::togglePopover(
+    V8UnionBooleanOrTogglePopoverOptions* options_or_force,
+    ExceptionState& exception_state) {
+  bool popover_was_open = popoverOpen();
+  bool force = !popover_was_open;
+  Element* invoker;
+  if (options_or_force && options_or_force->IsBoolean()) {
+    force = options_or_force->GetAsBoolean();
+    invoker = nullptr;
   } else {
-    // Throw an exception if this element is disconnected or doesn't have a
-    // popover attribute.
+    TogglePopoverOptions* options =
+        (options_or_force &&
+         RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled())
+            ? options_or_force->GetAsTogglePopoverOptions()
+            : nullptr;
+    if (options && options->hasForce()) {
+      force = options->force();
+    }
+    invoker = (options && options->hasInvoker()) ? options->invoker() : nullptr;
+  }
+  if (!force && popover_was_open) {
+    hidePopover(exception_state);
+  } else if (force && !popover_was_open) {
+    ShowPopoverInternal(invoker, &exception_state);
+  } else {
+    // We had `force`, and the state already lined up. Just make sure to still
+    // throw exceptions in other cases, e.g. disconnected element or no popover
+    // attribute.
     IsPopoverReady(PopoverTriggerAction::kToggle, &exception_state,
                    /*include_event_handler_text=*/false,
                    /*document=*/nullptr);
   }
-
-  if (GetPopoverData()) {
-    return GetPopoverData()->visibilityState() ==
-           PopoverVisibilityState::kShowing;
-  }
-  return false;
+  return GetPopoverData() && GetPopoverData()->visibilityState() ==
+                                 PopoverVisibilityState::kShowing;
 }
 
 void HTMLElement::showPopover(ExceptionState& exception_state) {
-  ShowPopoverInternal(/*invoker*/ nullptr, &exception_state);
+  return showPopover(nullptr, exception_state);
+}
+void HTMLElement::showPopover(ShowPopoverOptions* options,
+                              ExceptionState& exception_state) {
+  if (!RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled()) {
+    options = nullptr;
+  }
+  Element* invoker =
+      options && options->hasInvoker() ? options->invoker() : nullptr;
+  ShowPopoverInternal(invoker, &exception_state);
 }
 
 void HTMLElement::ShowPopoverInternal(Element* invoker,
@@ -1726,7 +1753,10 @@ void HTMLElement::HideAllPopoversUntil(
 
   // Now check the auto stack.
   auto& auto_stack = document.PopoverAutoStack();
-  CHECK(auto_stack.Contains(endpoint));
+  if (!auto_stack.Contains(endpoint)) {
+    // Event handlers from hint popovers could have closed our endpoint.
+    return;
+  }
   hide_stack_until(endpoint, auto_stack);
 }
 
@@ -2327,7 +2357,7 @@ void HTMLElement::HoveredElementChanged(Element* old_element,
 
 void HTMLElement::SetInternalImplicitAnchor(HTMLElement* element) {
   CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled() ||
-        RuntimeEnabledFeatures::StylableSelectEnabled());
+        RuntimeEnabledFeatures::CustomizableSelectEnabled());
   CHECK(HasPopoverAttribute());
   GetPopoverData()->setInternalImplicitAnchor(element);
 }

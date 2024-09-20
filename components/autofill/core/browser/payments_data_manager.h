@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -43,7 +44,6 @@ class SyncService;
 
 namespace autofill {
 
-class AutofillImageFetcherBase;
 class AutofillOptimizationGuide;
 class BankAccount;
 struct CreditCardArtImage;
@@ -517,8 +517,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // to the query handle.
   void CancelPendingServerQuery(WebDataServiceBase::Handle* handle);
 
-  // Asks `image_fetcher_` to fetch images.
-  void FetchImagesForURLs(base::span<const GURL> updated_urls) const;
+  // Asks `image_fetcher_` to fetch images. Each image represented by an url in
+  // the list `updated_urls` is downloaded in all the sizes specified by
+  // `image_sizes`. The total # of images downloaded is `updated_urls`.size() x
+  // `image_sizes`.size().
+  void FetchImagesForURLs(
+      base::span<const GURL> updated_urls,
+      base::span<const AutofillImageFetcherBase::ImageSize> image_sizes) const;
 
   // The first time this is called, logs a UMA metrics about the user's credit
   // card, offer and IBAN.

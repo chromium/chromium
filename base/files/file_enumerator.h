@@ -50,6 +50,18 @@ class BASE_EXPORT FileEnumerator {
   class BASE_EXPORT FileInfo {
    public:
     FileInfo();
+#if BUILDFLAG(IS_ANDROID)
+    // Android has both posix paths, and Content-URIs. It will use the linux /
+    // posix code for posix paths where a FileInfo() object is constructed and
+    // then `stat_` is populated via fstat() and used for IsDirectory(),
+    // GetSize(), GetLastModifiedTime(). Content-URIs provide all values in this
+    // constructor and writes `is_directory`, `size` and `time` to `stat_`.
+    FileInfo(base::FilePath content_uri,
+             base::FilePath filename,
+             bool is_directory,
+             off_t size,
+             Time time);
+#endif
     ~FileInfo();
 
     bool IsDirectory() const;
@@ -78,6 +90,9 @@ class BASE_EXPORT FileEnumerator {
    private:
     friend class FileEnumerator;
 
+#if BUILDFLAG(IS_ANDROID)
+    FilePath content_uri_;
+#endif
 #if BUILDFLAG(IS_WIN)
     CHROME_WIN32_FIND_DATA find_data_;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

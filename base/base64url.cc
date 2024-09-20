@@ -42,7 +42,7 @@ class StringViewOrString {
 };
 
 // Converts the base64url `input` into a plain base64 string.
-std::optional<StringViewOrString> Base64ToBase64URL(
+std::optional<StringViewOrString> Base64UrlToBase64(
     std::string_view input,
     Base64UrlDecodePolicy policy) {
   // Characters outside of the base64url alphabet are disallowed, which includes
@@ -132,7 +132,7 @@ bool Base64UrlDecode(std::string_view input,
                      Base64UrlDecodePolicy policy,
                      std::string* output) {
   std::optional<StringViewOrString> base64_input =
-      Base64ToBase64URL(input, policy);
+      Base64UrlToBase64(input, policy);
   if (!base64_input) {
     return false;
   }
@@ -143,7 +143,7 @@ std::optional<std::vector<uint8_t>> Base64UrlDecode(
     std::string_view input,
     Base64UrlDecodePolicy policy) {
   std::optional<StringViewOrString> base64_input =
-      Base64ToBase64URL(input, policy);
+      Base64UrlToBase64(input, policy);
   if (!base64_input) {
     return std::nullopt;
   }

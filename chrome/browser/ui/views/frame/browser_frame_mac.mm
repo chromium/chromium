@@ -41,6 +41,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 namespace {
@@ -461,7 +462,7 @@ bool BrowserFrameMac::ShouldSaveWindowPlacement() const {
 
 void BrowserFrameMac::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   return NativeWidgetMac::GetWindowPlacement(bounds, show_state);
 }
 

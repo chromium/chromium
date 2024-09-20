@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.ENABLED;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
@@ -31,6 +32,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
+import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -301,7 +303,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (FirstRunStatus.getFirstRunFlowComplete()) {
                 if (!mItemDelegate.isIncognito()
                         && UrlUtilities.isDownloadableScheme(mParams.getLinkUrl())) {
-                    linkGroup.add(createListItem(Item.SAVE_LINK_AS));
+                    linkGroup.add(
+                            createListItem(
+                                    Item.SAVE_LINK_AS,
+                                    /* showInProductHelp= */ false,
+                                    !DownloadUtils.isDownloadRestrictedByPolicy(getProfile())));
                 }
                 if (!mParams.isImage()
                         && ReadingListUtils.isReadingListSupported(mParams.getLinkUrl())) {
@@ -363,7 +369,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
             imageGroup.add(createListItem(Item.COPY_IMAGE));
             if (isSrcDownloadableScheme) {
-                imageGroup.add(createListItem(Item.SAVE_IMAGE));
+                imageGroup.add(
+                        createListItem(
+                                Item.SAVE_IMAGE,
+                                /* showInProductHelp= */ false,
+                                !DownloadUtils.isDownloadRestrictedByPolicy(getProfile())));
             }
 
             if (mMode == ContextMenuMode.CUSTOM_TAB || mMode == ContextMenuMode.NORMAL) {
@@ -398,7 +408,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 && mParams.canSaveMedia()
                 && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
             ModelList videoGroup = new ModelList();
-            videoGroup.add(createListItem(Item.SAVE_VIDEO));
+            videoGroup.add(
+                    createListItem(
+                            Item.SAVE_VIDEO,
+                            /* showInProductHelp= */ false,
+                            !DownloadUtils.isDownloadRestrictedByPolicy(getProfile())));
             groupedItems.add(new Pair<>(R.string.contextmenu_video_title, videoGroup));
         }
 
@@ -900,10 +914,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     private ListItem createListItem(@Item int item) {
-        return createListItem(item, false);
+        return createListItem(item, /* showInProductHelp= */ false, /* enabled= */ true);
     }
 
     private ListItem createListItem(@Item int item, boolean showInProductHelp) {
+        return createListItem(item, showInProductHelp, /* enabled= */ true);
+    }
+
+    private ListItem createListItem(@Item int item, boolean showInProductHelp, boolean enabled) {
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
@@ -911,6 +929,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 TEXT,
                                 ChromeContextMenuItem.getTitle(
                                         mContext, getProfile(), item, showInProductHelp))
+                        .with(ENABLED, enabled)
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
     }
@@ -921,6 +940,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
+                        .with(ENABLED, true)
                         .with(
                                 TEXT,
                                 ChromeContextMenuItem.getTitle(mContext, getProfile(), item, false))

@@ -7,21 +7,24 @@
 
 #include "base/time/clock.h"
 #include "chrome/browser/android/webapk/pwa_restore_bottom_sheet_mediator.h"
-#include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_restore_manager.h"
 #include "chrome/browser/android/webapk/webapk_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
 
-class Profile;
+namespace syncer {
+class DataTypeStoreService;
+}  // namespace syncer
 
 namespace webapk {
 
 class WebApkSyncService : public KeyedService {
  public:
-  static WebApkSyncService* GetForProfile(Profile* profile);
-
-  explicit WebApkSyncService(Profile* profile);
+  // DO NOT pass a whole Profile object here, otherwise there is a higher risk
+  // that people retrieve new keyed services internally without declaring
+  // DependsOn() in the factory. See crbug.com/368297674.
+  WebApkSyncService(syncer::DataTypeStoreService* data_type_store_service,
+                    std::unique_ptr<WebApkRestoreManager> restore_manager);
   WebApkSyncService(const WebApkSyncService&) = delete;
   WebApkSyncService& operator=(const WebApkSyncService&) = delete;
   ~WebApkSyncService() override;
@@ -48,7 +51,6 @@ class WebApkSyncService : public KeyedService {
   WebApkRestoreManager* GetWebApkRestoreManager() const;
 
  private:
-  std::unique_ptr<AbstractWebApkDatabaseFactory> database_factory_;
   std::unique_ptr<WebApkSyncBridge> sync_bridge_;
   std::unique_ptr<WebApkRestoreManager> restore_manager_;
 };

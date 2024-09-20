@@ -107,6 +107,10 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, OnDocumentCanceled, (), (override));
 
+  MOCK_METHOD(void, SetFormHighlight, (bool), (override));
+
+  MOCK_METHOD(void, ClearTextSelection, (), (override));
+
  protected:
   std::vector<DocumentAttachmentInfo>& doc_attachment_info_list() {
     return doc_attachment_info_list_;

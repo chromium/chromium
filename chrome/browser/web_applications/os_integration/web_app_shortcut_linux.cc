@@ -4,10 +4,12 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_linux.h"
 
-#include <algorithm>
-#include <utility>
-
 #include <fcntl.h>
+
+#include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/check_is_test.h"
@@ -367,10 +369,8 @@ void SetLaunchXdgUtilityForTesting(
       std::move(launchXdgUtilityForTesting);
 }
 
-base::FilePath GetAppShortcutFilename(const base::FilePath& profile_path,
-                                      const std::string& app_id) {
-  DCHECK(!app_id.empty());
-
+std::string GetShortcutFileName(const base::FilePath& profile_path,
+                                const std::string& app_id) {
   // Use a prefix, because xdg-desktop-menu requires it.
   std::string filename(chrome::kBrowserProcessExecutableName);
   filename.append("-").append(app_id).append("-").append(
@@ -379,7 +379,21 @@ base::FilePath GetAppShortcutFilename(const base::FilePath& profile_path,
   // Spaces in filenames break xdg-desktop-menu
   // (see https://bugs.freedesktop.org/show_bug.cgi?id=66605).
   base::ReplaceChars(filename, " ", "_", &filename);
-  return base::FilePath(filename.append(".desktop"));
+  return filename;
+}
+
+base::FilePath GetAppDesktopShortcutFilename(const base::FilePath& profile_path,
+                                             const std::string& app_id) {
+  CHECK(!app_id.empty());
+  std::string shortcut_filename = GetShortcutFileName(profile_path, app_id);
+  return base::FilePath(shortcut_filename.append(".desktop"));
+}
+
+base::FilePath GetAppIconShortcutFilename(const base::FilePath& profile_path,
+                                          const std::string& app_id) {
+  CHECK(!app_id.empty());
+  std::string shortcut_filename = GetShortcutFileName(profile_path, app_id);
+  return base::FilePath(shortcut_filename.append(".png"));
 }
 
 bool DeleteShortcutOnDesktop(const base::FilePath& shortcut_filename) {
@@ -423,6 +437,29 @@ bool DeleteShortcutInApplicationsMenu(
   return LaunchXdgUtility(argv, &exit_code);
 }
 
+// Removes temporary shortcut icons left over in `./local/share/icons/hicolor`
+// post shortcut deletion.
+bool DeleteShortcutIcons(const base::FilePath& shortcut_icon_filename) {
+  CHECK(!shortcut_icon_filename.empty());
+  bool result = true;
+  for (const auto& size : web_app::GetDesiredIconSizesForShortcut()) {
+    std::vector<std::string> argv;
+    argv.push_back("xdg-icon-resource");
+    argv.push_back("uninstall");
+
+    // Uninstall in user mode, to match the install.
+    argv.push_back("--mode");
+    argv.push_back("user");
+    argv.push_back("--size");
+    argv.push_back(base::ToString(size));
+
+    argv.push_back(shortcut_icon_filename.value());
+    int exit_code;
+    result = result && LaunchXdgUtility(argv, &exit_code);
+  }
+  return result;
+}
+
 bool CreateDesktopShortcut(base::Environment* env,
                            const ShortcutInfo& shortcut_info,
                            const ShortcutLocations& creation_locations) {
@@ -452,8 +489,8 @@ bool CreateDesktopShortcut(base::Environment* env,
 
   base::FilePath shortcut_filename;
   if (!shortcut_info.app_id.empty()) {
-    shortcut_filename = GetAppShortcutFilename(shortcut_info.profile_path,
-                                               shortcut_info.app_id);
+    shortcut_filename = GetAppDesktopShortcutFilename(
+        shortcut_info.profile_path, shortcut_info.app_id);
     // For extensions we do not want duplicate shortcuts. So, delete any that
     // already exist and replace them.
     if (creation_locations.on_desktop) {
@@ -466,6 +503,11 @@ bool CreateDesktopShortcut(base::Environment* env,
 
     if (applications_menu_location != APP_MENU_LOCATION_NONE) {
       DeleteShortcutInApplicationsMenu(shortcut_filename, base::FilePath());
+    }
+    if (!test_override && !GetInstalledLaunchXdgUtilityForTesting()) {
+      base::FilePath icon_filename = GetAppIconShortcutFilename(
+          shortcut_info.profile_path, shortcut_info.app_id);
+      DeleteShortcutIcons(icon_filename);
     }
   } else if (std::optional<base::SafeBaseName> opt_shortcut_filename =
                  shell_integration_linux::GetUniqueWebShortcutFilename(
@@ -582,7 +624,7 @@ ShortcutLocations GetExistingShortcutLocations(
   }
 
   base::FilePath shortcut_filename =
-      GetAppShortcutFilename(profile_path, extension_id);
+      GetAppDesktopShortcutFilename(profile_path, extension_id);
   DCHECK(!shortcut_filename.empty());
   ShortcutLocations locations;
 
@@ -632,7 +674,7 @@ bool DeleteDesktopShortcuts(base::Environment* env,
   }
 
   base::FilePath shortcut_filename =
-      GetAppShortcutFilename(profile_path, extension_id);
+      GetAppDesktopShortcutFilename(profile_path, extension_id);
   DCHECK(!shortcut_filename.empty());
 
   bool deleted_from_desktop = DeleteShortcutOnDesktop(shortcut_filename);
@@ -663,8 +705,16 @@ bool DeleteDesktopShortcuts(base::Environment* env,
     deleted_from_application_menu = DeleteShortcutInApplicationsMenu(
         shortcut_filename, base::FilePath(kDirectoryFilename));
   }
+
+  bool deleted_from_icon_storage = true;
+  if (!test_override && !GetInstalledLaunchXdgUtilityForTesting()) {
+    base::FilePath icon_filename =
+        GetAppIconShortcutFilename(profile_path, extension_id);
+    deleted_from_icon_storage = DeleteShortcutIcons(icon_filename);
+  }
+
   return (deleted_from_desktop && deleted_from_autostart &&
-          deleted_from_application_menu);
+          deleted_from_application_menu && deleted_from_icon_storage);
 }
 
 bool DeleteAllDesktopShortcuts(base::Environment* env,
@@ -681,8 +731,10 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
   }
 
   bool result = true;
-  // Delete shortcuts from Desktop.
+  // Delete shortcuts from Desktop and collect all icon files that need to be
+  // removed from the staging directory `~/.local/share/icons/hicolor/`.
   base::FilePath desktop_path = GetDesktopPath();
+  std::vector<base::FilePath> icon_files_to_be_deleted;
   if (!desktop_path.empty()) {
     std::vector<base::FilePath> shortcut_filenames_desktop =
         shell_integration_linux::GetExistingProfileShortcutFilenames(
@@ -691,6 +743,8 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
       if (!DeleteShortcutOnDesktop(shortcut)) {
         result = false;
       }
+      icon_files_to_be_deleted.push_back(
+          shortcut.RemoveExtension().AddExtension("png"));
     }
   }
 
@@ -722,6 +776,11 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
                              menu, base::FilePath(kDirectoryFilename));
     }
   }
+  // Delete the shortcut icons from the staging area.
+  for (const auto& icon_files : icon_files_to_be_deleted) {
+    result = result && DeleteShortcutIcons(icon_files);
+  }
+
   return result;
 }
 
@@ -780,7 +839,7 @@ std::vector<base::FilePath> GetShortcutLocations(
 
   std::vector<base::FilePath> shortcut_locations;
   base::FilePath shortcut_filename =
-      GetAppShortcutFilename(profile_path, app_id);
+      GetAppDesktopShortcutFilename(profile_path, app_id);
   DCHECK(!shortcut_filename.empty());
 
   if (locations.on_desktop) {

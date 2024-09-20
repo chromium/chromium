@@ -453,9 +453,8 @@ InlineCaretPosition ComputeInlineCaretPosition(
 
   const OffsetMapping* const mapping = InlineNode::GetOffsetMapping(context);
   if (!mapping) {
-    // TODO(yosin): We should find when we reach here[1].
-    // [1] http://crbug.com/1100481
-    DUMP_WILL_BE_NOTREACHED() << context;
+    // A block containing the position might be display-locked.
+    // See editing/caret/caret-display-locked-crash.html
     return InlineCaretPosition();
   }
   const std::optional<unsigned> maybe_offset =

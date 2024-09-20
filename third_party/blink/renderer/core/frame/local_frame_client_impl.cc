@@ -1040,9 +1040,10 @@ void LocalFrameClientImpl::NotifyUserActivation() {
     autofill_client->UserGestureObserved();
 }
 
-void LocalFrameClientImpl::AbortClientNavigation() {
-  if (web_frame_->Client())
-    web_frame_->Client()->AbortClientNavigation();
+void LocalFrameClientImpl::AbortClientNavigation(bool for_new_navigation) {
+  if (web_frame_->Client()) {
+    web_frame_->Client()->AbortClientNavigation(for_new_navigation);
+  }
 }
 
 WebSpellCheckPanelHostClient* LocalFrameClientImpl::SpellCheckPanelHostClient()

@@ -18,7 +18,7 @@ std::unique_ptr<FormFieldParser> MerchantPromoCodeFieldParser::Parse(
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> merchant_promo_code_patterns =
       GetMatchPatterns("MERCHANT_PROMO_CODE", context.page_language,
-                       context.pattern_source);
+                       context.pattern_file);
   if (ParseField(context, scanner, merchant_promo_code_patterns, &field,
                  "MERCHANT_PROMO_CODE")) {
     return std::make_unique<MerchantPromoCodeFieldParser>(field);

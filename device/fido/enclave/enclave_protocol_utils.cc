@@ -389,11 +389,9 @@ ParseMakeCredentialResponse(cbor::Value response_value,
     }
   }
 
-  std::vector<uint8_t> credential_id(kCredentialIdSize);
-  crypto::RandBytes(credential_id);
-
-  std::vector<uint8_t> sync_id(kSyncIdSize);
-  crypto::RandBytes(sync_id);
+  std::vector<uint8_t> credential_id =
+      crypto::RandBytesAsVector(kCredentialIdSize);
+  std::vector<uint8_t> sync_id = crypto::RandBytesAsVector(kSyncIdSize);
 
   sync_pb::WebauthnCredentialSpecifics entity;
 

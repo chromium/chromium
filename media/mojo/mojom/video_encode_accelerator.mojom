@@ -8,6 +8,7 @@ import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "media/mojo/mojom/video_encoder_info.mojom";
@@ -55,13 +56,27 @@ struct VideoEncodeAcceleratorSupportedProfile {
   array<SVCScalabilityMode> scalability_modes;
   bool is_software_codec;
   array<VideoPixelFormat> gpu_supported_pixel_formats;
+  bool supports_gpu_shared_images;
+};
+
+// Identifies a CommandBufferStub. MediaGpuChannelManager is responsible
+// for minting `channel_token` values.
+struct EncodeCommandBufferId {
+  mojo_base.mojom.UnguessableToken channel_token;
+  int32 route_id;
 };
 
 // A renderer process calls this interface's functions. GPU process implements
 // this interface.
 interface VideoEncodeAcceleratorProvider {
-  // Creates a VideoEncodeAccelerator bound to |receiver|.
+  // Creates a VideoEncodeAccelerator bound to `receiver`.  If
+  // `command_buffer_id` has a valid `channel_token` and `route_id`, and
+  // `supports_gpu_shared_images` is true in the profile, the caller can supply
+  // shared image backed frames to the accelerator.  Otherwise, only
+  // VideoFrames backed by CPU memory or GpuMemoryBuffer may be supplied as
+  // input.
   CreateVideoEncodeAccelerator(
+        EncodeCommandBufferId? command_buffer_id,
         pending_receiver<VideoEncodeAccelerator> receiver);
 
   // Get a VideoEncodeAccelerator supported profiles.

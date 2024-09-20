@@ -408,17 +408,19 @@ public class ToolbarManager
                 BackPressMetrics.recordNavStatusDuringGesture(
                         mStartNavDuringOngoingGesture, mActivity.getWindow());
             }
-            mBackGestureInProgress = false;
             int res = BackPressResult.SUCCESS;
 
             if (mHandler != null) {
                 mHandler.onBackInvoked();
             } else {
-                assert !GestureNavigationUtils.allowTransition(
-                                mActivityTabProvider.get(), /* forward= */ false)
+                assert !mBackGestureInProgress
+                                || // called handleBackPress without handleBackStarted
+                                !GestureNavigationUtils.allowTransition(
+                                        mActivityTabProvider.get(), /* forward= */ false)
                         : "No gesture handler when transition is disallowed.";
                 res = ToolbarManager.this.handleBackPress();
             }
+            mBackGestureInProgress = false;
             mHandler = null;
             return res;
         }

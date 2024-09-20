@@ -11,8 +11,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -26,7 +26,11 @@ public class RevenueStats {
     public static RevenueStats getInstance() {
         assert ThreadUtils.runningOnUiThread();
         if (sInstance == null) {
-            sInstance = AppHooks.get().createRevenueStatsInstance();
+            RevenueStats instance = ServiceLoaderUtil.maybeCreate(RevenueStats.class);
+            if (instance == null) {
+                instance = new RevenueStats();
+            }
+            sInstance = instance;
         }
 
         return sInstance;

@@ -265,8 +265,9 @@ class FileURLDirectoryLoader
   }
 
   void MaybeDeleteSelf() {
-    if (!receiver_.is_bound() && !client_.is_bound() && !lister_)
+    if (!receiver_.is_bound() && !client_.is_bound() && !lister_) {
       delete this;
+    }
   }
 
   // net::DirectoryLister::DirectoryListerDelegate:
@@ -300,8 +301,9 @@ class FileURLDirectoryLoader
   }
 
   void MaybeTransferPendingData() {
-    if (transfer_in_progress_)
+    if (transfer_in_progress_) {
       return;
+    }
 
     transfer_in_progress_ = true;
     data_producer_->Write(
@@ -331,8 +333,9 @@ class FileURLDirectoryLoader
 
       // If there's no pending data but the lister is still active, we simply
       // wait for more listing results.
-      if (lister_)
+      if (lister_) {
         return;
+      }
 
       // At this point we know the listing is complete and all available data
       // has been transferred. We inherit the status of the listing operation.
@@ -559,8 +562,9 @@ class FileURLLoader : public network::mojom::URLLoader {
       }
 
       GURL new_url = net::FilePathToFileURL(shortcut_target);
-      if (info.is_directory && !path.EndsWithSeparator())
+      if (info.is_directory && !path.EndsWithSeparator()) {
         new_url = AppendUrlSeparator(new_url);
+      }
 
       net::RedirectInfo redirect_info;
       redirect_info.new_method = "GET";
@@ -612,8 +616,9 @@ class FileURLLoader : public network::mojom::URLLoader {
     // path didn't have a trailing path separator. In that case we finish with
     // a redirect above which will in turn be handled by FileURLDirectoryLoader.
     DCHECK(!info.is_directory);
-    if (observer)
+    if (observer) {
       observer->OnStart();
+    }
 
     auto file_data_source = std::make_unique<mojo::FileDataSource>(
         base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
@@ -636,8 +641,9 @@ class FileURLLoader : public network::mojom::URLLoader {
       MaybeDeleteSelf();
       return;
     }
-    if (observer)
+    if (observer) {
       observer->OnRead(base::span<char>(initial_read_buffer), &read_result);
+    }
 
     uint64_t initial_read_size = read_result.bytes_read;
 
@@ -737,8 +743,9 @@ class FileURLLoader : public network::mojom::URLLoader {
     // (i.e., no range request) this Seek is effectively a no-op.
     file_data_source->SetRange(first_byte_to_send,
                                first_byte_to_send + total_bytes_to_send);
-    if (observer)
+    if (observer) {
       observer->OnSeekComplete(first_byte_to_send);
+    }
 
     data_producer_ =
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
@@ -771,8 +778,9 @@ class FileURLLoader : public network::mojom::URLLoader {
   }
 
   void MaybeDeleteSelf() {
-    if (!receiver_.is_bound() && !client_.is_bound())
+    if (!receiver_.is_bound() && !client_.is_bound()) {
       delete this;
+    }
   }
 
   void OnFileWritten(std::unique_ptr<FileURLLoaderObserver> observer,
@@ -780,8 +788,9 @@ class FileURLLoader : public network::mojom::URLLoader {
     // All the data has been written now. Close the data pipe. The consumer will
     // be notified that there will be no more data to read from now.
     data_producer_.reset();
-    if (observer)
+    if (observer) {
       observer->OnDone();
+    }
 
     if (result == MOJO_RESULT_OK) {
       network::URLLoaderCompletionStatus status(net::OK);

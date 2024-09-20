@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_android)
+
+source_set("fast_checkout") {
+  sources = [
+    "fast_checkout_controller.h",
+    "fast_checkout_controller_impl.h",
+    "fast_checkout_view.h",
+  ]
+  public_deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "fast_checkout_controller_impl.cc" ]
+  deps = [
+    ":fast_checkout",
+    "//components/autofill/android:autofill_core_browser_java_enums",
+    "//components/autofill/core/browser",
+    "//content/public/browser",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fast_checkout_controller_impl_unittest.cc" ]
+  deps = [
+    ":fast_checkout",
+    "//chrome/test:test_support",
+    "//components/autofill/core/browser:test_support",
+  ]
+}

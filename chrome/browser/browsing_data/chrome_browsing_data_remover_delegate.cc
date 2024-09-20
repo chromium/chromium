@@ -183,12 +183,14 @@
 
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -726,7 +728,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     browsing_data::RemoveSiteSettingsData(delete_begin, delete_end,
                                           host_content_settings_map_);
 
-#if !BUILDFLAG(IS_ANDROID)
     // The active permission does not have timestamps, so the all active grants
     // will be revoked regardless of the time range because all the are expected
     // to be recent.
@@ -734,7 +735,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             FileSystemAccessPermissionContextFactory::GetForProfile(profile_)) {
       permission_context->RevokeAllActiveGrants();
     }
-#endif
 
     auto* handler_registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_);
@@ -864,14 +864,14 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, delete_begin_,
         delete_end_, website_settings_filter);
 
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, delete_begin,
+        delete_end, website_settings_filter);
+
 #if !BUILDFLAG(IS_ANDROID)
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::INTENT_PICKER_DISPLAY, delete_begin_, delete_end_,
         website_settings_filter);
-
-    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, delete_begin,
-        delete_end, website_settings_filter);
 
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::PRIVATE_NETWORK_GUARD, delete_begin_, delete_end_,
@@ -1068,6 +1068,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           FROM_HERE, base::DoNothing(),
           CreateTaskCompletionClosure(TracingDataType::kAutofillData));
     }
+#if !BUILDFLAG(IS_ANDROID)
+    if (auto* user_annotations_service =
+            UserAnnotationsServiceFactory::GetForProfile(profile_)) {
+      user_annotations_service->RemoveAnnotationsInRange(delete_begin_,
+                                                         delete_end_);
+    }
+#endif
   }
 
   //////////////////////////////////////////////////////////////////////////////

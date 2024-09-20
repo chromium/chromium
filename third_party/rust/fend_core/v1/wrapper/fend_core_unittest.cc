@@ -169,6 +169,12 @@ INSTANTIATE_TEST_SUITE_P(
             .query = "pi",
             .expected = std::nullopt,
         },
+
+        {
+            .name = "LowercaseTemperature",
+            .query = "50f to c",
+            .expected = "10 °C",
+        },
     }),
     [](const testing::TestParamInfo<FendCoreTestCase> &info) {
       return info.param.name;

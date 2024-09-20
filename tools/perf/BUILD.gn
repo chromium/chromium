@@ -6,6 +6,7 @@ if (!is_android) {
   group("perf") {
     testonly = true
     data = [
+      "//third_party/crossbench/.vpython3",
       "//third_party/crossbench/cb.py",
       "//third_party/crossbench/crossbench/",
     ]
@@ -23,6 +24,7 @@ if (!is_android) {
     group(target_name) {
       testonly = true
       data = [
+        "//third_party/crossbench/.vpython3",
         "//third_party/crossbench/cb.py",
         "//third_party/crossbench/crossbench/",
       ]
@@ -77,7 +79,7 @@ group("perf_without_chrome") {
 
     # For blink_perf benchmarks.
     "//third_party/blink/perf_tests/",
-    
+
     # For Speedometer benchmarks.
     "//third_party/speedometer/v3.0",
 

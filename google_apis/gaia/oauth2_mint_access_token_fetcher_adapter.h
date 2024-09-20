@@ -70,6 +70,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
   void OnRemoteConsentSuccess(
       const RemoteConsentResolutionData& resolution_data) override;
 
+  void RecordMetricsAndFireError(const GoogleServiceAuthError& error);
+
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::string user_gaia_id_;
   const std::string refresh_token_;

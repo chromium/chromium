@@ -19,6 +19,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
+#include "chrome/browser/ui/views/desktop_capture/desktop_media_delegated_source_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views_test_api.h"
@@ -851,6 +852,17 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, AccessibleProperties) {
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             sample_accessible_name);
   EXPECT_EQ(source_view->GetViewAccessibility().GetCachedName(),
+            sample_accessible_name);
+
+  // DesktopMediaDelegatedSourceListView accessible properties test.
+  auto view = std::make_unique<DesktopMediaDelegatedSourceListView>(
+      test_api_.GetSelectedController()->GetWeakPtr(), sample_accessible_name,
+      DesktopMediaList::Type::kScreen);
+
+  data = ui::AXNodeData();
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             sample_accessible_name);
 }
 

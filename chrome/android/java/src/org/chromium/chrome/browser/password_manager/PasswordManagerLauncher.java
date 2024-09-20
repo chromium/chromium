@@ -9,6 +9,7 @@ import android.content.Context;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -45,7 +46,12 @@ public class PasswordManagerLauncher {
                         : null;
         PasswordManagerHelper.getForProfile(originalProfile)
                 .showPasswordSettings(
-                        context, referrer, modalDialogManagerSupplier, managePasskeys, account);
+                        context,
+                        referrer,
+                        modalDialogManagerSupplier,
+                        managePasskeys,
+                        account,
+                        LaunchIntentDispatcher::createCustomTabActivityIntent);
     }
 
     @CalledByNative

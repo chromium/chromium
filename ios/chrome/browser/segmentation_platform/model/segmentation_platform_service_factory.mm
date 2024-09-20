@@ -93,8 +93,7 @@ class SegmentationPlatformServiceSubscription
 // Returns the ShoppingService for `weak_profile`.
 ShoppingService* GetShoppingService(base::WeakPtr<ProfileIOS> weak_profile) {
   if (ProfileIOS* profile = weak_profile.get()) {
-    return commerce::ShoppingServiceFactory::GetForBrowserStateIfExists(
-        profile);
+    return commerce::ShoppingServiceFactory::GetForBrowserState(profile);
   }
 
   return nullptr;

@@ -8,12 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace subresource_filter {
 
@@ -31,7 +31,7 @@ class MemoryMappedRuleset final : public base::RefCounted<MemoryMappedRuleset> {
 
   static void SetMemoryMapFailuresForTesting(bool fail);
 
-  base::span<const uint8_t> data() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  base::span<const uint8_t> data() const LIFETIME_BOUND {
     return ruleset_.bytes();
   }
 

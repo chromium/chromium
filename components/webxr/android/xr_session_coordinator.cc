@@ -125,9 +125,8 @@ void XrSessionCoordinator::OnDrawingSurfaceReady(
   gl::ScopedANativeWindow window(scoped_surface);
   gpu::SurfaceHandle surface_handle =
       gpu::GpuSurfaceTracker::Get()->AddSurfaceForNativeWidget(
-          gpu::GpuSurfaceTracker::SurfaceRecord(
-              std::move(scoped_surface),
-              /*can_be_used_with_surface_control=*/false));
+          gpu::SurfaceRecord(std::move(scoped_surface),
+                             /*can_be_used_with_surface_control=*/false));
   ui::WindowAndroid* root_window =
       ui::WindowAndroid::FromJavaWindowAndroid(java_root_window);
   display::Display::Rotation display_rotation =

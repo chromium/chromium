@@ -79,7 +79,7 @@ class ConnectorsManagerBaseReportingTest
  public:
   ReportingConnector connector() const { return GetParam(); }
 
-  const char* pref() const { return ConnectorPref(connector()); }
+  const char* pref() const { return kOnSecurityEventPref; }
 };
 
 TEST_P(ConnectorsManagerBaseReportingTest, DynamicPolicies) {

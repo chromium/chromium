@@ -88,7 +88,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
       const std::optional<base::Uuid>& tab_guid) override;
   void SavedTabGroupReorderedLocally() override;
   void SavedTabGroupReorderedFromSync() override;
-  void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) override;
+  void SavedTabGroupTabMovedLocally(const base::Uuid& group_guid,
+                                    const base::Uuid& tab_guid) override;
   void SavedTabGroupAddedFromSync(const base::Uuid& guid) override;
   void SavedTabGroupRemovedFromSync(
       const SavedTabGroup& removed_group) override;

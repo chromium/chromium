@@ -121,6 +121,7 @@ import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
@@ -171,7 +172,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
-import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegateImpl;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -687,6 +687,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mSnackbarManager = new SnackbarManager(this, mBottomContainer, getWindowAndroid());
             getWindowAndroid().getInsetObserver().addObserver(mSnackbarManager);
             SnackbarManagerProvider.attach(getWindowAndroid(), mSnackbarManager);
+            // TODO (crbug/359973775): Pass InsetObserver as a ModalDialogManager ctor arg so that
+            // all instances are registered as inset observers.
+            getModalDialogManager().setInsetObserver(getWindowAndroid().getInsetObserver());
 
             // Make the activity listen to policy change events
             CombinedPolicyProvider.get().addPolicyChangeListener(this);
@@ -1155,7 +1158,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (isMainIntentLaunch) {
             RecordHistogram.recordBooleanHistogram(
                     "Startup.Android.MainIntentIsColdStart",
-                    ColdStartTracker.wasColdOnFirstActivityCreationOrNow());
+                    ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
+                            && SimpleStartupForegroundSessionDetector
+                                    .runningCleanForegroundSession());
         }
 
         Tab tab = getActivityTab();
@@ -2522,7 +2527,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.tinker_tank_menu_id) {
-            TinkerTankDelegate delegate = new TinkerTankDelegateImpl();
+            TinkerTankDelegate delegate = TinkerTankDelegate.create();
             delegate.maybeShowBottomSheet(
                     this,
                     getProfileProviderSupplier().get().getOriginalProfile(),

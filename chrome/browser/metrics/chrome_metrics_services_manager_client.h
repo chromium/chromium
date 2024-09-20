@@ -74,15 +74,6 @@ class ChromeMetricsServicesManagerClient
   void OnCrosSettingsCreated();
 #endif
 
-  // Accessor for the EnabledStateProvider instance used by this object.
-  const metrics::EnabledStateProvider& GetEnabledStateProviderForTesting();
-
- private:
-  // This is defined as a member class to get access to
-  // ChromeMetricsServiceAccessor through ChromeMetricsServicesManagerClient's
-  // friendship.
-  class ChromeEnabledStateProvider;
-
   // metrics_services_manager::MetricsServicesManagerClient:
   std::unique_ptr<variations::VariationsService> CreateVariationsService(
       variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
@@ -90,13 +81,18 @@ class ChromeMetricsServicesManagerClient
       variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
   metrics::MetricsStateManager* GetMetricsStateManager() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  bool IsMetricsReportingEnabled() override;
-  bool IsMetricsConsentGiven() override;
+  const metrics::EnabledStateProvider& GetEnabledStateProvider() override;
   bool IsOffTheRecordSessionActive() override;
 #if BUILDFLAG(IS_WIN)
   // On Windows, the client controls whether Crashpad can upload crash reports.
   void UpdateRunningServices(bool may_record, bool may_upload) override;
 #endif  // BUILDFLAG(IS_WIN)
+
+ private:
+  // This is defined as a member class to get access to
+  // ChromeMetricsServiceAccessor through ChromeMetricsServicesManagerClient's
+  // friendship.
+  class ChromeEnabledStateProvider;
 
   // EnabledStateProvider to communicate if the client has consented to metrics
   // reporting, and if it's enabled.

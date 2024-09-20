@@ -160,7 +160,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
                         dismissalCause -> {
                             if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                                 deleteEntry();
-                                getActivity().finish();
+                                finishPage();
                             }
                         },
                         /* titleResId= */ R.string.autofill_credit_card_delete_confirmation_title);

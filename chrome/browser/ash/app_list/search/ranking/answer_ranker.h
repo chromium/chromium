@@ -24,7 +24,8 @@ class AnswerRanker : public Ranker {
   AnswerRanker& operator=(const AnswerRanker&) = delete;
 
   // Ranker:
-  void Start(const std::u16string& query, CategoriesList& categories) override;
+  void Start(const std::u16string& query,
+             const CategoriesList& categories) override;
   void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
   void OnBurnInPeriodElapsed() override;
 

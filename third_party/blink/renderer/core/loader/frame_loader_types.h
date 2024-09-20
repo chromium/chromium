@@ -63,6 +63,8 @@ enum class CancelNavigationReason {
   kDropped,
   // Navigate event is fired.
   kNavigateEvent,
+  // New navigation is starting (e.g. form submission).
+  kNewNavigation,
   // Anything else (including error cases that don't drop the navigation).
   kOther
 };

@@ -26,9 +26,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/select_file_dialog_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/login_web_dialog.h"
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -37,6 +34,9 @@
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_web_dialog.h"
+#include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -201,7 +201,11 @@ class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
                                std::u16string title)
       : ash::SystemWebDialogDelegate(url, title),
         id_(id),
-        parent_(std::move(parent)) {}
+        parent_(std::move(parent)) {
+    RegisterOnDialogClosedCallback(
+        base::BindOnce(&SystemFilesAppDialogDelegate::OnDialogClosing,
+                       base::Unretained(this)));
+  }
   ~SystemFilesAppDialogDelegate() override = default;
 
   void SetModal(bool modal) {
@@ -232,7 +236,7 @@ class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
     ash::SystemWebDialogDelegate::OnDialogShown(webui);
   }
 
-  void OnDialogWillClose() override {
+  void OnDialogClosing(const std::string& ret_val) {
     if (parent_) {
       parent_->OnSystemDialogWillClose();
     }
@@ -505,6 +509,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   owner_ = owner;
   type_ = type;
 
+  // The delegate deletes itself in WebDialogDelegate::OnDialogClosed().
   auto* dialog_delegate = new SystemFilesAppDialogDelegate(
       weak_factory_.GetWeakPtr(), routing_id, file_manager_url, dialog_title);
   dialog_delegate->SetModal(owner.window != nullptr);

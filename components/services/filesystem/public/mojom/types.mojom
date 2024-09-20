@@ -75,8 +75,16 @@ enum FsFileType {
 // Describes a directory entry (i.e., a single member of a directory).
 struct DirectoryEntry {
   // It contains only the entry name, i.e.: /path/to/a/file would be just
-  // "file". TODO(https://crbug/779196): Use Basename type when available.
+  // "file".
+  // TODO(crbug.com/367394555): Use SafeBaseName type.
   mojo_base.mojom.FilePath name;
+
+  // The name to display. For most platforms, display_name is the same as name.
+  // For android content-URI paths are usually identifiers which do not relate
+  // to the display name and this field is required.
+  // If this field is empty, name is used for display.
+  // TODO(crbug.com/367394555): Use SafeBaseName type if possible.
+  mojo_base.mojom.FilePath display_name;
 
   // Type of a given entry.
   FsFileType type;

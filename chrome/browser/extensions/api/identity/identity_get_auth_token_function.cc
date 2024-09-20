@@ -18,7 +18,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_error.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,6 +37,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/oauth2.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -47,6 +47,7 @@
 #include "ui/base/idle/idle.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -311,7 +312,7 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
   // In kiosk mode, interactive sign-in is not supported.
   SigninFailed();
 #else
-  if (g_browser_process->IsShuttingDown()) {
+  if (ExtensionsBrowserClient::Get()->IsShuttingDown()) {
     // The login prompt cannot be displayed when the browser process is shutting
     // down.
     SigninFailed();
@@ -755,6 +756,9 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
 #if BUILDFLAG(IS_CHROMEOS)
   device_oauth2_token_fetcher_.reset();
 #endif
+  if (gaia_remote_consent_flow_) {
+    gaia_remote_consent_flow_->Stop();
+  }
   token_key_account_access_token_fetcher_.reset();
   scoped_identity_manager_observation_.Reset();
   extensions::IdentityAPI::GetFactoryInstance()
@@ -762,8 +766,8 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
       ->mint_queue()
       ->RequestCancel(token_key_, this);
 
-  CompleteFunctionWithError(
-      IdentityGetAuthTokenError(IdentityGetAuthTokenError::State::kCanceled));
+  CompleteFunctionWithError(IdentityGetAuthTokenError(
+      IdentityGetAuthTokenError::State::kBrowserContextShutDown));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -52,6 +52,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/system/status_area_widget.h"
@@ -102,7 +103,9 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -1196,7 +1199,7 @@ TEST_F(CaptureModeTest,
   // moving a fullscreen window triggers the shelf to occur, which changes
   // display metrics.
   recorded_window->SetProperty(aura::client::kShowStateKey,
-                               ui::SHOW_STATE_FULLSCREEN);
+                               ui::mojom::WindowShowState::kFullscreen);
 
   auto* session = controller->capture_mode_session();
 
@@ -6142,6 +6145,16 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   }
 }
 
+// Tests that if the user is in projector mode, then presses the shortcut to
+// start default capture mode, it is ignored.
+TEST_P(ProjectorCaptureModeIntegrationTests, SwitchToDefaultCaptureMode) {
+  StartProjectorModeSession();
+  VerifyActiveBehavior(BehaviorType::kProjector);
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  VerifyActiveBehavior(BehaviorType::kProjector);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ProjectorCaptureModeIntegrationTests,
                          testing::Values(CaptureModeSource::kFullscreen,
@@ -6718,6 +6731,20 @@ TEST_F(CaptureModeSettingsTest, AudioInputSettingsMenu) {
   StartImageRegionCapture();
   EXPECT_EQ(AudioRecordingMode::kMicrophone,
             controller->GetEffectiveAudioRecordingMode());
+}
+
+TEST_F(CaptureModeSettingsTest, AccessibleName) {
+  StartImageRegionCapture();
+  ClickOnView(GetSettingsButton(), GetEventGenerator());
+  CaptureModeSettingsTestApi test_api;
+
+  CaptureModeMenuGroup* audio_input_menu_group =
+      test_api.GetAudioInputMenuGroup();
+  views::View* menu_header_view = audio_input_menu_group->menu_header();
+  ui::AXNodeData data;
+  menu_header_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT),
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 TEST_F(CaptureModeSettingsTest, AudioCaptureDisabledByPolicy) {

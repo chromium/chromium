@@ -4,84 +4,27 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("policy") {
   output_name = "chromeos_ash_components_policy"
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
 
-  public = [
-    "restriction_schedule/device_restriction_schedule_controller.h",
-    "weekly_time/checked_util.h",
-    "weekly_time/time_utils.h",
-    "weekly_time/weekly_time.h",
-    "weekly_time/weekly_time_checked.h",
-    "weekly_time/weekly_time_interval.h",
-    "weekly_time/weekly_time_interval_checked.h",
-  ]
+  public = []
 
-  sources = [
-    "restriction_schedule/device_restriction_schedule_controller.cc",
-    "weekly_time/checked_util.cc",
-    "weekly_time/time_utils.cc",
-    "weekly_time/weekly_time.cc",
-    "weekly_time/weekly_time_checked.cc",
-    "weekly_time/weekly_time_interval.cc",
-    "weekly_time/weekly_time_interval_checked.cc",
-  ]
+  sources = []
 
-  public_deps = [
-    "//base",
-    "//components/policy/proto",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/icu",
-  ]
+  public_deps = [ "restriction_schedule" ]
 
-  deps = [
-    "//base:i18n",
-    "//chromeos/constants",
-    "//components/prefs",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-
-  public = [ "weekly_time/test_support.h" ]
-
-  sources = [ "weekly_time/test_support.cc" ]
-
-  public_deps = [ "//base" ]
-
-  deps = [
-    "//chromeos/ash/components/policy",
-    "//testing/gtest",
-  ]
+  deps = []
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "restriction_schedule/device_restriction_schedule_controller_unittest.cc",
-    "weekly_time/checked_util_unittest.cc",
-    "weekly_time/time_utils_unittest.cc",
-    "weekly_time/weekly_time_checked_unittest.cc",
-    "weekly_time/weekly_time_interval_checked_unittest.cc",
-    "weekly_time/weekly_time_interval_unittest.cc",
-    "weekly_time/weekly_time_unittest.cc",
-  ]
-
   deps = [
-    ":policy",
-    ":test_support",
-    "//base",
-    "//base:i18n",
-    "//base/test:test_support",
-    "//chromeos/constants",
-    "//components/policy/proto",
-    "//components/prefs:test_support",
-    "//testing/gtest",
-    "//third_party/icu",
+    "restriction_schedule:unit_tests",
+    "weekly_time:unit_tests",
+    "weekly_time:unit_tests_checked",
   ]
 }

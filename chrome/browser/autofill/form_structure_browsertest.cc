@@ -136,8 +136,8 @@ std::string FormStructuresToString(
       }
       string_form += base::JoinString(
           {field->Type().ToStringView(), base::UTF16ToUTF8(field->name()),
-           base::UTF16ToUTF8(field->label()), base::UTF16ToUTF8(field->value()),
-           section},
+           base::UTF16ToUTF8(field->label()),
+           base::UTF16ToUTF8(field->value(ValueSemantics::kCurrent)), section},
           " | ");
       string_form.push_back('\n');
     }
@@ -297,7 +297,7 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
 #endif
 IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, MAYBE_DataDrivenHeuristics) {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (GetActiveHeuristicSource() != HeuristicSource::kLegacy) {
+  if (GetActiveHeuristicSource() != HeuristicSource::kLegacyRegexes) {
     GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                     "parsing patterns";
   }

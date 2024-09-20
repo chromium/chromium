@@ -116,6 +116,8 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_ROLE_DESCRIPTION},
       {"certificateManagerV2CertEntryViewAriaLabel",
        IDS_CERTIFICATE_MANAGER_V2_CERT_ENTRY_VIEW_ARIA_LABEL},
+      {"certificateManagerV2CertEntryDeleteAriaLabel",
+       IDS_CERTIFICATE_MANAGER_V2_CERT_ENTRY_DELETE_ARIA_LABEL},
       {"certificateManagerV2CertHashCopyAriaLabel",
        IDS_CERTIFICATE_MANAGER_V2_CERT_HASH_COPY_ARIA_LABEL},
   };

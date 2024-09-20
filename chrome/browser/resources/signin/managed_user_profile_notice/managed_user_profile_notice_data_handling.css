@@ -1,0 +1,79 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=/signin_shared.css.js
+ * #import=/signin_vars.css.js
+ * #import=/tangible_sync_style_shared_lit.css.js
+ * #scheme=relative
+ * #include=signin-shared tangible-sync-style-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --radio-button-height: 20px;
+}
+
+main {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-inline: var(--tangible-sync-style-banner-width);
+  position: relative;
+}
+
+.title {
+  text-align: center;
+  margin: 0;
+}
+
+cr-radio-group {
+  background-color: var(--md-background-color);
+  border-radius: 24px;
+  margin-block: auto;
+  width: 500px;
+}
+
+cr-radio-button {
+  --cr-radio-button-size: 24px;
+  align-items: start;
+  display: flex;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: var(--radio-button-height);
+  padding: 20px;
+}
+
+cr-radio-button + cr-radio-button {
+  border-top: solid 2px var(--cr-fallback-color-surface);
+}
+
+cr-radio-button p {
+  line-height: var(--radio-button-height);
+  font-weight: normal;
+  margin: 0;
+}
+
+cr-radio-button #label {
+  font-weight: 500;
+  line-height: var(--radio-button-height);
+  margin: 0;
+}
+
+.success-icon {
+  content: url(images/data_handling.svg);
+  height: 64px;
+  width: 87px;
+}
+
+@media (prefers-color-scheme: dark) {
+  cr-radio-group {
+    background-color: var(--cr-fallback-color-surface);
+  }
+
+  cr-radio-button + cr-radio-button {
+    border-top: solid 2px var(--md-background-color);
+  }
+}

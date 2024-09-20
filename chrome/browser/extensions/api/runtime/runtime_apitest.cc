@@ -1349,10 +1349,11 @@ IN_PROC_BROWSER_TEST_P(GetContextsWithDeveloperToolsOpened,
 
   // Open the developer tools and wait for the extension page to be loaded.
   ExtensionTestMessageListener listener("devtools page opened");
-  content::WebContents* web_contents =
+  content::WebContents* inspected_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   DevToolsWindow* devtools_window =
-      DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, open_docked);
+      DevToolsWindowTesting::OpenDevToolsWindowSync(inspected_web_contents,
+                                                    open_docked);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   // Assert the docked state of developer tools.
@@ -1374,10 +1375,10 @@ IN_PROC_BROWSER_TEST_P(GetContextsWithDeveloperToolsOpened,
 
   // Setup the expected values for the context. Only one tab-based context
   // should be returned by chrome.runtime.getContexts().
-  int expected_tab_id = ExtensionTabUtil::GetTabId(devtools_web_contents);
-  int expected_window_id =
-      ExtensionTabUtil::GetWindowIdOfTab(devtools_web_contents);
-  int expected_frame_id = ExtensionApiFrameIdMap::GetFrameId(extension_host);
+  int expected_tab_id = -1;
+  int expected_window_id = ExtensionTabUtil::GetWindowIdOfTab(
+      is_docked ? inspected_web_contents : devtools_web_contents);
+  int expected_frame_id = -1;
   std::string expected_context_id =
       ExtensionApiFrameIdMap::GetContextId(extension_host).AsLowercaseString();
   std::string expected_document_id =
@@ -1385,7 +1386,7 @@ IN_PROC_BROWSER_TEST_P(GetContextsWithDeveloperToolsOpened,
   std::string expected_origin = extension().origin().Serialize();
   static constexpr char kExpectedTemplate[] =
       R"([{
-            "contextType": "TAB",
+            "contextType": "DEVELOPER_TOOLS",
             "contextId": "%s",
             "tabId": %d,
             "windowId": %d,
@@ -1401,7 +1402,8 @@ IN_PROC_BROWSER_TEST_P(GetContextsWithDeveloperToolsOpened,
       expected_frame_url.spec().c_str(), expected_origin.c_str());
 
   // Verify the result of chrome.runtime.getContexts().
-  base::Value contexts = GetContexts(R"({"contextTypes": ["TAB"]})");
+  base::Value contexts =
+      GetContexts(R"({"contextTypes": ["DEVELOPER_TOOLS"]})");
   EXPECT_THAT(contexts, base::test::IsJson(expected_contexts));
 }
 

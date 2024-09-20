@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "components/tab_groups/tab_group_info.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace crosapi {
@@ -72,7 +73,7 @@ class BrowserAction {
       const std::vector<GURL>& urls,
       const gfx::Rect& bounds,
       const std::vector<tab_groups::TabGroupInfo>& tab_group_infos,
-      ui::WindowShowState show_state,
+      ui::mojom::WindowShowState show_state,
       int32_t active_tab_index,
       int32_t first_non_pinned_tab_index,
       std::string_view app_name,

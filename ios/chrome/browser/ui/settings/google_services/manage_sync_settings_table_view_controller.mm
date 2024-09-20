@@ -213,7 +213,8 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
           avatarImage:avatarImage
                  name:name
                 email:email
-      managementState:std::move(managementState)];
+      managementState:std::move(managementState)
+      useLargeMargins:YES];
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
 }

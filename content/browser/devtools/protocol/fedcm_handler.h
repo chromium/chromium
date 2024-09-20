@@ -17,8 +17,13 @@ namespace content {
 class FederatedAuthRequestImpl;
 class FederatedAuthRequestPageData;
 class FederatedIdentityApiPermissionContextDelegate;
-struct IdentityProviderData;
+class IdentityProviderData;
+class IdentityRequestAccount;
 }  // namespace content
+
+using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+using IdentityRequestAccountPtr =
+    scoped_refptr<content::IdentityRequestAccount>;
 
 namespace content::protocol {
 
@@ -72,7 +77,9 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
 
   FederatedAuthRequestPageData* GetPageData();
   FederatedAuthRequestImpl* GetFederatedAuthRequest();
-  const std::vector<IdentityProviderData>* GetIdentityProviderData(
+  const std::vector<IdentityProviderDataPtr>* GetIdentityProviderData(
+      FederatedAuthRequestImpl* auth_request);
+  const std::vector<IdentityRequestAccountPtr>* GetAccounts(
       FederatedAuthRequestImpl* auth_request);
   FederatedIdentityApiPermissionContextDelegate* GetApiPermissionContext();
 

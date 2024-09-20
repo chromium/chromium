@@ -18,6 +18,7 @@ class RenderFrameHost;
 class RenderFrameHostImpl;
 class DedicatedWorkerHost;
 class SharedWorkerHost;
+class SharedStorageWorkletHost;
 class ServiceWorkerHost;
 struct ServiceWorkerVersionInfo;
 struct ServiceWorkerVersionBaseInfo;
@@ -53,6 +54,13 @@ void PopulateBinderMapWithContext(
     SharedWorkerHost* host,
     mojo::BinderMapWithContext<const url::Origin&>* map);
 url::Origin GetContextForHost(SharedWorkerHost* host);
+
+// Registers the handlers for interfaces requested by shared storage worklets.
+void PopulateBinderMap(SharedStorageWorkletHost* host, mojo::BinderMap* map);
+void PopulateBinderMapWithContext(
+    SharedStorageWorkletHost* host,
+    mojo::BinderMapWithContext<SharedStorageWorkletHost*>* map);
+SharedStorageWorkletHost* GetContextForHost(SharedStorageWorkletHost* host);
 
 // Registers the handlers for interfaces requested by service workers.
 void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map);

@@ -12,10 +12,12 @@
 #include <stddef.h>
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -362,8 +364,21 @@ void TaskManagerView::Init() {
   tab_table->set_context_menu_controller(this);
   set_context_menu_controller(this);
 
-  tab_table_parent_ = AddChildView(
-      views::TableView::CreateScrollViewWithTable(std::move(tab_table)));
+  const bool tm_refresh_enabled =
+      base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh);
+
+  // Has a border if the feature is disabled, since the redesign version doesn't
+  // have a border.
+  bool table_has_border = !tm_refresh_enabled;
+
+  if (tm_refresh_enabled) {
+    views::TableHeaderStyle header_style = {/*vertical_padding=*/16,
+                                            /*horizontal_padding=*/8};
+    tab_table->SetHeaderStyle(header_style);
+  }
+
+  tab_table_parent_ = AddChildView(views::TableView::CreateScrollViewWithTable(
+      std::move(tab_table), table_has_border));
 
   SetUseDefaultFillLayout(true);
 

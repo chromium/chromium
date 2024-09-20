@@ -169,7 +169,7 @@ bool IsFieldConditionFulfilledIgnoringLocation(ParsingContext& context,
   if (condition.regex_reference_match.has_value()) {
     base::span<const MatchPatternRef> patterns =
         GetMatchPatterns(condition.regex_reference_match.value(),
-                         context.page_language, context.pattern_source);
+                         context.page_language, context.pattern_file);
     if (!FormFieldParser::FieldMatchesMatchPatternRef(context, patterns,
                                                       field)) {
       return false;

@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
+import("//rlz/buildflags/buildflags.gni")
 
 assert(is_chromeos_ash)
 
@@ -78,9 +79,8 @@ static_library("app_list") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/search/ranking",
-    "//chrome/browser/ash/crosapi:browser_util",
-    "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/search_engines",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/app_icon_color_cache",
     "//chrome/browser/ui/webui/ash/settings/app_management",
@@ -89,11 +89,15 @@ static_library("app_list") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/constants",
-    "//chromeos/crosapi/cpp",
     "//components/app_constants",
     "//components/pref_registry",
     "//extensions/common",
+    "//rlz/buildflags",
   ]
+
+  if (enable_rlz) {
+    deps += [ "//components/rlz" ]
+  }
 }
 
 static_library("test_support") {
@@ -239,13 +243,13 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/demo_mode:test_support",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/web_applications",
@@ -297,7 +301,6 @@ source_set("browser_tests") {
       "//ash/assistant/ui",
       "//ash/assistant/ui:constants",
       "//chrome/browser/ui/ash/assistant:browser_test_support",
-      "//chrome/browser/ui/ash/assistant/test_support",
       "//chromeos/ash/components/assistant/test_support",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/assistant/internal:libassistant",

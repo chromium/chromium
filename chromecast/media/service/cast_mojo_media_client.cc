@@ -62,8 +62,7 @@ std::unique_ptr<::media::Renderer> CastMojoMediaClient::CreateRenderer(
   // TODO(guohuideng): CastMojoMediaClient is used only when build flag
   // ENABLE_CAST_RENDERER is set. We can get rid of a number of related macros
   // and the [[maybe_unused]].
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::unique_ptr<::media::CdmFactory> CastMojoMediaClient::CreateCdmFactory(

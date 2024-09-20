@@ -70,6 +70,14 @@ const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[] =
     "When enabled, the address fields for input would be dynamically loaded "
     "based on the country value";
 
+const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[] =
+    "Enable logging form events to all parsed form on a web page.";
+const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[] =
+    "When enabled, a form event will log to all of the parsed forms of the "
+    "same type on a webpage. This means credit card form events will log to "
+    "all credit card form types and address form events will log to all "
+    "address form types.";
+
 const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[] =
     "Enable sending merchant domain in server card unmask requests";
 const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[] =
@@ -345,6 +353,12 @@ const char kDefaultBrowserTriggerCriteriaExperimentName[] =
 const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =
     "When enabled, default browser promo will be displayed to user without "
     "matching all the trigger criteria.";
+
+const char kBlueDotOnToolsMenuButtonName[] =
+    "Show blue dot promo on tools menu button";
+const char kBlueDotOnToolsMenuButtonDescription[] =
+    "When enabled, blue dot promo on tools menu button will be displayed to "
+    "user";
 
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =
@@ -686,10 +700,9 @@ const char kNativeFindInPageDescription[] =
     "is replaced with a native implementation which also enables searching "
     "text in PDF files. Available for iOS 16 or later.";
 
-const char kNewNTPOmniboxLayoutName[] = "New NTP Omnibox Layout";
-const char kNewNTPOmniboxLayoutDescription[] =
-    "Enables the new NTP omnibox layout with leading-edge aligned hint label "
-    "and magnifying glass icon.";
+const char kNewSyncOptInIllustrationName[] = "New sync opt-in illustration";
+const char kNewSyncOptInIllustrationDescription[] =
+    "Uses the new illustration in the sync opt-in promotion view.";
 
 const char kOverflowMenuCustomizationName[] = "Overflow Menu Customization";
 const char kOverflowMenuCustomizationDescription[] =
@@ -1079,21 +1092,10 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
 const char kEnableLensOverlayName[] = "Enable Lens Overlay";
 const char kEnableLensOverlayDescription[] = "Enables lens overlay UI";
 
-const char kEnableSessionSerializationOptimizationsName[] =
-    "Session Serialization Optimization";
-const char kEnableSessionSerializationOptimizationsDescription[] =
-    "Enables the use of multiple separate files to save the session state "
-    "and the ability to load only the minimum amount of data when restoring "
-    "the session from disk.";
-
 const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
 const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"
     "are used.";
-
-const char kTabGroupsInGridName[] = "Enable Tab Groups in grid";
-const char kTabGroupsInGridDescription[] =
-    "When enabled, tab groups can be created from the grid.";
 
 const char kTabGroupsIPadName[] = "Enable Tab Groups on iPad";
 const char kTabGroupsIPadDescription[] =

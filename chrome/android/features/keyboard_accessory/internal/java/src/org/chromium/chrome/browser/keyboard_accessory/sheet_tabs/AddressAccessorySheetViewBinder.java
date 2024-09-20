@@ -29,8 +29,7 @@ class AddressAccessorySheetViewBinder {
             FaviconHelper faviconHelper) {
         switch (viewType) {
             case AccessorySheetDataPiece.Type.TITLE:
-                return new AccessorySheetTabViewBinder.TitleViewHolder(
-                        parent, R.layout.keyboard_accessory_sheet_tab_title);
+                return new AccessorySheetTabViewBinder.TitleViewHolder(parent);
             case AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION:
                 return new PlusAddressInfoViewHolder(parent, faviconHelper);
             case AccessorySheetDataPiece.Type.ADDRESS_INFO:

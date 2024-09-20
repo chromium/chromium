@@ -138,6 +138,9 @@ bool MaybeHandlePlatformEventForDrag(const ui::PlatformEvent& event,
                                      bool start_drag_ack_received,
                                      base::OnceClosure cancel_drag_cb);
 
+// Logs connection state to UMA.
+void RecordConnectionMetrics(wl_display* display);
+
 }  // namespace wl
 
 #endif  // UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_UTIL_H_

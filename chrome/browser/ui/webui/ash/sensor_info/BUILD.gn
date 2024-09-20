@@ -36,7 +36,7 @@ static_library("sensor_info") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/sensor_info:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
   ]
 }
 

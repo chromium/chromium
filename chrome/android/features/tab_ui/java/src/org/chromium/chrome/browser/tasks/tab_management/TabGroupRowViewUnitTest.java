@@ -20,6 +20,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DISPLAY_AS_SHARED;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
@@ -29,6 +31,7 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -73,12 +76,14 @@ public class TabGroupRowViewUnitTest {
     @Mock Runnable mRunnable;
     @Mock Drawable mDrawable;
     @Mock FaviconResolver mFaviconResolver;
+    @Mock Callback<FrameLayout> mFrameLayoutCallback;
 
     private Activity mActivity;
     private TabGroupRowView mTabGroupRowView;
     private ViewGroup mTabGroupFaviconCluster;
     private TextView mTitleTextView;
     private TextView mSubtitleTextView;
+    private FrameLayout mImageTilesContainer;
     private ListMenuButton mListMenuButton;
     private PropertyModel mPropertyModel;
 
@@ -102,6 +107,7 @@ public class TabGroupRowViewUnitTest {
         mTabGroupFaviconCluster = mTabGroupRowView.findViewById(R.id.tab_group_favicon_cluster);
         mTitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_title);
         mSubtitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_subtitle);
+        mImageTilesContainer = mTabGroupRowView.findViewById(R.id.image_tiles_container);
         mListMenuButton = mTabGroupRowView.findViewById(R.id.more);
         mTabGroupRowView.setTimeAgoResolverForTesting(mTimeAgoResolver);
 
@@ -260,5 +266,19 @@ public class TabGroupRowViewUnitTest {
         remakeWithProperty(TITLE_DATA, new Pair<>("Title", 3));
         assertEquals("Open Title", mTitleTextView.getContentDescription());
         assertEquals("Title tab group options", mListMenuButton.getContentDescription());
+    }
+
+    @Test
+    public void testDisplayAsShared() {
+        remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(DISPLAY_AS_SHARED, true).build());
+        assertEquals(View.VISIBLE, mImageTilesContainer.getVisibility());
+        remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(DISPLAY_AS_SHARED, false).build());
+        assertEquals(View.GONE, mImageTilesContainer.getVisibility());
+    }
+
+    @Test
+    public void testImageTileContainerCallback() {
+        remakeWithProperty(GET_IMAGE_TILE_CONTAINER_CALLBACK, mFrameLayoutCallback);
+        verify(mFrameLayoutCallback).onResult(any());
     }
 }

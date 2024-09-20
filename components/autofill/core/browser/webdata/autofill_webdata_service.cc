@@ -113,12 +113,11 @@ void AutofillWebDataService::RemoveAutofillProfile(const std::string& guid) {
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
-    std::optional<AutofillProfile::RecordType> record_type,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetAutofillProfiles,
-                     autofill_backend_, record_type),
+                     autofill_backend_),
       consumer);
 }
 

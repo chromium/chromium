@@ -23,15 +23,6 @@ BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
              "AutofillGivePrecedenceToNumericQuantities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/40151750): Remove this feature flag after the explicit save
-// prompts for address profiles is complete.
-// When enabled, address profile save problem will contain a dropdown for
-// assigning a nickname to the address profile. Relevant only if the
-// AutofillAddressProfileSavePrompt feature is enabled.
-BASE_FEATURE(kAutofillAddressProfileSavePromptNicknameSupport,
-             "AutofillAddressProfileSavePromptNicknameSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature flag to control the displaying of an ongoing hats survey that
 // measures users perception of Autofill. Differently from other surveys,
 // the Autofill user perception survey will not have a specific target
@@ -91,16 +82,6 @@ BASE_FEATURE(kAutofillDontPrefixMatchCreditCardNumbersOrCvcs,
              "AutofillDontPrefixMatchCreditCardNumbersOrCvcs",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// FormStructure::RetrieveFromCache used to preserve an AutofillField's
-// is_autofilled from the cache of previously parsed forms. This makes little
-// sense because the renderer sends us the autofill state and has the most
-// recent information. Dropping the old behavior should not make any difference
-// but to be sure, this is gated by a finch experiment.
-// TODO(crbug.com/40871691) Cleanup when launched.
-BASE_FEATURE(kAutofillDontPreserveAutofillState,
-             "AutofillDontPreserveAutofillState",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
              "AutofillDisableFilling",
@@ -109,12 +90,6 @@ BASE_FEATURE(kAutofillDisableFilling,
 // Kill switch for Autofill address import.
 BASE_FEATURE(kAutofillDisableAddressImport,
              "AutofillDisableAddressImport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Kill switch for computing heuristics other than the active ones
-// (GetActivePatternSource()).
-BASE_FEATURE(kAutofillDisableShadowHeuristics,
-             "AutofillDisableShadowHeuristics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, autofill will use the new ranking algorithm for address profile
@@ -216,6 +191,12 @@ BASE_FEATURE(kAutofillEnableImportWhenMultiplePhoneNumbers,
              "AutofillEnableImportWhenMultiplePhoneNumbers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if Autofill executes the parser for the prediction improvements.
+// TODO(crbug.com/345170058) Remove once launched.
+BASE_FEATURE(kAutofillEnableImprovedPredictionParser,
+             "AutofillEnableImprovedPredictionParser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the precedence is given to the field label over the name when
 // they match different types. Applied only for parsing of address forms in
 // Turkish.
@@ -264,6 +245,22 @@ BASE_FEATURE(kAutofillAddressFieldSwapping,
 // blink::features::AllowJavaScriptToResetAutofillState.
 BASE_FEATURE(kAutofillFixCachingOnJavaScriptChanges,
              "AutofillFixCachingOnJavaScriptChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Fixes the overloaded meaning of FormFieldData::value (current value of a
+// field and initial value of a field): if enabled, AutofillField::value() takes
+// into accounts its ValueSemantics parameter.
+// TODO: crbug.com/40227496 - Clean up when launched.
+BASE_FEATURE(kAutofillFixValueSemantics,
+             "AutofillFixValueSemantics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, AutofillField::value(kInitial) for <select> fields returns the
+// initial values. Otherwise, it is identical to AutofillField::value(kCurrent).
+// Should only be enabled if kAutofillFixValueSemantics is enabled.
+// TODO: crbug.com/40227496 - Clean up when launched.
+BASE_FEATURE(kAutofillFixInitialValueOfSelect,
+             "AutofillFixInitialValueOfSelect",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Killswitch for not running logic in `form_util::ClearPreviewedElements` that
@@ -409,12 +406,6 @@ BASE_FEATURE(kAutofillUsePLAddressModel,
              "AutofillUsePLAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Autofill will issues votes for EMAIL_ADDRESS field types on
-// fields where the content matches a valid email format.
-BASE_FEATURE(kAutofillUploadVotesForFieldsWithEmail,
-             "AutofillUploadVotesForFieldsWithEmail",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
 // TODO(crbug.com/40276177): Remove when launched.
@@ -439,26 +430,6 @@ BASE_FEATURE(kAutofillOverwritePlaceholdersOnly,
 BASE_FEATURE(kAutofillSkipPreFilledFields,
              "AutofillSkipPreFilledFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This feature flag only exists for its feature parameter
-// `kAutofillParsingPatternActiveSource`, controlling from which JSON file
-// regexes are loaded.
-// If the flag is disabled (which it should never be in practice), it behaves
-// as if enabled with `kAutofillParsingPatternActiveSource` set to "default".
-// TODO(crbug.com/40280853): Remove once there is a decision what to do about
-// the different JSON files.
-BASE_FEATURE(kAutofillParsingPatternProvider,
-             "AutofillParsingPatternProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The specific pattern set from which regexes are loaded for the active
-// predictions. One of "default", "experimental".
-// This parameter is only supported in Chrome-branded builds. Non-Chrome branded
-// builds default to the legacy patterns.
-// TODO(crbug.com/40280853): Remove once there is a decision what to do about
-// the different JSON files.
-const base::FeatureParam<std::string> kAutofillParsingPatternActiveSource{
-    &kAutofillParsingPatternProvider, "prediction_source", "default"};
 
 // Enables detection of language from Translate.
 // TODO(crbug.com/40158074): Cleanup when launched.
@@ -598,17 +569,6 @@ BASE_FEATURE(kAutofillTestFormWithTestAddresses,
 BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
              "AutofillSilentProfileUpdateForInsufficientImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Sends text change events for contenteditable elements. When this is off,
-// only input elements and maybe textarea elements send text change events.
-BASE_FEATURE(kAutofillContentEditableChangeEvents,
-             "AutofillContentEditableChangeEvents",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
 
 // Causes Autofill to announce the Compose popup less assertively.
 BASE_FEATURE(kComposePopupAnnouncePolitely,
@@ -765,6 +725,12 @@ const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket4{
 COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kAutofillTrackMultipleUseDates,
              "AutofillTrackMultipleUseDates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, Greek regexes are used for parsing in branded builds.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillGreekRegexes,
+             "AutofillGreekRegexes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

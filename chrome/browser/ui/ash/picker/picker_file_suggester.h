@@ -53,6 +53,7 @@ class PickerFileSuggester {
 
   // Any in-flight requests are cancelled when this object is destroyed.
   void GetRecentLocalImages(size_t max_files,
+                            base::TimeDelta now_delta,
                             RecentLocalImagesCallback callback);
   void GetRecentDriveFiles(size_t max_files, RecentDriveFilesCallback callback);
 

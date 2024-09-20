@@ -76,24 +76,6 @@ struct COMPONENT_EXPORT(MANTA) Action {
   bool all_done;
 };
 
-struct COMPONENT_EXPORT(MANTA) DialogTurn {
-  DialogTurn(const std::string& message,
-             Role role,
-             std::vector<Action> actions);
-  DialogTurn(const std::string& message, Role role);
-
-  ~DialogTurn();
-
-  DialogTurn(const DialogTurn&);
-  DialogTurn& operator=(const DialogTurn&);
-
-  void AppendAction(Action action);
-
-  std::string message;
-  Role role;
-  std::vector<Action> actions;
-};
-
 proto::Role COMPONENT_EXPORT(MANTA) GetRole(Role role);
 
 void COMPONENT_EXPORT(MANTA)
@@ -119,13 +101,6 @@ void COMPONENT_EXPORT(MANTA) AddAppsData(base::span<const AppsData> apps_data,
 std::unique_ptr<SettingsData> COMPONENT_EXPORT(MANTA)
     ObtainSettingFromProto(proto::Setting setting_proto);
 
-DialogTurn COMPONENT_EXPORT(MANTA)
-    ConvertDialogToStruct(proto::Turn* turn_proto);
-
-void COMPONENT_EXPORT(MANTA)
-    AddDialogToSparkyContext(const std::vector<DialogTurn>& dialog,
-                             proto::SparkyContextData* sparky_context_proto);
-
 void COMPONENT_EXPORT(MANTA) AddFilesData(base::span<const FileData> files_data,
                                           proto::FilesData* files_proto);
 
@@ -137,6 +112,9 @@ std::optional<FileData> COMPONENT_EXPORT(MANTA)
 
 std::vector<FileData> COMPONENT_EXPORT(MANTA)
     GetFileDataFromProto(const proto::FilesData& files_proto);
+
+proto::Turn COMPONENT_EXPORT(MANTA)
+    CreateTurn(const std::string& message, manta::proto::Role role);
 
 }  // namespace manta
 

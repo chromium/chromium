@@ -192,16 +192,19 @@ void NetworkServiceNetworkDelegate::OnPACScriptError(
 std::optional<net::cookie_util::StorageAccessStatus>
 NetworkServiceNetworkDelegate::OnGetStorageAccessStatus(
     const net::URLRequest& request) const {
-  const std::optional<url::Origin>& top_frame_origin =
-      request.isolation_info().IsEmpty()
-          ? std::nullopt
-          : request.isolation_info().top_frame_origin();
-
   return network_context_->cookie_manager()
       ->cookie_settings()
       .GetStorageAccessStatus(request.url(), request.site_for_cookies(),
-                              top_frame_origin,
+                              request.isolation_info().top_frame_origin(),
                               request.cookie_setting_overrides());
+}
+
+bool NetworkServiceNetworkDelegate::OnIsStorageAccessHeaderEnabled(
+    const url::Origin* top_frame_origin,
+    const GURL& url) const {
+  return network_context_->cookie_manager()
+      ->cookie_settings()
+      .IsStorageAccessHeadersEnabled(url, top_frame_origin);
 }
 
 bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(

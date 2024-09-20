@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">您在 <ph name="RECENCY" />访问过</translation>
 <translation id="5039804452771397117">允许</translation>
 <translation id="5048398596102334565">允许网站使用移动传感器（推荐）</translation>
+<translation id="5048841907079026162">管理浏览数据</translation>
 <translation id="5050380848339752099">该网站即将与某个并非处于无痕模式下的应用共享信息。</translation>
 <translation id="5063480226653192405">空间占用量</translation>
 <translation id="5091013926750941408">移动网站</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">允许网站运行 JavaScript（推荐）</translation>
 <translation id="534295439873310000">NFC 设备</translation>
 <translation id="5344522958567249764">管理广告隐私设置</translation>
+<translation id="5373874281522292782">标签页分组已保存</translation>
 <translation id="5389626883706033615">禁止网站向您请求使用它们保存的与您相关的信息</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（以及另外 1 个）}other{（以及另外 # 个）}}</translation>
 <translation id="5403592356182871684">名称</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">永远</translation>
 <translation id="757524316907819857">禁止网站播放受保护的内容</translation>
 <translation id="7594634374516752650">已连接到蓝牙设备</translation>
+<translation id="7617547684249261169">您可以删除部分或全部历史记录、Cookie、网站数据等</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">绿野仙踪</translation>

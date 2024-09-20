@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/command_line.h"
 #include "components/services/on_device_translation/mock_translator.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -14,16 +13,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace on_device_translation {
-namespace {
-
-// TODO(crbug.com/362123222): Remove these once models are installed via CCU.
-constexpr base::FilePath::CharType kPackageInfoRelativePath[] =
-    FILE_PATH_LITERAL("models/config");
-constexpr base::FilePath::CharType kModelRelativePath[] =
-    FILE_PATH_LITERAL("models");
-
-}  // namespace
-
 // TranslateKitTranslator provides translation functionalities based on the
 // Translator from TranslateKitClient.
 class TranslateKitTranslator : public mojom::Translator {
@@ -54,24 +43,14 @@ class TranslateKitTranslator : public mojom::Translator {
 OnDeviceTranslationService::OnDeviceTranslationService(
     mojo::PendingReceiver<mojom::OnDeviceTranslationService> receiver)
     : receiver_(this, std::move(receiver)) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kTranslateKitRootDir) &&
-      command_line->HasSwitch(kTranslateKitBinaryPath)) {
-    auto translate_kit_root_dir =
-        command_line->GetSwitchValuePath(kTranslateKitRootDir);
-    auto translate_kit_path =
-        command_line->GetSwitchValuePath(kTranslateKitBinaryPath);
-    translate_kit_ = std::make_unique<TranslateKitClient>(
-        translate_kit_path,
-        translate_kit_root_dir.Append(kPackageInfoRelativePath),
-        translate_kit_root_dir.Append(kModelRelativePath));
-  } else {
-    LOG(ERROR)
-        << "Failed to initialize TranslateKitClient due to missing path.";
-  }
 }
 
 OnDeviceTranslationService::~OnDeviceTranslationService() = default;
+
+void OnDeviceTranslationService::SetServiceConfig(
+    mojom::OnDeviceTranslationServiceConfigPtr config) {
+  TranslateKitClient::Get()->SetConfig(std::move(config));
+}
 
 void OnDeviceTranslationService::CreateTranslator(
     const std::string& source_lang,
@@ -84,7 +63,8 @@ void OnDeviceTranslationService::CreateTranslator(
     return;
   }
 
-  auto* translator = translate_kit_->GetTranslator(source_lang, target_lang);
+  auto* translator =
+      TranslateKitClient::Get()->GetTranslator(source_lang, target_lang);
   if (!translator) {
     std::move(create_translator_callback).Run(false);
     return;
@@ -106,11 +86,8 @@ void OnDeviceTranslationService::CanTranslate(
     return;
   }
 
-  bool can_translate = false;
-  if (translate_kit_) {
-    can_translate = translate_kit_->CanTranslate(source_lang, target_lang);
-  }
-  std::move(can_translate_callback).Run(can_translate);
+  std::move(can_translate_callback)
+      .Run(TranslateKitClient::Get()->CanTranslate(source_lang, target_lang));
 }
 
 }  // namespace on_device_translation

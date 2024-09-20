@@ -25,20 +25,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/iterators/text_searcher_icu.h"
 
 #include <unicode/usearch.h>
+
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator_internal_icu.h"
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -59,36 +56,56 @@ UStringSearch* CreateSearcher() {
   return searcher;
 }
 
-class ICULockableSearcher {
+class SearcherFactory {
   STACK_ALLOCATED();
 
  public:
-  ICULockableSearcher(const ICULockableSearcher&) = delete;
-  ICULockableSearcher& operator=(const ICULockableSearcher&) = delete;
+  SearcherFactory(const SearcherFactory&) = delete;
+  SearcherFactory& operator=(const SearcherFactory&) = delete;
 
+  // Returns the global instance. If this is called again before calling
+  // ReleaseSearcher(), this function crashes.
   static UStringSearch* AcquireSearcher() {
-    Instance().lock();
+    Instance().Lock();
     return Instance().searcher_;
   }
+  // Creates a normal instance. We may create instances multiple times with
+  // this function.  A returned pointer should be destructed by
+  // ReleaseSearcher().
+  static UStringSearch* CreateLocal() { return CreateSearcher(); }
 
-  static void ReleaseSearcher() { Instance().unlock(); }
-
- private:
-  static ICULockableSearcher& Instance() {
-    static ICULockableSearcher searcher(CreateSearcher());
-    return searcher;
+  static void ReleaseSearcher(UStringSearch* searcher) {
+    if (searcher == Instance().searcher_) {
+      // Leave the static object pointing to valid strings (pattern=target,
+      // text=buffer). Otherwise, usearch_reset() will results in
+      // 'use-after-free' error.
+      UErrorCode status = U_ZERO_ERROR;
+      usearch_setPattern(searcher, &kNewlineCharacter, 1, &status);
+      DCHECK(U_SUCCESS(status));
+      usearch_setText(searcher, &kNewlineCharacter, 1, &status);
+      DCHECK(U_SUCCESS(status));
+      Instance().Unlock();
+    } else {
+      usearch_close(searcher);
+    }
   }
 
-  explicit ICULockableSearcher(UStringSearch* searcher) : searcher_(searcher) {}
+ private:
+  static SearcherFactory& Instance() {
+    static SearcherFactory factory(CreateSearcher());
+    return factory;
+  }
 
-  void lock() {
+  explicit SearcherFactory(UStringSearch* searcher) : searcher_(searcher) {}
+
+  void Lock() {
 #if DCHECK_IS_ON()
     DCHECK(!locked_);
     locked_ = true;
 #endif
   }
 
-  void unlock() {
+  void Unlock() {
 #if DCHECK_IS_ON()
     DCHECK(locked_);
     locked_ = false;
@@ -104,13 +121,11 @@ class ICULockableSearcher {
 
 }  // namespace
 
-static bool IsWholeWordMatch(const UChar* text,
-                             unsigned text_length,
+static bool IsWholeWordMatch(base::span<const UChar> text,
                              const MatchResultICU& result) {
   const wtf_size_t result_end = result.start + result.length;
-  DCHECK_LE(result_end, text_length);
-  UChar32 first_character;
-  U16_GET(text, 0, result.start, result_end, first_character);
+  DCHECK_LE(result_end, text.size());
+  UChar32 first_character = CodePointAt(text, result.start);
 
   // Chinese and Japanese lack word boundary marks, and there is no clear
   // agreement on what constitutes a word, so treat the position before any CJK
@@ -121,27 +136,23 @@ static bool IsWholeWordMatch(const UChar* text,
   wtf_size_t word_break_search_start = result_end;
   while (word_break_search_start > result.start) {
     word_break_search_start =
-        FindNextWordBackward(text, text_length, word_break_search_start);
+        FindNextWordBackward(text, word_break_search_start);
   }
   if (word_break_search_start != result.start)
     return false;
-  return result_end == static_cast<wtf_size_t>(FindWordEndBoundary(
-                           text, text_length, word_break_search_start));
+  return result_end == static_cast<wtf_size_t>(
+                           FindWordEndBoundary(text, word_break_search_start));
 }
 
 // Grab the single global searcher.
-// If we ever have a reason to do more than once search buffer at once, we'll
-// have to move to multiple searchers.
 TextSearcherICU::TextSearcherICU()
-    : searcher_(ICULockableSearcher::AcquireSearcher()) {}
+    : searcher_(SearcherFactory::AcquireSearcher()) {}
+
+TextSearcherICU::TextSearcherICU(ConstructLocalTag)
+    : searcher_(SearcherFactory::CreateLocal()) {}
 
 TextSearcherICU::~TextSearcherICU() {
-  // Leave the static object pointing to valid strings (pattern=target,
-  // text=buffer). Otheriwse, usearch_reset() will results in 'use-after-free'
-  // error.
-  SetPattern(&kNewlineCharacter, 1);
-  SetText(&kNewlineCharacter, 1);
-  ICULockableSearcher::ReleaseSearcher();
+  SearcherFactory::ReleaseSearcher(searcher_);
 }
 
 void TextSearcherICU::SetPattern(const StringView& pattern,
@@ -149,18 +160,17 @@ void TextSearcherICU::SetPattern(const StringView& pattern,
   DCHECK_GT(pattern.length(), 0u);
   options_ = options;
   SetCaseSensitivity(!options.IsCaseInsensitive());
-  SetPattern(pattern.Characters16(), pattern.length());
+  SetPattern(pattern.Span16());
   if (ContainsKanaLetters(pattern.ToString())) {
-    NormalizeCharactersIntoNFCForm(pattern.Characters16(), pattern.length(),
-                                   normalized_search_text_);
+    normalized_search_text_ = NormalizeCharactersIntoNfc(pattern.Span16());
   }
 }
 
-void TextSearcherICU::SetText(const UChar* text, wtf_size_t length) {
+void TextSearcherICU::SetText(base::span<const UChar> text) {
   UErrorCode status = U_ZERO_ERROR;
-  usearch_setText(searcher_, text, length, &status);
+  usearch_setText(searcher_, text.data(), text.size(), &status);
   DCHECK_EQ(status, U_ZERO_ERROR);
-  text_length_ = length;
+  text_length_ = text.size();
 }
 
 void TextSearcherICU::SetOffset(wtf_size_t offset) {
@@ -209,26 +219,28 @@ bool TextSearcherICU::ShouldSkipCurrentMatch(
   unsigned text_length = text_length_i32;
   DCHECK_LE(result.start + result.length, text_length);
   DCHECK_GT(result.length, 0u);
+  // SAFETY: Making a span same as the SetText() argument.
+  auto text_span = UNSAFE_BUFFERS(base::span<const UChar>(text, text_length));
 
-  if (!normalized_search_text_.empty() && !IsCorrectKanaMatch(text, result))
+  if (!normalized_search_text_.empty() &&
+      !IsCorrectKanaMatch(text_span, result)) {
     return true;
+  }
 
-  return options_.IsWholeWord() && !IsWholeWordMatch(text, text_length, result);
+  return options_.IsWholeWord() && !IsWholeWordMatch(text_span, result);
 }
 
-bool TextSearcherICU::IsCorrectKanaMatch(const UChar* text,
+bool TextSearcherICU::IsCorrectKanaMatch(base::span<const UChar> text,
                                          const MatchResultICU& result) const {
-  Vector<UChar> normalized_match;
-  NormalizeCharactersIntoNFCForm(text + result.start, result.length,
-                                 normalized_match);
-  return CheckOnlyKanaLettersInStrings(
-      normalized_search_text_.data(), normalized_search_text_.size(),
-      normalized_match.data(), normalized_match.size());
+  Vector<UChar> normalized_match =
+      NormalizeCharactersIntoNfc(text.subspan(result.start, result.length));
+  return CheckOnlyKanaLettersInStrings(base::span(normalized_search_text_),
+                                       base::span(normalized_match));
 }
 
-void TextSearcherICU::SetPattern(const UChar* pattern, wtf_size_t length) {
+void TextSearcherICU::SetPattern(base::span<const UChar> pattern) {
   UErrorCode status = U_ZERO_ERROR;
-  usearch_setPattern(searcher_, pattern, length, &status);
+  usearch_setPattern(searcher_, pattern.data(), pattern.size(), &status);
   DCHECK(U_SUCCESS(status));
 }
 

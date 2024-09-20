@@ -812,6 +812,24 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     return index + 1;
   }
 
+  private getSeaPenTileTagClass_(item: Tile|null): string {
+    const defaultTag = 'tile-tag';
+    return this.isSelectableTile_(item) ? defaultTag :
+                                          `${defaultTag} unavailable-tag`;
+  }
+
+  private getSeaPenTileTagLabel_(item: Tile|null): string {
+    return this.isSelectableTile_(item) ? this.i18n('seaPenExperimentLabel') :
+                                          this.i18n('seaPenUnavailableLabel');
+  }
+
+  private getSeaPenTileAriaDescription_(item: Tile|null): string|null {
+    // Do not set the aria-description for Sea Pen tile if the tile is
+    // unavailable.
+    return this.isSelectableTile_(item) ? this.getSeaPenTileTagLabel_(item) :
+                                          null;
+  }
+
   private getSeaPenTemplatesTileLabel_(): string {
     return isSeaPenTextInputEnabled() ?
         this.i18n('seaPenFreeformWallpaperTemplatesLabel') :

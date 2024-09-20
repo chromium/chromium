@@ -545,7 +545,7 @@ void SafeBrowsingService::RefreshState() {
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-bool SafeBrowsingService::SendDownloadReport(
+void SafeBrowsingService::SendDownloadReport(
     download::DownloadItem* download,
     ClientSafeBrowsingReportRequest::ReportType report_type,
     bool did_proceed,
@@ -555,12 +555,15 @@ bool SafeBrowsingService::SendDownloadReport(
                                      show_download_in_folder);
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(download));
-  return ChromePingManagerFactory::GetForBrowserContext(profile)
-             ->ReportThreatDetails(std::move(report)) ==
-         PingManager::ReportThreatDetailsResult::SUCCESS;
+  PingManager::ReportThreatDetailsResult result =
+      ChromePingManagerFactory::GetForBrowserContext(profile)
+          ->ReportThreatDetails(std::move(report));
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.ClientSafeBrowsingReport.SendDownloadReportResult", result);
+  return;
 }
 
-bool SafeBrowsingService::PersistDownloadReportAndSendOnNextStartup(
+void SafeBrowsingService::PersistDownloadReportAndSendOnNextStartup(
     download::DownloadItem* download,
     ClientSafeBrowsingReportRequest::ReportType report_type,
     bool did_proceed,
@@ -576,7 +579,7 @@ bool SafeBrowsingService::PersistDownloadReportAndSendOnNextStartup(
   base::UmaHistogramEnumeration(
       "SafeBrowsing.ClientSafeBrowsingReport.PersistDownloadReportResult",
       result);
-  return result == PingManager::PersistThreatDetailsResult::kPersistTaskPosted;
+  return;
 }
 
 bool SafeBrowsingService::SendPhishyInteractionsReport(

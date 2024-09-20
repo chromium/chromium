@@ -48,12 +48,12 @@ class InactiveTabsFakeWebStateListDelegate : public FakeWebStateListDelegate {
 class InactiveTabsUtilsTest : public PlatformTest {
  public:
   InactiveTabsUtilsTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     browser_active_ = std::make_unique<TestBrowser>(
-        browser_state_.get(),
+        profile_.get(),
         std::make_unique<InactiveTabsFakeWebStateListDelegate>());
     browser_inactive_ = std::make_unique<TestBrowser>(
-        browser_state_.get(),
+        profile_.get(),
         std::make_unique<InactiveTabsFakeWebStateListDelegate>());
     SnapshotBrowserAgent::CreateForBrowser(browser_active_.get());
     SnapshotBrowserAgent::CreateForBrowser(browser_inactive_.get());
@@ -66,7 +66,7 @@ class InactiveTabsUtilsTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_active_;
   std::unique_ptr<TestBrowser> browser_inactive_;
   // Used to verify histogram logging.
@@ -442,7 +442,7 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
   fake_web_state->SetVisibleURL(url);
   fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
   fake_web_state->SetLastActiveTime(base::Time::Now() - base::Days(30));
-  fake_web_state->SetBrowserState(browser_state_.get());
+  fake_web_state->SetBrowserState(profile_.get());
 
   // Ensure this is an ntp web state.
   id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));

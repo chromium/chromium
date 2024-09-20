@@ -1525,7 +1525,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 36
+// Next tag: 37
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1560,6 +1560,9 @@ message ClientSafeBrowsingReportRequest {
     // This report is triggered if a download warning is not interacted when
     // Chrome is closed.
     DANGEROUS_DOWNLOAD_PROFILE_CLOSED = 26;
+    // This report is triggered by the sampled HPRT lookup where it showed
+    // different verdicts from the URL real-time lookup.
+    URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY = 27;
   }
 
   message HTTPHeader {
@@ -1672,6 +1675,8 @@ message ClientSafeBrowsingReportRequest {
     ANDROID_SAFEBROWSING_REAL_TIME = 7;
     // The Android Safe Browsing API hit in local blocklist.
     ANDROID_SAFEBROWSING = 8;
+    // Client-side phishing.
+    CLIENT_SIDE_DETECTION = 9;
   }
 
   // The information propagated from the client about various environment
@@ -2017,6 +2022,25 @@ message ClientSafeBrowsingReportRequest {
 
   // Locale of the device, e.g. en, en_US.
   optional string locale = 35;
+
+  // Information included in the URL real-time and hash real-time discrepancy
+  // info reports.
+  message UrlRealTimeAndHashRealTimeDiscrepancyInfo {
+    enum LookupThreatType {
+      SAFE_OR_OTHER = 0;
+      MALWARE = 1;
+      PHISHING = 2;
+      UNWANTED = 3;
+      BILLING = 4;
+    }
+    // The threat type determined by the hash realtime mechanism.
+    optional LookupThreatType hash_realtime_threat_type = 1;
+    // The threat type determined by the URL real-time mechanism.
+    optional LookupThreatType url_realtime_threat_type = 2;
+  }
+
+  optional UrlRealTimeAndHashRealTimeDiscrepancyInfo
+      url_real_time_and_hash_real_time_discrepancy_info = 36;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).
@@ -2480,7 +2504,8 @@ message ExtensionTelemetryReportRequest {
   // Tracks the current setting of developer mode in chrome://extensions page.
   optional bool developer_mode_enabled = 4;
 
-  // Level of trustworthiness of a management authority entity.
+  // DEPRECATED.
+  // TODO(crbug.com/367327319): Clean up after new proto is live.
   enum ManagementAuthorityTrustworthiness {
     NONE = 0;           // No management authority found.
     LOW = 1;            // Local device management authority.
@@ -2489,11 +2514,27 @@ message ExtensionTelemetryReportRequest {
                         // e.g. CBCM, ChromeOS.
   }
 
-  // The highest level of trustworthiness between the platform and the browser.
+  // DEPRECATED.
+  // TODO(crbug.com/367327319): Clean up after new proto is live.
   optional ManagementAuthorityTrustworthiness
-      management_authority_trustworthiness = 5;
+      management_authority_trustworthiness = 5 [deprecated = true];
 
-  // Next available tag number: 6.
+  // Level of trustworthiness of a management authority entity.
+  enum ManagementAuthority {
+    MANAGEMENT_AUTHORITY_UNSPECIFIED = 0;
+    MANAGEMENT_AUTHORITY_NONE = 1;     // No management authority found.
+    MANAGEMENT_AUTHORITY_LOW = 2;      // Local device management authority.
+    MANAGEMENT_AUTHORITY_TRUSTED = 3;  // Non-local management authority.
+    MANAGEMENT_AUTHORITY_FULLY_TRUSTED =
+        4;  // Cryptographically verifiable policy source
+            // e.g. CBCM, ChromeOS.
+  }
+
+  // The highest level of management authority trustworthiness between the
+  // platform and the browser.
+  optional ManagementAuthority management_authority = 6;
+
+  // Next available tag number: 7.
 }
 
 message ExtensionTelemetryReportResponse {

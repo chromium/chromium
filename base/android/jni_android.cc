@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/robolectric_buildflags.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 #if BUILDFLAG(IS_ROBOLECTRIC)

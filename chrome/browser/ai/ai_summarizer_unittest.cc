@@ -181,7 +181,8 @@ CreateModelExecutionMock(const std::string& expected_input,
         summary_str.SerializeToString(&serialized_metadata);
         optimization_guide::proto::Any any;
         any.set_value(serialized_metadata);
-        any.set_type_url("type.googleapis.com/" + summary_str.GetTypeName());
+        any.set_type_url(
+            AITestUtils::GetTypeURLForProto(summary_str.GetTypeName()));
         callback.Run(
             optimization_guide::OptimizationGuideModelStreamingExecutionResult(
                 optimization_guide::StreamingResponse{

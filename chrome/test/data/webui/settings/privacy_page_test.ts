@@ -21,8 +21,6 @@ import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js'
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
-// clang-format on
-
 const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_ADS,
   routes.SITE_SETTINGS_AR,
@@ -37,7 +35,7 @@ const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_IDLE_DETECTION,
   routes.SITE_SETTINGS_IMAGES,
   routes.SITE_SETTINGS_JAVASCRIPT,
-  routes.SITE_SETTINGS_JAVASCRIPT_JIT,
+  routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
   routes.SITE_SETTINGS_LOCAL_FONTS,
   routes.SITE_SETTINGS_MICROPHONE,
   routes.SITE_SETTINGS_MIDI_DEVICES,
@@ -69,6 +67,8 @@ const redesignedPages: Route[] = [
   // routes.SITE_SETTINGS_INSECURE_CONTENT,
   // routes.SITE_SETTINGS_ZOOM_LEVELS,
 ];
+
+// clang-format on
 
 suite('PrivacyPage', function() {
   let page: SettingsPrivacyPageElement;

@@ -29,8 +29,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** Common test fixtures for AccountSelectionIntegration Android Javatests. */
 public class AccountSelectionIntegrationTestBase {
@@ -77,6 +81,13 @@ public class AccountSelectionIntegrationTestBase {
                     /* loginUrl= */ null,
                     /* supportsAddAccount= */ true);
 
+    protected static final @IdentityRequestDialogDisclosureField int[] DEFAULT_DISCLOSURE_FIELDS =
+            new int[] {
+                IdentityRequestDialogDisclosureField.NAME,
+                IdentityRequestDialogDisclosureField.EMAIL,
+                IdentityRequestDialogDisclosureField.PICTURE
+            };
+
     AccountSelectionCoordinator mAccountSelection;
 
     @Mock AccountSelectionComponent.Delegate mMockBridge;
@@ -90,9 +101,11 @@ public class AccountSelectionIntegrationTestBase {
     String mTestUrlTermsOfService;
     String mTestUrlPrivacyPolicy;
     ClientIdMetadata mClientIdMetadata;
-    IdentityProviderData mNewAccountsIdpReturningAna;
-    IdentityProviderData mNewAccountsIdpNewBob;
+    List<Account> mNewAccountsReturningAna;
+    List<Account> mNewAccountsNewBob;
     @RpMode.EnumType int mRpMode;
+    IdentityProviderData mIdpData;
+    IdentityProviderData mIdpDataWithAddAccount;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -108,23 +121,24 @@ public class AccountSelectionIntegrationTestBase {
                         new GURL(mTestUrlTermsOfService),
                         new GURL(mTestUrlPrivacyPolicy),
                         EXAMPLE_ETLD_PLUS_ONE);
-        mNewAccountsIdpReturningAna =
+        mNewAccountsReturningAna = Arrays.asList(RETURNING_ANA);
+        mNewAccountsNewBob = Arrays.asList(NEW_BOB);
+
+        mIdpData =
                 new IdentityProviderData(
-                        EXAMPLE_ETLD_PLUS_ONE,
-                        new Account[] {RETURNING_ANA},
-                        IDP_METADATA_WITH_ADD_ACCOUNT,
+                        TEST_ETLD_PLUS_ONE_2,
+                        IDP_METADATA,
                         mClientIdMetadata,
                         RpContext.SIGN_IN,
-                        /* requestPermission= */ true,
+                        DEFAULT_DISCLOSURE_FIELDS,
                         /* hasLoginStatusMismatch= */ false);
-        mNewAccountsIdpNewBob =
+        mIdpDataWithAddAccount =
                 new IdentityProviderData(
-                        EXAMPLE_ETLD_PLUS_ONE,
-                        new Account[] {NEW_BOB},
+                        TEST_ETLD_PLUS_ONE_2,
                         IDP_METADATA_WITH_ADD_ACCOUNT,
                         mClientIdMetadata,
                         RpContext.SIGN_IN,
-                        /* requestPermission= */ true,
+                        DEFAULT_DISCLOSURE_FIELDS,
                         /* hasLoginStatusMismatch= */ false);
 
         runOnUiThreadBlocking(

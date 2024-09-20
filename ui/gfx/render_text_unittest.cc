@@ -7057,8 +7057,14 @@ TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphSmallCaps) {
   EXPECT_EQ(std::vector<std::u16string>({u"ꟺＭ"}), GetRunListStrings());
   EXPECT_EQ("[0->1]", GetRunListStructureString());
 #else
+  base::HistogramTester histograms;
   EXPECT_EQ(std::vector<std::u16string>({u"ꟺ", u"Ｍ"}), GetRunListStrings());
   EXPECT_EQ("[0][1]", GetRunListStructureString());
+
+  // There should be one bucket with two entries (one per run).
+  histograms.ExpectTotalCount("RenderTextHarfBuzz.ShapeRunsFallback", 1);
+  EXPECT_EQ(histograms.GetTotalSum("RenderTextHarfBuzz.ShapeRunsFallback"), 2);
+
 #endif  // BUILDFLAG(IS_ANDROID)
   CheckBoundsForCursorPositions();
 }

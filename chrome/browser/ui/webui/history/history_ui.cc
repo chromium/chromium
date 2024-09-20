@@ -193,6 +193,12 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   bool enable_history_embeddings =
       history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile);
   source->AddBoolean("enableHistoryEmbeddings", enable_history_embeddings);
+  source->AddBoolean(
+      "maybeShowEmbeddingsIph",
+      history_embeddings::IsHistoryEmbeddingsSettingVisible(profile) &&
+          !enable_history_embeddings);
+  source->AddBoolean("enableHistoryEmbeddingsAnswers",
+                     history_embeddings::kEnableAnswers.Get());
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
       {"historyEmbeddingsSearchPrompt", IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT},
       {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
@@ -222,6 +228,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"learnMore", IDS_LEARN_MORE},
       {"thumbsUp", IDS_THUMBS_UP_RESULTS_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL},
+      {"historyEmbeddingsAnswerHeading", IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING},
   };
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",

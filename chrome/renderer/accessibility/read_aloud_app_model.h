@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "ui/accessibility/ax_node_position.h"
 
@@ -86,6 +87,8 @@ class ReadAloudAppModel {
                                bool is_docs,
                                const std::set<ui::AXNodeID>* current_nodes);
 
+  void PreprocessPhrasesForText(DependencyParserModel& dependency_parser_model);
+
   // Increments the processed_granularity_index_, updating ReadAloud's state of
   // the current granularity to refer to the next granularity. The current
   // behavior allows the client to increment past the end of the page's content.
@@ -118,7 +121,9 @@ class ReadAloudAppModel {
 
   // Given a text index for the current granularity, return the nodes and the
   // corresponding text ranges for that part of the text. The text ranges
-  // consist of start and end offsets within each node.
+  // consist of start and end offsets within each node. If the `phrases`
+  // argument is `true`, the text ranges for the containing phrase are returned,
+  // otherwise the text ranges for the word are returned.
   //
   // For example, if a current granularity segment has text:
   // "Hello darkness, my old friend."
@@ -131,7 +136,8 @@ class ReadAloudAppModel {
   // For index=17, which corresponds to the word "my ", will return:
   //    [{"207", 6, 9}].
   std::vector<ReadAloudTextSegment> GetHighlightForCurrentSegmentIndex(
-      int index) const;
+      int index,
+      bool phrases) const;
 
   // Updates the session count for the given metric name using
   // SingleSampleMetric. These are then logged once on destruction.
@@ -234,6 +240,10 @@ class ReadAloudAppModel {
   //      sentence, this will return false because "You need to not stare."
   //      still needs to be read.
   bool NoValidTextRemainingInCurrentNode(bool is_pdf, bool is_docs) const;
+
+  // Segment the given granularity into phrases with the given model.
+  void CalculatePhrases(DependencyParserModel& dependency_parser_model,
+                        a11y::ReadAloudCurrentGranularity& granularity);
 
   // Whether Read Aloud speech is currently playing or not.
   bool speech_playing_ = false;

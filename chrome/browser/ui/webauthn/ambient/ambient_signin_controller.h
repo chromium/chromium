@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -57,10 +56,12 @@ class AmbientSigninController
   void AddAndShowWebAuthnMethods(
       AuthenticatorRequestDialogModel* model,
       const std::vector<password_manager::PasskeyCredential>& credentials,
+      int expected_credential_type_flags,
       PasskeyCredentialSelectionCallback callback);
 
   void AddAndShowPasswordMethods(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+      int expected_credential_type_flags,
       password_manager::PasswordManagerClient::CredentialsCallback callback);
 
   // Called when the user selects a passkey shown in the bubble.
@@ -107,16 +108,6 @@ class AmbientSigninController
   CredentialsReceived credentials_received_state_ = CredentialsReceived::kNone;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> password_forms_;
   std::vector<password_manager::PasskeyCredential> passkey_credentials_;
-
-  // TODO(ambient): This is a temporary measure for prototyping. Right now
-  // it is impossible to know if the website is going to try to supply both
-  // passkeys and passwords, or just one of those things. The Credential
-  // Management API implementation needs to be changed to accept both kinds
-  // of requests in a single call, and awareness of the requested types has
-  // to be plumbed here so that we know when we have received all
-  // credentials, and the bubble can be shown. Until then, we just have a
-  // time delay for both request types to arrive when requested.
-  base::OneShotTimer timer_;
 
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 

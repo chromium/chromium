@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_consumer.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -92,6 +93,19 @@
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
+  if (IsTabGroupIndicatorEnabled()) {
+    // Update the Tab Grid button style, based on whether the active tab is
+    // grouped or not.
+    const int active_index = webStateList->active_index();
+    if (active_index != WebStateList::kInvalidIndex &&
+        webStateList->GetGroupOfWebStateAt(active_index) != nullptr) {
+      [self.consumer
+          setTabGridButtonStyle:ToolbarTabGridButtonStyle::kTabGroup];
+    } else {
+      [self.consumer setTabGridButtonStyle:ToolbarTabGridButtonStyle::kNormal];
+    }
+  }
+
   // Return early if the active web state is the same as before the change.
   if (!status.active_web_state_change()) {
     return;

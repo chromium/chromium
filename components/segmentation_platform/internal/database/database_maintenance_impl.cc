@@ -22,8 +22,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
+#include "components/segmentation_platform/internal/database/ukm_database.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 
 namespace {
@@ -94,22 +97,19 @@ struct DatabaseMaintenanceImpl::CleanupState {
 DatabaseMaintenanceImpl::DatabaseMaintenanceImpl(
     const base::flat_set<SegmentId>& segment_ids,
     base::Clock* clock,
-    SegmentInfoDatabase* segment_info_database,
-    SignalDatabase* signal_database,
-    SignalStorageConfig* signal_storage_config,
+    StorageService* storage_service,
     PrefService* profile_prefs)
     : segment_ids_(segment_ids),
       clock_(clock),
-      segment_info_database_(segment_info_database),
-      signal_database_(signal_database),
-      signal_storage_config_(signal_storage_config),
+      storage_service_(storage_service),
       profile_prefs_(profile_prefs) {}
 
 DatabaseMaintenanceImpl::~DatabaseMaintenanceImpl() = default;
 
 void DatabaseMaintenanceImpl::ExecuteMaintenanceTasks() {
   auto available_segments =
-      segment_info_database_->GetSegmentInfoForBothModels(segment_ids_);
+      storage_service_->segment_info_database()->GetSegmentInfoForBothModels(
+          segment_ids_);
   OnSegmentInfoCallback(std::move(available_segments));
 }
 
@@ -146,13 +146,20 @@ DatabaseMaintenanceImpl::GetAllTasks(std::set<SignalIdentifier> signal_ids) {
 void DatabaseMaintenanceImpl::CleanupSignalStorage(
     std::set<SignalIdentifier> signal_ids,
     base::OnceClosure next_action) {
-  std::vector<CleanupItem> signals_to_cleanup;
-  signal_storage_config_->GetSignalsForCleanup(signal_ids, signals_to_cleanup);
+  std::vector<CleanupItem> signals_to_cleanup_copy;
+  storage_service_->signal_storage_config()->GetSignalsForCleanup(
+      signal_ids, signals_to_cleanup_copy);
+
+  if (storage_service_->ukm_data_manager()->HasUkmDatabase()) {
+    std::vector<CleanupItem> signals_to_cleanup = signals_to_cleanup_copy;
+    storage_service_->ukm_data_manager()->GetUkmDatabase()->CleanupItems(
+        storage_service_->profile_id(), std::move(signals_to_cleanup));
+  }
 
   auto cleanup_state = std::make_unique<CleanupState>();
   // Convert the vector of cleanup items to a deque so we can easily handle
   // the state by popping the first one until it is empty.
-  for (auto& signal : signals_to_cleanup) {
+  for (auto& signal : signals_to_cleanup_copy) {
     // If UKM signal, skip deleting it as it is not present in signal database.
     if (signal.event_hash != CleanupItem::kNonUkmEventHash) {
       continue;
@@ -188,7 +195,7 @@ void DatabaseMaintenanceImpl::CleanupSignalStorageProcessNext(
   uint64_t name_hash = cleanup_item.name_hash;
   base::Time end_time = cleanup_item.timestamp;
 
-  signal_database_->DeleteSamples(
+  storage_service_->signal_database()->DeleteSamples(
       signal_type, name_hash, end_time,
       base::BindOnce(&DatabaseMaintenanceImpl::CleanupSignalStorageProcessNext,
                      weak_ptr_factory_.GetWeakPtr(), std::move(cleanup_state),
@@ -199,7 +206,8 @@ void DatabaseMaintenanceImpl::CleanupSignalStorageDone(
     base::OnceClosure next_action,
     std::vector<CleanupItem> cleaned_up_signals) {
   stats::RecordMaintenanceCleanupSignalSuccessCount(cleaned_up_signals.size());
-  signal_storage_config_->UpdateSignalsForCleanup(cleaned_up_signals);
+  storage_service_->signal_storage_config()->UpdateSignalsForCleanup(
+      cleaned_up_signals);
   std::move(next_action).Run();
 }
 
@@ -223,7 +231,7 @@ void DatabaseMaintenanceImpl::CompactSamples(
   while (compaction_day >= ealiest_day_to_compact &&
          compaction_day > last_compation_time) {
     for (auto signal_id : signal_ids) {
-      signal_database_->CompactSamplesForDay(
+      storage_service_->signal_database()->CompactSamplesForDay(
           signal_id.second, signal_id.first, compaction_day,
           base::BindOnce(&DatabaseMaintenanceImpl::RecordCompactionResult,
                          weak_ptr_factory_.GetWeakPtr(), signal_id.second,

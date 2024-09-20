@@ -96,7 +96,8 @@ def _install(version, output_prefix):
         shlex.split(f"""
         {java_home}/bin/java
             -Dcom.android.tools.r8.enableKeepAnnotations=1
-            -jar build/libs/r8.jar
+            -cp build/libs/r8.jar
+            com.android.tools.r8.R8
             --debug
             --classfile
             --no-minification

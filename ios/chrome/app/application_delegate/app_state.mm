@@ -7,6 +7,7 @@
 #import <utility>
 
 #import "base/apple/foundation_util.h"
+#import "base/barrier_closure.h"
 #import "base/critical_closure.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -76,33 +77,6 @@ void FlushCookieStoreOnIOThread(
   getter->GetURLRequestContext()->cookie_store()->FlushStore(
       std::move(closure));
 }
-
-// Return the equivalent ProfileInitStage from app InitStage.
-ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
-  switch (app_init_stage) {
-    case InitStageStart:
-    case InitStageBrowserBasic:
-    case InitStageSafeMode:
-    case InitStageVariationsSeed:
-      NOTREACHED();
-
-    case InitStageBrowserObjectsForBackgroundHandlers:
-      return ProfileInitStage::InitStageProfileLoaded;
-    case InitStageEnterprise:
-      return ProfileInitStage::InitStageEnterprise;
-    case InitStageBrowserObjectsForUI:
-      return ProfileInitStage::InitStagePrepareUI;
-    case InitStageNormalUI:
-      return ProfileInitStage::InitStageUIReady;
-    case InitStageFirstRun:
-      return ProfileInitStage::InitStageFirstRun;
-    case InitStageChoiceScreen:
-      return ProfileInitStage::InitStageChoiceScreen;
-    case InitStageFinal:
-      return ProfileInitStage::InitStageFinal;
-  }
-}
-
 }  // namespace
 
 #pragma mark - AppStateObserverList
@@ -113,12 +87,25 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
 @implementation AppStateObserverList
 @end
 
+#pragma mark - AppStateObserverList
+
+@interface UIBlockerManagerObserverList
+    : CRBProtocolObservers <UIBlockerManagerObserver>
+@end
+
+@implementation UIBlockerManagerObserverList
+@end
+
 #pragma mark - AppState
 
 @interface AppState () <AppStateObserver>
 
 // Container for observers.
 @property(nonatomic, strong) AppStateObserverList* observers;
+
+// Container for observers.
+@property(nonatomic, strong)
+    UIBlockerManagerObserverList* uiBlockerManagerObservers;
 
 // YES if cookies are currently being flushed to disk. Declared as a property
 // to allow modifying it in a block via a __weak pointer without checking if
@@ -184,6 +171,8 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   if (self) {
     _observers = [AppStateObserverList
         observersWithProtocol:@protocol(AppStateObserver)];
+    _uiBlockerManagerObservers = [UIBlockerManagerObserverList
+        observersWithProtocol:@protocol(UIBlockerManagerObserver)];
     _agents = [[NSMutableArray alloc] init];
     _startupInformation = startupInformation;
     _appCommandDispatcher = [[CommandDispatcher alloc] init];
@@ -243,15 +232,6 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   [self.observers appState:self willTransitionToInitStage:newInitStage];
   _initStage = newInitStage;
   [self.observers appState:self didTransitionFromInitStage:previousInitStage];
-}
-
-- (void)setMainProfile:(ProfileState*)mainProfile {
-  _mainProfile = mainProfile;
-  for (SceneState* scene in self.connectedScenes) {
-    // TODO(crbug.com/324417250): Select the correct profile state for the
-    // `sceneState` and if not available create it.
-    [_mainProfile sceneStateConnected:scene];
-  }
 }
 
 - (BOOL)portraitOnly {
@@ -314,33 +294,40 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
 
   // TODO(crbug.com/325596562): Update this for multiple browser states and for
   // per-state cookie storage.
-  if (self.mainProfile.browserState && !_savingCookies) {
-    // Record that saving the cookies has started to prevent posting multiple
-    // tasks if the user quickly background, foreground and background the app
-    // again.
-    _savingCookies = YES;
+  if (!_savingCookies) {
+    NSSet<ProfileState*>* profileStates = self.connectedProfileStates;
+    if (profileStates.count != 0) {
+      // Record that saving the cookies has started to prevent posting multiple
+      // tasks if the user quickly background, foreground and background the app
+      // again.
+      _savingCookies = YES;
 
-    // The closure may be called on any sequence, so ensure it is posted back
-    // on the current one but using base::BindPostTask(). The critical closure
-    // guarantees that the task will be run before backgrounding.
-    __weak AppState* weakSelf = self;
-    base::OnceClosure closure = base::BindPostTask(
-        base::SequencedTaskRunner::GetCurrentDefault(),
-        base::MakeCriticalClosure(
-            "applicationDidEnterBackground:_savingCookies", base::BindOnce(^{
-              // Accessing a property in a block is safe as this is compiled
-              // to sending a message which is well defined on nil.
-              weakSelf.savingCookies = NO;
-            }),
-            /*is_immediate=*/true));
+      // The closure may be called on any sequence, so ensure it is posted back
+      // on the current one by using base::BindPostTask(). The critical closure
+      // guarantees that the task will be run before backgrounding. The barrier
+      // callback ensures that the operation is considered complete when all the
+      // profile's cookies have been saved.
+      __weak AppState* weakSelf = self;
+      base::RepeatingClosure closure = base::BarrierClosure(
+          profileStates.count,
+          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                             base::MakeCriticalClosure(
+                                 "applicationDidEnterBackground:_savingCookies",
+                                 base::BindOnce(^{
+                                   weakSelf.savingCookies = NO;
+                                 }),
+                                 /*is_immediate=*/true)));
 
-    // Saving the cookies needs to happen on the IO thread.
-    web::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FlushCookieStoreOnIOThread,
-                       base::WrapRefCounted(
-                           self.mainProfile.browserState->GetRequestContext()),
-                       std::move(closure)));
+      for (ProfileState* profileState in profileStates) {
+        // Saving the cookies needs to happen on the IO thread.
+        web::GetIOThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &FlushCookieStoreOnIOThread,
+                base::WrapRefCounted(profileState.profile->GetRequestContext()),
+                closure));
+      }
+    }
   }
 
   // Mark the startup as clean if it hasn't already been.
@@ -502,17 +489,14 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   [self.startupInformation setIsColdStart:NO];
 
   // Record session metrics.
-  for (ChromeBrowserState* browserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    SessionMetrics::FromBrowserState(browserState)
-        ->RecordAndClearSessionMetrics(
-            MetricsToRecordFlags::kActivatedTabCount);
+    SessionMetrics::FromProfile(profile)->RecordAndClearSessionMetrics(
+        MetricsToRecordFlags::kActivatedTabCount);
 
-    if (browserState->HasOffTheRecordChromeBrowserState()) {
-      ChromeBrowserState* otrChromeBrowserState =
-          browserState->GetOffTheRecordChromeBrowserState();
-
-      SessionMetrics::FromBrowserState(otrChromeBrowserState)
+    if (profile->HasOffTheRecordChromeBrowserState()) {
+      ProfileIOS* otrProifle = profile->GetOffTheRecordChromeBrowserState();
+      SessionMetrics::FromProfile(otrProifle)
           ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
     }
   }
@@ -650,15 +634,17 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
   // (app) InitStage are fully decoupled.
   if (initStage >= InitStageBrowserObjectsForBackgroundHandlers) {
-    ProfileInitStage currStage = self.mainProfile.initStage;
-    ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);
-    while (currStage != nextStage) {
-      // The ProfileInitStage enum has more values than InitStage, so move over
-      // all stage that have no representation in InitStage to avoid failing
-      // CHECK in -[ProfileState setInitStage:].
-      currStage =
-          static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
-      self.mainProfile.initStage = currStage;
+    for (ProfileState* profileState in self.connectedProfileStates) {
+      ProfileInitStage currStage = profileState.initStage;
+      ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);
+      while (currStage != nextStage) {
+        // The ProfileInitStage enum has more values than InitStage, so move
+        // over all stage that have no representation in InitStage to avoid
+        // failing CHECK in -[ProfileState setInitStage:].
+        currStage =
+            static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
+        profileState.initStage = currStage;
+      }
     }
   }
   self.isIncrementingInitStage = NO;
@@ -696,11 +682,20 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   self.blockingUICounter--;
   if (self.blockingUICounter == 0) {
     self.uiBlockerTarget = nil;
+    [self.uiBlockerManagerObservers currentUIBlockerRemoved];
   }
 }
 
 - (id<UIBlockerTarget>)currentUIBlocker {
   return self.uiBlockerTarget;
+}
+
+- (void)addUIBlockerManagerObserver:(id<UIBlockerManagerObserver>)observer {
+  [self.uiBlockerManagerObservers addObserver:observer];
+}
+
+- (void)removeUIBlockerManagerObserver:(id<UIBlockerManagerObserver>)observer {
+  [self.uiBlockerManagerObservers removeObserver:observer];
 }
 
 #pragma mark - SceneStateObserver
@@ -742,10 +737,6 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
 
   [self.observers appState:self sceneConnected:sceneState];
   crash_keys::SetConnectedScenesCount([self connectedScenes].count);
-
-  // TODO(crbug.com/324417250): Select the correct profile state for the
-  // `sceneState` and if not available create it.
-  [self.mainProfile sceneStateConnected:sceneState];
 }
 
 #pragma mark - Voice Over lifecycle
@@ -764,6 +755,22 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   }
 
   [self completeUIInitialization];
+}
+
+#pragma mark - Private
+
+// TODO(crbug.com/325596562): AppState should not push to ProfileState, instead
+// this should be refactored. This is temporary code until each ProfileState is
+// correctly managed by its ProfileController.
+- (NSSet<ProfileState*>*)connectedProfileStates {
+  NSMutableSet<ProfileState*>* profileStates = [[NSMutableSet alloc] init];
+  for (SceneState* sceneState in self.connectedScenes) {
+    ProfileState* profileState = sceneState.profileState;
+    if (profileState) {
+      [profileStates addObject:profileState];
+    }
+  }
+  return profileStates;
 }
 
 @end

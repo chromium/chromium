@@ -108,6 +108,9 @@ ProductSpecificationsButton::ProductSpecificationsButton(
   SetLayoutManager(std::make_unique<views::FlexLayout>());
 
   UpdateColors();
+
+  // Button is not visible by default to avoid grabbing focus.
+  SetVisible(false);
 }
 
 ProductSpecificationsButton::~ProductSpecificationsButton() = default;
@@ -137,9 +140,14 @@ void ProductSpecificationsButton::AnimationEnded(
   // If the button went from shown -> hidden, unblock the tab strip from
   // showing other modal UIs. Compare to 0.5 to distinguish between show/hide
   // while avoiding potentially inexact float comparison to 0.0.
+  // When hiding animation finishes, set the button to not visible to avoid
+  // grabbing focus.
   if (animation == &expansion_animation_ &&
-      animation->GetCurrentValue() < 0.5 && scoped_tab_strip_modal_ui_) {
-    scoped_tab_strip_modal_ui_.reset();
+      animation->GetCurrentValue() < 0.5) {
+    SetVisible(false);
+    if (scoped_tab_strip_modal_ui_) {
+      scoped_tab_strip_modal_ui_.reset();
+    }
   }
 }
 
@@ -153,6 +161,7 @@ void ProductSpecificationsButton::Show() {
   if (expansion_animation_.IsShowing()) {
     return;
   }
+
   if (locked_expansion_view_->IsMouseHovered()) {
     SetLockedExpansionMode(LockedExpansionMode::kWillShow);
   }
@@ -220,6 +229,7 @@ void ProductSpecificationsButton::ExecuteShow() {
       FROM_HERE, delay, this,
       &ProductSpecificationsButton::ShowOpacityAnimation);
 
+  SetVisible(true);
   expansion_animation_.Show();
 
   hide_button_timer_.Start(FROM_HERE, kShowDuration, this,

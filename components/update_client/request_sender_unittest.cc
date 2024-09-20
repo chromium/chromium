@@ -54,7 +54,7 @@ class RequestSenderTest : public testing::Test,
   std::unique_ptr<TestingPrefServiceSimple> pref_ =
       std::make_unique<TestingPrefServiceSimple>();
   scoped_refptr<TestConfigurator> config_;
-  std::unique_ptr<RequestSender> request_sender_;
+  scoped_refptr<RequestSender> request_sender_;
 
   std::unique_ptr<URLLoaderPostInterceptor> post_interceptor_;
 
@@ -75,7 +75,8 @@ RequestSenderTest::~RequestSenderTest() = default;
 void RequestSenderTest::SetUp() {
   RegisterPersistedDataPrefs(pref_->registry());
   config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
-  request_sender_ = std::make_unique<RequestSender>(config_);
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
 
   std::vector<GURL> urls;
   urls.push_back(GURL(kUrl1));
@@ -193,7 +194,8 @@ TEST_F(RequestSenderTest, RequestSendFailed) {
       std::make_unique<PartialMatch>("test"), net::HTTP_FORBIDDEN));
 
   const std::vector<GURL> urls = {GURL(kUrl1), GURL(kUrl2)};
-  request_sender_ = std::make_unique<RequestSender>(config_);
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
       urls, {}, "test", false,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,
@@ -217,7 +219,8 @@ TEST_F(RequestSenderTest, RequestSendFailed) {
 // Tests that the request fails when no urls are provided.
 TEST_F(RequestSenderTest, RequestSendFailedNoUrls) {
   std::vector<GURL> urls;
-  request_sender_ = std::make_unique<RequestSender>(config_);
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
       urls, {}, "test", false,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,
@@ -234,7 +237,8 @@ TEST_F(RequestSenderTest, RequestSendCupError) {
       GetTestFilePath("updatecheck_reply_1.json")));
 
   const std::vector<GURL> urls = {GURL(kUrl1)};
-  request_sender_ = std::make_unique<RequestSender>(config_);
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
       urls, {}, "test", true,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,

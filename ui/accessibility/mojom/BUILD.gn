@@ -10,6 +10,7 @@ mojom("mojom") {
     "ax_action_data.mojom",
     "ax_event.mojom",
     "ax_event_intent.mojom",
+    "ax_location_changes.mojom",
     "ax_mode.mojom",
     "ax_node_data.mojom",
     "ax_relative_bounds.mojom",
@@ -82,6 +83,17 @@ mojom("mojom") {
       ]
       traits_sources = [ "ax_event_mojom_traits.cc" ]
       traits_headers = [ "ax_event_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/accessibility:ax_base" ]
+    },
+    {
+      types = [
+        {
+          mojom = "ax.mojom.AXLocationChanges"
+          cpp = "::ui::AXLocationChanges"
+        },
+      ]
+      traits_sources = [ "ax_location_changes_mojom_traits.cc" ]
+      traits_headers = [ "ax_location_changes_mojom_traits.h" ]
       traits_public_deps = [ "//ui/accessibility:ax_base" ]
     },
     {

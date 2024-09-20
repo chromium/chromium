@@ -64,11 +64,11 @@ SharedImageStub::SharedImageStub(GpuChannel* channel, int32_t route_id)
     : channel_(channel),
       command_buffer_id_(
           CommandBufferIdFromChannelAndRoute(channel->client_id(), route_id)),
-      sequence_(channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
-                                                     channel_->task_runner())) {
-  channel->scheduler()->CreateSyncPointClientState(
-      sequence_, CommandBufferNamespace::GPU_IO, command_buffer_id_);
-}
+      sequence_(
+          channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
+                                               channel_->task_runner(),
+                                               CommandBufferNamespace::GPU_IO,
+                                               command_buffer_id_)) {}
 
 SharedImageStub::~SharedImageStub() {
   channel_->scheduler()->DestroySequence(sequence_);
@@ -208,11 +208,6 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
                                         std::string debug_label) {
   TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
                size.width(), "height", size.height());
-  if (format.IsLegacyMultiplanar()) {
-    LOG(ERROR) << "SharedImageStub: Incompatible format.";
-    OnError();
-    return false;
-  }
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   if (format.PrefersExternalSampler()) {
     LOG(ERROR) << "SharedImageStub: Incompatible format.";

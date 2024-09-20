@@ -4,6 +4,9 @@
 
 // https://github.com/explainers-by-googlers/prompt-api
 
+enum AIAssistantInitialPromptRole { "system", "user", "assistant" };
+enum AIAssistantPromptRole { "user", "assistant" };
+
 [
   Exposed=(Window,Worker),
   RuntimeEnabled=AIPromptAPI
@@ -38,6 +41,6 @@ interface AIAssistantFactory {
     RaisesException
   ]
   Promise<AIAssistant> create(
-    optional AITextSessionOptions options = {}
+    optional AIAssistantCreateOptions options = {}
   );
 };

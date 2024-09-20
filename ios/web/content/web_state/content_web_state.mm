@@ -9,7 +9,9 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/embedder_support/ios/delegate/color_chooser/color_chooser_ios.h"
 #import "components/embedder_support/ios/delegate/file_chooser/file_select_helper_ios.h"
+#import "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #import "content/public/browser/file_select_listener.h"
+#import "content/public/browser/javascript_dialog_manager.h"
 #import "content/public/browser/navigation_entry.h"
 #import "content/public/browser/visibility.h"
 #import "content/public/browser/web_contents.h"
@@ -834,6 +836,13 @@ void ContentWebState::RunFileChooser(
     const blink::mojom::FileChooserParams& params) {
   web_contents_delegate_ios::FileSelectHelperIOS::RunFileChooser(
       render_frame_host, listener, params);
+}
+
+content::JavaScriptDialogManager* ContentWebState::GetJavaScriptDialogManager(
+    content::WebContents* source) {
+  content::JavaScriptDialogManager* dialog =
+      javascript_dialogs::TabModalDialogManager::FromWebContents(source);
+  return dialog;
 }
 
 }  // namespace web

@@ -103,13 +103,15 @@ scoped_refptr<RulesRegistry> RulesRegistryService::GetRulesRegistry(
     const std::string& event_name) {
   RulesRegistryKey key(event_name, rules_registry_id);
   RulesRegistryMap::const_iterator i = rule_registries_.find(key);
-  if (i != rule_registries_.end())
+  if (i != rule_registries_.end()) {
     return i->second;
+  }
 
   // We should have attempted creation of the default rule registries at
   // construction.
-  if (!browser_context_ || rules_registry_id == kDefaultRulesRegistryID)
+  if (!browser_context_ || rules_registry_id == kDefaultRulesRegistryID) {
     return nullptr;
+  }
 
   // Only web request rules registries are created for webviews.
   DCHECK_EQ(declarative_webrequest_constants::kOnRequest, event_name);
@@ -122,18 +124,17 @@ scoped_refptr<RulesRegistry> RulesRegistryService::GetRulesRegistry(
 
 void RulesRegistryService::RemoveRulesRegistriesByID(int rules_registry_id) {
   std::set<RulesRegistryKey> registries_to_delete;
-  for (auto it = rule_registries_.begin(); it != rule_registries_.end(); ++it) {
-    const RulesRegistryKey& key = it->first;
-    if (key.rules_registry_id != rules_registry_id)
+  for (auto& [key, rule_registry] : rule_registries_) {
+    if (key.rules_registry_id != rules_registry_id) {
       continue;
+    }
     // Modifying a container while iterating over it can lead to badness. So we
     // save the keys in another container and delete them in another loop.
     registries_to_delete.insert(key);
   }
 
-  for (auto it = registries_to_delete.begin(); it != registries_to_delete.end();
-       ++it) {
-    rule_registries_.erase(*it);
+  for (const auto& registry : registries_to_delete) {
+    rule_registries_.erase(registry);
   }
 }
 

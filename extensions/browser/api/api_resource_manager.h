@@ -285,8 +285,9 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     T* GetOwnedResource(const ExtensionId& extension_id, int api_resource_id) {
       const std::unique_ptr<T>& ptr = api_resource_map_[api_resource_id];
       T* resource = ptr.get();
-      if (resource && extension_id == resource->owner_extension_id())
+      if (resource && extension_id == resource->owner_extension_id()) {
         return resource;
+      }
       return NULL;
     }
 
@@ -295,8 +296,9 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       ExtensionToResourceMap::iterator it =
           extension_resource_map_.find(extension_id);
-      if (it == extension_resource_map_.end())
-        return NULL;
+      if (it == extension_resource_map_.end()) {
+        return nullptr;
+      }
       return &(it->second);
     }
 
@@ -316,8 +318,9 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
 
       ExtensionToResourceMap::iterator extension_it =
           extension_resource_map_.find(extension_id);
-      if (extension_it == extension_resource_map_.end())
+      if (extension_it == extension_resource_map_.end()) {
         return;
+      }
 
       // Remove all resources, or the non persistent ones only if |remove_all|
       // is false.

@@ -91,7 +91,8 @@ void TargetView::UpdateWidgetBounds() {
   auto* widget = GetWidget();
   DCHECK(widget);
 
-  widget->SetBounds(controller_->touch_injector()->content_bounds());
+  controller_->UpdateWidgetBoundsInRootWindow(
+      widget, controller_->touch_injector()->content_bounds());
 }
 
 gfx::Rect TargetView::GetTargetCircleBounds() const {

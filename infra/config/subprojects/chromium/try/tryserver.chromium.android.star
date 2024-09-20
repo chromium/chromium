@@ -120,6 +120,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-12l-x64-rel-cq",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    mirrors = [
+        "ci/android-12l-x64-rel-cq",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-12l-x64-rel-cq",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-13-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
@@ -268,6 +284,8 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # b/346598710
         "chromium.luci_analysis_v2": 100,
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -357,6 +375,10 @@ try_.builder(
     builderless = not settings.is_main,
     cores = "16|32",
     ssd = True,
+    experiments = {
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
     main_list_view = "try",
     properties = {
         "$build/binary_size": {
@@ -445,6 +467,8 @@ try_.builder(
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 50,
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -1056,6 +1080,7 @@ try_.orchestrator_builder(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run Chromium tests on Android emulators.",
     mirrors = [
+        "ci/android-12l-x64-rel-cq",
         "ci/android-13-x64-rel",
         "ci/android-webview-13-x64-hostside-rel",
     ],
@@ -1078,6 +1103,8 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # b/346598710
         "chromium.luci_analysis_v2": 100,
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -1120,6 +1147,8 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # b/346598710
         "chromium.luci_analysis_v2": 100,
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -1226,6 +1255,8 @@ try_.builder(
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -1256,6 +1287,8 @@ try_.builder(
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
@@ -1348,34 +1381,6 @@ try_.builder(
             "third_party/gvr-android-sdk/.+",
         ],
     ),
-)
-
-# TODO(crbug.com/363275110): Remove after "try/android-cronet-arm-rel" is up.
-try_.builder(
-    name = "android_cronet",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/android-cronet-arm-rel",
-    ],
-    builder_config_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder_without_codecs",
-            "cronet_android",
-            "release_try_builder",
-            "remoteexec",
-            "arm_no_neon",
-        ],
-    ),
-    builderless = not settings.is_main,
-    contact_team_email = "cronet-team@google.com",
-    experiments = {
-        # crbug/940930
-        "chromium.enable_cleandead": 50,
-    },
-    main_list_view = "try",
 )
 
 try_.gpu.optional_tests_builder(

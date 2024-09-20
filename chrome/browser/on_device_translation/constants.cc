@@ -10,23 +10,14 @@
 
 namespace on_device_translation {
 
-constexpr base::FilePath::CharType kTranslateKitRootInstallationRelativeDir[] =
-    FILE_PATH_LITERAL("TranslateKit");
-
 // The installation location of the TranslateKit binary component relative to
 // the User Data directory.
 constexpr base::FilePath::CharType
     kTranslateKitBinaryInstallationRelativeDir[] =
         FILE_PATH_LITERAL("TranslateKit/lib");
 
-const base::FilePath GetTranslateKitRootDirectory() {
-  base::FilePath components_dir;
-  base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                         &components_dir);
-
-  return components_dir.empty()
-             ? base::FilePath()
-             : components_dir.Append(kTranslateKitRootInstallationRelativeDir);
-}
+constexpr base::FilePath::CharType
+    kTranslateKitLanguagePackInstallationRelativeDir[] =
+        FILE_PATH_LITERAL("TranslateKit/models");
 
 }  // namespace on_device_translation

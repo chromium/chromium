@@ -121,8 +121,9 @@ TEST(AggregationKeysTest, FromJSON_CheckSize) {
       {"empty", true, 0, 0},
       {"max_keys", true, kMaxAggregationKeysPerSource, 1},
       {"too_many_keys", false, kMaxAggregationKeysPerSource + 1, 1},
-      {"max_key_size", true, 1, kMaxBytesPerAggregationKeyId},
-      {"excessive_key_size", false, 1, kMaxBytesPerAggregationKeyId + 1},
+      {"max_key_size", true, 1, AggregationKeys::kMaxBytesPerAggregationKeyId},
+      {"excessive_key_size", false, 1,
+       AggregationKeys::kMaxBytesPerAggregationKeyId + 1},
   };
 
   for (const auto& test_case : kTestCases) {

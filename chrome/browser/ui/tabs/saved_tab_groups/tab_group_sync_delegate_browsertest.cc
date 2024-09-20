@@ -104,7 +104,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
 
     auto service = std::make_unique<TabGroupSyncServiceImpl>(
         std::move(model), std::move(saved_config), nullptr, profile->GetPrefs(),
-        std::move(metrics_logger));
+        std::move(metrics_logger), nullptr);
 
     std::unique_ptr<TabGroupSyncDelegateDesktop> delegate =
         std::make_unique<TabGroupSyncDelegateDesktop>(service.get(), profile);

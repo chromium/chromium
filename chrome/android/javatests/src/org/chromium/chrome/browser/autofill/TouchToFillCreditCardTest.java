@@ -10,7 +10,7 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.base.test.util.Matchers.containsString;
 import static org.chromium.base.test.util.Matchers.is;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
-import static org.chromium.chrome.test.R.id.description_line_2;
+import static org.chromium.chrome.test.R.id.first_line_label;
 import static org.chromium.chrome.test.R.id.main_text;
 import static org.chromium.chrome.test.R.id.minor_text;
 import static org.chromium.chrome.test.R.id.sheet_item_list;
@@ -166,7 +166,7 @@ public class TouchToFillCreditCardTest {
     private void verifyCardSuggestionIsCorrectlyDisplayed(View cardSuggestionItemLayout) {
         TextView mainTextLayout = cardSuggestionItemLayout.findViewById(main_text);
         TextView minorTextLayout = cardSuggestionItemLayout.findViewById(minor_text);
-        TextView cardDescLayout = cardSuggestionItemLayout.findViewById(description_line_2);
+        TextView cardDescLayout = cardSuggestionItemLayout.findViewById(first_line_label);
         // Check that suggestion main text with the card name is displayed
         checkThat(mainTextLayout.getText().toString(), is(CARD_NAME));
         // Check that suggestion minor text with the last four digits of the card are displayed

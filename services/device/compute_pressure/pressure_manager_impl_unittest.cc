@@ -111,7 +111,8 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
     fake_cpu_probe->SetLastSample(system_cpu::CpuSample{0.63});
     auto* probes_manager = manager_impl_->GetProbesManagerForTesting();
     probes_manager->set_cpu_probe_manager(CpuProbeManager::CreateForTesting(
-        std::move(fake_cpu_probe), probes_manager->sampling_interval(),
+        std::move(fake_cpu_probe),
+        probes_manager->sampling_interval_for_testing(),
         probes_manager->cpu_probe_sampling_callback()));
     manager_.reset();
     manager_impl_->Bind(manager_.BindNewPipeAndPassReceiver());
@@ -298,12 +299,15 @@ TEST_F(PressureManagerImplTest, OneClientOneVirtual) {
   // PressureState::kFair.
   EXPECT_EQ(client.updates()[0].state, mojom::PressureState::kFair);
 
-  ASSERT_EQ(virtual_client.updates().size(), 1u);
-  EXPECT_EQ(virtual_client.updates()[0].source, mojom::PressureSource::kCpu);
-  EXPECT_EQ(virtual_client.updates()[0].state, mojom::PressureState::kCritical);
+  // Virtual probes run faster than real ones, so we might have more than one
+  // update.
+  ASSERT_FALSE(virtual_client.updates().empty());
+  for (const auto& update : virtual_client.updates()) {
+    EXPECT_EQ(update.source, mojom::PressureSource::kCpu);
+    EXPECT_EQ(update.state, mojom::PressureState::kCritical);
 
-  EXPECT_NE(client.updates()[0].timestamp,
-            virtual_client.updates()[0].timestamp);
+    EXPECT_NE(client.updates()[0].timestamp, update.timestamp);
+  }
 }
 
 TEST_F(PressureManagerImplTest, UpdateVirtualClientWithNoVirtualClient) {

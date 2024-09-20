@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.autofill.iban;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.view.View;
@@ -50,8 +50,8 @@ public class AutofillSaveIbanBottomSheetContentTest {
     }
 
     @Test
-    public void testCannotSwipeToDismissBottomSheet() {
-        assertFalse(mContent.swipeToDismissEnabled());
+    public void testSwipeToDismissEnabled() {
+        assertTrue(mContent.swipeToDismissEnabled());
     }
 
     @Test
@@ -85,25 +85,22 @@ public class AutofillSaveIbanBottomSheetContentTest {
 
     @Test
     public void testBottomSheetAccessibilityContentDescription() {
-        // TODO(b/309163431): Support a11y.
-        assertThat(mContent.getSheetContentDescriptionStringId(), equalTo(R.string.ok));
-    }
-
-    @Test
-    public void testBottomSheetHalfHeightAccessibilityContentDescription() {
-        // TODO(b/309163431): Support a11y.
-        assertThat(mContent.getSheetHalfHeightAccessibilityStringId(), equalTo(R.string.ok));
+        assertThat(
+                mContent.getSheetContentDescriptionStringId(),
+                equalTo(R.string.autofill_save_iban_prompt_bottom_sheet_content_description));
     }
 
     @Test
     public void testBottomSheetFullHeightAccessibilityContentDescription() {
-        // TODO(b/309163431): Support a11y.
-        assertThat(mContent.getSheetFullHeightAccessibilityStringId(), equalTo(R.string.ok));
+        assertThat(
+                mContent.getSheetFullHeightAccessibilityStringId(),
+                equalTo(R.string.autofill_save_iban_prompt_bottom_sheet_full_height));
     }
 
     @Test
     public void testBottomSheetClosedAccessibilityContentDescription() {
-        // TODO(b/309163431): Support a11y.
-        assertThat(mContent.getSheetClosedAccessibilityStringId(), equalTo(R.string.ok));
+        assertThat(
+                mContent.getSheetClosedAccessibilityStringId(),
+                equalTo(R.string.autofill_save_iban_prompt_bottom_sheet_closed));
     }
 }

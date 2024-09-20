@@ -299,7 +299,7 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
     frame->UpdateInertIfPossible();
 
   if (EmbeddedContentView* embedded_content_view = GetEmbeddedContentView()) {
-    if (new_style.Visibility() != EVisibility::kVisible) {
+    if (new_style.UsedVisibility() != EVisibility::kVisible) {
       embedded_content_view->Hide();
     } else {
       embedded_content_view->Show();
@@ -391,7 +391,7 @@ void LayoutEmbeddedContent::UpdateOnEmbeddedContentViewChange() {
     }
     if (Style()) {
       PropagateZoomFactor(StyleRef().EffectiveZoom());
-      if (StyleRef().Visibility() != EVisibility::kVisible) {
+      if (StyleRef().UsedVisibility() != EVisibility::kVisible) {
         embedded_content_view->Hide();
       } else {
         embedded_content_view->Show();

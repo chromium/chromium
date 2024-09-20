@@ -286,7 +286,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
     DCHECK(thread_.task_runner()->BelongsToCurrentThread());
     DCHECK_NE(AudioContentType::kOther, type);
 #if BUILDFLAG(SYSTEM_OWNS_VOLUME)
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #else
     volume_multipliers_[type] = multiplier;
     float scale =

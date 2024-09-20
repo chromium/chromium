@@ -15,6 +15,7 @@
 
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
+#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
@@ -326,7 +327,7 @@ CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
     StepsTimingFunction::StepPosition position =
         StepsTimingFunction::StepPosition::END;
     if (ConsumeCommaIncludingWhitespace(stream)) {
-      switch (stream.ConsumeIncludingWhitespace().Id()) {
+      switch (stream.Peek().Id()) {
         case CSSValueID::kStart:
           position = StepsTimingFunction::StepPosition::START;
           break;
@@ -354,6 +355,7 @@ CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
         default:
           return nullptr;
       }
+      stream.ConsumeIncludingWhitespace();  // kIdentToken
     }
 
     if (!stream.AtEnd()) {
@@ -1442,11 +1444,13 @@ static CSSPrimitiveValue* ConsumeMathFunctionAngle(
     }
   }
   if (CSSMathFunctionValue* result = math_parser.ConsumeValue()) {
-    if (result->ComputeDegrees() < minimum_value) {
+    auto* numeric_result =
+        DynamicTo<CSSMathExpressionNumericLiteral>(result->ExpressionNode());
+    if (numeric_result && numeric_result->DoubleValue() < minimum_value) {
       return CSSNumericLiteralValue::Create(
           minimum_value, CSSPrimitiveValue::UnitType::kDegrees);
     }
-    if (result->ComputeDegrees() > maximum_value) {
+    if (numeric_result && numeric_result->DoubleValue() > maximum_value) {
       return CSSNumericLiteralValue::Create(
           maximum_value, CSSPrimitiveValue::UnitType::kDegrees);
     }
@@ -1668,12 +1672,23 @@ CSSUrlData CollectUrlData(const StringView& url,
 // will be overwritten once we move to the next one.
 CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
                                  const CSSParserContext& context) {
+  wtf_size_t value_start_offset = stream.LookAheadOffset();
+  stream.EnsureLookAhead();
+
   CSSParserToken token = stream.Peek();
   if (token.GetType() == kUrlToken) {
     stream.ConsumeIncludingWhitespace();
   } else if (token.FunctionId() == CSSValueID::kUrl) {
     {
       CSSParserTokenStream::RestoringBlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      // If the block doesn't start with a quote, then the tokenizer
+      // would return a kUrlToken or kBadUrlToken instead of a
+      // kFunctionToken. Note also that this Peek() placates the
+      // DCHECK that we Peek() before Consume().
+      DCHECK(stream.Peek().GetType() == kStringToken ||
+             stream.Peek().GetType() == kBadStringToken)
+          << "Got unexpected token " << stream.Peek();
       token = stream.ConsumeIncludingWhitespace();
       if (token.GetType() == kBadStringToken || !stream.AtEnd()) {
         return CSSParserToken(kEOFToken);
@@ -1683,6 +1698,10 @@ CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
     DCHECK_EQ(token.GetType(), kStringToken);
     stream.ConsumeWhitespace();
   } else {
+    return CSSParserToken(kEOFToken);
+  }
+  wtf_size_t value_end_offset = stream.LookAheadOffset();
+  if (IsAttrTainted(stream, value_start_offset, value_end_offset)) {
     return CSSParserToken(kEOFToken);
   }
   return IsFetchRestricted(token.Value(), context)
@@ -2117,7 +2136,7 @@ CSSValue* ConsumeColorInternal(CSSParserTokenStream& stream,
     return functional_syntax_color;
   }
 
-  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
       IsUASheetBehavior(context.Mode())) {
     if (CSSAppearanceAutoBaseSelectValuePair* auto_base_select_pair =
             ConsumeAppearanceAutoBaseSelectColor(stream, context)) {
@@ -2544,10 +2563,11 @@ static bool ConsumeDeprecatedGradientColorStop(
 
 static CSSValue* ConsumeDeprecatedGradient(CSSParserTokenStream& stream,
                                            const CSSParserContext& context) {
-  CSSValueID id = stream.ConsumeIncludingWhitespace().Id();
+  CSSValueID id = stream.Peek().Id();
   if (id != CSSValueID::kRadial && id != CSSValueID::kLinear) {
     return nullptr;
   }
+  stream.ConsumeIncludingWhitespace();  // id
 
   if (!ConsumeCommaIncludingWhitespace(stream)) {
     return nullptr;
@@ -3386,8 +3406,17 @@ CSSValue* ConsumeImage(
     return CreateCSSImageValueWithReferrer(uri.Value(), context);
   }
   if (string_url_image_policy == ConsumeStringUrlImagePolicy::kAllow) {
+    wtf_size_t value_start_offset = stream.LookAheadOffset();
     String uri_string = ConsumeStringAsString(stream);
     if (!uri_string.IsNull()) {
+      wtf_size_t value_end_offset = stream.LookAheadOffset();
+      if (IsAttrTainted(stream, value_start_offset, value_end_offset)) {
+        // https://drafts.csswg.org/css-values-5/#attr-security
+        // “Additionally, attr() is not allowed to be used in any <url> value,
+        // whether directly or indirectly. Doing so makes the property it’s used
+        // in invalid.”
+        return nullptr;
+      }
       if (IsFetchRestricted(uri_string, context)) {
         uri_string = "";
       }
@@ -4969,7 +4998,7 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenStream& stream,
 
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
-  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
       IsUASheetBehavior(context.Mode()) &&
       stream.Peek().FunctionId() ==
           CSSValueID::kInternalAppearanceAutoBaseSelect) {
@@ -5134,15 +5163,13 @@ CSSValue* ConsumeCounter(CSSParserTokenStream& stream,
     if (!counter_name) {
       break;
     }
-    int value = default_value;
+    CSSPrimitiveValue* value = CSSNumericLiteralValue::Create(
+        default_value, CSSPrimitiveValue::UnitType::kInteger);
     if (CSSPrimitiveValue* counter_value = ConsumeInteger(stream, context)) {
-      value = ClampTo<int>(counter_value->GetDoubleValue());
+      value = counter_value;
     }
     list->Append(*MakeGarbageCollected<CSSValuePair>(
-        counter_name,
-        CSSNumericLiteralValue::Create(value,
-                                       CSSPrimitiveValue::UnitType::kInteger),
-        CSSValuePair::kDropIdenticalValues));
+        counter_name, value, CSSValuePair::kDropIdenticalValues));
   } while (!stream.AtEnd());
   if (list->length() == 0) {
     return nullptr;
@@ -5218,8 +5245,6 @@ CSSValue* ConsumePaletteMixFunction(CSSParserTokenStream& stream,
   // palette-mix() = palette-mix(<color-interpolation-method> , [ [normal |
   // light | dark | <palette-identifier> | <palette-mix()>] && <percentage
   // [0,100]>? ]#{2})
-  DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
-
   if (stream.Peek().FunctionId() != CSSValueID::kPaletteMix) {
     return nullptr;
   }
@@ -5307,8 +5332,7 @@ CSSValue* ConsumeFontPalette(CSSParserTokenStream& stream,
     return css_parsing_utils::ConsumeIdent(stream);
   }
 
-  if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled() &&
-      stream.Peek().FunctionId() == CSSValueID::kPaletteMix) {
+  if (stream.Peek().FunctionId() == CSSValueID::kPaletteMix) {
     return ConsumePaletteMixFunction(stream, context);
   }
 
@@ -5404,8 +5428,13 @@ CSSValueList* CombineToRangeList(const CSSPrimitiveValue* range_start,
 
 bool IsAngleWithinLimits(CSSPrimitiveValue* angle) {
   constexpr float kMaxAngle = 90.0f;
-  return angle->GetFloatValue() >= -kMaxAngle &&
-         angle->GetFloatValue() <= kMaxAngle;
+  auto* numeric_angle = DynamicTo<CSSNumericLiteralValue>(angle);
+  if (!numeric_angle) {
+    // Can't resolve math function here without length resolver.
+    return true;
+  }
+  return numeric_angle->DoubleValue() >= -kMaxAngle &&
+         numeric_angle->DoubleValue() <= kMaxAngle;
 }
 
 CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
@@ -5530,8 +5559,10 @@ CSSValue* ConsumeFontWeight(CSSParserTokenStream& stream,
 
   CSSPrimitiveValue* start_weight = ConsumeNumber(
       stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-  if (!start_weight || start_weight->GetFloatValue() < 1 ||
-      start_weight->GetFloatValue() > 1000) {
+  auto* numeric_start_weight = DynamicTo<CSSNumericLiteralValue>(start_weight);
+  if (!start_weight ||
+      (numeric_start_weight && (numeric_start_weight->DoubleValue() < 1 ||
+                                numeric_start_weight->DoubleValue() > 1000))) {
     return nullptr;
   }
 
@@ -5544,8 +5575,10 @@ CSSValue* ConsumeFontWeight(CSSParserTokenStream& stream,
 
   CSSPrimitiveValue* end_weight = ConsumeNumber(
       stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-  if (!end_weight || end_weight->GetFloatValue() < 1 ||
-      end_weight->GetFloatValue() > 1000) {
+  auto* numeric_end_weight = DynamicTo<CSSNumericLiteralValue>(end_weight);
+  if (!end_weight ||
+      (numeric_end_weight && (numeric_end_weight->DoubleValue() < 1 ||
+                              numeric_end_weight->DoubleValue() > 1000))) {
     return nullptr;
   }
 
@@ -6378,6 +6411,15 @@ bool ConsumeGridTemplateShorthand(bool important,
   return false;
 }
 
+CSSValue* ConsumeMasonrySlack(CSSParserTokenStream& stream,
+                              const CSSParserContext& context) {
+  if (stream.Peek().Id() == CSSValueID::kNormal) {
+    return ConsumeIdent(stream);
+  }
+  return ConsumeLengthOrPercent(stream, context,
+                                CSSPrimitiveValue::ValueRange::kNonNegative);
+}
+
 CSSValue* ConsumeHyphenateLimitChars(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
   CSSValueList* const list = CSSValueList::CreateSpaceSeparated();
@@ -6765,7 +6807,8 @@ CSSValue* ConsumeInitialLetter(CSSParserTokenStream& stream,
           ConsumeIdent<CSSValueID::kDrop, CSSValueID::kRaise>(stream)) {
     if (auto* size = ConsumeNumber(
             stream, context, CSSPrimitiveValue::ValueRange::kNonNegative)) {
-      if (size->GetFloatValue() < 1) {
+      auto* numeric_size = DynamicTo<CSSNumericLiteralValue>(size);
+      if (numeric_size && numeric_size->DoubleValue() < 1) {
         return nullptr;
       }
       list->Append(*size);
@@ -6780,7 +6823,8 @@ CSSValue* ConsumeInitialLetter(CSSParserTokenStream& stream,
   // number[1, Inf] integer[1, Inf]
   if (auto* size = ConsumeNumber(stream, context,
                                  CSSPrimitiveValue::ValueRange::kNonNegative)) {
-    if (size->GetFloatValue() < 1) {
+    auto* numeric_size = DynamicTo<CSSNumericLiteralValue>(size);
+    if (numeric_size && numeric_size->DoubleValue() < 1) {
       return nullptr;
     }
     list->Append(*size);
@@ -7228,7 +7272,7 @@ CSSValue* ConsumeBorderColorSide(CSSParserTokenStream& stream,
   bool allow_quirky_colors = IsQuirksModeBehavior(context.Mode()) &&
                              (shorthand == CSSPropertyID::kInvalid ||
                               shorthand == CSSPropertyID::kBorderColor);
-  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
       stream.Peek().FunctionId() ==
           CSSValueID::kInternalAppearanceAutoBaseSelect &&
       IsUASheetBehavior(context.Mode())) {
@@ -7241,7 +7285,7 @@ CSSValue* ConsumeBorderColorSide(CSSParserTokenStream& stream,
 CSSValue* ConsumeBorderWidth(CSSParserTokenStream& stream,
                              const CSSParserContext& context,
                              UnitlessQuirk unitless) {
-  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
       IsUASheetBehavior(context.Mode()) &&
       stream.Peek().FunctionId() ==
           CSSValueID::kInternalAppearanceAutoBaseSelect) {

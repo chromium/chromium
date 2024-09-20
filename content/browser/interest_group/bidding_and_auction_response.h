@@ -96,6 +96,19 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
     base::flat_map<std::string, GURL> beacon_urls;
   };
 
+  struct CONTENT_EXPORT DebugReportKey {
+    bool is_seller_report;
+    bool is_win_report;
+
+    bool operator<(const DebugReportKey& other) const {
+      if (is_seller_report != other.is_seller_report) {
+        return is_seller_report < other.is_seller_report;
+      } else {
+        return is_win_report < other.is_win_report;
+      }
+    }
+  };
+
   // This is not part of the message from the server, but is a convenient place
   // to store the outcome if we finish parsing the response before the component
   // auctions start the bidding phase.
@@ -138,15 +151,17 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
       server_filtered_pagg_requests_non_reserved;
 
   // forDebuggingOnly reports from component winning buyer/seller. These need to
-  // be further filtered based on the final auction result. Keyed by a pair of
-  // origin that the report came from and a bool of whether it's win or loss
-  // report.
-  std::map<std::pair<url::Origin, bool>, std::vector<GURL>>
-      component_winner_debugging_only_reports;
+  // be further filtered based on the final auction result.
+  std::map<DebugReportKey, std::optional<GURL>>
+      component_win_debugging_only_reports;
 
   // forDebuggingOnly reports that have been filtered by the server.
   std::map<url::Origin, std::vector<GURL>>
       server_filtered_debugging_only_reports;
+
+  // Ad tech origins that have forDebuggingOnly reports from server. This is
+  // used to get these origin's cooldown status.
+  base::flat_set<url::Origin> debugging_only_report_origins;
 };
 
 }  // namespace content

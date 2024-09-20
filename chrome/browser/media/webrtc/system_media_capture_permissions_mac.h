@@ -13,6 +13,9 @@ namespace system_media_permissions {
 system_permission_settings::SystemPermission
 CheckSystemScreenCapturePermission();
 
+// Returns whether a system-level permission is needed to capture the screen.
+bool ScreenCaptureNeedsSystemLevelPermissions();
+
 }  // namespace system_media_permissions
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_SYSTEM_MEDIA_CAPTURE_PERMISSIONS_MAC_H_

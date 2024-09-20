@@ -230,16 +230,60 @@ gn_args.config(
 
 gn_args.config(
     name = "cast_android",
+    args_file = "//chromecast/build/args/config/android.gni",
+    configs = [
+        "cast_receiver",
+        "android",
+        "minimal_symbols",
+        "static",
+    ],
+)
+
+gn_args.config(
+    name = "cast_linux",
+    args_file = "//chromecast/build/args/config/linux.gni",
+    configs = [
+        "cast_receiver",
+        "linux",
+        "minimal_symbols",
+        "static",
+    ],
+)
+
+gn_args.config(
+    name = "cast_debug",
     args = {
-        "is_cast_android": True,
+        "cast_is_debug": True,
+    },
+    configs = [
+        "debug",
+        "dcheck_always_on",
+    ],
+)
+
+gn_args.config(
+    name = "cast_java_debug",
+    args = {
+        "is_java_debug": True,
     },
 )
 
 gn_args.config(
-    name = "cast_os",
+    name = "cast_java_release",
     args = {
-        "is_castos": True,
+        "is_java_debug": False,
     },
+)
+
+gn_args.config(
+    name = "cast_release",
+    args = {
+        "cast_is_debug": False,
+    },
+    configs = [
+        "dcheck_off",
+        "release",
+    ],
 )
 
 gn_args.config(

@@ -12,10 +12,10 @@
 namespace webnn {
 
 // Bad messages Mojo errors.
-inline constexpr char kBadMessageInvalidBuffer[] =
-    "Invalid buffer from renderer.";
 inline constexpr char kBadMessageInvalidGraph[] =
     "Invalid graph from renderer.";
+inline constexpr char kBadMessageInvalidTensor[] =
+    "Invalid tensor from renderer.";
 inline constexpr char kBadMessageOnBuiltGraphBuilder[] =
     "Invalid message on an MLGraphBuilder which has already built a graph.";
 

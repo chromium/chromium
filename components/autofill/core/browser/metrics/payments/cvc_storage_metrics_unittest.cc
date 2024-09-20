@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 
 namespace autofill::autofill_metrics {
 
@@ -54,11 +55,15 @@ class CvcStorageMetricsTest
       card_ = test::WithCvc(test::GetCreditCard(), /*cvc=*/u"789");
       card_.set_guid(kCardGuid);
       personal_data().test_payments_data_manager().AddCreditCard(card_);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_IOS)
       // Disable mandatory reauth as it is not part of this test and will
       // interfere with the card retrieval flow.
-      personal_data()
-          .payments_data_manager()
-          .SetPaymentMethodsMandatoryReauthEnabled(false);
+      autofill_client_->GetPrefs()->SetBoolean(
+          prefs::kAutofillPaymentMethodsMandatoryReauth, false);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_IOS)
     } else {
       // Add a masked server card.
       card_ = test::WithCvc(test::GetMaskedServerCard());
@@ -115,8 +120,12 @@ class CvcStorageMetricsTest
 // Test CVC suggestion shown metrics are correctly logged.
 TEST_P(CvcStorageMetricsTest, LogShownMetrics) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /* enabled_features */
+      {features::kAutofillEnableCvcStorageAndFilling,
+       features::kAutofillEnableCvcStorageAndFillingEnhancement},
+      /* disabled_features */ {});
   personal_data().test_payments_data_manager().SetIsPaymentCvcStorageEnabled(
       true);
 

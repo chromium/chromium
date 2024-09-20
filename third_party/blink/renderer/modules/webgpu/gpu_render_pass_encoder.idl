@@ -25,6 +25,19 @@
     [NoAllocDirectCall] void endOcclusionQuery();
     [RaisesException, NoAllocDirectCall] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
+    [RuntimeEnabled=WebGPUExperimentalFeatures, NoAllocDirectCall, RaisesException]
+    void multiDrawIndirect(GPUBuffer indirectBuffer,
+                           GPUSize64 indirectOffset,
+                           GPUSize32 maxDrawCount,
+                           optional GPUBuffer drawCountBuffer,
+                           optional GPUSize64 drawCountBufferOffset = 0);
+    [RuntimeEnabled=WebGPUExperimentalFeatures, NoAllocDirectCall, RaisesException]
+    void multiDrawIndexedIndirect(GPUBuffer indirectBuffer,
+                                  GPUSize64 indirectOffset,
+                                  GPUSize32 maxDrawCount,
+                                  optional GPUBuffer drawCountBuffer,
+                                  optional GPUSize64 drawCountBufferOffset = 0);
+
     [NoAllocDirectCall] void end();
 };
 GPURenderPassEncoder includes GPUObjectBase;

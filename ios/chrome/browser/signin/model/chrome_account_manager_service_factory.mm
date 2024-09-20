@@ -14,11 +14,17 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
+// static
 ChromeAccountManagerService*
-ChromeAccountManagerServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+ChromeAccountManagerServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+ChromeAccountManagerService* ChromeAccountManagerServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<ChromeAccountManagerService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 ChromeAccountManagerServiceFactory*
@@ -38,9 +44,6 @@ ChromeAccountManagerServiceFactory::~ChromeAccountManagerServiceFactory() =
 std::unique_ptr<KeyedService>
 ChromeAccountManagerServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      static_cast<ChromeBrowserState*>(context);
   return std::make_unique<ChromeAccountManagerService>(
-      GetApplicationContext()->GetLocalState(),
-      chrome_browser_state->GetProfileName());
+      GetApplicationContext()->GetLocalState());
 }

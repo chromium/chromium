@@ -86,6 +86,15 @@ void AutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
     PlusAddressCallback callback) {}
 
+void AutofillClient::ShowPlusAddressError(
+    PlusAddressErrorDialogType error_dialog_type,
+    base::OnceClosure on_accepted) {}
+
+void AutofillClient::ShowPlusAddressAffiliationError(
+    std::u16string affiliated_domain,
+    std::u16string affiliated_plus_address,
+    base::OnceClosure on_accepted) {}
+
 payments::PaymentsAutofillClient* AutofillClient::GetPaymentsAutofillClient() {
   return nullptr;
 }
@@ -146,6 +155,12 @@ void AutofillClient::HideAutofillFieldIphForManualFallbackFeature() {}
 
 void AutofillClient::NotifyAutofillManualFallbackUsed() {}
 
+void AutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
+    const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+        to_be_upserted_entries,
+    base::OnceCallback<void(bool prompt_was_accepted)>
+        prompt_acceptance_callback) {}
+
 std::optional<AutofillClient::PopupScreenLocation>
 AutofillClient::GetPopupScreenLocation() const {
   NOTIMPLEMENTED();
@@ -176,10 +191,10 @@ base::span<const AutofillProfile> AutofillClient::GetTestAddresses() const {
   return {};
 }
 
-AutofillClient::PasswordFormClassification
-AutofillClient::ClassifyAsPasswordForm(AutofillManager& manager,
-                                       FormGlobalId form_id,
-                                       FieldGlobalId field_id) const {
+PasswordFormClassification AutofillClient::ClassifyAsPasswordForm(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id) const {
   return {};
 }
 

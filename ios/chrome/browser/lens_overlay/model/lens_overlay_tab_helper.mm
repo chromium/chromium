@@ -11,6 +11,13 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 
+namespace {
+
+// MIME type of PDF.
+const char kMimeTypePDF[] = "application/pdf";
+
+}  // namespace
+
 LensOverlayTabHelper::LensOverlayTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   CHECK(IsLensOverlayAvailable());
@@ -25,6 +32,14 @@ LensOverlayTabHelper::~LensOverlayTabHelper() {
 }
 
 #pragma mark - WebStateObserver
+void LensOverlayTabHelper::DidStartNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (web_state_ && snapshot_controller_) {
+    bool is_pdf = web_state_->GetContentsMimeType() == kMimeTypePDF;
+    snapshot_controller_->SetIsPDFDocument(is_pdf);
+  }
+}
 
 void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
   CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
@@ -84,6 +99,11 @@ void LensOverlayTabHelper::SetSnapshotController(
     std::unique_ptr<LensOverlaySnapshotController> snapshot_controller) {
   snapshot_controller_ = std::move(snapshot_controller);
   snapshot_controller_->SetDelegate(weak_ptr_factory_.GetWeakPtr());
+
+  if (web_state_ && snapshot_controller_) {
+    bool is_pdf = web_state_->GetContentsMimeType() == kMimeTypePDF;
+    snapshot_controller_->SetIsPDFDocument(is_pdf);
+  }
 }
 
 void LensOverlayTabHelper::OnSnapshotCaptureBegin() {

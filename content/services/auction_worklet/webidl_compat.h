@@ -103,6 +103,7 @@ class CONTENT_EXPORT IdlConvert {
     Type type() const { return static_cast<Type>(value_.index()); }
 
     bool is_success() const { return type() == Type::kSuccess; }
+    bool is_timeout() const { return type() == Type::kTimeout; }
 
     // Serializes the conversion error message. This can only be called if
     // the status is not a success.

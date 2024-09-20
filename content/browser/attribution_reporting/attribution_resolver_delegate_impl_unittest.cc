@@ -115,10 +115,10 @@ TEST(AttributionResolverDelegateImplTest,
 
   for (const auto& test_case : kTestCases) {
     AttributionConfig config;
-    attribution_reporting::ScopedMaxNavigationChannelCapacityForTesting
-        scoped_max_navigation_info_gain(test_case.max_navigation_info_gain);
-    attribution_reporting::ScopedMaxEventChannelCapacityForTesting
-        scoped_max_event_info_gain(test_case.max_event_info_gain);
+    config.privacy_math_config.max_channel_capacity_navigation =
+        test_case.max_navigation_info_gain;
+    config.privacy_math_config.max_channel_capacity_event =
+        test_case.max_event_info_gain;
 
     auto delegate = AttributionResolverDelegateImpl::CreateForTesting(
         AttributionNoiseMode::kDefault, AttributionDelayMode::kDefault, config);

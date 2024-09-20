@@ -8,50 +8,36 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "content/public/test/browser_test.h"
 
-class ComposeTest : public WebUIMochaBrowserTest,
-                    public testing::WithParamInterface<bool> {
- public:
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "RefinedUI" : "LegacyUI";
-  }
-
+class ComposeTest : public WebUIMochaBrowserTest {
  protected:
   ComposeTest() {
     set_test_loader_host(chrome::kChromeUIUntrustedComposeHost);
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
-    scoped_feature_list_.InitWithFeatureStates(
-        {{compose::features::kEnableCompose, true},
-         {compose::features::kComposeUiRefinement, GetParam()}});
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      compose::features::kEnableCompose};
   ComposeEnabling::ScopedOverride scoped_compose_enabled_;
 };
 
-INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
-                         ComposeTest,
-                         ::testing::Bool(),
-                         ComposeTest::DescribeParams);
-
-IN_PROC_BROWSER_TEST_P(ComposeTest, App) {
+IN_PROC_BROWSER_TEST_F(ComposeTest, App) {
   RunTest("compose/compose_app_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ComposeTest, Textarea) {
+IN_PROC_BROWSER_TEST_F(ComposeTest, Textarea) {
   RunTest("compose/compose_textarea_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ComposeTest, Animator) {
+IN_PROC_BROWSER_TEST_F(ComposeTest, Animator) {
   RunTest("compose/compose_animator_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ComposeTest, WordStreamer) {
+IN_PROC_BROWSER_TEST_F(ComposeTest, WordStreamer) {
   RunTest("compose/word_streamer_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ComposeTest, ResultText) {
+IN_PROC_BROWSER_TEST_F(ComposeTest, ResultText) {
   RunTest("compose/result_text_test.js", "mocha.run()");
 }

@@ -120,6 +120,7 @@ class NativeFileEnumerator : public FileSystemFileUtil::AbstractFileEnumerator {
   ~NativeFileEnumerator() override = default;
 
   base::FilePath Next() override;
+  base::FilePath GetName() override;
   int64_t Size() override;
   base::Time LastModifiedTime() override;
   bool IsDirectory() override;
@@ -134,6 +135,10 @@ base::FilePath NativeFileEnumerator::Next() {
   if (!rv.empty())
     file_util_info_ = file_enum_.GetInfo();
   return rv;
+}
+
+base::FilePath NativeFileEnumerator::GetName() {
+  return file_util_info_.GetName();
 }
 
 int64_t NativeFileEnumerator::Size() {

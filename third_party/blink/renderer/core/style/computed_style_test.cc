@@ -862,20 +862,20 @@ TEST_F(ComputedStyleTest, ApplyLightDarkColor) {
 
   StyleCascade cascade1(state);
   cascade1.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(document);
-  cascade1.MutableMatchResult().AddMatchedProperties(color_declaration,
-                                                     CascadeOrigin::kAuthor);
-  cascade1.MutableMatchResult().AddMatchedProperties(dark_declaration,
-                                                     CascadeOrigin::kAuthor);
+  cascade1.MutableMatchResult().AddMatchedProperties(
+      color_declaration, {.origin = CascadeOrigin::kAuthor});
+  cascade1.MutableMatchResult().AddMatchedProperties(
+      dark_declaration, {.origin = CascadeOrigin::kAuthor});
   cascade1.Apply();
   const ComputedStyle* style = state.StyleBuilder().CloneStyle();
   EXPECT_EQ(Color::kWhite, style->VisitedDependentColor(GetCSSPropertyColor()));
 
   StyleCascade cascade2(state);
   cascade2.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(document);
-  cascade2.MutableMatchResult().AddMatchedProperties(color_declaration,
-                                                     CascadeOrigin::kAuthor);
-  cascade2.MutableMatchResult().AddMatchedProperties(light_declaration,
-                                                     CascadeOrigin::kAuthor);
+  cascade2.MutableMatchResult().AddMatchedProperties(
+      color_declaration, {.origin = CascadeOrigin::kAuthor});
+  cascade2.MutableMatchResult().AddMatchedProperties(
+      light_declaration, {.origin = CascadeOrigin::kAuthor});
   cascade2.Apply();
   style = state.StyleBuilder().CloneStyle();
   EXPECT_EQ(Color::kBlack, style->VisitedDependentColor(GetCSSPropertyColor()));
@@ -904,10 +904,10 @@ TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
 
   StyleCascade cascade1(state);
   cascade1.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(document);
-  cascade1.MutableMatchResult().AddMatchedProperties(bgimage_declaration,
-                                                     CascadeOrigin::kAuthor);
-  cascade1.MutableMatchResult().AddMatchedProperties(dark_declaration,
-                                                     CascadeOrigin::kAuthor);
+  cascade1.MutableMatchResult().AddMatchedProperties(
+      bgimage_declaration, {.origin = CascadeOrigin::kAuthor});
+  cascade1.MutableMatchResult().AddMatchedProperties(
+      dark_declaration, {.origin = CascadeOrigin::kAuthor});
   cascade1.Apply();
   EXPECT_TRUE(state.TakeStyle()->HasBackgroundImage());
 
@@ -915,10 +915,10 @@ TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
 
   StyleCascade cascade2(state);
   cascade2.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(document);
-  cascade2.MutableMatchResult().AddMatchedProperties(bgimage_declaration,
-                                                     CascadeOrigin::kAuthor);
-  cascade2.MutableMatchResult().AddMatchedProperties(light_declaration,
-                                                     CascadeOrigin::kAuthor);
+  cascade2.MutableMatchResult().AddMatchedProperties(
+      bgimage_declaration, {.origin = CascadeOrigin::kAuthor});
+  cascade2.MutableMatchResult().AddMatchedProperties(
+      light_declaration, {.origin = CascadeOrigin::kAuthor});
   cascade2.Apply();
   EXPECT_FALSE(state.TakeStyle()->HasBackgroundImage());
 }

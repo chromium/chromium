@@ -69,10 +69,8 @@
       }
 
       #httpsFirstModeRadioGroup .list-item {
-        padding-block-start: 8px;
-        padding-block-end: 8px;
-        padding-inline-start: 20px;
         padding-inline-end: 20px;
+        padding-inline-start: 20px;
       }
 
       #learnMoreLabelContainer {
@@ -87,7 +85,7 @@
           src="chrome://settings/images/safe_browsing_banner.svg">
     </picture>
     <div id="safeBrowsingSection">
-      <h2>$i18n{safeBrowsingSectionLabel}</h2>
+      <h2 class="cr-title-text">$i18n{safeBrowsingSectionLabel}</h2>
       <settings-radio-group id="safeBrowsingRadioGroup" no-set-pref
           pref="{{prefs.generated.safe_browsing}}"
           selectable-elements="cr-radio-button, settings-collapse-radio-button"
@@ -217,10 +215,7 @@
     </div>
     <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
       <div id="secureConnectionsSection">
-        <h2>$i18n{secureConnectionsSectionTitle}</h2>
-        <div class="cr-secondary-text">
-          $i18n{secureConnectionsSectionDescription}
-        </div>
+        <h2 class="cr-title-text">$i18n{secureConnectionsSectionTitle}</h2>
       </div>
       <settings-toggle-button id="httpsFirstModeToggle" class="cr-row first"
           pref="{{prefs.generated.https_first_mode_enabled}}"
@@ -243,9 +238,6 @@
               pref="[[prefs.generated.https_first_mode_enabled]]"
               label="$i18n{httpsFirstModeEnabledBalancedLabel}"
               class="list-item">
-            <div class="cr-secondary-text">
-              $i18n{httpsFirstModeEnabledBalancedSubLabel}
-            </div>
           </controlled-radio-button>
             <controlled-radio-button id="httpsFirstModeEnabledStrict"
                 name="[[getName_(httpsFirstModeSettingEnum_.ENABLED_FULL)]]"
@@ -261,7 +253,7 @@
       </cr-collapse>
     </template>
     <div class="cr-row first">
-      <h2>$i18n{advancedPageTitle}</h2>
+      <h2 class="cr-title-text">$i18n{advancedPageTitle}</h2>
     </div>
     <template is="dom-if" if="[[!enableHttpsFirstModeNewSettings_]]" restamp>
       <settings-toggle-button id="httpsOnlyModeToggle"
@@ -272,15 +264,17 @@
           numeric-checked-value="[[httpsFirstModeSettingEnum_.ENABLED_FULL]]">
       </settings-toggle-button>
       <template is="dom-if" if="[[showSecureDnsSetting_]]">
-        <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
-      </template>
-    </template>
-    <tempate is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
-      <template is="dom-if" if="[[showSecureDnsSetting_]]">
-        <settings-secure-dns prefs="{{prefs}}" class="no-hr">
+        <settings-secure-dns prefs="{{prefs}}" id="secureDnsSettingOld">
         </settings-secure-dns>
       </template>
-    </tempate>
+    </template>
+    <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
+      <template is="dom-if" if="[[showSecureDnsSetting_]]">
+        <settings-secure-dns prefs="{{prefs}}" class="no-hr"
+            id="secureDnsSettingNew">
+        </settings-secure-dns>
+      </template>
+    </template>
 <if expr="is_chromeos">
     <template is="dom-if" if="[[showSecureDnsSettingLink_]]">
         <cr-link-row id="openChromeOSSecureDnsSettings"

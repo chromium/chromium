@@ -54,7 +54,7 @@ static_library("app_install") {
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/resources/chromeos/app_install:resources",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/constants",

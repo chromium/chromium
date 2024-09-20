@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
-#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -41,6 +39,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -196,9 +195,7 @@ void EnrollmentScreen::SetEnrollmentConfig(
         break;
       }
       current_auth_ = AUTH_ATTESTATION;
-      next_auth_ = prescribed_config_.should_enroll_interactively()
-                       ? AUTH_OAUTH
-                       : AUTH_ATTESTATION;
+      next_auth_ = AUTH_OAUTH;
       break;
     case EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED:
       current_auth_ = AUTH_ENROLLMENT_TOKEN;
@@ -217,12 +214,6 @@ void EnrollmentScreen::SetConfig() {
       effective_config_.is_mode_with_manual_fallback()) {
     effective_config_.mode =
         policy::EnrollmentConfig::GetManualFallbackMode(effective_config_.mode);
-  } else if (current_auth_ == AUTH_ATTESTATION &&
-             !prescribed_config_.is_mode_attestation()) {
-    effective_config_.mode =
-        effective_config_.is_attestation_auth_forced()
-            ? policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED
-            : policy::EnrollmentConfig::MODE_ATTESTATION;
   }
   // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
@@ -1003,10 +994,12 @@ bool EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
       effective_config_.mode != policy::EnrollmentConfig::MODE_MANUAL) {
     return false;
   }
-
-  CHECK(signin_artifacts_);
-  CHECK(enrollment_launcher_);
-  CHECK(enrollment_succeeded_);
+  // Technically this should be an invariant, but this feature is not crucial
+  // and allows for an easy fallback to the normal flow. Because of this we use
+  // soft checks in case of unforeseen flows that would cause a crash otherwise.
+  if (!signin_artifacts_ || !enrollment_launcher_ || !enrollment_succeeded_) {
+    return false;
+  }
 
   const AccountId account_id = AccountId::FromNonCanonicalEmail(
       signin_artifacts_->email, signin_artifacts_->gaia_id,
@@ -1026,8 +1019,13 @@ bool EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
   signin_artifacts_.reset();
 
   CHECK(LoginDisplayHost::default_host());
-  CHECK_DEREF(LoginDisplayHost::default_host()->GetWizardContext())
-      .user_context = std::move(user_context);
+  WizardContext* wizard_context =
+      LoginDisplayHost::default_host()->GetWizardContext();
+  CHECK(wizard_context);
+  // Make sure we aren't overwriting any existing information.
+  CHECK(!wizard_context->user_context);
+  wizard_context->user_context = std::move(user_context);
+  wizard_context->add_user_from_cached_credentials = true;
 
   return true;
 }

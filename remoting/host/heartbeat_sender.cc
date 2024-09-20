@@ -105,17 +105,17 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
 
 }  // namespace
 
-class HeartbeatSender::HeartbeatClientImpl final
-    : public HeartbeatSender::HeartbeatClient {
+class HeartbeatSender::OldHeartbeatClientImpl final
+    : public HeartbeatSender::OldHeartbeatClient {
  public:
-  explicit HeartbeatClientImpl(
+  explicit OldHeartbeatClientImpl(
       OAuthTokenGetter* oauth_token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  HeartbeatClientImpl(const HeartbeatClientImpl&) = delete;
-  HeartbeatClientImpl& operator=(const HeartbeatClientImpl&) = delete;
+  OldHeartbeatClientImpl(const OldHeartbeatClientImpl&) = delete;
+  OldHeartbeatClientImpl& operator=(const OldHeartbeatClientImpl&) = delete;
 
-  ~HeartbeatClientImpl() override;
+  ~OldHeartbeatClientImpl() override;
 
   void LegacyHeartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
                        LegacyHeartbeatResponseCallback callback) override;
@@ -128,16 +128,16 @@ class HeartbeatSender::HeartbeatClientImpl final
   ProtobufHttpClient http_client_;
 };
 
-HeartbeatSender::HeartbeatClientImpl::HeartbeatClientImpl(
+HeartbeatSender::OldHeartbeatClientImpl::OldHeartbeatClientImpl(
     OAuthTokenGetter* oauth_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : http_client_(ServiceUrls::GetInstance()->remoting_server_endpoint(),
                    oauth_token_getter,
                    url_loader_factory) {}
 
-HeartbeatSender::HeartbeatClientImpl::~HeartbeatClientImpl() = default;
+HeartbeatSender::OldHeartbeatClientImpl::~OldHeartbeatClientImpl() = default;
 
-void HeartbeatSender::HeartbeatClientImpl::LegacyHeartbeat(
+void HeartbeatSender::OldHeartbeatClientImpl::LegacyHeartbeat(
     std::unique_ptr<apis::v1::HeartbeatRequest> request,
     LegacyHeartbeatResponseCallback callback) {
   std::string host_offline_reason =
@@ -157,7 +157,7 @@ void HeartbeatSender::HeartbeatClientImpl::LegacyHeartbeat(
   http_client_.ExecuteRequest(std::move(http_request));
 }
 
-void HeartbeatSender::HeartbeatClientImpl::SendHeartbeat(
+void HeartbeatSender::OldHeartbeatClientImpl::SendHeartbeat(
     std::unique_ptr<apis::v1::SendHeartbeatRequest> request,
     SendHeartbeatResponseCallback callback) {
   HOST_LOG << "Sending outgoing heartbeat.";
@@ -173,26 +173,28 @@ void HeartbeatSender::HeartbeatClientImpl::SendHeartbeat(
   http_client_.ExecuteRequest(std::move(http_request));
 }
 
-void HeartbeatSender::HeartbeatClientImpl::CancelPendingRequests() {
+void HeartbeatSender::OldHeartbeatClientImpl::CancelPendingRequests() {
   http_client_.CancelPendingRequests();
 }
 
-// end of HeartbeatSender::HeartbeatClientImpl
+// end of HeartbeatSender::OldHeartbeatClientImpl
 
 HeartbeatSender::HeartbeatSender(
     Delegate* delegate,
     const std::string& host_id,
     SignalStrategy* signal_strategy,
     OAuthTokenGetter* oauth_token_getter,
+    std::unique_ptr<HeartbeatServiceClient> heartbeat_service,
     Observer* observer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     bool set_fqdn)
     : delegate_(delegate),
       host_id_(host_id),
       signal_strategy_(signal_strategy),
-      client_(std::make_unique<HeartbeatClientImpl>(oauth_token_getter,
-                                                    url_loader_factory)),
+      old_client_(std::make_unique<OldHeartbeatClientImpl>(oauth_token_getter,
+                                                           url_loader_factory)),
       oauth_token_getter_(oauth_token_getter),
+      service_client_(std::move(heartbeat_service)),
       observer_(observer),
       backoff_(&kBackoffPolicy) {
   DCHECK(delegate_);
@@ -232,7 +234,7 @@ void HeartbeatSender::OnSignalStrategyStateChange(SignalStrategy::State state) {
       SendFullHeartbeat();
       break;
     case SignalStrategy::State::DISCONNECTED:
-      client_->CancelPendingRequests();
+      old_client_->CancelPendingRequests();
       heartbeat_timer_.AbandonAndStop();
       break;
     default:
@@ -269,7 +271,7 @@ void HeartbeatSender::OnHostOfflineReasonAck() {
 void HeartbeatSender::ClearHeartbeatTimer() {
   // Drop previous heartbeat and timer so that it doesn't interfere with the
   // current one.
-  client_->CancelPendingRequests();
+  old_client_->CancelPendingRequests();
   heartbeat_timer_.AbandonAndStop();
 }
 
@@ -286,7 +288,7 @@ void HeartbeatSender::SendFullHeartbeat() {
 
   ClearHeartbeatTimer();
 
-  client_->LegacyHeartbeat(
+  old_client_->LegacyHeartbeat(
       CreateLegacyHeartbeatRequest(),
       base::BindOnce(&HeartbeatSender::OnLegacyHeartbeatResponse,
                      base::Unretained(this)));
@@ -307,12 +309,12 @@ void HeartbeatSender::SendLiteHeartbeat(bool useLiteHeartbeat) {
   ClearHeartbeatTimer();
 
   if (useLiteHeartbeat) {
-    client_->SendHeartbeat(
+    old_client_->SendHeartbeat(
         CreateSendHeartbeatRequest(),
         base::BindOnce(&HeartbeatSender::OnSendHeartbeatResponse,
                        base::Unretained(this)));
   } else {
-    client_->LegacyHeartbeat(
+    old_client_->LegacyHeartbeat(
         CreateLegacyHeartbeatRequest(),
         base::BindOnce(&HeartbeatSender::OnLegacyHeartbeatResponse,
                        base::Unretained(this)));
@@ -414,9 +416,6 @@ void HeartbeatSender::OnLegacyHeartbeatResponse(
       }
       if (!response->primary_user_email().empty()) {
         delegate_->OnUpdateHostOwner(response->primary_user_email());
-      }
-      if (response->has_is_corp_user()) {
-        delegate_->OnUpdateIsCorpUser(response->is_corp_user());
       }
       if (response->has_require_session_authorization()) {
         bool require = response->require_session_authorization();

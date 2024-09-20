@@ -186,8 +186,9 @@ bool V4L2Webcam::GetWebcamParameter(int fd,
   // Try to query current value for |control_id|. The getter fails if not
   // supported.
   struct v4l2_control v4l2_ctrl = {control_id};
-  if (HANDLE_EINTR(ioctl(fd, VIDIOC_G_CTRL, &v4l2_ctrl)))
+  if (HANDLE_EINTR(ioctl(fd, VIDIOC_G_CTRL, &v4l2_ctrl))) {
     return false;
+  }
   *value = v4l2_ctrl.value;
 
   // Try to query the valid range for |control_id|. Not supporting a range query

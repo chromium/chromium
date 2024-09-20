@@ -377,7 +377,7 @@ bool PhoneFieldParser::ParsePhoneField(ParsingContext& context,
                                        const bool is_country_code_field,
                                        const std::string& json_field_type) {
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(
-      json_field_type, context.page_language, context.pattern_source);
+      json_field_type, context.page_language, context.pattern_file);
 
   // Phone country code fields can be discovered via the generic "PHONE" regex
   // (see e.g. the "Phone: <cc> <ac>:3 - <phone>:3 - <suffix>:4" grammar rule).

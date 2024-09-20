@@ -641,6 +641,9 @@ chromium-metrics-reviews@google.com.
   <int value="100299" label="kAccessibilityFlashNotificationsColor"/>
   <int value="100300" label="PinnedChromeLabsMigrationComplete"/>
   <int value="100301" label="AccessibilityFaceGazeGesturesToKeyCombos"/>
+  <int value="100302" label="FocusModeYTMDisplayOAuthConsent"/>
+  <int value="100303" label="FocusModeYTMDisplayFreeTrial"/>
+  <int value="100304" label="AccessibilityFaceGazeVelocityThreshold"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
@@ -937,9 +940,11 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SyncFeatureStatusForSyncToSigninMigration">
   <int value="0" label="Undefined"/>
-  <int value="1" label="Disabled or paused"/>
+  <int value="1" label="(obsolete) Disabled or Paused"/>
   <int value="2" label="Initializing"/>
   <int value="3" label="Active"/>
+  <int value="4" label="Paused"/>
+  <int value="5" label="Disabled"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_feature_status_for_migrations_recorder.h:SyncFeatureStatusForSyncToSigninMigration) -->
@@ -1140,6 +1145,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Undo the migration"/>
   <int value="7" label="Don't undo: already completed or not necessary"/>
   <int value="8" label="Migrate forced"/>
+  <int value="9" label="Don't migrate, auth error"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncToSigninMigrationDecisionOverall) -->

@@ -67,12 +67,12 @@ std::string IdentityGetAuthTokenError::ToString() const {
       return identity_constants::kPageLoadFailure;
     case State::kInvalidConsentResult:
       return identity_constants::kInvalidConsentResult;
-    case State::kCanceled:
-      return identity_constants::kCanceled;
     case State::kInteractivityDenied:
       return identity_constants::kGetAuthTokenInteractivityDeniedError;
     case State::kCannotCreateWindow:
       return identity_constants::kCannotCreateWindow;
+    case State::kBrowserContextShutDown:
+      return identity_constants::kBrowserContextShutDown;
   }
 }
 

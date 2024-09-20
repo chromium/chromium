@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos_ash)
+
+source_set("enterprise_platform_keys_private") {
+  sources = [
+    "enterprise_platform_keys_private_api.cc",
+    "enterprise_platform_keys_private_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//chrome/browser/ash/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/constants",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//content/public/browser",
+  ]
+}

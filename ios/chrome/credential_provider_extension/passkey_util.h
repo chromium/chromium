@@ -10,13 +10,6 @@
 
 @protocol Credential;
 
-// The completion block called after fetching the vault key.
-using FetchKeyCompletionBlock = void (^)(NSData* sds);
-
-// Fetches the Security Domain Secret and calls the completion block
-// with the Security Domain Secret as the input argument.
-void FetchSecurityDomainSecret(FetchKeyCompletionBlock completion);
-
 // On a success, returns a newly created passkey.
 // Returns nil otherwise.
 ASPasskeyRegistrationCredential* PerformPasskeyCreation(

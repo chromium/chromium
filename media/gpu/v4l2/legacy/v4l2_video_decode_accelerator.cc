@@ -2228,17 +2228,14 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
       return false;
     }
 
-    // We should never need Intel media compressed buffers with V4L2.
     std::unique_ptr<VideoFrameMapper> output_frame_mapper;
     output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
         PIXEL_FORMAT_NV12, VideoFrame::STORAGE_DMABUFS,
-        /*force_linear_buffer_mapper=*/true,
-        /*must_support_intel_media_compressed_buffers=*/false);
+        /*force_linear_buffer_mapper=*/true);
     if (!output_frame_mapper) {
       output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
           PIXEL_FORMAT_NV12, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          /*force_linear_buffer_mapper=*/true);
     }
     if (!output_frame_mapper) {
       LOG(ERROR) << "Failed to instantiate MT21 frame mapper!";

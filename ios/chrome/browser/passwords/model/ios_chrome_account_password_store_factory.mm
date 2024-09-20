@@ -30,18 +30,26 @@ using password_manager::AffiliatedMatchHelper;
 // static
 scoped_refptr<password_manager::PasswordStoreInterface>
 IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
-  // `browser_state` gets always redirected to a non-Incognito one below, so
+  return GetForProfile(profile, access_type);
+}
+
+// static
+scoped_refptr<password_manager::PasswordStoreInterface>
+IOSChromeAccountPasswordStoreFactory::GetForProfile(
+    ProfileIOS* profile,
+    ServiceAccessType access_type) {
+  // `profile` gets always redirected to a non-Incognito one below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal BrowserState without the user knowing it.
   if (access_type == ServiceAccessType::IMPLICIT_ACCESS &&
-      browser_state->IsOffTheRecord()) {
+      profile->IsOffTheRecord()) {
     return nullptr;
   }
   return base::WrapRefCounted(
       static_cast<password_manager::PasswordStoreInterface*>(
-          GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
+          GetInstance()->GetServiceForBrowserState(profile, true).get()));
 }
 
 // static
@@ -85,7 +93,7 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
           browser_state->GetPrefs(), os_crypt_async));
 
   AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
+      IOSChromeAffiliationServiceFactory::GetForBrowserState(browser_state);
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
       std::make_unique<AffiliatedMatchHelper>(affiliation_service);
 

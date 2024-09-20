@@ -41,6 +41,7 @@ source_set("browser_tests") {
 
   deps = [
     "//ash",
+    "//ash/webui/annotator",
     "//ash/webui/annotator/public/cpp",
     "//ash/webui/media_app_ui:browser_test_support",
     "//ash/webui/media_app_ui:buildflags",
@@ -49,7 +50,6 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
-    "//chrome/browser/ui/ash/annotator",
     "//chrome/browser/ui/ash/system_web_apps",
     "//content/test:test_support",
   ]

@@ -187,7 +187,7 @@
 <translation id="3974105241379491420">網站可以要求使用與你相關的已儲存網站資訊</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
-<translation id="3992684624889376114">為何顯示此頁</translation>
+<translation id="3992684624889376114">關於本頁</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4149890623864272035">確定要刪除 Cookie 等所有本機資料，並重設這個網站的所有權限嗎？</translation>
@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">你曾在 <ph name="RECENCY" />造訪過這個分頁</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5048398596102334565">允許網站存取動作感應器 (建議)</translation>
+<translation id="5048841907079026162">管理瀏覽資料</translation>
 <translation id="5050380848339752099">這個網站即將退出無痕模式並與外部應用程式分享資訊。</translation>
 <translation id="5063480226653192405">用量</translation>
 <translation id="5091013926750941408">行動版網站</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">允許網站執行 JavaScript (建議)</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344522958567249764">管理廣告隱私權設定</translation>
+<translation id="5373874281522292782">系統會儲存你的分頁群組</translation>
 <translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資訊</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">一律使用</translation>
 <translation id="757524316907819857">禁止網站播放受保護的內容</translation>
 <translation id="7594634374516752650">已連線至藍牙裝置</translation>
+<translation id="7617547684249261169">你可以刪除部分或全部的歷史記錄、Cookie、網站資料和其他資料</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">綠野仙蹤</translation>

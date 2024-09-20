@@ -2007,18 +2007,6 @@ NavigationRequest::NavigationRequest(
       ad_auction_headers_eligible_ = true;
       headers.SetHeader(kAdAuctionRequestHeaderKey, "?1");
     }
-
-    // Partitioned popins are special modal popups that are partitioned as
-    // though they were an iframe embedded in the opener. All main-frame
-    // navigations and redirects must set a request header to notify the loaded
-    // site they are in a partitioned popin and not a standard popup.
-    // See https://explainers-by-googlers.github.io/partitioned-popins/
-    if (frame_tree_node->IsOutermostMainFrame() &&
-        frame_tree_node->current_frame_host()
-            ->delegate()
-            ->PartitionedPopinOpener()) {
-      headers.SetHeader("Sec-Popin-Context", "partitioned");
-    }
   }
 
   begin_params_->headers = headers.ToString();
@@ -2069,21 +2057,18 @@ NavigationRequest::NavigationRequest(
     // requests will be merged into this preflight request in
     // `ServiceWorkerRegistry::FindRegistrationForClientUrl()` and
     // `ServiceWorkerRegistry::RunFindRegistrationCallbacks()` later.
-    if (base::FeatureList::IsEnabled(
-            kServiceWorkerMergeFindRegistrationForClientUrl)) {
-      if (ServiceWorkerContext* context =
-              frame_tree_node_->navigator()
-                  .controller()
-                  .GetBrowserContext()
-                  ->GetStoragePartition(site_info_.storage_partition_config())
-                  ->GetServiceWorkerContext()) {
-        const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
-            GetTentativeOriginAtRequestTime());
-        if (context->MaybeHasRegistrationForStorageKey(key)) {
-          // `CheckHasServiceWorker` calls `FindRegistrationForClientUrl`
-          // internally.
-          context->CheckHasServiceWorker(GetURL(), key, base::DoNothing());
-        }
+    if (ServiceWorkerContext* context =
+            frame_tree_node_->navigator()
+                .controller()
+                .GetBrowserContext()
+                ->GetStoragePartition(site_info_.storage_partition_config())
+                ->GetServiceWorkerContext()) {
+      const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
+          GetTentativeOriginAtRequestTime());
+      if (context->MaybeHasRegistrationForStorageKey(key)) {
+        // `CheckHasServiceWorker` calls `FindRegistrationForClientUrl`
+        // internally.
+        context->CheckHasServiceWorker(GetURL(), key, base::DoNothing());
       }
     }
 
@@ -4788,9 +4773,6 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     return;
   }
 
-  // The CSP 'navigate-to' directive needs to know whether the response is a
-  // redirect or not in order to perform its checks. This is the reason why we
-  // need to check the CSP both on request and response.
   net::Error net_error = CheckContentSecurityPolicy(
       was_redirected_ /* has_followed_redirect */,
       false /* url_upgraded_after_redirect */, true /* is_response_check */);
@@ -6695,7 +6677,6 @@ bool NavigationRequest::IsAllowedByCSPDirective(
     network::mojom::CSPDirectiveName directive,
     bool has_followed_redirect,
     bool url_upgraded_after_redirect,
-    bool is_response_check,
     bool is_opaque_fenced_frame,
     network::CSPContext::CheckCSPDisposition disposition) {
   GURL url;
@@ -6713,8 +6694,8 @@ bool NavigationRequest::IsAllowedByCSPDirective(
   }
   network::CSPCheckResult result = context->IsAllowedByCsp(
       policies, directive, url, commit_params_->original_url,
-      has_followed_redirect, is_response_check, common_params_->source_location,
-      disposition, begin_params_->is_form_submission, is_opaque_fenced_frame);
+      has_followed_redirect, common_params_->source_location, disposition,
+      begin_params_->is_form_submission, is_opaque_fenced_frame);
   if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         GetParentFrame(),
@@ -6747,7 +6728,7 @@ net::Error NavigationRequest::CheckCSPDirectives(
         !IsAllowedByCSPDirective(
             initiator_policies->content_security_policies, &initiator_context,
             network::mojom::CSPDirectiveName::FormAction, has_followed_redirect,
-            url_upgraded_after_redirect, is_response_check,
+            url_upgraded_after_redirect,
             /*is_opaque_fenced_frame=*/false, disposition)) {
       // net::ERR_ABORTED is used instead of net::ERR_BLOCKED_BY_CSP. This is
       // a better user experience as the user is not presented with an error
@@ -6755,24 +6736,6 @@ net::Error NavigationRequest::CheckCSPDirectives(
       // may be appropriate for them to use ERR_BLOCKED_BY_CSP so this can be
       // overridden by the checks below.
       error = net::ERR_ABORTED;
-    }
-
-    if (base::FeatureList::IsEnabled(
-            features::kExperimentalContentSecurityPolicyFeatures)) {
-      // [navigate-to]
-      if (!IsAllowedByCSPDirective(
-              initiator_policies->content_security_policies, &initiator_context,
-              network::mojom::CSPDirectiveName::NavigateTo,
-              has_followed_redirect, url_upgraded_after_redirect,
-              is_response_check, /*is_opaque_fenced_frame=*/false,
-              disposition)) {
-        // net::ERR_ABORTED is used instead of net::ERR_BLOCKED_BY_CSP. This is
-        // a better user experience as the user is not presented with an error
-        // page. However if other CSP directives life frame-src are violated, it
-        // may be appropriate for them to use ERR_BLOCKED_BY_CSP so this can be
-        // overridden by the checks below.
-        error = net::ERR_ABORTED;
-      }
     }
   }
 
@@ -6791,8 +6754,7 @@ net::Error NavigationRequest::CheckCSPDirectives(
                 ? network::mojom::CSPDirectiveName::FencedFrameSrc
                 : network::mojom::CSPDirectiveName::FrameSrc,
             has_followed_redirect, url_upgraded_after_redirect,
-            is_response_check, is_opaque_fenced_frame_root_navigation,
-            disposition)) {
+            is_opaque_fenced_frame_root_navigation, disposition)) {
       error = net::ERR_BLOCKED_BY_CSP;
     }
   }
@@ -7120,15 +7082,6 @@ void NavigationRequest::RendererRequestedNavigationCancellationForTesting() {
 void NavigationRequest::OnNavigationClientDisconnected(
     uint32_t reason,
     const std::string& description) {
-  if (reason == mojom::NavigationClient::kResetForSwap) {
-    // If the RenderFrame that initiated this navigation request is swapped out
-    // (disconnecting its NavigationClient for this request), do not treat it as
-    // a cancellation. Otherwise, if a previous navigation before `this` is slow
-    // to commit, it would unexpectedly cancel `this` subsequent attempt to
-    // navigate elsewhere.
-    return;
-  }
-
   // Renderer-initiated navigation cancellations can only happen before the
   // navigation gets into the READY_TO_COMMIT state, because
   // RendererCancellationThrottle will prevent renderer-initiated navigations
@@ -7143,16 +7096,44 @@ void NavigationRequest::OnNavigationClientDisconnected(
   // anymore. Fix tests that expect this behavior.
   // 2. The target renderer had crashed, so the speculative RenderFrame is not
   // live anymore, because the navigation can't commit in a crashed renderer.
-  NavigationDiscardReason discard_reason =
-      (HasRenderFrameHost() && !GetRenderFrameHost()->IsRenderFrameLive())
-          ? NavigationDiscardReason::kRenderProcessGone
-          : (reason == mojom::NavigationClient::kResetForAbort
-                 ? NavigationDiscardReason::kExplicitCancellation
-                 : NavigationDiscardReason::kInternalCancellation);
+  std::optional<NavigationDiscardReason> discard_reason;
+  if (HasRenderFrameHost() && !GetRenderFrameHost()->IsRenderFrameLive()) {
+    discard_reason = NavigationDiscardReason::kRenderProcessGone;
+  } else {
+    switch (static_cast<mojom::NavigationClientDisconnectReason>(reason)) {
+      case mojom::NavigationClientDisconnectReason::kResetForSwap:
+        // If the RenderFrame that initiated this navigation request is swapped
+        // out (disconnecting its NavigationClient for this request), do not
+        // treat it as a cancellation. Otherwise, if a previous navigation
+        // before `this` is slow to commit, it would unexpectedly cancel `this`
+        // subsequent attempt to navigate elsewhere.
+        return;
+      case mojom::NavigationClientDisconnectReason::kNoExplicitReason:
+        discard_reason = NavigationDiscardReason::kInternalCancellation;
+        break;
+      case mojom::NavigationClientDisconnectReason::kResetForAbort:
+        discard_reason = NavigationDiscardReason::kExplicitCancellation;
+        break;
+      case mojom::NavigationClientDisconnectReason::kResetForNewNavigation:
+        discard_reason =
+            NavigationDiscardReason::kNewOtherNavigationRendererInitiated;
+        break;
+      case mojom::NavigationClientDisconnectReason::
+          kResetForDuplicateNavigation:
+        discard_reason = NavigationDiscardReason::kNewDuplicateNavigation;
+        break;
+    }
+    if (!discard_reason.has_value()) {
+      // TODO(https://crbug.com/366060351): An invalid value was used. Kill
+      // either the requesting or committing client's process.
+      return;
+    }
+  }
+
   if (!IsWaitingToCommit()) {
     // The cancellation happens before READY_TO_COMMIT.
     frame_tree_node_->navigator().CancelNavigation(frame_tree_node_,
-                                                   discard_reason);
+                                                   discard_reason.value());
   } else if (GetRenderFrameHost() ==
                  frame_tree_node_->render_manager()->current_frame_host() ||
              !GetRenderFrameHost()->IsRenderFrameLive()) {
@@ -7160,10 +7141,11 @@ void NavigationRequest::OnNavigationClientDisconnected(
     // `render_frame_host_` owns `this`. Cache any needed state in stack
     // variables to avoid a use-after-free.
     FrameTreeNode* frame_tree_node = frame_tree_node_;
-    GetRenderFrameHost()->NavigationRequestCancelled(this, discard_reason);
+    GetRenderFrameHost()->NavigationRequestCancelled(this,
+                                                     discard_reason.value());
     // Ensure that the speculative RFH, if any, is also cleaned up.
     frame_tree_node->render_manager()->DiscardSpeculativeRFHIfUnused(
-        discard_reason);
+        discard_reason.value());
   }
 
   // Do not add code after this, NavigationRequest might have been destroyed.
@@ -7196,6 +7178,10 @@ bool NavigationRequest::IsHistory() const {
 
 bool NavigationRequest::IsRestore() const {
   return NavigationTypeUtils::IsRestore(common_params_->navigation_type);
+}
+
+bool NavigationRequest::IsReload() const {
+  return NavigationTypeUtils::IsReload(common_params_->navigation_type);
 }
 
 void NavigationRequest::RecordDownloadUseCountersPrePolicyCheck() {

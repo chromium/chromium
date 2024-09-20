@@ -1,8 +1,0 @@
-This is a wdspec test.
-[FAIL] test_set_cache_behavior
-  webdriver.bidi.error.UnknownErrorException: unknown error (Method 'network.setCacheBehavior' is not implemented.)
-[FAIL] test_new_context[tab]
-  webdriver.bidi.error.UnknownErrorException: unknown error (Method 'network.setCacheBehavior' is not implemented.)
-[FAIL] test_new_context[window]
-  webdriver.bidi.error.UnknownErrorException: unknown error (Method 'network.setCacheBehavior' is not implemented.)
-Harness: the test ran to completion.

@@ -86,9 +86,10 @@ gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
   DCHECK(!object.IsSVGRoot());
 
   // Return early for any cases where we don't actually paint
-  if (object.StyleRef().Visibility() != EVisibility::kVisible &&
-      !object.EnclosingLayer()->HasVisibleContent())
+  if (object.StyleRef().UsedVisibility() != EVisibility::kVisible &&
+      !object.EnclosingLayer()->HasVisibleContent()) {
     return gfx::RectF();
+  }
 
   gfx::RectF visual_rect = object.VisualRectInLocalSVGCoordinates();
   if (int outset = OutlinePainter::OutlineOutsetExtent(

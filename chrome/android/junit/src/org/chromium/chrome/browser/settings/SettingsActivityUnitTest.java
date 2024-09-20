@@ -120,15 +120,16 @@ public class SettingsActivityUnitTest {
         mActivityScenario.moveToState(State.RESUMED);
 
         // Simulate opening a new fragment.
-        mActivityScenario.onActivity(
-                (activity) -> {
-                    Bundle args = new Bundle();
-                    args.putString(TestSettingsFragment.EXTRA_TITLE, "new title");
-                    Intent intent =
-                            SettingsIntentUtil.createIntent(
-                                    activity, TestSettingsFragment.class.getName(), args);
-                    activity.onNewIntent(intent);
-                });
+        Bundle args = new Bundle();
+        args.putString(TestSettingsFragment.EXTRA_TITLE, "new title");
+        Intent intent =
+                SettingsIntentUtil.createIntent(
+                        mSettingsActivity, TestSettingsFragment.class.getName(), args);
+
+        // Android temporarily pauses an activity while delivering a new intent.
+        mActivityScenario.moveToState(State.STARTED);
+        mSettingsActivity.onNewIntent(intent);
+        mActivityScenario.moveToState(State.RESUMED);
 
         // Wait for the UI update.
         ShadowLooper.runUiThreadTasks();
@@ -137,16 +138,39 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
-    public void testBackPress() throws TimeoutException {
+    @EnableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
+    public void testIntentFlags() {
         launchSettingsActivity(TestSettingsFragment.class.getName());
+        mActivityScenario.moveToState(State.RESUMED);
+
+        Intent embeddableFragmentIntent =
+                SettingsIntentUtil.createIntent(
+                        mSettingsActivity, TestSettingsFragment.class.getName(), null);
+        assertEquals(
+                "Incorrect intent flags for embeddable fragments",
+                Intent.FLAG_ACTIVITY_SINGLE_TOP,
+                embeddableFragmentIntent.getFlags());
+
+        Intent standaloneFragmentIntent =
+                SettingsIntentUtil.createIntent(
+                        mSettingsActivity, TestStandaloneFragment.class.getName(), null);
+        assertEquals(
+                "Incorrect intent flags for standalone fragments",
+                0,
+                standaloneFragmentIntent.getFlags());
+    }
+
+    @Test
+    public void testBackPress() throws TimeoutException {
+        launchSettingsActivity(TestStandaloneFragment.class.getName());
         assertTrue(
                 "SettingsActivity is using a wrong fragment.",
-                mSettingsActivity.getMainFragment() instanceof TestSettingsFragment);
-        TestSettingsFragment mainFragment =
-                (TestSettingsFragment) mSettingsActivity.getMainFragment();
+                mSettingsActivity.getMainFragment() instanceof TestStandaloneFragment);
+        TestStandaloneFragment mainFragment =
+                (TestStandaloneFragment) mSettingsActivity.getMainFragment();
         mainFragment.getHandleBackPressChangedSupplier().set(true);
         Assert.assertTrue(
-                "TestSettingsFragment will handle back press",
+                "TestStandaloneFragment will handle back press",
                 mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
 
         // Simulate back press.
@@ -156,7 +180,7 @@ public class SettingsActivityUnitTest {
 
         mainFragment.getHandleBackPressChangedSupplier().set(false);
         Assert.assertFalse(
-                "TestSettingsFragment will not handle back press",
+                "TestStandaloneFragment will not handle back press",
                 mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
     }
 
@@ -260,9 +284,9 @@ public class SettingsActivityUnitTest {
 
     private void launchSettingsActivity(String fragmentName) {
         assert mActivityScenario == null : "Should be called once per test.";
-        Intent intent = new Intent();
-        intent.setClass(ContextUtils.getApplicationContext(), SettingsActivity.class);
-        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragmentName);
+        Intent intent =
+                SettingsIntentUtil.createIntent(
+                        ContextUtils.getApplicationContext(), fragmentName, null);
         mActivityScenario = ActivityScenario.launch(intent);
         mActivityScenario.onActivity(activity -> mSettingsActivity = activity);
     }

@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -27,6 +29,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/fake_on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
@@ -60,6 +63,21 @@ using on_device_model::mojom::LoadModelResult;
 using ExecuteModelResult = SessionImpl::ExecuteModelResult;
 
 namespace {
+
+void FailRemote(ModelBasedCapabilityKey key,
+                const google::protobuf::MessageLite& req,
+                std::unique_ptr<proto::LogAiDataRequest> log,
+                OptimizationGuideModelExecutionResultCallback callback) {
+  EXPECT_TRUE(false) << "Unexpected use of remote fallback";
+  std::move(callback).Run(
+      base::unexpected(OptimizationGuideModelExecutionError::FromHttpStatusCode(
+          net::HTTP_BAD_REQUEST)),
+      nullptr);
+}
+
+ExecuteRemoteFn FailOnRemoteFallback() {
+  return base::BindRepeating(&FailRemote);
+}
 
 class FakeOnDeviceModelAvailabilityObserver
     : public OnDeviceModelAvailabilityObserver {
@@ -841,12 +859,18 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
   }
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelResetsSession) {
+TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
+  // Verifies that when we start a session before safety is available, that
+  // future session that require a safety model still get one.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::internal::kModelAdaptationCompose, {}},
-       {features::internal::kOnDeviceModelTestFeature,
-        {{"enable_adaptation", "false"}}}},
+      {
+          {features::internal::kModelAdaptationCompose, {}},
+          {features::internal::kOnDeviceModelTestFeature,
+           {{"enable_adaptation", "false"}}},
+          {features::kTextSafetyClassifier,
+           {{"on_device_retract_unsafe_content", "true"}}},
+      },
       {});
 
   auto config_compose = SimpleComposeConfig();
@@ -855,27 +879,50 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelResetsSession) {
   config_test.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
   config_test.set_can_skip_text_safety(true);
   Initialize({.config = config_compose, .config2 = config_test});
+
+  // Compose capability can't start because it's missing safety model.
   EXPECT_FALSE(test_controller_->CreateSession(
-      ModelBasedCapabilityKey::kCompose, base::DoNothing(),
+      ModelBasedCapabilityKey::kCompose, FailOnRemoteFallback(),
       logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt));
-  EXPECT_TRUE(test_controller_->CreateSession(ModelBasedCapabilityKey::kTest,
-                                              base::DoNothing(),
-                                              logger_.GetWeakPtr(), nullptr,
-                                              /*config_params=*/std::nullopt));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
 
-  FakeSafetyModelAsset safety_asset(ComposeSafetyConfig());
+  // Test capability starts because it doesn't require a safety model.
+  auto test_session = test_controller_->CreateSession(
+      ModelBasedCapabilityKey::kTest, FailOnRemoteFallback(),
+      logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(test_session);
+
+  // Executing with test_session should force model to be loaded.
+  ResponseHolder test_response;
+  test_session->ExecuteModel(PageUrlRequest("unsafe"),
+                             test_response.callback());
+  EXPECT_TRUE(test_response.GetFinalStatus());
+
+  // Compose capability should be available after safety model loads.
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    return safety_config;
+  }());
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(0ull, test_controller_->on_device_model_receiver_count());
-  EXPECT_TRUE(test_controller_->CreateSession(ModelBasedCapabilityKey::kCompose,
-                                              base::DoNothing(),
-                                              logger_.GetWeakPtr(), nullptr,
-                                              /*config_params=*/std::nullopt));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
+  auto compose_session = test_controller_->CreateSession(
+      ModelBasedCapabilityKey::kCompose, FailOnRemoteFallback(),
+      logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(compose_session);
+
+  ResponseHolder compose_response;
+  compose_session->ExecuteModel(PageUrlRequest("unsafe"),
+                                compose_response.callback());
+
+  // Compose should run and be rejected as unsafe.
+  EXPECT_FALSE(compose_response.GetFinalStatus());
+  EXPECT_EQ(
+      compose_response.error(),
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
@@ -1988,21 +2035,21 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
   Initialize();
   auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
-  task_environment_.RunUntilIdle();
 
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
-  session->ExecuteModel(PageUrlRequest("bar"), response_.callback());
-  task_environment_.RunUntilIdle();
+  ResponseHolder resp1;
+  ResponseHolder resp2;
+  session->ExecuteModel(PageUrlRequest("foo"), resp1.callback());
+  session->ExecuteModel(PageUrlRequest("bar"), resp2.callback());
 
-  EXPECT_TRUE(response_.error());
+  EXPECT_FALSE(resp1.GetFinalStatus());
+  EXPECT_TRUE(resp2.GetFinalStatus());
   EXPECT_EQ(
-      *response_.error(),
+      *resp1.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
-  EXPECT_TRUE(response_.value());
-  EXPECT_EQ(*response_.value(), "Input: execute:bar\n");
+  EXPECT_EQ(*resp2.value(), "Input: execute:bar\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {

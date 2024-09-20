@@ -3,6 +3,9 @@
 <head>
 
 <meta name="viewport" content="width=800">
+<!-- Tolerate slight differences in the textarea's border color
+     (https://crbug.com/362659850). -->
+<meta name="fuzzy" content="maxDifference=0-40; totalPixels=2200">
 <style>
   body {
     width: 800px;

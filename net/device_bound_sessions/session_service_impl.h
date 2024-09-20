@@ -45,6 +45,12 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       RefreshCompleteCallback restart_callback,
       RefreshCompleteCallback continue_callback) override;
 
+  void SetChallengeForBoundSession(const GURL& request_url,
+                                   const SessionChallengeParam& param) override;
+
+  const Session* GetSessionForTesting(const SchemefulSite& site,
+                                      const std::string& session_id) const;
+
  private:
   // The key is the site (eTLD+1) of the session's origin.
   using SessionsMap = std::multimap<SchemefulSite, std::unique_ptr<Session>>;

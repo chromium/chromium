@@ -102,7 +102,7 @@
                "external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html",
                "external/wpt/webmessaging/postMessage_cross_domain_image_transfer_2d.sub.htm" ],
     "args": ["--enable-accelerated-2d-canvas"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
 
   "The threaded virtual suite tests with threaded compositing, which is the",
@@ -206,6 +206,16 @@
     "args": ["--disable-features=RasterInducingScroll"],
     "owners": ["wangxianzhu@chromium.org"],
     "expires": "Dev 31, 2024"
+  },
+
+  {
+    "prefix": "atomic-move-auto",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/atomic-move-auto"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=AtomicMoveAuto"],
+    "owners": ["nrosenthal@chromium.org", "dom@chromium.org"],
+    "expires": "Apr 1, 2025"
   },
 
   {
@@ -421,6 +431,7 @@
   },
   {
     "prefix": "shared_array_buffer_on_desktop",
+    "owners": ["clamy@chromium.org", "chrome-secure-web-and-net@chromium.org"],
     "platforms": ["Linux"],
     "bases": ["external/wpt/wasm/jsapi/memory",
               "fast/workers/worker-atomics-wait.html",
@@ -1447,9 +1458,7 @@
     "prefix": "html-anchor-attribute-disabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/semantics/popovers"
-    ],
+    "bases": ["external/wpt/html/semantics/popovers"],
     "args": ["--disable-blink-features=HTMLAnchorAttribute"],
     "expires": "Jun 1, 2025"
   },
@@ -1460,6 +1469,14 @@
     "bases": ["external/wpt/css/css-anchor-position"],
     "args": ["--enable-blink-features=CSSPositionTryOptions"],
     "expires": "Dec 1, 2024"
+  },
+  {
+    "prefix": "popover-anchor-relationships-disabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": ["external/wpt/html/semantics/popovers"],
+    "args": ["--disable-blink-features=PopoverAnchorRelationships"],
+    "expires": "Jun 1, 2025"
   },
   {
     "owners": [
@@ -1554,7 +1571,7 @@
       "external/wpt/fledge/tentative/server-response.https.window.js"
     ],
     "args": [
-      "--enable-features=FledgeBiddingAndAuctionServerAPI,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fpublickeyservice.gcp.privacysandboxservices.com%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
+      "--enable-features=FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fpublickeyservice.gcp.privacysandboxservices.com%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
     ],
     "expires": "Jan 14, 2025"
   },
@@ -1789,20 +1806,6 @@
   },
 
   {
-    "prefix": "origin-agent-cluster-default-warning",
-    "owners": ["vogelheim@chromium.org", "wjmaclean@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "wpt_internal/origin-agent-cluster-default-warning" ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=OriginAgentClusterDefaultWarning",
-      "--disable-features=OriginAgentClusterDefaultEnable,OriginKeyedProcessesByDefault",
-      "--disable-auto-wpt-origin-isolation"
-    ],
-    "expires": "Jul 1, 2024"
-  },
-
-  {
     "prefix": "webauthn-remote-desktop-client-override",
     "owners": ["martinkr@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
@@ -1857,6 +1860,7 @@
   },
   {
     "prefix": "coop-restrict-properties",
+    "owners": ["clamy@chromium.org", "arichiv@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties" ],
     "args": ["--enable-features=CoopRestrictProperties"],
@@ -1892,6 +1896,21 @@
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Oct 1, 2024"
+  },
+  {
+    "prefix": "prefetch-new-wait-loop",
+    "owners": ["kenoss@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/speculation-rules/prefetch",
+      "http/tests/inspector-protocol/prefetch"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,PrefetchNewWaitLoop",
+      "--bypass-prefetch-proxy-for-host=not-web-platform.test"
+    ],
+    "expires": "March 9, 2025"
   },
   {
     "prefix": "prefetch-no-vary-search",
@@ -2009,6 +2028,7 @@
   },
   {
     "prefix": "orb-errors-for-all-fetches",
+    "owners": ["vogelheim@chromium.org"],
     "platforms": ["Linux"],
     "args": ["--enable-features=OpaqueResponseBlockingErrorsForAllFetches"],
     "bases": [
@@ -2176,6 +2196,7 @@
   },
   {
     "prefix": "produce-compile-hints",
+    "owners": ["marja@chromium.org"],
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/fetch",
@@ -2409,10 +2430,8 @@
       "external/wpt/webnn/conformance_tests/arg_min_max.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/batch_normalization.https.any.worker.html?gpu",
-      "external/wpt/webnn/conformance_tests/buffer.https.any.html?gpu",
-      "external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?gpu",
-      "external/wpt/webnn/conformance_tests/byob_readbuffer.https.any.html?gpu",
-      "external/wpt/webnn/conformance_tests/byob_readbuffer.https.any.worker.html?gpu",
+      "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/cast.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/cast.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/ceil.https.any.html?gpu",
@@ -2431,6 +2450,8 @@
       "external/wpt/webnn/conformance_tests/cos.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/div.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/div.https.any.worker.html?gpu",
+      "external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/elu.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/elu.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/equal.https.any.html?gpu",
@@ -2447,6 +2468,8 @@
       "external/wpt/webnn/conformance_tests/gather.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/gatherElements.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/gatherElements.https.any.worker.html?gpu",
+      "external/wpt/webnn/conformance_tests/gatherND.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/gatherND.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/gelu.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/gelu.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/gemm.https.any.html?gpu",
@@ -2465,6 +2488,8 @@
       "external/wpt/webnn/conformance_tests/hard_swish.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/identity.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/identity.https.any.worker.html?gpu",
+      "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?gpu",
@@ -2507,6 +2532,8 @@
       "external/wpt/webnn/conformance_tests/pow.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/prelu.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/prelu.https.any.worker.html?gpu",
+      "external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/quantizeLinear.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/reciprocal.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/reciprocal.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/reduce_l1.https.any.html?gpu",
@@ -2535,6 +2562,8 @@
       "external/wpt/webnn/conformance_tests/resample2d.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/reshape.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/reshape.https.any.worker.html?gpu",
+      "external/wpt/webnn/conformance_tests/scatterND.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/scatterND.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/sigmoid.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/sigmoid.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/sign.https.any.html?gpu",
@@ -2555,10 +2584,14 @@
       "external/wpt/webnn/conformance_tests/sqrt.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/sub.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/sub.https.any.worker.html?gpu",
+      "external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/tan.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/tan.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/tanh.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/tanh.https.any.worker.html?gpu",
+      "external/wpt/webnn/conformance_tests/tensor.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/tensor.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/tile.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/tile.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/transpose.https.any.html?gpu",
@@ -2589,6 +2622,8 @@
       "external/wpt/webnn/validation_tests/conv2d.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/convTranspose2d.https.any.html?gpu",
       "external/wpt/webnn/validation_tests/convTranspose2d.https.any.worker.html?gpu",
+      "external/wpt/webnn/validation_tests/cumulativeSum.https.any.html?gpu",
+      "external/wpt/webnn/validation_tests/cumulativeSum.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/createContext.https.any.html?gpu",
       "external/wpt/webnn/validation_tests/createContext.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/dequantizeLinear.https.any.html?gpu",
@@ -2611,6 +2646,8 @@
       "external/wpt/webnn/validation_tests/gather.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/gatherElements.https.any.html?gpu",
       "external/wpt/webnn/validation_tests/gatherElements.https.any.worker.html?gpu",
+      "external/wpt/webnn/validation_tests/gatherND.https.any.html?gpu",
+      "external/wpt/webnn/validation_tests/gatherND.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/gelu.https.any.html?gpu",
       "external/wpt/webnn/validation_tests/gelu.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/gemm.https.any.html?gpu",
@@ -2659,6 +2696,8 @@
       "external/wpt/webnn/validation_tests/resample2d.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/reshape.https.any.html?gpu",
       "external/wpt/webnn/validation_tests/reshape.https.any.worker.html?gpu",
+      "external/wpt/webnn/validation_tests/scatterND.https.any.html?gpu",
+      "external/wpt/webnn/validation_tests/scatterND.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/sigmoid.https.any.html?gpu",
       "external/wpt/webnn/validation_tests/sigmoid.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/slice.https.any.html?gpu",
@@ -2709,10 +2748,8 @@
       "external/wpt/webnn/conformance_tests/arg_min_max.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/batch_normalization.https.any.worker.html?cpu",
-      "external/wpt/webnn/conformance_tests/byob_readbuffer.https.any.html?cpu",
-      "external/wpt/webnn/conformance_tests/byob_readbuffer.https.any.worker.html?cpu",
-      "external/wpt/webnn/conformance_tests/buffer.https.any.html?cpu",
-      "external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?cpu",
+      "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/cast.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/cast.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/ceil.https.any.html?cpu",
@@ -2731,6 +2768,8 @@
       "external/wpt/webnn/conformance_tests/cos.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/div.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/div.https.any.worker.html?cpu",
+      "external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/elu.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/elu.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/equal.https.any.html?cpu",
@@ -2747,6 +2786,8 @@
       "external/wpt/webnn/conformance_tests/gather.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/gatherElements.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/gatherElements.https.any.worker.html?cpu",
+      "external/wpt/webnn/conformance_tests/gatherND.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/gatherND.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/gelu.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/gelu.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/gemm.https.any.html?cpu",
@@ -2765,6 +2806,8 @@
       "external/wpt/webnn/conformance_tests/hard_swish.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/identity.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/identity.https.any.worker.html?cpu",
+      "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?cpu",
@@ -2807,6 +2850,8 @@
       "external/wpt/webnn/conformance_tests/pow.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/prelu.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/prelu.https.any.worker.html?cpu",
+      "external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/quantizeLinear.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/reciprocal.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/reciprocal.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/reduce_l1.https.any.html?cpu",
@@ -2835,6 +2880,8 @@
       "external/wpt/webnn/conformance_tests/resample2d.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/reshape.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/reshape.https.any.worker.html?cpu",
+      "external/wpt/webnn/conformance_tests/scatterND.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/scatterND.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/sigmoid.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/sigmoid.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/sign.https.any.html?cpu",
@@ -2855,10 +2902,14 @@
       "external/wpt/webnn/conformance_tests/sqrt.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/sub.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/sub.https.any.worker.html?cpu",
+      "external/wpt/webnn/conformance_tests/subgraph.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/tan.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/tan.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/tanh.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/tanh.https.any.worker.html?cpu",
+      "external/wpt/webnn/conformance_tests/tensor.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/tensor.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/tile.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/tile.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/transpose.https.any.html?cpu",
@@ -2889,6 +2940,8 @@
       "external/wpt/webnn/validation_tests/conv2d.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/convTranspose2d.https.any.html?cpu",
       "external/wpt/webnn/validation_tests/convTranspose2d.https.any.worker.html?cpu",
+      "external/wpt/webnn/validation_tests/cumulativeSum.https.any.html?cpu",
+      "external/wpt/webnn/validation_tests/cumulativeSum.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/createContext.https.any.html?cpu",
       "external/wpt/webnn/validation_tests/createContext.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/dequantizeLinear.https.any.html?cpu",
@@ -2911,6 +2964,8 @@
       "external/wpt/webnn/validation_tests/gather.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/gatherElements.https.any.html?cpu",
       "external/wpt/webnn/validation_tests/gatherElements.https.any.worker.html?cpu",
+      "external/wpt/webnn/validation_tests/gatherND.https.any.html?cpu",
+      "external/wpt/webnn/validation_tests/gatherND.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/gelu.https.any.html?cpu",
       "external/wpt/webnn/validation_tests/gelu.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/gemm.https.any.html?cpu",
@@ -2959,6 +3014,8 @@
       "external/wpt/webnn/validation_tests/resample2d.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/reshape.https.any.html?cpu",
       "external/wpt/webnn/validation_tests/reshape.https.any.worker.html?cpu",
+      "external/wpt/webnn/validation_tests/scatterND.https.any.html?cpu",
+      "external/wpt/webnn/validation_tests/scatterND.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/sigmoid.https.any.html?cpu",
       "external/wpt/webnn/validation_tests/sigmoid.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/slice.https.any.html?cpu",
@@ -3007,10 +3064,8 @@
       "external/wpt/webnn/conformance_tests/arg_min_max.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/batch_normalization.https.any.worker.html?npu",
-      "external/wpt/webnn/conformance_tests/buffer.https.any.html?npu",
-      "external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?npu",
-      "external/wpt/webnn/conformance_tests/byob_readbuffer.https.any.html?npu",
-      "external/wpt/webnn/conformance_tests/byob_readbuffer.https.any.worker.html?npu",
+      "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/cast.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/cast.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/ceil.https.any.html?npu",
@@ -3029,6 +3084,8 @@
       "external/wpt/webnn/conformance_tests/cos.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/div.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/div.https.any.worker.html?npu",
+      "external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/elu.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/elu.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/equal.https.any.html?npu",
@@ -3045,6 +3102,8 @@
       "external/wpt/webnn/conformance_tests/gather.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/gatherElements.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/gatherElements.https.any.worker.html?npu",
+      "external/wpt/webnn/conformance_tests/gatherND.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/gatherND.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/gelu.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/gelu.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/gemm.https.any.html?npu",
@@ -3063,6 +3122,8 @@
       "external/wpt/webnn/conformance_tests/hard_swish.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/identity.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/identity.https.any.worker.html?npu",
+      "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?npu",
@@ -3105,6 +3166,8 @@
       "external/wpt/webnn/conformance_tests/pow.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/prelu.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/prelu.https.any.worker.html?npu",
+      "external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/quantizeLinear.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/reciprocal.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/reciprocal.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/reduce_l1.https.any.html?npu",
@@ -3133,6 +3196,8 @@
       "external/wpt/webnn/conformance_tests/resample2d.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/reshape.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/reshape.https.any.worker.html?npu",
+      "external/wpt/webnn/conformance_tests/scatterND.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/scatterND.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/sigmoid.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/sigmoid.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/sign.https.any.html?npu",
@@ -3153,10 +3218,14 @@
       "external/wpt/webnn/conformance_tests/sqrt.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/sub.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/sub.https.any.worker.html?npu",
+      "external/wpt/webnn/conformance_tests/subgraph.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/tan.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/tan.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/tanh.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/tanh.https.any.worker.html?npu",
+      "external/wpt/webnn/conformance_tests/tensor.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/tensor.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/tile.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/tile.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/transpose.https.any.html?npu",
@@ -3187,6 +3256,8 @@
       "external/wpt/webnn/validation_tests/conv2d.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/convTranspose2d.https.any.html?npu",
       "external/wpt/webnn/validation_tests/convTranspose2d.https.any.worker.html?npu",
+      "external/wpt/webnn/validation_tests/cumulativeSum.https.any.html?npu",
+      "external/wpt/webnn/validation_tests/cumulativeSum.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/createContext.https.any.html?npu",
       "external/wpt/webnn/validation_tests/createContext.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/dequantizeLinear.https.any.html?npu",
@@ -3209,6 +3280,8 @@
       "external/wpt/webnn/validation_tests/gather.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/gatherElements.https.any.html?npu",
       "external/wpt/webnn/validation_tests/gatherElements.https.any.worker.html?npu",
+      "external/wpt/webnn/validation_tests/gatherND.https.any.html?npu",
+      "external/wpt/webnn/validation_tests/gatherND.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/gelu.https.any.html?npu",
       "external/wpt/webnn/validation_tests/gelu.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/gemm.https.any.html?npu",
@@ -3257,6 +3330,8 @@
       "external/wpt/webnn/validation_tests/resample2d.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/reshape.https.any.html?npu",
       "external/wpt/webnn/validation_tests/reshape.https.any.worker.html?npu",
+      "external/wpt/webnn/validation_tests/scatterND.https.any.html?npu",
+      "external/wpt/webnn/validation_tests/scatterND.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/sigmoid.https.any.html?npu",
       "external/wpt/webnn/validation_tests/sigmoid.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/slice.https.any.html?npu",
@@ -3351,24 +3426,8 @@
     "expires": "Jun 1, 2025",
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
   },
-  {
-    "prefix": "import-assertions-enabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/semantics/scripting-1/the-script-element/css-module",
-      "external/wpt/html/semantics/scripting-1/the-script-element/import-attributes",
-      "external/wpt/html/semantics/scripting-1/the-script-element/json-module",
-      "external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/css-import-in-worker.any.js",
-      "external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/with-import-assertions.any.js",
-      "http/tests/inspector-protocol/css/constructed-stylesheet-source-url.js"
-    ],
-    "exclusive_tests": "ALL",
-    "args": ["--js-flags=--harmony-import-assertions"],
-    "expires": "Aug 1, 2024",
-    "owners": ["syg@chromium.org"]
-  },
   "select-parser-relaxation is needed in addition to",
-  "stylable-select-disabled because we might launch parser changes first.",
+  "customizable-select-disabled because we might launch parser changes first.",
   {
     "prefix": "select-parser-relaxation",
     "platforms": ["Linux"],
@@ -3394,12 +3453,12 @@
       "html5lib/generated"
     ],
     "args": ["--enable-features=SelectParserRelaxation",
-             "--disable-features=StylableSelect"],
+             "--disable-features=CustomizableSelect"],
     "expires": "Oct 1, 2024",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   {
-    "prefix": "stylable-select-disabled",
+    "prefix": "customizable-select-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "accessibility/aria-hidden-select.html",
@@ -3422,7 +3481,7 @@
       "fast/parser/inselect-tokenization.html",
       "html5lib/generated"
     ],
-    "args": ["--disable-features=StylableSelect,SelectParserRelaxation"],
+    "args": ["--disable-features=CustomizableSelect,SelectParserRelaxation"],
     "expires": "Oct 1, 2024",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
@@ -3508,6 +3567,25 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-features=SkipPreloadScanning"
+    ],
+    "expires": "Jan 14, 2025",
+    "owners": [
+      "alexnj@chromium.org"
+    ]
+  },
+  {
+    "prefix": "expect-no-linked-resources",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/expect-no-linked-resources"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=DocumentPolicyExpectNoLinkedResources"
     ],
     "expires": "Jan 14, 2025",
     "owners": [
@@ -3630,9 +3708,11 @@
     "prefix": "advanced-attr",
     "platforms": ["Linux"],
     "bases": [
+      "external/wpt/css/css-values/attr-all-types.html",
       "external/wpt/css/css-values/attr-color-invalid-cast.html",
       "external/wpt/css/css-values/attr-color-valid.html",
       "external/wpt/css/css-values/attr-container-style-query.html",
+      "external/wpt/css/css-values/attr-crash.html",
       "external/wpt/css/css-values/attr-in-max.html",
       "external/wpt/css/css-values/attr-invalidation.html",
       "external/wpt/css/css-values/attr-length-invalid-cast.html",
@@ -3642,7 +3722,7 @@
       "external/wpt/css/css-values/attr-pseudo-elem-invalidation.html",
       "external/wpt/css/css-values/attr-px-invalid-cast.html",
       "external/wpt/css/css-values/attr-px-valid.html",
-      "external/wpt/css/css-values/attr-all-types.html"
+      "external/wpt/css/css-values/attr-security.html"
     ],
     "exclusive_tests": "ALL",
     "args": [
@@ -3669,6 +3749,7 @@
       "external/wpt/css/css-color/relative-currentcolor-rec2020-02.html",
       "external/wpt/css/css-color/relative-currentcolor-rgb-01.html",
       "external/wpt/css/css-color/relative-currentcolor-rgb-02.html",
+      "external/wpt/css/css-color/relative-currentcolor-visited-getcomputedstyle.html",
       "external/wpt/css/css-color/relative-currentcolor-xyzd50-01.html",
       "external/wpt/css/css-color/relative-currentcolor-xyzd65-01.html",
       "external/wpt/css/css-color/parsing/color-computed-relative-color.html",

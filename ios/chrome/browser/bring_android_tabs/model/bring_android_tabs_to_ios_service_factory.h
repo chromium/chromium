@@ -12,7 +12,7 @@
 class BringAndroidTabsToIOSService;
 
 // Singleton that owns all BringAndroidTabsToIOSService and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 //
 // Note that as the "Bring Android Tabs" feature does not apply in incognito
 // mode, the factory should only create and store services for regular browser
@@ -20,10 +20,12 @@ class BringAndroidTabsToIOSService;
 class BringAndroidTabsToIOSServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static BringAndroidTabsToIOSService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static BringAndroidTabsToIOSService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358299863): Remove when fully migrated.
+  static BringAndroidTabsToIOSService* GetForBrowserState(ProfileIOS* profile);
+
+  static BringAndroidTabsToIOSService* GetForProfile(ProfileIOS* profile);
+  static BringAndroidTabsToIOSService* GetForProfileIfExists(
+      ProfileIOS* profile);
   static BringAndroidTabsToIOSServiceFactory* GetInstance();
 
   BringAndroidTabsToIOSServiceFactory(

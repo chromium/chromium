@@ -46,10 +46,10 @@
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 
@@ -416,16 +416,16 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     cc::PaintFlags::FilterQuality filter_quality,
     bool is_origin_top_left,
     bool is_accelerated,
-    uint32_t shared_image_usage_flags)
+    gpu::SharedImageUsageSet shared_image_usage_flags)
     : CanvasResource(std::move(provider), filter_quality, info.colorInfo()),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       size_(info.width(), info.height()),
       is_origin_top_left_(is_origin_top_left),
       is_accelerated_(is_accelerated),
-      is_overlay_candidate_(shared_image_usage_flags &
-                            gpu::SHARED_IMAGE_USAGE_SCANOUT),
-      supports_display_compositing_(shared_image_usage_flags &
-                                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+      is_overlay_candidate_(
+          shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)),
+      supports_display_compositing_(
+          shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ)),
       use_oop_rasterization_(is_accelerated &&
                              context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()
@@ -502,8 +502,8 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
   owning_thread_data().texture_id_for_read_access =
       raster_interface->CreateAndConsumeForGpuRaster(client_shared_image);
 
-  if (shared_image_usage_flags &
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+  if (shared_image_usage_flags.Has(
+          gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
     owning_thread_data().texture_id_for_write_access =
         raster_interface->CreateAndConsumeForGpuRaster(client_shared_image);
   } else {
@@ -519,7 +519,7 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
     cc::PaintFlags::FilterQuality filter_quality,
     bool is_origin_top_left,
     bool is_accelerated,
-    uint32_t shared_image_usage_flags) {
+    gpu::SharedImageUsageSet shared_image_usage_flags) {
   TRACE_EVENT0("blink", "CanvasResourceSharedImage::Create");
   auto resource = base::AdoptRef(new CanvasResourceSharedImage(
       info, std::move(context_provider_wrapper), std::move(provider),

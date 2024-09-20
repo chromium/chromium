@@ -68,6 +68,8 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   // `this` has already completed the TCP handshake.
   void SetTcpHandshakeCompletionCallback(CompletionOnceCallback callback);
 
+  bool IsTcpHandshakeCompleted() { return tcp_handshake_completed_; }
+
   bool IsTlsHandshakeStarted() { return tls_handshake_started_; }
 
  private:
@@ -100,6 +102,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   std::unique_ptr<TcpStreamAttempt> nested_attempt_;
   CompletionOnceCallback tcp_handshake_completion_callback_;
 
+  bool tcp_handshake_completed_ = false;
   bool tls_handshake_started_ = false;
   base::OneShotTimer tls_handshake_timeout_timer_;
   std::unique_ptr<SSLClientSocket> ssl_socket_;

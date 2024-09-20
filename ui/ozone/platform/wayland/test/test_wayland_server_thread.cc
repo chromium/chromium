@@ -113,6 +113,12 @@ bool TestWaylandServerThread::Start() {
   if (!alpha_compositing_.Initialize(display_.get()))
     return false;
 
+  if (config_.supports_viewporter_surface_scaling) {
+    if (!fractional_scale_manager_.Initialize(display_.get())) {
+      return false;
+    }
+  }
+
   if (config_.enable_aura_shell == EnableAuraShellProtocol::kEnabled) {
     // The aura output managers should be initialized before any wl_output
     // globals.

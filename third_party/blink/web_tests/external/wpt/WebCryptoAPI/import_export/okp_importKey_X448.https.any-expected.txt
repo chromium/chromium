@@ -1,0 +1,57 @@
+This is a testharness.js-based test.
+[FAIL] Good parameters: X448 bits (spki, buffer(68), {name: X448}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (jwk, object(kty, crv, x), {name: X448}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: X448 (jwk, object(kty, crv, x), {name: X448}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (raw, buffer(56), {name: X448}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (pkcs8, buffer(72), {name: X448}, true, [deriveKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (jwk, object(crv, d, x, kty), {name: X448}, true, [deriveKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: X448 (jwk, object(crv, d, x, kty), {name: X448}, true, [deriveKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (pkcs8, buffer(72), {name: X448}, true, [deriveBits, deriveKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (jwk, object(crv, d, x, kty), {name: X448}, true, [deriveBits, deriveKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: X448 (jwk, object(crv, d, x, kty), {name: X448}, true, [deriveBits, deriveKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (pkcs8, buffer(72), {name: X448}, true, [deriveBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (jwk, object(crv, d, x, kty), {name: X448}, true, [deriveBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: X448 (jwk, object(crv, d, x, kty), {name: X448}, true, [deriveBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (pkcs8, buffer(72), {name: X448}, true, [deriveKey, deriveBits, deriveKey, deriveBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (jwk, object(crv, d, x, kty), {name: X448}, true, [deriveKey, deriveBits, deriveKey, deriveBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: X448 (jwk, object(crv, d, x, kty), {name: X448}, true, [deriveKey, deriveBits, deriveKey, deriveBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (spki, buffer(68), {name: X448}, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (jwk, object(kty, crv, x), {name: X448}, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (raw, buffer(56), {name: X448}, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (pkcs8, buffer(72), {name: X448}, false, [deriveKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (jwk, object(crv, d, x, kty), {name: X448}, false, [deriveKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (pkcs8, buffer(72), {name: X448}, false, [deriveBits, deriveKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (jwk, object(crv, d, x, kty), {name: X448}, false, [deriveBits, deriveKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (pkcs8, buffer(72), {name: X448}, false, [deriveBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (jwk, object(crv, d, x, kty), {name: X448}, false, [deriveBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (pkcs8, buffer(72), {name: X448}, false, [deriveKey, deriveBits, deriveKey, deriveBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: X448 bits (jwk, object(crv, d, x, kty), {name: X448}, false, [deriveKey, deriveBits, deriveKey, deriveBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+Harness: the test ran to completion.
+

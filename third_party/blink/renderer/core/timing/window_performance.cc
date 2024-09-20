@@ -38,6 +38,7 @@
 #include "base/feature_list.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/load_timing_info.mojom-blink.h"
@@ -197,13 +198,13 @@ bool IsEventTypeForInteractionId(const AtomicString& type) {
 
 constexpr size_t kDefaultVisibilityStateEntrySize = 50;
 
-static base::TimeTicks ToTimeOrigin(LocalDOMWindow* window) {
+base::TimeTicks WindowPerformance::GetTimeOrigin(LocalDOMWindow* window) {
   DocumentLoader* loader = window->GetFrame()->Loader().GetDocumentLoader();
   return loader->GetTiming().ReferenceMonotonicTime();
 }
 
 WindowPerformance::WindowPerformance(LocalDOMWindow* window)
-    : Performance(ToTimeOrigin(window),
+    : Performance(GetTimeOrigin(window),
                   window->CrossOriginIsolatedCapability(),
                   window->GetTaskRunner(TaskType::kPerformanceTimeline),
                   window),
@@ -590,13 +591,16 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
 
 void WindowPerformance::SetCommitFinishTimeStampForPendingEvents(
     base::TimeTicks commit_finish_time) {
-  for (Member<PerformanceEventTiming> event_timing : event_timing_entries_) {
-    // Skip if commit finish timestamp has been set already.
-    if (event_timing->GetEventTimingReportingInfo()->commit_finish_time ==
-        base::TimeTicks()) {
-      event_timing->GetEventTimingReportingInfo()->commit_finish_time =
-          commit_finish_time;
+  for (auto entry : event_timing_entries_) {
+    // Skip events that don't need paint, or have already been painted
+    if (entry->GetEventTimingReportingInfo()->commit_finish_time.has_value()) {
+      continue;
     }
+    if (entry->HasKnownEndTime()) {
+      continue;
+    }
+    entry->GetEventTimingReportingInfo()->commit_finish_time =
+        commit_finish_time;
   }
 }
 
@@ -609,8 +613,6 @@ void WindowPerformance::SetCommitFinishTimeStampForPendingEvents(
 void WindowPerformance::OnPresentationPromiseResolved(
     uint64_t presentation_index,
     const viz::FrameTimingDetails& presentation_details) {
-  base::TimeTicks presentation_timestamp =
-      presentation_details.presentation_feedback.timestamp;
   if (!DomWindow() || !DomWindow()->document()) {
     return;
   }
@@ -622,15 +624,16 @@ void WindowPerformance::OnPresentationPromiseResolved(
     need_new_promise_for_event_presentation_time_ = true;
   }
 
-  CHECK(!pending_event_presentation_time_map_.Contains(presentation_index));
-  pending_event_presentation_time_map_.Set(presentation_index,
-                                           presentation_timestamp);
+  base::TimeTicks presentation_timestamp =
+      presentation_details.presentation_feedback.timestamp;
+  for (auto event_timing_entry : event_timing_entries_) {
+    if (event_timing_entry->GetEventTimingReportingInfo()->presentation_index ==
+        presentation_index) {
+      event_timing_entry->GetEventTimingReportingInfo()->presentation_time =
+          presentation_timestamp;
+    }
+  }
   ReportEventTimings();
-
-  // Use |end_time| as a proxy for the current time to flush expired keydowns.
-  DOMHighResTimeStamp end_time =
-      MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
-  responsiveness_metrics_->FlushExpiredKeydown(end_time);
 }
 
 void WindowPerformance::FlushEventTimingsOnPageHidden() {
@@ -649,20 +652,19 @@ void WindowPerformance::ReportAllPendingEventTimingsOnPageHidden() {
     return;
   }
 
-  if (event_timing_entries_.empty()) {
-    return;
-  }
-
-  InteractiveDetector* interactive_detector =
-      InteractiveDetector::From(*(DomWindow()->document()));
-
-  // Using the processingEnd timestamp in place of visibility change timestamp.
+  // For events which don't have an end_time yet, set a fallback time to the
+  // processingEnd timestamp.
+  // Ideally the fallback time could be the last_hidden_timestamp_, but we don't
+  // actually have an accurate value for that (it would need to come from
+  // browser IPC).
   for (auto event_timing_entry : event_timing_entries_) {
-    ReportEvent(
-        interactive_detector, event_timing_entry,
-        event_timing_entry->GetEventTimingReportingInfo()->processing_end_time);
+    if (!event_timing_entry->HasKnownEndTime()) {
+      event_timing_entry->GetEventTimingReportingInfo()->fallback_time =
+          event_timing_entry->GetEventTimingReportingInfo()
+              ->processing_end_time;
+    }
   }
-  event_timing_entries_.clear();
+  ReportEventTimings();
 }
 
 void WindowPerformance::ReportEventTimings() {
@@ -670,58 +672,98 @@ void WindowPerformance::ReportEventTimings() {
   InteractiveDetector* interactive_detector =
       InteractiveDetector::From(*(DomWindow()->document()));
 
-  // At a visibility change, all pending events are reported. Hence the
-  // event_data_ could be empty.
-  if (event_timing_entries_.empty()) {
-    return;
-  }
+  bool tracing_enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
 
-  for (uint64_t presentation_index_to_report =
-           event_timing_entries_.front()
-               ->GetEventTimingReportingInfo()
-               ->presentation_index;
-       pending_event_presentation_time_map_.Contains(
-           presentation_index_to_report);
-       ++presentation_index_to_report) {
-    base::TimeTicks presentation_timestamp =
-        pending_event_presentation_time_map_.at(presentation_index_to_report);
-    pending_event_presentation_time_map_.erase(presentation_index_to_report);
-
-    auto iter = std::find_if_not(
-        event_timing_entries_.begin(), event_timing_entries_.end(),
-        [presentation_index_to_report](auto event) {
-          return presentation_index_to_report ==
-                 event->GetEventTimingReportingInfo()->presentation_index;
+  while (!event_timing_entries_.empty()) {
+    // Find the range [first, last) of events with the same presentation_index
+    auto first = event_timing_entries_.begin();
+    uint64_t presentation_index =
+        first->Get()->GetEventTimingReportingInfo()->presentation_index;
+    auto last = std::find_if_not(
+        first, event_timing_entries_.end(), [presentation_index](auto entry) {
+          return presentation_index ==
+                 entry->GetEventTimingReportingInfo()->presentation_index;
         });
 
-    for (auto it = event_timing_entries_.begin(); it != iter;
-         it = std::next(it)) {
-      ReportEvent(interactive_detector, it->Get(), presentation_timestamp);
+    // Unless ALL events in this range are ready to be reported, break out.
+    // Today: only a known EndTime is needed.
+    // Soon: also enforce interactionID to know Known.
+    if (!std::all_of(first, last,
+                     [](auto entry) { return entry->HasKnownEndTime(); })) {
+      break;
     }
+
+    if (tracing_enabled) {
+      auto scope = perfetto::Track::ThreadScoped(this);
+      auto flowid = perfetto::Flow::ProcessScoped(presentation_index);
+
+      auto* first_event_reporting_info =
+          first->Get()->GetEventTimingReportingInfo();
+      auto frame_start_time = first_event_reporting_info->processing_start_time;
+
+      TRACE_EVENT_BEGIN("devtools.timeline", "EventsInAnimationFrame", scope,
+                        frame_start_time, flowid);
+
+      TRACE_EVENT_INSTANT("devtools.timeline", "EventCreation", scope,
+                          first_event_reporting_info->creation_time, flowid);
+    }
+
+    // Report all the events in this frame
+    std::for_each(first, last, [&](auto entry) {
+      ReportEvent(interactive_detector, entry);
+    });
+
+    if (tracing_enabled) {
+      auto scope = perfetto::Track::ThreadScoped(this);
+      auto flowid = perfetto::Flow::ProcessScoped(presentation_index);
+
+      auto* last_event_reporting_info =
+          std::prev(last)->Get()->GetEventTimingReportingInfo();
+      auto frame_end_time =
+          last_event_reporting_info->commit_finish_time.value_or(
+              last_event_reporting_info->processing_end_time);
+
+      TRACE_EVENT_END("devtools.timeline", scope, frame_end_time);
+
+      if (last_event_reporting_info->presentation_time.has_value()) {
+        TRACE_EVENT_INSTANT(
+            "devtools.timeline", "EventPresentation", scope,
+            last_event_reporting_info->presentation_time.value(), flowid);
+      }
+
+      if (auto first_entry_with_fallback =
+              std::find_if(first, last,
+                           [](auto entry) {
+                             return entry->GetEventTimingReportingInfo()
+                                 ->fallback_time.has_value();
+                           });
+          first_entry_with_fallback != last) {
+        TRACE_EVENT_INSTANT("devtools.timeline", "EventFallbackTime", scope,
+                            first_entry_with_fallback->Get()
+                                ->GetEventTimingReportingInfo()
+                                ->fallback_time.value(),
+                            flowid);
+      }
+    }
+
     // Remove reported EventData objects.
-    event_timing_entries_.erase(event_timing_entries_.begin(), iter);
+    event_timing_entries_.erase(first, last);
   }
 }
 
 void WindowPerformance::ReportEvent(
     InteractiveDetector* interactive_detector,
-    Member<PerformanceEventTiming> event_timing_entry,
-    base::TimeTicks presentation_timestamp) {
+    Member<PerformanceEventTiming> event_timing_entry) {
   base::TimeTicks event_creation_time =
       event_timing_entry->GetEventTimingReportingInfo()->creation_time;
   base::TimeTicks processing_start =
       event_timing_entry->GetEventTimingReportingInfo()->processing_start_time;
   base::TimeTicks processing_end =
       event_timing_entry->GetEventTimingReportingInfo()->processing_end_time;
-
-  event_timing_entry->GetEventTimingReportingInfo()->presentation_time =
-      presentation_timestamp;
-
   SetFallbackTime(event_timing_entry);
 
-  base::TimeTicks event_end_time =
-      event_timing_entry->GetEventTimingReportingInfo()->fallback_time.value_or(
-          event_timing_entry->GetEventTimingReportingInfo()->presentation_time);
+  base::TimeTicks event_end_time = event_timing_entry->GetEndTime();
 
   base::TimeDelta time_to_next_paint = event_end_time - processing_end;
 
@@ -760,7 +802,10 @@ void WindowPerformance::ReportEvent(
       event_creation_time,
       event_timing_entry->GetEventTimingReportingInfo()
           ->enqueued_to_main_thread_time,
-      event_timing_entry->GetEventTimingReportingInfo()->commit_finish_time,
+      event_timing_entry->GetEventTimingReportingInfo()
+          ->commit_finish_time.value_or(
+              event_timing_entry->GetEventTimingReportingInfo()
+                  ->processing_end_time),
       event_end_time};
   if (SetInteractionIdAndRecordLatency(event_timing_entry, event_timestamps)) {
     NotifyAndAddEventTimingBuffer(event_timing_entry);
@@ -814,12 +859,34 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
 
   if (tracing_enabled) {
     base::TimeTicks unsafe_start_time =
-        GetTimeOriginInternal() + base::Milliseconds(entry->startTime());
-    base::TimeTicks unsafe_end_time =
-        entry->GetEventTimingReportingInfo()->fallback_time.value_or(
-            entry->GetEventTimingReportingInfo()->presentation_time);
+        entry->GetEventTimingReportingInfo()->creation_time;
+    base::TimeTicks unsafe_end_time = entry->GetEndTime();
     unsigned hash = WTF::GetHash(entry->name());
     WTF::AddFloatToHash(hash, entry->startTime());
+    auto track_id = perfetto::Track::ThreadScoped(this);
+    auto flow_id = perfetto::Flow::FromPointer(entry);
+    TRACE_EVENT_INSTANT("devtools.timeline", "EventCreation", track_id,
+                        entry->GetEventTimingReportingInfo()->creation_time,
+                        flow_id);
+    TRACE_EVENT_INSTANT(
+        "devtools.timeline", "EventEnqueuedToMainThread", track_id,
+        entry->GetEventTimingReportingInfo()->enqueued_to_main_thread_time,
+        flow_id);
+
+    TRACE_EVENT_BEGIN(
+        "devtools.timeline", "EventProcessing", track_id,
+        entry->GetEventTimingReportingInfo()->processing_start_time, flow_id,
+        [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_event_timing();
+          entry->SetPerfettoData(DomWindow()->GetFrame(), data,
+                                 GetTimeOriginInternal());
+        });
+    TRACE_EVENT_END("devtools.timeline", track_id,
+                    entry->GetEventTimingReportingInfo()->processing_end_time);
+
+    // TODO(sullivan): Remove these events when DevTools migrates to the above
+    // perfetto events.
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
         "devtools.timeline", "EventTiming", hash, unsafe_start_time, "data",
         entry->ToTracedValue(DomWindow()->GetFrame()));
@@ -830,6 +897,9 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
 }
 
 void WindowPerformance::SetFallbackTime(PerformanceEventTiming* entry) {
+  if (entry->GetEventTimingReportingInfo()->fallback_time.has_value()) {
+    return;
+  }
   // For artificial events on MacOS, we will fallback entry's end time to its
   // processingEnd (as if there was no next paint needed). crbug.com/1321819.
   const bool is_artificial_pointerup_or_click =
@@ -867,10 +937,7 @@ void WindowPerformance::SetFallbackTime(PerformanceEventTiming* entry) {
   if (!show_modal_dialog_timestamps_.empty() &&
       show_modal_dialog_timestamps_.front() <
           entry->GetEventTimingReportingInfo()->presentation_time) {
-    if (base::FeatureList::IsEnabled(
-            features::kEventTimingFallbackToModalDialogStart)) {
-      fallback_end_time_to_dialog_time = true;
-    }
+    fallback_end_time_to_dialog_time = true;
     first_modal_dialog_timestamp = show_modal_dialog_timestamps_.front();
   }
 
@@ -908,8 +975,8 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
     return responsiveness_metrics_->SetPointerIdAndRecordLatency(
         entry, event_timestamps);
   }
-  return responsiveness_metrics_->SetKeyIdAndRecordLatency(entry,
-                                                           event_timestamps);
+  responsiveness_metrics_->SetKeyIdAndRecordLatency(entry, event_timestamps);
+  return true;
 }
 
 void WindowPerformance::ReportLongAnimationFrameTiming(

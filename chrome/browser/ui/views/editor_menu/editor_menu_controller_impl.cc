@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/gfx/geometry/rect.h"
@@ -80,7 +81,8 @@ void EditorMenuControllerImpl::OnDismiss(bool is_other_command_executed) {
 void EditorMenuControllerImpl::OnSettingsButtonPressed() {
   GURL setting_url = GURL(base::StrCat(
       {"chrome://os-settings/",
-       chromeos::features::IsMagicBoostEnabled()
+       chromeos::MagicBoostState::Get() &&
+               chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()
            ? chromeos::settings::mojom::kSystemPreferencesSectionPath
            : chromeos::settings::mojom::kInputSubpagePath,
        "?settingId=",

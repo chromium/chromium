@@ -52,18 +52,15 @@ enum class PasswordCheckReferrer;
                                     showCancelButton:(BOOL)showCancelButton;
 
 // Shows the password details page for a credential. `editMode` indicates
-// whether the details page should be opened in edit mode. `showCancelButton`
-// indicates whether a cancel button should be added as the left navigation item
-// of the password details view.
+// whether the details page should be opened in edit mode.
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
-                              inEditMode:(BOOL)editMode
-                        showCancelButton:(BOOL)showCancelButton;
+                              inEditMode:(BOOL)editMode;
 
 // Shows the address details view. `editMode` indicates whether the details page
 // should be opened in edit mode. `offerMigrateToAccount` indicates whether or
 // not the option to migrate the address to the account should be available.
-- (void)showAddressDetails:(const autofill::AutofillProfile*)address
+- (void)showAddressDetails:(autofill::AutofillProfile)address
                 inEditMode:(BOOL)editMode
      offerMigrateToAccount:(BOOL)offerMigrateToAccount;
 
@@ -76,7 +73,7 @@ enum class PasswordCheckReferrer;
 
 // Shows the credit card details view. `editMode` indicates whether the details
 // page should be opened in edit mode.
-- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard
+- (void)showCreditCardDetails:(autofill::CreditCard)creditCard
                    inEditMode:(BOOL)editMode;
 
 // Shows the settings page informing the user how to set Chrome as the default

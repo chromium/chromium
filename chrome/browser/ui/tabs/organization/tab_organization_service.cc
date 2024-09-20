@@ -41,8 +41,11 @@ TabOrganizationService::TabOrganizationService(
   trigger_observer_ = std::make_unique<TabOrganizationTriggerObserver>(
       base::BindRepeating(&TabOrganizationService::OnTriggerOccured,
                           base::Unretained(this)),
-      browser_context, MakeTrigger(trigger_backoff_.get()));
+      browser_context,
+      MakeTrigger(trigger_backoff_.get(),
+                  Profile::FromBrowserContext(browser_context)));
 }
+
 TabOrganizationService::~TabOrganizationService() = default;
 
 void TabOrganizationService::OnTriggerOccured(const Browser* browser) {

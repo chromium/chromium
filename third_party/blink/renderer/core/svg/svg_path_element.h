@@ -56,11 +56,6 @@ class SVGPathElement final : public SVGGeometryElement {
 
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
-  void CollectStyleForPresentationAttribute(
-      const QualifiedName&,
-      const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
-
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 

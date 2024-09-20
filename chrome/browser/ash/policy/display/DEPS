@@ -15,8 +15,8 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/login/test",
-  "+chrome/browser/ash/login/ui",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/lifetime",
+  "+chrome/browser/ui/ash/login",
   "+chrome/test/base",
 ]

@@ -10,8 +10,10 @@
 
 #include "base/containers/span.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
 
 namespace net::device_bound_sessions {
 
@@ -35,6 +37,11 @@ class SessionServiceMock : public SessionService {
                Session::Id session_id,
                RefreshCompleteCallback restart_callback,
                RefreshCompleteCallback continue_callback),
+              (override));
+  MOCK_METHOD(void,
+              SetChallengeForBoundSession,
+              (const GURL& request_url,
+               const SessionChallengeParam& challenge_param),
               (override));
 };
 

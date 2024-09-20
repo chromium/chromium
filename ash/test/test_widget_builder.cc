@@ -9,6 +9,7 @@
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -89,7 +90,7 @@ TestWidgetBuilder& TestWidgetBuilder::SetActivatable(bool activatable) {
 }
 
 TestWidgetBuilder& TestWidgetBuilder::SetShowState(
-    ui::WindowShowState show_state) {
+    ui::mojom::WindowShowState show_state) {
   DCHECK(!built_);
   widget_init_params_.show_state = show_state;
   return *this;

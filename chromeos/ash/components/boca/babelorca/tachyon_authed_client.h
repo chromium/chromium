@@ -7,19 +7,14 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 
 namespace google::protobuf {
 class MessageLite;
 }  // namespace google::protobuf
 
-namespace net {
-struct NetworkTrafficAnnotationTag;
-}  // namespace net
-
 namespace ash::babelorca {
 
-class ResponseCallbackWrapper;
+struct RequestDataWrapper;
 
 class TachyonAuthedClient {
  public:
@@ -29,18 +24,12 @@ class TachyonAuthedClient {
   virtual ~TachyonAuthedClient() = default;
 
   virtual void StartAuthedRequest(
-      const net::NetworkTrafficAnnotationTag& annotation_tag,
-      std::unique_ptr<google::protobuf::MessageLite> request_proto,
-      std::string_view url,
-      int max_retries,
-      std::unique_ptr<ResponseCallbackWrapper> response_cb) = 0;
+      std::unique_ptr<RequestDataWrapper> request_data,
+      std::unique_ptr<google::protobuf::MessageLite> request_proto) = 0;
 
   virtual void StartAuthedRequestString(
-      const net::NetworkTrafficAnnotationTag& annotation_tag,
-      std::string request_string,
-      std::string_view url,
-      int max_retries,
-      std::unique_ptr<ResponseCallbackWrapper> response_cb) = 0;
+      std::unique_ptr<RequestDataWrapper> request_data,
+      std::string request_string) = 0;
 
  protected:
   TachyonAuthedClient() = default;

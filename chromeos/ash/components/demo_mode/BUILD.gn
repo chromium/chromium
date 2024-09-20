@@ -7,12 +7,15 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 component("demo_mode") {
   sources = [
+    "utils/demo_session_utils.cc",
+    "utils/demo_session_utils.h",
     "utils/dimensions_utils.cc",
     "utils/dimensions_utils.h",
   ]
 
   deps = [
     "//base",
+    "//chromeos/ash/components/install_attributes",
     "//third_party/abseil-cpp:absl",
     "//third_party/icu",
   ]

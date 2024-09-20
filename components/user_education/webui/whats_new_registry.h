@@ -104,7 +104,7 @@ class WhatsNewModule {
 
 // What's New editions represent an entire What's New page with content
 // relevant to a single feature or set of features. Editions are always
-// tied to a base::Feature.
+// tied to a base::Feature, but this Feature may be enabled by default.
 //
 // As with modules, remember to add user action and histogram variants
 // with the same name as the base::Feature for your edition.
@@ -122,10 +122,6 @@ class WhatsNewEdition {
   }
 
   std::string metric_name() const { return GetFeatureName(); }
-
-  // Return true if the feature is enabled, but not by default.
-  // This indicates a feature is in the process of rolling out.
-  bool HasActiveFeature() const;
 
   // Return true if the feature is enabled.
   bool IsFeatureEnabled() const;

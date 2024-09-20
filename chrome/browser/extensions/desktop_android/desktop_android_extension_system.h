@@ -87,7 +87,7 @@ class DesktopAndroidExtensionSystem : public ExtensionSystem {
   // KeyedService implementation:
   void Shutdown() override;
 
-  void AddExtension(scoped_refptr<const Extension> extension);
+  bool AddExtension(scoped_refptr<Extension> extension, std::string& error);
 
   // ExtensionSystem implementation:
   void InitForRegularProfile(bool extensions_enabled) override;

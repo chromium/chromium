@@ -43,6 +43,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
@@ -472,12 +473,20 @@ void DeepScanningRequest::StartSingleFileScan() {
   IncrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS);
   IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_DOWNLOADS);
 
+  enterprise_obfuscation::DownloadObfuscationData* obfuscation_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          item_->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+
   auto request = std::make_unique<FileAnalysisRequest>(
       analysis_settings_, item_->GetFullPath(),
       item_->GetTargetFilePath().BaseName(), item_->GetMimeType(),
       /* delay_opening_file */ false,
       base::BindOnce(&DeepScanningRequest::OnScanComplete,
-                     weak_ptr_factory_.GetWeakPtr(), item_->GetFullPath()));
+                     weak_ptr_factory_.GetWeakPtr(), item_->GetFullPath()),
+      base::DoNothing(),
+      obfuscation_data ? obfuscation_data->is_obfuscated : false);
+
   request->set_filename(item_->GetTargetFilePath().AsUTF8Unsafe());
 
   std::string sha256 = base::HexEncode(item_->GetHash());

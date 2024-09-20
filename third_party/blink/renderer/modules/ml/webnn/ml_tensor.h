@@ -32,18 +32,18 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Instances should only be constructed via `MLContext.createBuffer()`.
+  // Instances should only be constructed via `MLContext.createTensor()`.
   // This method is public as required by the `MakeGarbageCollected` helper.
   //
-  // `descriptor` describes the buffer data type and shape.
-  // `create_buffer_success` contains the resulting handles to the created
-  // buffer. which may be used to execute a context operation with respective
-  // buffer.
+  // `descriptor` describes the tensor data type and shape.
+  // `create_tensor_success` contains the resulting handles to the created
+  // tensor. which may be used to execute a context operation with respective
+  // tensor.
   MLTensor(ExecutionContext* execution_context,
            MLContext* context,
            webnn::OperandDescriptor descriptor,
            webnn::MLTensorUsage usage,
-           webnn::mojom::blink::CreateBufferSuccessPtr create_buffer_success,
+           webnn::mojom::blink::CreateTensorSuccessPtr create_tensor_success,
            base::PassKey<MLContext> pass_key);
   MLTensor(const MLTensor&) = delete;
   MLTensor& operator=(const MLTensor&) = delete;
@@ -72,37 +72,43 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
 
   const MLContext* context() const { return ml_context_.Get(); }
 
-  bool IsValid() const { return remote_buffer_.is_bound(); }
+  bool IsValid() const { return remote_tensor_.is_bound(); }
 
   // Read data from the MLTensor. The resolver should be resolved with a copy of
-  // the buffer data. Otherwise, the resolver should be rejected accordingly.
-  ScriptPromise<DOMArrayBuffer> ReadBufferImpl(ScriptState* script_state,
+  // the tensor data. Otherwise, the resolver should be rejected accordingly.
+  ScriptPromise<DOMArrayBuffer> ReadTensorImpl(ScopedMLTrace scoped_trace,
+                                               ScriptState* script_state,
                                                ExceptionState& exception_state);
 
-  ScriptPromise<IDLUndefined> ReadBufferImpl(ScriptState* script_state,
+  ScriptPromise<IDLUndefined> ReadTensorImpl(ScopedMLTrace scoped_trace,
+                                             ScriptState* script_state,
                                              DOMArrayBufferBase* dst_data,
                                              ExceptionState& exception_state);
 
-  ScriptPromise<IDLUndefined> ReadBufferImpl(ScriptState* script_state,
+  ScriptPromise<IDLUndefined> ReadTensorImpl(ScopedMLTrace scoped_trace,
+                                             ScriptState* script_state,
                                              DOMArrayBufferView* dst_data,
                                              ExceptionState& exception_state);
 
   // Write data to the MLTensor. If write was successful, the data will be
   // stored in the MLTensor.
-  void WriteBufferImpl(base::span<const uint8_t> src_data,
+  void WriteTensorImpl(base::span<const uint8_t> src_data,
                        ExceptionState& exception_state);
 
  private:
   // The callback of reading from `WebNNTensor` by calling hardware accelerated
   // OS machine learning APIs.
-  void OnDidReadBuffer(ScriptPromiseResolver<DOMArrayBuffer>* resolver,
-                       webnn::mojom::blink::ReadBufferResultPtr result);
-  void OnDidReadBufferByob(ScriptPromiseResolver<IDLUndefined>* resolver,
+  void OnDidReadTensor(ScopedMLTrace scoped_trace,
+                       ScriptPromiseResolver<DOMArrayBuffer>* resolver,
+                       webnn::mojom::blink::ReadTensorResultPtr result);
+  void OnDidReadTensorByob(ScopedMLTrace scoped_trace,
+                           ScriptPromiseResolver<IDLUndefined>* resolver,
                            DOMArrayBufferBase* dst_data,
-                           webnn::mojom::blink::ReadBufferResultPtr result);
-  void OnDidReadBufferByobView(ScriptPromiseResolver<IDLUndefined>* resolver,
+                           webnn::mojom::blink::ReadTensorResultPtr result);
+  void OnDidReadTensorByobView(ScopedMLTrace scoped_trace,
+                               ScriptPromiseResolver<IDLUndefined>* resolver,
                                DOMArrayBufferView* dst_data,
-                               webnn::mojom::blink::ReadBufferResultPtr result);
+                               webnn::mojom::blink::ReadTensorResultPtr result);
 
   void OnConnectionError();
 
@@ -119,7 +125,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
 
   // The `WebNNTensor` is a buffer that can be used by the hardware
   // accelerated OS machine learning API.
-  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNTensor> remote_buffer_;
+  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNTensor> remote_tensor_;
 
   // Keep a set of unresolved `ScriptPromiseResolver`s which will be
   // rejected when the Mojo pipe is unexpectedly disconnected.

@@ -577,6 +577,11 @@ bool DesksController::CanRemoveDesks() const {
 }
 
 void DesksController::NewDesk(DesksCreationRemovalSource source) {
+  NewDesk(source, std::u16string());
+}
+
+void DesksController::NewDesk(DesksCreationRemovalSource source,
+                              std::u16string name) {
   // We want to destroy the `temporary_removed_desk_` first in this
   // function because we want to ensure that the removing desk's container is
   // available for use if we need it for the new desk.
@@ -603,15 +608,19 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
     observer.OnDeskAdded(new_desk, /*from_undo=*/false);
   }
 
-  // The new desk should have an empty name when the user creates a desk with
-  // a button. This is done to encourage them to rename their desks.
-  const bool empty_name =
-      (source == DesksCreationRemovalSource::kButton ||
-       source == DesksCreationRemovalSource::kDeskButtonDeskBarButton) &&
-      desks_.size() > 1;
-  if (!empty_name) {
-    new_desk->SetName(GetDeskDefaultName(desks_.size() - 1),
-                      /*set_by_user=*/false);
+  if (name.empty()) {
+    // The new desk should have an empty name when the user creates a desk with
+    // a button. This is done to encourage them to rename their desks.
+    const bool empty_name =
+        (source == DesksCreationRemovalSource::kButton ||
+         source == DesksCreationRemovalSource::kDeskButtonDeskBarButton) &&
+        desks_.size() > 1;
+    if (!empty_name) {
+      new_desk->SetName(GetDeskDefaultName(desks_.size() - 1),
+                        /*set_by_user=*/false);
+    }
+  } else {
+    new_desk->SetName(std::move(name), /*set_by_user=*/false);
   }
 
   // Don't trigger an a11y alert when the source is `kLaunchTemplate` because
@@ -2366,6 +2375,7 @@ void DesksController::ReportClosedWindowsCountPerSourceHistogram(
     case DesksCreationRemovalSource::kDesksRestore:
     case DesksCreationRemovalSource::kFloatingWorkspace:
     case DesksCreationRemovalSource::kEnsureDefaultDesk:
+    case DesksCreationRemovalSource::kCoral:
       break;
   }
   if (desk_removal_source_histogram)

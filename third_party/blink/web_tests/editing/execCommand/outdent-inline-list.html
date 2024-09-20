@@ -1,28 +1,80 @@
-<html>
-<body contenteditable="true">
-<br>
-<ol><li id="test1" style="display: inline">one</li><li>two</li><li>three</li></ol>
-<ul><li id="test2" style="display: inline">one</li><li>two</li><li>three</li></ul>
-<p id="console"></p>
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
 
-function log(message) {
-    var console = document.getElementById("console");
-    var text = document.createTextNode(message);
-    console.appendChild(text);
-}
+selection_test(
+    [
+      '<div contenteditable="true">',
+        '<br>',
+        '<ol>',
+          '<li id="test1" style="display: inline">|one</li>',
+          '<li>two</li>',
+          '<li>three</li>',
+        '</ol>',
+        '<ul>',
+          '<li id="test2" style="display: inline">one</li>',
+          '<li>two</li>',
+          '<li>three</li>',
+        '</ul>',
+        '</div>',
+    ],
+    'Outdent',
+    [
+      '<div contenteditable="true">',
+        '<br>',
+        '|one',
+        '<br>',
+        '<ol>',
+          '<li>two</li>',
+          '<li>three</li>',
+        '</ol>',
+        '<ul>',
+          '<li id="test2" style="display: inline">one</li>',
+          '<li>two</li>',
+          '<li>three</li>',
+        '</ul>',
+        '</div>',
+    ],
+    'Outdent first inline item');
 
-var s = window.getSelection();
-var p = document.getElementById("test1");
-s.collapse(p, 0);
-document.execCommand("Outdent", false, 0);
-log("Test1 passed: no crash ");
-var p = document.getElementById("test2");
-s.collapse(p, 0);
-document.execCommand("Outdent", false, 0);
-log("Test2 passed: no crash");
+selection_test(
+    [
+      '<div contenteditable="true">',
+        '<br>',
+        'one',
+        '<br>',
+        '<ol>',
+          '<li>two</li>',
+          '<li>three</li>',
+        '</ol>',
+        '<ul>',
+          '<li id="test2" style="display: inline">|one</li>',
+          '<li>two</li>',
+          '<li>three</li>',
+        '</ul>',
+        '</div>',
+    ],
+    'Outdent',
+    [
+      '<div contenteditable="true">',
+        '<br>',
+        'one',
+        '<br>',
+        '<ol>',
+          '<li>two</li>',
+          '<li>three</li>',
+        '</ol>',
+        '|one',
+        '<br>',
+        '<ul>',
+          '<li>two</li>',
+          '<li>three</li>',
+        '</ul>',
+        '</div>',
+    ],
+    'Outdent second inline item');
 
 </script>
 </body>

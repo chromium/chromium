@@ -945,6 +945,20 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // Notify the delegate that a drag cames from another app.
     [self.delegate gridViewControllerDragSessionWillBeginForTab:self];
   }
+  if (!_localDragActionInProgress) {
+    // Disable buttons toolbar if no items are dragged in the current collection
+    // view.
+    [self.delegate gridViewControllerDropSessionDidEnter:self];
+  }
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    dropSessionDidExit:(id<UIDropSession>)session {
+  if (!_localDragActionInProgress) {
+    // Enable back toolbar buttons if no items are dragged in the current
+    // collection view.
+    [self.delegate gridViewControllerDropSessionDidExit:self];
+  }
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -1372,7 +1386,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   if (numberOfTabs > 0) {
     [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
   }
-  [self.delegate gridViewController:self didRemoveItemWIthID:removedItemID];
+  [self.delegate gridViewController:self didRemoveItemWithID:removedItemID];
 }
 
 // Makes the required changes to the data source when an existing item is moved.
@@ -1770,7 +1784,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       base::RecordAction(
           base::UserMetricsAction("MobileTabGridTabGroupCellTapped"));
       const TabGroup* group = itemIdentifier.tabGroupItem.tabGroup;
-      [self.delegate gridViewController:self didSelectGroup:group];
+      if (group) {
+        [self.delegate gridViewController:self didSelectGroup:group];
+      }
       break;
     }
     case GridItemType::kSuggestedActions:

@@ -11,12 +11,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
@@ -237,6 +238,29 @@ void PermissionPromptBubbleBaseView::ClosingPermission() {
 
 void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
   PermissionDialogButton button = GetPermissionDialogButton(button_id);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  if (browser_view && browser_view->GetLocationBarView()->GetChipController() &&
+      browser_view->GetLocationBarView()
+          ->GetChipController()
+          ->IsPermissionPromptChipVisible()) {
+    ChipController* chip_controller =
+        browser_view->GetLocationBarView()->GetChipController();
+    switch (button) {
+      case PermissionDialogButton::kAccept:
+        chip_controller->PromptDecided(permissions::PermissionAction::GRANTED);
+        return;
+
+      case PermissionDialogButton::kAcceptOnce:
+        chip_controller->PromptDecided(
+            permissions::PermissionAction::GRANTED_ONCE);
+        return;
+
+      case PermissionDialogButton::kDeny:
+        chip_controller->PromptDecided(permissions::PermissionAction::DENIED);
+        return;
+    }
+  }
+
   switch (button) {
     case PermissionDialogButton::kAccept:
       delegate_->Accept();

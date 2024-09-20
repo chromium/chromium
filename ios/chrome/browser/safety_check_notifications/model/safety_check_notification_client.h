@@ -109,6 +109,18 @@ class SafetyCheckNotificationClient
   void ShowUIForNotificationMetadata(NSDictionary* notification_metadata,
                                      Browser* browser);
 
+  // Logs to a histogram if notifications that were requested have been
+  // triggered.
+  void LogTriggeredNotifications();
+
+  // Logs to a histogram if notifications that were requested have been
+  // dismissed.
+  void LogDismissedNotifications();
+
+  // Called with all the delivered `notifications` that are still present in
+  // Notification Center.
+  void OnGetDeliveredNotifications(NSArray<UNNotification*>* notifications);
+
   // Current state of the Update Chrome check.
   UpdateChromeSafetyCheckState update_chrome_check_state_ =
       UpdateChromeSafetyCheckState::kDefault;

@@ -26,6 +26,7 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/mojom/ax_event.mojom.h"
+#include "ui/accessibility/mojom/ax_location_changes.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_id.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_update.mojom.h"
 
@@ -47,6 +48,9 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                void(const ui::AXTreeID& tree_id,
                     const std::vector<ui::AXTreeUpdate>& updates,
                     const std::vector<ui::AXEvent>& events));
+  MOCK_METHOD(void,
+              AccessibilityLocationChangesReceived,
+              (const std::vector<ui::AXLocationChanges>& details));
   MOCK_METHOD(void,
               OnSettingsRestoredFromPrefs,
               (read_anything::mojom::LineSpacing line_spacing,
@@ -218,10 +222,6 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
       1u);
 }
 
-// Until the kReadAloudAutoVoiceSwitching flag is enabled on all platforms,
-// there is slightly different behavior that needs to be tested on ChromeOS
-// vs. other platforms.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ReadAnythingUntrustedPageHandlerTest,
        OnHandlerConstructed_WithReadAloud_SendsStoredReadAloudInfo) {
   // Build the voice and lang info.
@@ -332,67 +332,5 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
   EXPECT_THAT(*voices,
               base::test::DictionaryHasValue(kLang2, base::Value(kVoice)));
 }
-#else
-TEST_F(ReadAnythingUntrustedPageHandlerTest,
-       OnHandlerConstructed_WithReadAloud_SendsStoredReadAloudInfo) {
-  // Build the voice and lang info.
-  const char kVoice[] = "Maria";
-  const char kLang1[] = "en";
-  const char kLang2[] = "fr";
-  const char kLang3[] = "it";
-  base::Value::List langs;
-  langs.Append(kLang1);
-  langs.Append(kLang2);
-  langs.Append(kLang3);
-
-  // Set the values in prefs.
-  double expected_speech_rate = 1.2;
-  read_anything::mojom::HighlightGranularity expected_highlight_granularity =
-      read_anything::mojom::HighlightGranularity::kOff;
-  PrefService* prefs = profile()->GetPrefs();
-  prefs->SetDouble(prefs::kAccessibilityReadAnythingSpeechRate,
-                   expected_speech_rate);
-  prefs->SetString(prefs::kAccessibilityReadAnythingVoiceName, kVoice);
-  prefs->SetList(prefs::kAccessibilityReadAnythingLanguagesEnabled,
-                 std::move(langs));
-  prefs->SetInteger(prefs::kAccessibilityReadAnythingHighlightGranularity, 1);
-
-  // Verify the values passed to the page are correct.
-  EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
-                         _, _, _, _, _, _, _, expected_speech_rate, _, _,
-                         expected_highlight_granularity))
-      .Times(1)
-      .WillOnce(testing::WithArgs<8, 9>(testing::Invoke(
-          [&](base::Value::Dict voices, base::Value::List langs) {
-            EXPECT_THAT(voices, base::test::DictionaryHasValue(
-                                    "", base::Value(kVoice)));
-            EXPECT_EQ(3u, langs.size());
-            EXPECT_EQ(langs[0].GetString(), kLang1);
-            EXPECT_EQ(langs[1].GetString(), kLang2);
-            EXPECT_EQ(langs[2].GetString(), kLang3);
-          })));
-
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-}
-
-TEST_F(ReadAnythingUntrustedPageHandlerTest,
-       OnVoiceChange_StoresLatestInPrefs) {
-  const char kLang1[] = "hi";
-  const char kLang2[] = "ja";
-  const char kVoice1[] = "Ariel";
-  const char kVoice2[] = "Sebastian";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-
-  OnVoiceChange(kVoice1, kLang1);
-  OnVoiceChange(kVoice2, kLang2);
-
-  std::string voice = profile()->GetPrefs()->GetString(
-      prefs::kAccessibilityReadAnythingVoiceName);
-  ASSERT_EQ(voice, kVoice2);
-}
-
-#endif  // IS_CHROME_OS_ASH
 
 }  // namespace

@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -127,7 +128,9 @@ public class TabPersistentStoreIntegrationTest {
 
         mOrchestrator =
                 new TabbedModeTabModelOrchestrator(
-                        /* tabMergingEnabled= */ true, mActivityLifecycleDispatcher);
+                        /* tabMergingEnabled= */ true,
+                        mActivityLifecycleDispatcher,
+                        new CipherFactory());
         mOrchestrator.createTabModels(
                 mChromeActivity,
                 profileProviderSupplier,

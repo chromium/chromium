@@ -87,8 +87,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   AXObject* ActiveDescendant() const override;
   String AriaAccessibilityDescription() const;
   String AutoComplete() const override;
-  void AccessibilityChildrenFromAOMProperty(AOMRelationListProperty,
-                                            AXObject::AXObjectVector&) const;
 
   // For table objects.
   bool IsDataTable() const override;
@@ -223,8 +221,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // ARIA attributes.
   ax::mojom::blink::Role RawAriaRole() const final;
-  void AriaDescribedbyElements(AXObjectVector&) const override;
-  void AriaOwnsElements(AXObjectVector&) const override;
   ax::mojom::blink::HasPopup HasPopup() const override;
   ax::mojom::blink::IsPopup IsPopup() const override;
   bool IsEditableRoot() const override;

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_ATTRIBUTES_IOS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_ATTRIBUTES_IOS_H_
 
+#include <set>
 #include <string>
 #include <string_view>
 
@@ -21,6 +22,9 @@
 // committed to the preferences.
 class ProfileAttributesIOS {
  public:
+  // Represents a set of gaia ids.
+  using GaiaIdSet = std::set<std::string, std::less<>>;
+
   ProfileAttributesIOS(std::string_view profile_name,
                        const base::Value::Dict* attrs);
 
@@ -36,6 +40,7 @@ class ProfileAttributesIOS {
   const std::string& GetGaiaId() const;
   const std::string& GetUserName() const;
   bool HasAuthenticationError() const;
+  GaiaIdSet GetAttachedGaiaIds() const;
   base::Time GetLastActiveTime() const;
   bool IsAuthenticated() const;
 
@@ -43,6 +48,7 @@ class ProfileAttributesIOS {
   void SetAuthenticationInfo(std::string_view gaia_id,
                              std::string_view user_name);
   void SetHasAuthenticationError(bool value);
+  void SetAttachedGaiaIds(const GaiaIdSet& gaia_ids);
   void SetLastActiveTime(base::Time time);
 
   // Returns the storage.

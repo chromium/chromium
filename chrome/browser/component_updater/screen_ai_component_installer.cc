@@ -121,9 +121,6 @@ ScreenAIComponentInstallerPolicy::GetInstallerAttributes() const {
 // static
 void ScreenAIComponentInstallerPolicy::DeleteComponent() {
   base::DeletePathRecursively(screen_ai::GetComponentDir());
-  screen_ai::ScreenAIInstallState::RecordComponentInstallationResult(
-      /*install=*/false,
-      /*successful=*/true);
 }
 
 void ManageScreenAIComponentRegistration(ComponentUpdateService* cus,

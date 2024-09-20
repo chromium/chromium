@@ -180,6 +180,7 @@ component("wtf") {
     "text/text_stream.h",
     "text/unicode.h",
     "text/unicode_string.h",
+    "text/utf16.h",
     "text/utf8.cc",
     "text/utf8.h",
     "text/wtf_string.cc",

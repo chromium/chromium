@@ -11,7 +11,7 @@
 #include "third_party/jni_zero/jni_zero_internal.h"
 
 extern const int64_t kJniZeroHashWhole = -7874644414477415950LL;
-extern const int64_t kJniZeroHashPriority = 4439870226107528323LL;
+extern const int64_t kJniZeroHashPriority = 4128442159926458845LL;
 // Class Accessors.
 #ifndef org_jni_1zero_SampleProxyEdgeCases_clazz_defined
 #define org_jni_1zero_SampleProxyEdgeCases_clazz_defined
@@ -50,12 +50,10 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleProxyEdgeCases_
     jclass jcaller,
     jobject a,
     jobject b);
-JNI_POSSIBLE_BOUNDARY_EXPORT void
-    Java_org_1jni_11zero_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_1jni_11zero_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
     JNIEnv* env,
     jclass jcaller,
     jobject arg);
@@ -89,7 +87,6 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_1jni_11zero_1TinySample_1foo(
     jclass jcaller,
     jobject a,
     jint b);
-
 
 JNI_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1IO(
     JNIEnv* env,
@@ -166,6 +163,4 @@ JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1OO(
         }
 }
 
-
 #endif  // TEMP_DIR_HEADER_
-

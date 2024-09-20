@@ -67,7 +67,7 @@ void CastStabilityMetricsProvider::LogExternalCrash(
   else if (crash_type == "uncleanshutdown")
     IncrementPrefValue(prefs::kStabilitySystemUncleanShutdownCount);
   else
-    NOTREACHED_IN_MIGRATION() << "Unexpected crash type " << crash_type;
+    NOTREACHED() << "Unexpected crash type " << crash_type;
 
   // Wake up metrics logs sending if necessary now that new
   // log data is available.

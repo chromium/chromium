@@ -4,11 +4,8 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
-import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -70,24 +67,17 @@ public interface AccountSelectionComponent {
      * @param rpEtldPlusOne The {@link String} for the relying party.
      * @param idpEtldPlusOne The {@link String} for the identity provider.
      * @param accounts A list of {@link Account}s that will be displayed.
-     * @param idpMetadata Metadata related to identity provider.
-     * @param clientMetadata Metadata related to relying party.
+     * @param idpData The information about the identity provider.
      * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
-     * @param rpContext is an enum representing the desired text to be used in the title of the
-     *     FedCM prompt: "signin", "continue", etc.
-     * @param requestPermission A {@link boolean} indicating whether we need to request permission
-     *     from the user to share their data with the IDP, if the user is not a returning user.
+     * @param newAccounts The newly logged in accounts.
      */
     void showAccounts(
             String rpEtldPlusOne,
             String idpEtldPlusOne,
             List<Account> accounts,
-            IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata,
+            IdentityProviderData idpData,
             boolean isAutoReauthn,
-            @RpContext.EnumType int rpContext,
-            boolean requestPermission,
-            @Nullable IdentityProviderData newAccountsIdp);
+            List<Account> newAccounts);
 
     /**
      * Displays a dialog telling the user that they can sign in to an IDP for the purpose of

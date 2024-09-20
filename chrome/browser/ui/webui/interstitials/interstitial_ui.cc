@@ -78,6 +78,10 @@
 
 using security_interstitials::TestSafeBrowsingBlockingPageQuiet;
 
+InterstitialUIConfig::InterstitialUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIInterstitialHost) {}
+
 namespace {
 
 // NSS requires that serial numbers be unique even for the same issuer;
@@ -380,7 +384,8 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 std::unique_ptr<SupervisedUserVerificationPage>
-CreateSupervisedUserVerificationPage(content::WebContents* web_contents) {
+CreateSupervisedUserVerificationPage(content::WebContents* web_contents,
+                                     bool is_main_frame) {
   const GURL kRequestUrl("https://supervised-user-verification.example.net");
   return std::make_unique<SupervisedUserVerificationPage>(
       web_contents, "first.last@gmail.com", kRequestUrl,
@@ -391,23 +396,26 @@ CreateSupervisedUserVerificationPage(content::WebContents* web_contents) {
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL), kRequestUrl));
+          GURL(chrome::kChromeUINewTabURL), kRequestUrl),
+      is_main_frame);
 }
 
 std::unique_ptr<SupervisedUserVerificationPage>
 CreateSupervisedUserVerificationPageForBlockedSite(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    bool is_main_frame) {
   const GURL kRequestUrl("https://supervised-user-verification.example.net");
   return std::make_unique<SupervisedUserVerificationPage>(
       web_contents, "first.last@gmail.com", kRequestUrl,
-      SupervisedUserVerificationPage::VerificationPurpose::BLOCKED_SITE,
+      SupervisedUserVerificationPage::VerificationPurpose::DEFAULT_BLOCKED_SITE,
       /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL), kRequestUrl));
+          GURL(chrome::kChromeUINewTabURL), kRequestUrl),
+      is_main_frame);
 }
 #endif
 
@@ -592,10 +600,18 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_delegate = CreateHttpsOnlyModePage(web_contents);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else if (path_without_query == "/supervised-user-verify") {
-    interstitial_delegate = CreateSupervisedUserVerificationPage(web_contents);
+    interstitial_delegate = CreateSupervisedUserVerificationPage(
+        web_contents, /*is_main_frame=*/true);
   } else if (path_without_query == "/supervised-user-verify-blocked-site") {
-    interstitial_delegate =
-        CreateSupervisedUserVerificationPageForBlockedSite(web_contents);
+    interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSite(
+        web_contents, /*is_main_frame=*/true);
+  } else if (path_without_query == "/supervised-user-verify-subframe") {
+    interstitial_delegate = CreateSupervisedUserVerificationPage(
+        web_contents, /*is_main_frame=*/false);
+  } else if (path_without_query ==
+             "/supervised-user-verify-blocked-site-subframe") {
+    interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSite(
+        web_contents, /*is_main_frame=*/false);
 #endif
   }
 

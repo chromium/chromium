@@ -8,6 +8,14 @@
 #include "base/gtest_prod_util.h"
 #include "base/types/pass_key.h"
 
+namespace video_effects {
+namespace mojom {
+class VideoEffectsService;
+}
+
+video_effects::mojom::VideoEffectsService* GetVideoEffectsService();
+}  // namespace video_effects
+
 namespace screen_ai {
 class ScreenAIServiceRouter;
 }  // namespace screen_ai
@@ -25,6 +33,8 @@ class ServiceProcessHostPreloadLibraries {
   // Service launchers using `ServiceProcessHost::Options::WithPreloadLibraries`
   // should be added here and must be reviewed by the security team.
   friend class screen_ai::ScreenAIServiceRouter;
+  friend video_effects::mojom::VideoEffectsService*
+  video_effects::GetVideoEffectsService();
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ServiceProcessHostBrowserTest,

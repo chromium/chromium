@@ -30,7 +30,7 @@
 // `mockReauthenticationModuleReturnMockedResult` to be invoked. Defaults to
 // sync. Use it for testing state before the result is returned (e.g. View X
 // shouldn't be visible until successful reauth).
-+ (void)mockReauthenticationModuleShouldReturnSynchronously:(BOOL)returnSync;
++ (void)mockReauthenticationModuleShouldSkipReAuth:(BOOL)returnSync;
 
 // Makes the mock reauthentication module return its mocked result by invoking
 // the handler of the last reauthentication request.

@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -80,7 +81,7 @@ void PriceInsightsModel::FetchConfigurationForWebState(
       std::make_unique<PriceInsightsExecution>();
 
   shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
-      web_state->GetBrowserState());
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   shopping_service_->GetProductInfoForUrl(
       product_url, base::BindOnce(&PriceInsightsModel::OnProductInfoUrlReceived,
                                   weak_ptr_factory_.GetWeakPtr()));

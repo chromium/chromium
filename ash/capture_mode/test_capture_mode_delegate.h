@@ -60,6 +60,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void set_policy_capture_path(PolicyCapturePath policy_capture_path) {
     policy_capture_path_ = policy_capture_path;
   }
+  int num_capture_image_attempts() const { return num_capture_image_attempts_; }
 
   // Resets |is_allowed_by_policy_| and |is_allowed_by_dlp_| back to true.
   void ResetAllowancesToDefault();
@@ -136,7 +137,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       crosapi::mojom::VideoConferenceMediaDevice device) override;
   void FinalizeSavedFile(
       base::OnceCallback<void(bool, const base::FilePath&)> callback,
-      const base::FilePath& path) override;
+      const base::FilePath& path,
+      const gfx::Image& thumbnail) override;
   base::FilePath RedirectFilePath(const base::FilePath& path) override;
   std::unique_ptr<AshWebView> CreateSearchResultsView() const override;
 
@@ -151,6 +153,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool should_save_after_dlp_check_ = true;
   bool is_camera_disabled_by_policy_ = false;
   bool is_audio_capture_disabled_by_policy_ = false;
+  // Counter to track number of times `OnCaptureImageAttempted()` is called, for
+  // testing purposes.
+  int num_capture_image_attempts_ = 0;
   base::ScopedTempDir fake_drive_fs_mount_path_;
   base::ScopedTempDir fake_android_files_path_;
   base::ScopedTempDir fake_linux_files_path_;

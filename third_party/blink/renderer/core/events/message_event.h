@@ -35,7 +35,6 @@
 #include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/serialization/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -43,6 +42,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -133,7 +133,7 @@ class CORE_EXPORT MessageEvent final : public Event {
   MessageEvent(const String& data, const String& origin);
   MessageEvent(Blob* data, const String& origin);
   MessageEvent(DOMArrayBuffer* data, const String& origin);
-  ~MessageEvent() override = default;
+  ~MessageEvent() override;
 
   void initMessageEvent(const AtomicString& type,
                         bool bubbles,

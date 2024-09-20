@@ -64,6 +64,10 @@ class AITestUtils {
    private:
     std::unique_ptr<MockSupportsUserData> mock_host_;
   };
+
+  static std::string GetTypeURLForProto(std::string type_name);
+  static const optimization_guide::TokenLimits& GetFakeTokenLimits();
+  static const optimization_guide::proto::Any& GetFakeFeatureMetadata();
 };
 
 #endif  // CHROME_BROWSER_AI_AI_TEST_UTILS_H_

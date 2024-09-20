@@ -11,96 +11,74 @@
 #include "third_party/jni_zero/jni_zero_internal.h"
 
 
-
 // Forward declarations (methods).
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1bar(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1bar(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
-JNI_POSSIBLE_BOUNDARY_EXPORT void
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1foo(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1foo(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1hasPhalange(
+JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1hasPhalange(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClass(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClass(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedAppObjects(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedAppObjects(
     JNIEnv* env,
     jclass jcaller,
     jclass __arrayClazz);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedString(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedString(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedStrings(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedStrings(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObject(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObject(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObjects(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObjects(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnString(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnString(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStrings(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStrings(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStruct(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStruct(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStructs(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStructs(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowable(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowable(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowables(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowables(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1revString(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1revString(
     JNIEnv* env,
     jclass jcaller,
     jobject stringToReverse);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1sendSamplesToNative(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1sendSamplesToNative(
     JNIEnv* env,
     jclass jcaller,
     jobject strs);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1sendToNative(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1sendToNative(
     JNIEnv* env,
     jclass jcaller,
     jobject strs);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
@@ -119,8 +97,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject
     jobject floats,
     jboolean zbool,
     jobject bools);
-JNI_POSSIBLE_BOUNDARY_EXPORT void
-    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes(
     JNIEnv* env,
     jclass jcaller,
     jobject clazz,
@@ -142,11 +119,12 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void
     jobject context,
     jobject convertedObjects);
 
+// Helper Methods.
 
-// Method declarations.
+namespace {
 
-
-static const JNINativeMethod kMethods_org_jni_1zero_GEN_1JNI[] = {
+bool RegisterNative_org_jni_1zero_GEN_1JNI(JNIEnv* env) {
+  static const JNINativeMethod kMethods[] = {
     { "org_jni_1zero_SampleForAnnotationProcessor_bar", "(Ljava/lang/Object;)Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1bar)
         },
@@ -220,20 +198,11 @@ static const JNINativeMethod kMethods_org_jni_1zero_GEN_1JNI[] = {
         reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes)
         },
 
-};
-
-namespace {
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_GEN_1JNI(JNIEnv* env) {
-  const int number_of_methods = std::size(kMethods_org_jni_1zero_GEN_1JNI);
+  };
 
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
       jni_zero::GetClass(env, "org/jni_zero/GEN_JNI");
-  if (env->RegisterNatives(
-      native_clazz.obj(),
-      kMethods_org_jni_1zero_GEN_1JNI,
-      number_of_methods) < 0) {
-
+  if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {
     jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
     return false;
   }
@@ -243,10 +212,9 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_GEN_1JNI(JNIEn
 
 }  // namespace
 
+// Main Register Function.
 
-// Registration function.
-
-namespace  {
+namespace {
 
 bool RegisterNatives(JNIEnv* env) {
   // Register natives in a proxy.
@@ -254,12 +222,9 @@ bool RegisterNatives(JNIEnv* env) {
     return false;
   }
 
-
   return true;
 }
 
-}  // namespace 
-
+}  // namespace
 
 #endif  // TEMP_DIR_HEADER_
-

@@ -154,6 +154,8 @@ static_library("test_support") {
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/update_client",
+    "//components/user_annotations",
+    "//components/user_annotations:test_support",
     "//components/user_prefs",
     "//content/public/common",
     "//content/test:test_support",
@@ -217,94 +219,118 @@ static_library("test_support") {
   public_deps = [ "//content/public/browser" ]
 }
 
-# TODO(https://crbug.com/356905053): Gradually include more of these sources
-# in the desktop-android build.
-if (enable_extensions) {
-  repack("shell_and_test_pak") {
-    testonly = true
+repack("shell_and_test_pak") {
+  testonly = true
 
-    sources = [
+  sources = [
+    "$root_gen_dir/content/content_resources.pak",
+    "$root_gen_dir/content/shell/shell_resources.pak",
+    "$root_gen_dir/extensions/extensions_browser_resources_100_percent.pak",
+    "$root_gen_dir/extensions/extensions_renderer_resources.pak",
+    "$root_gen_dir/extensions/extensions_resources.pak",
+    "$root_gen_dir/extensions/strings/extensions_strings_en-US.pak",
+    "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
+    "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
+    "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+    "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
+    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+  ]
+
+  output = "$root_out_dir/extensions_shell_and_test.pak"
+
+  deps = [
+    ":extensions_resources",
+    "//content:content_resources",
+    "//content/shell:resources",
+    "//extensions/strings",
+    "//mojo/public/js:resources",
+    "//third_party/blink/public:resources",
+    "//third_party/blink/public:scaled_resources_100_percent",
+    "//third_party/blink/public/strings",
+    "//ui/resources",
+    "//ui/strings",
+  ]
+
+  # The following resources are not used by desktop-android build.
+  if (enable_extensions) {
+    sources += [
       "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
-      "$root_gen_dir/content/content_resources.pak",
-      "$root_gen_dir/content/shell/shell_resources.pak",
       "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_en-US.pak",
-      "$root_gen_dir/extensions/extensions_browser_resources_100_percent.pak",
-      "$root_gen_dir/extensions/extensions_renderer_resources.pak",
-      "$root_gen_dir/extensions/extensions_resources.pak",
       "$root_gen_dir/extensions/shell/app_shell_resources.pak",
-      "$root_gen_dir/extensions/strings/extensions_strings_en-US.pak",
-      "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
-      "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
-      "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
-      "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
-      "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-      "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
-      "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
-      "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
     ]
 
-    output = "$root_out_dir/extensions_shell_and_test.pak"
-
-    deps = [
-      ":extensions_resources",
-      "//content:content_resources",
+    deps += [
       "//content/browser/devtools:devtools_resources",
-      "//content/shell:resources",
       "//device/bluetooth/strings",
       "//extensions/shell:resources",
-      "//extensions/strings",
-      "//mojo/public/js:resources",
-      "//third_party/blink/public:resources",
-      "//third_party/blink/public:scaled_resources_100_percent",
-      "//third_party/blink/public/strings",
-      "//ui/resources",
-      "//ui/strings",
+    ]
+  }
+}
+
+test("extensions_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
+  sources = [
+    "test/extensions_unittests_main.cc",
+    "test/flakiness_test_util_test.cc",
+    "test/logging_timer_unittest.cc",
+  ]
+
+  data = [
+    "test/data/",
+    "//chrome/test/data/extensions/",
+    "$root_out_dir/content_shell.pak",
+    "$root_out_dir/extensions_shell_and_test.pak",
+  ]
+
+  deps = [
+    ":shell_and_test_pak",
+    ":test_support",
+    "//base/test:test_support",
+    "//build:android_buildflags",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//extensions/browser:unit_tests",
+    "//extensions/common",
+    "//extensions/common:unit_tests",
+    "//extensions/renderer:unit_tests",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/service_manager/public/cpp/test:test_support",
+    "//ui/gl:test_support",
+  ]
+
+  data_deps = [
+    "//testing/buildbot/filters:extensions_unittests_filters",
+    "//third_party/angle:includes",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/chromeos/extensions/telemetry/api:extensions_unittests",
     ]
   }
 
-  test("extensions_unittests") {
-    use_xvfb = use_xvfb_in_this_config
-
-    sources = [
-      "test/extensions_unittests_main.cc",
-      "test/flakiness_test_util_test.cc",
-      "test/logging_timer_unittest.cc",
+  if (is_android) {
+    deps += [
+      "//content/public/android:content_full_java",
+      "//gin:v8_snapshot_assets",
+      "//services/data_decoder/public/cpp/android:safe_json_java",
+      "//ui/android:ui_full_java",
     ]
-
-    data = [
-      "test/data/",
-      "//chrome/test/data/extensions/",
-      "$root_out_dir/content_shell.pak",
-      "$root_out_dir/extensions_shell_and_test.pak",
-    ]
-
-    deps = [
-      ":extensions_resources",
-      ":shell_and_test_pak",
-      ":test_support",
-      "//base/test:test_support",
-      "//content/public/common",
-      "//content/test:test_support",
-      "//extensions/browser:unit_tests",
-      "//extensions/common",
-      "//extensions/common:unit_tests",
-      "//extensions/renderer:unit_tests",
-      "//extensions/shell:unit_tests",
-      "//services/data_decoder/public/cpp:test_support",
-      "//services/service_manager/public/cpp/test:test_support",
-      "//ui/gl:test_support",
-    ]
-
-    data_deps = [
-      "//testing/buildbot/filters:extensions_unittests_filters",
-      "//third_party/angle:includes",
-    ]
-
-    if (is_chromeos) {
-      deps += [ "//chrome/browser/chromeos/extensions/telemetry/api:extensions_unittests" ]
-    }
   }
 
+  # TODO(https://crbug.com/356905053): Gradually include more of these sources
+  # in the desktop-android build.
+  if (enable_extensions) {
+    deps += [ "//extensions/shell:unit_tests" ]
+  }
+}
+
+if (enable_extensions) {
+  # Browser tests are not currently supported in desktop-android builds.
   test("extensions_browsertests") {
     use_xvfb = use_xvfb_in_this_config
 

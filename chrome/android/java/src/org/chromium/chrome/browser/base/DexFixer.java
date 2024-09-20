@@ -79,7 +79,7 @@ public class DexFixer {
             Log.w(TAG, "Triggering dex compile. Reason=%d", reason);
             try {
                 String cmd = "/system/bin/cmd package compile -r shared ";
-                if (reason == DexFixerReason.NOT_READABLE && BuildConfig.ISOLATED_SPLITS_ENABLED) {
+                if (reason == DexFixerReason.NOT_READABLE && BuildConfig.IS_BUNDLE) {
                     // Isolated processes need only access the base split.
                     String apkBaseName = new File(appInfo.sourceDir).getName();
                     cmd += String.format("--split %s ", apkBaseName);

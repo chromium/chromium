@@ -138,10 +138,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     private AnimatorHolder mMoves = new AnimatorHolder("Move");
     private AnimatorHolder mRemovals = new AnimatorHolder("Removal");
 
-    private final boolean mRemoveEmphasizedAccelerate;
-
-    TabListItemAnimator(boolean removeEmphasizedAccelerate) {
-        mRemoveEmphasizedAccelerate = removeEmphasizedAccelerate;
+    TabListItemAnimator() {
         setRemoveDuration(DEFAULT_REMOVE_DURATION);
     }
 
@@ -528,8 +525,6 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     }
 
     private Interpolator getGenericRemoveInterpolator() {
-        return mRemoveEmphasizedAccelerate
-                ? Interpolators.EMPHASIZED_ACCELERATE
-                : Interpolators.STANDARD_ACCELERATE;
+        return Interpolators.STANDARD_ACCELERATE;
     }
 }

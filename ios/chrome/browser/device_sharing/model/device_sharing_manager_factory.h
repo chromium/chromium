@@ -12,14 +12,13 @@
 class DeviceSharingManager;
 
 // Keyed service factory for BrowserList.
-// This factory returns the same instance for regular and OTR browser states.
+// This factory returns the same instance for regular and OTR profiles.
 class DeviceSharingManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Convenience getter that typecasts the value returned to a
-  // BrowserList.
-  static DeviceSharingManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  // Getter for singleton instance.
+  // TODO(crbug.com/358301380): remove this method.
+  static DeviceSharingManager* GetForBrowserState(ProfileIOS* profile);
+
+  static DeviceSharingManager* GetForProfile(ProfileIOS* profile);
   static DeviceSharingManagerFactory* GetInstance();
 
   // Returns the default factory used to build DeviceSharingManagers. Can be

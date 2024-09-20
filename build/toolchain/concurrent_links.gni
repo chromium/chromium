@@ -103,11 +103,11 @@ if (concurrent_links == -1) {
   # For Android builds, we also need to be wary of:
   # * ProGuard / R8
   # * Android Lint
-  # These both have a peak usage of < 2GB, but that is still large enough for
-  # them to need to use a pool since they both typically happen at the
-  # same time as linking.
+  # These both have a peak usage of < 4GB, that is large enough for them to
+  # need to use a pool since they both typically happen at the same time as
+  # linking.
   if (is_android) {
-    _args += [ "--secondary_mem_per_link=2" ]
+    _args += [ "--secondary_mem_per_link=4" ]
   }
 
   # TODO(crbug.com/41257258) Pass more build configuration info to the script

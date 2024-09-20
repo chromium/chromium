@@ -39,8 +39,9 @@ bool FakeSafeBrowsingClient::ShouldBlockUnsafeResource(
   return should_block_unsafe_resource_;
 }
 
-void FakeSafeBrowsingClient::OnMainFrameUrlQueryCancellationDecided(
+bool FakeSafeBrowsingClient::OnMainFrameUrlQueryCancellationDecided(
     web::WebState* web_state,
     const GURL& url) {
   main_frame_cancellation_decided_called_ = true;
+  return main_frame_cancellation_decided_called_;
 }

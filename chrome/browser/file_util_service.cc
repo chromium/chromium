@@ -9,7 +9,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/service_process_host.h"
 
-namespace chrome {
 // Class allows us to friend the passkeys we need to launch the service.
 class FileUtilServiceLauncher {
  public:
@@ -24,8 +23,7 @@ class FileUtilServiceLauncher {
     return remote;
   }
 };
-}  // namespace chrome
 
 mojo::PendingRemote<chrome::mojom::FileUtilService> LaunchFileUtilService() {
-  return chrome::FileUtilServiceLauncher::LaunchFileUtilService();
+  return FileUtilServiceLauncher::LaunchFileUtilService();
 }

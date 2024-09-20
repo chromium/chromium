@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -21,10 +22,10 @@
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -32,6 +33,13 @@
 #import "ui/base/resource/resource_bundle.h"
 
 using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
+
+namespace {
+// Delay before allowing selecting a suggestion for filling. This helps
+// preventing clickjacking by giving more time to the user to understand what
+// the bottom sheet does.
+base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
+}  // namespace
 
 @interface PaymentsSuggestionBottomSheetMediator () <
     CRWWebStateObserver,
@@ -73,6 +81,17 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 
   // Information regarding the triggering form for this bottom sheet.
   autofill::FormActivityParams _params;
+
+  // Timestamp recorded when the bottom sheet view did appear which corresponds
+  // to when the presentation animation is done. Countdowns start once this
+  // timestamp is set with a value.
+  std::optional<base::TimeTicks> _viewDidAppearTimestamp;
+
+  // Counter that counts the number of attempts made to fill a suggestion before
+  // it actually happened. If the count is bigger than 1 it means that filling a
+  // suggestion was rejected at least once for some reason. The most common
+  // reason is that filling wasn't allowed yet, to prevent clickjacking.
+  int _fillAttemptsCount;
 }
 
 #pragma mark - Properties
@@ -89,6 +108,8 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
     _params = params;
     _hasCreditCards = NO;
     _webStateList = webStateList;
+    _fillAttemptsCount = 0;
+
     if (personalDataManager) {
       _personalDataManager = personalDataManager;
       _personalDataManagerObserver.reset(
@@ -137,11 +158,14 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
   _webStateList = nullptr;
 }
 
-- (autofill::CreditCard*)creditCardForIdentifier:(NSString*)identifier {
+- (std::optional<autofill::CreditCard>)creditCardForIdentifier:
+    (NSString*)identifier {
   CHECK(identifier);
   CHECK(_personalDataManager);
-  return _personalDataManager->payments_data_manager().GetCreditCardByGUID(
-      base::SysNSStringToUTF8(identifier));
+  const autofill::CreditCard* card =
+      _personalDataManager->payments_data_manager().GetCreditCardByGUID(
+          base::SysNSStringToUTF8(identifier));
+  return card ? std::make_optional(*card) : std::nullopt;
 }
 
 - (BOOL)hasCreditCards {
@@ -151,6 +175,14 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 - (void)logExitReason:(PaymentsSuggestionBottomSheetExitReason)exitReason {
   base::UmaHistogramEnumeration("IOS.PaymentsBottomSheet.ExitReason",
                                 exitReason);
+  if (exitReason ==
+      PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion) {
+    base::UmaHistogramCounts100("IOS.PaymentsBottomSheet.AcceptAttempts.Accept",
+                                _fillAttemptsCount);
+  } else {
+    base::UmaHistogramCounts100(
+        "IOS.PaymentsBottomSheet.AcceptAttempts.Dismiss", _fillAttemptsCount);
+  }
 }
 
 #pragma mark - Accessors
@@ -239,25 +271,26 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
   // Create a form suggestion containing the selected credit card's backend id
   // so that the suggestion provider can properly fill the form.
   FormSuggestion* suggestion = [FormSuggestion
-             suggestionWithValue:nil
-                      minorValue:nil
-              displayDescription:nil
-                            icon:nil
-                            type:((base::FeatureList::IsEnabled(
-                                       autofill::features::
-                                           kAutofillEnableVirtualCards) &&
-                                   ([creditCardData recordType] ==
-                                    autofill::CreditCard::RecordType::
-                                        kVirtualCard))
-                                      ? autofill::SuggestionType::
-                                            kVirtualCreditCardEntry
-                                      : autofill::SuggestionType::
-                                            kCreditCardEntry)
-               backendIdentifier:[creditCardData backendIdentifier]
-                  requiresReauth:NO
-      acceptanceA11yAnnouncement:
-          base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
+              suggestionWithValue:nil
+                       minorValue:nil
+               displayDescription:nil
+                             icon:nil
+                             type:((base::FeatureList::IsEnabled(
+                                        autofill::features::
+                                            kAutofillEnableVirtualCards) &&
+                                    ([creditCardData recordType] ==
+                                     autofill::CreditCard::RecordType::
+                                         kVirtualCard))
+                                       ? autofill::SuggestionType::
+                                             kVirtualCreditCardEntry
+                                       : autofill::SuggestionType::
+                                             kCreditCardEntry)
+                backendIdentifier:[creditCardData backendIdentifier]
+      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                   requiresReauth:NO
+       acceptanceA11yAnnouncement:
+           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
   [provider didSelectSuggestion:suggestion atIndex:index params:_params];
 }
@@ -267,6 +300,22 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
     AutofillBottomSheetTabHelper::FromWebState(activeWebState)
         ->DetachPaymentsListenersForAllFrames(refocus);
+  }
+}
+
+- (void)paymentsBottomSheetViewDidAppear {
+  // Start countdown for being able to select suggestions.
+  _viewDidAppearTimestamp = base::TimeTicks::Now();
+}
+
+- (void)didTapOnPrimaryButton {
+  ++_fillAttemptsCount;
+
+  // Allow the action if past the delay for accepting suggestions.
+  if (_viewDidAppearTimestamp &&
+      base::TimeTicks::Now() - *_viewDidAppearTimestamp >=
+          kSelectSuggestionDelay) {
+    [self.consumer activatePrimaryButton];
   }
 }
 

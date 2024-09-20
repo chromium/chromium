@@ -53,7 +53,8 @@ class AsyncCheckTracker
 
   static AsyncCheckTracker* GetOrCreateForWebContents(
       content::WebContents* web_contents,
-      scoped_refptr<BaseUIManager> ui_manager);
+      scoped_refptr<BaseUIManager> ui_manager,
+      bool should_sync_checker_check_allowlist);
 
   // Returns true if the main frame load is pending (i.e. the navigation has not
   // yet committed). Note that a main frame hit may not be pending, eg. 1)
@@ -72,6 +73,14 @@ class AsyncCheckTracker
   // navigation associated with the `resource` is too old.
   static std::optional<base::TimeTicks> GetBlockedPageCommittedTimestamp(
       const security_interstitials::UnsafeResource& resource);
+
+  // Returns whether the platform is eligible for its sync checker to check the
+  // allowlist first. Only return true if
+  //   * The allowlist check is significantly faster than the local blocklist
+  //     check on this platform. AND
+  //   * As a risk mitigation, the async checker should still fall back to local
+  //     blocklist check if the URL matches the allowlist.
+  static bool IsPlatformEligibleForSyncCheckerCheckAllowlist();
 
   AsyncCheckTracker(const AsyncCheckTracker&) = delete;
   AsyncCheckTracker& operator=(const AsyncCheckTracker&) = delete;
@@ -94,6 +103,14 @@ class AsyncCheckTracker
   std::optional<base::TimeTicks> GetNavigationCommittedTimestamp(
       int64_t navigation_id);
 
+  // Returns whether the additional sync checker should check the allowlist
+  // first.
+  // Checking the allowlist first can reduce the loading latency caused by Safe
+  // Browsing on certain platforms.
+  bool should_sync_checker_check_allowlist() {
+    return should_sync_checker_check_allowlist_;
+  }
+
   // content::WebContentsObserver methods:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
@@ -113,7 +130,8 @@ class AsyncCheckTracker
   friend class SafeBrowsingBlockingPageTestHelper;
 
   AsyncCheckTracker(content::WebContents* web_contents,
-                    scoped_refptr<BaseUIManager> ui_manager);
+                    scoped_refptr<BaseUIManager> ui_manager,
+                    bool should_sync_checker_check_allowlist);
 
   // Deletes the pending checker in `pending_checkers_` that is keyed by
   // `navigation_id`. Does nothing if `navigation_id` is not found.
@@ -163,6 +181,9 @@ class AsyncCheckTracker
   // The threshold that will trigger a cleanup on
   // `committed_navigation_timestamps_`. Overridden in tests.
   size_t navigation_timestamps_size_threshold_;
+
+  // Whether sync checker should check the allowlist first.
+  const bool should_sync_checker_check_allowlist_ = false;
 
   // A list of observers that are interested in events from this class.
   base::ObserverList<Observer> observers_;

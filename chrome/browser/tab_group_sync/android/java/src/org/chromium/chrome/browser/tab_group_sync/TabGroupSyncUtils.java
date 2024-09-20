@@ -11,7 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Token;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -23,6 +27,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupEvent;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
@@ -150,5 +155,50 @@ public final class TabGroupSyncUtils {
         if (tab == null || tab.getTabGroupId() == null) return null;
         LocalTabGroupId localTabGroupId = new LocalTabGroupId(tab.getTabGroupId());
         return tabGroupSyncService.getGroup(localTabGroupId);
+    }
+
+    /**
+     * Called to update the URL redirect chain of the current page in the tab.
+     *
+     * @param tab Tab that triggers the navigation.
+     * @param navigationHandle Navigation handle to retrieve the redirect chain from.
+     */
+    public static void updateTabRedirectChain(Tab tab, NavigationHandle navigationHandle) {
+        if (tab.getTabGroupId() == null) return;
+        TabGroupSyncUtilsJni.get()
+                .updateTabRedirectChain(
+                        tab.getProfile(),
+                        getLocalTabGroupId(tab),
+                        tab.getId(),
+                        navigationHandle.nativeNavigationHandlePtr());
+    }
+
+    /**
+     * Called to check if a URL is part of the redirect chain of the current tab URL.
+     *
+     * @param tab Tab whose URL redirect chain needs to be checked.
+     * @param url The URL to be checked.
+     * @return true if the URL belongs to the tab's redirect chain, or false otherwise.
+     */
+    public static boolean isUrlInTabRedirectChain(Tab tab, GURL url) {
+        if (tab.getTabGroupId() == null) return false;
+        return TabGroupSyncUtilsJni.get()
+                .isUrlInTabRedirectChain(
+                        tab.getProfile(), getLocalTabGroupId(tab), tab.getId(), url);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void updateTabRedirectChain(
+                @JniType("Profile*") Profile profile,
+                LocalTabGroupId groupId,
+                int tabId,
+                long navigationHandlePtr);
+
+        boolean isUrlInTabRedirectChain(
+                @JniType("Profile*") Profile profile,
+                LocalTabGroupId groupId,
+                int tabId,
+                @JniType("GURL") GURL url);
     }
 }

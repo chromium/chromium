@@ -181,9 +181,8 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     offset += kMaxChunkSize;
   }
 
-  DCHECK(!failure);
   if (failure) {
-    LOG(ERROR) << "CountResidentBytes failed. The resident size is invalid";
+    PLOG(ERROR) << "CountResidentBytes";
     return std::nullopt;
   }
   return total_resident_pages;

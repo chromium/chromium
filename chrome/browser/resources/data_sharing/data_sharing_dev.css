@@ -8,11 +8,3 @@ body {
   width: 520px;
   height: 500px;
 }
-
- #debug-container {
-  display: none;
-}
-
-#debug-container[debug] {
-  display: block;
-}

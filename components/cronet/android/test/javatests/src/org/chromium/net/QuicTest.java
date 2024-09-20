@@ -10,6 +10,8 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.os.Build;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
@@ -19,12 +21,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.CronetUrlRequestContext;
+import org.chromium.net.impl.TestLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,14 +46,20 @@ import java.util.concurrent.Executors;
                 "The fallback implementation doesn't support QUIC. "
                         + "crbug.com/1494870: Enable for AOSP_PLATFORM once fixed")
 public class QuicTest {
-    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    private final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    private final CronetLoggerTestRule<TestLogger> mLoggerTestRule =
+            new CronetLoggerTestRule<>(TestLogger.class);
+
+    @Rule public final RuleChain chain = RuleChain.outerRule(mTestRule).around(mLoggerTestRule);
+
+    private TestLogger mTestLogger;
 
     @Before
     public void setUp() throws Exception {
         // Load library first, since we need the Quic test server's URL.
         System.loadLibrary("cronet_tests");
         QuicTestServer.startQuicTestServer(mTestRule.getTestFramework().getContext());
-
+        mTestLogger = mLoggerTestRule.mTestLogger;
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -100,6 +111,7 @@ public class QuicTest {
 
     @After
     public void tearDown() throws Exception {
+        mTestLogger = null;
         QuicTestServer.shutdownQuicTestServer();
     }
 
@@ -321,6 +333,18 @@ public class QuicTest {
         assertThat(quicException.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.PEER);
         assertThat(quicException.getErrorCode())
                 .isEqualTo(NetworkException.ERROR_QUIC_PROTOCOL_FAILED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mTestLogger.waitForLogCronetTrafficInfo();
+            final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
+            assertThat(trafficInfo.getConnectionCloseSource())
+                    .isEqualTo(quicException.getConnectionCloseSource());
+            assertThat(trafficInfo.getNetworkInternalErrorCode())
+                    .isEqualTo(quicException.getCronetInternalErrorCode());
+            assertThat(trafficInfo.getQuicErrorCode())
+                    .isEqualTo(quicException.getQuicDetailedErrorCode());
+            assertThat(trafficInfo.getFailureReason())
+                    .isEqualTo(CronetTrafficInfo.RequestFailureReason.NETWORK);
+        }
     }
 
     // Helper method to assert that the request is negotiated over QUIC.

@@ -63,35 +63,21 @@ public class CipherFactory {
         }
     }
 
-    /** Singleton holder for the class. */
-    private static class LazyHolder {
-        private static CipherFactory sInstance = new CipherFactory();
-    }
-
-    public static void resetInstanceForTesting() {
-        LazyHolder.sInstance = new CipherFactory();
-    }
-
-    public static void resetInstanceForTesting(CipherFactory cipherFactory) {
-        LazyHolder.sInstance = cipherFactory;
-    }
-
     /** Protects mData across threads. */
     private final Object mDataLock = new Object();
 
     /** Holds data for cipher generation. */
     private CipherData mData;
 
-    /** A list of observers for this class. */
-    private Runnable mTestCipherDataGeneratedCallback;
-
-    /** @return The Singleton instance. Creates it if it doesn't exist. */
-    public static CipherFactory getInstance() {
-        return LazyHolder.sInstance;
-    }
+    /**
+     * Constructor for a new {@link CipherFactory}. Each CipherFactory will use different encryption
+     * keys.
+     */
+    public CipherFactory() {}
 
     /**
      * Creates a secure Cipher for encrypting data.
+     *
      * @param opmode One of Cipher.{ENCRYPT,DECRYPT}_MODE.
      * @return A Cipher, or null if it is not possible to instantiate one.
      */
@@ -196,6 +182,4 @@ public class CipherFactory {
 
         return false;
     }
-
-    private CipherFactory() {}
 }

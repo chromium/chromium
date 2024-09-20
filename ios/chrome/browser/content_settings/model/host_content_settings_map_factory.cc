@@ -15,9 +15,15 @@ namespace ios {
 
 // static
 HostContentSettingsMap* HostContentSettingsMapFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+HostContentSettingsMap* HostContentSettingsMapFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<HostContentSettingsMap*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get());
+      GetInstance()->GetServiceForBrowserState(profile, true).get());
 }
 
 // static

@@ -64,8 +64,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
 - (FeedMetricsRecorder*)feedMetricsRecorderForBrowser:(Browser*)browser {
   DiscoverFeedService* discoverFeedService =
-      DiscoverFeedServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      DiscoverFeedServiceFactory::GetForProfile(browser->GetProfile());
   return discoverFeedService->GetFeedMetricsRecorder();
 }
 
@@ -110,29 +109,26 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 - (NewTabPageMediator*)NTPMediatorForBrowser:(Browser*)browser
                     identityDiscImageUpdater:
                         (id<UserAccountImageUpdateDelegate>)imageUpdater {
-  ChromeBrowserState* browserState = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+      ios::TemplateURLServiceFactory::GetForBrowserState(profile);
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForBrowserState(profile);
   DiscoverFeedService* discoverFeedService =
-      DiscoverFeedServiceFactory::GetForBrowserState(browserState);
-  PrefService* prefService =
-      ChromeBrowserState::FromBrowserState(browser->GetBrowserState())
-          ->GetPrefs();
+      DiscoverFeedServiceFactory::GetForProfile(profile);
+  PrefService* prefService = profile->GetPrefs();
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browser->GetBrowserState());
+      SyncServiceFactory::GetForBrowserState(profile);
   BOOL isSafeMode = [browser->GetSceneState().appState resumingFromSafeMode];
   return [[NewTabPageMediator alloc]
       initWithTemplateURLService:templateURLService
                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
                      authService:authService
-                 identityManager:IdentityManagerFactory::GetForProfile(
-                                     browserState)
+                 identityManager:IdentityManagerFactory::GetForProfile(profile)
            accountManagerService:ChromeAccountManagerServiceFactory::
-                                     GetForBrowserState(browserState)
+                                     GetForBrowserState(profile)
         identityDiscImageUpdater:imageUpdater
-                     isIncognito:browserState->IsOffTheRecord()
+                     isIncognito:profile->IsOffTheRecord()
              discoverFeedService:discoverFeedService
                      prefService:prefService
                      syncService:syncService
@@ -153,8 +149,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
   // Get the feed factory from the `browser` and create the feed model.
   DiscoverFeedService* feedService =
-      DiscoverFeedServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      DiscoverFeedServiceFactory::GetForProfile(browser->GetProfile());
   FeedModelConfiguration* discoverFeedConfiguration =
       [FeedModelConfiguration discoverFeedModelConfiguration];
   feedService->CreateFeedModel(discoverFeedConfiguration);
@@ -176,8 +171,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   // Get the feed factory from the `browser` and create the feed model. Content
   // is sorted by `sortType`.
   DiscoverFeedService* feedService =
-      DiscoverFeedServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      DiscoverFeedServiceFactory::GetForProfile(browser->GetProfile());
   FeedModelConfiguration* followingFeedConfiguration =
       [FeedModelConfiguration followingModelConfigurationWithSortType:sortType];
   feedService->CreateFeedModel(followingFeedConfiguration);
@@ -197,10 +191,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
                                        feedViewController:feedViewController];
 }
 
-- (FeedHeaderViewController*)feedHeaderViewControllerWithFollowingDotVisible:
-    (BOOL)followingDotVisible {
-  return [[FeedHeaderViewController alloc]
-      initWithFollowingDotVisible:followingDotVisible];
+- (FeedHeaderViewController*)feedHeaderViewController {
+  return [[FeedHeaderViewController alloc] init];
 }
 
 @end

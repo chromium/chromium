@@ -69,8 +69,9 @@ void ExtensionIconManager::OnImageLoaded(const ExtensionId& extension_id,
   if (!image.IsEmpty()) {
     // We may have removed the icon while waiting for it to load. In that case,
     // do nothing.
-    if (pending_icons_.erase(extension_id) == 0)
+    if (pending_icons_.erase(extension_id) == 0) {
       return;
+    }
 
     gfx::Image modified_image = image;
     if (monochrome_) {
@@ -82,8 +83,9 @@ void ExtensionIconManager::OnImageLoaded(const ExtensionId& extension_id,
     icons_[extension_id] = modified_image;
   }
 
-  if (observer_)
+  if (observer_) {
     observer_->OnImageLoaded(extension_id);
+  }
 }
 
 void ExtensionIconManager::EnsureDefaultIcon() {

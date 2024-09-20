@@ -58,7 +58,13 @@ FileSystemURL::~FileSystemURL() = default;
 FileSystemURL FileSystemURL::CreateSibling(
     const base::SafeBaseName& sibling_name) const {
   const base::FilePath& new_base_name = sibling_name.path();
-  if (!is_valid_ || new_base_name.empty()) {
+  if (!is_valid_ ||
+      new_base_name.empty()
+#if BUILDFLAG(IS_ANDROID)
+      // Android content-URIs do not support siblings.
+      || path().IsContentUri()
+#endif
+  ) {
     return FileSystemURL();
   }
 
@@ -118,8 +124,7 @@ bool FileSystemURL::TypeImpliesPathIsReal(FileSystemType type) {
 
     case kFileSystemInternalTypeEnumStart:
     case kFileSystemInternalTypeEnumEnd:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case kFileSystemTypeLocal:
     case kFileSystemTypeLocalMedia:

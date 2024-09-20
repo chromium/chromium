@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ui/views/borealis/borealis_disallowed_dialog.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
@@ -38,8 +39,9 @@ namespace ash {
 
 void BorealisInstallerDialog::Show(Profile* profile,
                                    OnLoadedCallback on_loaded_callback) {
-  borealis::BorealisService::GetForProfile(profile)->Features().IsAllowed(
-      base::BindOnce(
+  borealis::BorealisServiceFactory::GetForProfile(profile)
+      ->Features()
+      .IsAllowed(base::BindOnce(
           &BorealisInstallerDialog::ShowBorealisInstallerDialogIfAllowed,
           profile, std::move(on_loaded_callback)));
 }

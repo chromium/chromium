@@ -5,13 +5,16 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 
 #import "base/ios/ios_util.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider_delegate.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_utils.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/image_preview_view_controller.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
@@ -91,22 +94,41 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
 @property(nonatomic, weak) UIViewController* baseViewController;
 
-@property(nonatomic, assign, readonly) web::WebState* currentWebState;
+@property(nonatomic, assign, readonly) web::WebState* webState;
 
 @end
 
-@implementation ContextMenuConfigurationProvider
+@implementation ContextMenuConfigurationProvider {
+  /// Override the `webState` when the context menu is not triggered by the
+  /// `currentWebState`.
+  base::WeakPtr<web::WebState> _baseWebState;
+
+  // Whether the context menu is presented in the lens overlay.
+  BOOL _isLensOverlay;
+}
 
 - (instancetype)initWithBrowser:(Browser*)browser
-             baseViewController:(UIViewController*)baseViewController {
+             baseViewController:(UIViewController*)baseViewController
+                   baseWebState:(web::WebState*)webState
+                  isLensOverlay:(BOOL)isLensOverlay {
   self = [super init];
   if (self) {
     _browser = browser;
     _baseViewController = baseViewController;
     _imageSaver = [[ImageSaver alloc] initWithBrowser:self.browser];
     _imageCopier = [[ImageCopier alloc] initWithBrowser:self.browser];
+    _baseWebState = webState ? webState->GetWeakPtr() : nullptr;
+    _isLensOverlay = isLensOverlay;
   }
   return self;
+}
+
+- (instancetype)initWithBrowser:(Browser*)browser
+             baseViewController:(UIViewController*)baseViewController {
+  return [self initWithBrowser:browser
+            baseViewController:baseViewController
+                  baseWebState:nullptr
+                 isLensOverlay:NO];
 }
 
 - (void)stop {
@@ -116,6 +138,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   _imageSaver = nil;
   [_imageCopier stop];
   _imageCopier = nil;
+  _baseWebState = nullptr;
 }
 
 - (void)dealloc {
@@ -125,6 +148,10 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params {
+  UIContextMenuContentPreviewProvider previewProvider =
+      [self contextMenuContentPreviewProviderForWebState:webState
+                                                  params:params];
+
   UIContextMenuActionProvider actionProvider =
       [self contextMenuActionProviderForWebState:webState params:params];
   if (!actionProvider) {
@@ -132,18 +159,42 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   }
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:nil
+                                              previewProvider:previewProvider
                                                actionProvider:actionProvider];
 }
 
 #pragma mark - Properties
 
-- (web::WebState*)currentWebState {
+- (web::WebState*)webState {
+  if (base::FeatureList::IsEnabled(kEnableLensOverlay) && _baseWebState) {
+    return _baseWebState.get();
+  }
   return self.browser ? self.browser->GetWebStateList()->GetActiveWebState()
                       : nullptr;
 }
 
 #pragma mark - Private
+
+// Returns a preview for the images in contextual menu for a given image web
+// state.
+- (UIContextMenuContentPreviewProvider)
+    contextMenuContentPreviewProviderForWebState:(web::WebState*)webState
+                                          params:
+                                              (web::ContextMenuParams)params {
+  if (!base::FeatureList::IsEnabled(kShareInWebContextMenuIOS) ||
+      !params.src_url.is_valid() || params.link_url.is_valid()) {
+    return nil;
+  }
+
+  ImagePreviewViewController* previewViewController =
+      [[ImagePreviewViewController alloc]
+          initWithSrcURL:net::NSURLWithGURL(params.src_url)
+                webState:webState];
+  [previewViewController loadPreview];
+  return ^() {
+    return previewViewController;
+  };
+}
 
 // Returns an action based contextual menu for a given web state (link, image,
 // copy and intent detection actions).
@@ -155,7 +206,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   // Prevent context menu from displaying for a tab which is no longer the
   // current one.
-  if (webState != self.currentWebState) {
+  if (webState != self.webState) {
     return nil;
   }
 
@@ -305,6 +356,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
         return;
       }
       UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)->Load(loadParams);
+      [strongSelf didOpenTabInBackground:linkURL];
     }];
     [linkOpeningElements addObject:openNewTab];
 
@@ -376,10 +428,13 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   [linkMenuElements addObject:copyLink];
 
   // Share Link.
-  if (base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
+  // TODO(crbug.com/351817704): Disable the share menu with lens overlay as the
+  // share sheet is not presented in `baseViewController`.
+  if (!_isLensOverlay &&
+      base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
     UIAction* shareLink = [actionFactory actionToShareWithBlock:^{
       [weakSelf shareURLFromContextMenu:linkURL
-                               URLTitle:params.text
+                               URLTitle:params.text ? params.text : @""
                                  params:params];
     }];
     [linkMenuElements addObject:shareLink];
@@ -424,7 +479,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
     }
     [strongSelf.imageCopier copyImageAtURL:imageURL
                                   referrer:referrer
-                                  webState:strongSelf.currentWebState
+                                  webState:strongSelf.webState
                         baseViewController:strongSelf.baseViewController];
   }];
   [imageMenuElements addObject:copyImage];
@@ -450,12 +505,13 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   // Shares the URL of the image and not the image itself.
   // This avoids doing in process image processing by working as the share sheet
   // fetches the image to share it.
-  if (base::FeatureList::IsEnabled(kShareInWebContextMenuIOS) && !isLink) {
+  // TODO(crbug.com/351817704): Disable the share menu with lens overlay as the
+  // share sheet is not presented in `baseViewController`.
+  if (!_isLensOverlay &&
+      base::FeatureList::IsEnabled(kShareInWebContextMenuIOS) && !isLink) {
     UIAction* shareImage = [actionFactory actionToShareWithBlock:^{
       [weakSelf shareURLFromContextMenu:imageURL
-                               URLTitle:params.title_attribute
-                                            ? params.title_attribute
-                                            : params.alt_text
+                               URLTitle:GetContextMenuTitle(params)
                                  params:params];
     }];
     [imageMenuElements addObject:shareImage];
@@ -469,7 +525,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                  usingLens:(BOOL)usingLens
                   referrer:(web::Referrer)referrer {
   ImageFetchTabHelper* imageFetcher =
-      ImageFetchTabHelper::FromWebState(self.currentWebState);
+      ImageFetchTabHelper::FromWebState(self.webState);
   DCHECK(imageFetcher);
   __weak ContextMenuConfigurationProvider* weakSelf = self;
   imageFetcher->GetImageData(imageURL, referrer, ^(NSData* data) {
@@ -547,6 +603,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
     UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
         ->Load(groupLoadParams);
+    [strongSelf didOpenTabInBackground:linkURL];
   };
 
   return [actionFactory menuToOpenLinkInGroupWithGroups:groups
@@ -569,9 +626,12 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
       [[NSMutableArray alloc] init];
 
   // Open Image.
-  UIAction* openImage = [actionFactory actionOpenImageWithURL:imageURL
-                                                   completion:nil];
-  [imageOpeningMenuElements addObject:openImage];
+  // TODO(crbug.com/351817704): Add open image suport for lens overlay.
+  if (!_isLensOverlay) {
+    UIAction* openImage = [actionFactory actionOpenImageWithURL:imageURL
+                                                     completion:nil];
+    [imageOpeningMenuElements addObject:openImage];
+  }
 
   // Open Image in new tab.
   UrlLoadParams loadParams = UrlLoadParams::InNewTab(imageURL);
@@ -582,9 +642,13 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   loadParams.origin_point = [params.view convertPoint:params.location
                                                toView:nil];
 
-  UIAction* openImageInNewTab =
-      [actionFactory actionOpenImageInNewTabWithUrlLoadParams:loadParams
-                                                   completion:nil];
+  __weak __typeof__(self) weakSelf = self;
+  UIAction* openImageInNewTab = [actionFactory
+      actionOpenImageInNewTabWithUrlLoadParams:loadParams
+                                    completion:^() {
+                                      [weakSelf
+                                          didOpenTabInBackground:imageURL];
+                                    }];
 
   // Check if the URL was a valid link to avoid having the `Open in Tab Group`
   // option twice.
@@ -624,7 +688,10 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                       scenario:(MenuScenarioHistogram)scenario
                       referrer:(web::Referrer)referrer
                       webState:(web::WebState*)webState {
+  // TODO(crbug.com/351817704): Save to photo is not presented in the
+  // baseViewController.
   const bool saveToPhotosAvailable =
+      !_isLensOverlay &&
       IsSaveToPhotosAvailable(self.browser->GetBrowserState());
 
   BrowserActionFactory* actionFactory =
@@ -644,7 +711,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
     }
     [strongSelf.imageSaver saveImageAtURL:imageURL
                                  referrer:referrer
-                                 webState:strongSelf.currentWebState
+                                 webState:strongSelf.webState
                        baseViewController:strongSelf.baseViewController];
     base::UmaHistogramEnumeration(
         kSaveToPhotosContextMenuActionsHistogram,
@@ -690,6 +757,9 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
     imageSearchingElementsWithURL:(GURL)imageURL
                          scenario:(MenuScenarioHistogram)scenario
                          referrer:(web::Referrer)referrer {
+  if (_isLensOverlay) {
+    return @[];
+  }
   BrowserActionFactory* actionFactory =
       [[BrowserActionFactory alloc] initWithBrowser:self.browser
                                            scenario:scenario];
@@ -773,6 +843,12 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                                sourceView:params.view
                                                sourceRect:sourceRect];
   [handler shareURLFromContextMenu:command];
+}
+
+// Informs the delegate that a new tab has been opened in the background.
+- (void)didOpenTabInBackground:(GURL)URL {
+  [self.delegate contextMenuConfigurationProvider:self
+                 didOpenNewTabInBackgroundWithURL:URL];
 }
 
 @end

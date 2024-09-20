@@ -13,7 +13,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
-#include "net/base/features.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace storage_access_api::trial {
@@ -28,7 +28,7 @@ class StorageAccessHeaderServiceFactoryTest : public testing::Test {
     // fix such that the tests still pass when the feature is enabled.
     features_.InitWithFeatures(
         {::features::kPersistentOriginTrials,
-         net::features::kStorageAccessHeadersTrial},
+         network::features::kStorageAccessHeadersTrial},
         {safe_browsing::kSafetyHubAbusiveNotificationRevocation});
     profile_ = std::make_unique<TestingProfile>();
   }

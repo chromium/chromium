@@ -16,9 +16,15 @@ namespace ios {
 
 // static
 ZeroSuggestCacheService* ZeroSuggestCacheServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+ZeroSuggestCacheService* ZeroSuggestCacheServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<ZeroSuggestCacheService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -37,11 +43,9 @@ ZeroSuggestCacheServiceFactory::~ZeroSuggestCacheServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ZeroSuggestCacheServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<ZeroSuggestCacheService>(
-      std::make_unique<AutocompleteSchemeClassifierImpl>(),
-      browser_state->GetPrefs(),
+      std::make_unique<AutocompleteSchemeClassifierImpl>(), profile->GetPrefs(),
       OmniboxFieldTrial::kZeroSuggestCacheMaxSize.Get());
 }
 

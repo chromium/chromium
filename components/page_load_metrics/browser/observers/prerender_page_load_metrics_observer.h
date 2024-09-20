@@ -33,24 +33,6 @@ extern const char
 extern const char
     kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration[];
 
-extern const char kPageLoadPrerenderObserverEvent[];
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PageLoadPrerenderObserverEvent {
-  kOnPrerenderStart = 0,
-  kDidActivatePrerenderedPage = 1,
-  kOnFirstPaintInPage = 2,
-  kOnFirstContentfulPaintInPage = 3,
-  kOnFirstInputInPage = 4,
-  kOnComplete = 5,
-  kFlushMetricsOnAppEnterBackground = 6,
-  kRecordSessionEndHistograms = 7,
-  kRecordLayoutShiftScoreMetrics = 8,
-  kRecordNormalizedResponsivenessMetrics = 9,
-  kMaxValue = kRecordNormalizedResponsivenessMetrics,
-};
-
 }  // namespace internal
 
 namespace page_load_metrics {

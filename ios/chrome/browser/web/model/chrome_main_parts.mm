@@ -300,7 +300,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
       base::BindOnce(&FirstRun::LoadSentinelInfo));
 
   // ContentSettingsPattern need to be initialized before creating the
-  // ChromeBrowserState.
+  // ProfileIOS.
   ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(nullptr, 0);
 
   // Ensure ClipboadRecentContentIOS is created.
@@ -327,8 +327,8 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   profile_manager->LoadProfiles();
 
   // TODO(crbug.com/325257407): Factor all of the code that uses this to instead
-  // initialize for every browser state.
-  ChromeBrowserState* last_used_browser_state =
+  // initialize for every profile.
+  ProfileIOS* last_used_profile =
       profile_manager->GetLastUsedProfileDeprecatedDoNotUse();
 
   // This must occur at PreMainMessageLoopRun because `SetupMetrics()` uses the
@@ -363,7 +363,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   // Init the RLZ library. This just schedules a task on the file thread to be
   // run sometime later. If this is the first run we record the installation
   // event.
-  int ping_delay = last_used_browser_state->GetPrefs()->GetInteger(
+  int ping_delay = last_used_profile->GetPrefs()->GetInteger(
       FirstRun::GetPingDelayPrefName());
   // Negative ping delay means to send ping immediately after a first search is
   // recorded.
@@ -371,25 +371,24 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   rlz::RLZTracker::InitRlzDelayed(
       FirstRun::IsChromeFirstRun(), ping_delay < 0,
       base::Milliseconds(abs(ping_delay)),
-      RLZTrackerDelegateImpl::IsGoogleDefaultSearch(last_used_browser_state),
-      RLZTrackerDelegateImpl::IsGoogleHomepage(last_used_browser_state),
-      RLZTrackerDelegateImpl::IsGoogleInStartpages(last_used_browser_state));
+      RLZTrackerDelegateImpl::IsGoogleDefaultSearch(last_used_profile),
+      RLZTrackerDelegateImpl::IsGoogleHomepage(last_used_profile),
+      RLZTrackerDelegateImpl::IsGoogleInStartpages(last_used_profile));
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
   TranslateServiceIOS::Initialize();
   language::LanguageUsageMetrics::RecordAcceptLanguages(
-      last_used_browser_state->GetPrefs()->GetString(
+      last_used_profile->GetPrefs()->GetString(
           language::prefs::kAcceptLanguages));
   translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
       ChromeIOSTranslateClient::CreateTranslatePrefs(
-          last_used_browser_state->GetPrefs()));
+          last_used_profile->GetPrefs()));
 
   // Request new variations seed information from server.
   variations::VariationsService* variations_service =
       application_context_->GetVariationsService();
   if (variations_service) {
-    variations_service->set_policy_pref_service(
-        last_used_browser_state->GetPrefs());
+    variations_service->set_policy_pref_service(last_used_profile->GetPrefs());
     variations_service->PerformPreMainMessageLoopStartup();
   }
 
@@ -407,9 +406,8 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   base::FilePath user_data_path;
   CHECK(base::PathService::Get(ios::DIR_USER_DATA, &user_data_path));
   safe_browsing::SafeBrowsingMetricsCollector* safe_browsing_metrics_collector =
-      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
-          last_used_browser_state);
-  safe_browsing_service->Initialize(last_used_browser_state->GetPrefs(),
+      SafeBrowsingMetricsCollectorFactory::GetForProfile(last_used_profile);
+  safe_browsing_service->Initialize(last_used_profile->GetPrefs(),
                                     user_data_path,
                                     safe_browsing_metrics_collector);
 }
@@ -455,14 +453,10 @@ void IOSChromeMainParts::SetUpFieldTrials(
   std::vector<std::string> variation_ids =
       RegisterAllFeatureVariationParameters(&flags_storage, feature_list.get());
 
-  // TODO(crbug.com/355550974): Uncomment the following once the API is
-  // implemented.
-  /*
   // Register additional features to the feature list.
   AdditionalFeaturesController* additional_features_controller =
       application_context_->GetAdditionalFeaturesController();
   additional_features_controller->RegisterFeatureList(feature_list.get());
-  */
 
 #if !BUILDFLAG(USE_BLINK)
   // TODO(crbug.com/40261735) Move variations to PostEarlyInitialization.
@@ -470,7 +464,7 @@ void IOSChromeMainParts::SetUpFieldTrials(
       variation_ids, command_line_variation_ids,
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), &ios_field_trials_);
-  // additional_features_controller->FeatureListDidCompleteSetup();
+  additional_features_controller->FeatureListDidCompleteSetup();
 #endif
 }
 

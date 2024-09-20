@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "crypto/encryptor.h"
@@ -117,8 +118,13 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
   // old data saved as clear text and we'll return it directly.
   // Credit card numbers are current legacy data, so false match with prefix
   // won't happen.
-  if (!base::StartsWith(ciphertext, kObfuscationPrefix,
-                        base::CompareCase::SENSITIVE)) {
+  const bool no_prefix_found = !base::StartsWith(ciphertext, kObfuscationPrefix,
+                                                 base::CompareCase::SENSITIVE);
+
+  base::UmaHistogramBoolean("OSCrypt.Posix.NoEncryptionPrefixFound",
+                            no_prefix_found);
+
+  if (no_prefix_found) {
     *plaintext = ciphertext;
     return true;
   }

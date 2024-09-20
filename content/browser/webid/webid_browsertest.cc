@@ -1287,6 +1287,52 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   EXPECT_EQ(kIdentityProviderResponse, RunDigitalIdentityValidRequest(shell()));
 }
 
+// Test that a Verifiable Credential can be requested via the
+// navigator.credentials JS API too.
+IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
+                       NavigatorCredentialsApi) {
+  constexpr char kIdentityProviderResponse[] =
+      "&vp_token=token&presentation_submission=bar";
+
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  MockDigitalIdentityProvider* digital_identity_provider =
+      static_cast<MockDigitalIdentityProvider*>(
+          test_browser_client_->GetDigitalIdentityProviderForTests());
+
+  std::string_view request = R"(
+  {
+   "providers": [ {
+      "protocol": "openid4vp",
+      "request": "{
+        \"client_id\": \"client.example.org\",
+        \"client_id_scheme\": \"web-origin\",
+        \"nonce\": \"n-0S6_WzA2Mj\",
+        \"presentation_definition\": {
+        }
+      }",
+   } ]
+  }
+  )";
+
+  std::string json;
+  // Invalid whitespace and newlines are added to the request string to make it
+  // easier to read in this test, so we remove them before actually making the
+  // JSON comparison in IsJson below.
+  base::RemoveChars(request, "\n ", &json);
+
+  EXPECT_CALL(*digital_identity_provider, Request(_, _, JsonMatches(json), _))
+      .WillOnce(WithArg<3>(
+          [kIdentityProviderResponse](
+              DigitalIdentityProvider::DigitalIdentityCallback callback) {
+            std::move(callback).Run(kIdentityProviderResponse);
+          }));
+
+  std::string script = base::StringPrintf(
+      "const {data} = await navigator.credentials.get(%s);return data;",
+      BuildDigitalIdentityValidJsRequestDictionary().c_str());
+  EXPECT_EQ(kIdentityProviderResponse, EvalJsAndReturnToken(shell(), script));
+}
+
 // Test that when there's a pending mdoc request, a second `get` call should be
 // rejected.
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
@@ -1380,7 +1426,11 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
             content += "fields=name,email,picture&";
             content += "param_%3F+gets+://=%26+escaped+!&";
             content += "param_foo=bar&";
-            content += "param_hello=world";
+            content += "param_hello=world&";
+            content +=
+                "params=%7B%22%3F+gets+://"
+                "%22:%22%26+escaped+!%22,%22foo%22:%22bar%22,%22hello%22:%"
+                "22world%22%7D";
 
             EXPECT_EQ(request.content, content);
 
@@ -1530,7 +1580,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
 
   // Expects the account chooser to be opened. Selects the first account.
   EXPECT_CALL(*controller, ShowAccountsDialog)
-      .WillOnce(::testing::WithArg<5>([&config_url](auto on_selected) {
+      .WillOnce(::testing::WithArg<6>([&config_url](auto on_selected) {
         std::move(on_selected)
             .Run(config_url,
                  /* account_id=*/"not_real_account",

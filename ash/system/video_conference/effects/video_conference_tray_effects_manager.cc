@@ -4,6 +4,7 @@
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -151,6 +152,20 @@ void VideoConferenceTrayEffectsManager::NotifyEffectSupportStateChanged(
   }
 }
 
+void VideoConferenceTrayEffectsManager::NotifyEffectChanged(
+    VcEffectId effect_id,
+    bool is_on) {
+  for (auto& observer : observers_) {
+    observer.OnEffectChanged(effect_id, is_on);
+  }
+}
+
+void VideoConferenceTrayEffectsManager::NotifyVideoConferenceBubbleOpened() {
+  for (auto& observer : observers_) {
+    observer.OnVideoConferenceBubbleOpened();
+  }
+}
+
 void VideoConferenceTrayEffectsManager::RecordInitialStates() {
   for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
     delegate->RecordInitialStates();
@@ -216,6 +231,10 @@ VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
     }
   }
 
+  std::sort(effects.begin(), effects.end(),
+            [](const VcHostedEffect* lhs, const VcHostedEffect* rhs) {
+              return lhs->id() < rhs->id();
+            });
   return effects;
 }
 

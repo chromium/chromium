@@ -256,13 +256,13 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
 
   String AsString() const {
     if (Is8Bit()) {
-      return String::Make8BitFrom16BitSource(this->data(), this->size());
+      return String::Make8BitFrom16BitSource(base::span(*this));
     }
     return String(this->data(), this->size());
   }
 
   String AsString8() const {
-    return String::Make8BitFrom16BitSource(this->data(), this->size());
+    return String::Make8BitFrom16BitSource(base::span(*this));
   }
 
   AtomicString AsAtomicString() const {

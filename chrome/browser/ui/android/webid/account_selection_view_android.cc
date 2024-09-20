@@ -37,21 +37,22 @@ using DismissReason = content::IdentityRequestDialogController::DismissReason;
 
 namespace {
 
-ScopedJavaLocalRef<jobject> ConvertToJavaAccount(JNIEnv* env,
-                                                 const Account& account) {
+ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
+    JNIEnv* env,
+    content::IdentityRequestAccount* account) {
   ScopedJavaLocalRef<jobject> decoded_picture = nullptr;
-  if (!account.decoded_picture.IsEmpty()) {
+  if (!account->decoded_picture.IsEmpty()) {
     decoded_picture =
-        gfx::ConvertToJavaBitmap(*account.decoded_picture.ToSkBitmap());
+        gfx::ConvertToJavaBitmap(*account->decoded_picture.ToSkBitmap());
   }
   return Java_Account_Constructor(
-      env, ConvertUTF8ToJavaString(env, account.id),
-      ConvertUTF8ToJavaString(env, account.email),
-      ConvertUTF8ToJavaString(env, account.name),
-      ConvertUTF8ToJavaString(env, account.given_name),
-      url::GURLAndroid::FromNativeGURL(env, account.picture), decoded_picture,
-      account.login_state == Account::LoginState::kSignIn,
-      account.browser_trusted_login_state == Account::LoginState::kSignIn);
+      env, ConvertUTF8ToJavaString(env, account->id),
+      ConvertUTF8ToJavaString(env, account->email),
+      ConvertUTF8ToJavaString(env, account->name),
+      ConvertUTF8ToJavaString(env, account->given_name),
+      url::GURLAndroid::FromNativeGURL(env, account->picture), decoded_picture,
+      account->login_state == Account::LoginState::kSignIn,
+      account->browser_trusted_login_state == Account::LoginState::kSignIn);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
@@ -92,7 +93,7 @@ ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
     JNIEnv* env,
-    const std::vector<Account>& accounts) {
+    const std::vector<IdentityRequestAccountPtr>& accounts) {
   ScopedJavaLocalRef<jclass> account_clazz = base::android::GetClass(
       env, "org/chromium/chrome/browser/ui/android/webid/data/Account");
   ScopedJavaLocalRef<jobjectArray> array(
@@ -101,33 +102,40 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
   base::android::CheckException(env);
 
   for (size_t i = 0; i < accounts.size(); ++i) {
-    ScopedJavaLocalRef<jobject> item = ConvertToJavaAccount(env, accounts[i]);
+    ScopedJavaLocalRef<jobject> item =
+        ConvertToJavaAccount(env, accounts[i].get());
     env->SetObjectArrayElement(array.obj(), i, item.obj());
   }
   return array;
 }
 
-ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
+inline ScopedJavaLocalRef<jintArray> ConvertFieldsToJavaArray(
     JNIEnv* env,
-    const std::optional<content::IdentityProviderData>& new_accounts_idp) {
-  if (!new_accounts_idp) {
-    return ScopedJavaLocalRef<jobject>(env, nullptr);
+    const std::vector<content::IdentityRequestDialogDisclosureField>& fields) {
+  std::vector<int> int_array;
+  for (auto field : fields) {
+    int_array.push_back(static_cast<int>(field));
   }
-  return Java_IdentityProviderData_Constructor(
-      env, new_accounts_idp->idp_for_display,
-      ConvertToJavaAccounts(env, new_accounts_idp->accounts),
-      ConvertToJavaIdentityProviderMetadata(env,
-                                            new_accounts_idp->idp_metadata),
-      ConvertToJavaClientIdMetadata(env, new_accounts_idp->client_metadata),
-      static_cast<jint>(new_accounts_idp->rp_context),
-      !new_accounts_idp->disclosure_fields.empty(),
-      new_accounts_idp->has_login_status_mismatch);
+  return base::android::ToJavaIntArray(env, int_array);
 }
 
-Account ConvertFieldsToAccount(JNIEnv* env,
-                               const std::vector<std::string>& string_fields,
-                               const GURL& picture_url,
-                               bool is_sign_in) {
+ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
+    JNIEnv* env,
+    content::IdentityProviderData* idp_data) {
+  return Java_IdentityProviderData_Constructor(
+      env, idp_data->idp_for_display,
+      ConvertToJavaIdentityProviderMetadata(env, idp_data->idp_metadata),
+      ConvertToJavaClientIdMetadata(env, idp_data->client_metadata),
+      static_cast<jint>(idp_data->rp_context),
+      ConvertFieldsToJavaArray(env, idp_data->disclosure_fields),
+      idp_data->has_login_status_mismatch);
+}
+
+IdentityRequestAccountPtr ConvertFieldsToAccount(
+    JNIEnv* env,
+    const std::vector<std::string>& string_fields,
+    const GURL& picture_url,
+    bool is_sign_in) {
   auto account_id = string_fields[0];
   auto email = string_fields[1];
   auto name = string_fields[2];
@@ -143,10 +151,12 @@ Account ConvertFieldsToAccount(JNIEnv* env,
   Account::LoginState browser_trusted_login_state =
       Account::LoginState::kSignUp;
 
-  return Account(account_id, email, name, given_name, picture_url,
-                 std::move(login_hints), std::move(domain_hints),
-                 std::move(labels), login_state, browser_trusted_login_state);
+  return base::MakeRefCounted<Account>(
+      account_id, email, name, given_name, picture_url, std::move(login_hints),
+      std::move(domain_hints), std::move(labels), login_state,
+      browser_trusted_login_state);
 }
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class FedCmJavaObjectCreationOutcome {
@@ -190,10 +200,11 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 
 bool AccountSelectionViewAndroid::Show(
     const std::string& rp_for_display,
-    const std::vector<content::IdentityProviderData>& identity_provider_data,
+    const std::vector<IdentityProviderDataPtr>& idp_list,
+    const std::vector<IdentityRequestAccountPtr>& accounts,
     Account::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
-    const std::optional<content::IdentityProviderData>& new_account_idp) {
+    const std::vector<IdentityRequestAccountPtr>& new_accounts) {
   if (!MaybeCreateJavaObject(rp_mode)) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
@@ -202,33 +213,28 @@ bool AccountSelectionViewAndroid::Show(
     return false;
   }
 
-  // Serialize the `identity_provider_data.accounts` into a Java array and
+  // Serialize the `idp_list` and `accounts` into a Java array and
   // instruct the bridge to show it together with |url| to the user.
   JNIEnv* env = AttachCurrentThread();
-  // Multi IDP support does not currently work on mobile. Hence, we use the
-  // first index from the `identity_provider_data` for the IDP-specific
-  // information.
   ScopedJavaLocalRef<jobjectArray> accounts_obj =
-      ConvertToJavaAccounts(env, identity_provider_data[0].accounts);
-  ScopedJavaLocalRef<jobject> idp_metadata_obj =
-      ConvertToJavaIdentityProviderMetadata(
-          env, identity_provider_data[0].idp_metadata);
-  ScopedJavaLocalRef<jobject> client_id_metadata_obj =
-      ConvertToJavaClientIdMetadata(env,
-                                    identity_provider_data[0].client_metadata);
-  ScopedJavaLocalRef<jobject> new_account_idp_obj =
-      ConvertToJavaIdentityProviderData(env, new_account_idp);
+      ConvertToJavaAccounts(env, accounts);
+
+  ScopedJavaLocalRef<jobjectArray> new_accounts_obj =
+      ConvertToJavaAccounts(env, new_accounts);
+
+  // Multi IDP support does not currently work on mobile. Hence, we use the
+  // first index from the `idp_list` for the IDP-specific
+  // information.
+  ScopedJavaLocalRef<jobject> idp_obj =
+      ConvertToJavaIdentityProviderData(env, idp_list[0].get());
 
   // TODO(crbug.com/329235198): Support auto re-authn on Android.
   Java_AccountSelectionBridge_showAccounts(
-      env, java_object_internal_, rp_for_display,
-      identity_provider_data[0].idp_for_display, accounts_obj, idp_metadata_obj,
-      client_id_metadata_obj,
+      env, java_object_internal_, rp_for_display, idp_list[0]->idp_for_display,
+      accounts_obj, idp_obj,
       sign_in_mode == Account::SignInMode::kAuto &&
           rp_mode == blink::mojom::RpMode::kWidget,
-      static_cast<jint>(identity_provider_data[0].rp_context),
-      !identity_provider_data[0].disclosure_fields.empty(),
-      new_account_idp_obj);
+      new_accounts_obj);
   return true;
 }
 
@@ -363,8 +369,8 @@ void AccountSelectionViewAndroid::OnAccountSelected(
     const GURL& account_picture_url,
     bool is_sign_in) {
   delegate_->OnAccountSelected(
-      idp_config_url, ConvertFieldsToAccount(env, account_string_fields,
-                                             account_picture_url, is_sign_in));
+      idp_config_url, *ConvertFieldsToAccount(env, account_string_fields,
+                                              account_picture_url, is_sign_in));
   // The AccountSelectionViewAndroid may be destroyed.
   // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
   // See https://crbug.com/1393650 for details.

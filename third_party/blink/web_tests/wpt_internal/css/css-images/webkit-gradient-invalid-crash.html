@@ -1,0 +1,9 @@
+<!DOCTYPE HTML>
+<title>Don't crash for invalid -webkit-gradient() values</title>
+<link rel="help" href="https://crbug.com/363225680">
+<style>
+p {
+  background-image: -webkit-gradient(rgb(1, 2, 3));
+}
+</style>
+<p>PASS if no crash</p>

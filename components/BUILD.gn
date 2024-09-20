@@ -223,6 +223,7 @@ test("components_unittests") {
     "//components/enterprise:unit_tests",
     "//components/enterprise/common:unit_tests",
     "//components/enterprise/obfuscation/core:unit_tests",
+    "//components/enterprise/connectors/core:unit_tests",
     "//components/facilitated_payments/core/metrics:unit_tests",
     "//components/facilitated_payments/core/util:unit_tests",
     "//components/favicon/core:unit_tests",
@@ -317,6 +318,7 @@ test("components_unittests") {
     "//components/safe_browsing/core/common:unit_tests",
     "//components/safe_browsing/core/common/hashprefix_realtime:unit_tests",
     "//components/safe_search_api:unit_tests",
+    "//components/sampling_profiler:unit_tests",
     "//components/saved_tab_groups:unit_tests",
     "//components/search:unit_tests",
     "//components/search_engines:unit_tests",
@@ -845,6 +847,7 @@ test("components_unittests") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
+      "//components/metrics/dwa:unit_tests",
       "//components/metrics/structured:unit_tests",
       "//components/metrics/structured/mojom:unit_tests",
       "//components/user_notes/browser:unit_tests",
@@ -1291,6 +1294,7 @@ if (is_android) {
       "//components/permissions/android:components_permissions_junit_tests",
       "//components/policy/android:components_policy_junit_tests",
       "//components/prefs/android:junit",
+      "//components/sensitive_content:junit",
       "//components/signin/public/android:junit",
       "//components/stylus_handwriting/android:stylus_handwriting_junit_tests",
       "//components/subresource_filter/android:junit",

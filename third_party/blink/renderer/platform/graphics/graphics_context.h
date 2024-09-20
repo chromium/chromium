@@ -253,9 +253,6 @@ class PLATFORM_EXPORT GraphicsContext {
   void SetTextPaintOrder(const TextPaintOrder& order) {
     MutableState()->SetTextPaintOrder(order);
   }
-  TextPaintOrder GetTextPaintOrder() const {
-    return ImmutableState()->GetTextPaintOrder();
-  }
 
   void SetImageInterpolationQuality(InterpolationQuality quality) {
     MutableState()->SetInterpolationQuality(quality);
@@ -326,10 +323,6 @@ class PLATFORM_EXPORT GraphicsContext {
                   const AutoDarkMode& auto_dark_mode);
 
   void DrawRecord(PaintRecord);
-  void CompositeRecord(PaintRecord,
-                       const gfx::RectF& dest,
-                       const gfx::RectF& src,
-                       SkBlendMode);
   void DrawImage(Image&,
                  Image::ImageDecodingMode,
                  const ImageAutoDarkMode& auto_dark_mode,
@@ -389,7 +382,6 @@ class PLATFORM_EXPORT GraphicsContext {
   void ClipOut(const gfx::RectF& rect) {
     ClipRect(gfx::RectFToSkRect(rect), kNotAntiAliased, SkClipOp::kDifference);
   }
-  void ClipOut(const Path&);
   void ClipOutRoundedRect(const FloatRoundedRect&);
   void ClipPath(const SkPath&,
                 AntiAliasingMode = kNotAntiAliased,
@@ -470,7 +462,6 @@ class PLATFORM_EXPORT GraphicsContext {
   void ConcatCTM(const AffineTransform&);
 
   void Scale(float x, float y);
-  void Rotate(float angle_in_radians);
   void Translate(float x, float y);
   // ---------- End transformation methods -----------------
 

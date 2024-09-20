@@ -285,7 +285,6 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
   // Maps ChunkDemuxerStream instances to our internal ones for track changes.
   void MapDemuxerStreams(TrackChangeCB cb,
-                         DemuxerStream::Type,
                          const std::vector<DemuxerStream*>&);
 
   std::vector<MediaTrack::Id> MapTrackIds(

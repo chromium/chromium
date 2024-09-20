@@ -10,6 +10,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_DATA_H_
 
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -31,6 +32,25 @@ struct HarfBuzzRunGlyphData {
   // of glyphs predictable and minimizes the buffer reallocations.
   static constexpr unsigned kMaxGlyphs = kMaxCharacters;
 
+  HarfBuzzRunGlyphData() = default;
+  HarfBuzzRunGlyphData(unsigned glyph,
+                       unsigned character_index,
+                       bool safe_to_break_before,
+                       TextRunLayoutUnit advance)
+      : glyph(glyph),
+        character_index(character_index),
+        safe_to_break_before(safe_to_break_before),
+        advance(advance) {}
+
+  void SetAdvance(TextRunLayoutUnit value) { advance = value; }
+  void AddAdvance(TextRunLayoutUnit value) { advance += value; }
+  void SetAdvance(float value) {
+    advance = TextRunLayoutUnit::FromFloatRound(value);
+  }
+  void AddAdvance(float value) {
+    advance += TextRunLayoutUnit::FromFloatRound(value);
+  }
+
   unsigned glyph : 16;
   // The index of the character this glyph is for. To use as an index of
   // |String|, it is the index of UTF16 code unit, and it is always at the
@@ -38,7 +58,7 @@ struct HarfBuzzRunGlyphData {
   unsigned character_index : kCharacterIndexBits;
   unsigned safe_to_break_before : 1;
 
-  float advance;
+  TextRunLayoutUnit advance;
 };
 static_assert(std::is_trivially_copyable<HarfBuzzRunGlyphData>::value, "");
 

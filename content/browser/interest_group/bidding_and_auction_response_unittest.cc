@@ -134,15 +134,19 @@ base::Value::Dict CreateResponseDictWithPAggResponse(
 }
 
 base::Value::Dict CreateResponseDictWithDebugReports(
-    std::optional<bool> maybe_is_win_report,
-    std::optional<bool> maybe_component_win) {
+    std::optional<bool> maybe_component_win,
+    std::optional<bool> maybe_is_seller_report,
+    std::optional<bool> maybe_is_win_report) {
   base::Value::Dict report;
   report.Set("url", kDebugReportingURL);
-  if (maybe_is_win_report.has_value()) {
-    report.Set("isWinReport", *maybe_is_win_report);
-  }
   if (maybe_component_win.has_value()) {
     report.Set("componentWin", *maybe_component_win);
+  }
+  if (maybe_is_seller_report.has_value()) {
+    report.Set("isSellerReport", *maybe_is_seller_report);
+  }
+  if (maybe_is_win_report.has_value()) {
+    report.Set("isWinReport", *maybe_is_win_report);
   }
 
   return CreateValidResponseDict().Set(
@@ -1247,15 +1251,13 @@ TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReports) {
   ASSERT_TRUE(result);
   EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
 
-  EXPECT_EQ(2u, result->component_winner_debugging_only_reports.size());
-  EXPECT_THAT(result->component_winner_debugging_only_reports[std::make_pair(
-                  url::Origin::Create(GURL(kOwnerOrigin)), true)],
-              testing::UnorderedElementsAre(
-                  GURL("https://component-win.win-debug-report.com")));
-  EXPECT_THAT(result->component_winner_debugging_only_reports[std::make_pair(
-                  url::Origin::Create(GURL(kOwnerOrigin)), false)],
-              testing::UnorderedElementsAre(
-                  GURL("https://component-win.loss-debug-report.com")));
+  EXPECT_EQ(2u, result->component_win_debugging_only_reports.size());
+  EXPECT_THAT(result->component_win_debugging_only_reports
+                  [BiddingAndAuctionResponse::DebugReportKey(false, true)],
+              GURL("https://component-win.win-debug-report.com"));
+  EXPECT_THAT(result->component_win_debugging_only_reports
+                  [BiddingAndAuctionResponse::DebugReportKey(false, false)],
+              GURL("https://component-win.loss-debug-report.com"));
 
   EXPECT_EQ(1u, result->server_filtered_debugging_only_reports.size());
   EXPECT_THAT(
@@ -1315,21 +1317,26 @@ TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsIgnoreErrors) {
     ASSERT_TRUE(result);
     EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
 
-    EXPECT_TRUE(result->component_winner_debugging_only_reports.empty());
+    EXPECT_TRUE(result->component_win_debugging_only_reports.empty());
     EXPECT_TRUE(result->server_filtered_debugging_only_reports.empty());
   }
 }
 
 TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsComponentWinner) {
   BiddingAndAuctionResponse output = CreateExpectedValidResponse();
-  static const std::optional<bool> kTestCases[] = {
-      true,
-      false,
-      std::nullopt,
+  static const struct {
+    std::optional<bool> is_seller_report;
+    std::optional<bool> is_win_report;
+  } kTestCases[] = {
+      {true, true},         {true, false},         {true, std::nullopt},
+      {false, true},        {false, false},        {false, std::nullopt},
+      {std::nullopt, true}, {std::nullopt, false}, {std::nullopt, std::nullopt},
   };
+
   for (const auto& test_case : kTestCases) {
     base::Value::Dict response = CreateResponseDictWithDebugReports(
-        test_case, /*maybe_component_win=*/true);
+        /*maybe_component_win=*/true, test_case.is_seller_report,
+        test_case.is_win_report);
     SCOPED_TRACE(response.DebugString());
     std::optional<BiddingAndAuctionResponse> result =
         BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
@@ -1337,11 +1344,15 @@ TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsComponentWinner) {
                                             /*group_pagg_coordinators=*/{});
     ASSERT_TRUE(result);
     EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-    EXPECT_EQ(1u, result->component_winner_debugging_only_reports.size());
-    bool is_win_report = test_case.has_value() && *test_case;
-    EXPECT_THAT(result->component_winner_debugging_only_reports[std::make_pair(
-                    url::Origin::Create(GURL(kOwnerOrigin)), is_win_report)],
-                testing::UnorderedElementsAre(kDebugReportingURL));
+    EXPECT_EQ(1u, result->component_win_debugging_only_reports.size());
+    bool is_seller_report =
+        test_case.is_seller_report.has_value() && *test_case.is_seller_report;
+    bool is_win_report =
+        test_case.is_win_report.has_value() && *test_case.is_win_report;
+    EXPECT_THAT(result->component_win_debugging_only_reports
+                    [BiddingAndAuctionResponse::DebugReportKey(is_seller_report,
+                                                               is_win_report)],
+                kDebugReportingURL);
     EXPECT_TRUE(result->server_filtered_debugging_only_reports.empty());
   }
 }
@@ -1355,7 +1366,8 @@ TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsServerFiltered) {
   };
   for (const auto& test_case : kTestCases) {
     base::Value::Dict response = CreateResponseDictWithDebugReports(
-        test_case, /*maybe_component_win=*/false);
+        /*maybe_component_win=*/false, /*maybe_is_seller_report=*/std::nullopt,
+        /*maybe_is_win_report=*/test_case);
     SCOPED_TRACE(response.DebugString());
     std::optional<BiddingAndAuctionResponse> result =
         BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
@@ -1363,7 +1375,7 @@ TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsServerFiltered) {
                                             /*group_pagg_coordinators=*/{});
     ASSERT_TRUE(result);
     EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-    EXPECT_TRUE(result->component_winner_debugging_only_reports.empty());
+    EXPECT_TRUE(result->component_win_debugging_only_reports.empty());
     EXPECT_EQ(1u, result->server_filtered_debugging_only_reports.size());
     EXPECT_THAT(
         result->server_filtered_debugging_only_reports[url::Origin::Create(

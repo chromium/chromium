@@ -344,7 +344,7 @@ PersonalDataManagerAndroid::GetCreditCardGUIDsToSuggest(JNIEnv* env) {
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetCreditCardByGUID(
     JNIEnv* env,
     const JavaParamRef<jstring>& jguid) {
-  CreditCard* card =
+  const CreditCard* card =
       personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
           ConvertJavaStringToUTF8(env, jguid));
   if (!card)
@@ -482,7 +482,7 @@ jlong PersonalDataManagerAndroid::GetProfileUseDateForTesting(
 void PersonalDataManagerAndroid::RecordAndLogCreditCardUse(
     JNIEnv* env,
     const JavaParamRef<jstring>& jguid) {
-  CreditCard* card =
+  const CreditCard* card =
       personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
           ConvertJavaStringToUTF8(env, jguid));
   if (card) {
@@ -509,7 +509,7 @@ void PersonalDataManagerAndroid::SetCreditCardUseStatsForTesting(
 jint PersonalDataManagerAndroid::GetCreditCardUseCountForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jguid) {
-  CreditCard* card =
+  const CreditCard* card =
       personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
           ConvertJavaStringToUTF8(env, jguid));
   return card->use_count();
@@ -518,7 +518,7 @@ jint PersonalDataManagerAndroid::GetCreditCardUseCountForTesting(
 jlong PersonalDataManagerAndroid::GetCreditCardUseDateForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jguid) {
-  CreditCard* card =
+  const CreditCard* card =
       personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
           ConvertJavaStringToUTF8(env, jguid));
   return card->use_date().ToTimeT();
@@ -675,9 +675,9 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetCreditCardGUIDs(
     JNIEnv* env,
     const std::vector<CreditCard*>& credit_cards) {
   std::vector<std::u16string> guids;
-  for (CreditCard* credit_card : credit_cards)
+  for (const CreditCard* credit_card : credit_cards) {
     guids.push_back(base::UTF8ToUTF16(credit_card->guid()));
-
+  }
   return base::android::ToJavaArrayOfStrings(env, guids);
 }
 

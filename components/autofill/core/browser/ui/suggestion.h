@@ -105,6 +105,23 @@ struct Suggestion {
     DenseSet<FieldFillingSkipReason> ignorable_skip_reasons;
   };
 
+  struct PaymentsPayload final {
+    PaymentsPayload();
+    explicit PaymentsPayload(bool should_display_terms_available);
+    PaymentsPayload(const PaymentsPayload&);
+    PaymentsPayload(PaymentsPayload&&);
+    PaymentsPayload& operator=(const PaymentsPayload&);
+    PaymentsPayload& operator=(PaymentsPayload&&);
+    ~PaymentsPayload();
+
+    friend bool operator==(const PaymentsPayload&,
+                           const PaymentsPayload&) = default;
+
+    // If true, the user will be presented with a "Terms apply for card
+    // benefits" message below the suggestions list on TTF for mobile.
+    bool should_display_terms_available = false;
+  };
+
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using Guid = base::StrongAlias<class GuidTag, std::string>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
@@ -115,7 +132,8 @@ struct Suggestion {
                                 ValueToFill,
                                 PasswordSuggestionDetails,
                                 PlusAddressPayload,
-                                PredictionImprovementsPayload>;
+                                PredictionImprovementsPayload,
+                                PaymentsPayload>;
 
   // This struct is used to provide password suggestions with custom icons,
   // using the favicon of the website associated with the credentials. While
@@ -278,6 +296,7 @@ struct Suggestion {
   bool Invariant() const {
     switch (type) {
       case SuggestionType::kCreateNewPlusAddressInline:
+      case SuggestionType::kPlusAddressError:
         return absl::holds_alternative<PlusAddressPayload>(payload);
       case SuggestionType::kPasswordEntry:
         // Manual fallback password suggestions store the password to preview or
@@ -298,6 +317,13 @@ struct Suggestion {
       case SuggestionType::kFillPredictionImprovements:
         return absl::holds_alternative<ValueToFill>(payload) ||
                absl::holds_alternative<PredictionImprovementsPayload>(payload);
+      case SuggestionType::kCreditCardEntry:
+      case SuggestionType::kVirtualCreditCardEntry:
+        // TODO(crbug.com/367434234): Use `PaymentsPayload` for all credit card
+        // suggestions. Only Touch-To-Fill credit card suggestions currently
+        // use this.
+        return absl::holds_alternative<BackendId>(payload) ||
+               absl::holds_alternative<PaymentsPayload>(payload);
       default:
         return absl::holds_alternative<BackendId>(payload);
     }
@@ -401,6 +427,13 @@ struct Suggestion {
   // form. This field should be true only when `is_acceptable` is false  which
   // will make the suggestion deactivated and unclickable.
   bool apply_deactivated_style = false;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // If true, selecting a suggestion or, when it exists, expanding its
+  // sub-popup, highlights the background of the suggestion row and its
+  // contained cells.
+  bool highlight_on_select = true;
+#endif
 };
 
 std::string_view ConvertIconToPrintableString(Suggestion::Icon icon);

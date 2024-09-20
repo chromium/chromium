@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/viz/host/gpu_client.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
@@ -58,6 +59,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_host.h"
+#include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/browser/speech/speech_recognition_dispatcher_host.h"
 #include "content/browser/storage_access/storage_access_handle.h"
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
@@ -248,12 +250,6 @@
 #include "media/mojo/mojom/fuchsia_media.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "services/webnn/webnn_context_provider_impl.h"
-#else
-#include "components/viz/host/gpu_client.h"
-#endif
-
 namespace blink {
 class StorageKey;
 }  // namespace blink
@@ -305,24 +301,16 @@ void BindTextDetection(
 void BindWebNNContextProviderForRenderFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
-#if BUILDFLAG(IS_CHROMEOS)
-  webnn::WebNNContextProviderImpl::Create(std::move(receiver));
-#else
   auto* process_host = static_cast<RenderProcessHostImpl*>(host->GetProcess());
   process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
-#endif
 }
 
 void BindWebNNContextProviderForDedicatedWorker(
     DedicatedWorkerHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
-#if BUILDFLAG(IS_CHROMEOS)
-  webnn::WebNNContextProviderImpl::Create(std::move(receiver));
-#else
   auto* process_host =
       static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
   process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
-#endif
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1213,7 +1201,7 @@ void PopulateBinderMapWithContext(
   RegisterWebUIControllerInterfaceBinder<attribution_internals::mojom::Factory,
                                          AttributionInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::IdbInternalsHandler,
-                                         IndexedDBInternalsUI>(map);
+                                         indexed_db::IndexedDBInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<::mojom::ProcessInternalsHandler,
                                          ProcessInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::QuotaInternalsHandler,
@@ -1243,11 +1231,8 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&ClipboardHostImpl::Create));
   map->Add<blink::mojom::SpeculationHost>(
       base::BindRepeating(&SpeculationHostImpl::Bind));
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAnchorElementInteraction)) {
-    map->Add<blink::mojom::AnchorElementInteractionHost>(
-        base::BindRepeating(&AnchorElementInteractionHostImpl::Create));
-  }
+  map->Add<blink::mojom::AnchorElementInteractionHost>(
+      base::BindRepeating(&AnchorElementInteractionHostImpl::Create));
   GetContentClient()->browser()->RegisterBrowserInterfaceBindersForFrame(host,
                                                                          map);
 
@@ -1358,6 +1343,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
 #if !BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::SerialService>(base::BindRepeating(
       &DedicatedWorkerHost::BindSerialService, base::Unretained(host)));
+  map->Add<blink::mojom::HidService>(base::BindRepeating(
+      &DedicatedWorkerHost::BindHidService, base::Unretained(host)));
 #endif  // !BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
       &DedicatedWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
@@ -1525,6 +1512,26 @@ void PopulateBinderMapWithContext(
 
 void PopulateBinderMap(SharedWorkerHost* host, mojo::BinderMap* map) {
   PopulateSharedWorkerBinders(host, map);
+}
+
+// Shared storage worklets
+SharedStorageWorkletHost* GetContextForHost(SharedStorageWorkletHost* host) {
+  return host;
+}
+
+void PopulateSharedStorageWorkletBinders(SharedStorageWorkletHost* host,
+                                         mojo::BinderMap* map) {
+  // Ignore requests to bind UKM recorder, since there is no current plan to
+  // support it for worklets and the renderer always tries to bind it.
+  map->Add<ukm::mojom::UkmRecorderFactory>(base::DoNothing());
+}
+
+void PopulateBinderMapWithContext(
+    SharedStorageWorkletHost* host,
+    mojo::BinderMapWithContext<SharedStorageWorkletHost*>* map) {}
+
+void PopulateBinderMap(SharedStorageWorkletHost* host, mojo::BinderMap* map) {
+  PopulateSharedStorageWorkletBinders(host, map);
 }
 
 // Service workers

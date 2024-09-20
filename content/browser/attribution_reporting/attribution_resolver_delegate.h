@@ -151,6 +151,11 @@ class CONTENT_EXPORT AttributionResolverDelegate {
       int lookback_day,
       attribution_reporting::mojom::SourceRegistrationTimeConfig) const = 0;
 
+  const AttributionConfig& config() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return config_;
+  }
+
  protected:
   AttributionConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);
 

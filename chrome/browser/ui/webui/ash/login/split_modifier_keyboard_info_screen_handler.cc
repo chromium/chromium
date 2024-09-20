@@ -18,7 +18,22 @@ SplitModifierKeyboardInfoScreenHandler::
 
 // Add localized values that you want to propagate to the JS side here.
 void SplitModifierKeyboardInfoScreenHandler::DeclareLocalizedValues(
-    ::login::LocalizedValuesBuilder* builder) {}
+    ::login::LocalizedValuesBuilder* builder) {
+  builder->Add("splitModifierTitle", IDS_OOBE_SPLIT_MODIFIER_INFO_TITLE);
+  builder->Add("splitModifierSubtitle", IDS_OOBE_SPLIT_MODIFIER_INFO_SUBTITLE);
+  builder->Add("splitModifierFirstDescriptionTitle",
+               IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TITLE);
+  builder->Add("splitModifierFirstDescriptionText",
+               IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TEXT);
+  builder->Add("splitModifierFirstDescriptionAccessibility",
+               IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_ACCESSIBILITY);
+  builder->Add("splitModifierSecondDescriptionTitle",
+               IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TITLE);
+  builder->Add("splitModifierSecondDescriptionText",
+               IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TEXT);
+  builder->Add("splitModifierSecondDescriptionAccessibility",
+               IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_ACCESSIBILITY);
+}
 
 void SplitModifierKeyboardInfoScreenHandler::Show() {
   ShowInWebUI();

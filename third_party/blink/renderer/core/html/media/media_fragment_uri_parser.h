@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_FRAGMENT_URI_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_FRAGMENT_URI_PARSER_H_
 
+#include <string_view>
+
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -56,16 +58,10 @@ class CORE_EXPORT MediaFragmentURIParser final {
     kWallClockTimeCode
   };
   void ParseTimeFragment();
-  bool ParseNPTFragment(const char*,
-                        unsigned length,
-                        double& start_time,
-                        double& end_time);
+  bool ParseNPTFragment(std::string_view, double& start_time, double& end_time);
 
   FRIEND_TEST_ALL_PREFIXES(ParseNPTTimeTest, TestParseNPTTime);
-  bool ParseNPTTime(const char*,
-                    unsigned length,
-                    unsigned& offset,
-                    double& time);
+  bool ParseNPTTime(std::string_view, size_t& offset, double& time);
 
   KURL url_;
   TimeFormat time_format_;

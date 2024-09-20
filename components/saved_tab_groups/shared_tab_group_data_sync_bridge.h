@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
@@ -34,21 +34,18 @@ class SharedTabGroupDataSpecifics;
 
 namespace tab_groups {
 class SavedTabGroup;
-class SavedTabGroupModel;
+class SyncBridgeTabGroupModelWrapper;
 
 // Sync bridge implementation for SHARED_TAB_GROUP_DATA data type.
 class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
  public:
-  using SharedTabGroupLoadCallback =
-      base::OnceCallback<void(std::vector<SavedTabGroup>,
-                              std::vector<SavedTabGroupTab>)>;
-
+  // `model_wrapper` and `pref_service` must not be null and must outlive the
+  // current object.
   SharedTabGroupDataSyncBridge(
-      SavedTabGroupModel* model,
+      SyncBridgeTabGroupModelWrapper* model_wrapper,
       syncer::OnceDataTypeStoreFactory create_store_callback,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      PrefService* pref_service,
-      SharedTabGroupLoadCallback on_load_callback);
+      PrefService* pref_service);
 
   SharedTabGroupDataSyncBridge(const SharedTabGroupDataSyncBridge&) = delete;
   SharedTabGroupDataSyncBridge& operator=(const SharedTabGroupDataSyncBridge&) =
@@ -84,28 +81,25 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // Process creation of a new shared group. The added group must be shared.
   void SavedTabGroupAddedLocally(const base::Uuid& guid);
 
-  // Process update to the existing group. The group must be shared.
+  // Process update to the existing group or tab (including moved tab). The
+  // group must be shared.
   void SavedTabGroupUpdatedLocally(const base::Uuid& group_guid,
                                    const std::optional<base::Uuid>& tab_guid);
 
   // Process shared group deletion, the removed group must be shared.
   void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group);
 
-  // TODO(crbug.com/319521964): implement the following methods.
-  // void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid);
-  // void SavedTabGroupReorderedLocally();
-  // void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid);
+  // Process updated local ID for the group.
+  void ProcessTabGroupLocalIdChanged(const base::Uuid& group_guid);
 
  private:
   // Loads the data already stored in the DataTypeStore.
-  void OnStoreCreated(SharedTabGroupLoadCallback on_load_callback,
-                      const std::optional<syncer::ModelError>& error,
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::DataTypeStore> store);
 
   // Calls ModelReadyToSync if there are no errors to report and propagaters the
   // stored entries to `on_load_callback`.
   void OnReadAllDataAndMetadata(
-      SharedTabGroupLoadCallback on_load_callback,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::DataTypeStore::RecordList> entries,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
@@ -124,10 +118,11 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
       const std::string& collaboration_id,
       syncer::MetadataChangeList* metadata_change_list,
       syncer::DataTypeStore::WriteBatch* write_batch);
-  void AddTabToLocalStorage(
+  void ApplyRemoteTabUpdate(
       const sync_pb::SharedTabGroupDataSpecifics& specifics,
       syncer::MetadataChangeList* metadata_change_list,
-      syncer::DataTypeStore::WriteBatch* write_batch);
+      syncer::DataTypeStore::WriteBatch* write_batch,
+      const std::set<base::Uuid>& tab_ids_with_pending_model_update);
 
   // Removes all data assigned to `storage_key` from local storage
   // (SavedTabGroupModel, and DataTypeStore). If a group is removed, all its
@@ -140,13 +135,6 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   void SendToSync(sync_pb::SharedTabGroupDataSpecifics specific,
                   const std::string& collaboration_id,
                   syncer::MetadataChangeList* metadata_change_list);
-
-  // Updates or adds the `specifics` into the `store_` and populates it to the
-  // processor.
-  void UpsertEntitySpecifics(
-      const sync_pb::SharedTabGroupDataSpecifics& specifics,
-      const std::string& collaboration_id,
-      syncer::DataTypeStore::WriteBatch* write_batch);
 
   // Process local tab changes (add, remove, update), excluding changing tab's
   // position.
@@ -165,18 +153,20 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Calculates the position to insert a remote tab with the given unique
   // position. Always returns a valid value regardless input validness.
+  // `tab_ids_to_ignore` is used to exclude tabs which will be updated later
+  // from the comparison (see details in the implementation).
   size_t PositionToInsertRemoteTab(
       const sync_pb::UniquePosition& remote_unique_position,
-      const SavedTabGroup& group) const;
+      const SavedTabGroup& group,
+      const std::set<base::Uuid>& tab_ids_to_ignore) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.
   std::unique_ptr<syncer::DataTypeStore> store_;
 
-  // The Model used to represent the current state of saved and shared tab
-  // groups.
-  raw_ptr<SavedTabGroupModel> model_;
+  // The model wrapper used to access and mutate SavedTabGroupModel.
+  raw_ptr<SyncBridgeTabGroupModelWrapper> model_wrapper_;
 
   // Allows safe temporary use of the SharedTabGroupDataSyncBridge object if it
   // exists at the time of use.

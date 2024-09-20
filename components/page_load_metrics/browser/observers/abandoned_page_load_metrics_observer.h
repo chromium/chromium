@@ -13,10 +13,13 @@ namespace internal {
 // Exposed for tests.
 extern const char kAbandonedPageLoadMetricsHistogramPrefix[];
 extern const char kSuffixWasBackgrounded[];
-extern const char kSuffixWasHidden[];
-extern const char kSuffixResponseFromCache[];
+extern const char kSuffixTabWasHiddenAtStartStaysHidden[];
+extern const char kSuffixTabWasHiddenAtStartLaterShown[];
+extern const char kSuffixTabWasHiddenStaysHidden[];
+extern const char kSuffixTabWasHiddenLaterShown[];
 extern const char kRendererProcessCreatedBeforeNavHistogramName[];
 extern const char kRendererProcessInitHistogramName[];
+extern const char kNavigationTypeBrowserNav[];
 
 }  // namespace internal
 
@@ -83,7 +86,8 @@ class AbandonedPageLoadMetricsObserver
     kNewHistoryNavigation = 11,
     kNewOtherNavigationBrowserInitiated = 12,
     kNewOtherNavigationRendererInitiated = 13,
-    kMaxValue = kNewOtherNavigationRendererInitiated,
+    kNewDuplicateNavigation = 14,
+    kMaxValue = kNewDuplicateNavigation,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationAbandonReasonEnum)
 
@@ -103,6 +107,9 @@ class AbandonedPageLoadMetricsObserver
       std::optional<AbandonReason> abandon_reason);
   static std::string GetTimeToAbandonFromNavigationStartWithoutPrefixSuffix(
       NavigationMilestone milestone);
+  static std::string GetNavigationTypeToAbandonWithoutPrefixSuffix(
+      const std::string_view& tracked_navigation_type,
+      std::optional<AbandonReason> abandon_reason);
 
   AbandonedPageLoadMetricsObserver();
   ~AbandonedPageLoadMetricsObserver() override;
@@ -143,6 +150,7 @@ class AbandonedPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnHidden(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  ObservePolicy OnShown() override;
   void OnFailedProvisionalLoad(
       const page_load_metrics::FailedProvisionalLoadInfo&
           failed_provisional_load_info) override;
@@ -160,6 +168,7 @@ class AbandonedPageLoadMetricsObserver
 
  protected:
   virtual std::vector<std::string> GetAdditionalSuffixes() const;
+  bool IsResponseFromCache() const { return was_cached_; }
 
  private:
   using LoadingMilestone = std::pair<NavigationMilestone, base::TimeDelta>;
@@ -187,11 +196,13 @@ class AbandonedPageLoadMetricsObserver
   // time from the navigation start. Also updates `latest_loading_milestone_` if
   // the given milestone is newer than the current `latest_loading_milestone_`.
   void LogLoadingMilestone(NavigationMilestone milestone, base::TimeDelta time);
+
   bool WasBackgrounded() const {
     return !first_backgrounded_timestamp_.is_null();
   }
   bool WasHidden() const { return !first_hidden_timestamp_.is_null(); }
 
+  void OnHiddenInternal();
   void LogPreviousBackgroundingIfNeeded();
   void LogPreviousHidingIfNeeded();
 
@@ -212,9 +223,10 @@ class AbandonedPageLoadMetricsObserver
   // page load is complete (or navigate away from the page).
   void FinalizeLCP();
 
-  // The ID and start time of the navigation being tracked.
+  // The ID, start time, and type of the navigation being tracked.
   int64_t navigation_id_ = 0;
   base::TimeTicks navigation_start_time_;
+  std::string_view navigation_type_;
 
   base::TimeTicks renderer_process_init_time_;
 
@@ -225,6 +237,12 @@ class AbandonedPageLoadMetricsObserver
   // false).
   base::TimeTicks first_backgrounded_timestamp_;
   base::TimeTicks first_hidden_timestamp_;
+  bool started_in_foreground_ = false;
+
+  // Timestamp of the first and latest `OnShown()` call.
+  base::TimeTicks first_shown_timestamp_;
+  base::TimeTicks last_shown_timestamp_;
+
   // Whether we've previously logged backgrounding/hiding time. This is useful
   // because we will keep observing when backgrounding/hiding happens, unlike
   // other abandonment triggers. This ensures we will only log those events

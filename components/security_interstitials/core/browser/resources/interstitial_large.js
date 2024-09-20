@@ -78,9 +78,15 @@ function setupEvents() {
   const enterpriseBlock = interstitialType === 'ENTERPRISE_BLOCK';
   const enterpriseWarn = interstitialType === 'ENTERPRISE_WARN';
   const supervisedUserVerify = interstitialType === 'SUPERVISED_USER_VERIFY';
+  const supervisedUserVerifySubframe =
+      interstitialType === 'SUPERVISED_USER_VERIFY_SUBFRAME';
   const hidePrimaryButton = loadTimeData.getBoolean('hide_primary_button');
   const showRecurrentErrorParagraph =
       loadTimeData.getBoolean('show_recurrent_error_paragraph');
+  const showBlockedSiteMessage =
+      loadTimeData.valueExists('show_blocked_site_message') ?
+      loadTimeData.getBoolean('show_blocked_site_message') :
+      false;
 
   const body = document.querySelector('#body');
   if (ssl || blockedInterception) {
@@ -110,6 +116,8 @@ function setupEvents() {
     body.classList.add('enterprise-warn');
   } else if (supervisedUserVerify) {
     body.classList.add('supervised-user-verify');
+  } else if (supervisedUserVerifySubframe) {
+    body.classList.add('supervised-user-verify-subframe');
   } else {
     body.classList.add('safe-browsing');
     // Override the default theme color.
@@ -127,6 +135,7 @@ function setupEvents() {
       switch (interstitialType) {
         case 'CAPTIVE_PORTAL':
         case 'SUPERVISED_USER_VERIFY':
+        case 'SUPERVISED_USER_VERIFY_SUBFRAME':
           sendCommand(SecurityInterstitialCommandId.CMD_OPEN_LOGIN);
           break;
 
@@ -208,6 +217,16 @@ function setupEvents() {
     body.classList.add('showing-recurrent-error-message');
   }
 
+  if (showBlockedSiteMessage) {
+    document.querySelector('#blocked-site-message')
+        .classList.remove(HIDDEN_CLASS);
+    body.classList.add('showing-blocked-site-message');
+    document.getElementById('blocked-site-message-header').textContent =
+        loadTimeData.getString('blockedSiteMessageHeader');
+    document.getElementById('blocked-site-message-reason').textContent =
+        loadTimeData.getString('blockedSiteMessageReason');
+  }
+
   const diagnosticLink = document.querySelector('#diagnostic-link');
   if (diagnosticLink) {
     diagnosticLink.addEventListener('click', function(event) {
@@ -224,7 +243,8 @@ function setupEvents() {
 
   const detailsButton = document.querySelector('#details-button');
   if (captivePortal || billing || lookalike || insecureForm || httpsOnly ||
-      enterpriseWarn || enterpriseBlock || supervisedUserVerify) {
+      enterpriseWarn || enterpriseBlock || supervisedUserVerify ||
+      supervisedUserVerifySubframe) {
     // Captive portal, billing, lookalike pages, insecure form, enterprise warn,
     // enterprise block, and HTTPS only mode interstitials don't
     // have details buttons.

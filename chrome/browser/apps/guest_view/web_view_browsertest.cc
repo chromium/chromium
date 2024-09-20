@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -13,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -31,11 +33,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/bluetooth/web_bluetooth_test_utils.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
+#include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -44,6 +48,8 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/serial/serial_chooser_context.h"
+#include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -76,6 +82,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/hid_chooser.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -93,6 +100,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/bluetooth_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
@@ -136,9 +144,11 @@
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
+#include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/device/public/mojom/hid.mojom.h"
+#include "services/device/public/mojom/serial.mojom.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -195,6 +205,7 @@ using task_manager::browsertest_util::MatchApp;
 using task_manager::browsertest_util::MatchBackground;
 using task_manager::browsertest_util::MatchWebView;
 using task_manager::browsertest_util::WaitForTaskManagerRows;
+using testing::Return;
 using ui::MenuModel;
 
 namespace {
@@ -204,6 +215,11 @@ const char kUserAgentRedirectResponsePath[] = "/detect-user-agent";
 const char kCacheResponsePath[] = "/cache-control-response";
 const char kRedirectResponseFullPath[] =
     "/extensions/platform_apps/web_view/shim/guest_redirect.html";
+
+// Web Bluetooth
+constexpr char kFakeBluetoothDeviceName[] = "Test Device";
+constexpr char kDeviceAddress[] = "00:00:00:00:00:00";
+constexpr char kHeartRateUUIDString[] = "0000180d-0000-1000-8000-00805f9b34fb";
 
 class RenderWidgetHostVisibilityObserver
     : public content::RenderWidgetHostObserver {
@@ -420,18 +436,6 @@ class LeftMouseClick {
 };
 
 #endif
-
-bool IsShowingInterstitial(content::WebContents* tab) {
-  security_interstitials::SecurityInterstitialTabHelper* helper =
-      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
-          tab);
-  if (!helper) {
-    return false;
-  } else {
-    return helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting() !=
-           nullptr;
-  }
-}
 
 // Wraps around the browser-initiated |NavigateToURL| to hide direct guest
 // WebContents access. For MPArch GuestView migration pre-work, we do not have
@@ -1085,16 +1089,17 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AudioMutesOnAttach) {
   EXPECT_TRUE(embedder->IsAudioMuted());
 
   SendMessageToEmbedder("create-guest");
-  content::WebContents* guest =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  content::WebContents* guest_contents = guest_view->web_contents();
 
   EXPECT_TRUE(embedder->IsAudioMuted());
-  WebContentsAudioMutedObserver observer(guest);
+  WebContentsAudioMutedObserver observer(guest_contents);
   // If the guest hasn't attached yet, it may not have received the muting
   // update, in which case we should wait until it does.
-  if (!guest->IsAudioMuted())
+  if (!guest_contents->IsAudioMuted()) {
     observer.WaitForUpdate();
-  EXPECT_TRUE(guest->IsAudioMuted());
+  }
+  EXPECT_TRUE(guest_contents->IsAudioMuted());
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, AudioStateJavascriptAPI) {
@@ -2151,11 +2156,13 @@ class WebViewSSLErrorTest : public WebViewTest {
     // Guest's `target_url` is served by an HTTP server with a cert error.
     // A security error within a guest should not cause an interstitial to be
     // shown in the embedder.
-    ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
+    ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+        GetFirstAppWindowWebContents()));
 
     auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
     ASSERT_TRUE(guest->GetGuestMainFrame()->IsErrorDocument());
-    ASSERT_TRUE(IsShowingInterstitial(guest->web_contents()));
+    ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+        guest->web_contents()));
   }
 
   void LoadEmptyGuest() {
@@ -2246,7 +2253,8 @@ IN_PROC_BROWSER_TEST_F(WebViewSSLErrorTest, NavigateBackFromSSLError) {
   auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
   EXPECT_FALSE(WaitForLoadStop(guest->web_contents()));
   ASSERT_TRUE(guest->GetGuestMainFrame()->IsErrorDocument());
-  ASSERT_TRUE(IsShowingInterstitial(guest->web_contents()));
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+      guest->web_contents()));
 
   // Simulate invoking the "Back to safety" button.  This should dismiss the
   // interstitial and navigate the guest to a known safe URL that can always
@@ -2263,7 +2271,8 @@ IN_PROC_BROWSER_TEST_F(WebViewSSLErrorTest, NavigateBackFromSSLError) {
 
   EXPECT_TRUE(WaitForLoadStop(guest->web_contents()));
   ASSERT_FALSE(guest->GetGuestMainFrame()->IsErrorDocument());
-  ASSERT_FALSE(IsShowingInterstitial(guest->web_contents()));
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+      guest->web_contents()));
 }
 
 // Test makes sure that the interstitial is registered in the
@@ -2414,7 +2423,8 @@ IN_PROC_BROWSER_TEST_F(WebViewSSLErrorTest, GuestLoadsHttpsWithoutError) {
 
   ASSERT_FALSE(guest_main_frame->IsErrorDocument());
   ASSERT_FALSE(embedder_main_frame->IsErrorDocument());
-  ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+      GetFirstAppWindowWebContents()));
 }
 
 // Tests that loading an HTTP page in a guest <webview> with HTTPS-First Mode
@@ -2437,7 +2447,8 @@ IN_PROC_BROWSER_TEST_F(WebViewSSLErrorTest, GuestLoadsHttpWithoutError) {
 
   ASSERT_FALSE(guest_main_frame->IsErrorDocument());
   ASSERT_FALSE(embedder_main_frame->IsErrorDocument());
-  ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+      GetFirstAppWindowWebContents()));
 }
 
 // Verify that guests cannot be navigated to disallowed URLs, such as
@@ -2775,13 +2786,12 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
   ASSERT_TRUE(new_window_listener.WaitUntilSatisfied());
 
   // Verify that a new guest was created.
-  content::WebContents* new_guest_web_contents =
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
-  EXPECT_NE(GetGuestWebContents(), new_guest_web_contents);
+  content::RenderFrameHost* new_guest_rfh =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+  EXPECT_NE(GetGuestRenderFrameHost(), new_guest_rfh);
 
   // Verify that the new <webview> guest ends up at about:blank.
-  EXPECT_EQ(GURL(url::kAboutBlankURL),
-            new_guest_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), new_guest_rfh->GetLastCommittedURL());
 }
 
 // Verify that we handle gracefully having two webviews in the same
@@ -3968,12 +3978,11 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, SendMessageToComponentExtensionFromGuest) {
                       "window.guestRenderFrameRoutingId")
           .ExtractInt();
 
-  auto* guest_rfh = content::RenderFrameHost::FromID(
-      guest_process_id, guest_render_frame_routing_id);
   // Verify that the guest related info (guest_process_id and
   // guest_render_frame_routing_id) actually points to a WebViewGuest.
-  ASSERT_TRUE(extensions::WebViewGuest::FromWebContents(
-      content::WebContents::FromRenderFrameHost(guest_rfh)));
+  ASSERT_TRUE(extensions::WebViewGuest::FromRenderFrameHostId(
+      content::GlobalRenderFrameHostId(guest_process_id,
+                                       guest_render_frame_routing_id)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, SetPropertyOnDocumentReady) {
@@ -7117,4 +7126,151 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestCannotRequestFontsGrantedInTab) {
   // attempts to access fonts. The granted permission should not be
   // available for that context.
   TestHelper("testCannotRequestFonts", "web_view/shim", NO_TEST_SERVER);
+}
+
+class WebViewSerialTest : public WebViewTest {
+ public:
+  void SetUpOnMainThread() override {
+    WebViewTest::SetUpOnMainThread();
+    mojo::PendingRemote<device::mojom::SerialPortManager> port_manager;
+    port_manager_.AddReceiver(port_manager.InitWithNewPipeAndPassReceiver());
+    context()->SetPortManagerForTesting(std::move(port_manager));
+  }
+
+  void TearDownOnMainThread() override { WebViewTest::TearDownOnMainThread(); }
+
+  device::FakeSerialPortManager& port_manager() { return port_manager_; }
+  SerialChooserContext* context() {
+    return SerialChooserContextFactory::GetForProfile(browser()->profile());
+  }
+
+  void CreatePortAndGrantPermissionToOrigin(const url::Origin& origin) {
+    // Create port and grant permission to it.
+    auto port = device::mojom::SerialPortInfo::New();
+    port->token = base::UnguessableToken::Create();
+    context()->GrantPortPermission(origin, *port);
+    port_manager().AddPort(std::move(port));
+  }
+
+ private:
+  device::FakeSerialPortManager port_manager_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewSerialTest,
+                       Shim_TestEnabledInTabButNotInWebView) {
+  // We start the test server here, instead of in TestHelper, because we need
+  // to know the origin used in both the tab and webview.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const GURL url = embedded_test_server()->GetURL("localhost", "/title1.html");
+  url::Origin origin = url::Origin::Create(url);
+  CreatePortAndGrantPermissionToOrigin(origin);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Test that serial works in a tab.
+  EXPECT_EQ(1, EvalJs(tab_web_contents,
+                      R"(
+(async () => {
+  const ports = await navigator.serial.getPorts().then(ports => ports.length);
+  return ports;
+})();
+      )"));
+
+  // Have the embedder create a webview which navigates to the same origin and
+  // attempts to use serial.
+  TestHelper("testSerialDisabled", "web_view/shim", NO_TEST_SERVER);
+}
+
+class WebViewBluetoothTest : public WebViewTest {
+ public:
+  void SetUpOnMainThread() override {
+    WebViewTest::SetUpOnMainThread();
+    // Hook up the test bluetooth delegate.
+    SetFakeBlueboothAdapter();
+    old_browser_client_ = content::SetBrowserClientForTesting(&browser_client_);
+  }
+
+  void TearDownOnMainThread() override {
+    content::SetBrowserClientForTesting(old_browser_client_);
+    WebViewTest::TearDownOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Sets up the blink runtime feature for accessing to navigator.bluetooth.
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+    WebViewTest::SetUpCommandLine(command_line);
+  }
+
+  void SetFakeBlueboothAdapter() {
+    adapter_ = new FakeBluetoothAdapter();
+    EXPECT_CALL(*adapter_, IsPresent()).WillRepeatedly(Return(true));
+    EXPECT_CALL(*adapter_, IsPowered()).WillRepeatedly(Return(true));
+    content::SetBluetoothAdapter(adapter_);
+  }
+
+  void AddFakeDevice(const std::string& device_address) {
+    const device::BluetoothUUID kHeartRateUUID(kHeartRateUUIDString);
+    auto fake_device =
+        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+            adapter_.get(), /*bluetooth_class=*/0u, kFakeBluetoothDeviceName,
+            device_address,
+            /*paired=*/true,
+            /*connected=*/true);
+    fake_device->AddUUID(kHeartRateUUID);
+    fake_device->AddMockService(
+        std::make_unique<testing::NiceMock<device::MockBluetoothGattService>>(
+            fake_device.get(), kHeartRateUUIDString, kHeartRateUUID,
+            /*is_primary=*/true));
+    adapter_->AddMockDevice(std::move(fake_device));
+  }
+
+  void SetDeviceToSelect(const std::string& device_address) {
+    browser_client_.bluetooth_delegate()->SetDeviceToSelect(device_address);
+  }
+
+ private:
+  scoped_refptr<FakeBluetoothAdapter> adapter_;
+  BluetoothTestContentBrowserClient browser_client_;
+  raw_ptr<content::ContentBrowserClient> old_browser_client_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewBluetoothTest,
+                       Shim_TestEnabledInTabButNotInWebView) {
+  // We start the test server here, instead of in TestHelper, because we
+  // need to know the origin used in the tab.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const GURL url = embedded_test_server()->GetURL("localhost", "/title1.html");
+  url::Origin origin = url::Origin::Create(url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  AddFakeDevice(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
+
+  // Test that Bluetooth works in a tab.
+  constexpr char kBluetoothTestScript[] = R"(
+(async () => {
+  try {
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{services: ['heart_rate']}]
+    });
+    return device.name;
+  } catch (e) {
+    return e.name + ': ' + e.message;
+  }
+})();
+  )";
+  EXPECT_EQ(kFakeBluetoothDeviceName,
+            EvalJs(tab_web_contents, kBluetoothTestScript));
+
+  // Have the embedder create a webview which navigates to the same origin
+  // and attempts to use Bluetooth.
+  TestHelper("testBluetoothDisabled", "web_view/shim", NO_TEST_SERVER);
 }

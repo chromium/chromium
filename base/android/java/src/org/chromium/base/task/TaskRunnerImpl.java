@@ -143,7 +143,7 @@ public class TaskRunnerImpl implements TaskRunner {
     }
 
     @Override
-    public final void postTask(Runnable task) {
+    public final void execute(Runnable task) {
         postDelayedTask(task, 0);
     }
 

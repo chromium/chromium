@@ -15,6 +15,8 @@ class WebState;
 
 namespace autofill {
 
+class FormUtilJavaScriptFeature;
+
 // Registers listeners that are used to handle forms, enabling autofill and the
 // replacement method to dismiss the keyboard needed because of the Autofill
 // keyboard accessory.
@@ -35,6 +37,9 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
 
  private:
   friend class base::NoDestructor<FormHandlersJavaScriptFeature>;
+  // TODO(crbug.com/359538514): Remove friend once isolated world for Autofill
+  // is launched.
+  friend class TestAutofillJavaScriptFeatureContainer;
 
   // web::JavaScriptFeature
   std::optional<std::string> GetScriptMessageHandlerName() const override;
@@ -47,6 +52,12 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   FormHandlersJavaScriptFeature(const FormHandlersJavaScriptFeature&) = delete;
   FormHandlersJavaScriptFeature& operator=(
       const FormHandlersJavaScriptFeature&) = delete;
+
+  // For testing.
+  // TODO(crbug.com/359538514): Remove test constructor once isolated world for
+  // Autofill is launched.
+  FormHandlersJavaScriptFeature(
+      FormUtilJavaScriptFeature* form_util_java_script_feature);
 };
 
 }  // namespace autofill

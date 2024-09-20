@@ -12,6 +12,7 @@
 namespace autofill {
 
 enum class VerificationStatus;
+class PossibleProfileValueSources;
 
 class AutofillType;
 
@@ -27,7 +28,8 @@ class FormGroup {
   virtual void GetMatchingTypesWithProfileSources(
       const std::u16string& text,
       const std::string& app_locale,
-      FieldTypeSet* matching_types) const;
+      FieldTypeSet* matching_types,
+      PossibleProfileValueSources* profile_value_sources) const;
 
   // Returns a set of server field types for which this FormGroup has non-empty
   // data. This method is additive on |non_empty_types|.

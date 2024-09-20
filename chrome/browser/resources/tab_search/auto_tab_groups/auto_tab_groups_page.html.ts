@@ -11,6 +11,20 @@ export function getHtml(this: AutoTabGroupsPageElement) {
   return html`<!--_html_template_start_-->
 <div id="contents">
   <div id="body">
+    <div id="header"
+        class="auto-tab-groups-header"
+        aria-live="polite"
+        aria-relevant="all">
+      ${
+      this.declutterEnabled_ ? html`
+        <cr-icon-button class="back-button"
+            iron-icon="cr:arrow-back"
+            @click="${this.onBackClick_}">
+        </cr-icon-button>
+      ` :
+                               ''}
+      ${this.getTitle_()}
+    </div>
     <auto-tab-groups-not-started id="notStarted"
         ?shown="${this.isState_(TabOrganizationState.kNotStarted)}"
         model-strategy="${this.modelStrategy_}"
@@ -28,6 +42,7 @@ export function getHtml(this: AutoTabGroupsPageElement) {
         .session="${this.session_}"
         ?multi-tab-organization="${this.multiTabOrganization_}"
         available-height="${this.availableHeight_}"
+        @name-change="${this.onNameChange_}"
         @reject-click="${this.onRejectClick_}"
         @reject-all-groups-click="${this.onRejectAllGroupsClick_}"
         @create-group-click="${this.onCreateGroupClick_}"

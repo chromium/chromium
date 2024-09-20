@@ -443,6 +443,16 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                  const OperandDescriptor& filter,
                                  const Conv2dAttributes& attributes);
 
+// Validate and infer output information of cumulativeSum operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-cumulativesum
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateCumulativeSumAndInferOutput(
+        const ContextProperties& context_properties,
+        const OperandDescriptor& input,
+        const uint32_t axis,
+        std::string_view label);
+
 // Validate and infer output information of 2-D transposed convolution operator
 // defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-convtranspose2d
@@ -523,6 +533,15 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
         const OperandDescriptor& indices,
         const uint32_t axis,
         std::string_view label);
+
+// Validate and infer output information of gatherND operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gatherND
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateGatherNDAndInferOutput(const ContextProperties& context_properties,
+                                   const OperandDescriptor& input,
+                                   const OperandDescriptor& indices,
+                                   std::string_view label);
 
 // Validate gemm operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm
@@ -666,6 +685,16 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                  base::span<const uint32_t> axes,
                                  bool keepDimensions = false);
 
+// Validate and infer output information of scatterND operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-scatternd
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateScatterNDAndInferOutput(const ContextProperties& context_properties,
+                                    const OperandDescriptor& input,
+                                    const OperandDescriptor& indices,
+                                    const OperandDescriptor& updates,
+                                    std::string_view label);
+
 // Validate triangular operator defined in WebIDL here:
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-triangular.
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
@@ -687,7 +716,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 
 // Validate the creation of an MLTensor given `descriptor`.
 base::expected<void, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    ValidateBuffer(const ContextProperties& context_properties,
+    ValidateTensor(const ContextProperties& context_properties,
                    OperandDescriptor descriptor);
 
 // Validate that the axes are within the range of [0, rank - 1] without

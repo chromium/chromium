@@ -98,12 +98,6 @@ bool IsTextAreaElement(const blink::WebFormControlElement& element);
 // Returns true if `element` is a textarea element or a text input element.
 bool IsTextAreaElementOrTextInput(const blink::WebFormControlElement& element);
 
-// Returns true if |element| is one of the input element types that can be
-// autofilled. {Text, Radiobutton, Checkbox}.
-// TODO(crbug.com/40100455): IsAutofillableInputElement() are currently used
-// inconsistently. Investigate where these checks are necessary.
-bool IsAutofillableInputElement(const blink::WebInputElement& element);
-
 // Returns true if |element| is one of the element types that can be autofilled.
 // {Text, Radiobutton, Checkbox, Select, TextArea}.
 // TODO(crbug.com/40100455): IsAutofillableElement() are currently used
@@ -288,8 +282,8 @@ void InferLabelForElementsForTesting(
 std::u16string FindChildTextWithIgnoreListForTesting(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);
-void GetDataListSuggestionsForTesting(const blink::WebInputElement& element,
-                                      std::vector<SelectOption>* options);
+std::vector<SelectOption> GetDataListOptionsForTesting(
+    const blink::WebInputElement& element);
 blink::WebFormElement GetClosestAncestorFormElementForTesting(blink::WebNode n);
 bool IsDOMPredecessorForTesting(const blink::WebNode& x,
                                 const blink::WebNode& y,

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/sync/engine/cycle/model_neutral_state.h"
+
 #include "components/sync/engine/syncer_error.h"
 
 namespace syncer {

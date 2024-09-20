@@ -4,7 +4,7 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationModelStrategy, TabOrganizationSession, UserFeedback} from './tab_search.mojom-webui.js';
+import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationFeature, TabOrganizationModelStrategy, TabOrganizationSession, UserFeedback} from './tab_search.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
 
 /**
@@ -21,17 +21,21 @@ export interface TabSearchApiProxy {
 
   declutterTabs(tabIds: number[]): void;
 
-  acceptTabOrganization(
-      sessionId: number, organizationId: number, name: string,
-      tabs: Tab[]): void;
+  acceptTabOrganization(sessionId: number, organizationId: number, tabs: Tab[]):
+      void;
 
   rejectTabOrganization(sessionId: number, organizationId: number): void;
+
+  renameTabOrganization(
+      sessionId: number, organizationId: number, name: string): void;
 
   excludeFromStaleTabs(tabId: number): void;
 
   getProfileData(): Promise<{profileData: ProfileData}>;
 
   getStaleTabs(): Promise<{tabs: Tab[]}>;
+
+  getTabOrganizationFeature(): Promise<{feature: TabOrganizationFeature}>;
 
   getTabOrganizationSession(): Promise<{session: TabOrganizationSession}>;
 
@@ -57,6 +61,8 @@ export interface TabSearchApiProxy {
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
   setTabIndex(index: number): void;
+
+  setOrganizationFeature(feature: TabOrganizationFeature): void;
 
   startTabGroupTutorial(): void;
 
@@ -96,13 +102,18 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
   }
 
   acceptTabOrganization(
-      sessionId: number, organizationId: number, name: string, tabs: Tab[]) {
-    this.handler.acceptTabOrganization(
-        sessionId, organizationId, stringToMojoString16(name), tabs);
+      sessionId: number, organizationId: number, tabs: Tab[]) {
+    this.handler.acceptTabOrganization(sessionId, organizationId, tabs);
   }
 
   rejectTabOrganization(sessionId: number, organizationId: number) {
     this.handler.rejectTabOrganization(sessionId, organizationId);
+  }
+
+  renameTabOrganization(
+      sessionId: number, organizationId: number, name: string) {
+    this.handler.renameTabOrganization(
+        sessionId, organizationId, stringToMojoString16(name));
   }
 
   excludeFromStaleTabs(tabId: number) {
@@ -115,6 +126,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   getStaleTabs() {
     return this.handler.getStaleTabs();
+  }
+
+  getTabOrganizationFeature() {
+    return this.handler.getTabOrganizationFeature();
   }
 
   getTabOrganizationSession() {
@@ -172,6 +187,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   setTabIndex(index: number) {
     this.handler.setTabIndex(index);
+  }
+
+  setOrganizationFeature(feature: TabOrganizationFeature) {
+    this.handler.setOrganizationFeature(feature);
   }
 
   startTabGroupTutorial() {

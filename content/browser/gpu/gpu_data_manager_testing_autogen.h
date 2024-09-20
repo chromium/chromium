@@ -11,11 +11,12 @@
 #ifndef CONTENT_BROWSER_GPU_GPU_DATA_MANAGER_TESTING_AUTOGEN_H_
 #define CONTENT_BROWSER_GPU_GPU_DATA_MANAGER_TESTING_AUTOGEN_H_
 
+#include <array>
+
 #include "gpu/config/gpu_control_list.h"
 
 namespace gpu {
-extern const size_t kGpuDataManagerTestingEntryCount;
-extern const GpuControlList::Entry kGpuDataManagerTestingEntries[];
+extern const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries;
 }  // namespace gpu
 
 #endif  // CONTENT_BROWSER_GPU_GPU_DATA_MANAGER_TESTING_AUTOGEN_H_

@@ -22,17 +22,17 @@ MLTensor::MLTensor(
     MLContext* context,
     webnn::OperandDescriptor descriptor,
     webnn::MLTensorUsage usage,
-    webnn::mojom::blink::CreateBufferSuccessPtr create_buffer_success,
+    webnn::mojom::blink::CreateTensorSuccessPtr create_tensor_success,
     base::PassKey<MLContext> /*pass_key*/)
     : ml_context_(context),
       descriptor_(std::move(descriptor)),
       usage_(usage),
-      webnn_handle_(std::move(create_buffer_success->buffer_handle)),
-      remote_buffer_(execution_context) {
-  remote_buffer_.Bind(
-      std::move(create_buffer_success->buffer_remote),
+      webnn_handle_(std::move(create_tensor_success->tensor_handle)),
+      remote_tensor_(execution_context) {
+  remote_tensor_.Bind(
+      std::move(create_tensor_success->tensor_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
-  remote_buffer_.set_disconnect_handler(
+  remote_tensor_.set_disconnect_handler(
       WTF::BindOnce(&MLTensor::OnConnectionError, WrapWeakPersistent(this)));
 }
 
@@ -40,7 +40,7 @@ MLTensor::~MLTensor() = default;
 
 void MLTensor::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
-  visitor->Trace(remote_buffer_);
+  visitor->Trace(remote_tensor_);
   visitor->Trace(pending_resolvers_);
   visitor->Trace(pending_byob_resolvers_);
   ScriptWrappable::Trace(visitor);
@@ -85,12 +85,13 @@ uint64_t MLTensor::PackedByteLength() const {
   return descriptor_.PackedByteLength();
 }
 
-ScriptPromise<DOMArrayBuffer> MLTensor::ReadBufferImpl(
+ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
+    ScopedMLTrace scoped_trace,
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
-  if (!remote_buffer_.is_bound()) {
+  if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Buffer has been destroyed or context is lost.");
@@ -101,20 +102,21 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadBufferImpl(
       script_state, exception_state.GetContext());
   pending_resolvers_.insert(resolver);
 
-  remote_buffer_->ReadBuffer(WTF::BindOnce(&MLTensor::OnDidReadBuffer,
-                                           WrapPersistent(this),
-                                           WrapPersistent(resolver)));
+  remote_tensor_->ReadTensor(
+      WTF::BindOnce(&MLTensor::OnDidReadTensor, WrapPersistent(this),
+                    std::move(scoped_trace), WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
 
-ScriptPromise<IDLUndefined> MLTensor::ReadBufferImpl(
+ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
+    ScopedMLTrace scoped_trace,
     ScriptState* script_state,
     DOMArrayBufferBase* dst_data,
     ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
-  if (!remote_buffer_.is_bound()) {
+  if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid buffer state");
     return EmptyPromise();
@@ -129,19 +131,21 @@ ScriptPromise<IDLUndefined> MLTensor::ReadBufferImpl(
       script_state, exception_state.GetContext());
   pending_byob_resolvers_.insert(resolver);
 
-  remote_buffer_->ReadBuffer(
-      WTF::BindOnce(&MLTensor::OnDidReadBufferByob, WrapPersistent(this),
-                    WrapPersistent(resolver), WrapPersistent(dst_data)));
+  remote_tensor_->ReadTensor(
+      WTF::BindOnce(&MLTensor::OnDidReadTensorByob, WrapPersistent(this),
+                    std::move(scoped_trace), WrapPersistent(resolver),
+                    WrapPersistent(dst_data)));
   return resolver->Promise();
 }
 
-ScriptPromise<IDLUndefined> MLTensor::ReadBufferImpl(
+ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
+    ScopedMLTrace scoped_trace,
     ScriptState* script_state,
     DOMArrayBufferView* dst_data,
     ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
-  if (!remote_buffer_.is_bound()) {
+  if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid buffer state");
     return EmptyPromise();
@@ -156,15 +160,17 @@ ScriptPromise<IDLUndefined> MLTensor::ReadBufferImpl(
       script_state, exception_state.GetContext());
   pending_byob_resolvers_.insert(resolver);
 
-  remote_buffer_->ReadBuffer(
-      WTF::BindOnce(&MLTensor::OnDidReadBufferByobView, WrapPersistent(this),
-                    WrapPersistent(resolver), WrapPersistent(dst_data)));
+  remote_tensor_->ReadTensor(
+      WTF::BindOnce(&MLTensor::OnDidReadTensorByobView, WrapPersistent(this),
+                    std::move(scoped_trace), WrapPersistent(resolver),
+                    WrapPersistent(dst_data)));
   return resolver->Promise();
 }
 
-void MLTensor::OnDidReadBuffer(
+void MLTensor::OnDidReadTensor(
+    ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<DOMArrayBuffer>* resolver,
-    webnn::mojom::blink::ReadBufferResultPtr result) {
+    webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_resolvers_.erase(resolver);
 
   if (result->is_error()) {
@@ -177,10 +183,11 @@ void MLTensor::OnDidReadBuffer(
   resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer()));
 }
 
-void MLTensor::OnDidReadBufferByob(
+void MLTensor::OnDidReadTensorByob(
+    ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferBase* dst_data,
-    webnn::mojom::blink::ReadBufferResultPtr result) {
+    webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_byob_resolvers_.erase(resolver);
 
   if (result->is_error()) {
@@ -204,10 +211,11 @@ void MLTensor::OnDidReadBufferByob(
   resolver->Resolve();
 }
 
-void MLTensor::OnDidReadBufferByobView(
+void MLTensor::OnDidReadTensorByobView(
+    ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferView* dst_data,
-    webnn::mojom::blink::ReadBufferResultPtr result) {
+    webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_byob_resolvers_.erase(resolver);
 
   if (result->is_error()) {
@@ -231,11 +239,11 @@ void MLTensor::OnDidReadBufferByobView(
   resolver->Resolve();
 }
 
-void MLTensor::WriteBufferImpl(base::span<const uint8_t> src_data,
+void MLTensor::WriteTensorImpl(base::span<const uint8_t> src_data,
                                ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
-  if (!remote_buffer_.is_bound()) {
+  if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Buffer has been destroyed or context is lost.");
@@ -249,11 +257,11 @@ void MLTensor::WriteBufferImpl(base::span<const uint8_t> src_data,
   }
 
   // Copy src data.
-  remote_buffer_->WriteBuffer(src_data);
+  remote_tensor_->WriteTensor(src_data);
 }
 
 void MLTensor::OnConnectionError() {
-  remote_buffer_.reset();
+  remote_tensor_.reset();
 
   for (const auto& resolver : pending_resolvers_) {
     resolver->RejectWithDOMException(

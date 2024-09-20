@@ -67,16 +67,6 @@ constexpr char kTestAppID[] = "{D07D2B56-F583-4631-9E8E-9942F63765BE}";
 
 }  // namespace
 
-TEST(WinUtil, GetServiceDisplayName) {
-  for (const bool is_internal_service : {true, false}) {
-    EXPECT_EQ(base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" ",
-                            is_internal_service ? kWindowsInternalServiceName
-                                                : kWindowsServiceName,
-                            L" ", kUpdaterVersionUtf16}),
-              GetServiceDisplayName(is_internal_service));
-  }
-}
-
 TEST(WinUtil, GetServiceName) {
   for (const bool is_internal_service : {true, false}) {
     EXPECT_EQ(base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING),

@@ -199,6 +199,15 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   return DefaultInfobarOverlayRequestConfig::RequestSupport();
 }
 
+- (void)dismissOverlay {
+  if (self.saveCardDelegate) {
+    self.saveCardDelegate->SetCreditCardUploadCompletionCallback(
+        base::NullCallback());
+    self.saveCardDelegate->SetInfobarIsPresenting(NO);
+  }
+  [super dismissOverlay];
+}
+
 #pragma mark - InfobarSaveCardModalDelegate
 
 - (void)saveCardWithCardholderName:(NSString*)cardholderName
@@ -284,15 +293,6 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
     return;
   }
   self.saveCardDelegate->OnConfirmationClosed();
-}
-
-- (void)dismissOverlay {
-  if (self.saveCardDelegate) {
-    self.saveCardDelegate->SetCreditCardUploadCompletionCallback(
-        base::NullCallback());
-    self.saveCardDelegate->SetInfobarIsPresenting(NO);
-  }
-  [super dismissOverlay];
 }
 
 @end

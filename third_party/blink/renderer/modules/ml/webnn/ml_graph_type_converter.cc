@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_cumulative_sum_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
@@ -754,6 +755,24 @@ std::optional<String> SerializeConv2dOperation(
   return std::nullopt;
 }
 
+OperationPtr CreateCumulativeSumOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* cumulative_sum) {
+  const auto* cumulative_sum_operator =
+      static_cast<const MLCumulativeSumOperator*>(cumulative_sum);
+  const auto* options =
+      static_cast<const MLCumulativeSumOptions*>(cumulative_sum->Options());
+
+  auto cumulative_sum_mojo = blink_mojom::CumulativeSum::New(
+      GetOperatorInputId(cumulative_sum, operand_to_id_map),
+      GetOperatorOutputId(cumulative_sum, operand_to_id_map),
+      cumulative_sum_operator->Axis(), options->exclusive(),
+      options->reversed(), options->label());
+
+  return blink_mojom::Operation::NewCumulativeSum(
+      std::move(cumulative_sum_mojo));
+}
+
 OperationPtr CreateDequantizeLinearOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* dequantize_linear) {
@@ -850,6 +869,23 @@ OperationPtr CreateGatherElementsOperation(
   gather_elements_mojo->label = options->label();
   return webnn::mojom::blink::Operation::NewGatherElements(
       std::move(gather_elements_mojo));
+}
+
+OperationPtr CreateGatherNDOperation(const OperandToIdMap& operand_to_id_map,
+                                     const MLOperator* gather_nd) {
+  auto gather_nd_mojo = webnn::mojom::blink::GatherND::New();
+  gather_nd_mojo->input_operand_id =
+      GetOperatorInputId(gather_nd, operand_to_id_map, 0);
+  gather_nd_mojo->indices_operand_id =
+      GetOperatorInputId(gather_nd, operand_to_id_map, 1);
+  gather_nd_mojo->output_operand_id =
+      GetOperatorOutputId(gather_nd, operand_to_id_map);
+
+  const auto* options =
+      static_cast<const blink::MLOperatorOptions*>(gather_nd->Options());
+  gather_nd_mojo->label = options->label();
+
+  return webnn::mojom::blink::Operation::NewGatherNd(std::move(gather_nd_mojo));
 }
 
 OperationPtr CreateGeluOperation(const OperandToIdMap& operand_to_id_map,
@@ -1504,6 +1540,25 @@ OperationPtr CreateReshapeOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewReshape(std::move(reshape_mojo));
 }
 
+OperationPtr CreateScatterNDOperation(const OperandToIdMap& operand_to_id_map,
+                                      const MLOperator* scatter_nd) {
+  auto scatter_nd_mojo = webnn::mojom::blink::ScatterND::New();
+  scatter_nd_mojo->input_operand_id =
+      GetOperatorInputId(scatter_nd, operand_to_id_map, 0);
+  scatter_nd_mojo->indices_operand_id =
+      GetOperatorInputId(scatter_nd, operand_to_id_map, 1);
+  scatter_nd_mojo->updates_operand_id =
+      GetOperatorInputId(scatter_nd, operand_to_id_map, 2);
+  scatter_nd_mojo->output_operand_id =
+      GetOperatorOutputId(scatter_nd, operand_to_id_map);
+
+  const auto* options =
+      static_cast<const blink::MLOperatorOptions*>(scatter_nd->Options());
+  scatter_nd_mojo->label = options->label();
+  return webnn::mojom::blink::Operation::NewScatterNd(
+      std::move(scatter_nd_mojo));
+}
+
 OperationPtr CreateSigmoidOperation(const OperandToIdMap& operand_to_id_map,
                                     const MLOperator* sigmoid) {
   auto sigmoid_mojo = blink_mojom::Sigmoid::New();
@@ -1706,6 +1761,10 @@ std::optional<String> SerializeMojoOperation(
       }
       break;
     }
+    case blink_mojom::Operation::Tag::kCumulativeSum:
+      graph_info->operations.push_back(
+          CreateCumulativeSumOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kDequantizeLinear:
       graph_info->operations.push_back(
           CreateDequantizeLinearOperation(operand_to_id_map, op));
@@ -1735,6 +1794,10 @@ std::optional<String> SerializeMojoOperation(
     case blink_mojom::Operation::Tag::kGatherElements:
       graph_info->operations.push_back(
           CreateGatherElementsOperation(operand_to_id_map, op));
+      break;
+    case blink_mojom::Operation::Tag::kGatherNd:
+      graph_info->operations.push_back(
+          CreateGatherNDOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kGelu:
       graph_info->operations.push_back(
@@ -1824,6 +1887,10 @@ std::optional<String> SerializeMojoOperation(
     case blink_mojom::Operation::Tag::kReshape:
       graph_info->operations.push_back(
           CreateReshapeOperation(operand_to_id_map, op));
+      break;
+    case blink_mojom::Operation::Tag::kScatterNd:
+      graph_info->operations.push_back(
+          CreateScatterNDOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kSigmoid:
       graph_info->operations.push_back(

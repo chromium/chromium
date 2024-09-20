@@ -427,7 +427,7 @@ class NearbySharingServiceImpl
       NearbyConnectionsManager::ConnectionsStatus status);
   void OnStartDiscoveryResult(
       NearbyConnectionsManager::ConnectionsStatus status);
-  void SetInHighVisibility(bool in_high_visibility);
+  void SetInHighVisibility(bool new_in_high_visibility);
 
   // Note: |share_target| is intentionally passed by value. A share target
   // reference could likely be invalidated by the owner during the multi-step
@@ -572,7 +572,7 @@ class NearbySharingServiceImpl
   // The time scanning began.
   base::Time scanning_start_timestamp_;
   // True when we are advertising with a device name visible to everyone.
-  bool in_high_visibility = false;
+  bool in_high_visibility_ = false;
   // The time attachments are sent after a share target is selected. This is
   // used to time the process from selecting a share target to writing the
   // introduction frame (last frame before receiver gets notified).

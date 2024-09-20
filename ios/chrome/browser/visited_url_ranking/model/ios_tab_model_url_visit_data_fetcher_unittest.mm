@@ -24,15 +24,15 @@ using tab_groups::TabGroupId;
 class IOSTabModelURLVisitDataFetcherTest : public PlatformTest {
  protected:
   IOSTabModelURLVisitDataFetcherTest() {
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
-    main_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    otr_browser_ = std::make_unique<TestBrowser>(
-        browser_state_->GetOffTheRecordChromeBrowserState());
+    main_browser_ = std::make_unique<TestBrowser>(profile_.get());
+    otr_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
 
     BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+        BrowserListFactory::GetForProfile(profile_.get());
     browser_list->AddBrowser(main_browser_.get());
     browser_list->AddBrowser(otr_browser_.get());
   }
@@ -46,7 +46,7 @@ class IOSTabModelURLVisitDataFetcherTest : public PlatformTest {
     navigation_manager->SetLastCommittedItem(
         navigation_manager->GetItemAtIndex(0));
     web_state->SetNavigationManager(std::move(navigation_manager));
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     web_state->SetNavigationItemCount(1);
     web_state->SetCurrentURL(url);
     IOSChromeSessionTabHelper::CreateForWebState(web_state.get());
@@ -70,7 +70,7 @@ class IOSTabModelURLVisitDataFetcherTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> main_browser_;
   std::unique_ptr<TestBrowser> otr_browser_;
 };
@@ -85,7 +85,7 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, FetchNormalTabsAndNotOtr) {
 
   auto fetcher =
       std::make_unique<visited_url_ranking::IOSTabModelURLVisitDataFetcher>(
-          browser_state_.get());
+          profile_.get());
   visited_url_ranking::FetchOptions options = visited_url_ranking::
       FetchOptions::CreateDefaultFetchOptionsForTabResumption();
   fetcher->FetchURLVisitData(
@@ -148,7 +148,7 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, FetchNormalTabsWithData) {
 
   auto fetcher =
       std::make_unique<visited_url_ranking::IOSTabModelURLVisitDataFetcher>(
-          browser_state_.get());
+          profile_.get());
   visited_url_ranking::FetchOptions options = visited_url_ranking::
       FetchOptions::CreateDefaultFetchOptionsForTabResumption();
   fetcher->FetchURLVisitData(
@@ -192,7 +192,7 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, FetchUnrealizedTab) {
   base::Time now = base::Time::Now();
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetIsRealized(false);
-  web_state->SetBrowserState(browser_state_.get());
+  web_state->SetBrowserState(profile_.get());
   web_state->SetCurrentURL(GURL(url));
   web_state->SetLastActiveTime(now - base::Hours(1));
   IOSChromeSessionTabHelper::CreateForWebState(web_state.get());
@@ -200,7 +200,7 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, FetchUnrealizedTab) {
       std::move(web_state), WebStateList::InsertionParams::AtIndex(0));
   auto fetcher =
       std::make_unique<visited_url_ranking::IOSTabModelURLVisitDataFetcher>(
-          browser_state_.get());
+          profile_.get());
   visited_url_ranking::FetchOptions options = visited_url_ranking::
       FetchOptions::CreateDefaultFetchOptionsForTabResumption();
   fetcher->FetchURLVisitData(
@@ -272,7 +272,7 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, AggregateEntries) {
 
   auto fetcher =
       std::make_unique<visited_url_ranking::IOSTabModelURLVisitDataFetcher>(
-          browser_state_.get());
+          profile_.get());
   visited_url_ranking::FetchOptions options = visited_url_ranking::
       FetchOptions::CreateDefaultFetchOptionsForTabResumption();
   fetcher->FetchURLVisitData(

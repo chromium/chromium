@@ -8,9 +8,9 @@
 #include <vector>
 
 struct VisualElementImpression {
-  int id = -1;
+  int64_t id = -1;
   int type = -1;
-  int parent = -1;
+  int64_t parent = -1;
   int context = -1;
   int width = -1;
   int height = -1;
@@ -23,37 +23,37 @@ struct ImpressionEvent {
 };
 
 struct ResizeEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int width = -1;
   int height = -1;
 };
 
 struct ClickEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int mouse_button = -1;
   int context = -1;
   int double_click = -1;
 };
 
 struct HoverEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int time = -1;
   int context = -1;
 };
 
 struct DragEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int distance = -1;
   int context = -1;
 };
 
 struct ChangeEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int context = -1;
 };
 
 struct KeyDownEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int context = -1;
 };
 

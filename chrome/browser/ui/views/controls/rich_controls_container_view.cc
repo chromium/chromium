@@ -33,9 +33,9 @@ std::unique_ptr<views::View> CreateLabelWrapper() {
                              gfx::Insets::VH(0, icon_label_spacing));
   label_wrapper->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true)
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
   return label_wrapper;
 }
@@ -100,9 +100,6 @@ views::Label* RichControlsContainerView::AddSecondaryLabel(
       text, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   secondary_label->SetMultiLine(true);
-  secondary_label->SetProperty(
-      views::kBoxLayoutFlexKey,
-      views::BoxLayoutFlexSpecification().WithWeight(1));
 
   // TODO(https://crbug.com/326376201): Consider using
   // views::style::STYLE_BODY_5 when CR2023 is enabled to
@@ -116,12 +113,7 @@ views::StyledLabel* RichControlsContainerView::AddSecondaryStyledLabel(
   auto secondary_label = std::make_unique<views::StyledLabel>();
   secondary_label->SetText(text);
   secondary_label->SetTextContext(views::style::CONTEXT_LABEL);
-  secondary_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  secondary_label->SetProperty(
-      views::kBoxLayoutFlexKey,
-      views::BoxLayoutFlexSpecification().WithWeight(1));
-
   secondary_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
   secondary_label->SetDefaultEnabledColorId(ui::kColorLabelForegroundSecondary);
   return labels_wrapper_->AddChildView(std::move(secondary_label));

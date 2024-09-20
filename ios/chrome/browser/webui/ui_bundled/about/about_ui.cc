@@ -181,7 +181,7 @@ bool AboutUIHTMLSource::ShouldDenyXFrameOptions() const {
 
 AboutUI::AboutUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  web::URLDataSourceIOS::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::URLDataSourceIOS::Add(ProfileIOS::FromWebUIIOS(web_ui),
                              new AboutUIHTMLSource(host));
 }
 

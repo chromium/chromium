@@ -23,6 +23,59 @@ class AutofillFieldTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
+TEST_F(AutofillFieldTest, ValueWasIdentifiedAsPotentiallySensitive) {
+  AutofillField field;
+
+  // Initially the value should not be identified as sensitive.
+  EXPECT_FALSE(field.value_identified_as_potentially_sensitive());
+
+  // We should be able to set the value and retrieve the state.
+  field.set_value_identified_as_potentially_sensitive(true);
+  EXPECT_TRUE(field.value_identified_as_potentially_sensitive());
+}
+
+TEST_F(AutofillFieldTest, AssumedProfileValueSource) {
+  AutofillField field;
+
+  // Initially there is no value source.
+  EXPECT_FALSE(field.assumed_profile_value_source().has_value());
+
+  // Test that setting the value works.
+  field.set_assumed_profile_value_source(
+      ProfileValueSource{"guid", NAME_FIRST});
+  ASSERT_TRUE(field.assumed_profile_value_source().has_value());
+  ProfileValueSource expected_source = {"guid", NAME_FIRST};
+  EXPECT_EQ(field.assumed_profile_value_source().value(), expected_source);
+
+  // Verify that the state can also be reset.
+  field.set_assumed_profile_value_source(std::nullopt);
+  EXPECT_FALSE(field.assumed_profile_value_source().has_value());
+}
+
+TEST_F(AutofillFieldTest, FieldIsEligableForPredictionImprovementsFlag) {
+  AutofillField field;
+
+  // Initially the value should not be identified as sensitive.
+  EXPECT_FALSE(
+      field.field_is_eligible_for_prediction_improvements().has_value());
+
+  // Test that setting the value works.
+  field.set_field_is_eligible_for_prediction_improvements(true);
+  ASSERT_TRUE(
+      field.field_is_eligible_for_prediction_improvements().has_value());
+  EXPECT_TRUE(field.field_is_eligible_for_prediction_improvements().value());
+
+  field.set_field_is_eligible_for_prediction_improvements(false);
+  ASSERT_TRUE(
+      field.field_is_eligible_for_prediction_improvements().has_value());
+  EXPECT_FALSE(field.field_is_eligible_for_prediction_improvements().value());
+
+  // Verify that the state can also be reset.
+  field.set_field_is_eligible_for_prediction_improvements(std::nullopt);
+  EXPECT_FALSE(
+      field.field_is_eligible_for_prediction_improvements().has_value());
+}
+
 // Tests that if both autocomplete attributes and server agree it's a phone
 // field, always use server predicted type. If they disagree with autocomplete
 // says it's a phone field, always use autocomplete attribute.

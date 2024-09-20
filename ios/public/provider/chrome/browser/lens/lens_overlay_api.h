@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+class GURL;
+
 @protocol ChromeLensOverlayResult;
 @protocol ChromeLensOverlay;
 @class LensConfiguration;
@@ -26,10 +28,22 @@
 // The user tapped on the close button in the Lens overlay.
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay;
 
+// The lens overlay has suggest signals available for the given result.
+- (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
+    suggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result;
+
+// The lens overlay requested to open a URL (e.g. after a selection in the
+// flyout menu).
+- (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
+    didRequestToOpenURL:(GURL)URL;
+
 @end
 
 // Defines the interface for interacting with a Chrome Lens Overlay.
 @protocol ChromeLensOverlay
+
+// Whether the user is currently panning the selection UI.
+@property(nonatomic, readonly) BOOL isPanningSelectionUI;
 
 // Sets the delegate for `ChromeLensOverlay`.
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate;

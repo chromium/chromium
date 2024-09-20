@@ -92,8 +92,7 @@ OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,
 }
 
 OffscreenCanvas::~OffscreenCanvas() {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      -memory_usage_);
+  external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(), memory_usage_);
 }
 
 void OffscreenCanvas::Commit(scoped_refptr<CanvasResource>&& canvas_resource,
@@ -546,7 +545,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
        (IsRenderingContext2D() &&
         RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()));
 
-  uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  gpu::SharedImageUsageSet shared_image_usage_flags =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   if (use_scanout) {
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
@@ -735,8 +735,7 @@ void OffscreenCanvas::UpdateMemoryUsage() {
     // AdjustAmountOfExternalAllocatedMemory is safe, hence the
     // 'diposing_' condition in the DCHECK below.
     DCHECK(ThreadState::Current()->IsAllocationAllowed() || disposing_);
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        delta_bytes);
+    external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
     memory_usage_ = new_memory_usage;
   }
 }

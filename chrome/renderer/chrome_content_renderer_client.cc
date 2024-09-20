@@ -38,7 +38,8 @@
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/pepper_permission_util.h"
 #include "chrome/common/ppapi_utils.h"
-#include "chrome/common/profiler/thread_profiler.h"
+#include "chrome/common/profiler/chrome_thread_profiler_client.h"
+#include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/profiler/unwind_util.h"
 #include "chrome/common/secure_origin_allowlist.h"
 #include "chrome/common/url_constants.h"
@@ -108,6 +109,8 @@
 #include "components/permissions/features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
+#include "components/sampling_profiler/thread_profiler.h"
+#include "components/security_interstitials/content/renderer/security_interstitial_page_controller_delegate_impl.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
@@ -375,20 +378,20 @@ bool IsTerminalSystemWebAppNaClPage(GURL url) {
 }  // namespace
 
 ChromeContentRendererClient::ChromeContentRendererClient()
-    :
 #if BUILDFLAG(IS_WIN)
-      remote_module_watcher_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
+    : remote_module_watcher_(nullptr, base::OnTaskRunnerDeleter(nullptr))
 #endif
-      main_thread_profiler_(
-#if BUILDFLAG(IS_CHROMEOS)
-          // The profiler can't start before the sandbox is initialized on
-          // ChromeOS due to ChromeOS's sandbox initialization code's use of
-          // AssertSingleThreaded().
-          nullptr
-#else
-          ThreadProfiler::CreateAndStartOnMainThread()
+{
+  sampling_profiler::ThreadProfiler::SetClient(
+      std::make_unique<ChromeThreadProfilerClient>());
+
+  // The profiler can't start before the sandbox is initialized on
+  // ChromeOS due to ChromeOS's sandbox initialization code's use of
+  // AssertSingleThreaded().
+#if !BUILDFLAG(IS_CHROMEOS)
+  main_thread_profiler_ =
+      sampling_profiler::ThreadProfiler::CreateAndStartOnMainThread();
 #endif
-      ) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EnsureExtensionsClientInitialized();
   ChromeExtensionsRendererClient::Create();
@@ -568,9 +571,10 @@ void ChromeContentRendererClient::RenderThreadStarted() {
     // The HeapProfilerController should have been created in
     // ChromeMainDelegate::PostEarlyInitialization.
     CHECK(heap_profiler_controller);
-    if (ThreadProfiler::ShouldCollectProfilesForChildProcess() ||
+    if (ThreadProfilerConfiguration::Get()
+            ->IsProfilerEnabledForCurrentProcess() ||
         heap_profiler_controller->IsEnabled()) {
-      ThreadProfiler::SetMainThreadTaskRunner(
+      sampling_profiler::ThreadProfiler::SetMainThreadTaskRunner(
           base::SingleThreadTaskRunner::GetCurrentDefault());
       mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
       thread->BindHostReceiver(collector.InitWithNewPipeAndPassReceiver());
@@ -658,6 +662,9 @@ void ChromeContentRendererClient::RenderFrameCreated(
   }
 
   new NetErrorHelper(render_frame);
+
+  new security_interstitials::SecurityInterstitialPageControllerDelegateImpl(
+      render_frame);
 
   new SupervisedUserErrorPageControllerDelegateImpl(render_frame);
 
@@ -801,7 +808,7 @@ void ChromeContentRendererClient::WebViewCreated(
     const url::Origin* outermost_origin) {
   new prerender::NoStatePrefetchClient(web_view);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::ExtensionsRendererClient::Get()->WebViewCreated(web_view,
                                                               outermost_origin);
 #endif
@@ -1368,6 +1375,9 @@ void ChromeContentRendererClient::PrepareErrorPage(
           http_method == "POST", std::move(alternative_error_page_info),
           error_html);
 
+  security_interstitials::SecurityInterstitialPageControllerDelegateImpl::Get(
+      render_frame)
+      ->PrepareForErrorPage();
   SupervisedUserErrorPageControllerDelegateImpl::Get(render_frame)
       ->PrepareForErrorPage();
 }
@@ -1389,22 +1399,25 @@ void ChromeContentRendererClient::PrepareErrorPageForHttpStatusError(
 void ChromeContentRendererClient::PostSandboxInitialized() {
 #if BUILDFLAG(IS_CHROMEOS)
   DCHECK(!main_thread_profiler_);
-  main_thread_profiler_ = ThreadProfiler::CreateAndStartOnMainThread();
+  main_thread_profiler_ =
+      sampling_profiler::ThreadProfiler::CreateAndStartOnMainThread();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeContentRendererClient::PostIOThreadCreated(
     base::SingleThreadTaskRunner* io_thread_task_runner) {
   io_thread_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                base::ProfilerThreadType::kIo));
+      FROM_HERE,
+      base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
+                     base::ProfilerThreadType::kIo));
 }
 
 void ChromeContentRendererClient::PostCompositorThreadCreated(
     base::SingleThreadTaskRunner* compositor_thread_task_runner) {
   compositor_thread_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                base::ProfilerThreadType::kCompositor));
+      FROM_HERE,
+      base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
+                     base::ProfilerThreadType::kCompositor));
   // Enable stack sampling for tracing.
   // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
   // layer while TracingSamplerProfiler is outside of chrome/.
@@ -1731,7 +1744,8 @@ bool ChromeContentRendererClient::AllowScriptExtensionForServiceWorker(
 void ChromeContentRendererClient::
     WillInitializeServiceWorkerContextOnWorkerThread() {
   // This is called on the service worker thread.
-  ThreadProfiler::StartOnChildThread(base::ProfilerThreadType::kServiceWorker);
+  sampling_profiler::ThreadProfiler::StartOnChildThread(
+      base::ProfilerThreadType::kServiceWorker);
 }
 
 void ChromeContentRendererClient::

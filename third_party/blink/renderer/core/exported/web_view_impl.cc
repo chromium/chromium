@@ -1176,8 +1176,6 @@ void WebViewImpl::Close() {
   // want page popups to re-enter WebViewImpl during our shutdown.
   CancelPagePopup();
 
-  // Invalidate any weak ptrs as we are starting to shutdown.
-  weak_ptr_factory_.InvalidateWeakPtrs();
   receiver_.reset();
 
   dev_tools_emulator_->Shutdown();

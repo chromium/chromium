@@ -18,7 +18,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_almanac_endpoint.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
@@ -94,9 +93,7 @@ BASE_FEATURE(kAppPreloadServiceAllUserTypes,
              "AppPreloadServiceAllUserTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-AppPreloadService::AppPreloadService(Profile* profile)
-    : profile_(profile),
-      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
+AppPreloadService::AppPreloadService(Profile* profile) : profile_(profile) {
   if (g_disable_preloads_on_startup_for_testing_) {
     return;
   }
@@ -164,17 +161,14 @@ void AppPreloadService::StartFirstLoginFlow() {
 
   if ((first_run_started && !first_run_complete) ||
       base::FeatureList::IsEnabled(kAppPreloadServiceForceRun)) {
-    device_info_manager_->GetDeviceInfo(
-        base::BindOnce(&AppPreloadService::StartAppInstallationForFirstLogin,
-                       weak_ptr_factory_.GetWeakPtr(), start_time));
+    StartAppInstallationForFirstLogin(start_time);
   } else {
     data_ready_ = true;
   }
 }
 
 void AppPreloadService::StartAppInstallationForFirstLogin(
-    base::TimeTicks start_time,
-    DeviceInfo device_info) {
+    base::TimeTicks start_time) {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile_->GetURLLoaderFactory();
   if (!url_loader_factory.get()) {
@@ -186,7 +180,7 @@ void AppPreloadService::StartAppInstallationForFirstLogin(
     return;
   }
   app_preload_almanac_endpoint::GetAppsForFirstLogin(
-      device_info, *url_loader_factory,
+      profile_,
       base::BindOnce(&AppPreloadService::OnGetAppsForFirstLoginCompleted,
                      weak_ptr_factory_.GetWeakPtr(), start_time));
 }

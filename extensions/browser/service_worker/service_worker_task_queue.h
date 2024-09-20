@@ -291,6 +291,19 @@ class ServiceWorkerTaskQueue
   void OnStopped(int64_t version_id,
                  const content::ServiceWorkerRunningInfo& worker_info) override;
 
+  // Worker unregistrations can fail in expected and unexpected ways, this
+  // determines if the unregistration can be accepted as successful from the
+  // extension's perspective. When there was a record of worker registration
+  // prior to unregistering, `worker_previously_registered` should be set to
+  // true. Used in metrics.
+  bool IsWorkerUnregistrationSuccess(blink::ServiceWorkerStatusCode status_code,
+                                     bool worker_previously_registered);
+  // Whether this class is aware of a worker being registered. Note: This does
+  // not verify that the registration exists in the service worker layer, so it
+  // may not be 100% accurate (if there are bugs in registration tracking logic
+  // in this class). Used in metrics.
+  bool IsWorkerRegistered(const ExtensionId extension_id);
+
   class TestObserver {
    public:
     TestObserver();
@@ -394,6 +407,11 @@ class ServiceWorkerTaskQueue
       bool worker_previously_registered,
       blink::ServiceWorkerStatusCode status);
 
+  // Worker registrations can fail in expected and unexpected ways, this
+  // determines if the registration can be accepted as successful from the
+  // extension's perspective.
+  bool IsWorkerRegistrationSuccess(blink::ServiceWorkerStatusCode status);
+
   void DidStartWorkerForScope(const SequencedContextId& context_id,
                               base::Time start_time,
                               int64_t version_id,
@@ -402,6 +420,9 @@ class ServiceWorkerTaskQueue
   void DidStartWorkerFail(const SequencedContextId& context_id,
                           base::Time start_time,
                           blink::ServiceWorkerStatusCode status_code);
+
+  bool IsStartWorkerFailureUnexpected(
+      blink::ServiceWorkerStatusCode status_code);
 
   // Records that the extension with |extension_id| and |version| successfully
   // registered a Service Worker.
@@ -473,7 +494,7 @@ class ServiceWorkerTaskQueue
 
   // Whether the task queue (as a keyed service) has been informed that the
   // browser context is shutting down. Used for metrics purposes.
-  bool browser_context_shutting_down_;
+  bool browser_context_shutting_down_ = false;
 
   std::map<content::ServiceWorkerContext*, int> observing_worker_contexts_;
 

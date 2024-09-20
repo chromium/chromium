@@ -71,6 +71,20 @@ struct ScoreAdDependencyLatencies {
   mojo_base.mojom.TimeTicks score_ad_finish_time;
 };
 
+// How long particular tasks took. Unlike ScoreAdDependencyLatencies this
+// doesn't denote how long things blocked for --- e.g. the fetch times are
+// how long the download took, even for later calls to scoreAd() that may not
+// actually wait for the download since it's already in memory.
+struct SellerTimingMetrics {
+  mojo_base.mojom.TimeDelta? js_fetch_latency;
+
+  // How long it took to execute the script (including both the top-level
+  // and the function).
+  mojo_base.mojom.TimeDelta script_latency;
+
+  bool script_timed_out;
+};
+
 // Interface for returning ScoreAd results. The advantage of having an interface
 // is that it makes ScoreAd() calls cancellable, and allows callbacks passed
 // over the Mojo pipe to be deleted when the Mojo pipe is, to avoid setting off
@@ -114,11 +128,10 @@ interface ScoreAdClient {
   //
   // `real_time_contributions` Real time reporting contributions.
   //
-  // `scoring_latency` How long it took to execute the scoreAd() JavaScript,
-  //  (including the top-level).
+  // `score_ad_timing_metrics` Time metrics relevant to this call.
   //
-  // `trusted_signals_fetch_latency` How long it took to fetch the trusted
-  //  scoring signals, if any. 0 if there weren't any.
+  // `score_ad_dependency_latencies` How long various depedent-on operations
+  // were waited for on this particular call.
   //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see. `errors` should not be assumed to be
@@ -134,7 +147,7 @@ interface ScoreAdClient {
                     url.mojom.Url? debug_win_report_url,
                     array<PrivateAggregationRequest> pa_requests,
                     array<RealTimeReportingContribution> real_time_contributions,
-                    mojo_base.mojom.TimeDelta scoring_latency,
+                    SellerTimingMetrics score_ad_timing_metrics,
                     ScoreAdDependencyLatencies score_ad_dependency_latencies,
                     array<string> errors);
 };
@@ -410,7 +423,7 @@ interface SellerWorklet {
            url.mojom.Url? report_url,
            map<string, url.mojom.Url> ad_beacon_map,
            array<PrivateAggregationRequest> pa_requests,
-           mojo_base.mojom.TimeDelta reporting_latency,
+           SellerTimingMetrics time_metrics,
            array<string> error_msgs);
 
   // Establishes a debugger connection to the worklet thread.

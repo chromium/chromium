@@ -7,18 +7,17 @@
 #include "base/lazy_instance.h"
 #include "base/synchronization/lock.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace ppapi {
 
 base::LazyInstance<base::Lock>::Leaky g_proxy_lock = LAZY_INSTANCE_INITIALIZER;
 
 bool g_disable_locking = false;
-ABSL_CONST_INIT thread_local bool disable_locking_for_thread = false;
+constinit thread_local bool disable_locking_for_thread = false;
 
 // Simple single-thread deadlock detector for the proxy lock.
 // |true| when the current thread has the lock.
-ABSL_CONST_INIT thread_local bool proxy_locked_on_thread = false;
+constinit thread_local bool proxy_locked_on_thread = false;
 
 // static
 base::Lock* ProxyLock::Get() {

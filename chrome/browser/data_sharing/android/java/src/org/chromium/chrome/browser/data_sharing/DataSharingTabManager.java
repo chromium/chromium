@@ -10,11 +10,12 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -22,11 +23,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -48,8 +46,11 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogUtils;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is responsible for handling communication from the UI to multiple data sharing
@@ -64,26 +65,20 @@ public class DataSharingTabManager {
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
     private final Resources mResources;
-    private final OneshotSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private Callback<Profile> mProfileObserver;
-    private List<SyncObserver> mSyncObserversList;
-    private List<TabGroupModelObserver> mTabGroupModelObserversList;
+    private Map</*collaborationId*/ String, SyncObserver> mSyncObserversList;
 
     /** This class is responsible for observing sync tab activities. */
     private static class SyncObserver implements TabGroupSyncService.Observer {
-        interface OnTabGroupAddedCallback {
-            void onResult(SyncObserver observer, SavedTabGroup group);
-        }
-
         private final String mDataSharingGroupId;
         private final TabGroupSyncService mTabGroupSyncService;
-        private OnTabGroupAddedCallback mCallback;
+        private Callback<SavedTabGroup> mCallback;
 
         SyncObserver(
                 String dataSharingGroupId,
                 TabGroupSyncService tabGroupSyncService,
-                OnTabGroupAddedCallback callback) {
+                Callback<SavedTabGroup> callback) {
             mDataSharingGroupId = dataSharingGroupId;
             mTabGroupSyncService = tabGroupSyncService;
             mCallback = callback;
@@ -94,58 +89,14 @@ public class DataSharingTabManager {
         @Override
         public void onTabGroupAdded(SavedTabGroup group, @TriggerSource int source) {
             if (mDataSharingGroupId.equals(group.collaborationId)) {
-                OnTabGroupAddedCallback callback = mCallback;
+                Callback<SavedTabGroup> callback = mCallback;
                 destroy();
-                callback.onResult(this, group);
+                callback.onResult(group);
             }
         }
 
         void destroy() {
             mTabGroupSyncService.removeObserver(this);
-            mCallback = null;
-        }
-    }
-
-    /** This class is responsible for waiting for the next tab group to be created. */
-    private static class TabGroupModelObserver implements TabGroupModelFilterObserver {
-        interface OnCreateNewGroupCallback {
-            void onResult(TabGroupModelObserver observer, int tabId);
-        }
-
-        private final String mSyncId;
-        private final TabGroupModelFilter mTabGroupModelFilter;
-        private final TabGroupSyncService mTabGroupSyncService;
-        private OnCreateNewGroupCallback mCallback;
-
-        TabGroupModelObserver(
-                String syncId,
-                TabGroupModelFilter tabGroupModelFilter,
-                TabGroupSyncService tabGroupSyncService,
-                OnCreateNewGroupCallback callback) {
-            mSyncId = syncId;
-            mTabGroupModelFilter = tabGroupModelFilter;
-            mTabGroupSyncService = tabGroupSyncService;
-            mCallback = callback;
-
-            mTabGroupModelFilter.addTabGroupObserver(this);
-        }
-
-        @Override
-        public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
-            Token groupId = destinationTab.getTabGroupId();
-            assert groupId != null;
-            SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(mSyncId);
-            assert savedTabGroup.localId != null;
-            if (savedTabGroup.localId.equals(new LocalTabGroupId(groupId))) {
-                int tabId = destinationTab.getId();
-                OnCreateNewGroupCallback callback = mCallback;
-                destroy();
-                callback.onResult(this, tabId);
-            }
-        }
-
-        void destroy() {
-            mTabGroupModelFilter.removeTabGroupObserver(this);
             mCallback = null;
         }
     }
@@ -159,8 +110,6 @@ public class DataSharingTabManager {
      * @param shareDelegateSupplier The supplier of share delegate.
      * @param windowAndroid The window base class that has the minimum functionality.
      * @param resources Used to load localized android resources.
-     * @param tabGroupModelFilterSupplier The {@link TabGroupModelFilter} for the current non
-     *     incognito tab group.
      * @param tabGroupUiActionHandlerSupplier Supplier for the controller used to open tab groups
      *     locally.
      */
@@ -171,18 +120,15 @@ public class DataSharingTabManager {
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             Resources resources,
-            OneshotSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         mDataSharingTabSwitcherDelegate = tabSwitcherDelegate;
-        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
         mProfileSupplier = profileSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
         mWindowAndroid = windowAndroid;
         mResources = resources;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
-        mSyncObserversList = new ArrayList<SyncObserver>();
-        mTabGroupModelObserversList = new ArrayList<TabGroupModelObserver>();
+        mSyncObserversList = new HashMap<>();
         assert mProfileSupplier != null;
         assert mBottomSheetControllerSupplier != null;
         assert mShareDelegateSupplier != null;
@@ -190,14 +136,42 @@ public class DataSharingTabManager {
 
     /** Cleans up any outstanding resources. */
     public void destroy() {
-        for (SyncObserver observer : mSyncObserversList) {
-            observer.destroy();
+        for (Map.Entry<String, SyncObserver> entry : mSyncObserversList.entrySet()) {
+            entry.getValue().destroy();
         }
-
-        for (TabGroupModelObserver observer : mTabGroupModelObserversList) {
-            observer.destroy();
-        }
+        mSyncObserversList.clear();
     }
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(JoinActionStateAndroid)
+    @IntDef({
+        JoinActionStateAndroid.JOIN_TRIGGERED,
+        JoinActionStateAndroid.PROFILE_AVAILABLE,
+        JoinActionStateAndroid.PARSE_URL_FAILED,
+        JoinActionStateAndroid.SYNCED_TAB_GROUP_EXISTS,
+        JoinActionStateAndroid.LOCAL_TAB_GROUP_EXISTS,
+        JoinActionStateAndroid.LOCAL_TAB_GROUP_ADDED,
+        JoinActionStateAndroid.LOCAL_TAB_GROUP_OPENED,
+        JoinActionStateAndroid.ADD_MEMBER_FAILED,
+        JoinActionStateAndroid.ADD_MEMBER_SUCCESS,
+        JoinActionStateAndroid.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface JoinActionStateAndroid {
+        int JOIN_TRIGGERED = 0;
+        int PROFILE_AVAILABLE = 1;
+        int PARSE_URL_FAILED = 2;
+        int SYNCED_TAB_GROUP_EXISTS = 3;
+        int LOCAL_TAB_GROUP_EXISTS = 4;
+        int LOCAL_TAB_GROUP_ADDED = 5;
+        int LOCAL_TAB_GROUP_OPENED = 6;
+        int ADD_MEMBER_FAILED = 7;
+        int ADD_MEMBER_SUCCESS = 8;
+        int COUNT = 9;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/data_sharing/enums.xml:JoinActionStateAndroid)
 
     /**
      * Initiate the join flow. If successful, the associated tab group view will be opened.
@@ -205,6 +179,10 @@ public class DataSharingTabManager {
      * @param dataSharingURL The URL associated with the join invitation.
      */
     public void initiateJoinFlow(GURL dataSharingURL) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "DataSharing.Android.JoinActionFlowState",
+                JoinActionStateAndroid.JOIN_TRIGGERED,
+                JoinActionStateAndroid.COUNT);
         if (mProfileSupplier.hasValue() && mProfileSupplier.get().getOriginalProfile() != null) {
             initiateJoinFlowWithProfile(dataSharingURL);
             return;
@@ -221,6 +199,10 @@ public class DataSharingTabManager {
     }
 
     private void initiateJoinFlowWithProfile(GURL dataSharingURL) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "DataSharing.Android.JoinActionFlowState",
+                JoinActionStateAndroid.PROFILE_AVAILABLE,
+                JoinActionStateAndroid.COUNT);
         Profile originalProfile = mProfileSupplier.get().getOriginalProfile();
         TabGroupSyncService tabGroupSyncService =
                 TabGroupSyncServiceFactory.getForProfile(originalProfile);
@@ -233,38 +215,55 @@ public class DataSharingTabManager {
                 dataSharingService.parseDataSharingURL(dataSharingURL);
         if (parseResult.status != ParseURLStatus.SUCCESS) {
             showInvitationFailureDialog();
+            RecordHistogram.recordEnumeratedHistogram(
+                    "DataSharing.Android.JoinActionFlowState",
+                    JoinActionStateAndroid.PARSE_URL_FAILED,
+                    JoinActionStateAndroid.COUNT);
             return;
         }
 
         GroupToken groupToken = parseResult.groupToken;
+        String groupId = groupToken.groupId;
         // Verify that tab group does not already exist in sync.
-        SavedTabGroup existingGroup =
-                getTabGroupForCollabIdFromSync(groupToken.groupId, tabGroupSyncService);
+        SavedTabGroup existingGroup = getTabGroupForCollabIdFromSync(groupId, tabGroupSyncService);
         if (existingGroup != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "DataSharing.Android.JoinActionFlowState",
+                    JoinActionStateAndroid.SYNCED_TAB_GROUP_EXISTS,
+                    JoinActionStateAndroid.COUNT);
             onSavedTabGroupAvailable(existingGroup);
             return;
         }
 
         // TODO(b/354003616): Show loading dialog while waiting for tab.
+        if (!mSyncObserversList.containsKey(groupId)) {
+            SyncObserver syncObserver =
+                    new SyncObserver(
+                            groupId,
+                            tabGroupSyncService,
+                            (group) -> {
+                                onSavedTabGroupAvailable(group);
+                                mSyncObserversList.remove(group.collaborationId);
+                            });
 
-        SyncObserver syncObserver =
-                new SyncObserver(
-                        groupToken.groupId,
-                        tabGroupSyncService,
-                        (observer, group) -> {
-                            onSavedTabGroupAvailable(group);
-                            mSyncObserversList.remove(observer);
-                        });
-
-        mSyncObserversList.add(syncObserver);
+            mSyncObserversList.put(groupId, syncObserver);
+        }
 
         dataSharingService.addMember(
                 groupToken.groupId,
                 groupToken.accessToken,
                 result -> {
                     if (result != PeopleGroupActionOutcome.SUCCESS) {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "DataSharing.Android.JoinActionFlowState",
+                                JoinActionStateAndroid.ADD_MEMBER_FAILED,
+                                JoinActionStateAndroid.COUNT);
                         showInvitationFailureDialog();
                     }
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "DataSharing.Android.JoinActionFlowState",
+                            JoinActionStateAndroid.ADD_MEMBER_SUCCESS,
+                            JoinActionStateAndroid.COUNT);
                 });
     }
 
@@ -299,7 +298,9 @@ public class DataSharingTabManager {
      *
      * @param tabId The tab id of the first tab in the group.
      */
-    void switchToTabGroupWithTabId(int tabId) {
+    void switchToTabGroup(SavedTabGroup group) {
+        Integer tabId = group.savedTabs.get(0).localId;
+        assert tabId != null;
         // TODO(b/354003616): Verify that the loading dialog is gone.
         mDataSharingTabSwitcherDelegate.openTabGroupWithTabId(tabId);
     }
@@ -314,9 +315,11 @@ public class DataSharingTabManager {
         boolean isInLocalTabGroup = (group.localId != null);
 
         if (isInLocalTabGroup) {
-            Integer tabId = group.savedTabs.get(0).localId;
-            assert tabId != null;
-            switchToTabGroupWithTabId(tabId);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "DataSharing.Android.JoinActionFlowState",
+                    JoinActionStateAndroid.LOCAL_TAB_GROUP_EXISTS,
+                    JoinActionStateAndroid.COUNT);
+            switchToTabGroup(group);
             return;
         }
 
@@ -324,29 +327,24 @@ public class DataSharingTabManager {
     }
 
     void openLocalTabGroup(SavedTabGroup group) {
-        // Note: This does not switch the active tab to the opened tab.
-        Profile originalProfile = mProfileSupplier.get().getOriginalProfile();
-        TabGroupModelFilter tabGroupModelFilter = mTabGroupModelFilterSupplier.get();
-        TabGroupModelObserver tabGroupModelObserver =
-                new TabGroupModelObserver(
-                        group.syncId,
-                        tabGroupModelFilter,
-                        TabGroupSyncServiceFactory.getForProfile(originalProfile),
-                        (observer, tabId) -> {
-                            switchToTabGroupWithTabId(tabId);
-                            mTabGroupModelObserversList.remove(observer);
-                        });
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(
+                        mProfileSupplier.get().getOriginalProfile());
 
-        mTabGroupModelObserversList.add(tabGroupModelObserver);
-
-        String syncId = group.syncId;
-        if (mTabGroupUiActionHandlerSupplier.hasValue()) {
-            mTabGroupUiActionHandlerSupplier.get().openTabGroup(syncId);
-            return;
-        }
-        mTabGroupUiActionHandlerSupplier.onAvailable(
+        mTabGroupUiActionHandlerSupplier.runSyncOrOnAvailable(
                 (tabGroupUiActionHandler) -> {
-                    tabGroupUiActionHandler.openTabGroup(syncId);
+                    // Note: This does not switch the active tab to the opened tab.
+                    tabGroupUiActionHandler.openTabGroup(group.syncId);
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "DataSharing.Android.JoinActionFlowState",
+                            JoinActionStateAndroid.LOCAL_TAB_GROUP_ADDED,
+                            JoinActionStateAndroid.COUNT);
+                    SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(group.syncId);
+                    switchToTabGroup(savedTabGroup);
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "DataSharing.Android.JoinActionFlowState",
+                            JoinActionStateAndroid.LOCAL_TAB_GROUP_OPENED,
+                            JoinActionStateAndroid.COUNT);
                 });
     }
 
@@ -365,14 +363,34 @@ public class DataSharingTabManager {
         }
     }
 
-    /**
-     * Stop observing a data sharing tab group from local tab model.
-     *
-     * @param observer The observer to be removed.
-     */
-    protected void deleteLocalTabModelObserver(TabGroupModelObserver observer) {
-        mTabGroupModelFilterSupplier.get().removeTabGroupObserver(observer);
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(ShareActionStateAndroid)
+    @IntDef({
+        ShareActionStateAndroid.SHARE_TRIGGERED,
+        ShareActionStateAndroid.GROUP_EXISTS,
+        ShareActionStateAndroid.ENSURE_VISIBILITY_FAILED,
+        ShareActionStateAndroid.BOTTOM_SHEET_DISMISSED,
+        ShareActionStateAndroid.GROUP_CREATE_SUCCESS,
+        ShareActionStateAndroid.GROUP_CREATE_FAILED,
+        ShareActionStateAndroid.URL_CREATION_FAILED,
+        ShareActionStateAndroid.SHARE_SHEET_SHOWN,
+        ShareActionStateAndroid.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ShareActionStateAndroid {
+        int SHARE_TRIGGERED = 0;
+        int GROUP_EXISTS = 1;
+        int ENSURE_VISIBILITY_FAILED = 2;
+        int BOTTOM_SHEET_DISMISSED = 3;
+        int GROUP_CREATE_SUCCESS = 4;
+        int GROUP_CREATE_FAILED = 5;
+        int URL_CREATION_FAILED = 6;
+        int SHARE_SHEET_SHOWN = 7;
+        int COUNT = 8;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/data_sharing/enums.xml:ShareActionStateAndroid)
 
     /**
      * Creates a collaboration group.
@@ -387,19 +405,29 @@ public class DataSharingTabManager {
             String tabGroupDisplayName,
             LocalTabGroupId localTabGroupId,
             Callback<Boolean> createGroupFinishedCallback) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "DataSharing.Android.ShareActionFlowState",
+                ShareActionStateAndroid.SHARE_TRIGGERED,
+                ShareActionStateAndroid.COUNT);
         Profile profile = mProfileSupplier.get().getOriginalProfile();
         assert profile != null;
         TabGroupSyncService tabGroupService = TabGroupSyncServiceFactory.getForProfile(profile);
         DataSharingService dataSharingService = DataSharingServiceFactory.getForProfile(profile);
 
         SavedTabGroup existingGroup = tabGroupService.getGroup(localTabGroupId);
-        if (existingGroup != null && existingGroup.collaborationId != null) {
+        assert existingGroup != null : "Group not found in TabGroupSyncService.";
+        if (existingGroup.collaborationId != null) {
             dataSharingService.ensureGroupVisibility(
                     existingGroup.collaborationId,
                     (result) -> {
-                        if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN || result.groupData == null) {
+                        if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN
+                                || result.groupData == null) {
                             // TODO(ritikagup): Show error dialog telling failed to create access
                             // token.
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "DataSharing.Android.ShareActionFlowState",
+                                    ShareActionStateAndroid.ENSURE_VISIBILITY_FAILED,
+                                    ShareActionStateAndroid.COUNT);
                         } else {
                             showShareSheet(result.groupData);
                         }
@@ -410,6 +438,10 @@ public class DataSharingTabManager {
         Callback<Integer> onClosedCallback =
                 (reason) -> {
                     if (reason != StateChangeReason.INTERACTION_COMPLETE) {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "DataSharing.Android.ShareActionFlowState",
+                                ShareActionStateAndroid.BOTTOM_SHEET_DISMISSED,
+                                ShareActionStateAndroid.COUNT);
                         createGroupFinishedCallback.onResult(false);
                     }
                 };
@@ -421,11 +453,19 @@ public class DataSharingTabManager {
                             || result.groupData == null) {
                         Log.e(TAG, "Group creation failed " + result.actionFailure);
                         createGroupFinishedCallback.onResult(false);
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "DataSharing.Android.ShareActionFlowState",
+                                ShareActionStateAndroid.GROUP_CREATE_FAILED,
+                                ShareActionStateAndroid.COUNT);
                     } else {
                         tabGroupService.makeTabGroupShared(
                                 localTabGroupId, result.groupData.groupToken.groupId);
                         createGroupFinishedCallback.onResult(true);
 
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "DataSharing.Android.ShareActionFlowState",
+                                ShareActionStateAndroid.GROUP_CREATE_SUCCESS,
+                                ShareActionStateAndroid.COUNT);
                         showShareSheet(result.groupData);
                     }
                     mBottomSheetControllerSupplier
@@ -458,8 +498,16 @@ public class DataSharingTabManager {
         if (url == null) {
             // TODO(ritikagup) : Show error dialog showing fetching URL failed. Contact owner for
             // new link.
+            RecordHistogram.recordEnumeratedHistogram(
+                    "DataSharing.Android.ShareActionFlowState",
+                    ShareActionStateAndroid.URL_CREATION_FAILED,
+                    ShareActionStateAndroid.COUNT);
             return;
         }
+        RecordHistogram.recordEnumeratedHistogram(
+                "DataSharing.Android.ShareActionFlowState",
+                ShareActionStateAndroid.SHARE_SHEET_SHOWN,
+                ShareActionStateAndroid.COUNT);
         var chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.PAGE_INFO)

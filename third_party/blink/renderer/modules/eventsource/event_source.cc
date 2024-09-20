@@ -310,7 +310,7 @@ void EventSource::DidReceiveData(base::span<const char> data) {
   DCHECK(loader_);
   DCHECK(parser_);
 
-  parser_->AddBytes(data.data(), base::checked_cast<uint32_t>(data.size()));
+  parser_->AddBytes(data);
 }
 
 void EventSource::DidFinishLoading(uint64_t) {

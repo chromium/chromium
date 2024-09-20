@@ -1424,18 +1424,6 @@ bool BrowserDataBackMigrator::RestartToMigrateBack(
 }
 
 // static
-bool BrowserDataBackMigrator::MaybeRestartToMigrateBack(
-    const AccountId& account_id,
-    const std::string& user_id_hash,
-    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
-  if (!ShouldMigrateBack(account_id, user_id_hash, policy_init_state)) {
-    return false;
-  }
-
-  return RestartToMigrateBack(account_id);
-}
-
-// static
 BrowserDataBackMigratorBase::Result BrowserDataBackMigrator::ToResult(
     TaskResult result) {
   switch (result.status) {

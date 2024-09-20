@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package google.internal.remoting.cloud.v1alpha;
 
+import "field_mask.proto";
+import "remote_access_host.proto";
 import "service_account_info.proto";
 
 // Creates a new remote access host instance in the Directory.
@@ -43,4 +45,19 @@ message ProvisionGceInstanceResponse {
   // The email address and authorization_code for the service account created
   // for the new remote access host instance.
   ServiceAccountInfo service_account_info = 2;
+}
+
+// Updates the last seen timestamp for a remote access host.
+message SendHeartbeatRequest {
+  // The UUID of the remote access host to update in the Directory.
+  string directory_id = 1;
+}
+
+// Updates a remote access host in the Directory.
+message UpdateRemoteAccessHostRequest {
+  // `remote_access_host.directory_id` indicates which host entry to update.
+  RemoteAccessHost remote_access_host = 1;
+
+  // The list of fields to update.
+  FieldMask update_mask = 2;
 }

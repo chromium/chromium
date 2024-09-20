@@ -9,6 +9,10 @@
 
 #include "base/feature_list.h"
 #include "base/files/file.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace tflite::task::text::nlclassifier {
@@ -65,6 +69,8 @@ enum class LanguageDetectionModelState {
 // Each instance of this should only be used from a single thread.
 class LanguageDetectionModel {
  public:
+  using ModelLoadedCallback = base::OnceCallback<void(LanguageDetectionModel&)>;
+
   LanguageDetectionModel();
   ~LanguageDetectionModel();
 
@@ -78,24 +84,56 @@ class LanguageDetectionModel {
   std::vector<Prediction> Predict(const std::u16string& contents,
                                   bool truncate = true) const;
 
+#if !BUILDFLAG(IS_IOS)
   // Updates the language detection model for use by memory-mapping
   // |model_file| used to detect the language of the page.
   void UpdateWithFile(base::File model_file);
+#endif
+
+  // Updates the language detection model for use by memory-mapping
+  // |model_file| used to detect the language of the page. Performs
+  // the operation on a background sequence and call |callback| on
+  // completion
+  void UpdateWithFileAsync(base::File model_file, base::OnceClosure callback);
 
   // Returns whether |this| is initialized and is available to handle requests
   // to determine the language of the page.
   bool IsAvailable() const;
 
+  void AddOnModelLoadedCallback(ModelLoadedCallback callback);
+
   std::string GetModelVersion() const;
 
  private:
+  void NotifyModelLoaded();
+
+  // An owned NLClassifier.
+  using OwnedNLClassifier =
+      std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>;
+
+  // Updates the model if the not unset.
+  void SetModel(std::optional<OwnedNLClassifier> optional_model);
+
+#if BUILDFLAG(IS_IOS)
+  SEQUENCE_CHECKER(sequence_checker_);
+#endif
+
   // The tflite classifier that can determine the language of text.
-  std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>
-      lang_detection_model_;
+  OwnedNLClassifier lang_detection_model_;
 
   // The number of threads to use for model inference. -1 tells TFLite to use
   // its internal default logic.
   const int num_threads_ = -1;
+
+  static constexpr int kMaxPendingCallbacksCount = 100;
+  // Pending callbacks for waiting the model to be available.
+  std::vector<ModelLoadedCallback> model_loaded_callbacks_;
+
+  // Records whether a file has been updated to the model.
+  bool loaded_ = false;
+
+  // Used to load the data on a background sequence (see UpdateWithFileAsync).
+  base::WeakPtrFactory<LanguageDetectionModel> weak_factory_{this};
 };
 
 }  // namespace language_detection

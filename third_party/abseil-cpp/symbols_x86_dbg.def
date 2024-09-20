@@ -1946,8 +1946,8 @@ EXPORTS
     ??0ChunkRange@Cord@absl@@QAE@PBV12@@Z
     ??0CivilInfo@TimeZone@absl@@QAE@XZ
     ??0CommandLineFlag@absl@@QAE@XZ
+    ??0CommonFields@container_internal@absl@@QAE@Unon_soo_tag_t@12@@Z
     ??0CommonFields@container_internal@absl@@QAE@Usoo_tag_t@12@@Z
-    ??0CommonFields@container_internal@absl@@QAE@XZ
     ??0Condition@absl@@QAE@P6A_NPAX@Z0@Z
     ??0Condition@absl@@QAE@PB_N@Z
     ??0ConvertibleToStringView@strings_internal@absl@@QAE@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
@@ -5533,6 +5533,7 @@ EXPORTS
     ?push_front@?$__split_buffer@PAUPrefixCrc@CrcCordState@crc_internal@absl@@V?$allocator@PAUPrefixCrc@CrcCordState@crc_internal@absl@@@__Cr@std@@@__Cr@std@@QAEX$$QAPAUPrefixCrc@CrcCordState@crc_internal@absl@@@Z
     ?raw_code@Status@absl@@QBEHXZ
     ?reduce_size@InlineRep@Cord@absl@@QAEXI@Z
+    ?reinitialize_moved_from_non_soo@CommonFields@container_internal@absl@@QAEXXZ
     ?release@?$unique_ptr@$$CBVImpl@time_zone@cctz@time_internal@absl@@U?$default_delete@$$CBVImpl@time_zone@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@QAEPBVImpl@time_zone@cctz@time_internal@absl@@XZ
     ?release@?$unique_ptr@PAPBVImpl@time_zone@cctz@time_internal@absl@@V?$__allocator_destructor@V?$allocator@PBVImpl@time_zone@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@@__Cr@std@@QAEPAPBVImpl@time_zone@cctz@time_internal@absl@@XZ
     ?release@?$unique_ptr@PAUPrefixCrc@CrcCordState@crc_internal@absl@@V?$__allocator_destructor@V?$allocator@UPrefixCrc@CrcCordState@crc_internal@absl@@@__Cr@std@@@__Cr@std@@@__Cr@std@@QAEPAUPrefixCrc@CrcCordState@crc_internal@absl@@XZ

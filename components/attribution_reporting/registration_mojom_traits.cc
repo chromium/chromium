@@ -429,14 +429,8 @@ bool StructTraits<attribution_reporting::mojom::AggregatableTriggerDataDataView,
     return false;
   }
 
-  auto aggregatable_trigger_data =
-      attribution_reporting::AggregatableTriggerData::Create(
-          key_piece, std::move(source_keys), std::move(filters));
-  if (!aggregatable_trigger_data) {
-    return false;
-  }
-
-  *out = *std::move(aggregatable_trigger_data);
+  *out = attribution_reporting::AggregatableTriggerData(
+      key_piece, std::move(source_keys), std::move(filters));
   return true;
 }
 

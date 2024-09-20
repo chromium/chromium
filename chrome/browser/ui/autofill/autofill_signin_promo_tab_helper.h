@@ -34,10 +34,10 @@ class AutofillSigninPromoTabHelper
 
   // Initializes the autofill data move process by observing the
   // IdentityManager. If the sign in happens from a tab with the appropriate
-  // |access_point| within the |time_limit|, the |password_form| will be moved
-  // to account storage.
+  // |access_point| within the |time_limit|, the |move_callback| will be
+  // executed.
   void InitializeDataMoveAfterSignIn(
-      const password_manager::PasswordForm& password_form,
+      base::OnceCallback<void(content::WebContents*)> move_callback,
       signin_metrics::AccessPoint access_point,
       base::TimeDelta time_limit = base::Minutes(50));
 
@@ -70,7 +70,7 @@ class AutofillSigninPromoTabHelper
         identity_manager_observation_;
     std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>
         move_helper_;
-    password_manager::PasswordForm password_form_;
+    base::OnceCallback<void(content::WebContents*)> move_callback_;
     signin_metrics::AccessPoint access_point_ =
         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
     base::Time initialization_time_;

@@ -14,16 +14,10 @@ export function getHtml(this: AutoTabGroupsNotStartedElement) {
 <div class="auto-tab-groups-container">
   <auto-tab-groups-not-started-image></auto-tab-groups-not-started-image>
   <div class="auto-tab-groups-text-container">
-    <div id="header"
-        class="auto-tab-groups-header"
-        aria-live="polite"
-        aria-relevant="all">
-      ${this.getTitle()}
-    </div>
     <div class="auto-tab-groups-body">
       ${this.getBody_()}
       ${this.showFre ? html`
-<table class="bullet-list">
+        <table class="bullet-list">
           <tr>
             <td>
               <cr-icon icon="tab-search:plant" aria-hidden="true"></cr-icon>

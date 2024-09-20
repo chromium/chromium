@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
+#include "ash/wm/overview/overview_ui_task_pool.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
@@ -796,6 +797,11 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   std::optional<OverviewController::ScopedOcclusionPauser> scroll_pauser_;
 
   const base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator_;
+
+  // Set of tasks that get run on the UI thread while the enter-animation is
+  // in progress. These tasks are not immediately necessary but may be after the
+  // enter-animation is complete.
+  OverviewUiTaskPool enter_animation_task_pool_;
 
   base::WeakPtrFactory<OverviewGrid> weak_ptr_factory_{this};
 };

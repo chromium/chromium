@@ -428,6 +428,13 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
   FireNativeMacNotification(mac_notification, wrapper);
 }
 
+void BrowserAccessibilityManagerMac::FireSentinelEventForTesting() {
+  // The drawer created event is used as an end-of-test signal because it
+  // is used for an obsolete OS feature that will never occur in tests.
+  FireNativeMacNotification(NSAccessibilityDrawerCreatedNotification,
+                            GetBrowserAccessibilityRoot());
+}
+
 void BrowserAccessibilityManagerMac::FireAriaNotificationEvent(
     BrowserAccessibility* node,
     const std::string& announcement,

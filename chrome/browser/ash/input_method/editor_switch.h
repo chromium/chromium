@@ -33,6 +33,8 @@ class EditorSwitch {
 
   bool IsFeedbackEnabled() const;
 
+  bool CanShowNoticeBanner() const;
+
   EditorMode GetEditorMode() const;
 
   EditorOpportunityMode GetEditorOpportunityMode() const;

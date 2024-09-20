@@ -43,6 +43,29 @@ suite('SeaPen reducers', () => {
         'recent images set in store');
   });
 
+  test(
+      'selecting thumbnail sets recent image if thumbnail id is a recent image',
+      async () => {
+        await getRecentSeaPenImageIds(seaPenProvider, seaPenStore);
+        const recentImageId = seaPenProvider.recentImageIds[1] as number;
+
+        await selectSeaPenThumbnail(
+            {image: {url: ''}, id: recentImageId}, seaPenProvider, seaPenStore);
+
+        assertDeepEquals(
+            [
+              beginLoadRecentSeaPenImagesAction(),
+              setRecentSeaPenImagesAction(seaPenProvider.recentImageIds),
+              beginSelectRecentSeaPenImageAction(recentImageId),
+              beginLoadSelectedImageAction(),
+              beginLoadSelectedRecentSeaPenImageAction(),
+              endSelectRecentSeaPenImageAction(recentImageId, true),
+            ],
+            personalizationStore.actions,
+            'selects recent image instead of selecting thumbnail');
+      });
+
+
   test('sets sea pen thumbnails in store', async () => {
     const query = seaPenProvider.seaPenQuery;
     await getSeaPenThumbnails(query, seaPenProvider, seaPenStore);

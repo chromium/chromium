@@ -894,12 +894,6 @@ RuntimeGetContextsFunction::GetFrameContexts() {
         DUMP_WILL_BE_NOTREACHED();
         break;
 
-      case mojom::ViewType::kDeveloperTools:
-        // TODO(crbug.com/356827776): This view type is not set for developer
-        // tools WebContents yet. This will be NOTREACHED() till we do that.
-        // We also need to add a new type in the runtime API for this.
-        NOTREACHED();
-
       case mojom::ViewType::kExtensionPopup:
         return api::runtime::ContextType::kPopup;
       case mojom::ViewType::kTabContents:
@@ -908,6 +902,8 @@ RuntimeGetContextsFunction::GetFrameContexts() {
         return api::runtime::ContextType::kOffscreenDocument;
       case mojom::ViewType::kExtensionSidePanel:
         return api::runtime::ContextType::kSidePanel;
+      case mojom::ViewType::kDeveloperTools:
+        return api::runtime::ContextType::kDeveloperTools;
 
       case mojom::ViewType::kExtensionGuest:
         // Skip these view types for now.
@@ -940,12 +936,11 @@ RuntimeGetContextsFunction::GetFrameContexts() {
     context.context_type = context_type;
     context.context_id =
         ExtensionApiFrameIdMap::GetContextId(host).AsLowercaseString();
-    context.tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
-    context.window_id =
-        sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id();
+    context.tab_id = GetTabId(*web_contents);
+    context.frame_id = GetFrameId(*host);
+    context.window_id = GetWindowId(*web_contents);
     context.document_id =
         ExtensionApiFrameIdMap::GetDocumentId(host).ToString();
-    context.frame_id = ExtensionApiFrameIdMap::GetFrameId(host);
     context.document_url = host->GetLastCommittedURL().spec();
     context.document_origin = host->GetLastCommittedOrigin().Serialize();
     context.incognito = host->GetBrowserContext()->IsOffTheRecord();
@@ -954,6 +949,44 @@ RuntimeGetContextsFunction::GetFrameContexts() {
   }
 
   return results;
+}
+
+int RuntimeGetContextsFunction::GetTabId(content::WebContents& web_contents) {
+  mojom::ViewType view_type = extensions::GetViewType(&web_contents);
+
+  if (view_type == extensions::mojom::ViewType::kDeveloperTools) {
+    return -1;
+  }
+
+  return sessions::SessionTabHelper::IdForTab(&web_contents).id();
+}
+
+int RuntimeGetContextsFunction::GetFrameId(content::RenderFrameHost& host) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&host);
+  mojom::ViewType view_type = extensions::GetViewType(web_contents);
+
+  if (view_type == extensions::mojom::ViewType::kDeveloperTools) {
+    return -1;
+  }
+
+  return ExtensionApiFrameIdMap::GetFrameId(&host);
+}
+
+int RuntimeGetContextsFunction::GetWindowId(
+    content::WebContents& web_contents) {
+  mojom::ViewType view_type = extensions::GetViewType(&web_contents);
+
+  if (view_type != extensions::mojom::ViewType::kDeveloperTools) {
+    return sessions::SessionTabHelper::IdForWindowContainingTab(&web_contents)
+        .id();
+  }
+
+  // For developer tools, ask the embedder for the window ID.
+  std::unique_ptr<RuntimeAPIDelegate> delegate =
+      ExtensionsBrowserClient::Get()->CreateRuntimeAPIDelegate(
+          browser_context());
+  return delegate->GetDeveloperToolsWindowId(&web_contents);
 }
 
 }  // namespace extensions

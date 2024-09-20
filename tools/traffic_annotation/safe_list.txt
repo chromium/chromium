@@ -100,7 +100,7 @@ missing_new_fields,chrome/browser/autofill/autofill_image_fetcher_impl.cc
 missing_new_fields,chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc
 missing_new_fields,chrome/browser/cart/cart_discount_fetcher.cc
 missing_new_fields,chrome/browser/cart/cart_discount_link_fetcher.cc
-missing_new_fields,chrome/browser/chromeos/extensions/wallpaper_api.cc
+missing_new_fields,chrome/browser/chromeos/extensions/wallpaper/wallpaper_api.cc
 missing_new_fields,chrome/browser/device_api/managed_configuration_api.cc
 missing_new_fields,chrome/browser/devtools/device/adb/adb_client_socket.cc
 missing_new_fields,chrome/browser/devtools/device/android_device_manager.cc
@@ -184,7 +184,6 @@ missing_new_fields,components/autofill/core/browser/payments/payments_network_in
 missing_new_fields,components/captive_portal/content/captive_portal_service.cc
 missing_new_fields,components/commerce/core/account_checker.cc
 missing_new_fields,components/commerce/core/subscriptions/subscriptions_server_proxy.cc
-missing_new_fields,components/content_relationship_verification/digital_asset_links_handler.cc
 missing_new_fields,components/dom_distiller/core/distiller_url_fetcher.cc
 missing_new_fields,components/domain_reliability/uploader.cc
 missing_new_fields,components/download/internal/common/download_item_impl.cc

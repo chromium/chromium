@@ -8,24 +8,20 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/modules/ai/ai_summarizer_factory.h"
-#include "third_party/blink/renderer/modules/ai/ai_text_session_factory.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 class AIAssistantFactory;
-class AITextSession;
 class AIRewriterFactory;
+class AISummarizerFactory;
+class AITextSessionFactory;
 class AIWriterFactory;
 
-// The class that manages the exposed model APIs that load model assets and
-// create AITextSession.
+// The class is the entry point of all the built-in AI APIs. It provides the
+// getters for the factories of different functionalities.
 class AI final : public ScriptWrappable, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 

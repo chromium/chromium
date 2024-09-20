@@ -16,7 +16,6 @@ static_library("accelerator") {
 
   deps = [
     "//ash",
-    "//chrome/browser/ash/app_list/arc",
     "//components/user_manager",
   ]
 }

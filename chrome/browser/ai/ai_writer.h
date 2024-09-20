@@ -33,7 +33,7 @@ class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
   // `AIContextBoundObject` implementation.
   void SetDeletionCallback(base::OnceClosure deletion_callback) override;
 
-  // `blink::mojom::ModelTextSession` implementation.
+  // `blink::mojom::AIWriter` implementation.
   void Write(const std::string& input,
              const std::optional<std::string>& context,
              mojo::PendingRemote<blink::mojom::ModelStreamingResponder>

@@ -57,7 +57,7 @@ struct CONTENT_EXPORT BaseTraceReport {
   std::string upload_rule_name;
 
   // The total size in bytes taken by the report.
-  uint64_t total_size;
+  uint64_t total_size = 0;
 
   // The reason for which a report was not uploaded even if the upload rules
   // were met.
@@ -95,13 +95,13 @@ struct CONTENT_EXPORT ClientTraceReport : BaseTraceReport {
 
   // The current upload state for this report represented by
   // ReportUploadState.
-  ReportUploadState upload_state;
+  ReportUploadState upload_state = ReportUploadState::kNotUploaded;
 
   // The time at which the report was successfully uploaded to a server.
   base::Time upload_time;
 
   // Whether the report has content (payload) attached to it.
-  bool has_trace_content;
+  bool has_trace_content = false;
 };
 
 class CONTENT_EXPORT TraceReportDatabase {

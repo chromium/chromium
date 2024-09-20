@@ -97,11 +97,32 @@ class WindowController {
   // TODO(stevenjb): Temporary workaround. Eliminate this.
   virtual Browser* GetBrowser() const;
 
-  // On success, returns true and fills in the WebContents and extensions API
-  // tab ID for the active tab. The optional_tab_id may be null if the caller
-  // doesn't need it. Returns false if there is no active tab.
-  virtual bool GetActiveTab(content::WebContents** contents,
-                            int* optional_tab_id) const = 0;
+  // Returns true if the window is in the process of being torn down. See
+  // Browser::is_delete_scheduled().
+  virtual bool IsDeleteScheduled() const = 0;
+
+  // Returns the WebContents associated with the active tab, if any. Returns
+  // null if there is no active tab.
+  virtual content::WebContents* GetActiveTab() const = 0;
+
+  // Returns true if this window has a tab strip that's currently editable or
+  // if there's no visible tab strip.
+  //
+  // During some animations and drags the tab strip won't be editable and
+  // extensions should not update it. Many callers should use
+  // ExtensionTabUtil::IsTabStripEditable() which will check *all* tab strips
+  // because some move operations span tab strips. This checking of all windows
+  // is why windows that don't have visible tab strips should still return true
+  // here: otherwise they will prevent some operations from happening that use
+  // the ExtensionTabUtil.
+  virtual bool HasEditableTabStrip() const = 0;
+
+  // Returns the number of tabs in this window.
+  virtual int GetTabCount() const = 0;
+
+  // Returns the web contents at the given tab index, or null if it's off the
+  // end of the tab strip.
+  virtual content::WebContents* GetWebContentsAt(int i) const = 0;
 
   // Returns true if the window is visible to the tabs API, when used by the
   // given |extension|.

@@ -19,7 +19,19 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "extensions/browser/extension_system.h"
 #include "ui/base/resource/resource_bundle.h"
+
+AppHomeUIConfig::AppHomeUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIAppLauncherPageHost) {}
+
+bool AppHomeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return profile &&
+         extensions::ExtensionSystem::Get(profile)->extension_service() &&
+         !profile->IsGuestSession();
+}
 
 namespace webapps {
 

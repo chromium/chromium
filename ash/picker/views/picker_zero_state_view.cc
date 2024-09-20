@@ -15,9 +15,11 @@
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/picker_asset_fetcher.h"
+#include "ash/picker/picker_category.h"
 #include "ash/picker/picker_clipboard_history_provider.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_icons.h"
+#include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
@@ -28,7 +30,6 @@
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
 #include "ash/picker/views/picker_zero_state_view_delegate.h"
-#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/feature_list.h"
@@ -222,6 +223,9 @@ void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
 
   if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
     list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
+  } else if (auto* image_item_view =
+                 views::AsViewClass<PickerImageItemView>(view)) {
+    image_item_view->SetAction(delegate_->GetActionForResult(result));
   }
 }
 

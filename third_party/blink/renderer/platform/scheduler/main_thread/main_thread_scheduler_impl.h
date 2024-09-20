@@ -93,6 +93,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       public RenderWidgetSignals::Observer,
       public base::trace_event::TraceLog::AsyncEnabledStateObserver {
  public:
+  // Duration before rendering is considered starved by render-blocking tasks,
+  // which is a safeguard against pathological cases for render-blocking image
+  // prioritization.
+  static constexpr base::TimeDelta kRenderBlockingStarvationThreshold =
+      base::Milliseconds(500);
+
   // Tracks prioritization of the next frame. This is used in conjunction with
   // `UseCase` and other signals to compute the priority of the compositor task
   // queue.
@@ -131,11 +137,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // per-ASG task runner instead of the per-thread task runner.
     bool mbi_override_task_runner_handle;
 
-    // If ThreadedScrollPreventRenderingStarvation is enabled, this is set to
-    // the policy set in the associated feature param, otherwise this is
-    // equivalent to the existing behavior.
-    CompositorTQPolicyDuringThreadedScroll
-        compositor_tq_policy_during_threaded_scroll;
+    // If ThreadedScrollPreventRenderingStarvation is enabled, this controls the
+    // rendering anti-starvation threshold during UseCase::kCompositorGesture.
+    base::TimeDelta compositor_gesture_rendering_starvation_threshold;
 
     // The policy to use for discrete input-based task deferral. If
     // `features::kDeferRendererTasksAfterInput` is enabled, this is set to the

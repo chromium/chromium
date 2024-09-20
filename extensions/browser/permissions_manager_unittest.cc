@@ -493,10 +493,10 @@ TEST_F(PermissionsManagerUnittest, HasActiveTabAndCanAccess_PolicyUrl) {
       "ActiveTab Extension",
       extensions::mojom::ManifestLocation::kExternalPolicy);
 
-  constexpr int kContextId = 0;
-  extension->permissions_data()->SetContextId(kContextId);
+  int context_id = extensions::util::GetBrowserContextId(browser_context());
+  extension->permissions_data()->SetContextId(context_id);
   extension->permissions_data()->SetUsesDefaultHostRestrictions();
-  enterprise_extension->permissions_data()->SetContextId(kContextId);
+  enterprise_extension->permissions_data()->SetContextId(context_id);
   enterprise_extension->permissions_data()->SetUsesDefaultHostRestrictions();
 
   // Add a policy-blocked site.
@@ -506,8 +506,7 @@ TEST_F(PermissionsManagerUnittest, HasActiveTabAndCanAccess_PolicyUrl) {
   extensions::URLPatternSet default_blocked_hosts;
   default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
   extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
-      extensions::util::GetBrowserContextId(browser_context()),
-      default_blocked_hosts, default_allowed_hosts);
+      context_id, default_blocked_hosts, default_allowed_hosts);
 
   // Allow enterprise extension access to policy-blocked site.
   extensions::URLPatternSet allowed_hosts;

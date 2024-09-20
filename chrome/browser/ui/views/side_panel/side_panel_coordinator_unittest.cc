@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
@@ -340,6 +341,29 @@ TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
   EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
 }
 
+// https://issues.chromium.org/issues/40670141: animations don't run on mac.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(SidePanelCoordinatorTest, OpenWhileClosing) {
+  // Wait for the side panel to be visible and fully shown.
+  coordinator_->Show(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return browser_view()->unified_side_panel()->state() ==
+           SidePanel::State::kOpen;
+  }));
+
+  // Closing the side panel is asynchronous.
+  coordinator_->Close();
+  EXPECT_EQ(browser_view()->unified_side_panel()->state(),
+            SidePanel::State::kClosing);
+
+  // Opening the same entry should cancel the close.
+  coordinator_->Show(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+  auto state = browser_view()->unified_side_panel()->state();
+  EXPECT_TRUE(state == SidePanel::State::kOpen ||
+              state == SidePanel::State::kOpening);
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
   // Set side panel to right-aligned
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
@@ -571,16 +595,6 @@ TEST_F(SidePanelCoordinatorTest, SidePanelToggleWithEntriesTest) {
 
   // Toggle reading list sidepanel to close.
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
-                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
-
-  // If the same entry is loading, close the sidepanel.
-  coordinator_->SetNoDelaysForTesting(false);
-  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
-                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
-  coordinator_->SetNoDelaysForTesting(true);
-  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
 

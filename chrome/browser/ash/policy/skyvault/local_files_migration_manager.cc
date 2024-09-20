@@ -83,6 +83,23 @@ std::string GenerateDestinationDirName() {
   return std::string(kDestinationDirName) + " " + std::string(id.value_or(""));
 }
 
+// Converts `state` to its string representation.
+std::string StateToString(LocalFilesMigrationManager::State state) {
+  switch (state) {
+    case LocalFilesMigrationManager::State::kUninitialized:
+      return "uninitialized";
+    case LocalFilesMigrationManager::State::kPending:
+      return "pending";
+    case LocalFilesMigrationManager::State::kInProgress:
+      return "in_progress";
+    case LocalFilesMigrationManager::State::kCleanup:
+      return "clean_up";
+    case LocalFilesMigrationManager::State::kCompleted:
+      return "completed";
+    case LocalFilesMigrationManager::State::kFailure:
+      return "failure";
+  }
+}
 }  // namespace
 
 LocalFilesMigrationManager::LocalFilesMigrationManager(
@@ -95,10 +112,56 @@ LocalFilesMigrationManager::LocalFilesMigrationManager(
 
   notification_manager_ =
       MigrationNotificationManagerFactory::GetForBrowserContext(context);
-  CHECK(notification_manager_);
+  if (!notification_manager_) {
+    CHECK_IS_TEST();
+  }
 }
 
 LocalFilesMigrationManager::~LocalFilesMigrationManager() = default;
+
+void LocalFilesMigrationManager::Initialize() {
+  PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
+  state_ = static_cast<State>(
+      pref_service->GetInteger(prefs::kSkyVaultMigrationState));
+
+  VLOG(1) << "Loaded migration state: " << StateToString(state_);
+
+  local_user_files_allowed_ = LocalUserFilesAllowed();
+  cloud_provider_ = GetMigrationDestination();
+
+  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+    // Migration is now disabled, reset the state.
+    if (state_ != State::kUninitialized) {
+      LOG(WARNING) << "Migration disabled - resetting the state";
+      SetState(State::kUninitialized);
+    }
+    return;
+  }
+  // Migration is enabled.
+  switch (state_) {
+    case State::kUninitialized:
+    case State::kPending:
+      SetState(State::kPending);
+      InformUser();
+      break;
+    case State::kInProgress:
+      GetPathsToUpload();
+      break;
+    case State::kCleanup:
+      CleanupLocalFiles();
+      break;
+    case State::kCompleted:
+      // TODO(aidazolic): Consider if we should do any special handling.
+      for (auto& observer : observers_) {
+        observer.OnMigrationSucceeded();
+      }
+      SetLocalUserFilesWriteEnabled(/*enabled=*/false);
+      break;
+    case State::kFailure:
+      // TODO(b/351971781): Process errors from the error log.
+      break;
+  }
+}
 
 void LocalFilesMigrationManager::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
@@ -168,10 +231,13 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
 
   // Local files are disabled and migration destination is set - initiate
   // migration.
+  SetState(State::kPending);
   InformUser();
 }
 
 void LocalFilesMigrationManager::InformUser() {
+  CHECK(state_ == State::kPending)
+      << "Wrong state when informing the user first time";
   CHECK(!local_user_files_allowed_);
   CHECK(IsMigrationEnabled(cloud_provider_));
 
@@ -194,6 +260,11 @@ void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
     return;
   }
 
+  if (state_ != State::kPending) {
+    LOG(ERROR) << "Wrong state when informing the user second time";
+    return;
+  }
+
   notification_manager_->ShowMigrationInfoDialog(
       cloud_provider_, migration_start_time_,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
@@ -206,21 +277,38 @@ void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
 }
 
 void LocalFilesMigrationManager::SkipMigrationDelay() {
+  if (state_ != State::kPending) {
+    LOG(ERROR) << "Wrong state in SkipMigrationDelay";
+    return;
+  }
+  SetState(State::kInProgress);
   scheduling_timer_->Stop();
   GetPathsToUpload();
 }
 
 void LocalFilesMigrationManager::OnTimeoutExpired() {
+  if (state_ != State::kPending) {
+    LOG(ERROR) << "Wrong state in OnTimeoutExpired";
+    return;
+  }
   // TODO(aidazolic): This could cause issues if the dialog doesn't close fast
   // enough, and the user clicks "Upload now" exactly then.
+  SetState(State::kInProgress);
   notification_manager_->CloseDialog();
   GetPathsToUpload();
 }
 
 void LocalFilesMigrationManager::GetPathsToUpload() {
+  if (state_ != State::kInProgress) {
+    LOG(ERROR) << "Wrong state when getting paths to upload";
+    return;
+  }
+
   CHECK(!coordinator_->IsRunning());
   // Check policies again.
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+    LOG(ERROR) << "Local files allowed or migration disabled while in "
+                  "progress, aborting";
     return;
   }
 
@@ -232,15 +320,21 @@ void LocalFilesMigrationManager::GetPathsToUpload() {
       base::BindOnce(&GetMyFilesContents, profile),
       base::BindOnce(&LocalFilesMigrationManager::StartMigration,
                      weak_factory_.GetWeakPtr()));
-  in_progress_ = true;
   notification_manager_->ShowMigrationProgressNotification(cloud_provider_);
 }
 
 void LocalFilesMigrationManager::StartMigration(
     std::vector<base::FilePath> files) {
+  if (state_ != State::kInProgress) {
+    LOG(ERROR) << "Wrong state in migration start";
+    return;
+  }
+
   CHECK(!coordinator_->IsRunning());
   // Check policies again.
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+    LOG(ERROR) << "Local files allowed or migration disabled while in "
+                  "progress, aborting";
     return;
   }
 
@@ -252,23 +346,48 @@ void LocalFilesMigrationManager::StartMigration(
 
 void LocalFilesMigrationManager::OnMigrationDone(
     std::map<base::FilePath, MigrationUploadError> errors) {
-  in_progress_ = false;
-  // TODO(aidazolic): Get destination folder path in drive.
+  if (state_ != State::kInProgress) {
+    LOG(ERROR) << "Wrong state in migration done";
+    return;
+  }
+
+  // TODO(b/354709404): Get destination folder path in drive.
   const base::FilePath destination_path = base::FilePath();
   if (!errors.empty()) {
-    // TODO(aidazolic): Use error message; add on-click action.
-    notification_manager_->ShowMigrationErrorNotification(
-        cloud_provider_, destination_path, std::move(errors));
-
+    SetState(State::kFailure);
     LOG(ERROR) << "Local files migration failed.";
-  } else {
-    for (auto& observer : observers_) {
-      observer.OnMigrationSucceeded();
-    }
-    notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
-                                                              destination_path);
-    VLOG(1) << "Local files migration done";
+    ProcessErrors(std::move(errors));
+    return;
   }
+
+  for (auto& observer : observers_) {
+    observer.OnMigrationSucceeded();
+  }
+  notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
+                                                            destination_path);
+  VLOG(1) << "Local files migration done";
+
+  SetState(State::kCleanup);
+  CleanupLocalFiles();
+}
+
+void LocalFilesMigrationManager::ProcessErrors(
+    std::map<base::FilePath, MigrationUploadError> errors) {
+  CHECK(state_ == State::kFailure);
+  CHECK(!errors.empty());
+  // TODO(b/354709404): Get destination folder path in drive.
+  const base::FilePath destination_path = base::FilePath();
+  // TODO(b/351971781): Process retryable errors/show correct message.
+  notification_manager_->ShowMigrationErrorNotification(
+      cloud_provider_, destination_path, std::move(errors));
+}
+
+void LocalFilesMigrationManager::CleanupLocalFiles() {
+  if (state_ != State::kCleanup) {
+    LOG(ERROR) << "Wrong state in cleanup start";
+    return;
+  }
+
   if (cleanup_in_progress_) {
     LOG(ERROR) << "Local files cleanup is already running";
     return;
@@ -285,12 +404,18 @@ void LocalFilesMigrationManager::OnMigrationDone(
 void LocalFilesMigrationManager::OnCleanupDone(
     std::unique_ptr<chromeos::FilesCleanupHandler> cleanup_handler,
     const std::optional<std::string>& error_message) {
+  if (state_ != State::kCleanup) {
+    LOG(ERROR) << "Wrong state in cleanup done";
+    return;
+  }
+
   cleanup_in_progress_ = false;
   if (error_message.has_value()) {
     LOG(ERROR) << "Local files cleanup failed: " << error_message.value();
   } else {
     VLOG(1) << "Local files cleanup done";
   }
+  SetState(State::kCompleted);
   SetLocalUserFilesWriteEnabled(/*enabled=*/false);
 }
 
@@ -323,10 +448,17 @@ void LocalFilesMigrationManager::MaybeStopMigration() {
     coordinator_->Stop();
   }
 
-  if (in_progress_) {
-    in_progress_ = false;
-  }
   notification_manager_->CloseAll();
+  SetState(State::kUninitialized);
+}
+
+void LocalFilesMigrationManager::SetState(State new_state) {
+  if (state_ == new_state) {
+    return;
+  }
+  state_ = new_state;
+  Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
+      prefs::kSkyVaultMigrationState, static_cast<int>(new_state));
 }
 
 // static
@@ -338,9 +470,10 @@ LocalFilesMigrationManagerFactory::GetInstance() {
 
 LocalFilesMigrationManager*
 LocalFilesMigrationManagerFactory::GetForBrowserContext(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    bool create) {
   return static_cast<LocalFilesMigrationManager*>(
-      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
+      GetInstance()->GetServiceForBrowserContext(context, create));
 }
 
 LocalFilesMigrationManagerFactory::LocalFilesMigrationManagerFactory()
@@ -366,7 +499,14 @@ bool LocalFilesMigrationManagerFactory::ServiceIsNULLWhileTesting() const {
 std::unique_ptr<KeyedService>
 LocalFilesMigrationManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<LocalFilesMigrationManager>(context);
+  if (!base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
+    return nullptr;
+  }
+
+  std::unique_ptr<LocalFilesMigrationManager> instance =
+      std::make_unique<LocalFilesMigrationManager>(context);
+  instance->Initialize();
+  return instance;
 }
 
 }  // namespace policy::local_user_files

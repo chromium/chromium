@@ -20,7 +20,8 @@ class LegalMessageLineAndroid {
   static base::android::ScopedJavaLocalRef<jobject> ConvertToJavaObject(
       const LegalMessageLine& legal_message_line);
 
-  static base::android::ScopedJavaLocalRef<jobject> ConvertToJavaLinkedList(
+  static std::vector<base::android::ScopedJavaLocalRef<jobject>>
+  ConvertToJavaLinkedList(
       const std::vector<LegalMessageLine>& legal_message_lines);
 
   LegalMessageLineAndroid() = delete;

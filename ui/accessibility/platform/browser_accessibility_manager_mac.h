@@ -21,9 +21,11 @@ namespace ui {
 class AXPlatformTreeManagerDelegate;
 }
 
-namespace ui {
-
+namespace content {
 class BrowserAccessibilityCocoaBrowserTest;
+}
+
+namespace ui {
 
 class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
     : public BrowserAccessibilityManager {
@@ -60,6 +62,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
 
   bool OnAccessibilityEvents(const AXUpdatesAndEvents& details) override;
 
+  void FireSentinelEventForTesting() override;
+
   id GetParentView();
   id GetWindow();
 
@@ -93,7 +97,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
   // constructor.
   friend class BrowserAccessibilityManager;
 
-  friend class BrowserAccessibilityCocoaBrowserTest;
+  friend class content::BrowserAccessibilityCocoaBrowserTest;
 };
 
 }  // namespace ui

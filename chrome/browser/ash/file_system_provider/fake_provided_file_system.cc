@@ -243,7 +243,8 @@ AbortCallback FakeProvidedFileSystem::ReadDirectory(
       if (*metadata->name == kBadFakeEntryName2) {
         entry_type = static_cast<filesystem::mojom::FsFileType>(7);
       }
-      entry_list.emplace_back(base::FilePath(*metadata->name), entry_type);
+      entry_list.emplace_back(base::FilePath(*metadata->name), base::FilePath(),
+                              entry_type);
     }
   }
 

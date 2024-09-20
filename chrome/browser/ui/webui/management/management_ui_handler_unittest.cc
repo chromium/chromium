@@ -307,7 +307,7 @@ class TestManagementUIHandler : public ManagementUIHandlerBase {
   }
   void CreateSecureDnsManagerForTesting(PrefService* local_state) {
     secure_dns_manager_ = std::make_unique<ash::SecureDnsManager>(
-        local_state, /*is_profile_managed=*/true);
+        local_state, /*profile_prefs=*/nullptr, /*is_profile_managed=*/true);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -556,6 +556,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     profile_->GetPrefs()->SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
         policy::POLICY_SCOPE_MACHINE);
+
     if (GetTestConfig().legacy_tech_reporting_enabled) {
       base::Value::List allowlist;
       allowlist.Append("www.example.com");
@@ -1495,8 +1496,8 @@ TEST_F(ManagementUIHandlerTests, ReportLegacyTechReport) {
 TEST_F(ManagementUIHandlerTests,
        ShowPrivacyDisclosureForSecureDnsWithIdentifiers) {
   ResetTestConfig();
-  local_state_.Set(prefs::kDnsOverHttpsMode,
-                   base::Value(SecureDnsConfig::kModeSecure));
+  local_state_.SetManagedPref(prefs::kDnsOverHttpsMode,
+                              base::Value(SecureDnsConfig::kModeSecure));
   local_state_.Set(prefs::kDnsOverHttpsSalt, base::Value("test-salt"));
   local_state_.Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                    base::Value("www.test-dns.com"));
@@ -1647,7 +1648,7 @@ TEST_F(ManagementUIHandlerTests, CloudProfileReportingPolicy) {
   std::set<std::string> expected_messages = {
       kProfileReportingOverview, kProfileReportingUsername,
       kProfileReportingBrowser, kProfileReportingExtension,
-      kProfileReportingPolicy};
+      kProfileReportingPolicy, kProfileReportingLearnMore};
 
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
                       handler_.GetReportingInfo(/*can_collect_signals=*/false,
@@ -1858,7 +1859,10 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       "[{\"service_provider\":\"google\"}]");
 #endif
   enterprise_connectors::test::SetOnSecurityEventReporting(
-      profile_no_domain->GetPrefs(), true);
+      /*prefs=*/profile_no_domain->GetPrefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{{"extensionTelemetryEvent", {"*"}}});
   profile_no_domain->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
   profile_no_domain->GetPrefs()->SetInteger(
@@ -1877,9 +1881,9 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
 #if BUILDFLAG(IS_CHROMEOS)
-  const size_t expected_size = 7u;
+  const size_t expected_size = 8u;
 #else
-  const size_t expected_size = 6u;
+  const size_t expected_size = 7u;
 #endif
   EXPECT_EQ(expected_size, info.FindList("info")->size());
   EXPECT_EQ(
@@ -1929,6 +1933,12 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
     base::Value::Dict value;
     value.Set("title", kManagementOnPageVisitedEvent);
     value.Set("permission", kManagementOnPageVisitedVisibleData);
+    expected_info.Append(std::move(value));
+  }
+  {
+    base::Value::Dict value;
+    value.Set("title", kManagementOnExtensionTelemetryEvent);
+    value.Set("permission", kManagementOnExtensionTelemetryVisibleData);
     expected_info.Append(std::move(value));
   }
 

@@ -239,6 +239,12 @@ bool TabGroupSyncServiceProxy::IsRemoteDevice(
   return false;
 }
 
+bool TabGroupSyncServiceProxy::WasTabGroupClosedLocally(
+    const base::Uuid& sync_id) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void TabGroupSyncServiceProxy::RecordTabGroupEvent(
     const EventDetails& event_details) {
   NOTIMPLEMENTED();
@@ -257,6 +263,12 @@ TabGroupSyncServiceProxy::GetSharedTabGroupControllerDelegate() {
 std::unique_ptr<ScopedLocalObservationPauser>
 TabGroupSyncServiceProxy::CreateScopedLocalObserverPauser() {
   return service_->CreateScopedLocalObserverPauser();
+}
+
+void TabGroupSyncServiceProxy::GetURLRestriction(
+    const GURL& url,
+    TabGroupSyncService::UrlRestrictionCallback callback) {
+  std::move(callback).Run(std::nullopt);
 }
 
 void TabGroupSyncServiceProxy::AddObserver(Observer* observer) {}

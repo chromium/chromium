@@ -160,7 +160,13 @@ bool IsEligibleForMigrationToAccount(
     const AddressDataManager& address_data_manager,
     const AutofillProfile& profile) {
   return address_data_manager.IsEligibleForAddressAccountStorage() &&
-         !address_data_manager.IsProfileMigrationBlocked(profile.guid()) &&
+         IsProfileEligibleForMigrationToAccount(address_data_manager, profile);
+}
+
+bool IsProfileEligibleForMigrationToAccount(
+    const AddressDataManager& address_data_manager,
+    const AutofillProfile& profile) {
+  return !address_data_manager.IsProfileMigrationBlocked(profile.guid()) &&
          address_data_manager.IsCountryEligibleForAccountStorage(
              base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
 }

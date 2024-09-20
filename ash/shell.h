@@ -18,7 +18,6 @@
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/system_sounds_delegate.h"
 #include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/system/input_device_settings/touchscreen_metrics_recorder.h"
@@ -136,6 +135,7 @@ class CaptureModeController;
 class ColorPaletteController;
 class ControlVHistogramRecorder;
 class CoralController;
+class CoralDelegate;
 class CrosDisplayConfig;
 class DarkLightModeControllerImpl;
 class DeskProfilesDelegate;
@@ -238,6 +238,7 @@ class SavedDeskDelegate;
 class TabClusterUIController;
 class TabStripDelegate;
 class UsbPeripheralNotificationController;
+class ScannerController;
 class ScreenLayoutObserver;
 class ScreenOrientationController;
 class ScreenPinningController;
@@ -736,6 +737,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   RgbKeyboardManager* rgb_keyboard_manager() {
     return rgb_keyboard_manager_.get();
   }
+  ScannerController* scanner_controller() { return scanner_controller_.get(); }
   ScreenLayoutObserver* screen_layout_observer() {
     return screen_layout_observer_.get();
   }
@@ -877,6 +879,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
 
   CoralController* coral_controller() { return coral_controller_.get(); }
+  CoralDelegate* coral_delegate() { return coral_delegate_.get(); }
 
   DragDropController* drag_drop_controller() {
     return drag_drop_controller_.get();
@@ -1138,6 +1141,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<PipController> pip_controller_;
   std::unique_ptr<PrivacyScreenController> privacy_screen_controller_;
   std::unique_ptr<PolicyRecommendationRestorer> policy_recommendation_restorer_;
+  std::unique_ptr<ScannerController> scanner_controller_;
   std::unique_ptr<ScreenSwitchCheckController> screen_switch_check_controller_;
   std::unique_ptr<ShelfConfig> shelf_config_;
   std::unique_ptr<ShelfController> shelf_controller_;
@@ -1307,6 +1311,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<display::NativeDisplayDelegate> native_display_delegate_;
 
   std::unique_ptr<CoralController> coral_controller_;
+  std::unique_ptr<CoralDelegate> coral_delegate_;
 
   base::WeakPtrFactory<Shell> weak_factory_{this};
 };

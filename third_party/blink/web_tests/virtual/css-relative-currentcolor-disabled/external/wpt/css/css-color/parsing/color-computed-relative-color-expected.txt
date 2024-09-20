@@ -1,13 +1,19 @@
 This is a testharness.js-based test.
-Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property color value 'color-mix(in srgb, rgb(from rebeccapurple none g b), rebeccapurple)'
   Colors do not match.\nActual:   color(srgb 0.2 0.2 0.6)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.01, expected 0.4 but got 0.2
 [FAIL] Property background-color value 'rgb(from currentColor r g b)'
   assert_true: 'rgb(from currentColor r g b)' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'rgb(from color-mix(in srgb, currentColor, red) r g b / alpha)'
+  assert_true: 'rgb(from color-mix(in srgb, currentColor, red) r g b / alpha)' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'rgb(from rgb(from currentColor r g b) r g b)'
+  assert_true: 'rgb(from rgb(from currentColor r g b) r g b)' is a supported value for background-color. expected true got false
 [FAIL] Property color value 'color-mix(in hsl, hsl(from rebeccapurple none s l), rebeccapurple)'
   Colors do not match.\nActual:   color(srgb 0.6 0.2 0.5)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.01, expected 0.4 but got 0.6
 [FAIL] Property background-color value 'hsl(from currentColor h s l)'
   assert_true: 'hsl(from currentColor h s l)' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'hsl(from currentColor calc((h / 360) * 360deg) s l)'
+  assert_true: 'hsl(from currentColor calc((h / 360) * 360deg) s l)' is a supported value for background-color. expected true got false
 [FAIL] Property color value 'color-mix(in hwb, hwb(from rebeccapurple none w b), rebeccapurple)'
   Colors do not match.\nActual:   color(srgb 0.6 0.2 0.5)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.01, expected 0.4 but got 0.6
 [FAIL] Property background-color value 'hwb(from currentColor h w b)'

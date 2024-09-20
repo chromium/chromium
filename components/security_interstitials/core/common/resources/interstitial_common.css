@@ -32,7 +32,8 @@ button {
 .enterprise-block button,
 .enterprise-warn button,
 .safe-browsing-billing button,
-.supervised-user-verify button {
+.supervised-user-verify button,
+.supervised-user-verify-subframe button {
   background: var(--primary-button-fill-color);
 }
 

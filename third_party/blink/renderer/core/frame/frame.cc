@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -744,6 +745,11 @@ bool Frame::SwapImpl(
         remote_frame_host,
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
         remote_frame_receiver) {
+  TRACE_EVENT0("navigation", "Frame::SwapImpl");
+  std::string_view histogram_suffix =
+      (new_web_frame->IsWebLocalFrame() ? "Local" : "Remote");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      base::StrCat({"Navigation.Frame.SwapImpl.", histogram_suffix}));
   DCHECK(IsAttached());
 
   using std::swap;

@@ -333,11 +333,13 @@ gfx::RectF LayoutSVGText::VisualRectInLocalSVGCoordinates() const {
   return SVGLayoutSupport::ComputeVisualRectForText(*this, box);
 }
 
-void LayoutSVGText::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                                  MapCoordinatesFlags mode) const {
+void LayoutSVGText::QuadsInAncestorInternal(
+    Vector<gfx::QuadF>& quads,
+    const LayoutBoxModelObject* ancestor,
+    MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   quads.push_back(
-      LocalToAbsoluteQuad(gfx::QuadF(DecoratedBoundingBox()), mode));
+      LocalToAncestorQuad(gfx::QuadF(DecoratedBoundingBox()), ancestor, mode));
 }
 
 gfx::RectF LayoutSVGText::LocalBoundingBoxRectForAccessibility() const {

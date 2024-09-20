@@ -328,6 +328,8 @@ void PrivacySandboxNoticeStorage::MigratePrivacySandboxNoticeData(
 
   SetSchemaVersion(pref_service, notice);
 
+  // We are only setting the new prefs and emitting histograms if the new prefs
+  // haven't been set already.
   auto existing_notice_data = ReadNoticeData(pref_service, notice);
   if (input.notice_action_taken != NoticeActionTaken::kNotSet &&
       (!existing_notice_data.has_value() ||

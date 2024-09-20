@@ -24,12 +24,14 @@ static_library("auth") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/quick_unlock",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/login/auth",
     "//components/account_id",
     "//components/prefs",
@@ -37,8 +39,8 @@ static_library("auth") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy",
   ]
 }

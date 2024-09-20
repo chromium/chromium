@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_cumulative_sum_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
@@ -49,7 +50,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
@@ -91,16 +91,6 @@ namespace {
 
 constexpr char kGraphAlreadyBuiltError[] =
     "This MLGraphBuilder has already built a graph.";
-
-void LogConsoleWarning(ScriptState* script_state, const String& message) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  if (!execution_context) {
-    return;
-  }
-  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kWarning, message));
-}
 
 webnn::InputOperandLayout BlinkInputOperandLayoutToComponent(
     blink::V8MLInputOperandLayout::Enum type) {
@@ -1028,6 +1018,7 @@ MLGraphBuilder::~MLGraphBuilder() = default;
 void MLGraphBuilder::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
   visitor->Trace(remote_);
+  visitor->Trace(constant_operands_);
   visitor->Trace(pending_resolver_);
   ScriptWrappable::Trace(visitor);
 }
@@ -1036,13 +1027,17 @@ MLContext* MLGraphBuilder::GetContext() const {
   return ml_context_.Get();
 }
 
-MLOperand* MLGraphBuilder::input(String name,
+MLOperand* MLGraphBuilder::input(ScriptState* script_state,
+                                 String name,
                                  const MLOperandDescriptor* desc,
                                  ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      Vector<uint32_t> shape, GetShapeFromDescriptor(script_state, *desc));
+
   auto input_operand = MLOperand::ValidateAndCreateInput(
-      this, desc->dataType().AsEnum(), desc->dimensions(), std::move(name));
+      this, desc->dataType().AsEnum(), std::move(shape), std::move(name));
   if (!input_operand.has_value()) {
     exception_state.ThrowTypeError(input_operand.error());
     return nullptr;
@@ -1059,7 +1054,8 @@ MLOperand* MLGraphBuilder::input(String name,
   return input_operand.value();
 }
 
-MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
+MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
+                                    const MLOperandDescriptor* desc,
                                     NotShared<DOMArrayBufferView> buffer_view,
                                     ExceptionState& exception_state) {
   CHECK(buffer_view);
@@ -1067,9 +1063,12 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      Vector<uint32_t> shape, GetShapeFromDescriptor(script_state, *desc));
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor descriptor,
       webnn::OperandDescriptor::Create(
-          FromBlinkDataType(desc->dataType().AsEnum()), desc->dimensions()));
+          FromBlinkDataType(desc->dataType().AsEnum()), shape));
 
   if (GetArrayBufferViewType(descriptor.data_type()) !=
       buffer_view->GetType()) {
@@ -1094,8 +1093,10 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
     return nullptr;
   }
 
-  return MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor),
+  auto* constant_operand = MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor),
                                                  buffer_view->ByteSpan());
+  constant_operands_.push_back(constant_operand);
+  return constant_operand;
 }
 
 MLOperand* MLGraphBuilder::argMin(const MLOperand* input,
@@ -1272,6 +1273,30 @@ MLOperand* MLGraphBuilder::convTranspose2d(
   MLOperand* output = MLOperand::CreateOutput(
       this, std::move(output_descriptor), convTranspose2d);
   convTranspose2d->Connect(std::move(inputs), {output});
+  return output;
+}
+
+MLOperand* MLGraphBuilder::cumulativeSum(const MLOperand* input,
+                                         const uint32_t axis,
+                                         const MLCumulativeSumOptions* options,
+                                         ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateCumulativeSumAndInferOutput(ml_context_->GetProperties(),
+                                                 input->Descriptor(), axis,
+                                                 options->label().Utf8()));
+
+  // Create cumulativeSum operator and its output operand. Connect the
+  // cumulativeSum operator to its input and output operands.
+  auto* cumulativeSum =
+      MakeGarbageCollected<MLCumulativeSumOperator>(this, axis, options);
+  MLOperand* output = MLOperand::CreateOutput(
+      this, std::move(output_descriptor), cumulativeSum);
+  cumulativeSum->Connect({input}, {output});
+
   return output;
 }
 
@@ -1564,6 +1589,30 @@ MLOperand* MLGraphBuilder::gatherElements(const MLOperand* input,
       this, std::move(output_descriptor), gather_elements);
 
   gather_elements->Connect(std::move(inputs), {output});
+  return output;
+}
+
+MLOperand* MLGraphBuilder::gatherND(const MLOperand* input,
+                                    const MLOperand* indices,
+                                    const MLOperatorOptions* options,
+                                    ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+
+  HeapVector<Member<const MLOperand>> inputs = {input, indices};
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateGatherNDAndInferOutput(
+          ml_context_->GetProperties(), input->Descriptor(),
+          indices->Descriptor(), options->label().Utf8()));
+
+  auto* gather_nd = MakeGarbageCollected<MLOperator>(
+      this, webnn::mojom::blink::Operation::Tag::kGatherNd, options);
+  MLOperand* output =
+      MLOperand::CreateOutput(this, std::move(output_descriptor), gather_nd);
+
+  gather_nd->Connect(std::move(inputs), {output});
   return output;
 }
 
@@ -2240,6 +2289,32 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
   return output;
 }
 
+MLOperand* MLGraphBuilder::scatterND(const MLOperand* input,
+                                     const MLOperand* indices,
+                                     const MLOperand* updates,
+                                     const MLOperatorOptions* options,
+                                     ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+
+  HeapVector<Member<const MLOperand>> inputs = {input, indices, updates};
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateScatterNDAndInferOutput(
+          ml_context_->GetProperties(), input->Descriptor(),
+          indices->Descriptor(), updates->Descriptor(),
+          options->label().Utf8()));
+
+  auto* scatter_nd = MakeGarbageCollected<MLOperator>(
+      this, webnn::mojom::blink::Operation::Tag::kScatterNd, options);
+  MLOperand* output =
+      MLOperand::CreateOutput(this, std::move(output_descriptor), scatter_nd);
+
+  scatter_nd->Connect(std::move(inputs), {output});
+  return output;
+}
+
 MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
                                    const MLOperatorOptions* options,
                                    ExceptionState& exception_state) {
@@ -2579,6 +2654,10 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   // Set `has_built_` after all inputs have been validated.
   has_built_ = true;
 
+  // Release constant data held by the renderer now that it has been copied to
+  // the remote graph.
+  ReleaseConstantData();
+
   pending_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(
       script_state, exception_state.GetContext());
 
@@ -2626,6 +2705,8 @@ void MLGraphBuilder::DidCreateWebNNGraph(
 void MLGraphBuilder::OnConnectionError() {
   remote_.reset();
 
+  ReleaseConstantData();
+
   if (pending_resolver_) {
     pending_resolver_->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError, "Context is lost.");
@@ -2659,6 +2740,13 @@ base::expected<void, String> MLGraphBuilder::ValidateInputs(
     RETURN_IF_ERROR(ValidateInput(input_to_validate));
   }
   return base::ok();
+}
+
+void MLGraphBuilder::ReleaseConstantData() {
+  base::ranges::for_each(constant_operands_, [](auto& constant_operand) {
+    constant_operand->ReleaseBytes();
+  });
+  constant_operands_.clear();
 }
 
 }  // namespace blink

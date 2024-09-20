@@ -14,11 +14,13 @@
 class MailtoHandlerService;
 
 // Singleton that owns all MailtoHandlerServices and associates them with
-// ChromeBrowserState.
+// profiles.
 class MailtoHandlerServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static MailtoHandlerService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static MailtoHandlerService* GetForBrowserState(ProfileIOS* profile);
+
+  static MailtoHandlerService* GetForProfile(ProfileIOS* profile);
   static MailtoHandlerServiceFactory* GetInstance();
 
  private:

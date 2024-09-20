@@ -30,7 +30,9 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -64,14 +66,6 @@ using ::testing::ResultOf;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
 
-constexpr DenseSet<PatternSource> kAllPatternSources {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  PatternSource::kLegacy
-#else
-    PatternSource::kDefault, PatternSource::kExperimental
-#endif
-};
-
 class FormStructureTestImpl : public test::FormStructureTest {
  public:
   static std::string Hash64Bit(const std::string& str) {
@@ -102,48 +96,6 @@ class FormStructureTestImpl : public test::FormStructureTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
-
-class FormStructureTest_ForPatternSource
-    : public FormStructureTestImpl,
-      public testing::WithParamInterface<PatternSource> {
- public:
-  FormStructureTest_ForPatternSource() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(
-            features::kAutofillParsingPatternProvider,
-            {{"prediction_source", pattern_source_as_string()}})},
-        {});
-  }
-
-  PatternSource pattern_source() const { return GetParam(); }
-
-  std::string pattern_source_as_string() const {
-    switch (pattern_source()) {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      case PatternSource::kLegacy:
-        return "legacy";
-#else
-      case PatternSource::kDefault:
-        return "default";
-      case PatternSource::kExperimental:
-        return "experimental";
-#endif
-    }
-  }
-
-  DenseSet<PatternSource> other_pattern_sources() const {
-    DenseSet<PatternSource> patterns = kAllPatternSources;
-    patterns.erase(pattern_source());
-    return patterns;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(FormStructureTest,
-                         FormStructureTest_ForPatternSource,
-                         ::testing::ValuesIn(kAllPatternSources));
 
 TEST_F(FormStructureTestImpl, FieldCount) {
   CheckFormStructureTestData(
@@ -2337,39 +2289,6 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
 
   EXPECT_EQ(expected_result,
             FormStructure::FindFieldsEligibleForManualFilling(forms));
-}
-
-// Tests that AssignBestFieldTypes() sets (only) the PatternSource.
-TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
-  FormData form = test::CreateTestAddressFormData();
-  FormStructure form_structure(form);
-  ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                         pattern_source());
-  test_api(form_structure)
-      .AssignBestFieldTypes(
-          test_api(form_structure).ParseFieldTypesWithPatterns(context),
-          pattern_source());
-  ASSERT_THAT(form_structure.fields(), Not(IsEmpty()));
-
-  auto get_heuristic_type = [&](const AutofillField& field) {
-    return field.heuristic_type(
-        PatternSourceToHeuristicSource(pattern_source()));
-  };
-  EXPECT_THAT(
-      form_structure.fields(),
-      Each(Pointee(ResultOf(get_heuristic_type,
-                            AllOf(Not(NO_SERVER_DATA), Not(UNKNOWN_TYPE))))));
-
-  for (PatternSource other_pattern_source : other_pattern_sources()) {
-    auto get_other_pattern_heuristic_type = [&](const AutofillField& field) {
-      return field.heuristic_type(
-          PatternSourceToHeuristicSource(other_pattern_source));
-    };
-    EXPECT_THAT(form_structure.fields(),
-                Each(Pointee(ResultOf(get_other_pattern_heuristic_type,
-                                      NO_SERVER_DATA))))
-        << "PatternSource = " << static_cast<int>(other_pattern_source);
-  }
 }
 
 TEST_F(FormStructureTestImpl, DetermineRanks) {

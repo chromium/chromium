@@ -83,6 +83,7 @@
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/sensitive_content/android/android_sensitive_content_client.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/android/synchronous_compositor.h"
@@ -292,11 +293,12 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
   // Using a separate URLLoaderFactory is preferable as this is an internal
   // request made by Android WebView that should not be subject to attribution
   // and interception logic common for navigation-related network activity.
+  storage_access_url_loader_factory_ = network::SharedURLLoaderFactory::Create(
+      std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+          browser_context->CreateURLLoaderFactory()));
   asset_link_handler_ = std::make_unique<
       content_relationship_verification::DigitalAssetLinksHandler>(
-      network::SharedURLLoaderFactory::Create(
-          std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-              browser_context->CreateURLLoaderFactory())));
+      storage_access_url_loader_factory_);
 
   content::SynchronousCompositor::SetClientForWebContents(
       web_contents_.get(), &browser_view_renderer_);
@@ -350,6 +352,11 @@ void AwContents::InitializeAndroidAutofill(JNIEnv* env) {
   // AutofillManagers and after the autofill client is available.
   autofill::AutofillProvider::FromWebContents(web_contents_.get())
       ->MaybeInitKeyboardSuppressor();
+}
+
+void AwContents::InitSensitiveContentClient(JNIEnv* env) {
+  sensitive_content::AndroidSensitiveContentClient::CreateForWebContents(
+      web_contents_.get(), "SensitiveContent.WebView.");
 }
 
 AwContents::~AwContents() {
@@ -789,27 +796,21 @@ void AwContents::CancelMIDISysexPermissionRequests(const GURL& origin) {
 void AwContents::RequestStorageAccess(const url::Origin& top_level_origin,
                                       PermissionCallback callback) {
   base::TimeTicks time_requested = base::TimeTicks::Now();
-  // TODO(crbug.com/355460995): We should investigate if we should have a
-  // particular relation string from the android app side as well. For the
-  // moment, we will just accept any string that the app declares, and then
-  // verify the relation on the website's side.
-  AppDefinedWebsites::GetInstance()->GetAppDefinedDomains(
-      AppDefinedDomainCriteria::kAndroidAssetStatements,
-      base::BindOnce(&AwContents::RequestStorageAccessWithAppDomainList,
+
+  AppDefinedWebsites::GetInstance()->AppDeclaresDomainInAssetStatements(
+      std::make_unique<AssetDomainListIncludeHandler>(
+          storage_access_url_loader_factory_),
+      top_level_origin,
+      base::BindOnce(&AwContents::GrantRequestStorageAccessIfOriginIsAppDefined,
                      weak_ptr_factory_.GetWeakPtr(), top_level_origin,
                      time_requested, std::move(callback)));
 }
 
-void AwContents::RequestStorageAccessWithAppDomainList(
-    const url::Origin& top_level_origin,
+void AwContents::GrantRequestStorageAccessIfOriginIsAppDefined(
+    const url::Origin top_level_origin,
     base::TimeTicks time_requested,
     PermissionCallback callback,
-    const std::vector<std::string>& domains) {
-  bool is_defined = std::find_if(domains.begin(), domains.end(),
-                                 [&](const std::string& domain) {
-                                   return top_level_origin.DomainIs(domain);
-                                 }) != domains.end();
-
+    bool is_defined) {
   base::UmaHistogramEnumeration("Android.WebView.StorageAccessRelation2",
                                 is_defined
                                     ? StorageAccessAppDefinedType::kAppDefined
@@ -827,6 +828,10 @@ void AwContents::RequestStorageAccessWithAppDomainList(
     return;
   }
 
+  // TODO(crbug.com/355460995): We should investigate if we should have a
+  // particular relation string from the android app side as well. For the
+  // moment, we will just accept any string that the app declares, and then
+  // verify the relation on the website's side.
   constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
   asset_link_handler_->CheckDigitalAssetLinkRelationshipForAndroidApp(
       top_level_origin, kRelationship,

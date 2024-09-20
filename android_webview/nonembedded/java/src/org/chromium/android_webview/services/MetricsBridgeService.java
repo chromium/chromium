@@ -129,7 +129,7 @@ public final class MetricsBridgeService extends Service {
     @Override
     public void onCreate() {
         // Restore saved histograms from disk.
-        sSequencedTaskRunner.postTask(
+        sSequencedTaskRunner.execute(
                 () -> {
                     File file = getMetricsLogFile();
                     if (!file.exists()) return;
@@ -173,7 +173,7 @@ public final class MetricsBridgeService extends Service {
                     }
                     // If this is called within the same process, it will run on the caller thread,
                     // so we will always punt this to thread pool.
-                    sSequencedTaskRunner.postTask(
+                    sSequencedTaskRunner.execute(
                             () -> {
                                 // Make sure that we don't add records indefinitely in case of no
                                 // embedded WebView connects to the service to retrieve and clear
@@ -215,7 +215,7 @@ public final class MetricsBridgeService extends Service {
                                         deleteMetricsLogFile();
                                         return list;
                                     });
-                    sSequencedTaskRunner.postTask(retrieveFutureTask);
+                    sSequencedTaskRunner.execute(retrieveFutureTask);
                     try {
                         return retrieveFutureTask.get();
                     } catch (ExecutionException e) {
@@ -266,13 +266,13 @@ public final class MetricsBridgeService extends Service {
     }
 
     /**
-     * Add a FutureTask that can be used to block until all the tasks in the local
-     * {@code sSequencedTaskRunner} are finished for testing.
+     * Add a FutureTask that can be used to block until all the tasks in the local {@code
+     * sSequencedTaskRunner} are finished for testing.
      */
     @VisibleForTesting
     public FutureTask addTaskToBlock() {
         FutureTask<Object> blockTask = new FutureTask<Object>(() -> {}, new Object());
-        sSequencedTaskRunner.postTask(blockTask);
+        sSequencedTaskRunner.execute(blockTask);
         return blockTask;
     }
 }

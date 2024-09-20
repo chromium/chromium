@@ -69,6 +69,11 @@
 #include "partition_alloc/memory_reclaimer.h"
 #endif
 
+#if PA_BUILDFLAG( \
+    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_with_advanced_checks.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 #include <sys/system_properties.h>
 #endif
@@ -142,7 +147,7 @@ BASE_FEATURE(kDisableMemoryReclaimerInBackground,
 // exceeded.
 BASE_FEATURE(kPartitionAllocShortMemoryReclaim,
              "PartitionAllocShortMemoryReclaim",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 MemoryReclaimerSupport& MemoryReclaimerSupport::Instance() {
@@ -331,6 +336,40 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
 
   return trials;
 }
+
+namespace {
+
+bool ShouldEnableFeatureOnProcess(
+    features::internal::PAFeatureEnabledProcesses enabled_processes,
+    const std::string& process_type) {
+  switch (enabled_processes) {
+    case features::internal::PAFeatureEnabledProcesses::kBrowserOnly:
+      return process_type.empty();
+    case features::internal::PAFeatureEnabledProcesses::kNonRenderer:
+      return process_type != switches::kRendererProcess;
+    case features::internal::PAFeatureEnabledProcesses::kBrowserAndRenderer:
+      return process_type.empty() || process_type == switches::kRendererProcess;
+    case features::internal::PAFeatureEnabledProcesses::kRendererOnly:
+      return process_type == switches::kRendererProcess;
+    case features::internal::PAFeatureEnabledProcesses::kAllChildProcesses:
+      return !process_type.empty() && process_type != switches::kZygoteProcess;
+    case features::internal::PAFeatureEnabledProcesses::kAllProcesses:
+      return true;
+  }
+}
+
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+bool ShouldEnableShadowMetadata(const std::string& process_type) {
+  if (!base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocShadowMetadata)) {
+    return false;
+  }
+  return ShouldEnableFeatureOnProcess(
+      features::kShadowMetadataEnabledProcessesParam.Get(), process_type);
+}
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+
+}  // namespace
 
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
@@ -774,20 +813,42 @@ bool PartitionAllocSupport::ShouldEnableMemoryTagging(
           base::features::kKillPartitionAllocMemoryTagging)) {
     return false;
   }
-  switch (base::features::kMemoryTaggingEnabledProcessesParam.Get()) {
-    case base::features::MemoryTaggingEnabledProcesses::kBrowserOnly:
-      return process_type.empty();
-    case base::features::MemoryTaggingEnabledProcesses::kNonRenderer:
-      return process_type != switches::kRendererProcess;
-    case base::features::MemoryTaggingEnabledProcesses::kAllProcesses:
-      return true;
-  }
+  return ShouldEnableFeatureOnProcess(
+      base::features::kMemoryTaggingEnabledProcessesParam.Get(), process_type);
 }
 
 // static
 bool PartitionAllocSupport::ShouldEnableMemoryTaggingInRendererProcess() {
   return ShouldEnableMemoryTagging(switches::kRendererProcess);
 }
+
+// static
+bool PartitionAllocSupport::ShouldEnablePartitionAllocWithAdvancedChecks(
+    const std::string& process_type) {
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  return false;
+#else
+  if (!base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocWithAdvancedChecks)) {
+    return false;
+  }
+  return ShouldEnableFeatureOnProcess(
+      base::features::kPartitionAllocWithAdvancedChecksEnabledProcessesParam
+          .Get(),
+      process_type);
+#endif  // !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
+#if PA_BUILDFLAG( \
+    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+allocator_shim::AllocatorDispatch g_dispatch_for_advanced_checks = {
+    .realloc_function =
+        &allocator_shim::internal::PartitionReallocWithAdvancedChecks,
+    .free_function = &allocator_shim::internal::PartitionFreeWithAdvancedChecks,
+    .next = nullptr,
+};
+#endif  // PA_BUILDFLAG(
+        // ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
 
 // static
 PartitionAllocSupport::BrpConfiguration
@@ -802,23 +863,8 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
     // No specified process type means this is the Browser process.
-    switch (base::features::kBackupRefPtrEnabledProcessesParam.Get()) {
-      case base::features::BackupRefPtrEnabledProcesses::kBrowserOnly:
-        process_affected_by_brp_flag = process_type.empty();
-        break;
-      case base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer:
-        process_affected_by_brp_flag =
-            process_type.empty() ||
-            (process_type == switches::kRendererProcess);
-        break;
-      case base::features::BackupRefPtrEnabledProcesses::kNonRenderer:
-        process_affected_by_brp_flag =
-            (process_type != switches::kRendererProcess);
-        break;
-      case base::features::BackupRefPtrEnabledProcesses::kAllProcesses:
-        process_affected_by_brp_flag = true;
-        break;
-    }
+    process_affected_by_brp_flag = ShouldEnableFeatureOnProcess(
+        base::features::kBackupRefPtrEnabledProcessesParam.Get(), process_type);
   }
 #endif  // (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) ||
@@ -1083,6 +1129,17 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     allocator_shim::internal::PartitionAllocMalloc::Allocator()
         ->EnableLargeEmptySlotSpanRing();
   }
+
+#if PA_BUILDFLAG( \
+    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+  bool enable_pa_with_advanced_checks =
+      ShouldEnablePartitionAllocWithAdvancedChecks(process_type);
+  if (enable_pa_with_advanced_checks) {
+    allocator_shim::InstallDispatchToPartitionAllocWithAdvancedChecks(
+        &g_dispatch_for_advanced_checks);
+  }
+#endif  // PA_BUILDFLAG(
+        // ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(IS_WIN)
@@ -1194,6 +1251,14 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   partition_alloc::PartitionRoot::SetSortActiveSlotSpansEnabled(
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocSortActiveSlotSpans));
+
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+  if (ShouldEnableShadowMetadata(process_type)) {
+    partition_alloc::PartitionRoot::EnableShadowMetadata(
+        partition_alloc::internal::PoolHandleMask::kRegular |
+        partition_alloc::internal::PoolHandleMask::kBRP);
+  }
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
 
 void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {

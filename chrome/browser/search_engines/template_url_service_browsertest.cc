@@ -60,7 +60,8 @@ IN_PROC_BROWSER_TEST_F(TemplateURLServiceBrowserTest, PRE_LoadKeywordData) {
 }
 
 // TODO(crbug.com/41493716): Fails in Mac builds.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/365747879): Flaky in Windows builds.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_LoadKeywordData DISABLED_LoadKeywordData
 #else
 #define MAYBE_LoadKeywordData LoadKeywordData

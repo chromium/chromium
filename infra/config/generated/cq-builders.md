@@ -453,6 +453,7 @@ builder.
 
   Location filters:
   * [`//components/headless/.+`](https://cs.chromium.org/chromium/src/components/headless/)
+  * [`//dbus/.+`](https://cs.chromium.org/chromium/src/dbus/)
   * [`//headless/.+`](https://cs.chromium.org/chromium/src/headless/)
 
 * [linux-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/linux-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-js-coverage-rel""))
@@ -698,6 +699,9 @@ as required builders.
   * [`//base/.+`](https://cs.chromium.org/chromium/src/base/)
   * [`//net/.+`](https://cs.chromium.org/chromium/src/net/)
 
+* [chromeos-arm64-generic-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-arm64-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-arm64-generic-rel""))
+  * Experiment percentage: 100.0
+
 * [chromeos-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-js-coverage-rel""))
   * Experiment percentage: 50.0
 
@@ -724,7 +728,7 @@ as required builders.
   * Experiment percentage: 5.0
 
 * [linux-full-remote-rel](https://ci.chromium.org/p/chromium/builders/try/linux-full-remote-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-full-remote-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 1.0
 
 * [mac14-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac14-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac14-arm64-rel""))
   * Experiment percentage: 100.0

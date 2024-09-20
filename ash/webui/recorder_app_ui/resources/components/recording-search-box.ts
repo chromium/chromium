@@ -22,20 +22,35 @@ import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
 import {assertExists} from '../core/utils/assert.js';
+import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
+
+import {CraIconButton} from './cra/cra-icon-button.js';
 
 export class RecordingSearchBox extends ReactiveLitElement {
   static override styles = css`
+    :host {
+      --icon-button-width: 48px;
+      --textfield-width: 224px;
+    }
+
     #container {
       align-items: center;
       display: flex;
 
       & > cra-icon-button {
-        transition: visibility 200ms step-end allow-discrete;
+        transition:
+          opacity 150ms 50ms var(--cros-ref-motion-easing-standard-decelerate),
+          transform 200ms var(--cros-ref-motion-easing-standard);
       }
 
       &.opened > cra-icon-button {
-        transition: visibility 200ms step-start allow-discrete;
-        visibility: hidden;
+        opacity: 0;
+        transform: translateX(
+          calc(-1 * (var(--textfield-width) - var(--icon-button-width)))
+        );
+        transition:
+          opacity 50ms var(--cros-ref-motion-easing-standard-accelerate),
+          transform 200ms var(--cros-ref-motion-easing-standard);
       }
     }
 
@@ -55,15 +70,15 @@ export class RecordingSearchBox extends ReactiveLitElement {
        */
       opacity: 0;
       transition:
-        width 200ms ease,
-        opacity 200ms step-end;
+        opacity 50ms var(--cros-ref-motion-easing-standard-accelerate),
+        width 200ms var(--cros-ref-motion-easing-standard);
       width: 48px;
 
       #container.opened & {
         opacity: 1;
         transition:
-          width 200ms ease,
-          opacity 200ms step-start;
+          opacity 150ms 50ms var(--cros-ref-motion-easing-standard-decelerate),
+          width 200ms var(--cros-ref-motion-easing-standard);
         width: 224px;
       }
     }
@@ -77,15 +92,22 @@ export class RecordingSearchBox extends ReactiveLitElement {
     () => this.opened.value && this.query.value.trim().length !== 0,
   );
 
-  private readonly textFieldRef = createRef<Textfield>();
+  private readonly textfieldRef = createRef<Textfield>();
 
-  private async openSearchBox() {
+  private readonly searchButtonRef = createRef<CraIconButton>();
+
+  private readonly autofocusQueue = new AsyncJobQueue('keepLatest');
+
+  private openSearchBox() {
     this.opened.value = true;
-    // Similar to recording-title, it requires 3 updates for focus to work.
-    await this.updateComplete;
-    await this.updateComplete;
-    await this.updateComplete;
-    this.textFieldRef.value?.focusTextfield();
+    const textfield = assertExists(this.textfieldRef.value);
+    this.autofocusQueue.push(async () => {
+      // Wait for self update so the disabled state is updated on the textfield,
+      // and the textfield to update so the underlying textfield is focusable.
+      await this.updateComplete;
+      await textfield.updateComplete;
+      textfield.focusTextfield();
+    });
   }
 
   private updateQuery(newQuery: string) {
@@ -95,14 +117,22 @@ export class RecordingSearchBox extends ReactiveLitElement {
 
   private clearSearchBox() {
     this.updateQuery('');
-    if (this.textFieldRef.value !== undefined) {
-      this.textFieldRef.value.value = '';
+    if (this.textfieldRef.value !== undefined) {
+      this.textfieldRef.value.value = '';
     }
   }
 
   private closeSearchBox() {
     this.opened.value = false;
     this.clearSearchBox();
+    const searchButton = assertExists(this.searchButtonRef.value);
+    this.autofocusQueue.push(async () => {
+      // Wait for self update so the disabled state is updated on the search
+      // button, and the button to update so it's focusable.
+      await this.updateComplete;
+      await searchButton.updateComplete;
+      searchButton.focus();
+    });
   }
 
   private onFocusOut() {
@@ -123,14 +153,17 @@ export class RecordingSearchBox extends ReactiveLitElement {
   }
 
   private onInputUpdated() {
-    this.updateQuery(assertExists(this.textFieldRef.value).value);
+    this.updateQuery(assertExists(this.textfieldRef.value).value);
   }
 
   override render(): RenderResult {
     const searchButton = html`<cra-icon-button
       buttonstyle="floating"
       @click=${this.openSearchBox}
+      ?disabled=${this.opened.value}
+      aria-hidden=${this.opened.value}
       aria-label=${i18n.recordingListSearchButtonTooltip}
+      ${ref(this.searchButtonRef)}
     >
       <cra-icon slot="icon" name="search"></cra-icon>
     </cra-icon-button>`;
@@ -141,6 +174,7 @@ export class RecordingSearchBox extends ReactiveLitElement {
           slot="trailing"
           shape="circle"
           @click=${this.closeSearchBox}
+          aria-label=${i18n.recordingListSearchBoxClearButtonAriaLabel}
         >
           <cra-icon slot="icon" name="remove_fill"></cra-icon>
         </cra-icon-button>`;
@@ -152,13 +186,14 @@ export class RecordingSearchBox extends ReactiveLitElement {
     // after the transition is completed.
     const searchBox = html`<cros-textfield
       ?disabled=${!this.opened.value}
+      aria-hidden=${!this.opened.value}
       placeholder=${i18n.recordingListSearchBoxPlaceholder}
       shaded
       type="text"
       @focusout=${this.onFocusOut}
       @keydown=${this.onKeyDown}
       @input=${this.onInputUpdated}
-      ${ref(this.textFieldRef)}
+      ${ref(this.textfieldRef)}
     >
       <cra-icon-button
         ?disabled=${!this.opened.value}
@@ -166,6 +201,7 @@ export class RecordingSearchBox extends ReactiveLitElement {
         size="small"
         slot="leading"
         @click=${this.closeSearchBox}
+        aria-label=${i18n.recordingListSearchBoxCloseButtonAriaLabel}
       >
         <cra-icon slot="icon" name="search"></cra-icon>
       </cra-icon-button>

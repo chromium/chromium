@@ -34,7 +34,12 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
   using PathType = FileSystemAccessEntryFactory::PathType;
   struct ResultEntry {
     PathType type;
+    // Full path of file or directory.
     base::FilePath path;
+    // Display name of file or directory. This is usually path.BaseName(), but
+    // in some cases such as android content-URIs the path is unrelated to the
+    // display name. If empty, path.BaseName() should be used for the display.
+    base::FilePath display_name;
   };
 
   using ResultCallback =

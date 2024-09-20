@@ -206,7 +206,9 @@ struct SignalsAggregationRequest {
   SignalsAggregationRequest();
 
   SignalsAggregationRequest(const SignalsAggregationRequest&);
+  SignalsAggregationRequest(SignalsAggregationRequest&&);
   SignalsAggregationRequest& operator=(const SignalsAggregationRequest&);
+  SignalsAggregationRequest& operator=(SignalsAggregationRequest&&);
 
   ~SignalsAggregationRequest();
 
@@ -229,7 +231,9 @@ struct SignalsAggregationResponse {
   SignalsAggregationResponse();
 
   SignalsAggregationResponse(const SignalsAggregationResponse&);
+  SignalsAggregationResponse(SignalsAggregationResponse&&);
   SignalsAggregationResponse& operator=(const SignalsAggregationResponse&);
+  SignalsAggregationResponse& operator=(SignalsAggregationResponse&&);
 
   ~SignalsAggregationResponse();
 

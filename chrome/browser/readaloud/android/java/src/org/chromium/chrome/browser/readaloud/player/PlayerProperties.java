@@ -44,6 +44,8 @@ public class PlayerProperties {
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey HIDDEN_AND_PLAYING =
             new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey RESTORABLE_PLAYBACK =
+            new WritableBooleanPropertyKey();
     public static final PropertyKey[] ALL_KEYS = {
         EXPANDED_PLAYER_VISIBILITY,
         TITLE,
@@ -62,5 +64,6 @@ public class PlayerProperties {
         VOICE_PREVIEW_PLAYBACK_STATE,
         SHOW_MINI_PLAYER_ON_DISMISS,
         HIDDEN_AND_PLAYING,
+        RESTORABLE_PLAYBACK,
     };
 }

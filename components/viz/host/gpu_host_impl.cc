@@ -103,9 +103,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
                          InitParams params)
     : delegate_(delegate),
       viz_main_(std::move(viz_main)),
-      params_(std::move(params)),
-      shared_bitmap_to_shared_image_flag_(
-          base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage)) {
+      params_(std::move(params)) {
   // Create a special GPU info collection service if the GPU process is used for
   // info collection only.
 #if BUILDFLAG(IS_WIN)
@@ -223,19 +221,6 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
   TRACE_EVENT0("gpu", "GpuHostImpl::EstablishGpuChannel");
 
   shutdown_timeout_.Stop();
-
-  // If GPU features are already blocklisted, no need to establish the channel.
-  bool gpu_channel_allowed = shared_bitmap_to_shared_image_flag_
-                                 ? true
-                                 : delegate_->GpuAccessAllowed();
-  if (!gpu_channel_allowed) {
-    DVLOG(1) << "GPU access blocked, refusing to open a GPU channel.";
-    std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
-                            gpu::GpuFeatureInfo(),
-                            gpu::SharedImageCapabilities(),
-                            EstablishChannelStatus::kGpuAccessDenied);
-    return;
-  }
 
   if (gpu::IsReservedClientId(client_id)) {
     // The display-compositor/GrShaderCache in the gpu process uses these
@@ -468,22 +453,6 @@ void GpuHostImpl::OnChannelEstablished(
                             gpu::GpuFeatureInfo(),
                             gpu::SharedImageCapabilities(),
                             EstablishChannelStatus::kGpuHostInvalid);
-    return;
-  }
-
-  // Currently if any of the GPU features are blocklisted, we don't establish a
-  // GPU channel.
-  bool gpu_channel_allowed = shared_bitmap_to_shared_image_flag_
-                                 ? true
-                                 : delegate_->GpuAccessAllowed();
-  if (!gpu_channel_allowed) {
-    gpu_service_remote_->CloseChannel(client_id);
-    std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
-                            gpu::GpuFeatureInfo(),
-                            gpu::SharedImageCapabilities(),
-                            EstablishChannelStatus::kGpuAccessDenied);
-    RecordLogMessage(logging::LOGGING_WARNING, "WARNING",
-                     "Hardware acceleration is unavailable.");
     return;
   }
 

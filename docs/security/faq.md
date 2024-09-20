@@ -1004,6 +1004,21 @@ users inadvertently revealing their passwords on screen, for example if
 they’re screen sharing. We don’t do this on all platforms because we consider
 such risks greater on some than on others.
 
+
+<a name="TOC-On-some-websites-I-can-use-a-passkey-without-passing-a-lock-screen-or-biometric-challenge-is-this-a-security-bug"></a>
+### On some websites, I can use passkeys without passing a lock screen or biometric challenge. Is this a security bug?
+
+Probably not. When a website requests a passkeys signature, it can choose
+whether the authenticator should perform user verification (e.g. with a local
+user lock screen challenge). Unless the website sets user verification parameter
+in the request to 'required', the passkey authenticator can choose to skip the
+lock screen challenge. Authenticators commonly skip an optional challenge if
+biometrics are unavailable (e.g. on a laptop with a closed lid).
+
+If you can demonstrate bypassing the user verification challenge where the
+request user verification parameter is set to 'required', please
+[report it](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342).
+
 ## Other
 
 <a name="TOC-What-is-the-security-story-for-Service-Workers-"></a>

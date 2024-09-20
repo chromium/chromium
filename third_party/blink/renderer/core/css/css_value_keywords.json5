@@ -612,6 +612,7 @@
     "visible",
     //hidden
     "collapse",
+    "inert",
     //
     // white-space and its longhands (white-space-collapse and text-wrap)
     // https://w3c.github.io/csswg-drafts/css-text-4/#white-space-property
@@ -903,7 +904,7 @@
     // stretch
     // repeat
     "round",
-    // TODO(crbug.com/1511354): "base-select" is a temporary name for stylable
+    // TODO(crbug.com/1511354): "base-select" is a temporary name for customizable
     // <select>. It should be renamed when a standardized name is chosen.
     "base-select",
     "-internal-appearance-auto-base-select",
@@ -1580,10 +1581,10 @@
     // left
     // right
     // bottom
-    "inset-block-start",
-    "inset-block-end",
-    "inset-inline-start",
-    "inset-inline-end",
+    "block-start",
+    "block-end",
+    // inline-start,
+    // inline-end,
 
     // grid auto-repeat
     "auto-fill",
@@ -1825,8 +1826,8 @@
     "y-self-end",
     "span-y-self-start",
     "span-y-self-end",
-    "block-start",
-    "block-end",
+    // block-start,
+    // block-end,
     "span-block-start",
     "span-block-end",
     "self-block-start",

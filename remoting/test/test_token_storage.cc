@@ -25,6 +25,7 @@ constexpr char kUnspecifiedUsername[] = "unspecified";
 constexpr char kRefreshTokenKey[] = "refresh_token";
 constexpr char kUserEmailKey[] = "user_email";
 constexpr char kAccessTokenKey[] = "access_token";
+constexpr char kScopesKey[] = "scopes";
 constexpr char kDeviceIdKey[] = "device_id";
 }  // namespace
 
@@ -50,6 +51,8 @@ class TestTokenStorageOnDisk : public TestTokenStorage {
   bool StoreUserEmail(const std::string& user_email) override;
   std::string FetchAccessToken() override;
   bool StoreAccessToken(const std::string& access_token) override;
+  std::string FetchScopes() override;
+  bool StoreScopes(const std::string& scopes) override;
   std::string FetchDeviceId() override;
   bool StoreDeviceId(const std::string& device_id) override;
 
@@ -103,6 +106,14 @@ std::string TestTokenStorageOnDisk::FetchAccessToken() {
 
 bool TestTokenStorageOnDisk::StoreAccessToken(const std::string& access_token) {
   return StoreTokenForKey(kAccessTokenKey, access_token);
+}
+
+std::string TestTokenStorageOnDisk::FetchScopes() {
+  return FetchTokenFromKey(kScopesKey);
+}
+
+bool TestTokenStorageOnDisk::StoreScopes(const std::string& scopes) {
+  return StoreTokenForKey(kScopesKey, scopes);
 }
 
 std::string TestTokenStorageOnDisk::FetchDeviceId() {

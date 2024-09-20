@@ -13,6 +13,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/accessibility/page_colors_factory.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
+#include "chrome/browser/dips/dips_browser_signin_detector_factory.h"
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
@@ -86,6 +88,7 @@
 #include "chrome/browser/language/accept_languages_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
+#include "chrome/browser/language_detection/language_detection_model_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/manta/manta_service_factory.h"
@@ -202,7 +205,6 @@
 #include "chrome/browser/tpcd/support/origin_trial_service_factory.h"
 #include "chrome/browser/tpcd/support/top_level_trial_service_factory.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
-#include "chrome/browser/translate/translate_model_service_factory.h"
 #include "chrome/browser/translate/translate_ranker_factory.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
@@ -317,15 +319,17 @@
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ash/browser_context_keyed_service_factories.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/cloud_upload_prefs_watcher.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/ash/keyed_service/browser_context_keyed_service_factories.h"
 #include "chrome/browser/ash/language_packs/language_pack_font_service_factory.h"
+#include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
+#include "chrome/browser/ash/scanner/scanner_keyed_service_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/push_notification/push_notification_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -473,7 +477,6 @@
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/bookmarks/bookmark_expanded_state_tracker_factory.h"
-#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper_service_factory.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -626,6 +629,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AndroidSessionDurationsServiceFactory::GetInstance();
 #endif
   AffiliationServiceFactory::GetInstance();
+  AiDataKeyedServiceFactory::GetInstance();
   if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
     AIManagerKeyedServiceFactory::GetInstance();
   }
@@ -652,6 +656,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::features::IsOrcaEnabled()) {
     ash::input_method::EditorMediatorFactory::GetInstance();
+  }
+  if (ash::features::IsLobsterEnabled()) {
+    LobsterServiceProvider::GetInstance();
   }
   if (base::FeatureList::IsEnabled(ash::features::kLanguagePacksFonts)) {
     ash::language_packs::LanguagePackFontServiceFactory::GetInstance();
@@ -713,9 +720,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   browser_sync::UserEventServiceFactory::GetInstance();
   browsing_topics::BrowsingTopicsServiceFactory::GetInstance();
   BrowsingDataHistoryObserverService::Factory::GetInstance();
-#if defined(TOOLKIT_VIEWS)
-  WebUIContentsWrapperServiceFactory::GetInstance();
-#endif
   BulkLeakCheckServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   captions::LiveCaptionControllerFactory::GetInstance();
@@ -821,6 +825,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   DiceResponseHandler::EnsureFactoryBuilt();
   DiceWebSigninInterceptorFactory::GetInstance();
 #endif
+  DIPSBrowserSigninDetectorFactory::GetInstance();
   DIPSCleanupServiceFactory::GetInstance();
   DIPSServiceFactory::GetInstance();
   DocumentSuggestionsServiceFactory::GetInstance();
@@ -945,6 +950,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   JumpListFactory::GetInstance();
 #endif
   KAnonymityServiceFactory::GetInstance();
+  LanguageDetectionModelServiceFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
   LevelDBPersistedTabDataStorageAndroidFactory::GetInstance();
@@ -1215,6 +1221,11 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif  // BUILDFLAG(ENABLE_PDF)
   screen_ai::ScreenAIServiceRouterFactory::EnsureFactoryBuilt();
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsScannerEnabled()) {
+    ScannerKeyedServiceFactory::GetInstance();
+  }
+#endif
   SCTReportingServiceFactory::GetInstance();
   search_engines::SearchEngineChoiceServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
@@ -1318,7 +1329,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   TrackingProtectionOnboardingFactory::GetInstance();
   TrackingProtectionSettingsFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
-  TranslateModelServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   TriggeredProfileResetterFactory::GetInstance();
 #endif
@@ -1344,7 +1354,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   UsbConnectionTrackerFactory::GetInstance();
 #endif
+#if !BUILDFLAG(IS_ANDROID)
   UserAnnotationsServiceFactory::GetInstance();
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   UserEducationServiceFactory::GetInstance();
 #endif

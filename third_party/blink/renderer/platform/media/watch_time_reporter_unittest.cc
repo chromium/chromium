@@ -379,11 +379,17 @@ class WatchTimeReporterTest
   }
 
   void OnPowerStateChange(bool on_battery_power) {
-    wtr_->OnPowerStateChange(on_battery_power);
-    if (wtr_->background_reporter_)
-      wtr_->background_reporter_->OnPowerStateChange(on_battery_power);
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status_ =
+        on_battery_power
+            ? base::PowerStateObserver::BatteryPowerStatus::kBatteryPower
+            : base::PowerStateObserver::BatteryPowerStatus::kExternalPower;
+    wtr_->OnBatteryPowerStatusChange(battery_power_status_);
+    if (wtr_->background_reporter_) {
+      wtr_->background_reporter_->OnBatteryPowerStatusChange(
+          battery_power_status_);
+    }
     if (wtr_->muted_reporter_)
-      wtr_->muted_reporter_->OnPowerStateChange(on_battery_power);
+      wtr_->muted_reporter_->OnBatteryPowerStatusChange(battery_power_status_);
   }
 
   void OnNativeControlsEnabled(bool enabled) {

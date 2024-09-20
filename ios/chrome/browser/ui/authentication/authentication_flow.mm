@@ -16,13 +16,16 @@
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/tribool.h"
+#import "components/sync/service/account_pref_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -312,7 +315,7 @@ bool HasMachineLevelPolicies() {
 }
 
 - (void)continueSignin {
-  ChromeBrowserState* browserState = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   if (self.handlingError) {
     // The flow should not continue while the error is being handled, e.g. while
     // the user is being informed of an issue.
@@ -330,8 +333,7 @@ bool HasMachineLevelPolicies() {
       return;
 
     case FETCH_MANAGED_STATUS:
-      [_performer fetchManagedStatus:browserState
-                         forIdentity:_identityToSignIn];
+      [_performer fetchManagedStatus:profile forIdentity:_identityToSignIn];
       return;
 
     case SHOW_MANAGED_CONFIRMATION: {
@@ -343,7 +345,7 @@ bool HasMachineLevelPolicies() {
     }
 
     case SIGN_OUT_IF_NEEDED:
-      [_performer signOutBrowserState:browserState];
+      [_performer signOutProfile:profile];
       return;
 
     case SIGN_IN:
@@ -351,12 +353,11 @@ bool HasMachineLevelPolicies() {
       return;
 
     case REGISTER_FOR_USER_POLICY:
-      [_performer registerUserPolicy:browserState
-                         forIdentity:_identityToSignIn];
+      [_performer registerUserPolicy:profile forIdentity:_identityToSignIn];
       return;
 
     case FETCH_USER_POLICY:
-      [_performer fetchUserPolicy:browserState
+      [_performer fetchUserPolicy:profile
                       withDmToken:_dmToken
                          clientID:_clientID
                userAffiliationIDs:_userAffiliationIDs
@@ -370,7 +371,7 @@ bool HasMachineLevelPolicies() {
       return;
     case COMPLETE_WITH_FAILURE:
       if (_didSignIn) {
-        [_performer signOutImmediatelyFromBrowserState:browserState];
+        [_performer signOutImmediatelyFromProfile:profile];
       }
       [self completeSignInWithSuccess:NO];
       return;
@@ -392,8 +393,7 @@ bool HasMachineLevelPolicies() {
 
 - (void)checkSigninSteps {
   id<SystemIdentity> currentIdentity =
-      AuthenticationServiceFactory::GetForBrowserState(
-          [self originalBrowserState])
+      AuthenticationServiceFactory::GetForBrowserState([self originalProfile])
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
     // If the identity to sign-in is different than the current identity,
@@ -405,15 +405,15 @@ bool HasMachineLevelPolicies() {
 }
 
 - (void)signInIdentity:(id<SystemIdentity>)identity {
-  ChromeBrowserState* browserState = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForBrowserState(profile);
 
   if (accountManagerService->IsValidIdentity(identity)) {
     [_performer signInIdentity:identity
                  atAccessPoint:self.accessPoint
               withHostedDomain:_identityToSignInHostedDomain
-                toBrowserState:browserState];
+                     toProfile:profile];
     _didSignIn = YES;
     [self continueSignin];
   } else {
@@ -427,13 +427,12 @@ bool HasMachineLevelPolicies() {
 // Sync Opt-In screen.
 - (void)fetchCapabilities {
   CHECK([self shouldFetchCapabilities]);
-  ChromeBrowserState* browserState = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
 
   // Create the capability fetcher and start fetching capabilities.
   __weak __typeof(self) weakSelf = self;
   _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
-      initWithIdentityManager:IdentityManagerFactory::GetForProfile(
-                                  browserState)];
+      initWithIdentityManager:IdentityManagerFactory::GetForProfile(profile)];
 
   [_capabilitiesFetcher
       startFetchingRestrictionCapabilityWithCallback:base::BindOnce(^(
@@ -530,6 +529,14 @@ bool HasMachineLevelPolicies() {
 }
 
 - (void)didAcceptManagedConfirmation {
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    // Only show the dialog once per account.
+    signin::GaiaIdHash gaiaIDHash = signin::GaiaIdHash::FromGaiaId(
+        base::SysNSStringToUTF8(_identityToSignIn.gaiaID));
+    syncer::SetAccountKeyedPrefValue([self prefs],
+                                     prefs::kSigninHasAcceptedManagementDialog,
+                                     gaiaIDHash, base::Value(true));
+  }
   [self continueSignin];
 }
 
@@ -557,10 +564,13 @@ bool HasMachineLevelPolicies() {
 
 #pragma mark - Private methods
 
-// The original chrome browser state used for services that don't exist in
-// incognito mode.
-- (ChromeBrowserState*)originalBrowserState {
-  return _browser->GetBrowserState()->GetOriginalChromeBrowserState();
+// The original profile used for services that don't exist in incognito mode.
+- (ProfileIOS*)originalProfile {
+  return _browser->GetProfile()->GetOriginalChromeBrowserState();
+}
+
+- (PrefService*)prefs {
+  return [self originalProfile]->GetPrefs();
 }
 
 // Returns YES if the managed confirmation dialog should be shown for the
@@ -575,6 +585,19 @@ bool HasMachineLevelPolicies() {
     // Don't show the dialog if the browser has already machine level policies
     // as the user already knows that their browser is managed.
     return NO;
+  }
+
+  if (_accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU &&
+      base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    // Only show the dialog once per account, when switching from the Account
+    // Menu.
+    signin::GaiaIdHash gaiaIDHash = signin::GaiaIdHash::FromGaiaId(
+        base::SysNSStringToUTF8(_identityToSignIn.gaiaID));
+    const base::Value* alreadySeen = syncer::GetAccountKeyedPrefValue(
+        [self prefs], prefs::kSigninHasAcceptedManagementDialog, gaiaIDHash);
+    if (alreadySeen && alreadySeen->GetIfBool().value_or(false)) {
+      return NO;
+    }
   }
 
   // Show the dialog if User Policy is enabled.
@@ -595,7 +618,7 @@ bool HasMachineLevelPolicies() {
   }
 
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState([self originalBrowserState]);
+      SyncServiceFactory::GetForBrowserState([self originalProfile]);
   syncer::SyncUserSettings* userSettings = syncService->GetUserSettings();
 
   if (userSettings->GetSelectedTypes().HasAll(

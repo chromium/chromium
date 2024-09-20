@@ -7,16 +7,18 @@ import './cra/cra-image.js';
 import './speaker-label-consent-dialog-content.js';
 
 import {
+  createRef,
   css,
   html,
+  keyed,
   PropertyDeclarations,
   PropertyValues,
+  ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n, NoArgStringName} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {signal} from '../core/reactive/signal.js';
 import {
   settings,
   SpeakerLabelEnableState,
@@ -24,6 +26,7 @@ import {
 } from '../core/state/settings.js';
 import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
 
+import {CraButton} from './cra/cra-button.js';
 import {
   DESCRIPTION_NAMES as SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
 } from './speaker-label-consent-dialog-content.js';
@@ -82,7 +85,7 @@ export class OnboardingDialog extends ReactiveLitElement {
 
     #header {
       font: var(--cros-display-7-font);
-      margin-bottom: 16px;
+      margin: 0 0 16px;
     }
 
     #description {
@@ -107,6 +110,7 @@ export class OnboardingDialog extends ReactiveLitElement {
 
   static override properties: PropertyDeclarations = {
     open: {type: Boolean},
+    step: {state: true},
   };
 
   /**
@@ -117,9 +121,11 @@ export class OnboardingDialog extends ReactiveLitElement {
   /**
    * The currently shown step index starting from 0.
    */
-  step = signal<0|1|2>(0);
+  step: 0|1|2 = 0;
 
   private readonly platformHandler = usePlatformHandler();
+
+  private readonly autoFocusItem = createRef<CraButton>();
 
   get dialog(): HTMLDivElement {
     return assertInstanceof(
@@ -129,20 +135,42 @@ export class OnboardingDialog extends ReactiveLitElement {
   }
 
   override updated(changedProperties: PropertyValues<this>): void {
-    if (changedProperties.has('open')) {
+    if (changedProperties.has('open') || changedProperties.has('step')) {
       if (this.open) {
         this.dialog.showPopover();
       } else {
         this.dialog.hidePopover();
       }
     }
+
+    if (changedProperties.has('step')) {
+      const autoFocusItem = this.autoFocusItem.value;
+      if (autoFocusItem !== undefined) {
+        autoFocusItem.updateComplete.then(() => {
+          autoFocusItem.focus();
+        });
+      }
+    }
+  }
+
+  private sendOnboardEvent(): void {
+    const sodaState = this.platformHandler.sodaState.value.kind;
+    const isAvailable = sodaState !== 'unavailable' && sodaState !== 'error';
+
+    this.platformHandler.eventsSender.sendOnboardEvent({
+      speakerLabelEnableState: settings.value.speakerLabelEnabled,
+      transcriptionAvailable: isAvailable,
+      transcriptionEnableState: settings.value.transcriptionEnabled,
+    });
   }
 
   private close() {
+    this.sendOnboardEvent();
     this.dispatchEvent(new Event('close'));
   }
 
   private renderDialog(
+    step: number,
     imageName: string,
     header: string,
     description: RenderResult,
@@ -154,23 +182,35 @@ export class OnboardingDialog extends ReactiveLitElement {
     // is always cancelable by pressing ESC, and the onboarding flow should not
     // be cancelable.
     // See https://issues.chromium.org/issues/346597066.
-    return html`<div id="dialog" popover="manual" ?inert=${!this.open}>
-      <div id="illust">
-        <cra-image .name=${imageName}></cra-image>
-      </div>
-      <div id="content">
-        <div id="header">${header}</div>
-        <div id="description">${description}</div>
-        <div id="buttons">${buttons}</div>
-      </div>
-    </div>`;
+    //
+    // Force render a different element when step change, so ChromeVox would
+    // convey the header of the new dialog.
+    return keyed(
+      step,
+      html`<div
+        id="dialog"
+        popover="manual"
+        ?inert=${!this.open}
+        aria-labelledby="header"
+        role="dialog"
+      >
+        <div id="illust">
+          <cra-image .name=${imageName}></cra-image>
+        </div>
+        <div id="content">
+          <h2 id="header">${header}</h2>
+          <div id="description">${description}</div>
+          <div id="buttons">${buttons}</div>
+        </div>
+      </div>`,
+    );
   }
 
   override render(): RenderResult {
     // Note that all the onboarding_ images are currently placeholders and
     // don't use dynamic color tokens yet.
     // TODO: b/344785475 - Change to final illustration when ready.
-    switch (this.step.value) {
+    switch (this.step) {
       case 0: {
         const nextStep = () => {
           if (this.platformHandler.sodaState.value.kind === 'unavailable') {
@@ -179,15 +219,17 @@ export class OnboardingDialog extends ReactiveLitElement {
             this.close();
             return;
           }
-          this.step.value = 1;
+          this.step = 1;
         };
         return this.renderDialog(
+          this.step,
           'onboarding_welcome',
           i18n.onboardingDialogWelcomeHeader,
           i18n.onboardingDialogWelcomeDescription,
           html`<cra-button
             .label=${i18n.onboardingDialogWelcomeNextButton}
             @click=${nextStep}
+            ${ref(this.autoFocusItem)}
           ></cra-button>`,
         );
       }
@@ -202,7 +244,7 @@ export class OnboardingDialog extends ReactiveLitElement {
             this.close();
             return;
           }
-          this.step.value = 2;
+          this.step = 2;
         };
         const disableTranscription = () => {
           settings.mutate((s) => {
@@ -211,6 +253,7 @@ export class OnboardingDialog extends ReactiveLitElement {
           this.close();
         };
         return this.renderDialog(
+          this.step,
           'onboarding_transcription',
           i18n.onboardingDialogTranscriptionHeader,
           i18n.onboardingDialogTranscriptionDescription,
@@ -219,6 +262,7 @@ export class OnboardingDialog extends ReactiveLitElement {
               .label=${i18n.onboardingDialogTranscriptionDeferButton}
               class="left"
               @click=${this.close}
+              ${ref(this.autoFocusItem)}
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionCancelButton}
@@ -261,6 +305,7 @@ export class OnboardingDialog extends ReactiveLitElement {
         };
 
         return this.renderDialog(
+          this.step,
           'onboarding_speaker_label',
           i18n.onboardingDialogSpeakerLabelHeader,
           html`<speaker-label-consent-dialog-content>
@@ -270,6 +315,7 @@ export class OnboardingDialog extends ReactiveLitElement {
               .label=${i18n.onboardingDialogSpeakerLabelDeferButton}
               class="left"
               @click=${this.close}
+              ${ref(this.autoFocusItem)}
             ></cra-button>
             <cra-button
               .label=${i18n[DISALLOW_BUTTON_NAME]}
@@ -283,7 +329,7 @@ export class OnboardingDialog extends ReactiveLitElement {
         );
       }
       default:
-        assertExhaustive(this.step.value);
+        assertExhaustive(this.step);
     }
   }
 }

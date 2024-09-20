@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_web_view.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
-#include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
@@ -22,7 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/lens_features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -133,7 +132,7 @@ void LensOverlaySidePanelCoordinator::WebViewClosing() {
   // This is called from the destructor of the WebView. Synchronously clear all
   // state associated with the WebView.
   if (side_panel_web_view_) {
-    lens_overlay_controller_->ResetSearchboxHandler();
+    lens_overlay_controller_->ResetSidePanelSearchboxHandler();
     lens_overlay_controller_->RemoveGlueForWebView(side_panel_web_view_);
     side_panel_web_view_ = nullptr;
   }

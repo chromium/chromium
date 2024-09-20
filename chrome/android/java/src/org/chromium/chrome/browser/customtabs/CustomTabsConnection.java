@@ -45,6 +45,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -55,7 +56,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.MockedInTests;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
@@ -257,7 +257,11 @@ public class CustomTabsConnection {
      */
     public static CustomTabsConnection getInstance() {
         if (sInstance == null) {
-            sInstance = AppHooks.get().createCustomTabsConnection();
+            CustomTabsConnection impl = ServiceLoaderUtil.maybeCreate(CustomTabsConnection.class);
+            if (impl == null) {
+                impl = new CustomTabsConnection();
+            }
+            sInstance = impl;
         }
 
         return sInstance;

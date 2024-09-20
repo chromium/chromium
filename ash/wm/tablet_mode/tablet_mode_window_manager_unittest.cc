@@ -49,6 +49,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
@@ -533,8 +534,9 @@ TEST_F(TabletModeWindowManagerTest, CreateNonMaximizableButResizableWindows) {
 
 // Create a string which consists of the bounds and the state for comparison.
 std::string GetPlacementString(const gfx::Rect& bounds,
-                               ui::WindowShowState state) {
-  return bounds.ToString() + ' ' + base::NumberToString(state);
+                               ui::mojom::WindowShowState state) {
+  return bounds.ToString() + ' ' +
+         base::NumberToString(static_cast<int>(state));
 }
 
 // Retrieves the window's restore state override - if any - and returns it as a
@@ -565,14 +567,14 @@ TEST_F(TabletModeWindowManagerTest, TestRestoreIntegrety) {
 
   // With the maximization the override states should be returned in its
   // pre-maximized state.
-  EXPECT_EQ(GetPlacementString(bounds, ui::SHOW_STATE_DEFAULT),
+  EXPECT_EQ(GetPlacementString(bounds, ui::mojom::WindowShowState::kDefault),
             GetPlacementOverride(normal_window.get()));
-  EXPECT_EQ(GetPlacementString(bounds, ui::SHOW_STATE_MAXIMIZED),
+  EXPECT_EQ(GetPlacementString(bounds, ui::mojom::WindowShowState::kMaximized),
             GetPlacementOverride(maximized_window.get()));
 
   // Changing a window's state now does not change the returned result.
   WindowState::Get(maximized_window.get())->Minimize();
-  EXPECT_EQ(GetPlacementString(bounds, ui::SHOW_STATE_MAXIMIZED),
+  EXPECT_EQ(GetPlacementString(bounds, ui::mojom::WindowShowState::kMaximized),
             GetPlacementOverride(maximized_window.get()));
 
   // Destroy the manager again and check that the overrides get reset.
@@ -902,17 +904,17 @@ TEST_F(TabletModeWindowManagerTest, PersistPreMinimizedShowState) {
   WindowState* window_state = WindowState::Get(window.get());
   window_state->Maximize();
   window_state->Minimize();
-  EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
+  EXPECT_EQ(ui::mojom::WindowShowState::kMaximized,
             window->GetProperty(aura::client::kRestoreShowStateKey));
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   window_state->Unminimize();
   // Check that pre-minimized window show state is not cleared due to
   // unminimizing in tablet mode.
-  EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
+  EXPECT_EQ(ui::mojom::WindowShowState::kMaximized,
             window->GetProperty(aura::client::kRestoreShowStateKey));
   window_state->Minimize();
-  EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
+  EXPECT_EQ(ui::mojom::WindowShowState::kMaximized,
             window->GetProperty(aura::client::kRestoreShowStateKey));
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);

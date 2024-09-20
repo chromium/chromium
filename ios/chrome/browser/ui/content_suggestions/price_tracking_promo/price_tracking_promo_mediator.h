@@ -13,7 +13,14 @@ namespace commerce {
 class ShoppingService;
 }
 
+@protocol ApplicationCommands;
+class PrefService;
 @class PriceTrackingPromoItem;
+class PushNotificationService;
+@protocol SnackbarCommands;
+@protocol SystemIdentity;
+
+class AuthenticationService;
 
 // Delegate used to communicate events back to the owner of
 // PriceTrackingPromoMediator.
@@ -22,13 +29,20 @@ class ShoppingService;
 // New subscription for user observed (originating from a different platform).
 - (void)newSubscriptionAvailable;
 
+// Price Tracking Promo is removed from the magic stack.
+- (void)removePriceTrackingPromo;
+
 @end
 
 @interface PriceTrackingPromoMediator : NSObject <PriceTrackingPromoCommands>
 
 // Default initializer.
-- (instancetype)initWithShoppingService:
-    (commerce::ShoppingService*)shoppingService NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithShoppingService:(commerce::ShoppingService*)shoppingService
+                prefService:(PrefService*)prefService
+    pushNotificationService:(PushNotificationService*)pushNotificationService
+      authenticationService:(AuthenticationService*)authenticationService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -49,6 +63,9 @@ class ShoppingService;
 
 // Delegate used to communicate events back to the owner of this class.
 @property(nonatomic, weak) id<PriceTrackingPromoMediatorDelegate> delegate;
+
+// Dispatcher.
+@property(nonatomic, weak) id<ApplicationCommands, SnackbarCommands> dispatcher;
 
 @end
 

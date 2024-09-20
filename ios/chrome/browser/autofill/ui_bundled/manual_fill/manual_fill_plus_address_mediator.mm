@@ -9,6 +9,7 @@
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/plus_addresses/plus_address_service.h"
+#import "components/plus_addresses/plus_address_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
@@ -19,11 +20,16 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/plus_address_list_navigator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
+
+@interface ManualFillPlusAddressMediator () <ManualFillContentInjector>
+@end
 
 @implementation ManualFillPlusAddressMediator {
   // The favicon loader used in the cell.
@@ -114,6 +120,40 @@
                                                 filteredPlusAddresses]];
 }
 
+#pragma mark - ManualFillContentInjector
+
+- (BOOL)canUserInjectInPasswordField:(BOOL)passwordField
+                       requiresHTTPS:(BOOL)requiresHTTPS {
+  NOTREACHED_NORETURN();
+}
+
+- (void)userDidPickContent:(NSString*)content
+             passwordField:(BOOL)passwordField
+             requiresHTTPS:(BOOL)requiresHTTPS {
+  // If the "Select Plus Address" view is presented, close the sheet and then
+  // initiate the filling.
+  if (self.delegate) {
+    [self.delegate manualFillPlusAddressMediatorWillInjectContent];
+  }
+  [self.contentInjector userDidPickContent:content
+                             passwordField:passwordField
+                             requiresHTTPS:requiresHTTPS];
+}
+
+- (void)autofillFormWithCredential:(ManualFillCredential*)credential
+                      shouldReauth:(BOOL)shouldReauth {
+  NOTREACHED_NORETURN();
+}
+
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
+                           atIndex:(NSInteger)index {
+  NOTREACHED_NORETURN();
+}
+
+- (BOOL)isActiveFormAPasswordForm {
+  NOTREACHED_NORETURN();
+}
+
 #pragma mark - Private
 
 // Initiates the process of fetching and presenting Plus Addresses to the
@@ -162,6 +202,10 @@
   NSMutableArray* items =
       [[NSMutableArray alloc] initWithCapacity:plusAddressesCount];
 
+  NSArray<UIAction*>* menuActions = IsKeyboardAccessoryUpgradeEnabled()
+                                        ? @[ [self createManageMenuAction] ]
+                                        : @[];
+
   for (int i = 0; i < plusAddressesCount; i++) {
     NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
@@ -170,8 +214,8 @@
             "count", plusAddressesCount, "position", i + 1));
     ManualFillPlusAddressItem* item = [[ManualFillPlusAddressItem alloc]
                 initWithPlusAddress:plusAddresses[i]
-                    contentInjector:_contentInjector
-                        menuActions:@[]
+                    contentInjector:self
+                        menuActions:menuActions
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
     [items addObject:item];
   }
@@ -202,17 +246,17 @@
   GURL URL(plusProfile.facet.canonical_spec());
 
   std::string host = URL.host();
-  std::string site_name =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  NSString* siteName = base::SysUTF8ToNSString(site_name);
-  NSString* plusAddressHost = base::SysUTF8ToNSString(host);
-  if ([plusAddressHost hasPrefix:@"www."] && plusAddressHost.length > 4) {
-    plusAddressHost = [plusAddressHost substringFromIndex:4];
-  }
+  std::string siteName = net::registry_controlled_domains::GetDomainAndRegistry(
+      host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  NSString* plusAddressSiteName =
+      base::SysUTF8ToNSString(siteName.size() > 0 ? siteName : host);
+  NSString* plusAddressHost = l10n_util::GetNSStringF(
+      IDS_PLUS_ADDRESS_MANUAL_FALLBACK_SUGGESTION_SUBLABEL_PREFIX_TEXT_IOS,
+      GetOriginForDisplay(plusProfile));
   return [[ManualFillPlusAddress alloc]
       initWithPlusAddress:base::SysUTF8ToNSString(*plusProfile.plus_address)
-                 siteName:siteName.length ? siteName : plusAddressHost
+                 siteName:plusAddressSiteName
                      host:plusAddressHost
                       URL:URL];
 }
@@ -226,6 +270,8 @@
   NSMutableArray<ManualFillActionItem*>* actions =
       [[NSMutableArray alloc] init];
 
+  __weak __typeof(self) weakSelf = self;
+
   // Offer manage action if there are any plus addresses for the domain.
   if (hasPlusAddresses) {
     NSString* managePlusAddressesTitle = l10n_util::GetNSString(
@@ -235,13 +281,13 @@
                action:^{
                  base::RecordAction(base::UserMetricsAction(
                      "ManualFallback_PlusAddress_OpenManagePlusAddress"));
+                 [weakSelf.navigator openManagePlusAddress];
                }];
     managePlusAddressItem.accessibilityIdentifier =
         manual_fill::kManagePlusAddressAccessibilityIdentifier;
     [actions addObject:managePlusAddressItem];
   }
 
-  __weak __typeof(self) weakSelf = self;
   // Offer plus address creation if it's supported for the current user session
   // and if the user doesn't have any plus addresses created for the current
   // domain.
@@ -282,6 +328,21 @@
   if (actions.count > 0) {
     [self.consumer presentPlusAddressActions:actions];
   }
+}
+
+// Creates a "Manage" UIAction to be used with a UIMenu. Tapping on it, would
+// open the manage view for the plus address.
+- (UIAction*)createManageMenuAction {
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:
+          kMenuScenarioHistogramAutofillManualFallbackPlusAddressEntry];
+
+  __weak __typeof(self) weakSelf = self;
+  UIAction* manageAction = [actionFactory actionToManageLinkInNewTabWithBlock:^{
+    [weakSelf.navigator openManagePlusAddress];
+  }];
+
+  return manageAction;
 }
 
 @end

@@ -98,7 +98,7 @@ BASE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers,
 
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForChildUsers,
              "SyncEnableContactInfoDataTypeForChildUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnablePreferencesAccountStorage,
              "EnablePreferencesAccountStorage",
@@ -208,5 +208,9 @@ BASE_FEATURE(kWebApkBackupAndRestoreBackend,
 BASE_FEATURE(kSyncEnableModelTypeLocalDataBatchUploaders,
              "SyncEnableModelTypeLocalDataBatchUploaders",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncEnableExtensionsInTransportMode,
+             "kSyncEnableExtensionsInTransportMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace syncer

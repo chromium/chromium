@@ -319,6 +319,7 @@ source_set("browser_sources") {
     "picture_in_picture_window_controller.h",
     "platform_notification_context.h",
     "platform_notification_service.h",
+    "prefetch_browser_callbacks.h",
     "prefetch_metrics.h",
     "prefetch_service_delegate.cc",
     "prefetch_service_delegate.h",

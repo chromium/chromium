@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/search_engines/search_engines_switches.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -460,21 +461,18 @@ void TemplateURLService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
 
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    registry->RegisterInt64Pref(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
-    registry->RegisterStringPref(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
-        std::string());
-    registry->RegisterDictionaryPref(
-        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+  registry->RegisterInt64Pref(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
+  registry->RegisterStringPref(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+      std::string());
+  registry->RegisterDictionaryPref(
+      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
 
 #if BUILDFLAG(IS_IOS)
-    registry->RegisterIntegerPref(
-        prefs::kDefaultSearchProviderChoiceScreenSkippedCount, 0);
+  registry->RegisterIntegerPref(
+      prefs::kDefaultSearchProviderChoiceScreenSkippedCount, 0);
 #endif
-  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1830,12 +1828,6 @@ bool TemplateURLService::IsEeaChoiceCountry() {
       search_engine_choice_service_->GetCountryId());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-bool TemplateURLService::ShouldShowUpdatedSettings() {
-  return search_engine_choice_service_->ShouldShowUpdatedSettings();
-}
-#endif
-
 std::string TemplateURLService::GetSessionToken() {
   base::TimeTicks current_time(base::TimeTicks::Now());
   // Renew token if it expired.
@@ -2042,8 +2034,7 @@ void TemplateURLService::Init() {
     client_->SetOwner(this);
 
   pref_change_registrar_.Init(&prefs_.get());
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
     // We migrate `kSyncedDefaultSearchProviderGUID` to
     // `kDefaultSearchProviderGUID` if the latter was never set.
     if (!prefs_->HasPrefPath(prefs::kDefaultSearchProviderGUID)) {
@@ -2058,6 +2049,7 @@ void TemplateURLService::Init() {
             &TemplateURLService::OnDefaultSearchProviderGUIDChanged,
             base::Unretained(this)));
   } else {
+    // TODO(b/364828491): Deprecate `kSyncedDefaultSearchProviderGUID`.
     pref_change_registrar_.Add(
         prefs::kSyncedDefaultSearchProviderGUID,
         base::BindRepeating(
@@ -2290,9 +2282,8 @@ void TemplateURLService::UpdateTemplateURLIfPrepopulated(
 void TemplateURLService::MaybeUpdateDSEViaPrefs(TemplateURL* synced_turl) {
   // The DSE is not synced anymore when the `kSearchEngineChoiceTrigger` feature
   // is enabled.
-  // TODO(b/341011768): Revisit whether we need to keep the DSE sync code.
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
+  // TODO(b/341011768): Remove DSE sync code.
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
     return;
   }
 

@@ -20,10 +20,9 @@ bool VoiceSearchURLRewriter(GURL* url, web::BrowserState* browser_state) {
     return false;
   }
 
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   std::string language =
-      chrome_browser_state->GetPrefs()->GetString(prefs::kVoiceSearchLocale);
+      profile->GetPrefs()->GetString(prefs::kVoiceSearchLocale);
   GURL rewritten_url(*url);
   // The `hl` parameter will be overriden only if the voice search locale
   // is not empty. If it is empty (indicating that voice search locale

@@ -25,8 +25,7 @@ String To8BitOrNull(const String& source) {
     return source;
   if (!source.ContainsOnlyLatin1OrEmpty())
     return String();
-  return String::Make8BitFrom16BitSource(source.Characters16(),
-                                         source.length());
+  return String::Make8BitFrom16BitSource(source.Span16());
 }
 
 }  // namespace

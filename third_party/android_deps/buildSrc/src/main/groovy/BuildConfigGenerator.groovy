@@ -805,6 +805,14 @@ class BuildConfigGenerator extends DefaultTask {
                 // and android_aar_prebuilt template will fail if it's not set explictly.
                 sb.append('  extract_native_libraries = true\n')
                 break
+            case 'com_google_dagger_hilt_core':
+                sb.append('\n')
+                sb.append('  # Google3 organizes targets differently from maven. Restrict to the only classes we use.\n')
+                sb.append('  jar_included_patterns = [\n')
+                sb.append('    "dagger/hilt/internal/GeneratedComponentManager.class",\n')
+                sb.append('    "dagger/hilt/internal/GeneratedComponentManagerHolder.class",\n')
+                sb.append('  ]\n')
+                break
             case 'com_google_auto_service_auto_service_annotations_java':
                 sb.append('  preferred_dep = true\n')
                 break

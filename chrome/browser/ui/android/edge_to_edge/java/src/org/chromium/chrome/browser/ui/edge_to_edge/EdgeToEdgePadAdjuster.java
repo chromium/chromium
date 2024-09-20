@@ -14,4 +14,7 @@ public interface EdgeToEdgePadAdjuster {
      *     inset of 0 will reset to the original padding.
      */
     void overrideBottomInset(int inset);
+
+    /** Properly tear down the pad adjuster. */
+    void destroy();
 }

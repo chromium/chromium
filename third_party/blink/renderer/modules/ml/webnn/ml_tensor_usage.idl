@@ -13,6 +13,6 @@ typedef [EnforceRange] unsigned long MLTensorUsageFlags;
     SecureContext
 ] namespace MLTensorUsage {
     const MLFlagsConstant WEBGPU_INTEROP = 1;
-    const MLFlagsConstant READ_FROM = 2;
-    const MLFlagsConstant WRITE_TO = 4;
+    const MLFlagsConstant READ = 2;
+    const MLFlagsConstant WRITE = 4;
 };

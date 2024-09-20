@@ -7,14 +7,18 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -29,6 +33,23 @@ namespace {
 using ::base::test::EqualsProto;
 using ::testing::_;
 using ::testing::An;
+using ::testing::IsEmpty;
+
+class TestOptimizationGuideDecider
+    : public optimization_guide::TestOptimizationGuideDecider {
+ public:
+  optimization_guide::OptimizationGuideDecision CanApplyOptimization(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationMetadata* optimization_metadata)
+      override {
+    CHECK_EQ(optimization_type, optimization_guide::proto::FORMS_ANNOTATIONS);
+    if (url.host() == "allowed.com") {
+      return optimization_guide::OptimizationGuideDecision::kTrue;
+    }
+    return optimization_guide::OptimizationGuideDecision::kFalse;
+  }
+};
 
 class UserAnnotationsServiceTest : public testing::Test,
                                    public testing::WithParamInterface<bool> {
@@ -38,8 +59,11 @@ class UserAnnotationsServiceTest : public testing::Test,
     CHECK(temp_dir_.CreateUniqueTempDir());
     os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
         /*is_sync_for_unittests=*/true);
+    optimization_guide_decider_ =
+        std::make_unique<TestOptimizationGuideDecider>();
     service_ = std::make_unique<UserAnnotationsService>(
-        &model_executor_, temp_dir_.GetPath(), os_crypt_.get());
+        &model_executor_, temp_dir_.GetPath(), os_crypt_.get(),
+        optimization_guide_decider_.get());
   }
 
   virtual void InitializeFeatureList() {
@@ -53,10 +77,40 @@ class UserAnnotationsServiceTest : public testing::Test,
 
   bool ShouldPersistAnnotations() const { return GetParam(); }
 
+  UserAnnotationsEntries AddAndImportFormSubmission(
+      optimization_guide::proto::AXTreeUpdate ax_tree_update,
+      const autofill::FormData& form_data) {
+    UserAnnotationsEntries entries;
+    std::unique_ptr<autofill::FormStructure> form =
+        std::make_unique<autofill::FormStructure>(form_data);
+    service()->AddFormSubmission(
+        ax_tree_update, std::move(form),
+        base::BindLambdaForTesting(
+            [&entries](
+                std::unique_ptr<autofill::FormStructure> form,
+                UserAnnotationsEntries upserted_entries,
+                base::OnceCallback<void(bool)> prompt_acceptance_callback) {
+              entries = upserted_entries;
+              std::move(prompt_acceptance_callback).Run(true);
+            }));
+    task_environment_.RunUntilIdle();
+    return entries;
+  }
+
+  UserAnnotationsEntries GetAllUserAnnotationsEntries() {
+    base::test::TestFuture<UserAnnotationsEntries> test_future;
+    service()->RetrieveAllEntries(test_future.GetCallback());
+    return test_future.Take();
+  }
+
   UserAnnotationsService* service() { return service_.get(); }
 
   optimization_guide::MockOptimizationGuideModelExecutor* model_executor() {
     return &model_executor_;
+  }
+
+  TestOptimizationGuideDecider* optimization_guide_decider() {
+    return optimization_guide_decider_.get();
   }
 
  protected:
@@ -66,14 +120,25 @@ class UserAnnotationsServiceTest : public testing::Test,
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
+  std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
   std::unique_ptr<UserAnnotationsService> service_;
 };
 
-TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
-  base::test::TestFuture<UserAnnotationsEntries> test_future;
-  service()->RetrieveAllEntries(test_future.GetCallback());
+TEST_P(UserAnnotationsServiceTest, FormsAnnotationsTypeRegistered) {
+  EXPECT_TRUE(base::Contains(
+      optimization_guide_decider()->registered_optimization_types(),
+      optimization_guide::proto::FORMS_ANNOTATIONS));
+}
 
-  auto entries = test_future.Take();
+TEST_P(UserAnnotationsServiceTest, ShouldAddFormSubmissionForURL) {
+  EXPECT_FALSE(service()->ShouldAddFormSubmissionForURL(
+      GURL("https://notallowed.com/whatever")));
+  EXPECT_TRUE(service()->ShouldAddFormSubmissionForURL(
+      GURL("https://allowed.com/whatever")));
+}
+
+TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
+  auto entries = GetAllUserAnnotationsEntries();
   EXPECT_TRUE(entries.empty());
 }
 
@@ -87,11 +152,11 @@ struct FormsAnnotationsTestRequest {
 FormsAnnotationsTestRequest CreateSampleFormsAnnotationsTestRequest() {
   optimization_guide::proto::FormsAnnotationsResponse response;
   optimization_guide::proto::UserAnnotationsEntry* entry1 =
-      response.add_entries();
+      response.add_added_entries();
   entry1->set_key("label");
   entry1->set_value("whatever");
   optimization_guide::proto::UserAnnotationsEntry* entry2 =
-      response.add_entries();
+      response.add_added_entries();
   entry2->set_key("nolabel");
   entry2->set_value("value");
   optimization_guide::proto::Any forms_annotations_response;
@@ -152,12 +217,11 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
         .WillOnce(base::test::RunOnceCallback<2>(
             test_request.forms_annotations_response, /*log_entry=*/nullptr));
 
-    service()->AddFormSubmission(test_request.ax_tree, test_request.form_data);
+    EXPECT_FALSE(
+        AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
+            .empty());
 
-    base::test::TestFuture<UserAnnotationsEntries> test_future;
-    service()->RetrieveAllEntries(test_future.GetCallback());
-
-    auto entries = test_future.Take();
+    auto entries = GetAllUserAnnotationsEntries();
     EXPECT_EQ(2u, entries.size());
 
     EXPECT_EQ(entries[0].key(), "label");
@@ -187,13 +251,11 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
 
     autofill::FormData empty_form_data;
     optimization_guide::proto::AXTreeUpdate ax_tree;
-    service()->AddFormSubmission(ax_tree, empty_form_data);
 
-    base::test::TestFuture<UserAnnotationsEntries> test_future;
-    service()->RetrieveAllEntries(test_future.GetCallback());
+    EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, empty_form_data).empty());
 
     // Entries should still remain.
-    auto entries = test_future.Take();
+    auto entries = GetAllUserAnnotationsEntries();
     EXPECT_EQ(2u, entries.size());
 
     EXPECT_EQ(entries[0].key(), "label");
@@ -233,10 +295,12 @@ TEST_P(UserAnnotationsServiceTest, ExecuteFailed) {
   autofill::FormData form_data;
   form_data.set_fields({form_field_data, form_field_data2});
   optimization_guide::proto::AXTreeUpdate ax_tree;
-  service()->AddFormSubmission(ax_tree, form_data);
 
-  histogram_tester.ExpectTotalCount("UserAnnotations.AddFormSubmissionResult",
-                                    0);
+  EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, form_data).empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "UserAnnotations.AddFormSubmissionResult",
+      UserAnnotationsExecutionResult::kResponseError, 1);
 }
 
 TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
@@ -260,10 +324,11 @@ TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
   autofill::FormData form_data;
   form_data.set_fields({form_field_data, form_field_data2});
   optimization_guide::proto::AXTreeUpdate ax_tree;
-  service()->AddFormSubmission(ax_tree, form_data);
+  EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, form_data).empty());
 
-  histogram_tester.ExpectTotalCount("UserAnnotations.AddFormSubmissionResult",
-                                    0);
+  histogram_tester.ExpectUniqueSample(
+      "UserAnnotations.AddFormSubmissionResult",
+      UserAnnotationsExecutionResult::kResponseMalformed, 1);
 }
 
 TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
@@ -278,13 +343,11 @@ TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
       .WillOnce(base::test::RunOnceCallback<2>(
           test_request.forms_annotations_response, /*log_entry=*/nullptr));
 
-  service()->AddFormSubmission(test_request.ax_tree, test_request.form_data);
+  EXPECT_FALSE(
+      AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
+          .empty());
 
-  base::test::TestFuture<
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-      test_future_retrieve;
-  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
-  auto entries = test_future_retrieve.Take();
+  auto entries = GetAllUserAnnotationsEntries();
   EXPECT_EQ(2u, entries.size());
 
   base::test::TestFuture<void> test_future_remove_entry;
@@ -292,9 +355,7 @@ TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
                          test_future_remove_entry.GetCallback());
   EXPECT_TRUE(test_future_remove_entry.Wait());
   test_future_remove_entry.Clear();
-  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
-  EXPECT_TRUE(test_future_retrieve.Wait());
-  EXPECT_EQ(1u, test_future_retrieve.Take().size());
+  EXPECT_EQ(1u, GetAllUserAnnotationsEntries().size());
   histogram_tester.ExpectUniqueSample("UserAnnotations.RemoveEntry.Result",
                                       UserAnnotationsExecutionResult::kSuccess,
                                       1);
@@ -305,8 +366,7 @@ TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
   histogram_tester.ExpectUniqueSample("UserAnnotations.RemoveEntry.Result",
                                       UserAnnotationsExecutionResult::kSuccess,
                                       2);
-  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
-  EXPECT_TRUE(test_future_retrieve.Take().empty());
+  EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
 }
 
 TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
@@ -321,13 +381,11 @@ TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
       .WillOnce(base::test::RunOnceCallback<2>(
           test_request.forms_annotations_response, /*log_entry=*/nullptr));
 
-  service()->AddFormSubmission(test_request.ax_tree, test_request.form_data);
+  EXPECT_FALSE(
+      AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
+          .empty());
 
-  base::test::TestFuture<
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-      test_future_retrieve;
-  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
-  EXPECT_EQ(2u, test_future_retrieve.Take().size());
+  EXPECT_EQ(2u, GetAllUserAnnotationsEntries().size());
 
   base::test::TestFuture<void> test_future_remove_entry;
   service()->RemoveAllEntries(test_future_remove_entry.GetCallback());
@@ -335,8 +393,32 @@ TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
   histogram_tester.ExpectUniqueSample("UserAnnotations.RemoveAllEntries.Result",
                                       UserAnnotationsExecutionResult::kSuccess,
                                       1);
-  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
-  EXPECT_TRUE(test_future_retrieve.Take().empty());
+  EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
+}
+
+TEST_P(UserAnnotationsServiceTest, FormNotImported) {
+  base::HistogramTester histogram_tester;
+  auto test_request = CreateSampleFormsAnnotationsTestRequest();
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          An<optimization_guide::
+                 OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          test_request.forms_annotations_response, /*log_entry=*/nullptr));
+
+  service()->AddFormSubmission(
+      test_request.ax_tree,
+      std::make_unique<autofill::FormStructure>(test_request.form_data),
+      base::BindLambdaForTesting(
+          [](std::unique_ptr<autofill::FormStructure> form,
+             UserAnnotationsEntries upserted_entries,
+             base::OnceCallback<void(bool)> prompt_acceptance_callback) {
+            std::move(prompt_acceptance_callback).Run(false);
+          }));
+
+  EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, UserAnnotationsServiceTest, ::testing::Bool());
@@ -372,12 +454,11 @@ TEST_P(UserAnnotationsServiceReplaceAnnotationsTest,
         .WillOnce(base::test::RunOnceCallback<2>(
             test_request.forms_annotations_response, /*log_entry=*/nullptr));
 
-    service()->AddFormSubmission(test_request.ax_tree, test_request.form_data);
+    EXPECT_FALSE(
+        AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
+            .empty());
 
-    base::test::TestFuture<UserAnnotationsEntries> test_future;
-    service()->RetrieveAllEntries(test_future.GetCallback());
-
-    auto entries = test_future.Take();
+    auto entries = GetAllUserAnnotationsEntries();
     EXPECT_EQ(2u, entries.size());
 
     EXPECT_EQ(entries[0].key(), "label");
@@ -400,13 +481,11 @@ TEST_P(UserAnnotationsServiceReplaceAnnotationsTest,
         .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
     autofill::FormData empty_form_data;
     optimization_guide::proto::AXTreeUpdate ax_tree;
-    service()->AddFormSubmission(ax_tree, empty_form_data);
 
-    base::test::TestFuture<UserAnnotationsEntries> test_future;
-    service()->RetrieveAllEntries(test_future.GetCallback());
+    EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, empty_form_data).empty());
 
     // Entries should be cleared since there were no fields to replace with.
-    auto entries = test_future.Take();
+    auto entries = GetAllUserAnnotationsEntries();
     EXPECT_EQ(0u, entries.size());
   }
 }

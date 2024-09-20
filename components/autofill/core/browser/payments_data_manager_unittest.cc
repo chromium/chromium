@@ -253,6 +253,7 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
       void,
       FetchImagesForURLs,
       (base::span<const GURL> card_art_urls,
+       base::span<const AutofillImageFetcherBase::ImageSize> image_sizes,
        base::OnceCallback<void(
            const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback),
       (override));
@@ -673,7 +674,7 @@ TEST_F(PaymentsDataManagerTest, RecordUseOfCard) {
   payments_data_manager().RecordUseOfCard(&card);
   WaitForOnPaymentsDataChanged();
 
-  CreditCard* pdm_card =
+  const CreditCard* pdm_card =
       payments_data_manager().GetCreditCardByGUID(card.guid());
   ASSERT_TRUE(pdm_card);
   EXPECT_EQ(pdm_card->use_count(), 2u);

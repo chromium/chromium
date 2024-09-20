@@ -7,15 +7,14 @@
 
 #include "base/ios/block_types.h"
 
-@class HistoryTableViewController;
+@class BaseHistoryViewController;
 
 // Protocol to communicate HistoryTableViewController actions to its
 // coordinator.
 @protocol HistoryTableViewControllerDelegate
 // Notifies the coordinator that history should be dismissed.
-- (void)dismissHistoryTableViewController:
-            (HistoryTableViewController*)controller
-                           withCompletion:(ProceduralBlock)completionHandler;
+- (void)dismissViewController:(BaseHistoryViewController*)controller
+               withCompletion:(ProceduralBlock)completionHandler;
 // Notifies the coordinator that Privacy Settings should be displayed.
 - (void)displayClearHistoryData;
 @end

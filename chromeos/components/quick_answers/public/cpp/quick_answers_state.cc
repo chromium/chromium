@@ -82,9 +82,13 @@ QuickAnswersState* QuickAnswersState::Get() {
 
 // static
 QuickAnswersState::FeatureType QuickAnswersState::GetFeatureType() {
-  return chromeos::features::IsMagicBoostEnabled()
-             ? QuickAnswersState::FeatureType::kHmr
-             : QuickAnswersState::FeatureType::kQuickAnswers;
+  QuickAnswersState* quick_answers_state = Get();
+  if (!quick_answers_state) {
+    return QuickAnswersState::FeatureType::kQuickAnswers;
+  }
+
+  return quick_answers_state->GetFeatureTypeExpected().value_or(
+      QuickAnswersState::FeatureType::kQuickAnswers);
 }
 
 // static
@@ -227,6 +231,20 @@ bool QuickAnswersState::ShouldUseQuickAnswersTextAnnotator() {
 
 bool QuickAnswersState::IsSupportedLanguage(const std::string& language) const {
   return kSupportedLanguages.contains(language);
+}
+
+base::expected<QuickAnswersState::FeatureType, QuickAnswersState::Error>
+QuickAnswersState::GetFeatureTypeExpected() const {
+  chromeos::MagicBoostState* magic_boost_state =
+      chromeos::MagicBoostState::Get();
+  if (!magic_boost_state) {
+    // `magic_boost_state` might be null in tests
+    return base::unexpected(QuickAnswersState::Error::kUninitialized);
+  }
+
+  return magic_boost_state->IsMagicBoostAvailable()
+             ? QuickAnswersState::FeatureType::kHmr
+             : QuickAnswersState::FeatureType::kQuickAnswers;
 }
 
 base::expected<bool, QuickAnswersState::Error>

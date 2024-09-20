@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
@@ -147,6 +148,11 @@ class ShortcutsBackend : public RefcountedKeyedService,
   // Finishes initialization on UI thread, notifies all observers.
   void InitCompleted();
 
+  // Computes and records various metrics for the database. Should only be
+  // called once and only upon successful Init and before deleting old
+  // shortcuts.
+  void ComputeDatabaseMetrics();
+
   // Adds the Shortcut to the database.
   bool AddShortcut(const ShortcutsDatabase::Shortcut& shortcut);
 
@@ -163,6 +169,18 @@ class ShortcutsBackend : public RefcountedKeyedService,
 
   // Deletes all of the shortcuts.
   bool DeleteAllShortcuts();
+
+  // Deletes all shortcuts whose `last_access_time` is older than the threshold
+  // defined by HistoryBackend.
+  //
+  // This is called once on initialization after a short delay in order to
+  // remove any shortcuts that have not been removed by calls to
+  // `OnHistoryDeletions()`. That method is called from `HistoryService`, which
+  // can be initialized and running before `ShortcutsBackend` is created since
+  // the former is created at browser startup but the latter is not created
+  // until a browser window has been created, leading to the initialization of
+  // the autocomplete system.
+  bool DeleteOldShortcuts();
 
   raw_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<SearchTermsData> search_terms_data_;
@@ -190,6 +208,8 @@ class ShortcutsBackend : public RefcountedKeyedService,
 
   // For some unit-test only.
   bool no_db_access_;
+
+  base::WeakPtrFactory<ShortcutsBackend> weak_factory_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_BACKEND_H_

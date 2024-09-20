@@ -367,13 +367,20 @@ bool DefaultBrowserPromoCompleted() {
                allItemsCompleted:(BOOL)completed {
   // Can resend signal to mediator from Set Up List after SetUpListItemView
   // completes animation
-  ProceduralBlock completion = ^{
-    if (completed) {
-      SetUpListConfig* config = [[SetUpListConfig alloc] init];
-      config.setUpListItems = @[ [self allSetItem] ];
-      [self.audience replaceSetUpListWithAllSet:config];
+  ProceduralBlock completion = nil;
+  if (completed) {
+    if (![self configsContainItem:item.type]) {
+      // If the last item to complete is not in the displayed list, immediately
+      // swap to "All Set" rather than wait for any animations to finish.
+      [self replaceSetUpListWithAllSet];
+    } else {
+      // Wait until item completion animation is finished to swap in "All Set".
+      __weak __typeof(self) weakSelf = self;
+      completion = ^{
+        [weakSelf replaceSetUpListWithAllSet];
+      };
     }
-  };
+  }
   [_consumers setUpListItemDidComplete:item
                      allItemsCompleted:completed
                             completion:completion];
@@ -573,6 +580,25 @@ bool DefaultBrowserPromoCompleted() {
                                deviceSwitcherResult {
   _userSegment =
       GetDefaultBrowserUserSegment(&deviceSwitcherResult, &shopperResult);
+}
+
+// Returns YES if the current configs contains an item with the given `type`.
+- (BOOL)configsContainItem:(SetUpListItemType)type {
+  for (SetUpListConfig* config in [self setUpListConfigs]) {
+    for (SetUpListItem* item in config.setUpListItems) {
+      if (item.type == type) {
+        return YES;
+      }
+    }
+  }
+  return NO;
+}
+
+// Swaps out all SetUpList items with the "All Set" item.
+- (void)replaceSetUpListWithAllSet {
+  SetUpListConfig* config = [[SetUpListConfig alloc] init];
+  config.setUpListItems = @[ [self allSetItem] ];
+  [self.audience replaceSetUpListWithAllSet:config];
 }
 
 @end

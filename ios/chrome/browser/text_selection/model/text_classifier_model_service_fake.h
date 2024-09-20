@@ -18,7 +18,7 @@ class OptimizationGuideService;
 class TextClassifierModelServiceFake : public TextClassifierModelService {
  public:
   static std::unique_ptr<KeyedService> CreateTextClassifierModelService(
-      web::BrowserState* browser_state);
+      web::BrowserState* context);
   ~TextClassifierModelServiceFake() override;
 
  private:

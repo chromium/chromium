@@ -124,6 +124,17 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::ContactInfoSpecifics::AddressType address_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ContactInfoSpecifics, AddressType, REGULAR, WORK);
+  switch (address_type) {
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, REGULAR);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, HOME);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, WORK);
+  }
+  NOTREACHED();
+}
+
+const char* ProtoEnumToString(
     sync_pb::ContactInfoSpecifics::VerificationStatus verification_status) {
   ASSERT_ENUM_BOUNDS(sync_pb::ContactInfoSpecifics, VerificationStatus,
                      VERIFICATION_STATUS_UNSPECIFIED, SERVER_PARSED);
@@ -173,12 +184,13 @@ const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type) {
 const char* ProtoEnumToString(
     sync_pb::PaymentInstrument::SupportedRail supported_rail) {
   ASSERT_ENUM_BOUNDS(sync_pb::PaymentInstrument, SupportedRail,
-                     SUPPORTED_RAIL_UNKNOWN, PAYMENT_HYPERLINK);
+                     SUPPORTED_RAIL_UNKNOWN, CARD_NUMBER);
   switch (supported_rail) {
     ENUM_CASE(sync_pb::PaymentInstrument, SUPPORTED_RAIL_UNKNOWN);
     ENUM_CASE(sync_pb::PaymentInstrument, PIX);
     ENUM_CASE(sync_pb::PaymentInstrument, IBAN);
     ENUM_CASE(sync_pb::PaymentInstrument, PAYMENT_HYPERLINK);
+    ENUM_CASE(sync_pb::PaymentInstrument, CARD_NUMBER);
   }
   NOTREACHED_IN_MIGRATION();
   return "";

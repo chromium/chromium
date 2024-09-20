@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 class BarrierBuilder {
@@ -415,4 +415,4 @@ TEST_F(PartitionedLockManagerTest, LockReleased) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace content::indexed_db

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PageClassification} from './omnibox.mojom-webui.js';
 import {OmniboxElement} from './omnibox_element.js';
 /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-ignore:next-line
@@ -101,6 +102,25 @@ export class OmniboxInput extends OmniboxElement {
     };
     this.restoreInputs();
     this.setupElementListeners();
+    this.addPageClassification();
+  }
+
+  // Add Page Classification labels as options to dropdown.
+  private addPageClassification() {
+    const dropdown = this.$<HTMLSelectElement>('#page-classification')!;
+    for (const page in Object.keys(PageClassification)) {
+      const label = PageClassification[page];
+      // Filter out built-in reverse mappings for this numeric enum.
+      if (label === undefined) {
+        continue;
+      }
+      const option = document.createElement('option');
+      option.value = page;
+      option.text = label;
+      // Pre-select the OTHER option.
+      page === '4' ? option.selected = true : null;
+      dropdown.appendChild(option);
+    }
   }
 
   private storeInputs() {

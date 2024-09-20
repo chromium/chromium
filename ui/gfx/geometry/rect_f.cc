@@ -285,6 +285,14 @@ RectF UnionRects(const RectF& a, const RectF& b) {
   return result;
 }
 
+RectF UnionRects(base::span<const RectF> rects) {
+  RectF result;
+  for (const RectF& rect : rects) {
+    result.Union(rect);
+  }
+  return result;
+}
+
 RectF UnionRectsEvenIfEmpty(const RectF& a, const RectF& b) {
   RectF result = a;
   result.UnionEvenIfEmpty(b);

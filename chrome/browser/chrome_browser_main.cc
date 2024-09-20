@@ -118,7 +118,6 @@
 #include "chrome/common/media/media_resource_provider.h"
 #include "chrome/common/net/net_resource_provider.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/profiler/unwind_util.h"
 #include "chrome/grit/branded_strings.h"
@@ -154,6 +153,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_store.h"
+#include "components/sampling_profiler/thread_profiler.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -187,6 +187,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/base/localized_strings.h"
 #include "media/media_buildflags.h"
+#include "net/base/data_url.h"
 #include "net/base/net_module.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/http/http_network_layer.h"
@@ -738,8 +739,9 @@ void ChromeBrowserMainParts::StartMetricsRecording() {
   if (heap_profiler_controller &&
       heap_profiler_controller->GetSyntheticFieldTrial(trial_name,
                                                        group_name)) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
-                                                              group_name);
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        trial_name, group_name,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -902,7 +904,7 @@ void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
   UpgradeDetector::GetInstance()->Init();
 #endif
 
-  ThreadProfiler::SetMainThreadTaskRunner(
+  sampling_profiler::ThreadProfiler::SetMainThreadTaskRunner(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // TODO(sebmarchand): Allow this to be created earlier if startup tracing is
@@ -1179,6 +1181,14 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   // IsolateOrigins policy is taken care of through SiteIsolationPrefsObserver
   // (constructed and owned by BrowserProcessImpl).
 
+  // We need to set the policy for data URLs since they can be created in
+  // any process. The ChromeContentBrowserClient will take care of child
+  // processes.
+  if (!local_state->GetBoolean(prefs::kDataURLWhitespacePreservationEnabled) &&
+      !command_line->HasSwitch(net::kRemoveWhitespaceForDataURLs)) {
+    command_line->AppendSwitch(net::kRemoveWhitespaceForDataURLs);
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // The admin should also be able to use these policies to force Site Isolation
   // off (on Android; using enterprise policies to disable Site Isolation is not
@@ -1215,8 +1225,9 @@ void ChromeBrowserMainParts::PostCreateThreads() {
   // BrowserThreadsStarted as it matches the PreCreateThreads and CreateThreads
   // stages.
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                base::ProfilerThreadType::kIo));
+      FROM_HERE,
+      base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
+                     base::ProfilerThreadType::kIo));
 // Sampling multiple threads might cause overhead on Android and we don't want
 // to enable it unless the data is needed.
 #if !BUILDFLAG(IS_ANDROID)

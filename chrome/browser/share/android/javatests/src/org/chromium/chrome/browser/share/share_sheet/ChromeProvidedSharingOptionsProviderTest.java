@@ -10,6 +10,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.res.Resources;
 import android.view.View;
@@ -25,11 +30,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
@@ -72,6 +77,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public AutomotiveContextWrapperTestRule mAutoTestRule = new AutomotiveContextWrapperTestRule();
@@ -83,7 +89,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
     @Mock private ShareSheetCoordinator mShareSheetCoordinator;
-    @Mock private Supplier<Tab> mTabProvider;
     @Mock private Tab mTab;
     @Mock private NativePage mNativePage;
     @Mock private BottomSheetController mBottomSheetController;
@@ -96,25 +101,22 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private TestActivity mActivity;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
     private UserActionTester mActionTester;
+    private final ObservableSupplierImpl<Tab> mTabProvider = new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
-        MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         mJniMocker.mock(
                 SendTabToSelfAndroidBridgeJni.TEST_HOOKS, mSendTabToSelfAndroidBridgeNatives);
-        Mockito.when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
-        Mockito.when(
-                        mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(
-                                any(), anyString()))
+        when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
+        when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(any(), anyString()))
                 .thenReturn(null);
-        Mockito.when(mTabProvider.hasValue()).thenReturn(true);
-        Mockito.when(mTabProvider.get()).thenReturn(mTab);
-        Mockito.when(mTab.getWebContents()).thenReturn(mWebContents);
-        Mockito.when(mTab.getUrl()).thenReturn(new GURL(URL));
-        Mockito.doNothing().when(mBottomSheetController).hideContent(any(), anyBoolean());
+        mTabProvider.set(mTab);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.getUrl()).thenReturn(new GURL(URL));
+        doNothing().when(mBottomSheetController).hideContent(any(), anyBoolean());
 
         TrackerFactory.setTrackerForTests(mTracker);
     }
@@ -126,7 +128,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     public void getPropertyModels_longScreenshotEnabledNoTab_excludesLongScreenshot() {
-        Mockito.when(mTabProvider.hasValue()).thenReturn(false);
+        mTabProvider.set(null);
         setUpChromeProvidedSharingOptionsProviderTest(
                 /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
@@ -142,9 +144,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     public void getPropertyModels_longScreenshotEnabledPdfTab_excludesLongScreenshot() {
-        Mockito.when(mTab.isNativePage()).thenReturn(true);
-        Mockito.when(mTab.getNativePage()).thenReturn(mNativePage);
-        Mockito.when(mNativePage.isPdf()).thenReturn(true);
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.isPdf()).thenReturn(true);
         setUpChromeProvidedSharingOptionsProviderTest(
                 /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
@@ -160,7 +162,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     public void getPropertyModels_printingEnabledNoTab_excludesPrinting() {
-        Mockito.when(mTabProvider.hasValue()).thenReturn(false);
+        mTabProvider.set(null);
         setUpChromeProvidedSharingOptionsProviderTest(
                 /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
@@ -176,9 +178,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     public void getPropertyModels_printingEnabledPdfTab_excludesPrinting() {
-        Mockito.when(mTab.isNativePage()).thenReturn(true);
-        Mockito.when(mTab.getNativePage()).thenReturn(mNativePage);
-        Mockito.when(mNativePage.isPdf()).thenReturn(true);
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.isPdf()).thenReturn(true);
         setUpChromeProvidedSharingOptionsProviderTest(
                 /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
@@ -294,7 +296,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 propertyModels.get(0).get(ShareSheetItemViewProperties.CLICK_LISTENER);
 
         onClickListener.onClick(null);
-        Mockito.verify(mTargetChosenCallback, Mockito.times(1))
+        verify(mTargetChosenCallback, times(1))
                 .onTargetChosen(
                         ChromeProvidedSharingOptionsProvider
                                 .CHROME_PROVIDED_FEATURE_COMPONENT_NAME);
@@ -411,9 +413,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     public void getPropertyModels_sendTabToSelf() {
-        Mockito.when(
-                        mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(
-                                any(), anyString()))
+        when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(any(), anyString()))
                 .thenReturn(EntryPointDisplayReason.OFFER_FEATURE);
 
         setUpChromeProvidedSharingOptionsProviderTest(
@@ -465,8 +465,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
             boolean isIncognito,
             boolean printingEnabled,
             @LinkGeneration int linkGenerationStatus) {
-        Mockito.when(mPrefService.getBoolean(anyString())).thenReturn(printingEnabled);
-        Mockito.when(mTab.isIncognito()).thenReturn(isIncognito);
+        when(mPrefService.getBoolean(anyString())).thenReturn(printingEnabled);
+        when(mTab.isIncognito()).thenReturn(isIncognito);
 
         ShareParams shareParams =
                 new ShareParams.Builder(null, /* title= */ "", /* url= */ "")
@@ -524,7 +524,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private void assertCorrectLinkGenerationMetrics(
             List<PropertyModel> propertyModels, @LinkGeneration int linkGenerationStatus) {
         mActionTester = new UserActionTester();
-        View view = Mockito.mock(View.class);
+        View view = mock(View.class);
         for (PropertyModel propertyModel : propertyModels) {
             String label = propertyModel.get(ShareSheetItemViewProperties.LABEL);
             Resources res = mActivity.getResources();

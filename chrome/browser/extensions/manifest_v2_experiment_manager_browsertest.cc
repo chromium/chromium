@@ -90,6 +90,10 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
        MV2ExperimentStage::kDisableWithReEnable},
       {"UkmIsNotEmittedForOtherUninstallations",
        MV2ExperimentStage::kDisableWithReEnable},
+      {"PRE_MV2ExtensionsAreNotDisabledIfLegacyExtensionSwitchIsApplied",
+       MV2ExperimentStage::kWarning},
+      {"MV2ExtensionsAreNotDisabledIfLegacyExtensionSwitchIsApplied",
+       MV2ExperimentStage::kUnsupported},
   };
 
   for (const auto& test_stage : test_stages) {
@@ -159,16 +163,30 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
             extensions_features::kExtensionManifestV2DeprecationWarning);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kDisableWithReEnable:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
+        break;
+      case MV2ExperimentStage::kUnsupported:
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
         break;
       case MV2ExperimentStage::kNone:
         NOTREACHED() << "Unhandled stage.";
     }
+
+    PopulateAdditionalFeatures(enabled_features, disabled_features);
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -304,6 +322,11 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
   ukm::TestAutoSetUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
 
  private:
+  // Allows subclasses to add additional features to enable / disable.
+  virtual void PopulateAdditionalFeatures(
+      std::vector<base::test::FeatureRef>& enabled_features,
+      std::vector<base::test::FeatureRef>& disabled_features) {}
+
   base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   base::HistogramTester histogram_tester_;
@@ -802,6 +825,47 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   UninstallExtension(mv3_extension->id(),
                      UninstallReason::UNINSTALL_REASON_USER_INITIATED);
   EXPECT_TRUE(GetUkmEntries().empty());
+}
+
+class ManifestV2ExperimentWithLegacyExtensionSupportTest
+    : public ManifestV2ExperimentManagerBrowserTest {
+ public:
+  ManifestV2ExperimentWithLegacyExtensionSupportTest() = default;
+  ~ManifestV2ExperimentWithLegacyExtensionSupportTest() override = default;
+
+ private:
+  void PopulateAdditionalFeatures(
+      std::vector<base::test::FeatureRef>& enabled_features,
+      std::vector<base::test::FeatureRef>& disabled_features) override {
+    enabled_features.push_back(extensions_features::kAllowLegacyMV2Extensions);
+  }
+};
+
+// Tests that legacy MV2 extensions are still allowed (and aren't auto-disabled)
+// if the kAllowLegacyMV2Extensions feature is enabled.
+IN_PROC_BROWSER_TEST_F(
+    ManifestV2ExperimentWithLegacyExtensionSupportTest,
+    PRE_MV2ExtensionsAreNotDisabledIfLegacyExtensionSwitchIsApplied) {
+  EXPECT_EQ(MV2ExperimentStage::kWarning, GetActiveExperimentStage());
+
+  const Extension* extension = AddMV2Extension("Test MV2 Extension");
+  ASSERT_TRUE(extension);
+}
+IN_PROC_BROWSER_TEST_F(
+    ManifestV2ExperimentWithLegacyExtensionSupportTest,
+    MV2ExtensionsAreNotDisabledIfLegacyExtensionSwitchIsApplied) {
+  EXPECT_EQ(MV2ExperimentStage::kUnsupported, GetActiveExperimentStage());
+
+  WaitForExtensionSystemReady();
+
+  const Extension* extension = GetExtensionByName(
+      "Test MV2 Extension", extension_registry()->enabled_extensions());
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+
+  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
+  // The user didn't re-enable the extension, so it shouldn't be marked as such.
+  EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id));
 }
 
 }  // namespace extensions

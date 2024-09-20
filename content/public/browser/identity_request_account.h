@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -17,9 +18,13 @@
 
 namespace content {
 
+class IdentityProviderData;
+
 // Represents a federated user account which is used when displaying the FedCM
 // account selector.
-struct CONTENT_EXPORT IdentityRequestAccount {
+class CONTENT_EXPORT IdentityRequestAccount
+    : public base::RefCounted<IdentityRequestAccount> {
+ public:
   enum class LoginState {
     // This is a returning user signing in with RP/IDP in this browser.
     kSignIn,
@@ -54,8 +59,10 @@ struct CONTENT_EXPORT IdentityRequestAccount {
       std::optional<LoginState> login_state = std::nullopt,
       LoginState browser_trusted_login_state = LoginState::kSignUp,
       std::optional<base::Time> last_used_timestamp = std::nullopt);
-  IdentityRequestAccount(const IdentityRequestAccount&);
-  ~IdentityRequestAccount();
+
+  // The identity provider to which the account belongs to. This is not set in
+  // the constructor but instead set later.
+  scoped_refptr<IdentityProviderData> identity_provider = nullptr;
 
   std::string id;
   std::string email;
@@ -81,6 +88,11 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   // Whether this account is filtered out or not. An account may be filtered out
   // due to login hint, domain hint, or account label.
   bool is_filtered_out = false;
+
+ private:
+  friend class base::RefCounted<IdentityRequestAccount>;
+
+  ~IdentityRequestAccount();
 };
 
 }  // namespace content

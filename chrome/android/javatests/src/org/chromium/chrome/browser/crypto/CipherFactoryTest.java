@@ -39,9 +39,11 @@ public class CipherFactoryTest {
         return ret;
     }
 
+    private CipherFactory mCipherFactory;
+
     @Before
     public void setUp() {
-        CipherFactory.resetInstanceForTesting();
+        mCipherFactory = new CipherFactory();
     }
 
     /**
@@ -51,13 +53,13 @@ public class CipherFactoryTest {
     @MediumTest
     public void testCipherUse() throws Exception {
         // Check encryption.
-        Cipher aEncrypt = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
-        Cipher bEncrypt = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+        Cipher aEncrypt = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+        Cipher bEncrypt = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
         byte[] output = sameOutputDifferentCiphers(INPUT_DATA, aEncrypt, bEncrypt);
 
         // Check decryption.
-        Cipher aDecrypt = CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
-        Cipher bDecrypt = CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
+        Cipher aDecrypt = mCipherFactory.getCipher(Cipher.DECRYPT_MODE);
+        Cipher bDecrypt = mCipherFactory.getCipher(Cipher.DECRYPT_MODE);
         byte[] decrypted = sameOutputDifferentCiphers(output, aDecrypt, bDecrypt);
         Assert.assertTrue(Arrays.equals(decrypted, INPUT_DATA));
     }
@@ -82,10 +84,10 @@ public class CipherFactoryTest {
         bBundle.putByteArray(CipherFactory.BUNDLE_KEY, sameKey);
 
         // Restore using the first bundle, then the second. Both should succeed.
-        Assert.assertTrue(CipherFactory.getInstance().restoreFromBundle(aBundle));
-        Cipher aCipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
-        Assert.assertTrue(CipherFactory.getInstance().restoreFromBundle(bBundle));
-        Cipher bCipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+        Assert.assertTrue(mCipherFactory.restoreFromBundle(aBundle));
+        Cipher aCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+        Assert.assertTrue(mCipherFactory.restoreFromBundle(bBundle));
+        Cipher bCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
 
         // Make sure the CipherFactory instances are using the same key.
         sameOutputDifferentCiphers(INPUT_DATA, aCipher, bCipher);
@@ -105,8 +107,8 @@ public class CipherFactoryTest {
         byte[] aKey = getRandomBytes(CipherFactory.NUM_BYTES);
         aBundle.putByteArray(CipherFactory.BUNDLE_IV, aIv);
         aBundle.putByteArray(CipherFactory.BUNDLE_KEY, aKey);
-        Assert.assertTrue(CipherFactory.getInstance().restoreFromBundle(aBundle));
-        Cipher aCipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+        Assert.assertTrue(mCipherFactory.restoreFromBundle(aBundle));
+        Cipher aCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
 
         // Restore using a different set of parameters.
         Bundle bBundle = new Bundle();
@@ -114,8 +116,8 @@ public class CipherFactoryTest {
         byte[] bKey = getRandomBytes(CipherFactory.NUM_BYTES);
         bBundle.putByteArray(CipherFactory.BUNDLE_IV, bIv);
         bBundle.putByteArray(CipherFactory.BUNDLE_KEY, bKey);
-        Assert.assertFalse(CipherFactory.getInstance().restoreFromBundle(bBundle));
-        Cipher bCipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+        Assert.assertFalse(mCipherFactory.restoreFromBundle(bBundle));
+        Cipher bCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
 
         // Make sure they're using the same (original) key by encrypting the same data.
         sameOutputDifferentCiphers(INPUT_DATA, aCipher, bCipher);
@@ -126,19 +128,19 @@ public class CipherFactoryTest {
     @MediumTest
     public void testIncompleteBundleRestoration() {
         // Make sure we handle the null case.
-        Assert.assertFalse(CipherFactory.getInstance().restoreFromBundle(null));
+        Assert.assertFalse(mCipherFactory.restoreFromBundle(null));
 
         // Try restoring without the key.
         Bundle aBundle = new Bundle();
         byte[] iv = getRandomBytes(CipherFactory.NUM_BYTES);
         aBundle.putByteArray(CipherFactory.BUNDLE_IV, iv);
-        Assert.assertFalse(CipherFactory.getInstance().restoreFromBundle(aBundle));
+        Assert.assertFalse(mCipherFactory.restoreFromBundle(aBundle));
 
         // Try restoring without the initialization vector.
         Bundle bBundle = new Bundle();
         byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
         bBundle.putByteArray(CipherFactory.BUNDLE_KEY, key);
-        Assert.assertFalse(CipherFactory.getInstance().restoreFromBundle(bBundle));
+        Assert.assertFalse(mCipherFactory.restoreFromBundle(bBundle));
     }
 
     /**
@@ -156,9 +158,9 @@ public class CipherFactoryTest {
         bundle.putByteArray(CipherFactory.BUNDLE_KEY, key);
 
         // The keys should be initialized only after restoration.
-        Assert.assertNull(CipherFactory.getInstance().getCipherData(false));
-        Assert.assertTrue(CipherFactory.getInstance().restoreFromBundle(bundle));
-        Assert.assertNotNull(CipherFactory.getInstance().getCipherData(false));
+        Assert.assertNull(mCipherFactory.getCipherData(false));
+        Assert.assertTrue(mCipherFactory.restoreFromBundle(bundle));
+        Assert.assertNotNull(mCipherFactory.getCipherData(false));
     }
 
     /**
@@ -175,9 +177,9 @@ public class CipherFactoryTest {
         bundle.putByteArray(CipherFactory.BUNDLE_KEY, key);
 
         // The keys should be initialized after creating the cipher, so the keys shouldn't match.
-        Cipher aCipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
-        Assert.assertFalse(CipherFactory.getInstance().restoreFromBundle(bundle));
-        Cipher bCipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+        Cipher aCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+        Assert.assertFalse(mCipherFactory.restoreFromBundle(bundle));
+        Cipher bCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
 
         // B's cipher should use the keys generated for A.
         sameOutputDifferentCiphers(INPUT_DATA, aCipher, bCipher);
@@ -191,19 +193,19 @@ public class CipherFactoryTest {
     public void testSavingToBundle() {
         // Nothing should get saved out before Cipher data exists.
         Bundle initialBundle = new Bundle();
-        CipherFactory.getInstance().saveToBundle(initialBundle);
+        mCipherFactory.saveToBundle(initialBundle);
         Assert.assertFalse(initialBundle.containsKey(CipherFactory.BUNDLE_IV));
         Assert.assertFalse(initialBundle.containsKey(CipherFactory.BUNDLE_KEY));
 
         // Check that Cipher data gets saved if it exists.
-        CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+        mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
         Bundle afterBundle = new Bundle();
-        CipherFactory.getInstance().saveToBundle(afterBundle);
+        mCipherFactory.saveToBundle(afterBundle);
         Assert.assertTrue(afterBundle.containsKey(CipherFactory.BUNDLE_IV));
         Assert.assertTrue(afterBundle.containsKey(CipherFactory.BUNDLE_KEY));
 
         // Confirm the saved keys match by restoring it.
-        Assert.assertTrue(CipherFactory.getInstance().restoreFromBundle(afterBundle));
+        Assert.assertTrue(mCipherFactory.restoreFromBundle(afterBundle));
     }
 
     /**

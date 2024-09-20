@@ -50,6 +50,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/display/screen.h"
@@ -725,9 +726,9 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
 
   if (key == aura::client::kShowStateKey) {
     bool enter_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==
-                            ui::SHOW_STATE_FULLSCREEN;
-    bool exit_fullscreen =
-        static_cast<ui::WindowShowState>(old) == ui::SHOW_STATE_FULLSCREEN;
+                            ui::mojom::WindowShowState::kFullscreen;
+    bool exit_fullscreen = static_cast<ui::mojom::WindowShowState>(old) ==
+                           ui::mojom::WindowShowState::kFullscreen;
 
     // May have to hide caption buttons while in fullscreen mode, or show them
     // when exiting fullscreen.
@@ -947,9 +948,12 @@ bool BrowserNonClientFrameViewChromeOS::GetShouldPaint() const {
 void BrowserNonClientFrameViewChromeOS::OnAddedToOrRemovedFromOverview() {
   const bool should_show_caption_buttons = GetShowCaptionButtons();
   caption_button_container_->SetVisible(should_show_caption_buttons);
-  // The WebAppFrameToolbarView is part of the BrowserView, so make sure the
-  // BrowserView is re-layed out to take into account these changes.
-  browser_view()->InvalidateLayout();
+  if (!chromeos::features::AreOverviewSessionInitOptimizationsEnabled() ||
+      browser_view()->GetIsWebAppType()) {
+    // The WebAppFrameToolbarView is part of the BrowserView, so make sure the
+    // BrowserView is re-layed out to take into account these changes.
+    browser_view()->InvalidateLayout();
+  }
 }
 
 std::unique_ptr<chromeos::FrameHeader>

@@ -283,14 +283,13 @@ static void ExtractSelectorValues(const CSSSelector* selector,
     case CSSSelector::kPagePseudoClass:
       // Must match the cases in RuleSet::FindBestRuleSetAndAdd.
       switch (selector->GetPseudoType()) {
-        case CSSSelector::kPseudoScrollMarker:
-          pseudo_type = CSSSelector::kPseudoScrollMarker;
-          break;
         case CSSSelector::kPseudoFocus:
-          if (pseudo_type != CSSSelector::kPseudoScrollMarker) {
-            pseudo_type = selector->GetPseudoType();
+          if (pseudo_type == CSSSelector::kPseudoScrollMarker ||
+              pseudo_type == CSSSelector::kPseudoScrollNextButton ||
+              pseudo_type == CSSSelector::kPseudoScrollPrevButton) {
+            break;
           }
-          break;
+          [[fallthrough]];
         case CSSSelector::kPseudoCue:
         case CSSSelector::kPseudoLink:
         case CSSSelector::kPseudoVisited:
@@ -302,10 +301,11 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoHost:
         case CSSSelector::kPseudoHostContext:
         case CSSSelector::kPseudoSlotted:
-        case CSSSelector::kPseudoSelectFallbackButton:
-        case CSSSelector::kPseudoSelectFallbackButtonText:
         case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
+        case CSSSelector::kPseudoScrollMarker:
+        case CSSSelector::kPseudoScrollNextButton:
+        case CSSSelector::kPseudoScrollPrevButton:
           pseudo_type = selector->GetPseudoType();
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
@@ -559,8 +559,6 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
       return;
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoFileSelectorButton:
-    case CSSSelector::kPseudoSelectFallbackButton:
-    case CSSSelector::kPseudoSelectFallbackButtonText:
       if (it->FollowsSlotted()) {
         AddToRuleSet(slotted_pseudo_element_rules_, rule_data);
       } else {
@@ -571,12 +569,6 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
             break;
           case CSSSelector::kPseudoFileSelectorButton:
             name = shadow_element_names::kPseudoFileUploadButton;
-            break;
-          case CSSSelector::kPseudoSelectFallbackButton:
-            name = shadow_element_names::kSelectFallbackButton;
-            break;
-          case CSSSelector::kPseudoSelectFallbackButtonText:
-            name = shadow_element_names::kSelectFallbackButtonText;
             break;
           default:
             NOTREACHED_IN_MIGRATION();

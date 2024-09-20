@@ -1,0 +1,14 @@
+#<skip -- sometimes showing up empty -- crbug.com/364508153>
+Document Value.IsReadOnly=true
+++Group IsControlElement=false
+++++ComboBox Name='Transformer' ExpandCollapse.ExpandCollapseState='Expanded' Value.IsReadOnly=false Value.Value='Random Transformer'
+++++++List IsControlElement=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Value.IsReadOnly=false
+++++++++ListItem Name='Random Transformer' SelectionItem.IsSelected=true
+++++++++Group Name='group 1'
+++++++++++ListItem Name='Optimus Prime' SelectionItem.IsSelected=false
+++++++++++ListItem Name='Bumblebee' SelectionItem.IsSelected=false
+++++++++++ListItem Name='Jazz' SelectionItem.IsSelected=false
+++++++++Group Name='group 2'
+++++++++++ListItem Name='Megatron' SelectionItem.IsSelected=false
+++++++++++ListItem Name='Starscream' SelectionItem.IsSelected=false
+++++++++++ListItem Name='Brawl' SelectionItem.IsSelected=false

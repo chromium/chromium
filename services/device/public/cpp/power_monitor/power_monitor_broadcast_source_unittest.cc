@@ -82,28 +82,40 @@ TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   EXPECT_EQ(observer.resumes(), 1);
 
   // Pretend the device has gone on battery power
-  client()->PowerStateChange(true);
+  client()->PowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 1);
   EXPECT_EQ(observer.last_power_status(),
             base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   // Repeated indications the device is on battery power should be suppressed.
-  client()->PowerStateChange(true);
+  client()->PowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 1);
 
   // Pretend the device has gone off battery power
-  client()->PowerStateChange(false);
+  client()->PowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 2);
   EXPECT_EQ(observer.last_power_status(),
             base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
 
   // Repeated indications the device is off battery power should be suppressed.
-  client()->PowerStateChange(false);
+  client()->PowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 2);
+
+  // Sending unknown signal should be propagated properly.
+  client()->PowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kUnknown);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.power_state_changes(), 3);
+  EXPECT_EQ(observer.last_power_status(),
+            base::PowerStateObserver::BatteryPowerStatus::kUnknown);
 
   power_monitor->RemovePowerSuspendObserver(&observer);
   power_monitor->RemovePowerStateObserver(&observer);

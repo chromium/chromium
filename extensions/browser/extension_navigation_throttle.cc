@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -94,15 +95,18 @@ bool ShouldBlockNavigationToPlatformAppResource(
 
     // Platform apps can be embedded by other platform apps using an <appview>
     // tag.
-    AppViewGuest* app_view = AppViewGuest::FromWebContents(web_contents);
-    if (app_view)
+    auto* app_view = AppViewGuest::FromNavigationHandle(&navigation_handle);
+    if (app_view) {
       return false;
+    }
 
     // Webviews owned by the platform app can embed platform app resources via
     // "accessible_resources".
-    WebViewGuest* web_view_guest = WebViewGuest::FromWebContents(web_contents);
-    if (web_view_guest)
+    auto* web_view_guest =
+        WebViewGuest::FromNavigationHandle(&navigation_handle);
+    if (web_view_guest) {
       return web_view_guest->owner_host() != platform_app->id();
+    }
 
     // Otherwise, it's a guest view that's neither a webview nor an appview
     // (such as an extensionoptions view). Disallow.
@@ -158,8 +162,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Some checks below will need to know whether this navigation is in a
   // <webview> guest.
-  guest_view::GuestViewBase* guest =
-      guest_view::GuestViewBase::FromWebContents(web_contents);
+  auto* guest =
+      guest_view::GuestViewBase::FromNavigationHandle(navigation_handle());
 #endif
 
   // Is this navigation targeting an extension resource?
@@ -280,7 +284,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   }
 
   // `redirect_chain` is the current page and each one before is an ancestor.
-  auto redirect_chain = navigation_handle()->GetRedirectChain();
+  const auto& redirect_chain = navigation_handle()->GetRedirectChain();
 
   // Record if the redirection is to an extension resource that isn't web
   // accessible.
@@ -289,7 +293,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     // to be reached again if there are more redirects in the same navigation.
     const GURL& upstream = redirect_chain[redirect_chain.size() - 2];
     auto upstream_origin = url::Origin::Create(upstream);
-    // Cross-origin-redirects require that the `url` is in the
+    // Cross-origin-redirects require that the resource is accessible in the
     // "web_accessible_resources" section of the manifest.
     if (!upstream_origin.opaque() && upstream_origin != target_origin) {
       base::UmaHistogramBoolean(

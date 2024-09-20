@@ -93,9 +93,6 @@ public class HomeModulesMetricsUtils {
 
     private static final String SAFETY_HUB_FRESHNESS_INPUT_CONTEXT = "safety_hub_freshness";
 
-    private static final String EDUCATIONAL_TIP_FRESHNESS_INPUT_CONTEXT =
-            "educational_tip_freshness";
-
     private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
     public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -147,8 +144,6 @@ public class HomeModulesMetricsUtils {
                 return TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT;
             case (SAFETY_HUB):
                 return SAFETY_HUB_FRESHNESS_INPUT_CONTEXT;
-            case (EDUCATIONAL_TIP):
-                return EDUCATIONAL_TIP_FRESHNESS_INPUT_CONTEXT;
             default:
                 assert false : "Module type not supported!";
                 return null;

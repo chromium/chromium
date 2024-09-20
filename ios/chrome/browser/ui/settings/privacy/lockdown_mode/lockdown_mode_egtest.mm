@@ -60,17 +60,19 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
   // Ensure that Browser Lockdown Mode opt-out starts in its default (opted-out)
   // state.
   [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:prefs::kBrowserLockdownModeEnabled];
+             forLocalStatePref:prefs::kBrowserLockdownModeEnabled];
   // Ensure that OS Lockdown Mode opt-in starts in its default (opted-out)
   // state.
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kOSLockdownModeEnabled];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:prefs::kOSLockdownModeEnabled];
 }
 
 - (void)tearDown {
   // Reset preferences back to default values.
   [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:prefs::kBrowserLockdownModeEnabled];
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kOSLockdownModeEnabled];
+             forLocalStatePref:prefs::kBrowserLockdownModeEnabled];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:prefs::kOSLockdownModeEnabled];
   [super tearDown];
 }
 
@@ -93,7 +95,7 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
   // Check that lockdown mode row shows an "on" text label.
   [self checkPrivacyLockdownModeItemStatus:YES];
   GREYAssertTrue(
-      [ChromeEarlGrey userBooleanPref:prefs::kBrowserLockdownModeEnabled],
+      [ChromeEarlGrey localStateBooleanPref:prefs::kBrowserLockdownModeEnabled],
       @"Lockdown mode should be on.");
 }
 
@@ -101,8 +103,9 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
 // settings page should show a row with an "i" button.
 - (void)testOSLockdownModeEnabled {
   [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:prefs::kBrowserLockdownModeEnabled];
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kOSLockdownModeEnabled];
+             forLocalStatePref:prefs::kBrowserLockdownModeEnabled];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:prefs::kOSLockdownModeEnabled];
   [self openLockdownModeSettings];
 
   // Check that lockdown mode row shows an "on" text label.

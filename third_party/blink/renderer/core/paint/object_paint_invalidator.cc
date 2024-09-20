@@ -52,8 +52,9 @@ ObjectPaintInvalidatorWithContext::ComputePaintInvalidationReason() {
   bool previous_visibility_visible = object_.PreviousVisibilityVisible();
   object_.GetMutableForPainting().UpdatePreviousVisibilityVisible();
   if (object_.VisualRectRespectsVisibility() && !previous_visibility_visible &&
-      object_.StyleRef().Visibility() != EVisibility::kVisible)
+      object_.StyleRef().UsedVisibility() != EVisibility::kVisible) {
     return PaintInvalidationReason::kNone;
+  }
 
   if (!object_.ShouldCheckForPaintInvalidation() && !context_.subtree_flags) {
     // No paint invalidation flag. No paint invalidation is needed.

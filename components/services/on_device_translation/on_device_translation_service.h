@@ -13,8 +13,6 @@
 
 namespace on_device_translation {
 
-class TranslateKitClient;
-
 class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
  public:
   explicit OnDeviceTranslationService(
@@ -27,6 +25,8 @@ class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
       delete;
 
   // `mojom::OnDeviceTranslationService` overrides:
+  void SetServiceConfig(
+      mojom::OnDeviceTranslationServiceConfigPtr config) override;
   void CreateTranslator(
       const std::string& source_lang,
       const std::string& target_lang,
@@ -38,7 +38,6 @@ class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
 
  private:
   mojo::Receiver<mojom::OnDeviceTranslationService> receiver_;
-  std::unique_ptr<TranslateKitClient> translate_kit_;
 };
 
 }  // namespace on_device_translation

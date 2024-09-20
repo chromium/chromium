@@ -73,6 +73,12 @@
           "project": "chromium"
         }
       ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-desktop-14-x64-rel",
+          "group": "tryserver.chromium.android"
+        }
+      ],
       "targets_spec_directory": "src/infra/config/generated/builders/ci/android-desktop-x64-rel-14-tests/targets"
     }
   },

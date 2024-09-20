@@ -146,5 +146,88 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ServedToRedirectionChain) {
   EXPECT_EQ(GetRequestCount(des_url), 1);
 }
 
+// TODO(crbug.com/345352974): Make it a web platform test instead.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, SetCookieViaHTTPResponse) {
+  net::test_server::EmbeddedTestServer ssl_server{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+  ssl_server.RegisterRequestMonitor(base::BindRepeating(
+      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
+  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
+  ssl_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(ssl_server.Start());
+
+  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
+  const std::string server_cookie = "host_cookie=1";
+  GURL des_url = ssl_server.GetURL("b.test", "/set-cookie?" + server_cookie);
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  // 1. Prefetch a resource which sets cookie.
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  StartPrefetch(des_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      GetPrimaryMainFrameHost().GetDocumentToken(), des_url);
+  ASSERT_EQ(GetRequestCount(des_url), 1);
+
+  // 2. Activate the prefetched result.
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  nav_observer.set_wait_event(TestNavigationObserver::WaitEvent::kLoadStopped);
+  std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", des_url));
+  nav_observer.Wait();
+
+  // 3. The cookie was written into the real cookie storage.
+  EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+  EXPECT_EQ(GetRequestCount(des_url), 1);
+  EXPECT_EQ(EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "document.cookie"), server_cookie);
+
+  // 4. Navigate to another same-site page to confirm the cookie is persistent.
+  GURL after_prefetch_url = ssl_server.GetURL("b.test", "/title2.html");
+  std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", after_prefetch_url));
+  EXPECT_EQ(EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "document.cookie"), server_cookie);
+}
+
+// TODO(crbug.com/345352974): Make it a web platform test instead.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
+                       NeverSetCookieForDiscardedPrefetch) {
+  net::test_server::EmbeddedTestServer ssl_server{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+  ssl_server.RegisterRequestMonitor(base::BindRepeating(
+      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
+  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
+  ssl_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(ssl_server.Start());
+
+  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
+  const std::string server_cookie = "host_cookie=1";
+  GURL des_url = ssl_server.GetURL("b.test", "/set-cookie?" + server_cookie);
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  // 1. Prefetch a resource which sets cookie.
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  StartPrefetch(des_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      GetPrimaryMainFrameHost().GetDocumentToken(), des_url);
+  ASSERT_EQ(GetRequestCount(des_url), 1);
+
+  // 2. Navigate to another URL to invalidate the prefetch result.
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  nav_observer.set_wait_event(TestNavigationObserver::WaitEvent::kLoadStopped);
+  GURL after_prefetch_url = ssl_server.GetURL("b.test", "/title2.html");
+
+  std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", after_prefetch_url));
+  nav_observer.Wait();
+
+  // 3. Check the cookie set by discarded prefetch response cannot affect the
+  // real jar.
+  EXPECT_EQ(EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       "document.cookie").ExtractString(), "");
+}
+
 }  // namespace
 }  // namespace content

@@ -13,6 +13,9 @@
 // with tests.
 class FakeTabMatcher : public TabMatcher {
  public:
+  FakeTabMatcher();
+  ~FakeTabMatcher() override;
+
   // A test calls this to establish the set of URLs that will return
   // true from IsTabOpenWithURL() above. It's a simple substring match
   // of the URL.
@@ -20,12 +23,17 @@ class FakeTabMatcher : public TabMatcher {
     substring_to_match_ = substr;
   }
 
+  void AddOpenTab(TabMatcher::TabWrapper open_tab);
+
+  // TabMatcher implementation.
   bool IsTabOpenWithURL(const GURL& url,
                         const AutocompleteInput* input) const override;
+  std::vector<TabMatcher::TabWrapper> GetOpenTabs() const override;
 
  private:
   // Substring used to match URLs for IsTabOpenWithURL().
   std::string substring_to_match_;
+  std::vector<TabMatcher::TabWrapper> open_tabs_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_TAB_MATCHER_H_

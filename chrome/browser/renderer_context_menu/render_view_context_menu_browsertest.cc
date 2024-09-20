@@ -51,6 +51,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -151,8 +152,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/mock_chrome_compose_client.h"
@@ -935,28 +938,117 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
-                       ContextMenuEntriesAreDisabledInLockedFullscreen) {
-  int entries_to_test[] = {
-      IDC_VIEW_SOURCE,
-      IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-      IDC_CONTENT_CONTEXT_INSPECTELEMENT,
-  };
-  std::unique_ptr<TestRenderViewContextMenu> menu =
-      CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
-                                     GURL("http://www.google.com/"));
+class ContextMenuForLockedFullscreenBrowserTest
+    : public ContextMenuBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    ContextMenuBrowserTest::SetUpOnMainThread();
 
-  // Entries are enabled.
-  for (auto entry : entries_to_test)
-    EXPECT_TRUE(menu->IsCommandIdEnabled(entry));
+    // Set up browser for testing / validating page navigation command states.
+    OpenUrlWithDisposition(GURL("chrome://new-tab-page/"),
+                           WindowOpenDisposition::CURRENT_TAB);
+    OpenUrlWithDisposition(GURL("chrome://version/"),
+                           WindowOpenDisposition::CURRENT_TAB);
+    OpenUrlWithDisposition(GURL("about:blank"),
+                           WindowOpenDisposition::CURRENT_TAB);
+
+    // Go back by one page to ensure the forward command is also available for
+    // testing purposes.
+    content::TestNavigationObserver navigation_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+    navigation_observer.Wait();
+    ASSERT_TRUE(chrome::CanGoBack(browser()));
+    ASSERT_TRUE(chrome::CanGoForward(browser()));
+  }
+
+ private:
+  void OpenUrlWithDisposition(GURL url, WindowOpenDisposition disposition) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, disposition,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
+                       ItemsAreDisabledWhenNotLockedForOnTask) {
+  browser()->SetLockedForOnTask(false);
+  const GURL kTestUrl("http://www.google.com/");
+  const std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(/*unfiltered_url=*/kTestUrl,
+                                     /*url=*/kTestUrl);
+
+  // Verify commands are enabled before entering locked fullscreen.
+  static constexpr int kCommandsToTest[] = {
+      // Navigation commands.
+      IDC_BACK, IDC_FORWARD, IDC_RELOAD,
+      // Other commands (we only test a subset).
+      IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+      IDC_CONTENT_CONTEXT_INSPECTELEMENT};
+  for (int command_id : kCommandsToTest) {
+    EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet enabled state expectation";
+  }
 
   // Set locked fullscreen state.
   PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
 
-  // All entries are disabled in locked fullscreen (testing only a subset here).
-  for (auto entry : entries_to_test)
-    EXPECT_FALSE(menu->IsCommandIdEnabled(entry));
+  // Verify aforementioned commands are disabled in locked fullscreen.
+  for (int command_id : kCommandsToTest) {
+    EXPECT_FALSE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet disabled state expectation in locked fullscreen";
+  };
 }
+
+IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
+                       CriticalItemsAreEnabledWhenLockedForOnTask) {
+  browser()->SetLockedForOnTask(true);
+  const GURL kTestUrl("http://www.google.com/");
+  const std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(/*unfiltered_url=*/kTestUrl,
+                                     /*url=*/kTestUrl);
+
+  // Verify commands are enabled before entering locked fullscreen.
+  static constexpr int kCommandsToTest[] = {
+      // Navigation commands.
+      IDC_BACK, IDC_FORWARD, IDC_RELOAD,
+      // Other commands (we only test a subset).
+      IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+      IDC_CONTENT_CONTEXT_INSPECTELEMENT};
+  for (int command_id : kCommandsToTest) {
+    EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet enabled state expectation";
+  }
+
+  // Set locked fullscreen state.
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+
+  // Verify page navigation commands remain enabled in locked fullscreen.
+  static constexpr int kCommandsEnabledInLockedFullscreen[] = {
+      IDC_BACK, IDC_FORWARD, IDC_RELOAD};
+  for (int command_id : kCommandsEnabledInLockedFullscreen) {
+    EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet enabled state expectation in locked fullscreen";
+  };
+
+  // Verify other commands are disabled in locked fullscreen.
+  static constexpr int kCommandsDisabledInLockedFullscreen[] = {
+      IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+      IDC_CONTENT_CONTEXT_INSPECTELEMENT};
+  for (int command_id : kCommandsDisabledInLockedFullscreen) {
+    EXPECT_FALSE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet disabled state expectation in locked fullscreen";
+  };
+}
+
+INSTANTIATE_TEST_SUITE_P(ContextMenuForLockedFullscreenBrowserTests,
+                         ContextMenuForLockedFullscreenBrowserTest,
+                         /*is_preview_enabled=*/testing::Bool());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenEntryPresentForNormalURLs) {

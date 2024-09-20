@@ -321,6 +321,9 @@ void AgentSchedulingGroupHost::AddRoute(int32_t routing_id,
 }
 
 void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
+  TRACE_EVENT0("navigation", "AgentSchedulingGroupHost::RemoveRoute");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.AgentSchedulingGroupHost.RemoveRoute");
   DCHECK_EQ(state_, LifecycleState::kBound);
   listener_map_.Remove(routing_id);
   process_->RemoveRoute(routing_id);

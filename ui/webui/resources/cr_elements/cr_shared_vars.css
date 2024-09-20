@@ -247,6 +247,7 @@ html {
   --cr-fallback-color-neutral-outline: rgb(199, 199, 199);
 
   --cr-fallback-color-surface: rgb(255, 255, 255);
+  --cr-fallback-color-surface1: rgb(248, 250, 253);
   --cr-fallback-color-surface2: rgb(243, 246, 252);
   --cr-fallback-color-on-surface-rgb: 31, 31, 31;
   --cr-fallback-color-on-surface: rgb(var(--cr-fallback-color-on-surface-rgb));
@@ -342,6 +343,7 @@ html {
     --cr-fallback-color-neutral-container: rgb(40, 40, 40);
     --cr-fallback-color-neutral-outline: rgb(117, 117, 117);
     --cr-fallback-color-surface: rgb(31, 31, 31);
+    --cr-fallback-color-surface1: rgb(39, 40, 42);
     --cr-fallback-color-surface2: rgb(45, 47, 49);
     --cr-fallback-color-on-surface-rgb: 227, 227, 227;
     --cr-fallback-color-surface-variant: rgb(68, 71, 70);

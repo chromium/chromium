@@ -305,10 +305,8 @@ AdditionalFeaturesController*
 TestingApplicationContext::GetAdditionalFeaturesController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!additional_features_controller_) {
-    // TODO(crbug.com/355550974): Uncomment the following once the API is
-    // implemented.
-    /*additional_features_controller_ =
-        ios::provider::CreateAdditionalFeaturesController();*/
+    additional_features_controller_ =
+        ios::provider::CreateAdditionalFeaturesController();
   }
   return additional_features_controller_.get();
 }

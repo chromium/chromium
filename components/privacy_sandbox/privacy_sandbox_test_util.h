@@ -247,6 +247,8 @@ enum class OutputKey {
   kIsSharedStorageBlockSiteSettingSpecific = 50,
   kIsSharedStorageSelectURLBlockSiteSettingSpecific = 51,
   kIsPrivateAggregationBlockSiteSettingSpecific = 52,
+  kIsLocalUnpartitionedDataAccessAllowed = 53,
+  kIsLocalUnpartitionedDataAccessAllowedMetric = 54,
 };
 
 // To allow multiple input keys to map to the same value, without having to

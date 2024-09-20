@@ -6,10 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
@@ -54,12 +51,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
 }  // namespace
 
-@interface MagicStackModuleContainer () <UIContextMenuInteractionDelegate,
-                                         MagicStackModuleContentViewDelegate>
-
-// Redefined as ReadWrite.
-@property(nonatomic, assign, readwrite) ContentSuggestionsModuleType type;
-
+@interface MagicStackModuleContainer () <MagicStackModuleContentViewDelegate>
 @end
 
 @implementation MagicStackModuleContainer {
@@ -76,7 +68,7 @@ const CGFloat kSeparatorHeight = 0.5;
   MagicStackModuleContentsFactory* _magicStackModuleContentsFactory;
   NSLayoutConstraint* _containerHeightAnchor;
   NSLayoutConstraint* _contentStackViewBottomMarginAnchor;
-  UIContextMenuInteraction* _contextMenuInteraction;
+  ContentSuggestionsModuleType _type;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -84,11 +76,6 @@ const CGFloat kSeparatorHeight = 0.5;
   if (self) {
     self.maximumContentSizeCategory = UIContentSizeCategoryAccessibilityMedium;
     _magicStackModuleContentsFactory = [[MagicStackModuleContentsFactory alloc] init];
-
-    self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-    self.contentView.layer.cornerRadius = kCornerRadius;
-    self.contentView.clipsToBounds = YES;
-    self.layer.cornerRadius = kCornerRadius;
 
     _titleStackView = [[UIStackView alloc] init];
     _titleStackView.alignment = UIStackViewAlignmentTop;
@@ -185,7 +172,7 @@ const CGFloat kSeparatorHeight = 0.5;
         [self.heightAnchor constraintEqualToConstant:kModuleMaxHeight];
     [NSLayoutConstraint activateConstraints:@[ _containerHeightAnchor ]];
 
-    [self.contentView addSubview:_stackView];
+    [self addSubview:_stackView];
     AddSameConstraintsToSidesWithInsets(
         _stackView, self,
         (LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing),
@@ -196,12 +183,27 @@ const CGFloat kSeparatorHeight = 0.5;
                                                 constant:-kContentBottomInset];
     [NSLayoutConstraint
         activateConstraints:@[ _contentStackViewBottomMarginAnchor ]];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.self ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        strongSelf->_title.font = [strongSelf fontForTitle];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
 
 - (void)dealloc {
-  [self resetCell];
+  [self resetView];
 }
 
 // Creates a button with the specified `title` positioned in the module's
@@ -245,13 +247,16 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 - (void)configureWithConfig:(MagicStackModule*)config {
-  [self resetCell];
+  [self resetView];
   // Ensures that the modules conforms to a height of kModuleMaxHeight. For
   // the MVT when it lives outside of the Magic Stack to stay as close to its
   // intrinsic size as possible, the constraint is configured to be less than
   // or equal to.
   if (config.type == ContentSuggestionsModuleType::kMostVisited &&
       !ShouldPutMostVisitedSitesInMagicStack()) {
+    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.layer.cornerRadius = kCornerRadius;
+    self.clipsToBounds = YES;
     _containerHeightAnchor.active = NO;
     _containerHeightAnchor = [self.heightAnchor
         constraintLessThanOrEqualToConstant:kModuleMaxHeight];
@@ -270,13 +275,6 @@ const CGFloat kSeparatorHeight = 0.5;
     return;
   }
   _type = config.type;
-  if ([self allowsLongPress]) {
-    if (!_contextMenuInteraction) {
-      _contextMenuInteraction =
-          [[UIContextMenuInteraction alloc] initWithDelegate:self];
-      [self addInteraction:_contextMenuInteraction];
-    }
-  }
 
   _title.text = [MagicStackModuleContainer titleStringForModule:_type];
   _title.accessibilityIdentifier =
@@ -330,6 +328,20 @@ const CGFloat kSeparatorHeight = 0.5;
   }
   [accessibilityElements addObject:_contentView];
   self.accessibilityElements = accessibilityElements;
+}
+
+- (void)resetView {
+  _title.text = nil;
+  _subtitle.text = nil;
+  _isPlaceholder = NO;
+  if (_placeholderImage) {
+    [_placeholderImage removeFromSuperview];
+    _placeholderImage = nil;
+  }
+  if (_contentView) {
+    [_contentView removeFromSuperview];
+    _contentView = nil;
+  }
 }
 
 // Returns the module's title, if any, given the Magic Stack module `type`.
@@ -415,22 +427,21 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 }
 
-#pragma mark UICollectionViewCell Overrides
-
-- (void)prepareForReuse {
-  [super prepareForReuse];
-  [self resetCell];
-}
-
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     _title.font = [self fontForTitle];
   }
 }
+#endif
 
 #pragma mark - MagicStackModuleContentViewDelegate
 
@@ -439,151 +450,7 @@ const CGFloat kSeparatorHeight = 0.5;
   _subtitle.accessibilityIdentifier = subtitle;
 }
 
-#pragma mark - UIContextMenuInteractionDelegate
-
-- (UIContextMenuConfiguration*)contextMenuInteraction:
-                                   (UIContextMenuInteraction*)interaction
-                       configurationForMenuAtLocation:(CGPoint)location {
-  CHECK([self allowsLongPress]);
-  __weak MagicStackModuleContainer* weakSelf = self;
-  UIContextMenuActionProvider actionProvider =
-      ^(NSArray<UIMenuElement*>* suggestedActions) {
-        return [UIMenu menuWithTitle:[weakSelf contextMenuTitle]
-                            children:[weakSelf contextMenuActions]];
-      };
-  return
-      [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:nil
-                                               actionProvider:actionProvider];
-}
-
 #pragma mark - Helpers
-
-// Returns the list of actions for the long-press /  context menu.
-- (NSArray<UIAction*>*)contextMenuActions {
-  NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
-
-  if ((IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled()) ||
-      (self.type == ContentSuggestionsModuleType::kSafetyCheck &&
-       IsSafetyCheckNotificationsEnabled())) {
-    [actions addObject:[self toggleNotificationsActionForModuleType:self.type]];
-  }
-
-  [actions addObject:[self hideAction]];
-
-  [actions addObject:[self customizeCardAction]];
-
-  return actions;
-}
-
-// Returns the menu action to hide this module type.
-- (UIAction*)hideAction {
-  __weak __typeof(self) weakSelf = self;
-  UIAction* hideAction = [UIAction
-      actionWithTitle:[self contextMenuHideDescription]
-                image:DefaultSymbolWithPointSize(kHideActionSymbol, 18)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.delegate neverShowModuleType:weakSelf.type];
-              }];
-  hideAction.attributes = UIMenuElementAttributesDestructive;
-  return hideAction;
-}
-
-// Returns the menu action to hide this module type.
-- (UIAction*)customizeCardAction {
-  __weak __typeof(self) weakSelf = self;
-  UIAction* hideAction = [UIAction
-      actionWithTitle:
-          l10n_util::GetNSString(
-              IDS_IOS_MAGIC_STACK_CONTEXT_MENU_CUSTOMIZE_CARDS_TITLE)
-                image:DefaultSymbolWithPointSize(kSliderHorizontalSymbol, 18)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.delegate customizeCardsWasTapped];
-              }];
-  return hideAction;
-}
-
-// Returns the `PushNotificationClientId` associated with the specified `type`.
-// Currently, push notifications are exclusively supported by the Set Up List
-// and Safety Check modules.
-- (PushNotificationClientId)pushNotificationClientId:
-    (ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List and Safety Check modules.
-  CHECK(IsSetUpListModuleType(type) ||
-        type == ContentSuggestionsModuleType::kSafetyCheck);
-
-  if (type == ContentSuggestionsModuleType::kSafetyCheck) {
-    return PushNotificationClientId::kSafetyCheck;
-  }
-
-  if (IsSetUpListModuleType(type)) {
-    return PushNotificationClientId::kTips;
-  }
-
-  NOTREACHED();
-}
-
-// Retrieves the message ID for the push notification feature title associated
-// with the specified `ContentSuggestionsModuleType`. Currently, push
-// notifications are exclusively supported by the Set Up List and Safety Check
-// modules.
-- (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List and Safety Check modules.
-  CHECK(IsSetUpListModuleType(type) ||
-        type == ContentSuggestionsModuleType::kSafetyCheck);
-
-  if (type == ContentSuggestionsModuleType::kSafetyCheck) {
-    return IDS_IOS_SAFETY_CHECK_TITLE;
-  }
-
-  if (IsSetUpListModuleType(type)) {
-    return content_suggestions::SetUpListTitleStringID();
-  }
-
-  NOTREACHED();
-}
-
-// Returns the menu action to opt-in to Tips Notifications.
-- (UIAction*)toggleNotificationsActionForModuleType:
-    (ContentSuggestionsModuleType)moduleType {
-  const PushNotificationClientId clientId =
-      [self pushNotificationClientId:moduleType];
-
-  BOOL optedIn = [self optedInToNotificationsForClient:clientId];
-
-  __weak __typeof(self) weakSelf = self;
-
-  NSString* title;
-  NSString* symbol;
-
-  int featureTitle = [self pushNotificationTitleMessageId:moduleType];
-
-  if (optedIn) {
-    title = l10n_util::GetNSStringF(
-        IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM_OFF,
-        l10n_util::GetStringUTF16(featureTitle));
-    symbol = kBellSlashSymbol;
-  } else {
-    title =
-        l10n_util::GetNSStringF(IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM,
-                                l10n_util::GetStringUTF16(featureTitle));
-    symbol = kBellSymbol;
-  }
-
-  return [UIAction
-      actionWithTitle:title
-                image:DefaultSymbolWithPointSize(symbol, 18)
-           identifier:nil
-              handler:^(UIAction* action) {
-                if (optedIn) {
-                  [weakSelf.delegate disableNotifications:weakSelf.type];
-                } else {
-                  [weakSelf.delegate enableNotifications:weakSelf.type];
-                }
-              }];
-}
 
 // Handles taps on the "See More" button.
 - (void)seeMoreButtonWasTapped:(UIButton*)button {
@@ -593,24 +460,6 @@ const CGFloat kSeparatorHeight = 0.5;
 // Handles taps on the notifications opt-in button.
 - (void)notificationsOptInButtonWasTapped:(UIButton*)button {
   [_delegate enableNotifications:_type];
-}
-
-// `YES` if this container should show a context menu when the user performs a
-// long-press gesture.
-- (BOOL)allowsLongPress {
-  switch (_type) {
-    case ContentSuggestionsModuleType::kTabResumption:
-    case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSetUpListSync:
-    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
-    case ContentSuggestionsModuleType::kSetUpListAutofill:
-    case ContentSuggestionsModuleType::kSetUpListNotifications:
-    case ContentSuggestionsModuleType::kCompactedSetUpList:
-    case ContentSuggestionsModuleType::kParcelTracking:
-      return YES;
-    default:
-      return NO;
-  }
 }
 
 // Determines if a subtitle should be displayed based on the
@@ -656,90 +505,6 @@ const CGFloat kSeparatorHeight = 0.5;
     default:
       return NO;
   }
-}
-
-// Title string for the context menu of this container.
-- (NSString*)contextMenuTitle {
-  switch (_type) {
-    case ContentSuggestionsModuleType::kTabResumption:
-      return l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_TITLE);
-    case ContentSuggestionsModuleType::kSafetyCheck:
-      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_TITLE);
-    case ContentSuggestionsModuleType::kSetUpListSync:
-    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
-    case ContentSuggestionsModuleType::kSetUpListAutofill:
-    case ContentSuggestionsModuleType::kCompactedSetUpList:
-    case ContentSuggestionsModuleType::kSetUpListNotifications:
-      return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE);
-    case ContentSuggestionsModuleType::kParcelTracking:
-      return l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE);
-    default:
-      NOTREACHED();
-  }
-}
-
-// Descriptor string for hide action of the context menu of this container.
-- (NSString*)contextMenuHideDescription {
-  switch (_type) {
-    case ContentSuggestionsModuleType::kTabResumption:
-      return l10n_util::GetNSString(
-          IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_DESCRIPTION);
-    case ContentSuggestionsModuleType::kSafetyCheck:
-      return l10n_util::GetNSString(
-          IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_DESCRIPTION);
-    case ContentSuggestionsModuleType::kSetUpListSync:
-    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
-    case ContentSuggestionsModuleType::kSetUpListAutofill:
-    case ContentSuggestionsModuleType::kSetUpListNotifications:
-    case ContentSuggestionsModuleType::kCompactedSetUpList:
-      return l10n_util::GetNSStringF(
-          IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION,
-          l10n_util::GetStringUTF16(
-              content_suggestions::SetUpListTitleStringID()));
-    case ContentSuggestionsModuleType::kParcelTracking:
-      return l10n_util::GetNSStringF(
-          IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_DESCRIPTION,
-          base::SysNSStringToUTF16(l10n_util::GetNSString(
-              IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)));
-    default:
-      NOTREACHED();
-  }
-}
-
-// Reset the main configurations of the cell.
-- (void)resetCell {
-  _title.text = nil;
-  _subtitle.text = nil;
-  _isPlaceholder = NO;
-  if (_placeholderImage) {
-    [_placeholderImage removeFromSuperview];
-    _placeholderImage = nil;
-  }
-  if (_contentView) {
-    [_contentView removeFromSuperview];
-    _contentView = nil;
-  }
-  if (_contextMenuInteraction) {
-    [self removeInteraction:_contextMenuInteraction];
-    _contextMenuInteraction = nil;
-  }
-}
-
-// Returns YES if the user has already opted-in to notifications for the
-// specified `clientId`.
-- (BOOL)optedInToNotificationsForClient:(PushNotificationClientId)clientId {
-  // Currently, push notifications are exclusively supported for the Set Up List
-  // and Safety Check modules.
-  CHECK(clientId == PushNotificationClientId::kTips ||
-        clientId == PushNotificationClientId::kSafetyCheck);
-
-  // IMPORTANT: Notifications for Set Up List and Safety Check are managed
-  // through the app-wide notification settings. If a feature that utilizes
-  // per-profile notification settings is being introduced, ensure a `gaia_id`
-  // is passed to `GetMobileNotificationPermissionStatusForClient()` below.
-  return push_notification_settings::
-      GetMobileNotificationPermissionStatusForClient(clientId, "");
 }
 
 @end

@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {getRequiredElement} from 'chrome://resources/js/util.js';
-
 import type {ClientInfo, SegmentInfo} from './segmentation_internals.mojom-webui.js';
 import {SegmentationInternalsBrowserProxy} from './segmentation_internals_browser_proxy.js';
 
@@ -12,17 +9,28 @@ function getProxy(): SegmentationInternalsBrowserProxy {
   return SegmentationInternalsBrowserProxy.getInstance();
 }
 
-function isURLSafe(urlStr: string|undefined): boolean {
-  if (urlStr === undefined) {
-    return false;
+// Checks the given URL for expected pattern, and allowed list of param.
+function getSafeURL(untrustedURL: URL|undefined): URL|undefined {
+  if (untrustedURL === undefined) {
+    return undefined;
   }
-  const allowedList = ['https://www.google.com/search?q=chrome'];
-  for (let i = 0; i < allowedList.length; ++i) {
-    if (urlStr === allowedList[i]) {
-      return true;
+  const allowedList = [
+    'https://www.google.com/search',
+    'https://surveys.qualtrics.com/jfe/form/SV_cNMWDhaegCrsrsy',
+  ];
+  const allowedParams = ['ID', 'SG', 'Q_CHL', 'Q_DL', '_g_', 'QRID', 'CR', 'q'];
+  const withoutParams: string = untrustedURL.origin + untrustedURL.pathname;
+  if (!allowedList.includes(withoutParams)) {
+    return undefined;
+  }
+
+  const trustedURL = new URL(withoutParams);
+  untrustedURL.searchParams.forEach((value, key) => {
+    if (allowedParams.includes(key)) {
+      trustedURL.searchParams.append(key, value);
     }
-  }
-  return false;
+  });
+  return trustedURL;
 }
 
 function openSurvey(result: string|undefined) {
@@ -30,28 +38,32 @@ function openSurvey(result: string|undefined) {
     const untrustedParam =
         new URL(window.location.href).searchParams.get('url');
     if (untrustedParam) {
-      const untruedtURL = new URL(decodeURIComponent(untrustedParam));
-      const untrustedURLStr = untruedtURL ? untruedtURL.toString() : undefined;
-      if (isURLSafe(untrustedURLStr)) {
-        let safeURL: string = untrustedURLStr!;
+      const untrustedURL = new URL(decodeURIComponent(untrustedParam));
+      const trustedURL = getSafeURL(untrustedURL);
+      if (trustedURL) {
         if (result) {
-          safeURL = safeURL! + '&option=' + encodeURIComponent(result);
+          trustedURL.searchParams.append('CR', encodeURIComponent(result));
         }
-        window.location.href = safeURL;
+        window.location.href = trustedURL.toString();
+        return true;
       }
     }
   } catch (error) {
   }
-  const div = getRequiredElement('client-container');
-  div.innerHTML =
-      getTrustedHTML`Failed to open. Please check instructions in email.`;
+  return false;
+}
+
+function openError() {
+  window.location.href = 'chrome://network-error/-404';
 }
 
 function processPredictionResult(segmentInfo: SegmentInfo) {
   const result = String(segmentInfo.predictionResult) +
       ' Timestamp: ' + String(segmentInfo.predictionTimestamp.internalValue);
   const encoded = window.btoa(result);
-  openSurvey(encoded);
+  if (!openSurvey(encoded)) {
+    openError();
+  }
 }
 
 function processClientInfo(info: ClientInfo) {
@@ -61,11 +73,11 @@ function processClientInfo(info: ClientInfo) {
 }
 
 function initialize() {
-  const div = getRequiredElement('client-container');
-  div.innerHTML = getTrustedHTML`Loading...`;
+  // Timeout to wait for segmentation results.
+  const timeoutSec = 3000;
   setTimeout(() => {
-    openSurvey(undefined);
-  }, 1000);
+    openError();
+  }, timeoutSec);
 
   getProxy().getCallbackRouter().onClientInfoAvailable.addListener(
       (clientInfos: ClientInfo[]) => {

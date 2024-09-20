@@ -50,10 +50,6 @@ const char kArchAmd64[] = "x86_64";
 const char kArchIntel[] = "x86";
 const char kArchArm64[] = "arm64";
 
-bool HasDiffUpdate(const Component& component) {
-  return !component.crx_diffurls().empty();
-}
-
 bool IsHttpServerError(int status_code) {
   return 500 <= status_code && status_code < 600;
 }

@@ -27,7 +27,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -44,6 +43,8 @@ using blink::WebFormControlElement;
 using blink::WebFormElement;
 using blink::WebInputElement;
 using blink::WebLocalFrame;
+
+using enum blink::mojom::FormControlType;
 
 namespace autofill {
 
@@ -66,8 +67,8 @@ FieldRendererId FindConfirmationPasswordFieldId(
   ++iter;
   for (; iter != control_elements.end(); ++iter) {
     const WebInputElement input_element = iter->DynamicTo<WebInputElement>();
-    if (input_element && input_element.FormControlTypeForAutofill() ==
-                             blink::mojom::FormControlType::kInputPassword) {
+    if (input_element &&
+        input_element.FormControlTypeForAutofill() == kInputPassword) {
       return form_util::GetFieldRendererId(input_element);
     }
   }
@@ -87,17 +88,11 @@ void CopyElementValueToOtherInputElements(
 
 void PreviewGeneratedValue(WebInputElement& input_element,
                            const blink::WebString& value) {
-  if (base::FeatureList::IsEnabled(blink::features::kPasswordStrongLabel)) {
-    input_element.SetShouldShowStrongPasswordLabel(true);
-  }
   input_element.SetShouldRevealPassword(true);
   input_element.SetSuggestedValue(value);
 }
 
 void ClearPreviewedValue(WebInputElement& input_element) {
-  if (base::FeatureList::IsEnabled(blink::features::kPasswordStrongLabel)) {
-    input_element.SetShouldShowStrongPasswordLabel(false);
-  }
   input_element.SetShouldRevealPassword(false);
   input_element.SetSuggestedValue(blink::WebString());
 }
@@ -398,7 +393,7 @@ void PasswordGenerationAgent::FocusNextFieldAfterPasswords() {
   for (const WebInputElement& password_element :
        current_generation_item_->password_elements_) {
     if (password_element ==
-        password_agent_->focused_element().DynamicTo<WebInputElement>()) {
+        password_agent_->last_queried_element().DynamicTo<WebInputElement>()) {
       render_frame()->GetWebView()->AdvanceFocus(false);
     }
   }
@@ -420,7 +415,6 @@ void PasswordGenerationAgent::FoundFormEligibleForGeneration(
     const PasswordFormGenerationData& form) {
   generation_enabled_fields_[form.new_password_renderer_id] = form;
 
-  // Mark the input element as |has_been_password_for_autofill_|.
   if (mark_generation_element_) {
     WebFormControlElement new_password_input =
         form_util::GetFormControlByRendererId(form.new_password_renderer_id);
@@ -440,7 +434,6 @@ void PasswordGenerationAgent::TriggeredGeneratePassword(
     // should not be populated with passwords to avoid filling them in a
     // clear-text field.
     // `FormControlTypeForAutofill()` is deliberately not used.
-    using enum blink::mojom::FormControlType;
     bool is_generation_element_password_type =
         current_generation_item_->generation_element_
             .FormControlType()  // nocheck
@@ -469,11 +462,9 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
     return false;
   }
   const WebInputElement last_focused_password_element =
-      password_agent_->focused_element().DynamicTo<WebInputElement>();
+      password_agent_->last_queried_element().DynamicTo<WebInputElement>();
   if (!last_focused_password_element ||
-      last_focused_password_element.IsReadOnly() ||
-      last_focused_password_element.FormControlTypeForAutofill() !=
-          blink::mojom::FormControlType::kInputPassword) {
+      last_focused_password_element.IsReadOnly()) {
     return false;
   }
 
@@ -676,7 +667,6 @@ void PasswordGenerationAgent::AutomaticGenerationAvailable() {
   // should not be populated with passwordS to avoid filling them in a
   // clear-text field.
   // `FormControlTypeForAutofill()` is deliberately not used.
-  using enum blink::mojom::FormControlType;
   bool is_generation_element_password_type =
       current_generation_item_->generation_element_
           .FormControlType()  // nocheck

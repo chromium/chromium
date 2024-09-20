@@ -26,6 +26,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 
 class AuthenticatorRequestDialogController;
 class GPMEnclaveController;
@@ -62,6 +63,31 @@ class PrefRegistrySyncable;
 class ChromeWebAuthenticationDelegate final
     : public content::WebAuthenticationDelegate {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SignalUnknownCredentialResult {
+    kPasskeyNotFound = 0,
+    kPasskeyRemoved = 1,
+    kMaxValue = kPasskeyRemoved,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SignalAllAcceptedCredentialsResult {
+    kNoPasskeyRemoved = 0,
+    kPasskeyRemoved = 1,
+    kMaxValue = kPasskeyRemoved,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SignalCurrentUserDetailsResult {
+    kQuotaExceeded = 0,
+    kPasskeyUpdated = 1,
+    kPasskeyNotUpdated = 2,
+    kMaxValue = kPasskeyNotUpdated,
+  };
+
 #if BUILDFLAG(IS_MAC)
   // Returns a configuration struct for instantiating the macOS WebAuthn
   // platform authenticator for the given Profile.
@@ -107,6 +133,7 @@ class ChromeWebAuthenticationDelegate final
                                 const std::vector<std::vector<uint8_t>>&
                                     all_accepted_credentials_ids) override;
   void UpdateUserPasskeys(content::WebContents* web_contents,
+                          const url::Origin& origin,
                           const std::string& relying_party_id,
                           std::vector<uint8_t>& user_id,
                           const std::string& name,
@@ -215,11 +242,6 @@ class ChromeAuthenticatorRequestDelegate
   void OnTransactionSuccessful(RequestSource request_source,
                                device::FidoRequestType,
                                device::AuthenticatorType) override;
-  void ShouldReturnAttestation(
-      const std::string& relying_party_id,
-      const device::FidoAuthenticator* authenticator,
-      bool is_enterprise_attestation,
-      base::OnceCallback<void(bool)> callback) override;
   void ConfigureDiscoveries(
       const url::Origin& origin,
       const std::string& rp_id,
@@ -240,6 +262,7 @@ class ChromeAuthenticatorRequestDelegate
   void DisableUI() override;
   bool IsWebAuthnUIEnabled() override;
   void SetConditionalRequest(bool is_conditional) override;
+  void SetAmbientCredentialTypes(int credential_type_flags) override;
   void SetCredentialIdFilter(std::vector<device::PublicKeyCredentialDescriptor>
                                  credential_list) override;
   void SetUserEntityForMakeCredentialRequest(
@@ -355,6 +378,10 @@ class ChromeAuthenticatorRequestDelegate
       bool request_is_for_google_com,
       std::optional<bool> preference);
 
+  // Configure the NSWindow* for the current RenderFrameHost. This is used by
+  // some macOS system APIs to center dialogs on the pertinent Chrome window.
+  void ConfigureNSWindow(device::FidoDiscoveryFactory* discovery_factory);
+
   // ConfigureICloudKeychain is called by `ConfigureDiscoveries` to configure
   // the `AuthenticatorRequestDialogController` with iCloud Keychain-related
   // values.
@@ -379,6 +406,11 @@ class ChromeAuthenticatorRequestDelegate
   // If true, show a more subtle UI unless the user has platform discoverable
   // credentials on the device.
   bool is_conditional_ = false;
+
+  // The number of credential types that have been requested to be displayed
+  // in the Ambient credential UI.
+  int ambient_credential_types_ =
+      static_cast<int>(blink::mojom::CredentialTypeFlags::kNone);
 
   // A list of credentials used to filter passkeys by ID. When non-empty,
   // non-matching passkeys will not be displayed during conditional mediation

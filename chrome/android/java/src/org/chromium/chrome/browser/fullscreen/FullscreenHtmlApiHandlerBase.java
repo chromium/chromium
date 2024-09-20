@@ -27,6 +27,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
@@ -36,6 +38,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -44,12 +47,11 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewUtils;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 /** Handles updating the UI based on requests to the HTML Fullscreen API. */
 public abstract class FullscreenHtmlApiHandlerBase
-        implements ActivityStateListener,
-                WindowFocusChangedListener,
-                FullscreenManager {
+        implements ActivityStateListener, WindowFocusChangedListener, FullscreenManager {
     private static final boolean DEBUG_LOGS = false;
 
     protected static final int MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS = 1;
@@ -489,17 +491,52 @@ public abstract class FullscreenHtmlApiHandlerBase
                             int oldTop,
                             int oldRight,
                             int oldBottom) {
-                        if ((bottom - top) <= (oldBottom - oldTop)
-                                || BuildInfo.getInstance().isAutomotive) {
-                            // At this point, browser controls are hidden. Show browser controls
-                            // only if it's permitted.
-                            TabBrowserControlsConstraintsHelper.update(
-                                    mTab, BrowserControlsState.SHOWN, true);
-                            contentView.removeOnLayoutChangeListener(this);
-                        }
+                        showBrowserControlsOnFullscreenExit(
+                                top, bottom, oldTop, oldBottom, contentView);
                     }
                 };
-            contentView.addOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
+        contentView.addOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
+    }
+
+    private void showBrowserControlsOnFullscreenExit(
+            int top, int bottom, int oldTop, int oldBottom, View contentView) {
+        boolean didLayoutGrow = (bottom - top) > (oldBottom - oldTop);
+        // Only show the browser controls if the layout is shrinking (or staying the same). However,
+        // this check should be bypassed on automotive.
+        if (didLayoutGrow && !BuildInfo.getInstance().isAutomotive) {
+            // If the dedicated flag is enabled, bypass this check and show the browser controls. A
+            // report should also be logged to help confirm whether odd layout values are related
+            // to multi-window mode / the edge-to-edge feature.
+            if (ChromeFeatureList.sForceBrowserControlsUponExitingFullscreen.isEnabled()) {
+                logBrowserControlsForcedUponFullscreenExit(top, bottom, oldTop, oldBottom);
+            } else {
+                return;
+            }
+        }
+
+        // At this point, browser controls are hidden. Show browser controls only if it's permitted.
+        TabBrowserControlsConstraintsHelper.update(mTab, BrowserControlsState.SHOWN, true);
+        if (mFullscreenOnLayoutChangeListener != null) {
+            contentView.removeOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
+        }
+    }
+
+    private void logBrowserControlsForcedUponFullscreenExit(
+            int top, int bottom, int oldTop, int oldBottom) {
+        String message =
+                String.format(
+                        Locale.ENGLISH,
+                        "This is not a crash. See"
+                                + " https://crbug.com/363349568.\n"
+                                + "top: %d, bottom: %d, oldTop: %d\n"
+                                + "oldBottom: %d, inMultiWindowMode: %b, isEdgeToEdgeEnabled: %b",
+                        top,
+                        bottom,
+                        oldTop,
+                        oldBottom,
+                        MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity),
+                        EdgeToEdgeUtils.isEnabled());
+        ChromePureJavaExceptionReporter.reportJavaException(new Throwable(message));
     }
 
     private boolean isAlreadyInFullscreenOrNavigationHidden(View contentView) {

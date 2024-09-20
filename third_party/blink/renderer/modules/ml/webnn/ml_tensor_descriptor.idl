@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://www.w3.org/TR/webnn/#api-mlbuffer
+// https://www.w3.org/TR/webnn/#api-mltensor
 
 typedef [EnforceRange] unsigned long long MLSize64;
 

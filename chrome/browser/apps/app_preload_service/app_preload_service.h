@@ -31,10 +31,7 @@ class PrefRegistrySyncable;
 
 namespace apps {
 
-class DeviceInfoManager;
 class PreloadAppDefinition;
-
-struct DeviceInfo;
 
 // Debugging feature to always run the App Preload Service on startup, even if
 // the Profile would not normally be eligible.
@@ -105,8 +102,7 @@ class AppPreloadService : public KeyedService {
   // service, processes the list and installs the app list. This call should
   // only be used the first time a profile is created on the device as this call
   // installs a set of default and OEM apps.
-  void StartAppInstallationForFirstLogin(base::TimeTicks start_time,
-                                         DeviceInfo device_info);
+  void StartAppInstallationForFirstLogin(base::TimeTicks start_time);
   // Processes the list of apps retrieved by the server connector.
   void OnGetAppsForFirstLoginCompleted(
       base::TimeTicks start_time,
@@ -125,7 +121,6 @@ class AppPreloadService : public KeyedService {
   const base::Value::Dict& GetStateManager() const;
 
   raw_ptr<Profile> profile_;
-  std::unique_ptr<DeviceInfoManager> device_info_manager_;
   // Set true when response is received, or if APS is complete and not running.
   bool data_ready_ = false;
   std::vector<PackageId> pin_apps_;

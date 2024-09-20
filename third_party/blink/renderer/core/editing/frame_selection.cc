@@ -537,7 +537,7 @@ bool FrameSelection::SelectionHasFocus() const {
   Element* const focused_element = GetDocument().FocusedElement()
                                        ? GetDocument().FocusedElement()
                                        : GetDocument().documentElement();
-  if (!focused_element || focused_element->IsScrollMarkerPseudoElement()) {
+  if (!focused_element || focused_element->IsScrollControlPseudoElement()) {
     return false;
   }
 

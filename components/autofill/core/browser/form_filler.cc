@@ -154,6 +154,7 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
   switch (filling_product) {
     case FillingProduct::kAddress:
     case FillingProduct::kCreditCard:
+    case FillingProduct::kPlusAddresses:
       return true;
     case FillingProduct::kNone:
     case FillingProduct::kMerchantPromoCode:
@@ -161,7 +162,6 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
-    case FillingProduct::kPlusAddresses:
     case FillingProduct::kStandaloneCvc:
     case FillingProduct::kPredictionImprovements:
       return false;
@@ -216,10 +216,9 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
   // is empty and its initial value (= cached value) was empty as well. A
   // similar check is done in ForEachMatchingFormFieldCommon(), which
   // frequently has false negatives.
-  // TODO(crbug.com/40227496): 'autofill_field.value' should be the initial
-  // value of the field. `form_field.value` should be the current value.
   if ((field.properties_mask() & kUserTyped) &&
-      (!field.value().empty() || !autofill_field.value().empty()) &&
+      !(field.value().empty() &&
+        autofill_field.value(ValueSemantics::kInitial).empty()) &&
       !is_trigger_field) {
     return FieldFillingSkipReason::kUserFilledFields;
   }
@@ -285,10 +284,8 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
   // that this check happens after the `kFieldTypeUnrelated` check.
 
   // Don't fill meaningfully pre-filled fields but overwrite placeholders.
-  // TODO(crbug.com/40227496): 'autofill_field.value' should be the initial
-  // value of the field.
   if (!is_trigger_field && !autofill_field.IsSelectOrSelectListElement() &&
-      !autofill_field.value().empty() &&
+      !autofill_field.value(ValueSemantics::kInitial).empty() &&
       (IsNotAPlaceholder(autofill_field) ||
        IsMeaningfullyPreFilled(autofill_field))) {
     return FieldFillingSkipReason::kValuePrefilled;

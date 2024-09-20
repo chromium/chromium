@@ -52,6 +52,7 @@ source_set("unit_test") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser",
     "//chrome/browser/autofill",
+    "//chrome/browser/password_manager/android/access_loss:test_support",
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser",

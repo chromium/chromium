@@ -70,12 +70,12 @@ void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
   if (!webrtc::ParseCandidate(candidate_.Utf8(), &c, nullptr, true))
     return;
 
-  foundation_ = String::FromUTF8(c.foundation().data());
+  foundation_ = String::FromUTF8(c.foundation());
   component_ = CandidateComponentToString(c.component());
   priority_ = c.priority();
-  protocol_ = String::FromUTF8(c.protocol().data());
+  protocol_ = String::FromUTF8(c.protocol());
   if (!c.address().IsNil()) {
-    address_ = String::FromUTF8(c.address().HostAsURIString().data());
+    address_ = String::FromUTF8(c.address().HostAsURIString());
     port_ = c.address().port();
   }
   // The `type_name()` property returns a name as specified in:
@@ -87,11 +87,10 @@ void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
          type == "relay");
   type_ = String(type.data(), type.size());
   if (!c.tcptype().empty()) {
-    tcp_type_ = String::FromUTF8(c.tcptype().data());
+    tcp_type_ = String::FromUTF8(c.tcptype());
   }
   if (!c.related_address().IsNil()) {
-    related_address_ =
-        String::FromUTF8(c.related_address().HostAsURIString().data());
+    related_address_ = String::FromUTF8(c.related_address().HostAsURIString());
     related_port_ = c.related_address().port();
   }
   // url_ is set only when the candidate was gathered locally.
@@ -100,7 +99,7 @@ void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
   }
 
   if (use_username_from_candidate)
-    username_fragment_ = String::FromUTF8(c.username().data());
+    username_fragment_ = String::FromUTF8(c.username());
 }
 
 }  // namespace blink

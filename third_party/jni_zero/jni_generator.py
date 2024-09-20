@@ -292,12 +292,9 @@ class JniObject:
       elif self.options.enable_jni_multiplexing:
         return f'Java_{method_name}'
       else:
-        return 'Java_%s_%s' % (common.escape_class_name(
-            self.final_gen_jni_class.full_name_with_slashes), method_name)
+        return 'Java_%s_%s' % (self.final_gen_jni_class.to_cpp(), method_name)
 
-    escaped_name = common.escape_class_name(
-        self.java_class.full_name_with_slashes)
-    return f'Java_{escaped_name}_native{native.cpp_name}'
+    return f'Java_{self.java_class.to_cpp()}_native{native.cpp_name}'
 
 
 def _CollectReferencedClasses(jni_obj):

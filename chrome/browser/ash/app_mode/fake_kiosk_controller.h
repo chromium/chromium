@@ -9,11 +9,9 @@
 #include <vector>
 
 #include "ash/public/cpp/login_accelerators.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
-#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "content/public/browser/web_contents.h"
 
 namespace ash {
@@ -45,12 +43,6 @@ class FakeKioskController : public KioskController {
   kiosk_vision::TelemetryProcessor* GetKioskVisionTelemetryProcessor() override;
   kiosk_vision::InternalsPageProcessor* GetKioskVisionInternalsPageProcessor()
       override;
-
-  void SetKioskVisionTelemetryProcessor(
-      kiosk_vision::TelemetryProcessor* telemetry_processor);
-
- private:
-  raw_ptr<kiosk_vision::TelemetryProcessor> telemetry_processor_;
 };
 
 }  // namespace ash

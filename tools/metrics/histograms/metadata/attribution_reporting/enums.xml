@@ -230,6 +230,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:NavigationDataHostStatus) -->
 
+<!-- LINT.IfChange(ConversionNavigationSourceScopesLimitOutcome) -->
+
+<enum name="ConversionNavigationSourceScopesLimitOutcome">
+  <int value="0" label="No scopes allowed"/>
+  <int value="1" label="No scopes dropped"/>
+  <int value="2" label="Scopes allowed"/>
+  <int value="3" label="Scopes dropped"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:NavigationSourceScopesLimitOutcome) -->
+
 <!-- LINT.IfChange(ConversionNavigationUnexpectedRegistration) -->
 
 <enum name="ConversionNavigationUnexpectedRegistration">

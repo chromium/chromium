@@ -54,10 +54,7 @@ component("shell_dialogs") {
       "shell_dialog_linux.cc",
       "shell_dialog_linux.h",
     ]
-    deps += [
-      "//components/dbus/thread_linux",
-      "//ui/linux:linux_ui",
-    ]
+    deps += [ "//ui/linux:linux_ui" ]
     if (use_dbus) {
       defines += [ "USE_DBUS" ]
       sources += [
@@ -65,6 +62,7 @@ component("shell_dialogs") {
         "select_file_dialog_linux_portal.h",
       ]
       deps += [
+        "//components/dbus/thread_linux",
         "//dbus",
         "//ui/views",
       ]

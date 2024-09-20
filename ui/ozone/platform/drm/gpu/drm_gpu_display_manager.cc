@@ -542,8 +542,18 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
 
         // Populate |out_requests| with a new request which holds an updated
         // DisplayMode that precisely matches the found drm mode.
-        const std::unique_ptr<display::DisplayMode> out_mode =
+        std::unique_ptr<display::DisplayMode> out_mode =
             CreateDisplayMode(*found_mode, display->vsync_rate_min_from_edid());
+
+        // For a tiled display, Ozone must always expose the tiled-composited
+        // mode size, rather than the tiled mode size from the tiled connector.
+        const std::optional<TileProperty>& tile_property =
+            display->GetTileProperty();
+        if (tile_property.has_value() &&
+            IsTileMode(out_mode->size(), *tile_property)) {
+          out_mode =
+              out_mode->CopyWithSize(GetTotalTileDisplaySize(*tile_property));
+        }
         out_requests.emplace_back(request.id, request.origin, out_mode.get(),
                                   request.enable_vrr);
       } else {
@@ -974,6 +984,19 @@ std::unique_ptr<drmModeModeInfo> DrmGpuDisplayManager::FindModeForDisplay(
     bool is_seamless) {
   std::vector<const drmModeModeInfo*> matching_modes =
       FindMatchingModes(request_mode, display.modes());
+
+  // If there's no matching mode for tiled display, that may be due to
+  // |request_mode| being tile-composited, while individual display.modes() are
+  // drmModeModeInfo, which have individual tile sized modes. Try to find
+  // matching modes again with tile sized request mode.
+  std::optional<TileProperty> tile_property = display.GetTileProperty();
+  if (matching_modes.empty() && tile_property.has_value()) {
+    if (request_mode.size() == GetTotalTileDisplaySize(*tile_property)) {
+      matching_modes = FindMatchingModes(
+          *request_mode.CopyWithSize(tile_property->tile_size),
+          display.modes());
+    }
+  }
 
   // Filter the matched modes by testing for seamless configurability if needed.
   HardwareDisplayController* controller = screen_manager_->GetDisplayController(

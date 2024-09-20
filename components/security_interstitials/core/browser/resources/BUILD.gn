@@ -11,6 +11,7 @@ group("bundle_js") {
   public_deps = [
     ":bundle_js_interstitial_large",
     ":bundle_js_interstitial_webview_quiet",
+    ":bundle_js_interstitial_webview_supervised_user",
   ]
 }
 
@@ -19,8 +20,8 @@ shared_interstitials_path =
                 root_build_dir)
 
 bundle_js("bundle_js_interstitial_large") {
-  # Using a dummy value for`host` which is ignored anyway since the code being
-  # bundled below is not served from any host.
+  # Using a placeholder value for `host`. The value is ignored since the bundled
+  # code is not served from any host.
   host = "_ignored_"
   input = rebase_path(".", root_build_dir)
   out_folder = "${target_gen_dir}/interstitial_large"
@@ -34,12 +35,27 @@ bundle_js("bundle_js_interstitial_large") {
 }
 
 bundle_js("bundle_js_interstitial_webview_quiet") {
-  # Using a dummy value for`host` which is ignored anyway since the code being
-  # bundled below is not served from any host.
+  # Using a placeholder value for `host`. The value is ignored since the bundled
+  # code is not served from any host.
   host = "_ignored_"
   input = rebase_path(".", root_build_dir)
   out_folder = "${target_gen_dir}/interstitial_webview_quiet"
   js_module_in_files = [ "interstitial_webview_quiet.js" ]
+
+  external_paths = [ "chrome://interstitials/|$shared_interstitials_path" ]
+  deps = [
+    "../../common/resources:preprocess",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}
+
+bundle_js("bundle_js_interstitial_webview_supervised_user") {
+  # Using a placeholder value for `host`. The value is ignored since the bundled
+  # code is not served from any host.
+  host = "_ignored_"
+  input = rebase_path(".", root_build_dir)
+  out_folder = "${target_gen_dir}/interstitial_webview_supervised_user"
+  js_module_in_files = [ "interstitial_webview_supervised_user.js" ]
 
   external_paths = [ "chrome://interstitials/|$shared_interstitials_path" ]
   deps = [

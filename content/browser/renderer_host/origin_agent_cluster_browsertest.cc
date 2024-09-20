@@ -44,7 +44,6 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
   OriginAgentClusterBrowserTest()
       : OriginAgentClusterBrowserTest(
             /* origin_cluster_default_enabled */ false,
-            /* origin_cluster_absent_warning */ false,
             /* secure_context */ true) {}
   ~OriginAgentClusterBrowserTest() override = default;
 
@@ -59,11 +58,9 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
   enum OriginAgentClusterState { kUnset, kSetTrue, kSetFalse, kMalformed };
 
   OriginAgentClusterBrowserTest(bool origin_cluster_default_enabled,
-                                bool origin_cluster_absent_warning,
                                 bool secure_context)
       : server_(net::EmbeddedTestServer::TYPE_HTTPS),
         origin_cluster_default_enabled_(origin_cluster_default_enabled),
-        origin_cluster_absent_warning_(origin_cluster_absent_warning),
         secure_context_(secure_context) {
     server_.AddDefaultHandlers(GetTestDataFilePath());
 
@@ -72,8 +69,6 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
     std::vector<base::test::FeatureRef> enabled, disabled;
     (origin_cluster_default_enabled_ ? enabled : disabled)
         .push_back(blink::features::kOriginAgentClusterDefaultEnabled);
-    (origin_cluster_absent_warning_ ? enabled : disabled)
-        .push_back(blink::features::kOriginAgentClusterDefaultWarning);
     // TODO(https://crbug.com/40259221): update this test to be parameterized on
     // kOriginKeyedProcessesByDefault, and then make sure all the tests have
     // correct expectations both with and without. This will assist in removing
@@ -198,7 +193,6 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
   std::unique_ptr<MockContentBrowserClient> browser_client_;
 
   const bool origin_cluster_default_enabled_;
-  const bool origin_cluster_absent_warning_;
   const bool secure_context_;
   base::test::ScopedFeatureList features_;
 };
@@ -211,22 +205,8 @@ class OriginAgentClusterEnabledBrowserTest
   OriginAgentClusterEnabledBrowserTest()
       : OriginAgentClusterBrowserTest(
             /* origin_cluster_default_enabled */ true,
-            /* origin_cluster_absent_warning */ false,
             /* secure_context */ true) {}
   ~OriginAgentClusterEnabledBrowserTest() override = default;
-};
-
-// Test fixture wih the deprecation warning enabled.
-// (blink::features::kOriginAgentClusterDefaultWarning)
-class OriginAgentClusterWarningBrowserTest
-    : public OriginAgentClusterBrowserTest {
- public:
-  OriginAgentClusterWarningBrowserTest()
-      : OriginAgentClusterBrowserTest(
-            /* origin_cluster_default_enabled */ false,
-            /* origin_cluster_absent_warning */ true,
-            /* secure_context */ true) {}
-  ~OriginAgentClusterWarningBrowserTest() override = default;
 };
 
 // Test fixture wih the default behaviour change enabled, but using an insecure
@@ -237,7 +217,6 @@ class OriginAgentClusterInsecureEnabledBrowserTest
   OriginAgentClusterInsecureEnabledBrowserTest()
       : OriginAgentClusterBrowserTest(
             /* origin_cluster_default_enabled */ true,
-            /* origin_cluster_absent_warning */ false,
             /* secure_context */ false) {}
   ~OriginAgentClusterInsecureEnabledBrowserTest() override = default;
 };
@@ -385,29 +364,6 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
                        WarningMessage_Malformed) {
   EXPECT_FALSE(
-      CanDocumentDomainMessage("a.domain.test", "domain.test", kMalformed));
-}
-
-IN_PROC_BROWSER_TEST_F(OriginAgentClusterWarningBrowserTest,
-                       WarningMessage_Default) {
-  EXPECT_TRUE(CanDocumentDomainMessage("a.domain.test", "domain.test", kUnset));
-}
-
-IN_PROC_BROWSER_TEST_F(OriginAgentClusterWarningBrowserTest,
-                       WarningMessage_Enabled) {
-  EXPECT_FALSE(
-      CanDocumentDomainMessage("a.domain.test", "domain.test", kSetTrue));
-}
-
-IN_PROC_BROWSER_TEST_F(OriginAgentClusterWarningBrowserTest,
-                       WarningMessage_Disabled) {
-  EXPECT_TRUE(
-      CanDocumentDomainMessage("a.domain.test", "domain.test", kSetFalse));
-}
-
-IN_PROC_BROWSER_TEST_F(OriginAgentClusterWarningBrowserTest,
-                       WarningMessage_Malformed) {
-  EXPECT_TRUE(
       CanDocumentDomainMessage("a.domain.test", "domain.test", kMalformed));
 }
 

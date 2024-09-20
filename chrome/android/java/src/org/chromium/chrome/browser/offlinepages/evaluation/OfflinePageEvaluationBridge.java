@@ -213,7 +213,7 @@ public class OfflinePageEvaluationBridge {
                         + message
                         + System.getProperty("line.separator");
         Log.d(TAG, logString);
-        sSequencedTaskRunner.postTask(
+        sSequencedTaskRunner.execute(
                 () -> {
                     try {
                         mLogOutput.write(logString);

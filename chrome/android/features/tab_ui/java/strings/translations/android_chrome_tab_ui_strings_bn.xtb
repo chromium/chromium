@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">রেটিং</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি ট্যাব যোগ করা হয়েছে, <ph name="ANY_CHANGED" />টি পরিবর্তন করা হয়েছে}one{<ph name="MANY_ADDED" />টি ট্যাব যোগ করা হয়েছে, <ph name="ANY_CHANGED" />টি পরিবর্তন করা হয়েছে}other{<ph name="MANY_ADDED" />টি ট্যাব যোগ করা হয়েছে, <ph name="ANY_CHANGED" />টি পরিবর্তন করা হয়েছে}}</translation>
 <translation id="3291470810748040983">খুলে রাখা কোনও ট্যাবে জিনিসের দাম কমলে আপনি তার বিজ্ঞপ্তি পাবেন</translation>
-<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপের জন্য ট্যাব গ্রুপ অ্যাকশন মেনু খুলুন</translation>
 <translation id="3328308545011660196">সাজেশন: মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
 <translation id="3547352561153509682"><ph name="USER_EMAIL" /> ব্যবহার করে সাইন-ইন করা হয়েছে এমন সবকটি ডিভাইস থেকে গ্রুপ মুছে ফেলা হবে</translation>
 <translation id="3613492231657284463">অ্যাক্টিভ না থাকা ট্যাবের ডায়ালগ লুকান</translation>
@@ -80,7 +79,6 @@
 <translation id="4460014764210899310">আলাদা করুন</translation>
 <translation id="4590027107044272416">আপনি এখানে একটি নতুন ট্যাব খুলতে পারবেন</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{১টি ইনঅ্যাক্টিভ ট্যাব বন্ধ করবেন?}one{<ph name="TAB_COUNT_MANY" />টি ইনঅ্যাক্টিভ ট্যাব বন্ধ করবেন?}other{<ph name="TAB_COUNT_MANY" />টি ইনঅ্যাক্টিভ ট্যাব বন্ধ করবেন?}}</translation>
-<translation id="4648718555153979859">আপনার ট্যাবগুলি এখানে একসাথে গ্রুপ করা আছে</translation>
 <translation id="4686942373615810936">এইমাত্র তৈরি করা হয়েছে</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{১ দিন পরে বন্ধ হয়ে যাবে}one{<ph name="DAY_COUNT_MANY" /> দিন পরে বন্ধ হয়ে যাবে}other{<ph name="DAY_COUNT_MANY" /> দিন পরে বন্ধ হয়ে যাবে}}</translation>
 <translation id="4777866634702576038">ট্যাব গ্রুপ মুছবেন?</translation>
@@ -136,6 +134,7 @@
 <translation id="6694634756612002311">শেয়ার করা ম্যানেজ করুন</translation>
 <translation id="6744956528665271406">গ্রুপের রঙ এডিট করুন</translation>
 <translation id="6856809498882026482">একাধিক ট্যাব একসাথে বেছে নেওয়ার মোড লুকান</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ট্যাব শেয়ার করুন}one{ট্যাব শেয়ার করুন}other{ট্যাব শেয়ার করুন}}</translation>
 <translation id="7129458170538955174">অর্ধেক খোলা স্টোরের বিষয়ে তথ্য</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_ONE" />টি ট্যাব আছে।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
@@ -171,6 +170,7 @@
 <translation id="8205266828577616993">ট্যাব উপরে সরান</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8338427544764842461">আপনার ট্যাব গ্রুপ এখানে সেভ করা হয়েছে এবং আপনার সবকটি সাইন-ইন করা ডিভাইসে আপডেট হয়ে যায়</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_ONE" />টি ট্যাব বন্ধ আছে}one{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}other{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}}</translation>
 <translation id="8398929769197326728">নতুন ফোল্ডার - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">সেটিংস</translation>

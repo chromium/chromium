@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/form_filler.h"
-#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/common/is_required.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -123,8 +123,8 @@ bool AreCollapsible(const TypingFieldLogEvent& event1,
 // Events recorded after local heuristic prediction happened.
 struct HeuristicPredictionFieldLogEvent {
   FieldType field_type = internal::IsRequired();
-  PatternSource pattern_source = internal::IsRequired();
-  bool is_active_pattern_source = internal::IsRequired();
+  HeuristicSource heuristic_source = internal::IsRequired();
+  bool is_active_heuristic_source = internal::IsRequired();
   size_t rank_in_field_signature_group = internal::IsRequired();
 };
 

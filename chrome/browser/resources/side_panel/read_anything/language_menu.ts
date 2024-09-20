@@ -282,6 +282,13 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       case VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE:
         return {isError: false, text: 'readingModeLanguageMenuDownloading'};
       case VoiceClientSideStatusCode.ERROR_INSTALLING:
+        // Don't show an error if there are available on-device voices for this
+        // language.
+        if (this.availableVoices.some(
+                v => convertLangOrLocaleForVoicePackManager(v.lang) ===
+                    voicePackLanguage)) {
+          return {isError: false};
+        }
         // There's not a specific error code from the language pack installer
         // for internet connectivity, but if there's an installation error
         // and we detect we're offline, we can assume that the install error

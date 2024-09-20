@@ -80,7 +80,7 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   MOCK_METHOD4(
       CopyFromOutputBuffer,
       MediaCodecResult(int index, size_t offset, void* dst, size_t num));
-  MOCK_METHOD0(GetName, std::string());
+  std::string GetName() override;
   MOCK_METHOD1(SetSurface,
                bool(const base::android::JavaRef<jobject>& surface));
   MOCK_METHOD2(SetVideoBitrate, void(int bps, int frame_rate));
@@ -96,12 +96,15 @@ class MockMediaCodecBridge : public MediaCodecBridge,
 
   static std::unique_ptr<MediaCodecBridge> CreateVideoDecoder(
       const VideoCodecConfig& config);
+  static std::unique_ptr<MockMediaCodecBridge> CreateMockVideoDecoder(
+      const VideoCodecConfig& config);
 
  private:
   // Is the codec in the drained state?
   bool is_drained_ = true;
 
   CodecType codec_type_ = CodecType::kAny;
+  std::string name_;
 };
 
 }  // namespace media

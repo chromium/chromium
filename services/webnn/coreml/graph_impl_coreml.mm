@@ -42,6 +42,7 @@
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/queueable_resource_state_base.h"
 #include "services/webnn/resource_task.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_switches.h"
 
@@ -153,15 +154,15 @@ API_AVAILABLE(macos(12.3))
 base::flat_map<std::string,
                scoped_refptr<QueueableResourceState<BufferContent>>>
 ToNamedBufferStateMap(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_buffers) {
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_tensors) {
   base::flat_map<std::string,
                  scoped_refptr<QueueableResourceState<BufferContent>>>
       buffer_states;
-  buffer_states.reserve(named_buffers.size());
+  buffer_states.reserve(named_tensors.size());
 
-  for (const auto& [name, buffer] : named_buffers) {
+  for (const auto& [name, tensor] : named_tensors) {
     buffer_states.emplace(
-        name, static_cast<TensorImplCoreml*>(buffer)->GetBufferState());
+        name, static_cast<TensorImplCoreml*>(tensor)->GetBufferState());
   }
 
   return buffer_states;
@@ -174,6 +175,8 @@ void GraphImplCoreml::CreateAndBuild(
     ContextImplCoreml* context,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     mojom::CreateContextOptionsPtr context_options,
     ContextProperties context_properties,
     WebNNContextImpl::CreateGraphImplCallback callback) {
@@ -187,7 +190,8 @@ void GraphImplCoreml::CreateAndBuild(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(&GraphImplCoreml::CreateAndBuildOnBackgroundThread,
                      std::move(graph_info), std::move(compute_resource_info),
-                     std::move(context_options), std::move(context_properties),
+                     std::move(constant_operands), std::move(context_options),
+                     std::move(context_properties),
                      std::move(wrapped_callback)));
 }
 
@@ -195,6 +199,8 @@ void GraphImplCoreml::CreateAndBuild(
 void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     mojom::CreateContextOptionsPtr context_options,
     ContextProperties context_properties,
     base::OnceCallback<void(
@@ -210,9 +216,9 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
   // Generate .mlpackage.
   ASSIGN_OR_RETURN(
       std::unique_ptr<GraphBuilderCoreml::Result> build_graph_result,
-      GraphBuilderCoreml::CreateAndBuild(*graph_info.get(),
-                                         std::move(context_properties),
-                                         model_file_dir.GetPath()),
+      GraphBuilderCoreml::CreateAndBuild(
+          *graph_info.get(), std::move(context_properties), constant_operands,
+          model_file_dir.GetPath()),
       [&](mojom::ErrorPtr error) {
         std::move(callback).Run(base::unexpected(std::move(error)));
         return;
@@ -522,7 +528,7 @@ void GraphImplCoreml::DispatchImpl(
                  scoped_refptr<QueueableResourceState<BufferContent>>>
       named_output_buffer_states = ToNamedBufferStateMap(named_outputs);
 
-  // Input buffers will be read from while the graph is executing, so lock them
+  // Input tensors will be read from while the graph is executing, so lock them
   // them as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources;
   shared_resources.reserve(named_inputs.size());
@@ -530,7 +536,7 @@ void GraphImplCoreml::DispatchImpl(
       named_input_buffer_states, std::back_inserter(shared_resources),
       [](const auto& name_and_state) { return name_and_state.second; });
 
-  // Exclusively reserve all output buffers, which will be written to.
+  // Exclusively reserve all output tensors, which will be written to.
   std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources;
   exclusive_resources.reserve(named_outputs.size());
   base::ranges::transform(

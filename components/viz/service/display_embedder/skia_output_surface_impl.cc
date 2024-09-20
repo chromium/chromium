@@ -1474,9 +1474,7 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     const gfx::ColorSpace& yuv_color_space) {
 #if BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == gpu::GrContextType::kVulkan) {
-    bool external_sampling =
-        si_format.IsLegacyMultiplanar() || si_format.PrefersExternalSampler();
-    if (!external_sampling && !ycbcr_info) {
+    if (!si_format.PrefersExternalSampler() && !ycbcr_info) {
       // For per-plane sampling, can just return the VkFormat for the plane if
       // VulkanYcbCrInfo isn't present.
       return GrBackendFormats::MakeVk(gpu::ToVkFormat(si_format, plane_index));
@@ -1698,5 +1696,16 @@ void SkiaOutputSurfaceImpl::CleanupImageProcessor() {
                  /*need_framebuffer=*/false);
 }
 #endif
+
+void SkiaOutputSurfaceImpl::ReadbackForTesting(
+    CopyOutputRequest::CopyOutputRequestCallback result_callback) {
+  auto callback = base::BindOnce(
+      &SkiaOutputSurfaceImplOnGpu::ReadbackForTesting,
+      base::Unretained(impl_on_gpu_.get()), std::move(result_callback));
+  EnqueueGpuTask(std::move(callback), std::move(resource_sync_tokens_),
+                 /*make_current=*/true,
+                 /*need_framebuffer=*/!dependency_->IsOffscreen());
+  FlushGpuTasks(SyncMode::kNoWait);
+}
 
 }  // namespace viz

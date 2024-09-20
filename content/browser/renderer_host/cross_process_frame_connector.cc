@@ -251,9 +251,10 @@ bool CrossProcessFrameConnector::TransformPointToCoordSpaceForView(
   // ancestor of the other in the RenderWidgetHostView tree (e.g. they could
   // be siblings). To account for this, the point is first transformed into the
   // root coordinate space and then the root is asked to perform the conversion.
-  if (!root_view->TransformPointToLocalCoordSpace(point, local_surface_id,
-                                                  transformed_point))
+  if (!root_view->TransformPointToLocalCoordSpace(
+          point, local_surface_id.frame_sink_id(), transformed_point)) {
     return false;
+  }
 
   if (target_view == root_view)
     return true;
@@ -408,6 +409,12 @@ void CrossProcessFrameConnector::UpdateViewportIntersectionInternal(
     bool include_visual_properties) {
   intersection_state_ = intersection_state;
   if (view_) {
+    CHECK(current_child_frame_host());
+    current_child_frame_host()
+        ->delegate()
+        ->OnRemoteSubframeViewportIntersectionStateChanged(
+            current_child_frame_host(), intersection_state);
+
     // Only ship over the visual properties if they were included in the update
     // viewport intersection message.
     view_->UpdateViewportIntersection(

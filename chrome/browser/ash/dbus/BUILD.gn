@@ -92,7 +92,6 @@ static_library("dbus") {
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/profiles:profile",
     "//chrome/common:chrome_features",
@@ -186,6 +185,8 @@ static_library("dbus") {
     "//url",
   ]
 
+  data_deps = [ ":dbus_service_files" ]
+
   if (is_cfm) {
     deps += [
       "//chromeos/ash/components/chromebox_for_meetings",
@@ -254,7 +255,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/test:test_support",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/test:test_support",
     "//chrome/test:test_support",

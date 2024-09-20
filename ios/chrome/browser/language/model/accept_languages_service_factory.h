@@ -16,11 +16,14 @@ class AcceptLanguagesService;
 }
 
 // AcceptLanguagesServiceFactory is a way to associate an
-// AcceptLanguagesService instance to a BrowserState.
+// AcceptLanguagesService instance to a Profile.
 class AcceptLanguagesServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static language::AcceptLanguagesService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static language::AcceptLanguagesService* GetForProfile(ProfileIOS* profile);
   static AcceptLanguagesServiceFactory* GetInstance();
 
   AcceptLanguagesServiceFactory(const AcceptLanguagesServiceFactory&) = delete;

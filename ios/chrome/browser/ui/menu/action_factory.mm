@@ -74,7 +74,7 @@
                                       type:MenuActionType::ShowFullURL
                                      block:block];
   action.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_SHARE_FULL_URL_BUTTON_ACCESSIBILITY_LABEL);
+      l10n_util::GetNSString(IDS_IOS_SHOW_FULL_URL_BUTTON_ACCESSIBILITY_LABEL);
   action.attributes = UIMenuElementAttributesKeepsMenuPresented;
   action.subtitle = ios::provider::StyledContextMenuStringForString(URLString);
   return action;
@@ -732,6 +732,17 @@
   return [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_DRIVE_ADD_ACCOUNT)
                          image:nil
                           type:MenuActionType::AddDriveAccount
+                         block:block];
+}
+
+- (UIAction*)actionToManageLinkInNewTabWithBlock:(ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kExternalLinkSymbol, kSymbolActionPointSize);
+
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_CONTEXT_OPENMANAGEINNEWTAB)
+                         image:image
+                          type:MenuActionType::ManageInNewTab
                          block:block];
 }
 

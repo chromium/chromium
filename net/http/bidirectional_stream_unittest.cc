@@ -19,11 +19,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
@@ -409,6 +411,11 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
       : default_url_(kDefaultUrl),
         host_port_pair_(HostPortPair::FromURL(default_url_)),
         ssl_data_(SSLSocketDataProvider(ASYNC, OK)) {
+    // Explicitly disable HappyEyeballsV3 because it doesn't support
+    // bidirectional streams.
+    // TODO(crbug.com/346835898): Support bidirectional streams in
+    // HappyEyeballsV3.
+    feature_list_.InitAndDisableFeature(features::kHappyEyeballsV3);
     ssl_data_.next_proto = kProtoHTTP2;
     ssl_data_.ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
@@ -458,6 +465,7 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
  private:
   SSLSocketDataProvider ssl_data_;
   base::WeakPtr<SpdySession> session_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BidirectionalStreamTest, CreateInsecureStream) {

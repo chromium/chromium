@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -36,6 +35,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
@@ -276,8 +276,7 @@ class SelfHostedKioskEnterpriseTest : public KioskEnterpriseTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    private_store_.InitAsPrivateStore(&test_server_,
-                                      std::string(kPrivateStoreUpdate));
+    private_store_.InitAsPrivateStore(&test_server_, kPrivateStoreUpdate);
     KioskEnterpriseTest::SetUpCommandLine(command_line);
   }
 
@@ -293,12 +292,12 @@ class SelfHostedKioskEnterpriseTest : public KioskEnterpriseTest {
                               test_server_.GetURL(kPrivateStoreUpdate).spec());
   }
 
-  static constexpr std::string_view kPrivateStoreUpdate =
-      "/private_store_update";
-
   FakeCWS private_store_;
 
  private:
+  static constexpr std::string_view kPrivateStoreUpdate =
+      "/private_store_update";
+
   net::EmbeddedTestServer test_server_;
   EmbeddedTestServerSetupMixin test_server_setup_mixin_{&mixin_host_,
                                                         &test_server_};

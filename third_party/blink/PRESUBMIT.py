@@ -75,6 +75,7 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
         'services/network/public/mojom/url_response_head',
         'third_party/blink/public/mojom/blob/blob',
         'third_party/blink/public/mojom/blob/serialized_blob',
+        'third_party/blink/public/mojom/browser_interface_broker',
         'third_party/blink/public/mojom/fetch/fetch_api_request',
         'third_party/blink/public/mojom/loader/code_cache',
         'third_party/blink/public/mojom/loader/fetch_later',

@@ -442,7 +442,8 @@ class SavedDeskTest : public OverviewTestBase,
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kDesksTemplates,
-         features::kDeskBarWindowOcclusionOptimization},
+         features::kDeskBarWindowOcclusionOptimization,
+         chromeos::features::kOverviewSessionInitOptimizations},
         {});
     OverviewTestBase::SetUp();
 
@@ -523,15 +524,16 @@ TEST_F(SavedDeskTest, LibraryButtonsVisibilityClamshell) {
           ASSERT_TRUE(desks_bar_view);
           const DeskIconButton* library_button =
               desks_bar_view->library_button();
-          ASSERT_TRUE(library_button);
-          EXPECT_EQ(zero_state_shown, library_button->GetVisible() &&
+          EXPECT_EQ(zero_state_shown, library_button &&
+                                          library_button->GetVisible() &&
                                           library_button->state() ==
                                               DeskIconButton::State::kZero);
           EXPECT_EQ(
               expanded_state_shown,
-              library_button->GetVisible() &&
+              library_button && library_button->GetVisible() &&
                   library_button->state() == DeskIconButton::State::kExpanded);
-          EXPECT_EQ(active_state_shown, library_button->GetVisible() &&
+          EXPECT_EQ(active_state_shown, library_button &&
+                                            library_button->GetVisible() &&
                                             library_button->state() ==
                                                 DeskIconButton::State::kActive);
         }
@@ -1877,7 +1879,7 @@ TEST_F(SavedDeskTest, EnteringInTabletMode) {
   ToggleOverview();
   aura::Window* root = Shell::GetPrimaryRootWindow();
   auto* library_button = GetLibraryButtonForRoot(root);
-  EXPECT_FALSE(library_button->GetVisible());
+  EXPECT_FALSE(library_button && library_button->GetVisible());
   EXPECT_FALSE(GetSaveDeskButtonContainerForRoot(root));
 }
 
@@ -1900,6 +1902,7 @@ TEST_F(SavedDeskTest, ClamshellToTabletModeOld) {
   auto* desks_bar_view = GetDesksBarViewForRoot(root);
   ASSERT_TRUE(desks_bar_view);
   auto* library_button = GetLibraryButtonForRoot(root);
+  ASSERT_TRUE(library_button);
   EXPECT_TRUE(library_button->GetVisible());
   EXPECT_EQ(DeskIconButton::State::kZero, library_button->state());
   EXPECT_TRUE(
@@ -1932,6 +1935,7 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
   // Tests that on entering overview, the library button is visible.
   ToggleOverview();
   auto* library_button = GetLibraryButtonForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(library_button);
   EXPECT_TRUE(library_button->GetVisible());
 
   // Tests that after opening the context menu, there is a save desk as template
@@ -1982,6 +1986,7 @@ TEST_F(SavedDeskTest, ShowingSavedDeskLibraryToTabletMode) {
   auto* desks_bar_view = GetDesksBarViewForRoot(root_window);
   ASSERT_TRUE(desks_bar_view);
   auto* library_button = GetLibraryButtonForRoot(root_window);
+  ASSERT_TRUE(library_button);
   EXPECT_TRUE(library_button->GetVisible());
   EXPECT_EQ(DeskIconButton::State::kActive, library_button->state());
 
@@ -2064,8 +2069,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   ToggleOverview();
 
   auto* button = GetLibraryButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(button);
-  ASSERT_FALSE(button->GetVisible());
+  ASSERT_FALSE(button && button->GetVisible());
 
   // Test that we do not focus the templates button.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -2090,6 +2094,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(desks_bar_view);
   auto* library_button = desks_bar_view->library_button();
+  ASSERT_TRUE(library_button);
   EXPECT_TRUE(library_button->GetVisible());
   EXPECT_EQ(library_button->state(), DeskIconButton::State::kActive);
 }
@@ -2118,6 +2123,7 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
             desks_bar_view->new_desk_button()->state());
   // `OpenOverviewAndShowSavedDeskGrid` clicks on the library button, so it
   // should be active.
+  ASSERT_TRUE(desks_bar_view->library_button());
   EXPECT_EQ(DeskIconButton::State::kActive,
             desks_bar_view->library_button()->state());
 
@@ -2437,6 +2443,7 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonFocusColor) {
 
   const DeskIconButton* button = desks_bar_view->library_button();
   ASSERT_TRUE(button);
+  ASSERT_TRUE(button->GetVisible());
 
   // The library button starts of neither focused nor active.
   EXPECT_EQ(DeskIconButton::State::kExpanded, button->state());

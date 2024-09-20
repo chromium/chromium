@@ -65,6 +65,7 @@ interface CoreProbes {
   class ScriptState;
   class SpeculationCandidate;
   class XMLHttpRequest;
+  using PropertyName = std::variant<const char*, String>;
 
   void DidClearDocumentOfWindowObject([Keep] LocalFrame*);
   void DidCreateMainWorldContext([Keep] LocalFrame*);
@@ -103,7 +104,7 @@ interface CoreProbes {
   void WillSendNavigationRequest(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const KURL&, const AtomicString& http_method, EncodedFormData*);
   void MarkResourceAsCached(LocalFrame*, DocumentLoader*, uint64_t identifier);
   void DidReceiveResourceResponse(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const ResourceResponse&, const Resource*);
-  void DidReceiveData(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const char* data, uint64_t data_length);
+  void DidReceiveData(CoreProbeSink*, uint64_t identifier, DocumentLoader*, base::SpanOrSize<const char> data);
   void DidReceiveBlob(CoreProbeSink*, uint64_t identifier, DocumentLoader*, BlobDataHandle*);
   void DidReceiveEncodedDataLength(CoreProbeSink*, DocumentLoader* loader, uint64_t identifier, size_t encoded_data_length);
   void DidFinishLoading(CoreProbeSink*, uint64_t identifier, DocumentLoader*, base::TimeTicks finish_time, int64_t encoded_data_length, int64_t decoded_body_length);
@@ -142,7 +143,7 @@ interface CoreProbes {
   void DidReceiveWebSocketHandshakeResponse([Keep] ExecutionContext*, uint64_t identifier, network::mojom::blink::WebSocketHandshakeRequest* request, network::mojom::blink::WebSocketHandshakeResponse* response);
   void DidCloseWebSocket([Keep] ExecutionContext*, uint64_t identifier);
   void DidReceiveWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const Vector<base::span<const char>>& data);
-  void DidSendWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const char* payload, size_t payload_length);
+  void DidSendWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, base::span<const char> payload);
   void DidReceiveWebSocketMessageError(ExecutionContext*, uint64_t identifier, const String& error_message);
   void WebTransportCreated([Keep] ExecutionContext*, uint64_t transport_id, const KURL& request_url);
   void WebTransportConnectionEstablished(ExecutionContext*, uint64_t transport_id);
@@ -164,7 +165,7 @@ interface CoreProbes {
   void DocumentWriteFetchScript([Keep] Document*);
   void DidChangeViewport(LocalFrame* document);
   void BreakableLocation(ExecutionContext* context, const char* name);
-  void WillHandlePromise(ExecutionContext* context, ScriptState* script_state, bool resolving, const char* class_like_name, const String& property_like_name, const String& script_url);
+  void WillHandlePromise(ExecutionContext* context, ScriptState* script_state, bool resolving, const char* class_like_name, PropertyName property_like_name, const String& script_url);
   RecalculateStyle(Document* document);
   UpdateLayout(Document* document);
 

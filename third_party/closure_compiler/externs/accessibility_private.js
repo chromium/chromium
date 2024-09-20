@@ -609,8 +609,8 @@ chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function
  * @param {!chrome.accessibilityPrivate.SyntheticKeyboardEvent} keyEvent The
  *     event to send.
  * @param {boolean=} useRewriters If true, uses rewriters for the key event;
- *     only allowed if used from Dictation. Otherwise indicates that rewriters
- *     should be skipped.
+ *     only allowed if used from Dictation or FaceGaze. Otherwise indicates that
+ *     rewriters should be skipped.
  */
 chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewriters) {};
 

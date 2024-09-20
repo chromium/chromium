@@ -77,7 +77,7 @@ FakeDataTypeSyncBridge::Store::Store() = default;
 FakeDataTypeSyncBridge::Store::~Store() = default;
 
 void FakeDataTypeSyncBridge::Store::PutData(const std::string& key,
-                                             const EntityData& data) {
+                                            const EntityData& data) {
   data_change_count_++;
   data_store_[key] = CopyEntityData(data);
 }

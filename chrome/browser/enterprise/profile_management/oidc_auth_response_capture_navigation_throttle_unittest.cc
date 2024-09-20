@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/profile_management/oidc_auth_response_capture_navigation_throttle.h"
 
 #include "base/base64.h"
+#include "base/features.h"
 #include "base/json/json_writer.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -589,6 +590,9 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DecodeFailure) {
 }
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DataDecoderFailure) {
+  // Disable the Rust JSON parser, as it is in-process and cannot crash.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(base::features::kUseRustJsonParser, false);
   in_process_data_decoder_.SimulateJsonParserCrash(/*drop=*/true);
 
   std::string redirection_url =

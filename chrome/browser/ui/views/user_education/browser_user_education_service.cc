@@ -676,18 +676,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered to encourage users to try out the reading "
                        "mode feature.")));
 
-  // kIPHSidePanelGenericMenuFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHSidePanelGenericMenuFeature,
-          kToolbarAppMenuButtonElementId, IDS_SIDE_PANEL_GENERIC_MENU_IPH,
-          IDS_SIDE_PANEL_GENERIC_MENU_IPH_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetMetadata(121, "corising@chromium.org",
-                       "Triggered on startup for discovery of "
-                       "side panel entry points in app menu.")));
-
   // kIPHSidePanelGenericPinnableFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
@@ -1061,14 +1049,26 @@ void MaybeRegisterChromeFeaturePromos(
                        "opened in a PWA.")));
 
   registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
+      FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHHistorySearchFeature,
-          kHistorySearchInputElementId, IDS_HISTORY_EMBEDDINGS_IPH_LABEL,
-          IDS_HISTORY_EMBEDDINGS_IPH_LABEL_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo(IDC_FIND))
+          kHistorySearchInputElementId, IDS_HISTORY_EMBEDDINGS_IPH_BODY,
+          IDS_HISTORY_EMBEDDINGS_IPH_ACTION,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* const browser =
+                    chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                chrome::ShowSettingsSubPage(browser,
+                                            chrome::kHistorySearchSubpage);
+              }))
+          .SetCustomActionIsDefault(true)
+          .SetCustomActionDismissText(IDS_NO_THANKS)
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
           .SetInAnyContext(true)
-          .SetMetadata(127, "johntlee@chromium.org",
+          .SetMetadata(130, "johntlee@chromium.org",
                        "Triggered after user lands on chrome://history.")));
 
   // kIPHToolbarManagementButtonFeature
@@ -1087,6 +1087,7 @@ void MaybeRegisterChromeFeaturePromos(
                 }
                 chrome::ShowEnterpriseManagementPageInTabbedBrowser(browser);
               }))
+          .SetCustomActionIsDefault(true)
           .SetMetadata(129, "ydago@chromium.org",
                        "Triggered after a user uses managed browser where the "
                        "toolbar management button is visible.")));

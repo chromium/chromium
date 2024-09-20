@@ -104,7 +104,7 @@ TEST_F(CredentialManagerDialogControllerTest, ShowAccountChooser) {
 
   // Close the dialog.
   EXPECT_CALL(prompt, ControllerGone());
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_CALL(feature_manager(), IsBiometricAuthenticationBeforeFillingEnabled)
       .WillOnce(testing::Return(false));
 #endif
@@ -131,7 +131,7 @@ TEST_F(CredentialManagerDialogControllerTest, ShowAccountChooserAndSignIn) {
 
   // Close the dialog.
   EXPECT_CALL(prompt, ControllerGone());
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_CALL(feature_manager(), IsBiometricAuthenticationBeforeFillingEnabled)
       .WillOnce(testing::Return(false));
 #endif
@@ -218,7 +218,7 @@ TEST_F(CredentialManagerDialogControllerTest, AutoSigninPromoTurnOff) {
       password_manager::metrics_util::AUTO_SIGNIN_TURN_OFF, 1);
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(CredentialManagerDialogControllerTest, SignInBiometricsEnabled) {
   StrictMock<MockPasswordPrompt> prompt;
   password_manager::PasswordForm local_form = GetLocalForm();

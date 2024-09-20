@@ -197,17 +197,15 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
       const base::RepeatingClosure& callback);
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  // Sends download report to backend. Returns true if the report is sent
-  // successfully.
-  virtual bool SendDownloadReport(
+  // Sends download report to backend.
+  virtual void SendDownloadReport(
       download::DownloadItem* download,
       ClientSafeBrowsingReportRequest::ReportType report_type,
       bool did_proceed,
       std::optional<bool> show_download_in_folder);
 
   // Persists download report on disk and sends it to backend on next startup.
-  // Returns true if the report is persisted successfully.
-  virtual bool PersistDownloadReportAndSendOnNextStartup(
+  virtual void PersistDownloadReportAndSendOnNextStartup(
       download::DownloadItem* download,
       ClientSafeBrowsingReportRequest::ReportType report_type,
       bool did_proceed,

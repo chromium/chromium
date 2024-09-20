@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
@@ -53,9 +53,7 @@ Encryptor::Key::Key(base::span<const uint8_t> key,
                                       CRYPTPROTECTMEMORY_SAME_PROCESS);
   }
 #endif
-  if (!algorithm_.has_value()) {
-    NOTREACHED();
-  }
+  CHECK(algorithm_.has_value());
 
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM:
@@ -93,14 +91,23 @@ Encryptor& Encryptor::operator=(Encryptor&& other) = default;
 
 Encryptor::Encryptor(KeyRing keys, const std::string& provider_for_encryption)
     : keys_(std::move(keys)),
-      provider_for_encryption_(provider_for_encryption) {}
+      provider_for_encryption_(provider_for_encryption) {
+  // It is not permitted to have multiple keys that mark themselves as OSCrypt
+  // sync compatible.
+  bool already_found_os_crypt_compatible = false;
+  for (const auto& key : keys_) {
+    if (key.second.is_os_crypt_sync_compatible_) {
+      CHECK(!already_found_os_crypt_compatible)
+          << "Cannot have more than one key marked OSCrypt sync compatible.";
+      already_found_os_crypt_compatible = true;
+    }
+  }
+}
 Encryptor::~Encryptor() = default;
 
 std::vector<uint8_t> Encryptor::Key::Encrypt(
     base::span<const uint8_t> plaintext) const {
-  if (!algorithm_.has_value()) {
-    NOTREACHED();
-  }
+  CHECK(algorithm_.has_value());
 
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM: {
@@ -140,9 +147,7 @@ std::vector<uint8_t> Encryptor::Key::Encrypt(
 
 std::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
     base::span<const uint8_t> ciphertext) const {
-  if (!algorithm_.has_value()) {
-    NOTREACHED();
-  }
+  CHECK(algorithm_.has_value());
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM: {
       if (ciphertext.size() < kNonceLength) {
@@ -190,8 +195,10 @@ bool Encryptor::EncryptString(const std::string& plaintext,
 }
 
 bool Encryptor::DecryptString(const std::string& ciphertext,
-                              std::string* plaintext) const {
-  auto decrypted = DecryptData(base::as_bytes(base::make_span(ciphertext)));
+                              std::string* plaintext,
+                              DecryptFlags* flags) const {
+  auto decrypted =
+      DecryptData(base::as_bytes(base::make_span(ciphertext)), flags);
 
   if (!decrypted.has_value()) {
     return false;
@@ -231,7 +238,12 @@ std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
 }
 
 std::optional<std::string> Encryptor::DecryptData(
-    base::span<const uint8_t> data) const {
+    base::span<const uint8_t> data,
+    DecryptFlags* flags) const {
+  if (flags) {
+    flags->should_reencrypt = false;
+  }
+
   if (data.empty()) {
     return std::string();
   }
@@ -246,6 +258,9 @@ std::optional<std::string> Encryptor::DecryptData(
       // The Key does the raw decrypt.
       auto plaintext = key.Decrypt(ciphertext);
       if (plaintext) {
+        if (flags) {
+          flags->should_reencrypt = provider != provider_for_encryption_;
+        }
         return std::string(plaintext->begin(), plaintext->end());
       }
     }
@@ -256,6 +271,23 @@ std::optional<std::string> Encryptor::DecryptData(
   std::string string_data(data.begin(), data.end());
   std::string plaintext;
   if (OSCrypt::DecryptString(string_data, &plaintext)) {
+    // If OSCrypt is using os_crypt_posix.cc and it's passed invalid data to
+    // decrypt, it simply returns the data. This is a quirk of
+    // os_crypt_posix.cc. In this case, it's not really possible to tell whether
+    // or not encryption worked or not, and certainly not advisable to recommend
+    // a re-encryption of this potentially invalid data.
+    // TODO(crbug.com/365712505): Remove this fallback.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
+        !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_FUCHSIA)
+    if (plaintext == string_data) {
+      return plaintext;
+    }
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !(BUILDFLAG(IS_LINUX)
+        // && !BUILDFLAG(IS_CASTOS)) || BUILDFLAG(IS_FUCHSIA)
+    if (!provider_for_encryption_.empty() && flags) {
+      flags->should_reencrypt = true;
+    }
     return plaintext;
   }
 
@@ -268,9 +300,10 @@ bool Encryptor::EncryptString16(const std::u16string& plaintext,
 }
 
 bool Encryptor::DecryptString16(const std::string& ciphertext,
-                                std::u16string* plaintext) const {
+                                std::u16string* plaintext,
+                                DecryptFlags* flags) const {
   std::string utf8;
-  if (!DecryptString(ciphertext, &utf8)) {
+  if (!DecryptString(ciphertext, &utf8, flags)) {
     return false;
   }
 
@@ -293,10 +326,8 @@ Encryptor Encryptor::Clone(Option option) const {
     case Option::kEncryptSyncCompat:
       for (const auto& [provider, key] : keyring) {
         if (key.is_os_crypt_sync_compatible_) {
-          // Keys are already sorted by precedence, so if multiple keys are
-          // compatible, the one with the highest precedence (later in the
-          // keyring) is picked.
           provider_for_encryption = provider;
+          break;
         }
       }
       break;

@@ -1594,6 +1594,310 @@ class OperatorFlatMapSubscribeDelegate final
 };
 
 // This delegate is used by the `Observer#from()` operator, in the case where
+// the given `any` value is an async iterable. In that case, we store the async
+// iterable in `this` delegate, and upon subscription, push to the subscriber
+// all of the async iterable's resolved values, once the internal promises are
+// reacted to.
+class OperatorFromAsyncIterableSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  // Upon construction of `this`, we know that `async_iterable` is a valid
+  // object that implements the async iterable prototcol, however:
+  //   1. We don't assert that here, because it has script-observable
+  //      consequences that shouldn't be invoked just for assertion/sanity
+  //      purposes.
+  //   2. In `OnSubscribe()` we still have to confirm that fact, because in
+  //      between the constructor and `OnSubscribe()` running, that could have
+  //      changed.
+  OperatorFromAsyncIterableSubscribeDelegate(
+      ScriptValue async_iterable,
+      const ExceptionContext& exception_context)
+      : async_iterable_(async_iterable),
+        exception_context_(exception_context) {}
+
+  // "Return a new Observable whose subscribe callback is an algorithm that
+  // takes a Subscriber |subscriber| and does the following:"
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    // `Observable::from()` already checks that `async_iterable_` is a JS
+    // object, so we can safely convert it here.
+    //
+    // The runner is never owned by `this`, since the lifetime of `this` is too
+    // long. Instead, we just create it now and leave it alone. This ties the
+    // ownership to the underlying iterator that produces values. Specifically,
+    // `SubscriptionRunner::next_promise_` is kept alive by the script that owns
+    // the resolver.
+    MakeGarbageCollected<SubscriptionRunner>(
+        async_iterable_.V8Value().As<v8::Object>(), subscriber, script_state,
+        exception_context_);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(async_iterable_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  // An instance of this class gets created for every single call of
+  // `OperatorFromAsyncIterableSubscribeDelegate::OnSubscribe()`, and is
+  // responsible for managing each subscription. That's because each
+  // subscription must grab a brand new iterator off of `async_iterable_` and
+  // run it to completion, which `SubscriptionRunner` is responsible for.
+  //
+  // See documentation above its instantiation for ownership details.
+  class SubscriptionRunner final : public GarbageCollected<SubscriptionRunner> {
+   public:
+    SubscriptionRunner(v8::Local<v8::Object> v8_async_iterable,
+                       Subscriber* subscriber,
+                       ScriptState* script_state,
+                       ExceptionContext exception_context)
+        : subscriber_(subscriber),
+          script_state_(script_state),
+          exception_context_(exception_context) {
+      ExceptionState exception_state(script_state->GetIsolate(),
+                                     exception_context_);
+
+      // "Let |iteratorRecord| be GetIterator(value, async)."
+      //
+      // This invokes script, so we have to check if there was an exception. In
+      // all of the exception-throwing cases in this method, we always catch the
+      // exception, clear it, and report it properly through `subscriber`.
+      iterator_ = ScriptIterator::FromIterable(
+          script_state->GetIsolate(), v8_async_iterable, exception_state,
+          ScriptIterator::Kind::kAsync);
+
+      // "If |iteratorRecord| is a throw completion, then run |subscriber|'s
+      // error() method, given |iteratorRecord|'s [[Value]]."
+      if (exception_state.HadException()) {
+        v8::Local<v8::Value> v8_exception = exception_state.GetException();
+        exception_state.ClearException();
+        subscriber->error(script_state, ScriptValue(script_state->GetIsolate(),
+                                                    v8_exception));
+        return;
+      }
+
+      // Note that it's possible for `iterator_.IsNull()` to be true here, and
+      // we have to handle it appropriately. Here's why:
+      //
+      // ECMAScript's `GetIterator(value, async)` [1] throws a TypeError when it
+      // fails to find both a %Symbol.asyncIterator% or fallback
+      // %Symbol.iterator% implementation on the object to convert. However,
+      // Blink's implementation of this does not throw an exception in this
+      // case, to allow for Blink to specify alternate behavior in the case
+      // where the object simply doesn't implement the protocols. However,
+      // Observables have no alternate behavior, so we treat the `IsNull()` case
+      // the same as the error-throwing case.
+      //
+      // [1]: https://tc39.es/ecma262/#sec-getiterator
+      if (iterator_.IsNull()) {
+        DCHECK(!exception_state.HadException());
+        // The object failed to convert to an async or sync iterable.
+        v8::Local<v8::Value> type_error = V8ThrowException::CreateTypeError(
+            script_state->GetIsolate(), "Object must be iterable");
+        subscriber->error(script_state,
+                          ScriptValue(script_state->GetIsolate(), type_error));
+        return;
+      }
+
+      // "Run |nextAlgorithm| given |subscriber| and |iteratorRecord|."
+      GetNextValue(subscriber, script_state);
+    }
+
+    // "Let |nextAlgorithm| be the following steps, given a Subscriber
+    // |subscriber| and an Iterator Record |iteratorRecord|:"
+    void GetNextValue(Subscriber* subscriber, ScriptState* script_state) {
+      DCHECK(!iterator_.IsNull());
+      ExceptionState exception_state(script_state->GetIsolate(),
+                                     exception_context_);
+      ExecutionContext* execution_context =
+          ExecutionContext::From(script_state);
+
+      // "Let |nextRecord| be IteratorNext(|iteratorRecord|)."
+      const bool is_done_because_exception_was_thrown =
+          !iterator_.Next(execution_context, exception_state);
+
+      // "If |nextRecord| is a throw completion:"
+      if (exception_state.HadException()) {
+        v8::Local<v8::Value> v8_exception = exception_state.GetException();
+        exception_state.ClearException();
+
+        // Assert: |iteratorRecord|'s [[Done]] is true.
+        CHECK(is_done_because_exception_was_thrown);
+
+        // Set |nextPromise| to a promise rejected with |nextRecord|'s
+        // [[Value]].
+        next_promise_ =
+            ScriptPromise<IDLAny>::Reject(script_state, v8_exception);
+      } else {
+        // "Otherwise, if |nextRecord| is normal completion, then set
+        // |nextPromise| to a promise resolved with |nextRecord|'s [[Value]].
+        next_promise_ = ToResolvedPromise<IDLAny>(
+            script_state, iterator_.GetValue().ToLocalChecked());
+      }
+
+      // "React to |nextPromise|:"
+      //
+      // See continued documentation in
+      // `AsyncIteratorNextResolverFunction::Call()`.
+      ScriptFunction* on_fulfilled = MakeGarbageCollected<ScriptFunction>(
+          script_state,
+          MakeGarbageCollected<AsyncIteratorNextResolverFunction>(
+              this, subscriber,
+              AsyncIteratorNextResolverFunction::ResolveType::kFulfill));
+      ScriptFunction* on_rejected = MakeGarbageCollected<ScriptFunction>(
+          script_state,
+          MakeGarbageCollected<AsyncIteratorNextResolverFunction>(
+              this, subscriber,
+              AsyncIteratorNextResolverFunction::ResolveType::kReject));
+      next_promise_.Then(on_fulfilled, on_rejected);
+    }
+
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(subscriber_);
+      visitor->Trace(script_state_);
+      visitor->Trace(iterator_);
+      visitor->Trace(next_promise_);
+    }
+
+   private:
+    // The specific `Subscriber` that `this` will push values to from
+    // `iterator_`, as they are asynchronously emitted.
+    Member<Subscriber> subscriber_;
+    Member<ScriptState> script_state_;
+    ExceptionContext exception_context_;
+    // The `ScriptIterator` that this subscription is associated with. Per the
+    // Observable specification's conversion semantics [1], each subscription
+    // from an Observable that was created from an async iterable, will be
+    // associated with a new "Iterator Record" grabbed from invoking the
+    // @@asyncIterator on the underlying async iterable object. The subscription
+    // gets its values pushed to it by each Promise returned by the Iterator
+    // Record's `[[NextMethod]]` (i.e., `ScriptIterator::Next()`). This member
+    // represents the |iteratorRecord| variable in [1].
+    //
+    // [1]:
+    // https://wicg.github.io/observable/#observable-convert-to-an-observable.
+    ScriptIterator iterator_;
+    // Represents the |nextPromise| variable in the Observable specification's
+    // conversion algorithm [1]. It is obtained by wrapping the latest value
+    // returned by the above member's `Next()` method, and is reset each time it
+    // resolves. Once obtained, `next_promise_` gets "reacted" to by
+    // `GetNextValue()` with instances of `AsyncIteratorNextResolverFunction`
+    // algorithms owned by the promise. The promise needs to be owned by `this`
+    // however, so that it doesn't get garbage collected prematurely
+    //
+    // [1]:
+    // https://wicg.github.io/observable/#observable-convert-to-an-observable.
+    ScriptPromiseUntyped next_promise_;
+  };
+
+  class AsyncIteratorNextResolverFunction final
+      : public ScriptFunction::Callable {
+   public:
+    enum class ResolveType { kFulfill, kReject };
+
+    AsyncIteratorNextResolverFunction(SubscriptionRunner* delegate,
+                                      Subscriber* subscriber,
+                                      ResolveType type)
+        : delegate_(delegate), subscriber_(subscriber), type_(type) {
+      CHECK(delegate_);
+      CHECK(subscriber_);
+    }
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+      v8::Local<v8::Value> iterator_result = value.V8Value();
+      v8::Isolate* isolate = script_state->GetIsolate();
+      v8::Local<v8::Context> context = script_state->GetContext();
+      if (type_ == ResolveType::kFulfill) {
+        // "If |nextPromise| was fulfilled with value |iteratorResult|, then:
+
+        // "If Type(|iteratorResult|) is not Object, then run |subscriber|'s
+        // error() method with a TypeError and abort these steps.
+        if (!iterator_result->IsObject()) {
+          v8::Local<v8::Value> type_error = V8ThrowException::CreateTypeError(
+              isolate, "Expected next() Promise to resolve to an Object");
+          subscriber_->error(script_state, ScriptValue(isolate, type_error));
+          return ScriptValue();
+        }
+
+        v8::TryCatch try_catch(isolate);
+        v8::Local<v8::Object> iterator_result_obj =
+            iterator_result.As<v8::Object>();
+
+        // "Let done be IteratorComplete(|iteratorResult|)."
+        v8::MaybeLocal<v8::Value> maybe_done =
+            iterator_result_obj->Get(context, V8AtomicString(isolate, "done"));
+
+        // "If done is a throw completion, then run subscriber's error() method
+        // with |done|'s [[Value]] and abort these steps."
+        if (try_catch.HasCaught()) {
+          ScriptValue exception(script_state->GetIsolate(),
+                                try_catch.Exception());
+          subscriber_->error(script_state, exception);
+          return ScriptValue();
+        }
+
+        // "Otherwise, if done's [[Value]] is true, then run subscriber's
+        // complete() and abort these steps."
+        //
+        // Since we handled the exception case above, `maybe_done` must not be
+        // `v8::Nothing`.
+        const bool done = ToBoolean(isolate, maybe_done.ToLocalChecked(),
+                                    ASSERT_NO_EXCEPTION);
+        if (done) {
+          subscriber_->complete(script_state);
+          return ScriptValue();
+        }
+
+        // "Let value be IteratorValue(|iteratorResult|)."
+        v8::MaybeLocal<v8::Value> maybe_value =
+            iterator_result_obj->Get(context, V8AtomicString(isolate, "value"));
+
+        // "If value is a throw completion, then run subscriber's error() method
+        // with |value|'s [[Value]] and abort these steps."
+        if (try_catch.HasCaught()) {
+          ScriptValue exception(script_state->GetIsolate(),
+                                try_catch.Exception());
+          subscriber_->error(script_state, exception);
+          return ScriptValue();
+        }
+
+        // "Run subscriber’s next() method, given value's [[Value]]."
+        //
+        // Since we handled the exception case above, `maybe_value` must not be
+        // `v8::Nothing`.
+        subscriber_->next(ScriptValue(isolate, maybe_value.ToLocalChecked()));
+
+        // Run |nextAlgorithm|, given |subscriber| and |iteratorRecord|.
+        delegate_->GetNextValue(subscriber_, script_state);
+      } else {
+        // If |nextPromise| was rejected with reason |r|, then run
+        // |subscriber|'s error() method, given |r|.
+        subscriber_->error(script_state, value);
+      }
+
+      return ScriptValue();
+    }
+
+    void Trace(Visitor* visitor) const final {
+      visitor->Trace(delegate_);
+      visitor->Trace(subscriber_);
+
+      ScriptFunction::Callable::Trace(visitor);
+    }
+
+   private:
+    Member<SubscriptionRunner> delegate_;
+    Member<Subscriber> subscriber_;
+    ResolveType type_;
+  };
+
+  // The iterable that `this` synchronously pushes values from, for the
+  // subscription that `this` represents.
+  ScriptValue async_iterable_;
+  ExceptionContext exception_context_;
+};
+
+// This delegate is used by the `Observer#from()` operator, in the case where
 // the given `any` value is an iterable. In that case, we store the iterable in
 // `this` delegate, and upon subscription, synchronously push to the subscriber
 // all of the iterable's values.
@@ -1628,7 +1932,8 @@ class OperatorFromIterableSubscribeDelegate final
     // all of the exception-throwing cases in this method, we always catch the
     // exception, clear it, and report it properly through `subscriber`.
     ScriptIterator iterator = ScriptIterator::FromIterable(
-        script_state->GetIsolate(), v8_iterable, exception_state);
+        script_state->GetIsolate(), v8_iterable, exception_state,
+        ScriptIterator::Kind::kSync);
     if (exception_state.HadException()) {
       v8::Local<v8::Value> v8_exception = exception_state.GetException();
       exception_state.ClearException();
@@ -1667,21 +1972,6 @@ class OperatorFromIterableSubscribeDelegate final
  private:
   // The iterable that `this` synchronously pushes values from, for the
   // subscription that `this` represents.
-  //
-  // TODO(crbug.com/40282760): Right now we convert `iterable_` to an iterator
-  // twice:
-  //   1. In `Observable::from()`, to check if the value is an iterable / can be
-  //      converted to an Observable.
-  //   2. In `this`'s `OnSubscribe()` method, when re-converting to an iterable
-  //      to actually perform iteration.
-  //
-  // This is an unfortunate artifact of `ScriptIterator` being
-  // `STACK_ALLOCATED()` and not being able to be stored as a member on
-  // garbage-collected classes, like `this`, after its initial test conversion.
-  // This has script-observable consequences (i.e., `[Symbol.iterator]()` gets
-  // invoked twice) captured by web platform tests. We should really consider
-  // making `ScriptIterator` non-`STACK_ALLOCATED()` so that it can be stored
-  // here directly, and have more reasonable script-observable consequences.
   ScriptValue iterable_;
   ExceptionContext exception_context_;
 };
@@ -2279,10 +2569,7 @@ Observable* Observable::from(ScriptState* script_state,
   exception_state.ClearException();
 
   // 2. Try to convert to an AsyncIterable.
-  // TODO(crbug.com/40282760): There doesn't seem to be bindings support for
-  // async iterables in the same way that there is for iterables. Reach out to
-  // the bindings team and implement this conversion with their guidance.
-
+  //
   // 3. Try to convert to an Iterable.
   //
   // Because an array is an object, arrays will be converted into iterables here
@@ -2297,8 +2584,40 @@ Observable* Observable::from(ScriptState* script_state,
     v8::Local<v8::Object> v8_obj = v8_value.As<v8::Object>();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
 
-    // "Let |iteratorMethodRecord| be ? GetMethod(value, %Symbol.iterator%)."
+    // From async itertable: "Let |asyncIteratorMethodRecord| be ?
+    // GetMethod(value, %Symbol.asyncIterator%)."
     v8::Local<v8::Value> method;
+    if (!v8_obj->Get(current_context, v8::Symbol::GetAsyncIterator(isolate))
+             .ToLocal(&method)) {
+      CHECK(rethrow_scope.HasCaught());
+      return nullptr;
+    }
+
+    // "If |asyncIteratorMethodRecord|'s [[Value]] is undefined or null, then
+    // jump to the step labeled 'From iterable'."
+    if (!method->IsNullOrUndefined()) {
+      // "If IsCallable(|asyncIteratorMethodRecord|'s [[Value]]) is false, then
+      // throw a TypeError."
+      if (!method->IsFunction()) {
+        exception_state.ThrowTypeError("@@asyncIterator must be a callable.");
+        return nullptr;
+      }
+
+      // "Otherwise, ..."
+      //
+      // TODO(crbug.com/363015168): Consider pulling the @@asyncIterator method
+      // off of `value` and storing it alongside `value`, to avoid the
+      // subscription-time side effects of re-grabbing the method. See [1].
+      //
+      // [1]: https://github.com/WICG/observable/issues/127.
+      return MakeGarbageCollected<Observable>(
+          ExecutionContext::From(script_state),
+          MakeGarbageCollected<OperatorFromAsyncIterableSubscribeDelegate>(
+              value, exception_state.GetContext()));
+    }
+
+    // From iterable: "Let |iteratorMethodRecord| be ? GetMethod(value,
+    // %Symbol.iterator%)."
     if (!v8_obj->Get(current_context, v8::Symbol::GetIterator(isolate))
              .ToLocal(&method)) {
       CHECK(rethrow_scope.HasCaught());
@@ -2321,6 +2640,7 @@ Observable* Observable::from(ScriptState* script_state,
 
       // "Otherwise, return a new Observable whose subscribe callback is an
       // algorithm that takes a Subscriber subscriber and does the following:"
+      //
       // See the continued documentation in below classes.
       return MakeGarbageCollected<Observable>(
           ExecutionContext::From(script_state),
@@ -2330,6 +2650,9 @@ Observable* Observable::from(ScriptState* script_state,
   }
 
   // 4. Try to convert to a Promise.
+  //
+  // "From Promise: If IsPromise(value) is true, then:". See the continued
+  // documentation in the below classes.
   if (v8_value->IsPromise()) {
     ScriptPromiseUntyped promise(script_state->GetIsolate(),
                                  v8_value.As<v8::Promise>());

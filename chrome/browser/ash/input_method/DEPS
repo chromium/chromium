@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/login/demo_mode",
-  "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/magic_boost/magic_boost_controller_ash.h",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",

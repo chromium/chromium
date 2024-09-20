@@ -646,15 +646,14 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   // to use an existing one.  We do not want prefetching to happen in a shared
   // process, so that we can always reliably lower the CPU priority for
   // prefetching.
-  // In single-process mode, ShouldTryToUseExistingProcessHost() always returns
-  // true, so that case needs to be explicitly checked for.
+  // In single-process mode, IsProcessLimitReached() always returns true, so
+  // that case needs to be explicitly checked for.
   // TODO(tburkard): Figure out how to cancel prefetching in the opposite case,
   // when a new tab is added to a process used for prefetching.
   // TODO(ppi): Check whether there are usually enough render processes
   // available on Android. If not, kill an existing renderers so that we can
   // create a new one.
-  if (content::RenderProcessHost::ShouldTryToUseExistingProcessHost(
-          browser_context_, url) &&
+  if (content::RenderProcessHost::IsProcessLimitReached() &&
       !content::RenderProcessHost::run_renderer_in_process()) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(
         url, origin, FINAL_STATUS_TOO_MANY_PROCESSES);

@@ -1057,9 +1057,7 @@ CSSStyleSheet* StyleEngine::CreateSheet(
   // that keeps it alive.
   AtomicString key;
   if (text.length() >= 1024) {
-    size_t digest = FastHash(base::span<const uint8_t>(
-        reinterpret_cast<const uint8_t*>(text.Bytes()),
-        text.CharactersSizeInBytes()));
+    size_t digest = FastHash(text.RawByteSpan());
     LChar digest_as_char[sizeof(digest)];
     memcpy(digest_as_char, &digest, sizeof(digest));
     key = AtomicString(digest_as_char, sizeof(digest));
@@ -2624,7 +2622,7 @@ class StyleEngine::AtRuleCascadeMap {
   struct Priority {
     DISALLOW_NEW();
     bool is_user_style;
-    unsigned layer_order;
+    uint16_t layer_order;
 
     bool operator<(const Priority& other) const {
       if (is_user_style != other.is_user_style) {
@@ -2653,7 +2651,7 @@ class StyleEngine::AtRuleCascadeMap {
   }
 
  private:
-  unsigned GetLayerOrder(bool is_user_style, const CascadeLayer* layer) {
+  uint16_t GetLayerOrder(bool is_user_style, const CascadeLayer* layer) {
     if (!layer) {
       return CascadeLayerMap::kImplicitOuterLayerOrder;
     }

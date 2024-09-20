@@ -6,20 +6,13 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/strings/sys_string_conversions.h"
-#import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_delegate.h"
+#import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_item.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -40,7 +33,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @implementation SwitchProfileSettingsTableViewController {
-  NSString* _selectedProfile;
+  SwitchProfileSettingsItem* _selectedSwitchProfileSettingsItem;
+  NSArray<SwitchProfileSettingsItem*>* _switchProfileSettingsItems;
 }
 
 - (instancetype)init {
@@ -79,14 +73,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model setHeader:currentProfileTitle
       forSectionWithIdentifier:CurrentProfilesIdentifier];
 
-  TableViewAccountItem* currentProfileDetail =
-      [[TableViewAccountItem alloc] initWithType:CurrentAccount];
-  currentProfileDetail.image = ios::provider::GetSigninDefaultAvatar();
-  currentProfileDetail.text = self.activeProfileName;
-  currentProfileDetail.mode = TableViewAccountModeNonTappable;
-  [model addItem:currentProfileDetail
-      toSectionWithIdentifier:CurrentProfilesIdentifier];
-
   // LoadedProfilesIdentifier.
   TableViewTextHeaderFooterItem* switchToProfileTitle =
       [[TableViewTextHeaderFooterItem alloc] initWithType:kItemTypeEnumZero];
@@ -97,24 +83,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model setHeader:switchToProfileTitle
       forSectionWithIdentifier:LoadedProfilesIdentifier];
 
-  ProfileAttributesStorageIOS* profileStorage =
-      GetApplicationContext()
-          ->GetProfileManager()
-          ->GetProfileAttributesStorage();
-  size_t profile_count = profileStorage->GetNumberOfProfiles();
-  for (size_t index = 0; index < profile_count; ++index) {
-    ProfileAttributesIOS profileAttribute =
-        profileStorage->GetAttributesForProfileAtIndex(index);
+  for (SwitchProfileSettingsItem* item in _switchProfileSettingsItems) {
     TableViewAccountItem* accountItemDetail =
         [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
-    accountItemDetail.image = ios::provider::GetSigninDefaultAvatar();
-    accountItemDetail.text =
-        base::SysUTF8ToNSString(profileAttribute.GetProfileName());
-    if ([accountItemDetail.text isEqualToString:self.activeProfileName]) {
-      accountItemDetail.mode = TableViewAccountModeDisabled;
+    accountItemDetail.image = item.avatar;
+    accountItemDetail.text = item.displayName;
+    accountItemDetail.detailText = item.profileName;
+    // This is a hack to store `SwitchProfileSettingsItem` into
+    // `TableViewAccountItem`.
+    // `SwitchProfileSettingsItem` does not implement `SystemIdentity` protocol.
+    accountItemDetail.identity = static_cast<id<SystemIdentity>>(item);
+    if (item.active) {
+      accountItemDetail.mode = TableViewAccountModeNonTappable;
+      [model addItem:accountItemDetail
+          toSectionWithIdentifier:CurrentProfilesIdentifier];
+    } else {
+      [model addItem:accountItemDetail
+          toSectionWithIdentifier:LoadedProfilesIdentifier];
     }
-    [model addItem:accountItemDetail
-        toSectionWithIdentifier:LoadedProfilesIdentifier];
   }
 
   TableViewTextButtonItem* switchProfileButtonItem =
@@ -157,19 +143,34 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 #pragma mark - Private
-- (void)switchProfileButtonWasTapped {
-  // TODO(crbug.com/333520714): Add logic to open the profile in the same window
-  // once the API is available.
 
-  [self.delegate openProfileInNewWindow:_selectedProfile];
+- (void)switchProfileButtonWasTapped {
+  if (_selectedSwitchProfileSettingsItem) {
+    [self.delegate openProfileInNewWindowWithSwitchProfileSettingsItem:
+                       _selectedSwitchProfileSettingsItem];
+  }
 }
 
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-  _selectedProfile = cell.textLabel.text;
+  ListItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  TableViewAccountItem* accountItem =
+      base::apple::ObjCCast<TableViewAccountItem>(item);
+  if (accountItem) {
+    _selectedSwitchProfileSettingsItem =
+        base::apple::ObjCCastStrict<SwitchProfileSettingsItem>(
+            accountItem.identity);
+  }
+}
+
+#pragma mark - SwitchProfileSettingsConsumer
+
+- (void)setSwitchProfileSettingsItem:
+    (NSMutableArray<SwitchProfileSettingsItem*>*)items {
+  _switchProfileSettingsItems = items;
+  [self loadModel];
 }
 
 @end

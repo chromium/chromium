@@ -22,7 +22,11 @@ constexpr gfx::Size kMinimumVideoSize = gfx::Size(200, 140);
 
 static bool IsOnBatteryPower() {
   auto* power_monitor = base::PowerMonitor::GetInstance();
-  return power_monitor->IsInitialized() && power_monitor->IsOnBatteryPower();
+  if (!power_monitor->IsInitialized()) {
+    return false;
+  }
+  return power_monitor->GetBatteryPowerStatus() ==
+         base::PowerStateObserver::BatteryPowerStatus::kBatteryPower;
 }
 
 // Helper function for managing property changes. If the watch time timer is
@@ -344,8 +348,12 @@ void WatchTimeReporter::OnDurationChanged(base::TimeDelta duration) {
     muted_reporter_->OnDurationChanged(duration);
 }
 
-void WatchTimeReporter::OnPowerStateChange(bool on_battery_power) {
-  if (HandlePropertyChange<bool>(on_battery_power, reporting_timer_.IsRunning(),
+void WatchTimeReporter::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  bool battery_power =
+      (battery_power_status ==
+       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+  if (HandlePropertyChange<bool>(battery_power, reporting_timer_.IsRunning(),
                                  power_component_.get()) ==
       PropertyAction::kFinalizeRequired) {
     RestartTimerForHysteresis();

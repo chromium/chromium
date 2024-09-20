@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -34,6 +35,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
@@ -195,10 +197,15 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
   source->AddString("shortcutText", accelerator.GetShortcutText());
+  // TODO(b/362269642): Once the stale threshold duration is Finch-
+  // configurable, replace the hardcoded 7 below with the value of that
+  // parameter.
+  source->AddString("declutterBody",
+                    l10n_util::GetStringFUTF16(IDS_DECLUTTER_BODY, u"7")),
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kTabSearchResources, kTabSearchResourcesSize),
-      IDR_TAB_SEARCH_TAB_SEARCH_HTML);
+      webui::SetupWebUIDataSource(
+          source, base::make_span(kTabSearchResources, kTabSearchResourcesSize),
+          IDR_TAB_SEARCH_TAB_SEARCH_HTML);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
@@ -268,6 +275,19 @@ void TabSearchUI::CreatePageHandler(
 bool TabSearchUI::ShowTabOrganizationFRE() {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   return prefs->GetBoolean(tab_search_prefs::kTabOrganizationShowFRE);
+}
+
+void TabSearchUI::InstallTabDeclutterController(
+    tabs::TabDeclutterController* tab_declutter_controller) {
+  if (tab_declutter_controller_ == tab_declutter_controller) {
+    return;
+  }
+
+  tab_declutter_controller_ = tab_declutter_controller;
+
+  if (page_handler_) {
+    page_handler_->TabDeclutterControllerInstalled();
+  }
 }
 
 int TabSearchUI::TabIndex() {

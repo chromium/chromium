@@ -18,6 +18,10 @@ class PasswordAccessLossDialogSettingsProperties {
             new ReadableObjectPropertyKey<>("dialog details");
     static final PropertyModel.ReadableBooleanPropertyKey HELP_BUTTON_VISIBILITY =
             new ReadableBooleanPropertyKey("is help button visible");
+    static final PropertyModel.ReadableObjectPropertyKey<Runnable> HELP_BUTTON_CALLBACK =
+            new ReadableObjectPropertyKey<>("help button callback");
 
-    static final PropertyKey[] ALL_KEYS = {TITLE, DETAILS, HELP_BUTTON_VISIBILITY};
+    static final PropertyKey[] ALL_KEYS = {
+        TITLE, DETAILS, HELP_BUTTON_VISIBILITY, HELP_BUTTON_CALLBACK
+    };
 }

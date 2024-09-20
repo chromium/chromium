@@ -28,6 +28,17 @@ class RenderTextHarfBuzz;
 
 namespace internal {
 
+// Font fallback mechanism used to Shape runs (see ShapeRuns(...)).
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ShapeRunFallback {
+  FAILED = 0,
+  NO_FALLBACK = 1,
+  FALLBACK = 2,
+  FALLBACKS = 3,
+  kMaxValue = FALLBACKS
+};
+
 struct GFX_EXPORT TextRunHarfBuzz {
   // Construct the run with |template_font| since determining the details of a
   // default-constructed gfx::Font is expensive, but it will always be replaced.
@@ -307,8 +318,10 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
 
   // Creates and applies a BreakList based on the resolved fonts of each run in
   // |run_list|. This has the side-effect of isolating missing glyphs into their
-  // own run, maximizing fallback opportunities.
-  void BuildResolvedTypefaceBreakList(internal::TextRunList* run_list);
+  // own run, maximizing fallback opportunities. Returns a bool indicating
+  // whether the internal missing glyph BreakList was modified, indicating that
+  // reshaping is necessary.
+  bool BuildResolvedTypefaceBreakList(internal::TextRunList* run_list);
 
   // Itemize |text| into runs in |out_run_list|, shape the runs, and populate
   // |out_run_list|'s visual <-> logical maps.
@@ -327,6 +340,14 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
   // Returns whether the display range is still a valid range after the eliding
   // pass.
   bool IsValidDisplayRange(Range display_range);
+
+  // Store the fallback font mechanism used for shaping (see ShapeRuns(...)).
+  void RecordShapeRunsFallback(internal::ShapeRunFallback fallback);
+
+  // Record the fallback font mechanism used for shaping to UMA (see
+  // ShapeRuns(...)). This is done separately from RecordShapeRunsFallback, as
+  // multiple passes may be involved and we only want to log the final pass.
+  void EmitShapeRunsFallback();
 
   // RenderText:
   internal::TextRunList* GetRunList() override;
@@ -351,6 +372,9 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
 
   // The process application locale used to configure text rendering.
   std::string locale_;
+
+  // The fallback result of the most recent call to ShapeRuns.
+  std::optional<internal::ShapeRunFallback> last_shape_run_metric_;
 };
 
 }  // namespace gfx

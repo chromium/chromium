@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/channel_authenticator.h"
@@ -23,12 +24,15 @@
 
 namespace remoting::protocol {
 
+namespace {
+using Authenticator::RejectionReason::INVALID_ACCOUNT_ID;
+using Authenticator::RejectionReason::INVALID_CREDENTIALS;
+}  // namespace
+
 Me2MeHostAuthenticatorFactory::Me2MeHostAuthenticatorFactory(
-    const std::string& host_owner,
-    std::vector<std::string> required_client_domain_list,
+    CheckAccessPermissionCallback check_access_permission_callback,
     std::unique_ptr<HostAuthenticationConfig> config)
-    : canonical_host_owner_email_(GetCanonicalEmail(host_owner)),
-      required_client_domain_list_(std::move(required_client_domain_list)),
+    : check_access_permission_callback_(check_access_permission_callback),
       config_(std::move(config)) {}
 
 Me2MeHostAuthenticatorFactory::~Me2MeHostAuthenticatorFactory() = default;
@@ -40,39 +44,17 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
   std::string local_jid = NormalizeSignalingId(original_local_jid);
   std::string remote_jid = NormalizeSignalingId(original_remote_jid);
 
-  // Verify that the client's jid is an ASCII string, and then check that the
-  // client JID has the expected prefix. Comparison is case insensitive.
-  if (!base::IsStringASCII(remote_jid) ||
-      !base::StartsWith(remote_jid, canonical_host_owner_email_ + '/',
-                        base::CompareCase::INSENSITIVE_ASCII)) {
+  // Verify that the client's jid is an ASCII string.
+  auto parts = base::SplitStringOnce(remote_jid, '/');
+  if (!base::IsStringASCII(remote_jid) || !parts) {
     LOG(ERROR) << "Rejecting incoming connection from " << remote_jid
-               << ": Prefix mismatch.  Expected: "
-               << canonical_host_owner_email_;
-    return base::WrapUnique(new RejectingAuthenticator(
-        Authenticator::RejectionReason::INVALID_CREDENTIALS));
+               << ": Invalid signaling id.";
+    return std::make_unique<RejectingAuthenticator>(INVALID_CREDENTIALS);
   }
 
-  // If necessary, verify that the client's jid belongs to the correct domain.
-  if (!required_client_domain_list_.empty()) {
-    std::string client_username = remote_jid;
-    size_t pos = client_username.find('/');
-    if (pos != std::string::npos) {
-      client_username.replace(pos, std::string::npos, "");
-    }
-    bool matched = false;
-    for (const std::string& domain : required_client_domain_list_) {
-      if (base::EndsWith(client_username, std::string("@") + domain,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-        matched = true;
-        break;
-      }
-    }
-    if (!matched) {
-      LOG(ERROR) << "Rejecting incoming connection from " << remote_jid
-                 << ": Domain not allowed.";
-      return std::make_unique<RejectingAuthenticator>(
-          Authenticator::RejectionReason::INVALID_ACCOUNT_ID);
-    }
+  auto [email_address, _] = *parts;
+  if (!check_access_permission_callback_.Run(email_address)) {
+    return std::make_unique<RejectingAuthenticator>(INVALID_CREDENTIALS);
   }
 
   if (!config_->local_cert.empty() && config_->key_pair.get()) {
@@ -84,8 +66,7 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
         std::make_unique<HostAuthenticationConfig>(*config_));
   }
 
-  return base::WrapUnique(new RejectingAuthenticator(
-      Authenticator::RejectionReason::INVALID_CREDENTIALS));
+  return std::make_unique<RejectingAuthenticator>(INVALID_CREDENTIALS);
 }
 
 }  // namespace remoting::protocol

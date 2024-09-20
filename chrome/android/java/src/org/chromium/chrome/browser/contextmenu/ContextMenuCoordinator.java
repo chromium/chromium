@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.ENABLED;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
@@ -258,9 +259,12 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
                     @Override
                     public boolean isEnabled(int position) {
-                        return getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
+                        if (getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
                                 || getItemViewType(position)
-                                        == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON;
+                                        == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
+                            return ((ListItem) getItem(position)).model.get(ENABLED);
+                        }
+                        return false;
                     }
 
                     @Override

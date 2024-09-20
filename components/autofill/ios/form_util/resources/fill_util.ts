@@ -2,32 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
+
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {findChildText} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
-declare global {
-    // Defines an additional property, `angular`, on the Window object.
-    // The code below assumes that this property exists within the object.
-    interface Window {
-        angular: any;
-    }
-
-    // Extends the Document object to add the ability to access its
-    // properties via the [] notation and defines a property that is
-    // assumed to exist within the object.
-    interface Document {
-      [key: symbol]: number;
-
-      __gCrWebURLNormalizer: HTMLAnchorElement;
-    }
-}
-
 // Extends the Element to add the ability to access its properties
 // via the [] notation.
 declare interface IndexableElement extends Element {
-    [key: symbol]: number;
+  [key: symbol]: number;
 }
 
 declare interface AutofillFormFieldData {
@@ -690,36 +675,27 @@ gCrWeb.fill.isElementInsideFormOrFieldSet = function(
 /**
  * @param element Form or form input element.
  */
-function setUniqueIDIfNeeded(element: IndexableElement): void {
+gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
   try {
     const uniqueID = gCrWeb.fill.ID_SYMBOL;
     if (typeof element[uniqueID] === 'undefined') {
-      element[uniqueID] = document[uniqueID]!++;
+      const elementID = document[uniqueID]!++;
+      element[uniqueID] = elementID;
+
+      if (gCrWeb.autofill_form_features
+              .isAutofillIsolatedContentWorldEnabled()) {
+        //  Store a copy of the ID in the DOM. gCrWeb.fill.getUniqueID will use
+        //  the DOM copy when running in the page content world.
+        element.setAttribute(
+            fillConstants.UNIQUE_ID_ATTRIBUTE, elementID.toString());
+      }
+
       // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14
       // is deprecated.
       elementMap.set(
-          element[uniqueID], window.WeakRef ? new WeakRef(element) : element);
+          elementID, window.WeakRef ? new WeakRef(element) : element);
     }
   } catch (e) {
-  }
-}
-
-/**
- * @param element Form or form input element.
- * @return Unique stable ID converted to string..
- */
-gCrWeb.fill.getUniqueID = function(element: any): string {
-  setUniqueIDIfNeeded(element);
-  try {
-    const uniqueID = gCrWeb.fill.ID_SYMBOL;
-    if (typeof element[uniqueID]! !== 'undefined' &&
-        !isNaN(element[uniqueID]!)) {
-      return element[uniqueID].toString();
-    } else {
-      return fillConstants.RENDERER_ID_NOT_SET;
-    }
-  } catch (e) {
-    return fillConstants.RENDERER_ID_NOT_SET;
   }
 };
 

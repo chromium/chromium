@@ -67,12 +67,9 @@ java_library("module_interface_java") {
 java_annotation_processor("module_interface_processor") {
   sources = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterfaceProcessor.java" ]
   main_class = "org.chromium.components.module_installer.builder.ModuleInterfaceProcessor"
-  annotation_processor_deps =
-      [ "//third_party/android_deps:auto_service_processor" ]
   deps = [
     ":module_interface_java",
     "//build/android:build_java",
-    "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
     "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/android_deps:com_squareup_javapoet_java",
   ]

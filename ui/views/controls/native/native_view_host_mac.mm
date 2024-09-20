@@ -222,11 +222,6 @@ bool NativeViewHostMac::SetCornerRadii(
   return true;
 }
 
-bool NativeViewHostMac::SetCustomMask(std::unique_ptr<ui::LayerOwner> mask) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void NativeViewHostMac::SetHitTestTopInset(int top_inset) {
   NOTIMPLEMENTED();
 }

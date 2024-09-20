@@ -547,9 +547,6 @@ _mdc_public_headers = [
   "src/components/schemes/Shape/src/MDCShapeCategory.h",
   "src/components/schemes/Shape/src/MDCShapeScheme.h",
   "src/components/schemes/Shape/src/MaterialShapeScheme.h",
-  "src/components/schemes/Typography/src/BasicFontScheme/MDCBasicFontScheme.h",
-  "src/components/schemes/Typography/src/BasicFontScheme/MaterialTypographyScheme+BasicFontScheme.h",
-  "src/components/schemes/Typography/src/MDCLegacyFontScheme.h",
   "src/components/schemes/Typography/src/MDCTypographyScheme.h",
   "src/components/schemes/Typography/src/MaterialTypographyScheme.h",
   "src/components/schemes/Typography/src/Scheming/MDCTypographyScheming.h",
@@ -718,7 +715,6 @@ _mdc_include_dirs = [
   "src/components/schemes/Container/src",
   "src/components/schemes/Shape/src",
   "src/components/schemes/Typography/src",
-  "src/components/schemes/Typography/src/BasicFontScheme",
   "src/components/schemes/Typography/src/Scheming",
 ]
 
@@ -1549,9 +1545,6 @@ _mdc_sources = [
   "src/components/schemes/Shape/src/MDCShapeScheme.h",
   "src/components/schemes/Shape/src/MDCShapeScheme.m",
   "src/components/schemes/Shape/src/MaterialShapeScheme.h",
-  "src/components/schemes/Typography/src/BasicFontScheme/MDCBasicFontScheme.h",
-  "src/components/schemes/Typography/src/BasicFontScheme/MaterialTypographyScheme+BasicFontScheme.h",
-  "src/components/schemes/Typography/src/MDCLegacyFontScheme.h",
   "src/components/schemes/Typography/src/MDCTypographyScheme.h",
   "src/components/schemes/Typography/src/MDCTypographyScheme.m",
   "src/components/schemes/Typography/src/MaterialTypographyScheme.h",

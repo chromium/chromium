@@ -12,7 +12,7 @@ namespace blink {
 
 HTMLSelectedOptionElement::HTMLSelectedOptionElement(Document& document)
     : HTMLElement(html_names::kSelectedoptionTag, document) {
-  CHECK(RuntimeEnabledFeatures::StylableSelectEnabled() ||
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
         RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
 }
 

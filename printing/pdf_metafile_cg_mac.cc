@@ -50,8 +50,7 @@ void RotatePage(CGContextRef context, const CGRect& rect, int num_rotations) {
       CGContextRotateCTM(context, -std::numbers::pi / 2);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

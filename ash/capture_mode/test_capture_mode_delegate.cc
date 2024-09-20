@@ -118,7 +118,9 @@ void TestCaptureModeDelegate::StopObservingRestrictedContent(
 }
 
 void TestCaptureModeDelegate::OnCaptureImageAttempted(aura::Window const*,
-                                                      gfx::Rect const&) {}
+                                                      gfx::Rect const&) {
+  ++num_capture_image_attempts_;
+}
 
 mojo::Remote<recording::mojom::RecordingService>
 TestCaptureModeDelegate::LaunchRecordingService() {
@@ -201,7 +203,8 @@ void TestCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
 
 void TestCaptureModeDelegate::FinalizeSavedFile(
     base::OnceCallback<void(bool, const base::FilePath&)> callback,
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    const gfx::Image& thumbnail) {
   std::move(callback).Run(/*success=*/true, path);
 }
 

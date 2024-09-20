@@ -184,7 +184,9 @@ def _basic_suite_test_config(
         script = None,
         binary = None,
         telemetry_test_name = None,
-        args = None):
+        args = None,
+        precommit_args = None,
+        non_precommit_args = None):
     """The details for the test included when included in a basic suite.
 
     When generating test_suites.pyl, these values will be written out
@@ -204,6 +206,8 @@ def _basic_suite_test_config(
         binary = binary,
         telemetry_test_name = telemetry_test_name,
         args = args,
+        precommit_args = precommit_args,
+        non_precommit_args = non_precommit_args,
     )
 
 def _create_legacy_test(*, name, basic_suite_test_config, mixins = None):
@@ -246,6 +250,7 @@ def _create_bundle(
         builder_name = None,
         settings = None,
         mixins = [],
+        variants = [],
         per_test_modifications = {}):
     tests_to_remove = []
     for test_name, mods in per_test_modifications.items():
@@ -270,6 +275,8 @@ def _create_bundle(
         graph.add_edge(bundle_key, _targets_nodes.BUNDLE.key(t))
     for m in mixins:
         graph.add_edge(bundle_key, _targets_nodes.MIXIN.key(m))
+    for v in variants:
+        graph.add_edge(bundle_key, _targets_nodes.VARIANT.key(v))
     for test_name, mods in per_test_modifications.items():
         # Use bundle_key.id here instead of name because an inline bundle will
         # have None for name

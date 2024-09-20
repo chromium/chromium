@@ -66,6 +66,7 @@ class DownloadFileWithError : public download::DownloadFileImpl {
       const std::string& client_guid,
       const GURL& source_url,
       const GURL& referrer_url,
+      const std::optional<url::Origin>& request_initiator,
       mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
       RenameCompletionCallback callback) override;
 
@@ -247,6 +248,7 @@ void DownloadFileWithError::RenameAndAnnotate(
     const std::string& client_guid,
     const GURL& source_url,
     const GURL& referrer_url,
+    const std::optional<url::Origin>& request_initiator,
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
     RenameCompletionCallback callback) {
   download::DownloadInterruptReason error_to_return =
@@ -275,7 +277,8 @@ void DownloadFileWithError::RenameAndAnnotate(
     callback_to_use = std::move(callback);
 
   download::DownloadFileImpl::RenameAndAnnotate(
-      full_path, client_guid, source_url, referrer_url, mojo::NullRemote(),
+      full_path, client_guid, source_url, referrer_url,
+      /*request_initiator=*/std::nullopt, mojo::NullRemote(),
       std::move(callback_to_use));
 }
 

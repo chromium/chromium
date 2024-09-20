@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
-#include "base/memory/raw_ptr.h"
 
 #include <string>
 #include <utility>
@@ -18,6 +17,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -82,6 +82,7 @@
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/url_constants.h"
@@ -277,7 +278,7 @@ void ChromeNewWindowClient::NewWindowForDetachingTab(
 
   Browser::CreateParams params = source_view->browser()->create_params();
   params.user_gesture = true;
-  params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+  params.initial_show_state = ui::mojom::WindowShowState::kDefault;
   Browser* browser = Browser::Create(params);
   if (!browser) {
     std::move(closure).Run(/*new_window=*/nullptr);

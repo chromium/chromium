@@ -18,6 +18,7 @@
 #include "components/user_education/common/new_badge_controller.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/rect.h"
@@ -32,12 +33,12 @@ std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
   new TestBrowserWindowOwner(std::move(window));
   params.window = window_ptr;
   window_ptr->set_is_minimized(params.initial_show_state ==
-                               ui::SHOW_STATE_MINIMIZED);
+                               ui::mojom::WindowShowState::kMinimized);
   // Tests generally expect TestBrowserWindows not to be active.
   window_ptr->set_is_active(
-      params.initial_show_state != ui::SHOW_STATE_INACTIVE &&
-      params.initial_show_state != ui::SHOW_STATE_DEFAULT &&
-      params.initial_show_state != ui::SHOW_STATE_MINIMIZED);
+      params.initial_show_state != ui::mojom::WindowShowState::kInactive &&
+      params.initial_show_state != ui::mojom::WindowShowState::kDefault &&
+      params.initial_show_state != ui::mojom::WindowShowState::kMinimized);
 
   return std::unique_ptr<Browser>(Browser::Create(params));
 }
@@ -131,8 +132,8 @@ gfx::Rect TestBrowserWindow::GetRestoredBounds() const {
   return gfx::Rect();
 }
 
-ui::WindowShowState TestBrowserWindow::GetRestoredState() const {
-  return ui::SHOW_STATE_DEFAULT;
+ui::mojom::WindowShowState TestBrowserWindow::GetRestoredState() const {
+  return ui::mojom::WindowShowState::kDefault;
 }
 
 gfx::Rect TestBrowserWindow::GetBounds() const {
@@ -161,8 +162,8 @@ bool TestBrowserWindow::GetCanResize() {
   return false;
 }
 
-ui::WindowShowState TestBrowserWindow::GetWindowShowState() const {
-  return ui::SHOW_STATE_DEFAULT;
+ui::mojom::WindowShowState TestBrowserWindow::GetWindowShowState() const {
+  return ui::mojom::WindowShowState::kDefault;
 }
 
 bool TestBrowserWindow::IsFullscreen() const {

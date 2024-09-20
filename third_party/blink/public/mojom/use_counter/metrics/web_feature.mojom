@@ -4116,7 +4116,7 @@ enum WebFeature {
   kAutoSizesNonLazy = 4751,
   kOBSOLETE_TrustedTypesIntrospection = 4752,
   kTrustedTypesIsCheck = 4753,
-  kMouseDragOnCancelledMouseMove = 4754,
+  kOBSOLETE_MouseDragOnCancelledMouseMove = 4754,
   // The items above roughly this point are available in the M121 branch.
 
   kFedCmDomainHint = 4755,
@@ -4471,7 +4471,14 @@ enum WebFeature {
   kV8Window_PopinContextTypesSupported_Method = 5096,
   kV8Window_PopinContextType_Method = 5097,
   kWebAuthentication_AttestationFormats = 5098,
-
+  kCssDisplayPropertyMultipleValues = 5099,
+  kDocumentPolicyExpectNoLinkedResources = 5100,
+  kSelectionIsCollapsedBehaviorChange = 5101,
+  kTopicsAPIAll = 5102,
+  kPaymentRequestDeprecatedPaymentMethod = 5103,
+  kV8PublicKeyCredential_SignalUnknownCredential_Method = 5104,
+  kV8PublicKeyCredential_SignalAllAcceptedCredentials_Method = 5105,
+  kV8PublicKeyCredential_SignalCurrentUserDetails_Method = 5106,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

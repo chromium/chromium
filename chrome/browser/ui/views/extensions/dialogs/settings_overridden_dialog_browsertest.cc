@@ -113,8 +113,9 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
       params.icon = &vector_icons::kProductIcon;
     }
 
-    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         kExtensionSettingsOverridenDialogName);
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        kExtensionSettingsOverriddenDialogName);
     extensions::ShowSettingsOverriddenDialog(
         std::make_unique<TestDialogController>(std::move(params),
                                                &dialog_result_),

@@ -38,7 +38,7 @@ static_library("date_time") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/set_time",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",

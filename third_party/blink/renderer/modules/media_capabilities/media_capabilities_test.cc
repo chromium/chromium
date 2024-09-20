@@ -1419,8 +1419,6 @@ TEST(MediaCapabilitiesTests, WebrtcDecodePowerEfficientIsSmooth) {
   WebrtcDecodingInfoHandler decoding_info_handler(
       blink::CreateWebrtcVideoDecoderFactory(
           mock_gpu_factories.get(),
-          Platform::Current()->GetMediaDecoderFactory(),
-          Platform::Current()->MediaThreadTaskRunner(),
           Platform::Current()->GetRenderingColorSpace(), base::DoNothing()),
       blink::CreateWebrtcAudioDecoderFactory());
 
@@ -1460,9 +1458,8 @@ TEST(MediaCapabilitiesTests, WebrtcDecodeOverridePowerEfficientIsSmooth) {
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
   WebrtcDecodingInfoHandler decoding_info_handler(
       blink::CreateWebrtcVideoDecoderFactory(
-          &mock_gpu_factories, Platform::Current()->GetMediaDecoderFactory(),
-          Platform::Current()->MediaThreadTaskRunner(),
-          Platform::Current()->GetRenderingColorSpace(), base::DoNothing()),
+          &mock_gpu_factories, Platform::Current()->GetRenderingColorSpace(),
+          base::DoNothing()),
       blink::CreateWebrtcAudioDecoderFactory());
   context.GetMediaCapabilities()->set_webrtc_decoding_info_handler_for_test(
       &decoding_info_handler);

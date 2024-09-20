@@ -85,30 +85,6 @@ class RasterInterface : public InterfaceBase {
   virtual void WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
                               const SkYUVAPixmaps& src_yuv_pixmap) = 0;
 
-  // Copy `yuva_plane_mailboxes` to `dest_mailbox`. The color space for the
-  // source of the copy is split into `planes_yuv_color_space` which converts
-  // into full range RGB, and `planes_rgb_color_space` which an RGB color space.
-  // If `planes_rgb_color_space` is nullptr, then disable conversion to
-  // `dest_mailbox`'s color space.
-  virtual void ConvertYUVAMailboxesToRGB(
-      const gpu::Mailbox& dest_mailbox,
-      GLint src_x,
-      GLint src_y,
-      GLsizei width,
-      GLsizei height,
-      SkYUVColorSpace planes_yuv_color_space,
-      const SkColorSpace* planes_rgb_color_space,
-      SkYUVAInfo::PlaneConfig plane_config,
-      SkYUVAInfo::Subsampling subsampling,
-      const gpu::Mailbox yuva_plane_mailboxes[]) = 0;
-
-  virtual void ConvertRGBAToYUVAMailboxes(
-      SkYUVColorSpace planes_yuv_color_space,
-      SkYUVAInfo::PlaneConfig plane_config,
-      SkYUVAInfo::Subsampling subsampling,
-      const gpu::Mailbox yuva_plane_mailboxes[],
-      const gpu::Mailbox& source_mailbox) = 0;
-
   // OOP-Raster
 
   // msaa_sample_count has no effect unless msaa_mode is set to kMSAA

@@ -35,7 +35,6 @@ if (enable_openxr) {
       "src/include/openxr/openxr_platform.h",
       "src/include/openxr/openxr_platform_defines.h",
       "src/src/common/hex_and_handles.h",
-      "src/src/common/loader_interfaces.h",
     ]
 
     public_configs = [ ":config" ]
@@ -103,7 +102,6 @@ if (enable_openxr) {
       "src/src/common/filesystem_utils.cpp",
       "src/src/common/filesystem_utils.hpp",
       "src/src/common/hex_and_handles.h",
-      "src/src/common/loader_interfaces.h",
       "src/src/common/object_info.cpp",
       "src/src/common/object_info.h",
       "src/src/common/platform_utils.hpp",
@@ -113,6 +111,8 @@ if (enable_openxr) {
       "src/src/loader/api_layer_interface.hpp",
       "src/src/loader/exception_handling.hpp",
       "src/src/loader/loader_core.cpp",
+      "src/src/loader/loader_init_data.cpp",
+      "src/src/loader/loader_init_data.hpp",
       "src/src/loader/loader_instance.cpp",
       "src/src/loader/loader_instance.hpp",
       "src/src/loader/loader_logger.cpp",
@@ -190,6 +190,7 @@ if (enable_openxr) {
     } else {
       defines = [
         "XRLOADER_DISABLE_EXCEPTION_HANDLING",
+        "XR_KHR_LOADER_INIT_SUPPORT",
         "XR_OS_ANDROID",
         "XR_USE_PLATFORM_ANDROID",
         "XR_USE_GRAPHICS_API_OPENGL_ES",

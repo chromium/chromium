@@ -50,6 +50,9 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
+#include "content/common/frame.mojom-forward.h"
+#include "content/common/frame.mojom-shared.h"
+#include "content/common/frame.mojom-test-utils.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
@@ -2839,16 +2842,17 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        NetworkIsolationKeyInitialEmptyDocumentIframe) {
   GURL main_frame_url(embedded_test_server()->GetURL("/title1.html"));
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
   net::NetworkIsolationKey expected_main_frame_key =
-      net::NetworkIsolationKey(main_frame_origin, main_frame_origin);
-
+      net::NetworkIsolationKey(main_frame_site, main_frame_site);
   GURL subframe_url_one("about:blank");
   GURL subframe_url_two("about:blank#foo");
   GURL subframe_url_three(
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
   url::Origin subframe_origin_three = url::Origin::Create(subframe_url_three);
   net::NetworkIsolationKey expected_subframe_key_three =
-      net::NetworkIsolationKey(main_frame_origin, subframe_origin_three);
+      net::NetworkIsolationKey(main_frame_site,
+                               net::SchemefulSite(subframe_origin_three));
 
   // Main frame navigation.
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
@@ -2907,16 +2911,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        NetworkIsolationKeyInitialEmptyDocumentPopup) {
   GURL main_frame_url(embedded_test_server()->GetURL("/title1.html"));
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
   net::NetworkIsolationKey expected_main_frame_key =
-      net::NetworkIsolationKey(main_frame_origin, main_frame_origin);
+      net::NetworkIsolationKey(main_frame_site, main_frame_site);
 
   GURL popup_url_one("about:blank");
   GURL popup_url_two("about:blank#foo");
   GURL popup_url_three(
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
   url::Origin popup_origin_three = url::Origin::Create(popup_url_three);
+  net::SchemefulSite pop_site_three = net::SchemefulSite(popup_url_three);
   net::NetworkIsolationKey expected_popup_key_three =
-      net::NetworkIsolationKey(popup_origin_three, popup_origin_three);
+      net::NetworkIsolationKey(pop_site_three, pop_site_three);
 
   // Main frame navigation.
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
@@ -2968,8 +2974,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        NetworkIsolationKeyNavigateIframeToAboutBlank) {
   GURL main_frame_url(embedded_test_server()->GetURL("/page_with_iframe.html"));
   url::Origin origin = url::Origin::Create(main_frame_url);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
   net::NetworkIsolationKey expected_network_isolation_key =
-      net::NetworkIsolationKey(origin, origin);
+      net::NetworkIsolationKey(main_frame_site, main_frame_site);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
@@ -3023,11 +3030,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   url::Origin iframe_origin = url::Origin::Create(cross_site_iframe_url);
 
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
 
   net::NetworkIsolationKey expected_iframe_network_isolation_key(
-      main_frame_origin, iframe_origin);
+      main_frame_site, net::SchemefulSite{iframe_origin});
   net::NetworkIsolationKey expected_main_frame_network_isolation_key(
-      main_frame_origin, main_frame_origin);
+      main_frame_site, main_frame_site);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
@@ -3086,13 +3094,14 @@ IN_PROC_BROWSER_TEST_F(
       url::Origin::Create(innermost_iframe_url);
   url::Origin middle_iframe_origin = url::Origin::Create(middle_iframe_url);
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
 
   net::NetworkIsolationKey expected_innermost_iframe_network_isolation_key(
-      main_frame_origin, innermost_iframe_origin);
+      main_frame_site, net::SchemefulSite{innermost_iframe_origin});
   net::NetworkIsolationKey expected_middle_iframe_network_isolation_key(
-      main_frame_origin, middle_iframe_origin);
+      main_frame_site, net::SchemefulSite{middle_iframe_origin});
   net::NetworkIsolationKey expected_main_frame_network_isolation_key(
-      main_frame_origin, main_frame_origin);
+      main_frame_site, main_frame_site);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
@@ -8011,6 +8020,128 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_FALSE(root->render_manager()->speculative_frame_host());
 }
 
+// Intercept calls to RenderFramHostImpl's CreateNewWindow mojo method to
+// overwrite the target url.
+class FrameHostInterceptorForPopins
+    : public mojom::FrameHostInterceptorForTesting {
+ public:
+  explicit FrameHostInterceptorForPopins(RenderFrameHostImpl* render_frame_host,
+                                         const GURL& target_url)
+      : swapped_impl_(render_frame_host->frame_host_receiver_for_testing(),
+                      this),
+        target_url_(target_url) {}
+
+  ~FrameHostInterceptorForPopins() override = default;
+
+  FrameHostInterceptorForPopins(const FrameHostInterceptorForPopins&) = delete;
+  FrameHostInterceptorForPopins& operator=(
+      const FrameHostInterceptorForPopins&) = delete;
+
+  mojom::FrameHost* GetForwardingInterface() override {
+    return swapped_impl_.old_impl();
+  }
+
+  void CreateNewWindow(mojom::CreateNewWindowParamsPtr params,
+                       CreateNewWindowCallback callback) override {
+    params->target_url = target_url_;
+    static_cast<RenderFrameHostImpl*>(GetForwardingInterface())
+        ->CreateNewWindow(std::move(params), std::move(callback));
+  }
+
+ private:
+  mojo::test::ScopedSwapImplForTesting<mojom::FrameHost> swapped_impl_;
+  GURL target_url_;
+};
+
+class RenderFrameHostImplPartitionedPopinBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplPartitionedPopinBrowserTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kPartitionedPopins);
+  }
+  ~RenderFrameHostImplPartitionedPopinBrowserTest() override = default;
+
+ private:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPartitionedPopinBrowserTest,
+                       CreateNewWindow_FailsWithEmptyTargetUrl) {
+  FrameHostInterceptorForPopins interceptor(
+      static_cast<content::RenderFrameHostImpl*>(
+          web_contents()->GetPrimaryMainFrame()),
+      GURL());
+  GURL url(embedded_https_test_server().GetURL("a.test", "/empty.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+  ASSERT_EQ(ListValueOf("partitioned"),
+            EvalJs(web_contents(), "window.popinContextTypesSupported()"));
+  content::RenderProcessHostBadMojoMessageWaiter crash_observer(
+      web_contents()->GetPrimaryMainFrame()->GetProcess());
+  // ExecJs will sometimes finish before the renderer gets killed, so we must
+  // ignore the result.
+  std::ignore = ExecJs(web_contents(),
+                       "window.open('" + url.spec() + "', '_blank', 'popin');");
+  EXPECT_EQ(
+      "Received bad user message: "
+      "Partitioned popins can only open https URLs.",
+      crash_observer.Wait());
+  // The test passes if the renderer crashes but not the browser.
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPartitionedPopinBrowserTest,
+                       CreateNewWindow_FailsWithAboutBlankTargetUrl) {
+  FrameHostInterceptorForPopins interceptor(
+      static_cast<content::RenderFrameHostImpl*>(
+          web_contents()->GetPrimaryMainFrame()),
+      GURL("about:blank"));
+  GURL url(embedded_https_test_server().GetURL("a.test", "/empty.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+  ASSERT_EQ(ListValueOf("partitioned"),
+            EvalJs(web_contents(), "window.popinContextTypesSupported()"));
+  content::RenderProcessHostBadMojoMessageWaiter crash_observer(
+      web_contents()->GetPrimaryMainFrame()->GetProcess());
+  // ExecJs will sometimes finish before the renderer gets killed, so we must
+  // ignore the result.
+  std::ignore = ExecJs(web_contents(),
+                       "window.open('" + url.spec() + "', '_blank', 'popin');");
+  EXPECT_EQ(
+      "Received bad user message: "
+      "Partitioned popins can only open https URLs.",
+      crash_observer.Wait());
+  // The test passes if the renderer crashes but not the browser.
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPartitionedPopinBrowserTest,
+                       CreateNewWindow_FailsWithHttpTargetUrl) {
+  FrameHostInterceptorForPopins interceptor(
+      static_cast<content::RenderFrameHostImpl*>(
+          web_contents()->GetPrimaryMainFrame()),
+      GURL("http://a.test"));
+  GURL url(embedded_https_test_server().GetURL("a.test", "/empty.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+  ASSERT_EQ(ListValueOf("partitioned"),
+            EvalJs(web_contents(), "window.popinContextTypesSupported()"));
+  content::RenderProcessHostBadMojoMessageWaiter crash_observer(
+      web_contents()->GetPrimaryMainFrame()->GetProcess());
+  // ExecJs will sometimes finish before the renderer gets killed, so we must
+  // ignore the result.
+  std::ignore = ExecJs(web_contents(),
+                       "window.open('" + url.spec() + "', '_blank', 'popin');");
+  EXPECT_EQ(
+      "Received bad user message: "
+      "Partitioned popins can only open https URLs.",
+      crash_observer.Wait());
+  // The test passes if the renderer crashes but not the browser.
+}
+
 class RenderFrameHostImplBrowserTestWithBFCache
     : public RenderFrameHostImplBrowserTest {
  public:
@@ -8576,13 +8707,11 @@ class RenderFrameHostImplUrgentNavigationIPCBrowserTest
     if (RenderDocumentEnabled()) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           /*enabled_features=*/
-          {{blink::features::kBlinkSchedulerPrioritizeNavigationIPCs, {}},
-           {features::kRenderDocument, {{"level", "all-frames"}}}},
+          {{features::kRenderDocument, {{"level", "all-frames"}}}},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {blink::features::kBlinkSchedulerPrioritizeNavigationIPCs},
+          /*enabled_features=*/{},
           /*disabled_features=*/{features::kRenderDocument});
     }
   }

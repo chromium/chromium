@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_UNICODE_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_UNICODE_UTILITIES_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
@@ -37,19 +38,15 @@ PLATFORM_EXPORT bool IsSeparator(UChar32);
 PLATFORM_EXPORT bool ContainsOnlySeparatorsOrEmpty(const String&);
 PLATFORM_EXPORT bool IsKanaLetter(UChar character);
 PLATFORM_EXPORT bool ContainsKanaLetters(const String&);
-PLATFORM_EXPORT void NormalizeCharactersIntoNFCForm(const UChar* characters,
-                                                    unsigned length,
-                                                    Vector<UChar>& buffer);
-PLATFORM_EXPORT void FoldQuoteMarksAndSoftHyphens(UChar* data, size_t length);
+PLATFORM_EXPORT Vector<UChar> NormalizeCharactersIntoNfc(
+    base::span<const UChar> characters);
+PLATFORM_EXPORT void FoldQuoteMarksAndSoftHyphens(base::span<UChar> data);
 PLATFORM_EXPORT void FoldQuoteMarksAndSoftHyphens(String&);
-PLATFORM_EXPORT bool CheckOnlyKanaLettersInStrings(const UChar* first_data,
-                                                   unsigned first_length,
-                                                   const UChar* second_data,
-                                                   unsigned second_length);
-PLATFORM_EXPORT bool CheckKanaStringsEqual(const UChar* first_data,
-                                           unsigned first_length,
-                                           const UChar* second_data,
-                                           unsigned second_length);
+PLATFORM_EXPORT bool CheckOnlyKanaLettersInStrings(
+    base::span<const UChar> first_data,
+    base::span<const UChar> second_data);
+PLATFORM_EXPORT bool CheckKanaStringsEqual(base::span<const UChar> first_data,
+                                           base::span<const UChar> second_data);
 
 }  // namespace blink
 

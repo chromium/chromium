@@ -288,7 +288,7 @@ class CONTENT_EXPORT RenderThreadImpl
           scoped_refptr<viz::RasterContextProvider>);
 
   scoped_refptr<gpu::ClientSharedImageInterface>
-  GetVideoFrameCompositorSharedImageInterface();
+  GetRenderThreadSharedImageInterface();
 
   // Returns a worker context provider that will be bound on the compositor
   // thread.

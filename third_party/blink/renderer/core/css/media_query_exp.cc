@@ -65,8 +65,7 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
            ident == CSSValueID::kMinimalUi ||
            ident == CSSValueID::kWindowControlsOverlay ||
            ident == CSSValueID::kBrowser || ident == CSSValueID::kTabbed ||
-           (RuntimeEnabledFeatures::CSSDisplayModePictureInPictureEnabled() &&
-            ident == CSSValueID::kPictureInPicture);
+           ident == CSSValueID::kPictureInPicture;
   }
 
   if (RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled() &&
@@ -183,10 +182,10 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
         case CSSValueID::kLeft:
         case CSSValueID::kBottom:
         case CSSValueID::kRight:
-        case CSSValueID::kInsetBlockStart:
-        case CSSValueID::kInsetBlockEnd:
-        case CSSValueID::kInsetInlineStart:
-        case CSSValueID::kInsetInlineEnd:
+        case CSSValueID::kBlockStart:
+        case CSSValueID::kBlockEnd:
+        case CSSValueID::kInlineStart:
+        case CSSValueID::kInlineEnd:
           return true;
         default:
           return false;

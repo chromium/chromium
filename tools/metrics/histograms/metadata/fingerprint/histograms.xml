@@ -310,8 +310,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.MatchIgnoredDueToPowerButtonPress"
-    enum="BooleanIgnored" expires_after="2024-09-15">
-  <owner>ravisadineni@chromium.org</owner>
+    enum="BooleanIgnored" expires_after="2025-09-15">
+  <owner>dawidn@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     ChromeOS only. Record when a fingerprint touch was ignored due to parallel
@@ -375,7 +375,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.RecordFormatVersion"
-    enum="FingerprintRecordFormatVersion" expires_after="2025-01-05">
+    enum="FingerprintRecordFormatVersion" expires_after="2025-03-09">
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.{Outcome}.Duration.{Interval}" units="ms"
     expires_after="2025-01-26">
-  <owner>bobbycasey@google.com</owner>
+  <owner>dawidn@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Measures the time it took {Interval} in the '{Outcome}' case.

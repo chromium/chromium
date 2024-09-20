@@ -39,6 +39,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/session_storage_namespace.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/app_controller_mac.h"
@@ -199,9 +200,10 @@ void SessionServiceBase::SetTabWindow(SessionID window_id, SessionID tab_id) {
   ScheduleCommand(sessions::CreateSetTabWindowCommand(window_id, tab_id));
 }
 
-void SessionServiceBase::SetWindowBounds(SessionID window_id,
-                                         const gfx::Rect& bounds,
-                                         ui::WindowShowState show_state) {
+void SessionServiceBase::SetWindowBounds(
+    SessionID window_id,
+    const gfx::Rect& bounds,
+    ui::mojom::WindowShowState show_state) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 

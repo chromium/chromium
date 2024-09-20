@@ -168,9 +168,16 @@ Status ParsePresetClientHints(const base::Value::Dict& client_hints_dict,
 }  // namespace
 
 MobileDevice::MobileDevice() = default;
+
 MobileDevice::MobileDevice(const MobileDevice&) = default;
-MobileDevice::~MobileDevice() = default;
+
+MobileDevice::MobileDevice(MobileDevice&&) = default;
+
 MobileDevice& MobileDevice::operator=(const MobileDevice&) = default;
+
+MobileDevice& MobileDevice::operator=(MobileDevice&&) = default;
+
+MobileDevice::~MobileDevice() = default;
 
 Status MobileDevice::FindMobileDevice(std::string device_name,
                                       MobileDevice* mobile_device) {

@@ -1,0 +1,77 @@
+/* These are UA styles for select and customizable select. */
+/* TODO(crbug.com/1511354): These rules will probably change here:
+ * https://github.com/w3c/csswg-drafts/issues/10857 */
+
+.customizable-select-button, .customizable-select-popover {
+  box-sizing: border-box;
+  /* TODO(crbug.com/1511354): Make the UA stylesheet use something standardized
+   * instead of -webkit-small-control. */
+  font: -webkit-small-control;
+}
+
+.customizable-select-popover {
+  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+  overflow: auto;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25em;
+  padding-block: 0.25em;
+  padding-inline: 0;
+  background-color: Field;
+  margin: 0;
+  inset: auto;
+  min-inline-size: anchor-size(self-inline);
+  min-block-size: 1lh;
+  inset-block-start: anchor(self-end);
+  inset-inline-start: anchor(self-start);
+}
+
+/* These are the UA styles for <option> in chromium.
+ * They will either have to be specced or also added to the main test file.
+ * TODO(crbug.com/1511354): Spec these UA styles. */
+.customizable-select-option {
+  padding-inline: 2px;
+  padding-block-start: 0;
+  padding-block-end: 1px;
+  white-space: nowrap;
+  min-inline-size: 24px;
+  min-block-size: max(24px, 1.2em);
+  align-content: center;
+}
+
+.customizable-select-option::before {
+  content: '\2713' / '';
+}
+.customizable-select-option:not(.selected)::before {
+  visibility: hidden;
+}
+
+.customizable-select-button {
+  color: FieldText;
+  background-color: Field;
+  appearance: none;
+  padding: 0.25em;
+  border: 1px solid ButtonBorder;
+  cursor: default;
+  text-align: inherit;
+  /* TODO(crbug.com/1511354): Make display match the UA stylesheet. */
+  display: inline-flex;
+  flex-grow: 1;
+  flex-shrink: 1;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
+   * https://github.com/openui/open-ui/issues/1026
+   * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
+  min-inline-size: 24px;
+  min-block-size: max(24px, 1.2em);
+}
+
+.customizable-select-button::after {
+  padding-inline-start: 0.5em;
+  content: counter(fake-counter-name, disclosure-closed);
+}
+
+.customizable-select-button.open::after {
+  content: counter(fake-counter-name, disclosure-open);
+}

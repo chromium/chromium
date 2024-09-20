@@ -19,6 +19,7 @@
 #include "remoting/base/corp_service_client.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/protobuf_http_status.h"
+#include "remoting/host/host_config.h"
 #include "remoting/host/setup/buildflags.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_base.h"
@@ -43,6 +44,7 @@ class CorpHostStarter : public HostStarterBase {
   void RegisterNewHost(const std::string& public_key,
                        std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
+  void ApplyConfigValues(base::Value::Dict& config) override;
   void ReportError(const std::string& error_message,
                    base::OnceClosure on_error_reported) override;
 
@@ -105,6 +107,13 @@ void CorpHostStarter::RemoveOldHostFromDirectory(
   // This workflow removes the existing host as part of the provisioning service
   // call so we don't need to make an additional service request here.
   std::move(on_host_removed).Run();
+}
+
+void CorpHostStarter::ApplyConfigValues(base::Value::Dict& config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  config.Set(kRequireSessionAuthorizationPath, true);
+  config.Set(kHostTypeHintPath, kCorpHostTypeHint);
 }
 
 void CorpHostStarter::ReportError(const std::string& message,

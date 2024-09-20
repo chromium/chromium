@@ -26,6 +26,7 @@ import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -51,6 +52,7 @@ public class RestoreMigrateTest {
     @Mock private Profile mIncognitoProfile;
 
     private Context mAppContext;
+    private CipherFactory mCipherFactory;
 
     private void writeStateFile(final TabModelSelector selector, int index) throws IOException {
         TabModelSelectorMetadata data =
@@ -91,6 +93,8 @@ public class RestoreMigrateTest {
                                 .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
         TabIdManager.resetInstanceForTesting();
+
+        mCipherFactory = new CipherFactory();
     }
 
     static class AdvancedMockContextWithTestDir extends AdvancedMockContext {
@@ -132,7 +136,8 @@ public class RestoreMigrateTest {
                                     persistencePolicy,
                                     selector,
                                     null,
-                                    TabWindowManagerSingleton.getInstance());
+                                    TabWindowManagerSingleton.getInstance(),
+                                    mCipherFactory);
                     return store;
                 });
     }

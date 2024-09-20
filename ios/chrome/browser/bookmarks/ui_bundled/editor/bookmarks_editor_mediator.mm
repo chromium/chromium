@@ -33,7 +33,7 @@
   raw_ptr<PrefService> _prefs;
   std::unique_ptr<BookmarkModelBridge> _bookmarkModelObserver;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
-  base::WeakPtr<ChromeBrowserState> _browserState;
+  base::WeakPtr<ProfileIOS> _profile;
   // Whether the user manually changed the folder. In which case it must be
   // saved as last used folder on "save".
   BOOL _manuallyChangedTheFolder;
@@ -59,7 +59,7 @@
                     prefs:(PrefService*)prefs
     authenticationService:(AuthenticationService*)authenticationService
               syncService:(syncer::SyncService*)syncService
-             browserState:(ChromeBrowserState*)browserState {
+                  profile:(ProfileIOS*)profile {
   self = [super init];
   if (self) {
     DCHECK(bookmarkModel);
@@ -75,7 +75,7 @@
         new BookmarkModelBridge(self, _bookmarkModel.get()));
     _syncService = syncService;
     _syncObserverModelBridge.reset(new SyncObserverBridge(self, syncService));
-    _browserState = browserState->AsWeakPtr();
+    _profile = profile->AsWeakPtr();
     _authenticationService = authenticationService->GetWeakPtr();
   }
   return self;
@@ -89,7 +89,7 @@
   _bookmarkModelObserver.reset();
   _syncService = nullptr;
   _syncObserverModelBridge.reset();
-  _browserState = nullptr;
+  _profile = nullptr;
   _originalFolder = nullptr;
   _authenticationService = nullptr;
 }
@@ -229,9 +229,8 @@
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::UpdateBookmarkWithUndoToast(
                               self.bookmark, name, url, _originalFolder,
-                              self.folder, _bookmarkModel.get(),
-                              self.browserState, _authenticationService,
-                              _syncService)];
+                              self.folder, _bookmarkModel.get(), self.profile,
+                              _authenticationService, _syncService)];
   if (_manuallyChangedTheFolder) {
     BookmarkStorageType type = bookmark_utils_ios::GetBookmarkStorageType(
         _folder, _bookmarkModel.get());
@@ -260,7 +259,7 @@
     [self.snackbarCommandsHandler
         showSnackbarMessageOverBrowserToolbar:
             bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                nodes, _bookmarkModel.get(), self.browserState, FROM_HERE)];
+                nodes, _bookmarkModel.get(), self.profile, FROM_HERE)];
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
   }
 }
@@ -282,9 +281,9 @@
   [_consumer updateFolderLabel:folderName];
 }
 
-// Returns the browser state.
-- (ChromeBrowserState*)browserState {
-  return _browserState.get();
+// Returns the profile.
+- (ProfileIOS*)profile {
+  return _profile.get();
 }
 
 @end

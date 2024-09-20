@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_STRING_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_STRING_RESOURCE_H_
 
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -23,35 +25,43 @@ class StringResourceBase {
   explicit StringResourceBase(String string)
       : plain_string_(std::move(string)) {
     DCHECK(!plain_string_.IsNull());
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        plain_string_.CharactersSizeInBytes());
+    memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                               plain_string_.CharactersSizeInBytes());
   }
 
   explicit StringResourceBase(AtomicString string)
       : atomic_string_(std::move(string)) {
     DCHECK(!atomic_string_.IsNull());
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        atomic_string_.CharactersSizeInBytes());
+    memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                               atomic_string_.CharactersSizeInBytes());
   }
 
   explicit StringResourceBase(ParkableString string)
       : parkable_string_(string) {
     // TODO(lizeb): This is only true without compression.
     DCHECK(!parkable_string_.IsNull());
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        parkable_string_.CharactersSizeInBytes());
+    memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                               parkable_string_.CharactersSizeInBytes());
   }
 
   StringResourceBase(const StringResourceBase&) = delete;
   StringResourceBase& operator=(const StringResourceBase&) = delete;
 
   virtual ~StringResourceBase() {
-    int64_t reduced_external_memory = plain_string_.CharactersSizeInBytes();
-    if (plain_string_.Impl() != atomic_string_.Impl() &&
-        !atomic_string_.IsNull())
-      reduced_external_memory += atomic_string_.CharactersSizeInBytes();
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        -reduced_external_memory);
+    int64_t reduced_external_memory = 0;
+    if (!parkable_string_.IsNull()) {
+      DCHECK(plain_string_.IsNull());
+      DCHECK(atomic_string_.IsNull());
+      reduced_external_memory = parkable_string_.CharactersSizeInBytes();
+    } else {
+      reduced_external_memory = plain_string_.CharactersSizeInBytes();
+      if (plain_string_.Impl() != atomic_string_.Impl() &&
+          !atomic_string_.IsNull()) {
+        reduced_external_memory += atomic_string_.CharactersSizeInBytes();
+      }
+    }
+    memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
+                               reduced_external_memory);
   }
 
   String GetWTFString() {
@@ -73,8 +83,8 @@ class StringResourceBase {
       atomic_string_ = AtomicString(plain_string_);
       DCHECK(!atomic_string_.IsNull());
       if (plain_string_.Impl() != atomic_string_.Impl()) {
-        v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-            atomic_string_.CharactersSizeInBytes());
+        memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                   atomic_string_.CharactersSizeInBytes());
       }
     }
     return atomic_string_;
@@ -117,6 +127,8 @@ class StringResourceBase {
   // If this string is parkable, its value is held here, and the other
   // members above are null.
   ParkableString parkable_string_;
+
+  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase memory_accounter_;
 };
 
 // Even though StringResource{8,16}Base are effectively empty in release mode,

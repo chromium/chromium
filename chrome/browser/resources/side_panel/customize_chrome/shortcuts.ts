@@ -121,6 +121,14 @@ export class ShortcutsElement extends CrLitElement {
     this.setShow_(!this.show_);
   }
 
+  protected onRadioSelectionChanged_(e: CustomEvent<{value: string}>) {
+    if (e.detail.value === this.radioSelection_) {
+      return;
+    }
+    this.customLinksEnabled_ = e.detail.value === 'customLinksOption';
+    this.setMostVisitedSettings_();
+  }
+
   private setCustomLinksEnabled_(option: string) {
     if (this.radioSelection_ === option) {
       return;

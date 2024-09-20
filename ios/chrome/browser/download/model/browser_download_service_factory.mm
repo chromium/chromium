@@ -8,13 +8,20 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/download/model/browser_download_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/download/download_controller.h"
 
 // static
-BrowserDownloadService* BrowserDownloadServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
+BrowserDownloadService* BrowserDownloadServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<BrowserDownloadService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+}
+
+// static
+BrowserDownloadService* BrowserDownloadServiceFactory::GetForBrowserState(
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static

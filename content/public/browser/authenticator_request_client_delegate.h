@@ -153,6 +153,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // UpdateUserPasskeys updates the name and display name of a passkey for the
   // given relying party ID and user ID.
   virtual void UpdateUserPasskeys(content::WebContents* web_contents,
+                                  const url::Origin& origin,
                                   const std::string& relying_party_id,
                                   std::vector<uint8_t>& user_id,
                                   const std::string& name,
@@ -293,23 +294,6 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
           void(device::FidoRequestHandlerBase::BlePermissionCallback)>
           request_ble_permission_callback);
 
-  // Invokes |callback| with |true| if the given relying party ID is permitted
-  // to receive attestation certificates from the provided FidoAuthenticator.
-  // Otherwise invokes |callback| with |false|.
-  //
-  // If |is_enterprise_attestation| is true then that authenticator has asserted
-  // that |relying_party_id| is known to it and the attesation has no
-  // expectations of privacy.
-  //
-  // Since these certificates may uniquely identify the authenticator, the
-  // embedder may choose to show a permissions prompt to the user, and only
-  // invoke |callback| afterwards. This may hairpin |callback|.
-  virtual void ShouldReturnAttestation(
-      const std::string& relying_party_id,
-      const device::FidoAuthenticator* authenticator,
-      bool is_enterprise_attestation,
-      base::OnceCallback<void(bool)> callback);
-
   // ConfigureDiscoveries optionally configures |fido_discovery_factory|.
   //
   // |origin| is the origin of the calling site, |rp_id| is the relying party
@@ -381,6 +365,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // Set to true to enable a mode where a priori discovered credentials are
   // shown alongside autofilled passwords, instead of the modal flow.
   virtual void SetConditionalRequest(bool is_conditional);
+
+  // Set the credential types that are expected by the Ambient UI.
+  // Credential types are defined in `credential_types.mojom`.
+  virtual void SetAmbientCredentialTypes(int credential_type_flags);
 
   // Sets a credential filter for conditional mediation requests, which will
   // only allow passkeys with matching credential IDs to be displayed to the

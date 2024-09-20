@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
 
 namespace blink {
 
@@ -41,7 +41,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   bool StrictMode() const override;
   const String MediaType() const override;
   blink::mojom::DisplayMode DisplayMode() const override;
-  ui::WindowShowState WindowShowState() const override;
+  ui::mojom::blink::WindowShowState WindowShowState() const override;
   bool Resizable() const override;
   ColorSpaceGamut ColorGamut() const override;
   mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override;

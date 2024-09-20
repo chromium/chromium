@@ -21,7 +21,8 @@ enum class SiteFamiliarityHeuristicName {
   kSiteEngagementScoreGte10 = 6,
   kSiteEngagementScoreExists = 7,
   kNoVisitsToAnySiteMoreThanADayAgo = 8,
-  kMaxValue = kNoVisitsToAnySiteMoreThanADayAgo,
+  kGlobalAllowlistNotReady = 9,
+  kMaxValue = kGlobalAllowlistNotReady,
 };
 
 // Subset of SiteFamiliarityHeuristicName for heuristics related to navigation

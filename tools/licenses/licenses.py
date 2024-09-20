@@ -424,7 +424,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('third_party', 'lss'),
     os.path.join('third_party', 'lzma_sdk'),
     os.path.join('third_party', 'mesa'),
-    os.path.join('third_party', 'motemplate'),
     os.path.join('third_party', 'mozc'),
     os.path.join('third_party', 'mozilla'),
     os.path.join('third_party', 'npapi'),

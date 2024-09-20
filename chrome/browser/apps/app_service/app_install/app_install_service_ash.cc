@@ -88,7 +88,6 @@ AppInstallServiceAsh::InstallAppCallbackForTesting() {
 
 AppInstallServiceAsh::AppInstallServiceAsh(Profile& profile)
     : profile_(profile),
-      device_info_manager_(&*profile_),
       arc_app_installer_(&*profile_),
       web_app_installer_(&*profile_) {}
 
@@ -156,33 +155,10 @@ void AppInstallServiceAsh::InstallApp(
                          std::move(result_callback)));
       return;
     }
-    case PackageType::kBorealis: {
-      if (!base::FeatureList::IsEnabled(
-              ash::features::kAppInstallServiceUriBorealis)) {
-        std::move(result_callback)
-            .Run(AppInstallResult::kAppProviderNotAvailable);
-        return;
-      }
-
-      // Parse the Steam Game ID from the PackageId.
-      uint64_t steam_game_id;
-      if (!base::StringToUint64(package_id.identifier(), &steam_game_id)) {
-        std::move(result_callback).Run(AppInstallResult::kAppDataCorrupted);
-        return;
-      }
-
-      borealis::UserRequestedSteamGameInstall(&*profile_, steam_game_id);
-
-      // We've now launched the Borealis installer or the Steam Store
-      // website. We don't yet know whether that flow will result in a
-      // successfully installed game.
-      std::move(result_callback).Run(AppInstallResult::kUnknown);
-      return;
-    }
+    case PackageType::kBorealis:
     case PackageType::kChromeApp:
     case PackageType::kSystem:
     case PackageType::kUnknown:
-      // TODO(b/303350800): Generalize to work with all app types.
       std::move(result_callback).Run(AppInstallResult::kAppTypeNotSupported);
       return;
   }
@@ -231,19 +207,8 @@ bool AppInstallServiceAsh::CanUserInstall() const {
 void AppInstallServiceAsh::FetchAppInstallData(
     PackageId package_id,
     app_install_almanac_endpoint::GetAppInstallInfoCallback data_callback) {
-  device_info_manager_.GetDeviceInfo(
-      base::BindOnce(&AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(package_id),
-                     std::move(data_callback)));
-}
-
-void AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo(
-    PackageId package_id,
-    app_install_almanac_endpoint::GetAppInstallInfoCallback data_callback,
-    DeviceInfo device_info) {
-  app_install_almanac_endpoint::GetAppInstallInfo(
-      package_id, std::move(device_info), *profile_->GetURLLoaderFactory(),
-      std::move(data_callback));
+  app_install_almanac_endpoint::GetAppInstallInfo(&profile_.get(), package_id,
+                                                  std::move(data_callback));
 }
 
 void AppInstallServiceAsh::PerformInstallHeadless(
@@ -410,19 +375,8 @@ void AppInstallServiceAsh::PerformInstall(
 void AppInstallServiceAsh::FetchAppInstallUrl(
     std::string serialized_package_id,
     base::OnceCallback<void(base::expected<GURL, QueryError>)> callback) {
-  device_info_manager_.GetDeviceInfo(
-      base::BindOnce(&AppInstallServiceAsh::FetchAppInstallUrlWithDeviceInfo,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(serialized_package_id), std::move(callback)));
-}
-
-void AppInstallServiceAsh::FetchAppInstallUrlWithDeviceInfo(
-    std::string serialized_package_id,
-    base::OnceCallback<void(base::expected<GURL, QueryError>)> callback,
-    DeviceInfo device_info) {
   app_install_almanac_endpoint::GetAppInstallUrl(
-      serialized_package_id, std::move(device_info),
-      *profile_->GetURLLoaderFactory(), std::move(callback));
+      &profile_.get(), serialized_package_id, std::move(callback));
 }
 
 void AppInstallServiceAsh::MaybeLaunchAppInstallUrl(

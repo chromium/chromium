@@ -13,13 +13,17 @@ namespace password_manager {
 class PasswordSenderService;
 }
 
-// Creates instances of PasswordSenderService per BrowserState.
+// Creates instances of PasswordSenderService per profile.
 class IOSChromePasswordSenderServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static IOSChromePasswordSenderServiceFactory* GetInstance();
+  // TODO(crbug.com/358301380): remove this method.
   static password_manager::PasswordSenderService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static password_manager::PasswordSenderService* GetForProfile(
+      ProfileIOS* profile);
+  static IOSChromePasswordSenderServiceFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<IOSChromePasswordSenderServiceFactory>;

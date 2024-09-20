@@ -10,6 +10,7 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './settings-row.js';
 import './speaker-label-consent-dialog.js';
+import './spoken-message.js';
 import './transcription-consent-dialog.js';
 
 import {
@@ -27,12 +28,14 @@ import {
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {signal} from '../core/reactive/signal.js';
 import {
   settings,
   SpeakerLabelEnableState,
   SummaryEnableState,
   TranscriptionEnableState,
 } from '../core/state/settings.js';
+import {HELP_URL} from '../core/url_constants.js';
 import {
   assertExhaustive,
   assertInstanceof,
@@ -74,10 +77,14 @@ export class SettingsMenu extends ReactiveLitElement {
     }
 
     #header {
-      color: var(--cros-sys-primary);
-      font: var(--cros-title-1-font);
       padding: 24px;
       position: relative;
+
+      & > h2 {
+        color: var(--cros-sys-primary);
+        font: var(--cros-title-1-font);
+        margin: unset;
+      }
 
       & > cra-icon-button {
         position: absolute;
@@ -105,6 +112,7 @@ export class SettingsMenu extends ReactiveLitElement {
       & > .title {
         color: var(--cros-sys-primary);
         font: var(--cros-button-2-font);
+        margin: unset;
         padding: 8px;
       }
 
@@ -144,11 +152,26 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private readonly dialog = createRef<CraDialog>();
 
+  private readonly summaryDownloadRequested = signal(false);
+
+  private readonly downloadPerfCollected = signal(false);
+
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
 
   private readonly speakerLabelConsentDialog =
     createRef<SpeakerLabelConsentDialog>();
+
+  override updated(): void {
+    if (this.summaryDownloadRequested.value &&
+      !this.downloadPerfCollected.value &&
+      this.platformHandler.summaryModelLoader.state.value.kind === 'installed'
+    ) {
+      // TODO: b/367263595 - Collect perf in PlatformHandler instead.
+      this.platformHandler.perfLogger.finish('summaryModelDownload');
+      this.downloadPerfCollected.value = true;
+    }
+  }
 
   show(): void {
     this.dialog.value?.show();
@@ -162,9 +185,11 @@ export class SettingsMenu extends ReactiveLitElement {
     settings.mutate((s) => {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
+    this.platformHandler.perfLogger.start({kind: 'summaryModelDownload'});
     this.platformHandler.summaryModelLoader.download();
     // The settings download both the model for summary and title suggestion.
     this.platformHandler.titleSuggestionModelLoader.download();
+    this.summaryDownloadRequested.value = true;
   }
 
   private onSummaryToggle(ev: Event) {
@@ -184,8 +209,7 @@ export class SettingsMenu extends ReactiveLitElement {
       return html`
         <span slot="description">
           ${i18n.settingsOptionsSummaryDescription}
-          <!-- TODO: b/336963138 - Add correct link -->
-          <a href="javascript:;">
+          <a href=${HELP_URL} target="_blank">
             ${i18n.settingsOptionsSummaryLearnMoreLink}
           </a>
         </span>
@@ -203,12 +227,17 @@ export class SettingsMenu extends ReactiveLitElement {
         slot="action"
         .selected=${this.summaryEnabled}
         @change=${this.onSummaryToggle}
+        aria-label=${i18n.settingsOptionsSummaryLabel}
       >
       </cros-switch>
     `;
     if (!this.summaryEnabled) {
       return summaryToggle;
     }
+    const downloadedStatus =
+      html`<spoken-message slot="status" role="status" aria-live="polite">
+        ${i18n.summaryDownloadFinishedStatusMessage}
+      </spoken-message>`;
 
     switch (state.kind) {
       case 'unavailable':
@@ -234,10 +263,16 @@ export class SettingsMenu extends ReactiveLitElement {
             <md-circular-progress indeterminate slot="leading-icon">
             </md-circular-progress>
           </cra-button>
+          <spoken-message slot="status" role="status" aria-live="polite">
+            ${i18n.summaryDownloadStartedStatusMessage}
+          </spoken-message>
         `;
       }
       case 'installed':
-        return summaryToggle;
+        return [
+          summaryToggle,
+          this.summaryDownloadRequested.value ? downloadedStatus : nothing,
+        ];
       default:
         assertExhaustive(state.kind);
     }
@@ -297,6 +332,7 @@ export class SettingsMenu extends ReactiveLitElement {
           slot="action"
           .selected=${live(speakerLabelEnabled)}
           @change=${this.onSpeakerLabelToggle}
+          aria-label=${i18n.settingsOptionsSpeakerLabelLabel}
         ></cros-switch>
       </settings-row>
     `;
@@ -315,6 +351,7 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private onCloseClick() {
     this.dialog.value?.close();
+    this.summaryDownloadRequested.value = false;
   }
 
   private onTranscriptionToggle() {
@@ -392,6 +429,7 @@ export class SettingsMenu extends ReactiveLitElement {
         slot="action"
         .selected=${live(this.transcriptionEnabled)}
         @change=${this.onTranscriptionToggle}
+        aria-label=${i18n.settingsOptionsTranscriptionLabel}
       >
       </cros-switch>
     `;
@@ -438,9 +476,7 @@ export class SettingsMenu extends ReactiveLitElement {
     }
     return html`
       <div class="section">
-        <div class="title">
-          ${i18n.settingsSectionTranscriptionSummaryHeader}
-        </div>
+        <h3 class="title">${i18n.settingsSectionTranscriptionSummaryHeader}</h3>
         <div class="body">
           <settings-row>
             <span slot="label">
@@ -469,6 +505,7 @@ export class SettingsMenu extends ReactiveLitElement {
           slot="action"
           .selected=${live(this.platformHandler.quietMode.value)}
           @change=${this.onDoNotDisturbToggle}
+          aria-label=${i18n.settingsOptionsDoNotDisturbLabel}
         ></cros-switch>
       </settings-row>
     `;
@@ -488,6 +525,7 @@ export class SettingsMenu extends ReactiveLitElement {
           slot="action"
           .selected=${live(settings.value.keepScreenOn)}
           @change=${this.onKeepScreenOnToggle}
+          aria-label=${i18n.settingsOptionsKeepScreenOnLabel}
         ></cros-switch>
       </settings-row>
     `;
@@ -495,22 +533,26 @@ export class SettingsMenu extends ReactiveLitElement {
 
   override render(): RenderResult {
     // TODO: b/354109582 - Implement actual functionality of keep screen on.
-    return html`<cra-dialog ${ref(this.dialog)}>
+    return html`<cra-dialog
+        ${ref(this.dialog)}
+        aria-label=${i18n.settingsHeader}
+      >
         <div slot="content">
           <div id="header">
-            ${i18n.settingsHeader}
+            <h2 id="dialog-label">${i18n.settingsHeader}</h2>
             <cra-icon-button
               buttonstyle="floating"
               size="small"
               shape="circle"
               @click=${this.onCloseClick}
+              aria-label=${i18n.closeDialogButtonTooltip}
             >
               <cra-icon slot="icon" name="close"></cra-icon>
             </cra-icon-button>
           </div>
           <div id="body">
             <div class="section">
-              <div class="title">${i18n.settingsSectionGeneralHeader}</div>
+              <h3 class="title">${i18n.settingsSectionGeneralHeader}</h3>
               <div class="body">
                 ${this.renderDoNotDisturbSettingsRow()}
                 ${this.renderKeepScreenOnSettingsRow()}

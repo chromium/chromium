@@ -795,7 +795,7 @@ TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
 
   // Look for existing tab.
   content::WebContents* sign_in_tab = GetSignInTabWithAccessPoint(
-      *browser(),
+      browser(),
       signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
   EXPECT_EQ(signin::GetAddAccountURLForDice(
                 "test2@gmail.com", GURL(google_util::kGoogleHomepageURL)),
@@ -803,7 +803,7 @@ TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
 
   // Look for non existing tab.
   sign_in_tab = GetSignInTabWithAccessPoint(
-      *browser(), signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN);
+      browser(), signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN);
   EXPECT_EQ(nullptr, sign_in_tab);
 
   // Two tabs with the same access point, will return the first tab found.
@@ -812,7 +812,7 @@ TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
   EXPECT_EQ(4, tab_strip->count());
 
   sign_in_tab = GetSignInTabWithAccessPoint(
-      *browser(), signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      browser(), signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   EXPECT_EQ(signin::GetAddAccountURLForDice(
                 "test1@gmail.com", GURL(google_util::kGoogleHomepageURL)),
             sign_in_tab->GetVisibleURL());

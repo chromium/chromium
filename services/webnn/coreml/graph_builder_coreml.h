@@ -23,7 +23,11 @@
 #include "third_party/coremltools/mlmodel/format/MIL.pb.h"
 #include "third_party/coremltools/mlmodel/format/Model.pb.h"
 
-namespace webnn::coreml {
+namespace webnn {
+
+class WebNNConstantOperand;
+
+namespace coreml {
 
 struct Float16 {
   uint16_t data;
@@ -101,9 +105,12 @@ class GraphBuilderCoreml {
   //
   // Returns unexpected if it fails.
   [[nodiscard]] static base::expected<std::unique_ptr<Result>, mojom::ErrorPtr>
-  CreateAndBuild(const mojom::GraphInfo& graph_info,
-                 ContextProperties context_properties,
-                 const base::FilePath& working_directory);
+  CreateAndBuild(
+      const mojom::GraphInfo& graph_info,
+      ContextProperties context_properties,
+      const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+          constant_operands,
+      const base::FilePath& working_directory);
 
   static ContextProperties GetContextProperties();
 
@@ -113,9 +120,12 @@ class GraphBuilderCoreml {
   ~GraphBuilderCoreml();
 
  private:
-  GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
-                     ContextProperties context_properties,
-                     base::FilePath ml_package_dir);
+  GraphBuilderCoreml(
+      const mojom::GraphInfo& graph_info,
+      ContextProperties context_properties,
+      const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+          constant_operands,
+      base::FilePath ml_package_dir);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildCoreMLModel();
 
@@ -358,6 +368,10 @@ class GraphBuilderCoreml {
   // passed into `CreateAndBuild()` is valid for as long as `this` exists.
   base::raw_ref<const mojom::GraphInfo> graph_info_;
 
+  base::raw_ref<
+      const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>>
+      constant_operands_;
+
   const ContextProperties context_properties_;
 
   // Used to generate unique names for internal operands generated for WebNN
@@ -370,6 +384,7 @@ class GraphBuilderCoreml {
   std::unique_ptr<Result> result_;
 };
 
-}  // namespace webnn::coreml
+}  // namespace coreml
+}  // namespace webnn
 
 #endif  // SERVICES_WEBNN_COREML_GRAPH_BUILDER_COREML_H_

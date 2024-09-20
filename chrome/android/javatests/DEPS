@@ -50,6 +50,7 @@ include_rules = [
   "+components/payments/content/android/junit/src/org/chromium/components/payments/test_support",
   "+components/permissions/android/java/src/org/chromium/components/permissions",
   "+components/safe_browsing/android/java/src/org/chromium/components/safe_browsing",
+  "+components/saved_tab_groups/android/java/src/org/chromium/components/tab_group_sync",
   "+components/search_engines",
   "+components/security_state/content/android/java",
   "+components/sync/android/java/src/org/chromium/components/sync",

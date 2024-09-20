@@ -109,9 +109,15 @@ class WebAppPublisherTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 class WebAppPublisherTest_Mall : public WebAppPublisherTest {
+ public:
+  WebAppPublisherTest_Mall() : WebAppPublisherTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kCrosMall},
+        /*disabled_features=*/{chromeos::features::kCrosMallSwa});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kCrosMall};
+  base::test::ScopedFeatureList scoped_feature_list_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 

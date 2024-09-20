@@ -24,8 +24,8 @@ namespace autofill {
 // prediction is smaller than the default.)
 const uint32_t kDefaultPasswordLength = 15;
 
-// The minimum length to chunk password in kChunkPassword variation of
-// password_manager::features::PasswordGenerationExperiment.
+// The minimum length to chunk password with
+// `password_manager::features::PasswordGenerationChunking` feature.
 const uint32_t kMinLengthToChunkPassword = 9;
 
 namespace {
@@ -90,11 +90,10 @@ bool IsDifficultToRead(const std::u16string& password) {
          }) != password.end();
 }
 
-bool ChunkingPasswordExperimentEnabled() {
+bool ChunkingPasswordEnabled() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-  return password_manager::features::kPasswordGenerationExperimentVariationParam
-             .Get() == password_manager::features::PasswordGenerationVariation::
-                           kChunkPassword;
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordGenerationChunking);
 #else
   return false;
 #endif
@@ -277,11 +276,10 @@ std::u16string GeneratePassword(const PasswordRequirementsSpec& spec) {
   std::u16string password;
 
   // For specs that allow dash symbol and can be longer than 8 chars generate a
-  // chunked password when `kChunkPassword` variaton of
-  // kPasswordGenerationExperiment is enabled.
+  // chunked password with `PasswordGenerationChunking` feature enabled.
   if (actual_spec.symbols().character_set().find('-') != std::string::npos &&
       actual_spec.max_length() >= kMinLengthToChunkPassword &&
-      ChunkingPasswordExperimentEnabled()) {
+      ChunkingPasswordEnabled()) {
     password = GenerateMaxEntropyChunkedPassword(std::move(actual_spec));
     CHECK_LE(4u, password.size());
     return password;

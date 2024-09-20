@@ -299,7 +299,7 @@ LayoutUnit FlexItem::CrossAxisOffset(const NGFlexLine& line,
   }
   return FlowAwareMarginBefore() +
          FlexItem::AlignmentOffset(available_space, position, baseline_offset,
-                                   is_wrap_reverse, is_webkit_box);
+                                   is_wrap_reverse);
 }
 
 void FlexItem::Trace(Visitor* visitor) const {
@@ -312,8 +312,7 @@ void FlexItem::Trace(Visitor* visitor) const {
 LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
                                      ItemPosition position,
                                      LayoutUnit baseline_offset,
-                                     bool is_wrap_reverse,
-                                     bool is_deprecated_webkit_box) {
+                                     bool is_wrap_reverse) {
   switch (position) {
     case ItemPosition::kLegacy:
     case ItemPosition::kAuto:
@@ -504,11 +503,8 @@ LayoutUnit FlexLine::ApplyMainAxisAutoMarginAdjustment() {
   return size_of_auto_margin;
 }
 
-void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
-                                        LayoutUnit main_axis_end_offset,
-                                        LayoutUnit& cross_axis_offset) {
+void FlexLine::ComputeLineItemsPosition() {
   const auto& style = algorithm_->StyleRef();
-  const bool is_webkit_box = style.IsDeprecatedWebkitBox();
   const bool is_wrap_reverse = style.FlexWrap() == EFlexWrap::kWrapReverse;
 
   // Recalculate the remaining free space. The adjustment for flex factors
@@ -520,28 +516,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
       container_main_inner_size_ - total_item_size -
       (line_items_.size() - 1) * algorithm_->gap_between_items_;
 
-  const StyleContentAlignmentData justify_content =
-      FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
-
   const LayoutUnit auto_margin_offset = ApplyMainAxisAutoMarginAdjustment();
-  const LayoutUnit available_free_space = remaining_free_space_;
-  const bool is_reversed = style.ResolvedIsRowReverseFlexDirection() ||
-                           style.ResolvedIsColumnReverseFlexDirection();
-  const LayoutUnit initial_position =
-      FlexibleBoxAlgorithm::InitialContentPositionOffset(
-          style, available_free_space, justify_content, line_items_.size(),
-          is_reversed);
-  LayoutUnit main_axis_offset = initial_position + main_axis_start_offset;
-
-  // When a -webkit-box has negative available-space it always places that
-  // overflow to the line-right. (Even if we have "direction: rtl" or
-  // "-webkit-box-direction: reverse"). In the future it will hopefully be
-  // possible to remove this quirk.
-  if (is_webkit_box && available_free_space < 0 &&
-      (style.ResolvedIsRowReverseFlexDirection() ==
-       style.IsLeftToRightDirection())) {
-    main_axis_offset += available_free_space;
-  }
 
   LayoutUnit max_major_descent;
   LayoutUnit max_minor_descent;
@@ -582,30 +557,8 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
     }
     max_child_cross_axis_extent = std::max(max_child_cross_axis_extent,
                                            child_cross_axis_margin_box_extent);
-
-    main_axis_offset += flex_item.FlowAwareMarginStart();
-
-    LayoutUnit child_main_extent = flex_item.FlexedBorderBoxSize();
-
-    // In an RTL column situation, this will apply the margin-right/margin-end
-    // on the left. This will be fixed later in
-    // LayoutFlexibleBox::FlipForRightToLeftColumn.
-    flex_item.main_axis_offset_ =
-        style.ResolvedIsRowReverseFlexDirection()
-            ? container_logical_width_ - main_axis_offset - child_main_extent
-            : main_axis_offset;
-    main_axis_offset += child_main_extent + flex_item.FlowAwareMarginEnd();
-
-    const LayoutUnit space_between =
-        FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
-            available_free_space, justify_content, line_items_.size());
-    main_axis_offset += space_between + algorithm_->gap_between_items_;
   }
-
-  cross_axis_offset_ = cross_axis_offset;
   cross_axis_extent_ = max_child_cross_axis_extent;
-
-  cross_axis_offset += max_child_cross_axis_extent;
 }
 
 // static
@@ -674,8 +627,7 @@ FlexibleBoxAlgorithm::FlexibleBoxAlgorithm(const ComputedStyle* style,
   }
 }
 
-FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine(
-    LayoutUnit container_logical_width) {
+FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
   LayoutUnit sum_flex_base_size;
   double total_flex_grow = 0;
   double total_flex_shrink = 0;
@@ -719,9 +671,8 @@ FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine(
   if (next_item_index_ > start_index) {
     return &flex_lines_.emplace_back(
         this, FlexItemVectorView(&all_items_, start_index, next_item_index_),
-        container_logical_width, sum_flex_base_size, total_flex_grow,
-        total_flex_shrink, total_weighted_flex_shrink,
-        sum_hypothetical_main_size);
+        sum_flex_base_size, total_flex_grow, total_flex_shrink,
+        total_weighted_flex_shrink, sum_hypothetical_main_size);
   }
   return nullptr;
 }
@@ -789,87 +740,22 @@ LayoutUnit FlexibleBoxAlgorithm::IntrinsicContentBlockSize() const {
 
   if (IsColumnFlow()) {
     LayoutUnit max_size;
-    for (const FlexLine& line : flex_lines_)
-      max_size = std::max(line.sum_hypothetical_main_size_, max_size);
+    for (const auto& line : flex_lines_) {
+      max_size = std::max(max_size, line.sum_hypothetical_main_size_);
+    }
     return max_size;
   }
 
-  const FlexLine& last_line = flex_lines_.back();
-  // Subtract the first line's offset to remove border/padding
-  return last_line.cross_axis_offset_ + last_line.cross_axis_extent_ -
-         flex_lines_.front().cross_axis_offset_ +
-         (flex_lines_.size() - 1) * gap_between_lines_;
-}
-
-void FlexibleBoxAlgorithm::AlignFlexLines(
-    LayoutUnit cross_axis_content_extent,
-    HeapVector<NGFlexLine>* flex_line_outputs) {
-  const StyleContentAlignmentData align_content = ResolvedAlignContent(*style_);
-  if (align_content.GetPosition() == ContentPosition::kFlexStart &&
-      gap_between_lines_ == 0) {
-    return;
+  LayoutUnit size;
+  for (const auto& line : flex_lines_) {
+    size += line.cross_axis_extent_;
   }
-  if (flex_lines_.empty() || !IsMultiline())
-    return;
-  LayoutUnit available_cross_axis_space =
-      cross_axis_content_extent - (flex_lines_.size() - 1) * gap_between_lines_;
-  for (const FlexLine& line : flex_lines_)
-    available_cross_axis_space -= line.cross_axis_extent_;
-
-  const bool is_reversed = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
-  LayoutUnit line_offset = InitialContentPositionOffset(
-      StyleRef(), available_cross_axis_space, align_content, flex_lines_.size(),
-      is_reversed);
-  for (wtf_size_t i = 0; i < flex_lines_.size(); i++) {
-    FlexLine& line_context = flex_lines_[i];
-    line_context.cross_axis_offset_ += line_offset;
-    if (flex_line_outputs) {
-      (*flex_line_outputs)[i].cross_axis_offset =
-          line_context.cross_axis_offset_;
-    }
-
-    if (align_content.Distribution() == ContentDistributionType::kStretch &&
-        available_cross_axis_space > 0) {
-      line_context.cross_axis_extent_ +=
-          available_cross_axis_space /
-          static_cast<unsigned>(flex_lines_.size());
-      if (flex_line_outputs) {
-        (*flex_line_outputs)[i].line_cross_size =
-            line_context.cross_axis_extent_;
-      }
-    }
-
-    line_offset +=
-        ContentDistributionSpaceBetweenChildren(
-            available_cross_axis_space, align_content, flex_lines_.size()) +
-        gap_between_lines_;
-  }
-}
-
-void FlexibleBoxAlgorithm::FlipForWrapReverse(
-    LayoutUnit cross_axis_start_edge,
-    LayoutUnit cross_axis_content_size,
-    HeapVector<NGFlexLine>* flex_line_outputs) {
-  DCHECK_EQ(Style()->FlexWrap(), EFlexWrap::kWrapReverse);
-  for (wtf_size_t i = 0; i < flex_lines_.size(); i++) {
-    FlexLine& line_context = flex_lines_[i];
-    LayoutUnit original_offset =
-        line_context.cross_axis_offset_ - cross_axis_start_edge;
-    LayoutUnit new_offset = cross_axis_content_size - original_offset -
-                            line_context.cross_axis_extent_;
-    LayoutUnit delta = new_offset - original_offset;
-    if (flex_line_outputs) {
-      line_context.cross_axis_offset_ += delta;
-      (*flex_line_outputs)[i].cross_axis_offset += delta;
-    }
-  }
+  return size + (flex_lines_.size() - 1) * gap_between_lines_;
 }
 
 PhysicalDirection FlexibleBoxAlgorithm::MainAxisDirection() const {
   WritingDirectionMode writing_direction = style_->GetWritingDirection();
-  if (style_->ResolvedIsRowReverseFlexDirection()) {
-    return writing_direction.InlineStart();
-  } else if (style_->ResolvedIsRowFlexDirection()) {
+  if (style_->ResolvedIsRowFlexDirection()) {
     return writing_direction.InlineEnd();
   }
   DCHECK(style_->ResolvedIsColumnFlexDirection());
@@ -914,7 +800,8 @@ StyleContentAlignmentData FlexibleBoxAlgorithm::ResolvedJustifyContent(
       } else if ((position == ContentPosition::kLeft &&
                   style.IsFlippedBlocksWritingMode()) ||
                  (position == ContentPosition::kRight &&
-                  style.IsFlippedLinesWritingMode())) {
+                  style.GetWritingDirection().BlockEnd() ==
+                      PhysicalDirection::kRight)) {
         position = ContentPosition::kEnd;
       } else {
         position = ContentPosition::kStart;
@@ -937,9 +824,11 @@ StyleContentAlignmentData FlexibleBoxAlgorithm::ResolvedJustifyContent(
                     : style.ResolvedJustifyContentDistribution(
                           ContentAlignmentNormalBehavior());
   OverflowAlignment overflow = style.JustifyContent().Overflow();
-  // For flex, justify-content: stretch behaves as flex-start:
-  // https://drafts.csswg.org/css-align/#distribution-flex
-  if (!is_webkit_box && distribution == ContentDistributionType::kStretch) {
+  if (is_webkit_box) {
+    overflow = OverflowAlignment::kSafe;
+  } else if (distribution == ContentDistributionType::kStretch) {
+    // For flex, justify-content: stretch behaves as flex-start:
+    // https://drafts.csswg.org/css-align/#distribution-flex
     position = ContentPosition::kFlexStart;
     distribution = ContentDistributionType::kDefault;
   }
@@ -969,15 +858,10 @@ ItemPosition FlexibleBoxAlgorithm::AlignmentForChild(
                     {ItemPosition::kStretch, OverflowAlignment::kDefault},
                     &flexbox_style)
                 .GetPosition();
-  return TranslateItemPosition(flexbox_style, child_style, align);
-}
-
-ItemPosition FlexibleBoxAlgorithm::TranslateItemPosition(
-    const ComputedStyle& flexbox_style,
-    const ComputedStyle& child_style,
-    ItemPosition align) {
   DCHECK_NE(align, ItemPosition::kAuto);
   DCHECK_NE(align, ItemPosition::kNormal);
+  DCHECK_NE(align, ItemPosition::kLeft) << "left, right are only for justify";
+  DCHECK_NE(align, ItemPosition::kRight) << "left, right are only for justify";
 
   if (align == ItemPosition::kStart)
     return ItemPosition::kFlexStart;
@@ -1000,31 +884,6 @@ ItemPosition FlexibleBoxAlgorithm::TranslateItemPosition(
     }
     return align == ItemPosition::kSelfStart ? logical.BlockStart()
                                              : logical.BlockEnd();
-  }
-
-  if (align == ItemPosition::kLeft || align == ItemPosition::kRight) {
-    DCHECK_EQ(align, child_style
-                         .ResolvedJustifySelf({ItemPosition::kStretch,
-                                               OverflowAlignment::kDefault})
-                         .GetPosition())
-        << "justify-self is the only way that we can get a left or right "
-           "ItemPosition";
-    DCHECK(IsColumnFlow(flexbox_style))
-        << "We can also only get left or right ItemPositions when checking "
-           "compat data for column flexboxes. The rest of this logic assumes a "
-           "column flexbox.";
-    switch (flexbox_style.GetWritingMode()) {
-      case WritingMode::kHorizontalTb:
-      case WritingMode::kVerticalLr:
-        return align == ItemPosition::kLeft ? ItemPosition::kFlexStart
-                                            : ItemPosition::kFlexEnd;
-      case WritingMode::kVerticalRl:
-        return align == ItemPosition::kLeft ? ItemPosition::kFlexEnd
-                                            : ItemPosition::kFlexStart;
-      case WritingMode::kSidewaysLr:
-      case WritingMode::kSidewaysRl:
-        return ItemPosition::kFlexStart;
-    }
   }
 
   if (align == ItemPosition::kBaseline) {
@@ -1052,48 +911,6 @@ ItemPosition FlexibleBoxAlgorithm::TranslateItemPosition(
 }
 
 // static
-LayoutUnit FlexibleBoxAlgorithm::InitialContentPositionOffset(
-    const ComputedStyle& style,
-    LayoutUnit available_free_space,
-    const StyleContentAlignmentData& data,
-    unsigned number_of_items,
-    bool is_reversed) {
-  // Safe-alignment with negative free-space does nothing.
-  if (available_free_space <= LayoutUnit() &&
-      (style.IsDeprecatedWebkitBox() ||
-       data.Overflow() == OverflowAlignment::kSafe)) {
-    return LayoutUnit();
-  }
-
-  ContentPosition position = data.GetPosition();
-  DCHECK_NE(position, ContentPosition::kLeft)
-      << "ResolvedJustifyContent was supposed to translate this to kStart/End";
-  DCHECK_NE(position, ContentPosition::kRight)
-      << "ResolvedJustifyContent was supposed to translate this to kStart/End";
-  if (position == ContentPosition::kFlexEnd ||
-      (position == ContentPosition::kEnd && !is_reversed) ||
-      (position == ContentPosition::kStart && is_reversed)) {
-    return available_free_space;
-  }
-  if (data.GetPosition() == ContentPosition::kCenter)
-    return available_free_space / 2;
-  if (data.Distribution() == ContentDistributionType::kSpaceAround) {
-    if (available_free_space > 0 && number_of_items)
-      return available_free_space / (2 * number_of_items);
-
-    // Fallback to 'safe center'
-    return (available_free_space / 2).ClampNegativeToZero();
-  }
-  if (data.Distribution() == ContentDistributionType::kSpaceEvenly) {
-    if (available_free_space > 0 && number_of_items)
-      return available_free_space / (number_of_items + 1);
-    // Fallback to 'safe center'
-    return (available_free_space / 2).ClampNegativeToZero();
-  }
-  return LayoutUnit();
-}
-
-// static
 LayoutUnit FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
     LayoutUnit available_free_space,
     const StyleContentAlignmentData& data,
@@ -1110,34 +927,6 @@ LayoutUnit FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
   return LayoutUnit();
 }
 
-// Above, we calculated the positions of items in a column reverse container as
-// if they were in a column. Now that we know the block size of the container we
-// can flip the position of every item.
-void FlexibleBoxAlgorithm::LayoutColumnReverse(
-    LayoutUnit main_axis_content_size,
-    LayoutUnit border_scrollbar_padding_before) {
-  DCHECK(IsColumnFlow());
-  DCHECK(Style()->ResolvedIsColumnReverseFlexDirection());
-  for (FlexLine& line_context : FlexLines()) {
-    for (wtf_size_t child_number = 0;
-         child_number < line_context.line_items_.size(); ++child_number) {
-      FlexItem& flex_item = line_context.line_items_[child_number];
-      LayoutUnit item_main_size = flex_item.FlexedBorderBoxSize();
-
-      BoxStrut margins = flex_item.physical_margins_.ConvertToLogical(
-          Style()->GetWritingDirection());
-
-      // We passed 0 as the initial main_axis offset to ComputeLineItemsPosition
-      // for ColumnReverse containers so here we have to add the
-      // border_scrollbar_padding of the container.
-      flex_item.main_axis_offset_ =
-          main_axis_content_size + border_scrollbar_padding_before -
-          flex_item.main_axis_offset_ - item_main_size - margins.block_end +
-          margins.block_start;
-    }
-  }
-}
-
 FlexItem* FlexibleBoxAlgorithm::FlexItemAtIndex(wtf_size_t line_index,
                                                 wtf_size_t item_index) const {
   DCHECK_LT(line_index, flex_lines_.size());
@@ -1145,9 +934,9 @@ FlexItem* FlexibleBoxAlgorithm::FlexItemAtIndex(wtf_size_t line_index,
     line_index = flex_lines_.size() - line_index - 1;
 
   DCHECK_LT(item_index, flex_lines_[line_index].line_items_.size());
-  if (Style()->ResolvedIsColumnReverseFlexDirection() ||
-      Style()->ResolvedIsRowReverseFlexDirection())
+  if (Style()->ResolvedIsReverseFlexDirection()) {
     item_index = flex_lines_[line_index].line_items_.size() - item_index - 1;
+  }
   return const_cast<FlexItem*>(
       &flex_lines_[line_index].line_items_[item_index]);
 }

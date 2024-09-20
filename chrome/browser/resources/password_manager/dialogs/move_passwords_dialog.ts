@@ -111,7 +111,7 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
   }
 
   private onMoveButtonClick_() {
-    assert(this.isOptedInForAccountStorage);
+    assert(this.isAccountStorageEnabled);
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
         this.selectedPasswordIds_);
     this.dispatchEvent(new CustomEvent('passwords-moved', {

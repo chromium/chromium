@@ -10,6 +10,8 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
   switch (reason) {
     case CannotFreezeReason::kVisible:
       return "visible";
+    case CannotFreezeReason::kRecentlyVisible:
+      return "recently visible";
     case CannotFreezeReason::kAudible:
       return "audible";
     case CannotFreezeReason::kRecentlyAudible:
@@ -22,6 +24,10 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "connected to USB device";
     case CannotFreezeReason::kConnectedToBluetoothDevice:
       return "connected to Bluetooth device";
+    case CannotFreezeReason::kConnectedToHidDevice:
+      return "connected to HID device";
+    case CannotFreezeReason::kConnectedToSerialPort:
+      return "connected to serial port";
     case CannotFreezeReason::kCapturingVideo:
       return "capturing video";
     case CannotFreezeReason::kCapturingAudio:
@@ -32,6 +38,8 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "capturing window";
     case CannotFreezeReason::kCapturingDisplay:
       return "capturing display";
+    case CannotFreezeReason::kWebRTC:
+      return "has an active WebRTC connection";
     case CannotFreezeReason::kLoading:
       return "loading";
   }

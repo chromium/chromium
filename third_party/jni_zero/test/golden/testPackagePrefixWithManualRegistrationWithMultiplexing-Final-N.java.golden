@@ -10,7 +10,7 @@ package this.is.a.package.prefix.J;
 
 public class N {
     public static final long WHOLE_HASH = 3865356290363738592L;
-    public static final long PRIORITY_HASH = 3865356290363738592L;
+    public static final long PRIORITY_HASH = 0L;
 
 
     public static native Object _O(int switch_num);

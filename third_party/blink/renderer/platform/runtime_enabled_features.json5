@@ -346,8 +346,9 @@
       public: true,
     },
     {
+      // https://chromestatus.com/feature/5083257285378048
       name: "AnimationProgressAPI",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "AnimationWorklet",
@@ -381,6 +382,11 @@
     {
       name: "AtomicMoveAPI",
       status: "test",
+    },
+    // See https://crbug.com/40150299, and
+    // https://github.com/whatwg/dom/issues/1255.
+    {
+      name: "AtomicMoveAuto",
     },
     {
       name: "AttributionReporting",
@@ -606,7 +612,14 @@
       // features in the `implied_by` list will enable this feature as well.
       origin_trial_feature_name: "AISummarizationAPI",
       copied_from_base_feature_if: "overridden",
-      implied_by: ["AIPromptAPI", "AIRewriterAPI", "AISummarizationAPI", "AIWriterAPI"]
+      implied_by: [
+        "AIPromptAPI",
+        "AIRewriterAPI",
+        "AISummarizationAPI",
+        "AIWriterAPI",
+        "LanguageDetectionAPI",
+        "TranslationAPIEntryPoint",
+      ]
     },
     {
       // Bypasses the enforcement of the Page Embedded Permission Control
@@ -820,7 +833,7 @@
     },
     {
       name: "ContinueEventTimingRecordingWhenBufferIsFull",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Enable support for Controlled Frame, providing the Controlled
@@ -881,8 +894,7 @@
       // Support for <string> syntax in @property
       // https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings
       name: "CSSAtPropertyStringSyntax",
-      status: "experimental",
-
+      status: "stable",
     },
     {
       // Whether <image> values are allowed as counter style <symbol>
@@ -955,15 +967,6 @@
       // flag.
       // TODO(crbug.com/1514397): Remove this when the deprecation is done.
       name: "CSSCustomStateNewSyntax",
-      status: "stable",
-    },
-    {
-      // crbug.com/345562934
-      name: "CssDecoratingBoxFirstLine",
-      status: "stable",
-    },
-    {
-      name: "CSSDisplayModePictureInPicture",
       status: "stable",
     },
     {
@@ -1072,8 +1075,10 @@
       name: "CSSParserIgnoreCharsetForURLs",
     },
     {
+      // Shipped in M130.  Should be removed a little bit after M130 reaches
+      // stable.
       name: "CSSPartAllowsMoreSelectorsAfter",
-      status: "experimental",
+      status: "stable",
     },
     {
       // The `inset-area` CSS property has been renamed to `position-area`. This
@@ -1112,6 +1117,12 @@
     // progress(), media-progress(), container-progress()
     {
       name: "CSSProgressNotation",
+      status: "experimental",
+    },
+    {
+      // For ::column pseudo element for fragment styling.
+      // https://github.com/flackr/carousel/blob/main/fragmentation/README.md
+      name: "CSSPseudoColumn",
       status: "experimental",
     },
     {
@@ -1154,9 +1165,14 @@
       status: "stable",
     },
     {
+      // crbug.com/359616070
+      name: "CSSRelativeColorLateResolveAlways",
+      status: "stable",
+    },
+    {
       // crbug.com/325309578
       name: "CSSRelativeColorSupportsCurrentcolor",
-      status: "test",
+      status: "experimental",
     },
     {
       // Non-standard 'auto' keyword for the CSS resize property. Used for
@@ -1165,12 +1181,6 @@
       // -internal-textarea-auto instead.
       name: "CSSResizeAuto",
       status: "stable",
-    },
-    {
-      // crbug.com/40249572
-      name: "CssRubyAlign",
-      status: "stable",
-      depends_on: ["RubyLineBreakable"],
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
@@ -1252,15 +1262,6 @@
       depends_on: ["CSSTextAutoSpace"],
     },
     {
-      // Makes the transition shorthand omit longhands which have initial
-      // values as per a standards discussion.
-      // Shipped in M127, should be safe to remove in M132.
-      // https://issues.chromium.org/issues/41487057
-      // https://github.com/web-platform-tests/wpt/issues/43574
-      name: "CSSTransitionShorterSerialization",
-      status: "stable",
-    },
-    {
       // Support for tree-scoped [1] timeline names (e.g. produced by
       // scroll-timeline).
       //
@@ -1282,8 +1283,25 @@
       status: "stable"
     },
     {
+      // Support the 'inert' keyword for the visibility property.
+      name: "CSSVisibilityInert",
+      status: "experimental",
+    },
+    {
       name: "CursorAnchorInfoMojoPipe",
       // No status as this will be controlled by the matching Chromium feature.
+    },
+    {
+      // Adds the appearance:base-select CSS value which makes <select>
+      // rendering using alternate content in the UA shadowroot which is
+      // customizable.
+      name: "CustomizableSelect",
+      status: "experimental",
+      // :open is used in the UA stylesheet for CustomizableSelect, so this feature
+      // will not work properly without CSSPseudoOpenClosed.
+      // SelectParserRelaxation is needed to allow more content in <select>
+      // than just <option>s etc.
+      depends_on: ["CSSPseudoOpenClosed", "SelectParserRelaxation"],
     },
     {
       name: "Database",
@@ -1294,6 +1312,13 @@
       origin_trial_allows_third_party: true,
       origin_trial_type: "deprecation",
     },
+    {
+      // This will allow us to remove the GPUAdapter requestAdapterInfo method
+      // after the deprecation period. See https://crbug.com/335383516
+      name: "DeprecatedRequestAdapterInfo",
+      status: "stable",
+    },
+
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.
@@ -1519,7 +1544,7 @@
       name: "DocumentPictureInPicturePreferInitialPlacement",
       status: {
         "Android": "",
-        "default": "experimental",
+        "default": "stable",
       },
     },
     // Enables propagating user activation from a document picture-in-picture
@@ -1535,6 +1560,12 @@
     // DocumentDomain.
     {
       name: "DocumentPolicyDocumentDomain",
+      status: "experimental",
+    },
+    // Enables the ability to use Document Policy header to control feature
+    // ExpectNoLinkedResources.
+    {
+      name: "DocumentPolicyExpectNoLinkedResources",
       status: "experimental",
     },
     // Enables the ability to use Document Policy header to control feature
@@ -1566,19 +1597,6 @@
     },
     {
       name: "DocumentWrite",
-    },
-    // When this flag is enabled, a workaround for https://crbug.com/356158097
-    // is removed.
-    {
-      name: "DOMExceptionV8CaptureStackTraceDisableWorkaround",
-      status: "experimental"
-    },
-    // Controls whether DOMParser.parseFromString() attempts to use the
-    // html fast path parser. This flag is to be used as a killswitch in case
-    // of any issues.
-    {
-      name: "DOMParserUsesHTMLFastPathParser",
-      status: "stable"
     },
     {
       name: "DOMPartsAPI",
@@ -1946,6 +1964,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/40755728
+      name: "FindRubyInPage",
+      status: "test",
+    },
+    {
       name: "FindTextInReadonlyTextInput",
       status: "experimental",
     },
@@ -1963,6 +1986,7 @@
       name: "FledgeBiddingAndAuctionServerAPI",
       origin_trial_feature_name: "FledgeBiddingAndAuctionServer",
       origin_trial_allows_third_party: true,
+      base_feature: "none",
     },
     {
       name: "FledgeCustomMaxAuctionAdComponents",
@@ -2011,6 +2035,7 @@
       // Permit trusted signals to come cross-origin, subject to CORS on the
       // trusted server side and opt-in on the worklet script side.
       name: "FledgePermitCrossOriginTrustedSignals",
+      status: "stable",
     },
     {
       // Enables real time reporting API in Protected Audience.
@@ -2067,14 +2092,6 @@
     },
     {
       name: "FontFamilyStyleMatchingCTMigration",
-    },
-    {
-      name: "FontMatchingCTMigration",
-      status: "stable",
-    },
-    {
-      name: "FontPaletteAnimation",
-      status: "stable",
     },
     {
       name: "FontPresentWin",
@@ -2341,11 +2358,6 @@
       status: "stable",
     },
     {
-      // crbug.com/343749045
-      name: "InlineCursorMultiColFix",
-      status: "stable",
-    },
-    {
       // If enabled, and the inner html parser is unable to successfully
       // parse, it will log histograms of why it failed. The logging is
       // non-trivial.
@@ -2470,6 +2482,9 @@
     {
       name: "LanguageDetectionAPI",
       status: "experimental",
+      origin_trial_feature_name: "LanguageDetectionAPI",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "LayoutFlexNewRowAlgorithmV3",
@@ -2543,10 +2558,6 @@
       // Use LongAnimationFrameMonitor to emit longtask entries
       name: "LongTaskFromLongAnimationFrame",
       status: "test",
-    },
-    {
-      name: "MacFontsDeprecateFontTraitsWorkaround",
-      status: "stable",
     },
     {
       name: "MachineLearningNeuralNetwork",
@@ -2702,6 +2713,12 @@
       name: "MeterAppearanceNoneFallbackStyle",
       status: "stable",
     },
+    {
+      // If enabled, the <meter> widget appearance will devolve based on user
+      // declared styles as defined in the css-ui-4 spec
+      name: "MeterDevolveAppearance",
+      status: "stable",
+    },
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
     {
@@ -2732,18 +2749,6 @@
       status: "test",
       base_feature: "none",
       is_protected_feature: true,
-    },
-    // crbug.com/269917: Make mouse event targets agnostic to mousedown event
-    // cancellation when the pointer is dragged out of an iframe.
-    {
-      name: "MouseDragFromIframeOnCancelledMouseDown",
-      status: "stable",
-    },
-    // crbug.com/40078978: Allow mouse-drag text selection even when mousemove
-    // event is cancelled.
-    {
-      name: "MouseDragOnCancelledMouseMove",
-      status: "stable",
     },
     // Move the selection to the last position in the list item. See
     // https://crbug.com/331841851
@@ -2837,13 +2842,6 @@
     // character. See https://crbug.com/326888905
     {
       name: "NoIncreasingEndOffsetOnSplittingTextNodes",
-      status: "stable",
-    },
-    // Makes enter/leave Mouse and Pointer Events non-composed as per
-    // corresponding specifications.
-    {
-      name: "NonComposedEnterLeaveEvents",
-      public: true,
       status: "stable",
     },
     // Doesn't insert empty blockquotes on outdenting a blockquote. See
@@ -3111,10 +3109,6 @@
       name: "PasswordReveal",
     },
     {
-      name: "PasswordStrongLabel",
-      status: "experimental",
-    },
-    {
       name: "PaymentApp",
       depends_on: ["PaymentRequest"],
       public: true,
@@ -3202,10 +3196,6 @@
       origin_trial_feature_name: "PNaCl",
     },
     {
-      name: "PointerCaptureLostOnRemovalDuringCapture",
-      status: "stable",
-    },
-    {
       name: "PointerEventDeviceId",
       status: "stable",
     },
@@ -3214,6 +3204,13 @@
     {
       name: "PointerEventTargetsInEventLists",
       status: "stable",
+    },
+    // TODO(crbug.com/364669918) This enables these two new functionalities:
+    // 1. add an imperative way to set invoker relationships between popovers.
+    // 2. invoker relationships create implicit anchor element references.
+    {
+      name: "PopoverAnchorRelationships",
+      status: "experimental",
     },
     // This is a killswitch for the behavior of <dialog popover autofocus>,
     // which landed in M130 and can be removed in M132.
@@ -3257,12 +3254,6 @@
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
       origin_trial_allows_third_party: true,
-    },
-    {
-      // Attempt to set up paint properties for ancestors when pre-painting a
-      // missed descendant, so that paint effects like transforms aren't lost.
-      name: "PrePaintAncestorsOfMissedOOF",
-      status: "stable",
     },
     {
       // Used to allow chrome://flags to turn off prerendering. (Without using
@@ -3541,6 +3532,12 @@
       status: "stable",
     },
     {
+      // When enabled, the root element will have a placeholder after all text is deleted.
+      // crbug.com/40702380
+      name: "RootElementWithPlaceHolderAfterDeletingSelection",
+      status: "stable",
+    },
+    {
       name: "RtcAudioJitterBufferMaxPackets",
       origin_trial_feature_name: "RtcAudioJitterBufferMaxPackets",
       status: "experimental",
@@ -3584,6 +3581,10 @@
       status: "stable",
     },
     {
+      name: "RTCRtpScaleResolutionDownTo",
+      status: "test",
+    },
+    {
       name: "RTCRtpScriptTransform",
       status: "experimental",
     },
@@ -3607,12 +3608,6 @@
       // crbug.com/324111880
       name: "RubyLineBreakable",
       status: "stable",
-    },
-    {
-      // crbug.com/340041662
-      name: "RubyLineEdgeAlignment",
-      status: "stable",
-      depends_on: ["RubyLineBreakable"],
     },
     {
       // crbug.com/324111880
@@ -3766,14 +3761,6 @@
       status: "stable",
     },
     {
-      // If enabled, the type to search in a select element will ignore accents.
-      // This should land in M128, and can be cleaned up (assuming no problems)
-      // after M130.
-      // https://crbug.com/349089079
-      name: "SelectTypeToSearchIgnoreAccents",
-      status: "stable",
-    },
-    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       public: true,
       status: "stable",
@@ -3818,7 +3805,7 @@
       // Reference Target allows IDREF attributes to refer inside Shadow DOM.
       // crbug.com/346835896
       name: "ShadowRootReferenceTarget",
-      status: "test",
+      status: "experimental",
     },
     {
       // crbug.com/360716751
@@ -3913,12 +3900,6 @@
       // renderer cc touch event filter, ensuring that events will be passed
       // onto the renderer main thread.
       name: "SkipTouchEventFilter",
-      status: "stable",
-    },
-    {
-      // Skips calling update type if the HTMLInputElement is created by parser.
-      // This flag can be removed in M127 if no issues reported.
-      name: "SkipUpdateTypeForHTMLInputElementCreatedByParser",
       status: "stable",
     },
     {
@@ -4039,18 +4020,6 @@
       status: "experimental",
     },
     {
-      // Adds the appearance:base-select CSS value which makes <select>
-      // rendering using alternate content in the UA shadowroot which is
-      // stylable.
-      name: "StylableSelect",
-      status: "experimental",
-      // :open is used in the UA stylesheet for StylableSelect, so this feature
-      // will not work properly without CSSPseudoOpenClosed.
-      // SelectParserRelaxation is needed to allow more content in <select>
-      // than just <option>s etc.
-      depends_on: ["CSSPseudoOpenClosed", "SelectParserRelaxation"],
-    },
-    {
       name: "StylusHandwriting",
       base_feature: "none",
     },
@@ -4060,6 +4029,12 @@
     },
     {
       name: "SvgCrossOriginAttribute",
+      status: "stable",
+    },
+    {
+      // Feature for updating SVG presentation attribute style eagerly. This is
+      // a kill switch in case we encounter issues with this optimization.
+      name: "SvgEagerPresAttrStyleUpdate",
       status: "stable",
     },
     {
@@ -4286,6 +4261,7 @@
     {
       name: "TranslationAPIEntryPoint",
       status: "test",
+      origin_trial_feature_name: "TranslationAPIEntryPoint",
       implied_by: ["TranslationAPI", "LanguageDetectionAPI"],
     },
     {
@@ -4551,6 +4527,13 @@
       name: "WebAuthAuthenticatorAttachment",
       status: "test",
     },
+    // Prototyping https://github.com/w3c/webauthn/issues/2144
+    {
+      name: "WebAuthenticationAmbient",
+      status: "experimental",
+      base_feature: "none",
+      public: true,
+    },
     // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-attestationformats
     {
       name: "WebAuthenticationAttestationFormats",
@@ -4667,10 +4650,6 @@
       public: true,
     },
     {
-      name: "WebGPUAdapterInfoAttribute",
-      status: "stable",
-    },
-    {
       // WebGPU developer features are deliberately not enabled by experimental
       // web platform features.
       name: "WebGPUDeveloperFeatures",
@@ -4702,6 +4681,11 @@
     {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
+    },
+    {
+      name: "WebHIDOnDedicatedWorkers",
+      status: "experimental",
+      depends_on: ["WebHID"],
     },
     {
       // It is only enabled in extension environment for now.

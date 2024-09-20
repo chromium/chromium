@@ -373,6 +373,17 @@ suite('<facegaze-cursor-card>', () => {
     flush();
     assertEquals(prefs.cursor_speed_right.value, 19);
 
+
+    const velocityThresholdSlider =
+        faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#velocityThresholdSlider');
+    assert(velocityThresholdSlider);
+    assertTrue(isVisible(velocityThresholdSlider));
+    assertEquals(prefs.velocity_threshold.value, 6);
+    pressArrowOnSlider(velocityThresholdSlider, /*isRight=*/ false);
+    flush();
+    assertEquals(prefs.velocity_threshold.value, 5);
+
     const cursorSmoothingSlider =
         faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
             '#cursorSmoothingSlider');
@@ -402,6 +413,7 @@ suite('<facegaze-cursor-card>', () => {
     flush();
 
     assertFalse(prefs.adjust_speed_separately.value);
+    assertEquals(prefs.velocity_threshold.value, 6);
     assertEquals(prefs.cursor_smoothing.value, 6);
     assertTrue(prefs.cursor_use_acceleration.value);
     assertEquals(prefs.cursor_speed_up.value, 20);

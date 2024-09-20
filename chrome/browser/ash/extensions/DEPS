@@ -30,7 +30,6 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/ash/url_handler",
   "+chrome/browser/banners",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",

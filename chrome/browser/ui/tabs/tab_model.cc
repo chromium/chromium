@@ -249,4 +249,10 @@ TabInterface* TabInterface::MaybeGetFromContents(
   return lookup->model();
 }
 
+// static
+TabInterface* TabInterface::MaybeGetFromHandle(uint32_t handle_id) {
+  auto& helper = internal::HandleHelper<TabModel, int>::GetInstance();
+  return helper.LookupObject(handle_id);
+}
+
 }  // namespace tabs

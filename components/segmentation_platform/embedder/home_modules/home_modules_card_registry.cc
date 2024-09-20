@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/price_tracking_notification_promo.h"
 
@@ -24,33 +25,14 @@ const char kPriceTrackingPromoImpressionCounterPref[] =
 HomeModulesCardRegistry::HomeModulesCardRegistry(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
   CreateAllCards();
+}
 
-  size_t input_counter = 0;
-  size_t label_counter = 0;
-  for (std::unique_ptr<CardSelectionInfo>& card : all_cards_by_priority_) {
-    std::map<SignalKey, size_t> card_signals;
-    const auto& card_inputs = card->GetInputs();
-    for (const auto& key_and_input : card_inputs) {
-      card_signals[key_and_input.first] = input_counter;
-      input_counter++;
-    }
-    card_signal_map_[card->card_name()] = card_signals;
-
-    std::vector<std::string> card_labels = card->OutputLabels();
-    if (!card_labels.empty()) {
-      all_output_labels_.insert(all_output_labels_.end(), card_labels.begin(),
-                                card_labels.end());
-      for (const auto& label : card_labels) {
-        label_to_output_index_[label] = label_counter;
-        label_counter++;
-      }
-    } else {
-      all_output_labels_.push_back(card->card_name());
-      label_to_output_index_[card->card_name()] = label_counter;
-      label_counter++;
-    }
-  }
-  all_cards_input_size_ = input_counter;
+HomeModulesCardRegistry::HomeModulesCardRegistry(
+    PrefService* profile_prefs,
+    std::vector<std::unique_ptr<CardSelectionInfo>> cards)
+    : profile_prefs_(profile_prefs) {
+  all_cards_by_priority_.swap(cards);
+  InitializeAfterAddingCards();
 }
 
 HomeModulesCardRegistry::~HomeModulesCardRegistry() = default;
@@ -83,11 +65,39 @@ void HomeModulesCardRegistry::CreateAllCards() {
         std::make_unique<PriceTrackingNotificationPromo>(
             price_tracking_promo_count));
   }
-#else
-  // Add all cards
-  label_to_output_index_["label"] = 0;
-  all_output_labels_ = {"label"};
 #endif
+  InitializeAfterAddingCards();
+}
+
+void HomeModulesCardRegistry::InitializeAfterAddingCards() {
+  size_t input_counter = 0;
+  AddCardLabels({kPlaceholderEphemeralModuleLabel});
+  for (std::unique_ptr<CardSelectionInfo>& card : all_cards_by_priority_) {
+    std::map<SignalKey, size_t> card_signals;
+    const auto& card_inputs = card->GetInputs();
+    for (const auto& key_and_input : card_inputs) {
+      card_signals[key_and_input.first] = input_counter;
+      input_counter++;
+    }
+    card_signal_map_[card->card_name()] = card_signals;
+
+    std::vector<std::string> card_labels = card->OutputLabels();
+    if (!card_labels.empty()) {
+      AddCardLabels(card_labels);
+    } else {
+      AddCardLabels({card->card_name()});
+    }
+  }
+  all_cards_input_size_ = input_counter;
+}
+
+void HomeModulesCardRegistry::AddCardLabels(
+    const std::vector<std::string>& card_labels) {
+  for (const std::string& label : card_labels) {
+    CHECK(!label_to_output_index_.count(label));
+    label_to_output_index_[label] = all_output_labels_.size();
+    all_output_labels_.push_back(label);
+  }
 }
 
 base::WeakPtr<HomeModulesCardRegistry> HomeModulesCardRegistry::GetWeakPtr() {

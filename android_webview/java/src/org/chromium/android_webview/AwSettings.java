@@ -236,9 +236,6 @@ public class AwSettings {
                 AwSettingsJni.get().getDefaultUserAgentMetadata();
     }
 
-    // Protects access to settings global fields.
-    private static final Object sGlobalContentSettingsLock = new Object();
-
     // The native side of this object. It's lifetime is bounded by the WebContent it is attached to.
     private long mNativeAwSettings;
 
@@ -2208,7 +2205,7 @@ public class AwSettings {
 
     public void setWebauthnSupport(@WebauthnMode int support) {
         synchronized (mAwSettingsLock) {
-            if (mWebauthnMode != support) {
+            if (mWebauthnMode != support && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_WEBAUTHN)) {
                 mWebauthnMode = support;
                 mEventHandler.updateWebkitPreferencesLocked();
                 WebauthnModeProvider.getInstance()
@@ -2220,7 +2217,10 @@ public class AwSettings {
     @CalledByNative
     public @WebauthnMode int getWebauthnSupportLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
-        return mWebauthnMode;
+        // TODO(crbug.com/40210253): Consider supporting a NOT_SUPPORTED case.
+        return AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_WEBAUTHN)
+                ? mWebauthnMode
+                : WebauthnMode.NONE;
     }
 
     public int getWebauthnSupport() {

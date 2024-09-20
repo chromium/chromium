@@ -11,7 +11,7 @@
 
 #include "base/check_op.h"
 
-namespace content {
+namespace content::indexed_db {
 
 void EncodeVarInt(int64_t from, std::string* into) {
   DCHECK_GE(from, 0);
@@ -50,4 +50,4 @@ bool DecodeVarInt(std::string_view* from, int64_t* into) {
   return true;
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

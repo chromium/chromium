@@ -10,6 +10,8 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/picker/picker_asset_fetcher.h"
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/views/picker_async_preview_image_view.h"
 #include "ash/picker/views/picker_gif_view.h"
 #include "ash/picker/views/picker_icons.h"
@@ -23,8 +25,6 @@
 #include "ash/picker/views/picker_shortcut_hint_view.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"

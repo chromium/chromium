@@ -576,13 +576,31 @@ public class HomeModulesMediator {
             generalModuleList.add(ModuleType.SINGLE_TAB);
         }
 
+        boolean shouldAddEducationalTipModule =
+                filteredEnabledModuleSet.contains(ModuleType.EDUCATIONAL_TIP);
         for (@ModuleType Integer moduleType : filteredEnabledModuleSet) {
-            if (moduleType == ModuleType.PRICE_CHANGE || moduleType == ModuleType.SINGLE_TAB) {
+            if (moduleType == ModuleType.PRICE_CHANGE
+                    || moduleType == ModuleType.SINGLE_TAB
+                    || moduleType == ModuleType.EDUCATIONAL_TIP) {
                 continue;
+            }
+
+            if (moduleType == ModuleType.TAB_RESUMPTION && shouldAddEducationalTipModule) {
+                // Insert the educational tip module before the tab resumption module if the tab
+                // resumption module is included in the fixed module list.
+                generalModuleList.add(ModuleType.EDUCATIONAL_TIP);
+                shouldAddEducationalTipModule = false;
             }
 
             generalModuleList.add(moduleType);
         }
+
+        if (shouldAddEducationalTipModule) {
+            // If not already added, place the educational tip module at the end of the fixed module
+            // list.
+            generalModuleList.add(ModuleType.EDUCATIONAL_TIP);
+        }
+
         return generalModuleList;
     }
 
@@ -646,6 +664,10 @@ public class HomeModulesMediator {
     InputContext createInputContext() {
         InputContext inputContext = new InputContext();
         for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
+            if (moduleType == ModuleType.EDUCATIONAL_TIP) {
+                continue;
+            }
+
             inputContext.addEntry(
                     HomeModulesMetricsUtils.getFreshnessInputContextString(moduleType),
                     ProcessedValue.fromFloat(
@@ -709,13 +731,29 @@ public class HomeModulesMediator {
             List<String> orderedModuleLabels, Set<Integer> filteredEnabledModuleSet) {
         List<Integer> moduleList = new ArrayList<>();
 
+        boolean shouldAddEducationalTipModule =
+                filteredEnabledModuleSet.contains(ModuleType.EDUCATIONAL_TIP);
         for (String label : orderedModuleLabels) {
             @ModuleType
             int currentModuleType = HomeModulesMetricsUtils.convertLabelToModuleType(label);
             if (filteredEnabledModuleSet.contains(currentModuleType)) {
+                if (currentModuleType == ModuleType.TAB_RESUMPTION
+                        && shouldAddEducationalTipModule) {
+                    // Insert the educational tip module before the tab resumption module if the tab
+                    // resumption module is included in the return list.
+                    moduleList.add(ModuleType.EDUCATIONAL_TIP);
+                    shouldAddEducationalTipModule = false;
+                }
+
                 moduleList.add(currentModuleType);
             }
         }
+
+        if (shouldAddEducationalTipModule) {
+            // If not already added, place the educational tip module at the end of the return list.
+            moduleList.add(ModuleType.EDUCATIONAL_TIP);
+        }
+
         return moduleList;
     }
 

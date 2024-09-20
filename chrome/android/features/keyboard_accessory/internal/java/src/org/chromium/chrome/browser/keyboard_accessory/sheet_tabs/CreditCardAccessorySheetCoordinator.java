@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
@@ -22,6 +21,7 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.ImageSize;
 
 /**
  * This component is a tab that can be added to the ManualFillingCoordinator. This tab allows
@@ -85,7 +85,7 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
                                 info.getIconUrl(),
                                 CreditCardAccessorySheetViewBinder.getDrawableForOrigin(
                                         info.getOrigin()),
-                                AutofillUiUtils.CardIconSize.SMALL,
+                                ImageSize.SMALL,
                                 /* showCustomIcon= */ true);
         return uiConfiguration;
     }

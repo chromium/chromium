@@ -54,10 +54,16 @@ AcceptLanguagesServiceFactory* AcceptLanguagesServiceFactory::GetInstance() {
 
 // static
 language::AcceptLanguagesService*
-AcceptLanguagesServiceFactory::GetForBrowserState(ChromeBrowserState* state) {
+AcceptLanguagesServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+language::AcceptLanguagesService* AcceptLanguagesServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   AcceptLanguagesServiceForBrowserState* service =
       static_cast<AcceptLanguagesServiceForBrowserState*>(
-          GetInstance()->GetServiceForBrowserState(state, true));
+          GetInstance()->GetServiceForBrowserState(profile, true));
   return &service->accept_languages();
 }
 

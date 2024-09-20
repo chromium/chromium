@@ -38,17 +38,6 @@ found in the LICENSE file.
             android:gravity="center"
             android:visibility="gone"/>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:src="@drawable/ic_person_add_40dp"
-            android:id="@+id/shared_image_tiles_add"
-            android:layout_height="@dimen/shared_image_tiles_icon_height"
-            android:layout_width="@dimen/shared_image_tiles_add_width"
-            android:layout_gravity="center"
-            android:scaleType="centerInside"
-            android:background="@android:color/transparent"
-            android:tint="@color/default_icon_color_secondary_tint_list"
-            android:visibility="gone" />
-
     </LinearLayout>
 
 </org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView>

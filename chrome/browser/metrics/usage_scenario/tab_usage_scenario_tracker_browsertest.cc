@@ -5,12 +5,14 @@
 // TODO(crbug.com/40751070): More tests should be added to cover all possible
 // scenarios. E.g. a test closing the visible tab in a window should be added.
 
-#include "base/test/bind.h"
 #include "chrome/browser/metrics/usage_scenario/tab_usage_scenario_tracker.h"
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
@@ -24,9 +26,11 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/media_player_id.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -90,6 +94,47 @@ class FullscreenEventsWaiter : public content::WebContentsObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
   bool playing_media_fullscreen_ = false;
   std::optional<bool> playing_media_fullscreen_expected_value_ = false;
+};
+
+class MediaWaiter : public content::WebContentsObserver {
+ public:
+  explicit MediaWaiter(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void MediaStartedPlaying(const MediaPlayerInfo& video_type,
+                           const content::MediaPlayerId& id) override {
+    started_media_id_ = id;
+    media_started_playing_loop_.Quit();
+  }
+  void MediaStoppedPlaying(
+      const MediaPlayerInfo& video_type,
+      const content::MediaPlayerId& id,
+      content::WebContentsObserver::MediaStoppedReason reason) override {
+    EXPECT_EQ(id, started_media_id_);
+    media_stopped_playing_loop_.Quit();
+  }
+  void OnAudioStateChanged(bool audible) override {
+    if (audible) {
+      audio_started_playing_loop_.Quit();
+    } else {
+      audio_stopped_playing_loop_.Quit();
+    }
+  }
+
+  void WaitForMediaStartedPlaying() { media_started_playing_loop_.Run(); }
+  void WaitForMediaStoppedPlaying() { media_stopped_playing_loop_.Run(); }
+
+  void WaitForAudioStartedPlaying() { audio_started_playing_loop_.Run(); }
+  void WaitForAudioStoppedPlaying() { audio_stopped_playing_loop_.Run(); }
+
+ private:
+  std::optional<content::MediaPlayerId> started_media_id_;
+
+  base::RunLoop media_started_playing_loop_;
+  base::RunLoop media_stopped_playing_loop_;
+
+  base::RunLoop audio_started_playing_loop_;
+  base::RunLoop audio_stopped_playing_loop_;
 };
 
 }  // namespace
@@ -286,7 +331,20 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
-IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabDiscard) {
+class TabUsageScenarioTrackerDiscardBrowserTest
+    : public TabUsageScenarioTrackerBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  TabUsageScenarioTrackerDiscardBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kWebContentsDiscard,
+                                              GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest, TabDiscard) {
   ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
                             ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(content::Visibility::VISIBLE,
@@ -400,6 +458,101 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabDiscard) {
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
+IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
+                       VisibleTabVideoDiscarded) {
+  // Start a video in a tab and discard it while it's playing, ensure that
+  // things are tracked properly.
+  EXPECT_TRUE(
+      content::NavigateToURL(browser()->tab_strip_model()->GetWebContentsAt(0),
+                             embedded_test_server()->GetURL("/title2.html")));
+  tick_clock_.Advance(kInterval);
+  ASSERT_TRUE(AddTabAtIndex(
+      1, embedded_test_server()->GetURL("/media/session/media-session.html"),
+      ui::PAGE_TRANSITION_LINK));
+  EXPECT_EQ(content::Visibility::VISIBLE,
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibility());
+
+  auto* media_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
+  MediaWaiter media_waiter(media_contents);
+  EXPECT_TRUE(content::ExecJs(
+      media_contents, "document.getElementById('long-video-loop').play();"));
+  media_waiter.WaitForMediaStartedPlaying();
+  EXPECT_TRUE(data_store_.TrackingPlayingVideoInActiveTabForTesting());
+
+  auto expected_source_id =
+      media_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  // Discard the tab, the data store's visible tab video timer should be reset
+  // by the tracker.
+  tick_clock_.Advance(kInterval * 2);
+  DiscardTab(browser()->tab_strip_model()->GetWebContentsAt(1));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !data_store_.TrackingPlayingVideoInActiveTabForTesting();
+  }));
+
+  auto interval_data = data_store_.ResetIntervalData();
+  EXPECT_EQ(2U, interval_data.max_tab_count);
+  EXPECT_EQ(1U, interval_data.max_visible_window_count);
+  EXPECT_EQ(2U, interval_data.top_level_navigation_count);
+  EXPECT_EQ(0U, interval_data.tabs_closed_during_interval);
+  EXPECT_TRUE(
+      interval_data.time_playing_video_full_screen_single_monitor.is_zero());
+  EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
+  EXPECT_EQ(kInterval * 2, interval_data.time_playing_video_in_visible_tab);
+  EXPECT_EQ(expected_source_id,
+            interval_data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(kInterval * 2,
+            interval_data.source_id_for_longest_visible_origin_duration);
+}
+
+IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
+                       FullScreenVideoDiscarded) {
+  // Play full screen video in a tab and discard it while it's playing, ensure
+  // that things are tracked properly.
+  EXPECT_TRUE(
+      content::NavigateToURL(browser()->tab_strip_model()->GetWebContentsAt(0),
+                             embedded_test_server()->GetURL("/title2.html")));
+  tick_clock_.Advance(kInterval);
+  ASSERT_TRUE(
+      AddTabAtIndex(1, embedded_test_server()->GetURL("/media/fullscreen.html"),
+                    ui::PAGE_TRANSITION_LINK));
+  EXPECT_EQ(content::Visibility::VISIBLE,
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibility());
+
+  auto* fullscreen_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
+  FullscreenEventsWaiter fullscreen_waiter(fullscreen_contents);
+  EXPECT_TRUE(
+      content::ExecJs(fullscreen_contents, "makeFullscreen('small_video')"));
+  fullscreen_waiter.Wait(true);
+  EXPECT_TRUE(
+      data_store_.TrackingPlayingFullScreenVideoSingleMonitorForTesting());
+
+  auto expected_source_id =
+      fullscreen_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  // Discard the tab, the data store's full screen video timer should be reset
+  // by the tracker.
+  tick_clock_.Advance(kInterval * 2);
+  DiscardTab(browser()->tab_strip_model()->GetWebContentsAt(1));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !data_store_.TrackingPlayingFullScreenVideoSingleMonitorForTesting();
+  }));
+
+  auto interval_data = data_store_.ResetIntervalData();
+  EXPECT_EQ(2U, interval_data.max_tab_count);
+  EXPECT_EQ(1U, interval_data.max_visible_window_count);
+  EXPECT_EQ(2U, interval_data.top_level_navigation_count);
+  EXPECT_EQ(0U, interval_data.tabs_closed_during_interval);
+  EXPECT_EQ(kInterval * 2,
+            interval_data.time_playing_video_full_screen_single_monitor);
+  EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
+  EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
+  EXPECT_EQ(expected_source_id,
+            interval_data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(kInterval * 2,
+            interval_data.source_id_for_longest_visible_origin_duration);
+}
+
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
   // Play fullscreen video in a tab, ensure that things are tracked properly.
   auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -425,6 +578,72 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
   // The |time_playing_video_in_visible_tab| value is not currently being
   // tracked.
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
+  EXPECT_EQ(expected_source_id,
+            interval_data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
+}
+
+IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, VisibleTabVideo) {
+  // Play video in a tab, ensure that things are tracked properly.
+  auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+  MediaWaiter waiter(contents);
+  EXPECT_TRUE(content::NavigateToURL(
+      contents,
+      embedded_test_server()->GetURL("/media/session/media-session.html")));
+  EXPECT_TRUE(content::ExecJs(
+      contents, "document.getElementById('long-video-loop').play();"));
+  waiter.WaitForMediaStartedPlaying();
+  tick_clock_.Advance(kInterval);
+  EXPECT_TRUE(content::ExecJs(
+      contents, "document.getElementById('long-video-loop').pause();"));
+  waiter.WaitForMediaStoppedPlaying();
+  auto expected_source_id =
+      contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  auto interval_data = data_store_.ResetIntervalData();
+  EXPECT_EQ(1U, interval_data.max_tab_count);
+  EXPECT_EQ(1U, interval_data.max_visible_window_count);
+  EXPECT_EQ(1U, interval_data.top_level_navigation_count);
+  EXPECT_EQ(0U, interval_data.tabs_closed_during_interval);
+  EXPECT_TRUE(
+      interval_data.time_playing_video_full_screen_single_monitor.is_zero());
+  EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
+  EXPECT_EQ(kInterval, interval_data.time_playing_video_in_visible_tab);
+  EXPECT_TRUE(interval_data.time_playing_audio.is_zero());
+  EXPECT_EQ(expected_source_id,
+            interval_data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
+}
+
+IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabAudio) {
+  // Play audio in a tab, ensure that things are tracked properly.
+  auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+  MediaWaiter waiter(contents);
+  EXPECT_TRUE(content::NavigateToURL(
+      contents,
+      embedded_test_server()->GetURL("/media/session/media-session.html")));
+  EXPECT_TRUE(content::ExecJs(contents,
+                              "document.getElementById('long-audio').play();"));
+  waiter.WaitForAudioStartedPlaying();
+  tick_clock_.Advance(kInterval);
+  EXPECT_TRUE(content::ExecJs(
+      contents, "document.getElementById('long-audio').pause();"));
+  waiter.WaitForAudioStoppedPlaying();
+  auto expected_source_id =
+      contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  auto interval_data = data_store_.ResetIntervalData();
+  EXPECT_EQ(1U, interval_data.max_tab_count);
+  EXPECT_EQ(1U, interval_data.max_visible_window_count);
+  EXPECT_EQ(1U, interval_data.top_level_navigation_count);
+  EXPECT_EQ(0U, interval_data.tabs_closed_during_interval);
+  EXPECT_TRUE(
+      interval_data.time_playing_video_full_screen_single_monitor.is_zero());
+  EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
+  EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
+  EXPECT_EQ(kInterval, interval_data.time_playing_audio);
   EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
   EXPECT_EQ(kInterval,
@@ -587,5 +806,14 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
   EXPECT_EQ(kInterval,
             interval_data.source_id_for_longest_visible_origin_duration);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TabUsageScenarioTrackerDiscardBrowserTest,
+    ::testing::Values(false, true),
+    [](const ::testing::TestParamInfo<
+        TabUsageScenarioTrackerDiscardBrowserTest::ParamType>& info) {
+      return info.param ? "RetainedWebContents" : "UnretainedWebContents";
+    });
 
 }  // namespace metrics

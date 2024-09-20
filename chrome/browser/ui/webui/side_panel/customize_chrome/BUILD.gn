@@ -19,3 +19,7 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
 }
+
+source_set("customize_chrome") {
+  sources = [ "customize_chrome_section.h" ]
+}

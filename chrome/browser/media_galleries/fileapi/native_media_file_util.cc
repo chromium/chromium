@@ -631,7 +631,7 @@ base::File::Error NativeMediaFileUtil::Core::ReadDirectorySync(
     if (!info.IsDirectory() && !media_path_filter_.Match(enum_path))
       continue;
 
-    file_list->emplace_back(enum_path.BaseName(),
+    file_list->emplace_back(enum_path.BaseName(), info.GetName(),
                             info.IsDirectory()
                                 ? filesystem::mojom::FsFileType::DIRECTORY
                                 : filesystem::mojom::FsFileType::REGULAR_FILE);

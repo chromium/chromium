@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
@@ -15,6 +16,7 @@
 #endif
 
 class GURL;
+class ForceSigninUIError;
 
 namespace content {
 class WebContents;
@@ -60,6 +62,15 @@ class ProfilePickerWebContentsHost {
 
   virtual web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHost() = 0;
+
+  // Clears the current state an Shows the main screen.
+  // `callback` is run when the main screen is shown.
+  virtual void Reset(StepSwitchFinishedCallback callback) = 0;
+
+  // Used as a callback of type `StepSwitchFinishedCallback`. Allows to show the
+  // ForceSignin error dialog after completing a step switch.
+  virtual void ShowForceSigninErrorDialog(const ForceSigninUIError& error,
+                                          bool success) = 0;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Changes the visibility of the host's native toolbar, which shows a back

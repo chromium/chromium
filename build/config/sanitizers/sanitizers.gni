@@ -145,6 +145,10 @@ declare_args() {
 use_fuzzing_engine = use_libfuzzer || use_afl || use_centipede ||
                      use_external_fuzzing_engine || use_fuzzilli
 
+# Whether any UBSan subset is enabled.
+# TODO(crbug.com/40248746): Unify these under a single UBSan option.
+is_ubsan_any = is_ubsan || is_ubsan_vptr || is_ubsan_security
+
 declare_args() {
   # Builds fuzztest test executables such that they support the
   # --fuzz= argument, which requires some sanitizer coverage.
@@ -159,9 +163,8 @@ declare_args() {
   enable_fuzztest_fuzz =
       !(use_libfuzzer || use_afl || use_centipede ||
         use_external_fuzzing_engine || use_fuzzilli) &&
-      (is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan ||
-       is_ubsan_vptr || is_ubsan_security) && !is_component_build && is_linux &&
-      build_with_chromium
+      (is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan_any) &&
+      !is_component_build && is_linux && build_with_chromium
 
   # Whether FUZZ_TESTs should be registered as gtests in Chromium's mainstream
   # test suites. This will cause the to run for 1 second in normal testing
@@ -210,6 +213,7 @@ if (!is_a_target_toolchain || toolchain_for_rust_host_build_tools) {
   is_ubsan_no_recover = false
   is_ubsan_security = false
   is_ubsan_vptr = false
+  is_ubsan_any = false
   msan_track_origins = 0
   sanitizer_coverage_flags = ""
   use_afl = false
@@ -227,9 +231,8 @@ if (!is_a_target_toolchain || toolchain_for_rust_host_build_tools) {
 # Whether we are linking against a sanitizer runtime library. Among other
 # things, this changes the default symbol level and other settings in order to
 # prepare to create stack traces "live" using the sanitizer runtime.
-using_sanitizer =
-    is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan ||
-    is_ubsan_vptr || is_ubsan_security || use_sanitizer_coverage || use_cfi_diag
+using_sanitizer = is_asan || is_hwasan || is_lsan || is_tsan || is_msan ||
+                  is_ubsan_any || use_sanitizer_coverage || use_cfi_diag
 
 # Use dynamic libraries instrumented by one of the sanitizers instead of the
 # standard system libraries. We have instrumented system libraries for msan,

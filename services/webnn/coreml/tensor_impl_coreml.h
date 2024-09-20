@@ -27,12 +27,12 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
   static base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
   Create(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
          WebNNContextImpl* context,
-         mojom::BufferInfoPtr buffer_info);
+         mojom::TensorInfoPtr tensor_info);
 
   TensorImplCoreml(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       WebNNContextImpl* context,
-      mojom::BufferInfoPtr buffer_info,
+      mojom::TensorInfoPtr tensor_info,
       scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
       base::PassKey<TensorImplCoreml> pass_key);
 
@@ -41,8 +41,8 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
   ~TensorImplCoreml() override;
 
   // WebNNTensorImpl:
-  void ReadBufferImpl(mojom::WebNNTensor::ReadBufferCallback callback) override;
-  void WriteBufferImpl(mojo_base::BigBuffer src_buffer) override;
+  void ReadTensorImpl(mojom::WebNNTensor::ReadTensorCallback callback) override;
+  void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
 
   const scoped_refptr<QueueableResourceState<BufferContent>>& GetBufferState()
       const;

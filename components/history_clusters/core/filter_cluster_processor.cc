@@ -27,7 +27,7 @@ void RecordClusterFilterReasonHistogram(
 
 // Returns whether `filter_params` is a filter that would actually filter
 // clusters out.
-bool IsFunctionalFilter(QueryClustersFilterParams filter_params) {
+bool IsFunctionalFilter(const QueryClustersFilterParams& filter_params) {
   return filter_params.min_visits > 0 ||
          filter_params.min_visits_with_images > 0 ||
          !filter_params.categories_allowlist.empty() ||

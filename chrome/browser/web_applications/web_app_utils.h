@@ -174,7 +174,8 @@ enum class AppSettingsPageEntryPoint {
   kBrowserCommand = 2,
   kSubAppsInstallPrompt = 3,
   kNotificationSettingsButton = 4,
-  kMaxValue = kNotificationSettingsButton,
+  kSiteDataDialog = 5,
+  kMaxValue = kSiteDataDialog,
 };
 
 // When user_display_mode indicates a user preference for opening in

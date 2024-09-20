@@ -67,6 +67,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   shouldShowBanner: boolean = true;
   geolocationEnabled: boolean = true;
+  geolocationIsUserModifiable: boolean = true;
 
   previews: Url[] = [
     {url: 'http://preview0'},
@@ -91,6 +92,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'shouldShowTimeOfDayBanner',
       'handleTimeOfDayBannerDismissed',
       'isGeolocationEnabledForSystemServices',
+      'isGeolocationUserModifiable',
       'enableGeolocationForSystemServices',
     ]);
   }
@@ -169,6 +171,13 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       Promise<{geolocationEnabled: boolean}> {
     this.methodCalled('isGeolocationEnabledForSystemServices');
     return Promise.resolve({geolocationEnabled: this.geolocationEnabled});
+  }
+
+  isGeolocationUserModifiable():
+      Promise<{geolocationIsUserModifiable: boolean}> {
+    this.methodCalled('isGeolocationUserModifiable');
+    return Promise.resolve(
+        {geolocationIsUserModifiable: this.geolocationIsUserModifiable});
   }
 
   enableGeolocationForSystemServices() {

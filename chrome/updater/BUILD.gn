@@ -155,6 +155,8 @@ if (is_win || is_mac || is_linux) {
       "//base:i18n",
       "//build:chromeos_buildflags",
       "//chrome/enterprise_companion:client",
+      "//chrome/enterprise_companion:constants_prod",
+      "//chrome/enterprise_companion:installer_paths",
       "//chrome/enterprise_companion/device_management_storage",
       "//chrome/enterprise_companion/mojom",
       "//chrome/updater/protos:omaha_proto",
@@ -815,6 +817,8 @@ if (is_win || is_mac || is_linux) {
       "//base",
       "//base/test:test_support",
       "//chrome/common:constants",
+      "//chrome/enterprise_companion:constants_test",
+      "//chrome/enterprise_companion:installer_paths",
       "//chrome/enterprise_companion/device_management_storage",
       "//chrome/updater/protos:omaha_proto",
       "//components/crx_file",
@@ -854,6 +858,7 @@ if (is_win || is_mac || is_linux) {
 
     data_deps = [
       ":updater_selfupdate_test_crx",
+      "//chrome/enterprise_companion:enterprise_companion_test",
       "//chrome/updater/test/test_installer:app_installers",
     ]
 
@@ -937,7 +942,9 @@ if (is_win || is_mac || is_linux) {
             [ "enterprise/win/google/build_group_policy_template_unittest.cc" ]
         data += [
           "enterprise/win/google/build_group_policy_template_unittest.py",
+          "enterprise/win/google/generate_group_policy_template_adm.py",
           "enterprise/win/google/generate_group_policy_template_admx.py",
+          "test/data/enterprise/win/google/test_gold.adm",
           "test/data/enterprise/win/google/test_gold.admx",
           "test/data/enterprise/win/google/test_gold.adml",
         ]

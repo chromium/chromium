@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/common/features.h"
@@ -193,7 +194,7 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (context_provider) {
-    const uint32_t usage_flags =
+    const gpu::SharedImageUsageSet usage_flags =
         context_provider->ContextProvider()
             ->SharedImageInterface()
             ->UsageForMailbox(source_image->GetMailboxHolder().mailbox);
@@ -922,14 +923,13 @@ void ImageBitmap::UpdateImageBitmapMemoryUsage() {
         std::numeric_limits<int32_t>::max());
   }
 
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      new_memory_usage - memory_usage_);
+  external_memory_accounter_.Update(v8::Isolate::GetCurrent(),
+                                    new_memory_usage - memory_usage_);
   memory_usage_ = new_memory_usage;
 }
 
 ImageBitmap::~ImageBitmap() {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      -memory_usage_);
+  external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(), memory_usage_);
 }
 
 void ImageBitmap::ResolvePromiseOnOriginalThread(

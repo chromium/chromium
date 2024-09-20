@@ -27,7 +27,6 @@ CSPCheckResult CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
                                   const GURL& url,
                                   const mojom::CSPSource& self_source,
                                   bool has_followed_redirect = false,
-                                  bool is_response_check = false,
                                   bool is_opaque_fenced_frame = false);
 
 // Check if |source_list_a| subsumes |source_list_b| with origin |origin_b| for

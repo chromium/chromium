@@ -453,6 +453,12 @@ HeadlessContentBrowserClient::CreateWindowForVideoPictureInPicture(
   return std::make_unique<HeadlessVideoOverlayWindow>();
 }
 
+// TODO(364362654, 40052246): force-disable network service sandboxing
+// until it's stable in headful.
+bool HeadlessContentBrowserClient::ShouldSandboxNetworkService() {
+  return false;
+}
+
 void HeadlessContentBrowserClient::HandleExplicitlyAllowedPorts(
     ::network::mojom::NetworkService* network_service) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

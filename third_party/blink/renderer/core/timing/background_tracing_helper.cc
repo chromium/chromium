@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
 
 #include <string_view>
@@ -33,66 +28,44 @@ namespace blink {
 
 namespace {
 
-enum TerminationCondition {
-  kMustHaveTerminator,
-  kMayHaveTerminator,
-};
-
-// Consumes a 1-8 byte hash from the given string, and the terminator if one is
-// encountered. On success, the parsed hash is output via the optional |hash|
-// and the new position of the cursor is returned. On failure, nullptr is
-// returned.
-const char* ParseHash(const char* begin,
-                      const char* end,
-                      uint32_t& hash,
-                      TerminationCondition termination,
-                      char valid_terminator0,
-                      char valid_terminator1 = 0,
-                      char valid_terminator2 = 0) {
-  DCHECK(begin);
-  DCHECK(end);
-  DCHECK_LE(begin, end);
-  DCHECK_NE(valid_terminator0, 0);
-
-  const char* cur = begin;
-  while (cur < end) {
-    // Stop when a terminator is encountered.
-    if (*cur == valid_terminator0)
-      break;
-    if (valid_terminator1 != 0 && *cur == valid_terminator1)
-      break;
-    if (valid_terminator2 != 0 && *cur == valid_terminator2)
-      break;
-    // Stop if any invalid characters are encountered.
-    if (!IsASCIIHexDigit(*cur))
-      return nullptr;
-    ++cur;
-    // Stop if the hash string is too long.
-    if (cur - begin > 8)
-      return nullptr;
+// Consumes a 1-8 character hash from the given string. If successful the parsed
+// hash is returned and the characters consumed from `chars`. On failure,
+// std::nullopt is returned and no characters consumed.
+std::optional<uint32_t> ConsumeHash(std::string_view& chars) {
+  size_t count = 0;
+  while (count < chars.size() && IsASCIIHexDigit(chars[count])) {
+    ++count;
   }
 
-  // Stop if the hash is empty.
-  if (cur == begin)
-    return nullptr;
+  // Fail if the hash string is too long or empty.
+  if (count == 0 || count > 8) {
+    return std::nullopt;
+  }
 
-  // Enforce mandatory terminator characters.
-  if (termination == kMustHaveTerminator && cur == end)
-    return nullptr;
+  // Consume the hash characters.
+  auto hex_digits = chars.substr(0u, count);
+  chars.remove_prefix(count);
 
   // At this point we've successfully consumed a hash, so parse it.
-  bool parsed = false;
-  hash = WTF::HexCharactersToUInt(reinterpret_cast<const unsigned char*>(begin),
-                                  cur - begin, WTF::NumberParsingOptions(),
-                                  &parsed);
-  DCHECK(parsed);
+  return WTF::HexCharactersToUInt(base::as_byte_span(hex_digits),
+                                  WTF::NumberParsingOptions(), nullptr);
+}
 
-  // If there's a terminator, advance past it.
-  if (cur < end)
-    ++cur;
-
-  // Finally, return the advanced cursor.
-  return cur;
+// Consumes one of the specified separator characters and returns it. If no
+// separator character matches, 0 is returned.
+template <typename... Separators>
+char ConsumeSeparator(std::string_view& chars, Separators... separators) {
+  if (chars.empty()) {
+    return 0;
+  }
+  const std::array<char, sizeof...(separators)> separator_array = {
+      separators...};
+  const auto it = base::ranges::find(separator_array, chars.front());
+  if (it == separator_array.end()) {
+    return 0;
+  }
+  chars.remove_prefix(1u);
+  return *it;
 }
 
 static constexpr char kTriggerPrefix[] = "trigger:";
@@ -300,9 +273,8 @@ void BackgroundTracingHelper::GetMarkHashAndSequenceNumber(
     // Parse the suffix.
     auto suffix = mark_name.substr(sequence_number_pos + 1);
     bool result = false;
-    int seq_num = WTF::CharactersToInt(
-        reinterpret_cast<const unsigned char*>(suffix.data()), suffix.size(),
-        WTF::NumberParsingOptions(), &result);
+    int seq_num = WTF::CharactersToInt(base::as_byte_span(suffix),
+                                       WTF::NumberParsingOptions(), &result);
     if (result) {
       // Cap the sequence number to an easily human-consumable size. It is fine
       // for this calculation to overflow.
@@ -333,41 +305,47 @@ bool BackgroundTracingHelper::ParseBackgroundTracingPerformanceMarkHashes(
   // where each hash is a 32-bit hex hash. We also allow commas to be replaced
   // with underscores so that they can be easily specified via the
   // --enable-features command-line.
-  const char* cur = allow_list.data();
-  const char* end = allow_list.data() + allow_list.size();
-  while (cur < end) {
+  std::string_view cur = allow_list;
+  while (!cur.empty()) {
     // Parse a site hash.
-    uint32_t site_hash = 0;
-    cur = ParseHash(cur, end, site_hash, kMustHaveTerminator, '=');
-    if (!cur)
+    const std::optional<uint32_t> site_hash = ConsumeHash(cur);
+    if (!site_hash) {
       return false;
+    }
+    // Require a '='.
+    if (!ConsumeSeparator(cur, '=')) {
+      return false;
+    }
 
     // The site hash must be unique.
-    if (parsed_allow_listed_hashes.Contains(site_hash))
+    if (parsed_allow_listed_hashes.Contains(*site_hash)) {
       return false;
+    }
 
     // Parse the mark hashes.
     MarkHashSet parsed_mark_hashes;
     while (true) {
       // At least a single mark hash entry is expected per site hash.
-      uint32_t mark_hash = 0;
-      cur = ParseHash(cur, end, mark_hash, kMayHaveTerminator, ',', ';', '_');
-      if (!cur)
+      const std::optional<uint32_t> mark_hash = ConsumeHash(cur);
+      if (!mark_hash) {
         return false;
+      }
+      const char separator = ConsumeSeparator(cur, ',', ';', '_');
 
       // Duplicate entries are an error.
-      auto result = parsed_mark_hashes.insert(mark_hash);
+      auto result = parsed_mark_hashes.insert(*mark_hash);
       if (!result.is_new_entry)
         return false;
 
       // We're done processing the current list of mark hashes if there's no
       // data left to consume, or if the terminator was a ';'.
-      if (cur == end || cur[-1] == ';')
+      if (cur.empty() || separator == ';') {
         break;
+      }
     }
 
     auto result = parsed_allow_listed_hashes.insert(
-        site_hash, std::move(parsed_mark_hashes));
+        *site_hash, std::move(parsed_mark_hashes));
     // We guaranteed uniqueness of insertion by checking for the |site_hash|
     // before parsing the mark hashes.
     DCHECK(result.is_new_entry);

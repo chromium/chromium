@@ -377,7 +377,8 @@ TEST_F(TouchToFillControllerAutofillTest, FillingShowsAccessLossWarning) {
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
 
   EXPECT_CALL(*last_mock_filler(),
@@ -387,7 +388,8 @@ TEST_F(TouchToFillControllerAutofillTest, FillingShowsAccessLossWarning) {
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(_)).Times(0);
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }

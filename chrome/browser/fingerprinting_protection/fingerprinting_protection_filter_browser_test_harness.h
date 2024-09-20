@@ -41,6 +41,10 @@ class FingerprintingProtectionFilterBrowserTest
 
   ~FingerprintingProtectionFilterBrowserTest() override;
 
+  // The path to a multi-frame document used for tests.
+  static constexpr const char kTestFrameSetPath[] =
+      "/subresource_filter/frame_set.html";
+
  protected:
 
   void SetUpOnMainThread() override;
@@ -71,6 +75,40 @@ class FingerprintingProtectionFilterDryRunBrowserTest
       const FingerprintingProtectionFilterDryRunBrowserTest&) = delete;
 
   ~FingerprintingProtectionFilterDryRunBrowserTest() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class FingerprintingProtectionFilterEnabledInIncognitoBrowserTest
+    : public FingerprintingProtectionFilterBrowserTest {
+ public:
+  FingerprintingProtectionFilterEnabledInIncognitoBrowserTest();
+
+  FingerprintingProtectionFilterEnabledInIncognitoBrowserTest(
+      const FingerprintingProtectionFilterEnabledInIncognitoBrowserTest&) =
+      delete;
+  FingerprintingProtectionFilterEnabledInIncognitoBrowserTest& operator=(
+      const FingerprintingProtectionFilterEnabledInIncognitoBrowserTest&) =
+      delete;
+
+  ~FingerprintingProtectionFilterEnabledInIncognitoBrowserTest() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class FingerprintingProtectionFilterDisabledBrowserTest
+    : public FingerprintingProtectionFilterBrowserTest {
+ public:
+  FingerprintingProtectionFilterDisabledBrowserTest();
+
+  FingerprintingProtectionFilterDisabledBrowserTest(
+      const FingerprintingProtectionFilterDisabledBrowserTest&) = delete;
+  FingerprintingProtectionFilterDisabledBrowserTest& operator=(
+      const FingerprintingProtectionFilterDisabledBrowserTest&) = delete;
+
+  ~FingerprintingProtectionFilterDisabledBrowserTest() override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

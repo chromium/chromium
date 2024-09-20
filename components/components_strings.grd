@@ -283,6 +283,7 @@
     <messages fallback_to_english="true">
       <part file="arc_strings.grdp" />
       <part file="autofill_payments_strings.grdp" />
+      <part file="autofill_prediction_improvements_strings.grdp" />
       <part file="autofill_strings.grdp" />
       <part file="bookmark_bar_strings.grdp" />
       <part file="bookmark_component_strings.grdp" />
@@ -344,9 +345,6 @@
         <part file="android_system_error_page_strings.grdp" />
         <part file="external_intents_strings.grdp" />
         <part file="facilitated_payments_strings.grdp" />
-      </if>
-      <if expr="is_ios">
-        <part file="management_ios_strings.grdp" />
       </if>
       <if expr="enable_vr">
         <part file="webxr_strings.grdp" />

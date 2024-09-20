@@ -45,11 +45,10 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
   // On Android, the surface_handle is the id of the surface in the
   // GpuSurfaceTracker/GpuSurfaceLookup
-  bool can_be_used_with_surface_control = false;
-  auto surface_variant = GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
-      surface_handle, &can_be_used_with_surface_control);
+  auto surface_record =
+      GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_handle);
 
-  if (!can_be_used_with_surface_control) {
+  if (!surface_record.can_be_used_with_surface_control) {
     return nullptr;
   }
 
@@ -70,7 +69,7 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
                              std::move(surface_control),
                              base::SingleThreadTaskRunner::GetCurrentDefault());
                        }},
-      std::move(surface_variant));
+      std::move(surface_record.surface_variant));
 
   return presenter;
 }
@@ -102,15 +101,15 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
 
   // On Android, the surface_handle is the id of the surface in the
   // GpuSurfaceTracker/GpuSurfaceLookup
-  bool can_be_used_with_surface_control = false;
-  auto surface_variant = GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
-      surface_handle, &can_be_used_with_surface_control);
-  if (!absl::holds_alternative<gl::ScopedJavaSurface>(surface_variant)) {
+  auto surface_record =
+      GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_handle);
+  if (!absl::holds_alternative<gl::ScopedJavaSurface>(
+          surface_record.surface_variant)) {
     LOG(WARNING) << "Expected Java Surface";
     return nullptr;
   }
   gl::ScopedJavaSurface& scoped_java_surface =
-      absl::get<gl::ScopedJavaSurface>(surface_variant);
+      absl::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
   gl::ScopedANativeWindow window(scoped_java_surface);
 
   if (!window) {

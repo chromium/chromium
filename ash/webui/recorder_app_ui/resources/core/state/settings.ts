@@ -131,6 +131,18 @@ export enum ExportTranscriptionFormat {
   TXT = 'TXT',
 }
 
+/**
+ * Language code used for transcription.
+ *
+ * This is temporarily listed since the only supported language is en-US, and
+ * should be replaced with the type from `LanguageCode` in
+ * components/soda/constants.h.
+ */
+export enum TranscriptionLanguage {
+  NONE = 0,
+  EN_US = 1,
+}
+
 export const exportSettingsSchema = z.object({
   // Whether audio should be exported.
   audio: z.boolean(),
@@ -156,6 +168,7 @@ export const settingsSchema = z.object({
     z.nativeEnum(SpeakerLabelEnableState),
     SpeakerLabelEnableState.UNKNOWN,
   ),
+  systemAudioConsentDone: z.withDefault(z.boolean(), false),
 });
 
 type Settings = Infer<typeof settingsSchema>;
@@ -174,6 +187,7 @@ const defaultSettings: Settings = {
   transcriptionEnabled: TranscriptionEnableState.UNKNOWN,
   summaryEnabled: SummaryEnableState.UNKNOWN,
   speakerLabelEnabled: SpeakerLabelEnableState.UNKNOWN,
+  systemAudioConsentDone: false,
 };
 
 export const settings = signal(defaultSettings);

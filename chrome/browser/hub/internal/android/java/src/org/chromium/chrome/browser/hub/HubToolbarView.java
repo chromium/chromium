@@ -32,6 +32,9 @@ public class HubToolbarView extends LinearLayout {
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
     private FrameLayout mMenuButtonContainer;
+    private View mSearchBoxLayout;
+    private View mSearchBoxTextView;
+
     private OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
 
@@ -46,6 +49,10 @@ public class HubToolbarView extends LinearLayout {
         mActionButton = findViewById(R.id.toolbar_action_button);
         mPaneSwitcher = findViewById(R.id.pane_switcher);
         mMenuButtonContainer = findViewById(R.id.menu_button_container);
+
+        // SearchBoxLayout is GONE by default, and enabled via the mediator.
+        mSearchBoxLayout = findViewById(R.id.search_box);
+        mSearchBoxTextView = findViewById(R.id.search_box_text);
     }
 
     void setMenuButtonVisible(boolean visible) {
@@ -112,6 +119,15 @@ public class HubToolbarView extends LinearLayout {
 
     void setButtonLookupConsumer(Callback<PaneButtonLookup> lookupConsumer) {
         lookupConsumer.onResult(this::getButtonView);
+    }
+
+    void setSearchBoxVisible(boolean visible) {
+        mSearchBoxLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setSearchBoxListener(Runnable searchBarListener) {
+        mSearchBoxLayout.setOnClickListener(v -> searchBarListener.run());
+        mSearchBoxTextView.setOnClickListener(v -> searchBarListener.run());
     }
 
     private View getButtonView(int index) {

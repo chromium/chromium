@@ -280,7 +280,8 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 }
 
 // Tests that FIP can find RTL text in a web page.
-- (void)testFindInPageRTL {
+// TODO(crbug.com/366752786): Re-enable once de-flaked.
+- (void)FLAKY_testFindInPageRTL {
   [_helper helperTestFindInPageRTL];
 }
 

@@ -11,6 +11,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_constants.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_item.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -176,11 +177,11 @@ TEST_F(PriceInsightsCellTest, TestPriceTrackingUIOnly) {
 
   UILabel* title =
       GetLabelFromIdentifier(kPriceTrackingTitleIdentifier, cell_.contentView);
-  EXPECT_TRUE([title.text isEqualToString:kTitle]);
+  EXPECT_NSEQ(title.text, kTitle);
   UILabel* subtitle = GetLabelFromIdentifier(kPriceTrackingSubtitleIdentifier,
                                              cell_.contentView);
-  EXPECT_TRUE([subtitle.text
-      isEqualToString:l10n_util::GetNSString(IDS_PRICE_TRACKING_DESCRIPTION)]);
+  EXPECT_NSEQ(subtitle.text,
+              l10n_util::GetNSString(IDS_PRICE_TRACKING_DESCRIPTION));
 
   UIStackView* price_tracking_stack_view = GetStackViewFromIdentifier(
       kPriceTrackingStackViewIdentifier, cell_.contentView);
@@ -201,11 +202,11 @@ TEST_F(PriceInsightsCellTest, TestPriceTrackingUINoVariant) {
 
   UILabel* title =
       GetLabelFromIdentifier(kPriceTrackingTitleIdentifier, cell_.contentView);
-  EXPECT_TRUE([title.text isEqualToString:kTitle]);
+  EXPECT_NSEQ(title.text, kTitle);
   UILabel* subtitle = GetLabelFromIdentifier(kPriceTrackingSubtitleIdentifier,
                                              cell_.contentView);
-  EXPECT_TRUE([subtitle.text
-      isEqualToString:l10n_util::GetNSString(IDS_PRICE_TRACKING_DESCRIPTION)]);
+  EXPECT_NSEQ(subtitle.text,
+              l10n_util::GetNSString(IDS_PRICE_TRACKING_DESCRIPTION));
 
   UIStackView* price_tracking_stack_view = GetStackViewFromIdentifier(
       kPriceTrackingStackViewIdentifier, cell_.contentView);
@@ -226,11 +227,11 @@ TEST_F(PriceInsightsCellTest, TestPriceTrackingUIVariant) {
 
   UILabel* title =
       GetLabelFromIdentifier(kPriceTrackingTitleIdentifier, cell_.contentView);
-  EXPECT_TRUE([title.text isEqualToString:kTitle]);
+  EXPECT_NSEQ(title.text, kTitle);
   UILabel* subtitle = GetLabelFromIdentifier(kPriceTrackingSubtitleIdentifier,
                                              cell_.contentView);
-  EXPECT_TRUE([subtitle.text
-      isEqualToString:l10n_util::GetNSString(IDS_PRICE_TRACKING_DESCRIPTION)]);
+  EXPECT_NSEQ(subtitle.text,
+              l10n_util::GetNSString(IDS_PRICE_TRACKING_DESCRIPTION));
 
   UIStackView* price_tracking_stack_view = GetStackViewFromIdentifier(
       kPriceTrackingStackViewIdentifier, cell_.contentView);
@@ -251,14 +252,12 @@ TEST_F(PriceInsightsCellTest, TestBuyingOptions) {
 
   UILabel* title =
       GetLabelFromIdentifier(kBuyingOptionsTitleIdentifier, cell_.contentView);
-  EXPECT_TRUE([title.text
-      isEqualToString:l10n_util::GetNSString(
-                          IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE)]);
+  EXPECT_NSEQ(title.text,
+              l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE));
   UILabel* subtitle = GetLabelFromIdentifier(kBuyingOptionsSubtitleIdentifier,
                                              cell_.contentView);
-  EXPECT_TRUE([subtitle.text
-      isEqualToString:l10n_util::GetNSString(
-                          IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE)]);
+  EXPECT_NSEQ(subtitle.text, l10n_util::GetNSString(
+                                 IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE));
 }
 
 // Tests the presence of UI elements in the Price History components when only
@@ -273,15 +272,14 @@ TEST_F(PriceInsightsCellTest, TestPriceHistoryUIWithVariantNoTracking) {
 
   UILabel* title =
       GetLabelFromIdentifier(kPriceHistoryTitleIdentifier, cell_.contentView);
-  EXPECT_TRUE([title.text isEqualToString:item.title]);
+  EXPECT_NSEQ(title.text, item.title);
   UILabel* primary_subtitle = GetLabelFromIdentifier(
       kPriceHistoryPrimarySubtitleIdentifier, cell_.contentView);
-  EXPECT_TRUE([primary_subtitle.text isEqualToString:item.variants]);
+  EXPECT_NSEQ(primary_subtitle.text, item.variants);
   UILabel* secondary_subtitle = GetLabelFromIdentifier(
       kPriceHistorySecondarySubtitleIdentifier, cell_.contentView);
-  EXPECT_TRUE([secondary_subtitle.text
-      isEqualToString:l10n_util::GetNSString(
-                          IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS)]);
+  EXPECT_NSEQ(secondary_subtitle.text,
+              l10n_util::GetNSString(IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS));
 }
 
 // Tests the presence of UI elements in the Price History components when only
@@ -296,12 +294,11 @@ TEST_F(PriceInsightsCellTest, TestPriceHistoryUIWithNoVariantNoTracking) {
 
   UILabel* title =
       GetLabelFromIdentifier(kPriceHistoryTitleIdentifier, cell_.contentView);
-  EXPECT_TRUE([title.text isEqualToString:item.title]);
+  EXPECT_NSEQ(title.text, item.title);
   UILabel* primary_subtitle = GetLabelFromIdentifier(
       kPriceHistoryPrimarySubtitleIdentifier, cell_.contentView);
-  EXPECT_TRUE([primary_subtitle.text
-      isEqualToString:l10n_util::GetNSString(
-                          IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION)]);
+  EXPECT_NSEQ(primary_subtitle.text,
+              l10n_util::GetNSString(IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION));
   UILabel* secondary_subtitle = GetLabelFromIdentifier(
       kPriceHistorySecondarySubtitleIdentifier, cell_.contentView);
   EXPECT_EQ(NULL, secondary_subtitle);
@@ -319,12 +316,11 @@ TEST_F(PriceInsightsCellTest, TestPriceHistoryUIWithVariant) {
 
   UILabel* title =
       GetLabelFromIdentifier(kPriceHistoryTitleIdentifier, cell_.contentView);
-  EXPECT_TRUE(
-      [title.text isEqualToString:l10n_util::GetNSString(
-                                      IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS)]);
+  EXPECT_NSEQ(title.text,
+              l10n_util::GetNSString(IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS));
   UILabel* primary_subtitle = GetLabelFromIdentifier(
       kPriceHistoryPrimarySubtitleIdentifier, cell_.contentView);
-  EXPECT_TRUE([primary_subtitle.text isEqualToString:item.variants]);
+  EXPECT_NSEQ(primary_subtitle.text, item.variants);
   UILabel* secondary_subtitle = GetLabelFromIdentifier(
       kPriceHistorySecondarySubtitleIdentifier, cell_.contentView);
   EXPECT_EQ(NULL, secondary_subtitle);
@@ -342,9 +338,8 @@ TEST_F(PriceInsightsCellTest, TestPriceHistoryUIAndNoVariant) {
 
   UILabel* title =
       GetLabelFromIdentifier(kPriceHistoryTitleIdentifier, cell_.contentView);
-  EXPECT_TRUE(
-      [title.text isEqualToString:l10n_util::GetNSString(
-                                      IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION)]);
+  EXPECT_NSEQ(title.text,
+              l10n_util::GetNSString(IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION));
   UILabel* primary_subtitle = GetLabelFromIdentifier(
       kPriceHistoryPrimarySubtitleIdentifier, cell_.contentView);
   EXPECT_EQ(NULL, primary_subtitle);

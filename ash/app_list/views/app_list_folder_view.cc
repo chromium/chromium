@@ -1159,8 +1159,7 @@ void AppListFolderView::ReparentItem(
 
 void AppListFolderView::DispatchEndDragEventForReparent(
     bool events_forwarded_to_drag_drop_host,
-    bool cancel_drag,
-    std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
+    bool cancel_drag) {
   if (folder_item_) {
     folder_item_view_->UpdateDraggedItem(nullptr);
     folder_item_->NotifyOfDraggedItem(nullptr);

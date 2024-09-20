@@ -57,6 +57,8 @@ constexpr auto CONTENT_SETTING_BLOCK = ContentSetting::CONTENT_SETTING_BLOCK;
 // using enum content_settings::CookieControlsMode;
 constexpr auto kBlockThirdParty =
     content_settings::CookieControlsMode::kBlockThirdParty;
+constexpr auto kLimitedThirdParty =
+    content_settings::CookieControlsMode::kLimited;
 
 constexpr int kTestTaxonomyVersion = 1;
 
@@ -918,7 +920,8 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceEnabled) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
-               kIsPrivateAggregationDebugModeAllowed},
+               kIsPrivateAggregationDebugModeAllowed,
+               kIsLocalUnpartitionedDataAccessAllowed},
            true},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
@@ -929,7 +932,8 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceEnabled) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
-               kIsPrivateAggregationAllowedMetric},
+               kIsPrivateAggregationAllowedMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
                               kIsSharedStorageSelectURLBlockSiteSettingSpecific,
@@ -971,7 +975,9 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceDisabled) {
                kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed},
            false},
-          {kIsSharedStorageAllowed, true},
+          {MultipleOutputKeys{kIsSharedStorageAllowed,
+                              kIsLocalUnpartitionedDataAccessAllowed},
+           true},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
                kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
@@ -983,16 +989,20 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceDisabled) {
                kIsSharedStorageSelectURLAllowedMetric,
                kIsPrivateAggregationAllowedMetric},
            static_cast<int>(Status::kApisDisabled)},
-          {kIsSharedStorageAllowedMetric, static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{kIsSharedStorageAllowedMetric,
+                              kIsLocalUnpartitionedDataAccessAllowedMetric},
+           static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
                               kIsSharedStorageSelectURLBlockSiteSettingSpecific,
                               kIsPrivateAggregationBlockSiteSettingSpecific},
            &kFalse_}});
 }
 
-TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
-  // Confirm that M1 kAPIs ignore the Cookie Controls mode preference, except
-  // Private Aggregation Debug Mode.
+TEST_F(
+    PrivacySandboxSettingsM1Test,
+    CookieControlsModeEffectsOnlyPrivateAggregationDebugModeAndFencedFrameLocalUnpartitionedDataAccess) {
+  // Confirm that Private Aggregation Debug Mode and fenced frame local
+  // unpartitioned data are the only M1 kAPIs affected by 3PC blocking.
   RunTestCase(
       TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
                                    kM1FledgeEnabledUserPrefValue,
@@ -1019,7 +1029,9 @@ TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
            true},
-          {kIsPrivateAggregationDebugModeAllowed, false},
+          {MultipleOutputKeys{kIsPrivateAggregationDebugModeAllowed,
+                              kIsLocalUnpartitionedDataAccessAllowed},
+           false},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
                kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
@@ -1030,7 +1042,9 @@ TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
                kIsPrivateAggregationAllowedMetric},
-           static_cast<int>(Status::kAllowed)}});
+           static_cast<int>(Status::kAllowed)},
+          {kIsLocalUnpartitionedDataAccessAllowedMetric,
+           static_cast<int>(Status::kApisDisabled)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, SiteDataDefaultBlockExceptionApplies) {
@@ -1072,7 +1086,8 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataDefaultBlockExceptionApplies) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext},
+               kIsCookieDeprecationLabelAllowedForContext,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedMetric,
                               kIsAttributionReportingEverAllowedMetric},
@@ -1084,7 +1099,8 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataDefaultBlockExceptionApplies) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
-               kIsPrivateAggregationAllowedMetric},
+               kIsPrivateAggregationAllowedMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kSiteDataAccessBlocked)},
           {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
                               kIsSharedStorageSelectURLBlockSiteSettingSpecific,
@@ -1125,7 +1141,8 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockExceptionApplies) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext},
+               kIsCookieDeprecationLabelAllowedForContext,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedMetric,
                               kIsAttributionReportingEverAllowedMetric},
@@ -1137,7 +1154,8 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockExceptionApplies) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
-               kIsPrivateAggregationAllowedMetric},
+               kIsPrivateAggregationAllowedMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kSiteDataAccessBlocked)}});
 }
 
@@ -1166,7 +1184,8 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowDoesntOverridePref) {
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{kIsSharedStorageAllowed,
-                              kIsCookieDeprecationLabelAllowedForContext},
+                              kIsCookieDeprecationLabelAllowedForContext,
+                              kIsLocalUnpartitionedDataAccessAllowed},
            true},
           {MultipleOutputKeys{
                kIsTopicsAllowed, kIsTopicsAllowedForContext,
@@ -1177,7 +1196,9 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowDoesntOverridePref) {
                kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed},
            false},
-          {kIsSharedStorageAllowedMetric, static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{kIsSharedStorageAllowedMetric,
+                              kIsLocalUnpartitionedDataAccessAllowedMetric},
+           static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
                kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
@@ -1222,7 +1243,8 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowExceptions) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext},
+               kIsCookieDeprecationLabelAllowedForContext,
+               kIsLocalUnpartitionedDataAccessAllowed},
            true},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
@@ -1232,7 +1254,8 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowExceptions) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
-               kIsPrivateAggregationAllowedMetric},
+               kIsPrivateAggregationAllowedMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAllowed)}});
 }
 
@@ -1267,7 +1290,8 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataBlock) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext},
+               kIsCookieDeprecationLabelAllowedForContext,
+               kIsLocalUnpartitionedDataAccessAllowed},
            true},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
@@ -1278,7 +1302,8 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataBlock) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
-               kIsPrivateAggregationAllowedMetric},
+               kIsPrivateAggregationAllowedMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAllowed)}});
 }
 
@@ -1315,7 +1340,8 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataAllow) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext},
+               kIsCookieDeprecationLabelAllowedForContext,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedMetric,
                               kIsAttributionReportingEverAllowedMetric},
@@ -1327,7 +1353,8 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataAllow) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
-               kIsPrivateAggregationAllowedMetric},
+               kIsPrivateAggregationAllowedMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kSiteDataAccessBlocked)}});
 }
 
@@ -1364,7 +1391,8 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffInIncognito) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
-               kIsPrivateAggregationDebugModeAllowed},
+               kIsPrivateAggregationDebugModeAllowed,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
@@ -1375,7 +1403,8 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffInIncognito) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
-               kIsPrivateAggregationAllowedMetric},
+               kIsPrivateAggregationAllowedMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kIncognitoProfile)},
           {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
                               kIsSharedStorageSelectURLBlockSiteSettingSpecific,
@@ -1416,7 +1445,8 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffForRestrictedAccounts) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
-               kIsPrivateAggregationDebugModeAllowed},
+               kIsPrivateAggregationDebugModeAllowed,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
@@ -1427,7 +1457,8 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffForRestrictedAccounts) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
-               kIsPrivateAggregationAllowedMetric},
+               kIsPrivateAggregationAllowedMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kRestricted)},
           {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
                               kIsSharedStorageSelectURLBlockSiteSettingSpecific,
@@ -1502,7 +1533,8 @@ TEST_F(PrivacySandboxSettingsM1Test, NoAppropriateTopicsConsent) {
                kIsAttributionReportingEverAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
-               kIsPrivateAggregationDebugModeAllowed},
+               kIsPrivateAggregationDebugModeAllowed,
+               kIsLocalUnpartitionedDataAccessAllowed},
            true},
           {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
            false},
@@ -1514,7 +1546,8 @@ TEST_F(PrivacySandboxSettingsM1Test, NoAppropriateTopicsConsent) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
-               kIsPrivateAggregationAllowedMetric},
+               kIsPrivateAggregationAllowedMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric,
@@ -1575,14 +1608,16 @@ TEST_F(PrivacySandboxSettingsM1RestrictedNotice,
                               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
                               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
                               kIsFledgeBuyAllowed, kIsSharedStorageAllowed,
-                              kIsSharedStorageSelectURLAllowed},
+                              kIsSharedStorageSelectURLAllowed,
+                              kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
                kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
                kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
                kIsFledgeBuyAllowedMetric, kIsSharedStorageAllowedMetric,
-               kIsSharedStorageSelectURLAllowedMetric},
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kRestricted)},
 
           {MultipleOutputKeys{kIsAttributionReportingAllowed,
@@ -1652,7 +1687,8 @@ TEST_P(PrivacySandboxAttestationsTest, AttestationsFileNotYetChecked) {
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
-               kIsPrivateAggregationDebugModeAllowed},
+               kIsPrivateAggregationDebugModeAllowed,
+               kIsLocalUnpartitionedDataAccessAllowed},
            IsAttestationsDefaultAllowed()},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
@@ -1663,7 +1699,8 @@ TEST_P(PrivacySandboxAttestationsTest, AttestationsFileNotYetChecked) {
                kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
-               kIsEventReportingDestinationAttestedForFledgeMetric},
+               kIsEventReportingDestinationAttestedForFledgeMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(IsAttestationsDefaultAllowed()
                                 ? Status::kAllowed
                                 : Status::kAttestationsFileNotYetChecked)},
@@ -1708,7 +1745,8 @@ TEST_P(PrivacySandboxAttestationsTest, NoEnrollments) {
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
-               kIsPrivateAggregationDebugModeAllowed},
+               kIsPrivateAggregationDebugModeAllowed,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
@@ -1719,7 +1757,8 @@ TEST_P(PrivacySandboxAttestationsTest, NoEnrollments) {
                kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
-               kIsEventReportingDestinationAttestedForFledgeMetric},
+               kIsEventReportingDestinationAttestedForFledgeMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAttestationFailed)},
           {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
                               kIsPrivateAggregationBlockSiteSettingSpecific},
@@ -1759,7 +1798,8 @@ TEST_P(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
-               kIsPrivateAggregationDebugModeAllowed},
+               kIsPrivateAggregationDebugModeAllowed,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
@@ -1770,7 +1810,8 @@ TEST_P(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
                kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
-               kIsEventReportingDestinationAttestedForFledgeMetric},
+               kIsEventReportingDestinationAttestedForFledgeMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
@@ -1807,7 +1848,8 @@ TEST_P(PrivacySandboxAttestationsTest, TopicsAttestation) {
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsPrivateAggregationAllowed,
-               kIsPrivateAggregationDebugModeAllowed},
+               kIsPrivateAggregationDebugModeAllowed,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {kIsTopicsAllowedForContextMetric,
            static_cast<int>(Status::kAllowed)},
@@ -1819,7 +1861,8 @@ TEST_P(PrivacySandboxAttestationsTest, TopicsAttestation) {
                kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
-               kIsEventReportingDestinationAttestedForFledgeMetric},
+               kIsEventReportingDestinationAttestedForFledgeMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
@@ -1863,7 +1906,7 @@ TEST_P(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
                kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
-               kIsSharedStorageAllowed},
+               kIsSharedStorageAllowed, kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {kIsPrivateAggregationAllowedMetric,
            static_cast<int>(Status::kAllowed)},
@@ -1875,7 +1918,8 @@ TEST_P(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
                kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsSharedStorageAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
-               kIsEventReportingDestinationAttestedForFledgeMetric},
+               kIsEventReportingDestinationAttestedForFledgeMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAttestationFailed)},
           {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
                               kIsPrivateAggregationBlockSiteSettingSpecific},
@@ -1942,6 +1986,121 @@ TEST_P(PrivacySandboxAttestationsTest, SharedStorageAttestation) {
            &kFalse_}});
 }
 
+TEST_P(PrivacySandboxAttestationsTest,
+       LocalUnpartitionedDataAccessAttestation) {
+  GURL top_frame_url("https://top-frame.com");
+  GURL enrollee_url("https://embedded.com");
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                                   kM1FledgeEnabledUserPrefValue,
+                                   kM1AdMeasurementEnabledUserPrefValue},
+                 true},
+                {kAttestationsMap,
+                 PrivacySandboxAttestationsMap{
+                     {net::SchemefulSite(enrollee_url),
+                      {PrivacySandboxAttestationsGatedAPI::
+                           kLocalUnpartitionedDataAccess}}}}},
+      TestInput{
+          {kTopicsURL, enrollee_url},
+          {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
+          {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
+          {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL(top_frame_url))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL(top_frame_url))},
+          {kAccessingOrigin, url::Origin::Create(enrollee_url)},
+          {kOutSharedStorageBlockIsSiteSettingSpecific,
+           &actual_out_shared_storage_block_is_site_setting_specific_},
+          {kOutPrivateAggregationBlockIsSiteSettingSpecific,
+           &actual_out_private_aggregation_block_is_site_setting_specific_}},
+      TestOutput{
+          {kIsLocalUnpartitionedDataAccessAllowed, true},
+          {MultipleOutputKeys{kIsTopicsAllowedForContext,
+                              kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport,
+                              kIsSharedStorageAllowed, kIsFledgeJoinAllowed,
+                              kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+                              kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
+                              kIsEventReportingDestinationAttestedForFledge,
+                              kIsPrivateAggregationAllowed,
+                              kIsPrivateAggregationDebugModeAllowed},
+           false},
+          {kIsLocalUnpartitionedDataAccessAllowedMetric,
+           static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric, kIsPrivateAggregationAllowedMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
+           static_cast<int>(Status::kAttestationFailed)},
+          {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
+                              kIsPrivateAggregationBlockSiteSettingSpecific},
+           &kFalse_}});
+}
+
+TEST_P(PrivacySandboxAttestationsTest,
+       LocalUnpartitionedDataAccessEnabledWhen3pcsLimited) {
+  GURL top_frame_url("https://top-frame.com");
+  GURL enrollee_url("https://embedded.com");
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                                   kM1FledgeEnabledUserPrefValue,
+                                   kM1AdMeasurementEnabledUserPrefValue},
+                 true},
+                {kCookieControlsModeUserPrefValue, kLimitedThirdParty},
+                {kAttestationsMap,
+                 PrivacySandboxAttestationsMap{
+                     {net::SchemefulSite(enrollee_url),
+                      {PrivacySandboxAttestationsGatedAPI::
+                           kLocalUnpartitionedDataAccess}}}}},
+      TestInput{
+          {kTopicsURL, enrollee_url},
+          {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
+          {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
+          {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL(top_frame_url))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL(top_frame_url))},
+          {kAccessingOrigin, url::Origin::Create(enrollee_url)},
+          {kOutSharedStorageBlockIsSiteSettingSpecific,
+           &actual_out_shared_storage_block_is_site_setting_specific_},
+          {kOutPrivateAggregationBlockIsSiteSettingSpecific,
+           &actual_out_private_aggregation_block_is_site_setting_specific_}},
+      TestOutput{
+          {kIsLocalUnpartitionedDataAccessAllowed, true},
+          {MultipleOutputKeys{kIsTopicsAllowedForContext,
+                              kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport,
+                              kIsSharedStorageAllowed, kIsFledgeJoinAllowed,
+                              kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+                              kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
+                              kIsEventReportingDestinationAttestedForFledge,
+                              kIsPrivateAggregationAllowed,
+                              kIsPrivateAggregationDebugModeAllowed},
+           false},
+          {kIsLocalUnpartitionedDataAccessAllowedMetric,
+           static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric, kIsPrivateAggregationAllowedMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
+           static_cast<int>(Status::kAttestationFailed)},
+          {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
+                              kIsPrivateAggregationBlockSiteSettingSpecific},
+           &kFalse_}});
+}
+
 TEST_P(PrivacySandboxAttestationsTest, FledgeAttestation) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
@@ -1977,7 +2136,8 @@ TEST_P(PrivacySandboxAttestationsTest, FledgeAttestation) {
                kMaySendAttributionReport, kIsSharedStorageAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsEventReportingDestinationAttestedForSharedStorage},
+               kIsEventReportingDestinationAttestedForSharedStorage,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{
                kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
@@ -1990,7 +2150,8 @@ TEST_P(PrivacySandboxAttestationsTest, FledgeAttestation) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
-               kIsEventReportingDestinationAttestedForSharedStorageMetric},
+               kIsEventReportingDestinationAttestedForSharedStorageMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
@@ -2029,7 +2190,8 @@ TEST_P(PrivacySandboxAttestationsTest, FledgeAttestationBlockJoiningEtldplus1) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsEventReportingDestinationAttestedForSharedStorage},
+               kIsEventReportingDestinationAttestedForSharedStorage,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{
                kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
@@ -2043,7 +2205,8 @@ TEST_P(PrivacySandboxAttestationsTest, FledgeAttestationBlockJoiningEtldplus1) {
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
-               kIsEventReportingDestinationAttestedForSharedStorageMetric},
+               kIsEventReportingDestinationAttestedForSharedStorageMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
@@ -2083,7 +2246,8 @@ TEST_P(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsPrivateAggregationAllowed,
-               kIsPrivateAggregationDebugModeAllowed},
+               kIsPrivateAggregationDebugModeAllowed,
+               kIsLocalUnpartitionedDataAccessAllowed},
            false},
           {MultipleOutputKeys{kIsAttributionReportingAllowedMetric,
                               kMaySendAttributionReportMetric},
@@ -2095,7 +2259,8 @@ TEST_P(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
                kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
-               kIsEventReportingDestinationAttestedForFledgeMetric},
+               kIsEventReportingDestinationAttestedForFledgeMetric,
+               kIsLocalUnpartitionedDataAccessAllowedMetric},
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
@@ -2340,20 +2505,23 @@ TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, ApiPreferenceEnabled) {
            &actual_out_shared_storage_block_is_site_setting_specific_},
           {kOutSharedStorageSelectURLBlockIsSiteSettingSpecific,
            &actual_out_select_url_block_is_site_setting_specific_}},
-      TestOutput{{MultipleOutputKeys{kIsSharedStorageAllowed,
-                                     kIsSharedStorageSelectURLAllowed},
-                  true},
-                 {MultipleOutputKeys{kIsSharedStorageAllowedMetric,
-                                     kIsSharedStorageSelectURLAllowedMetric},
-                  static_cast<int>(Status::kAllowed)},
-                 {kIsSharedStorageAllowedDebugMessage,
-                  &expected_out_shared_storage_debug_message},
-                 {kIsSharedStorageSelectURLAllowedDebugMessage,
-                  &expected_out_select_url_debug_message},
-                 {MultipleOutputKeys{
-                      kIsSharedStorageBlockSiteSettingSpecific,
-                      kIsSharedStorageSelectURLBlockSiteSettingSpecific},
-                  &kFalse_}});
+      TestOutput{
+          {MultipleOutputKeys{kIsSharedStorageAllowed,
+                              kIsSharedStorageSelectURLAllowed,
+                              kIsLocalUnpartitionedDataAccessAllowed},
+           true},
+          {MultipleOutputKeys{kIsSharedStorageAllowedMetric,
+                              kIsSharedStorageSelectURLAllowedMetric,
+                              kIsLocalUnpartitionedDataAccessAllowedMetric},
+           static_cast<int>(Status::kAllowed)},
+          {kIsSharedStorageAllowedDebugMessage,
+           &expected_out_shared_storage_debug_message},
+          {kIsSharedStorageSelectURLAllowedDebugMessage,
+           &expected_out_select_url_debug_message},
+          {MultipleOutputKeys{
+               kIsSharedStorageBlockSiteSettingSpecific,
+               kIsSharedStorageSelectURLBlockSiteSettingSpecific},
+           &kFalse_}});
 }
 
 TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, ApiPreferenceDisabled) {
@@ -2484,7 +2652,6 @@ TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, NoEnrollments) {
   std::string expected_out_shared_storage_debug_message =
       base::StringPrintf(kAttestationFailedTemplate, "https://embedded.com",
                          static_cast<int>(Status::kAttestationFailed));
-  ;
 
   // Confirm that the expected debug message is received when attestation fails
   // due to no enrollments.

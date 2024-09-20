@@ -61,6 +61,12 @@ extern const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[];
 extern const char
     kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[];
 
+// When enabled, a form event will log to all of the parsed forms of the same
+// type on a webpage. This means credit card form events will log to all credit
+// card form types and address form events will log to all address form types.
+extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
+extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
+
 // Title and description for the flag to send merchant_domain as a top-level
 // parameter in card unmask requests.
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];
@@ -278,6 +284,10 @@ extern const char kDefaultBrowserPromoIPadExperimentalStringDescription[];
 // Title and description for default browser promo trigger criteria experiment.
 extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
+
+// Title and description for blue dot promo on tools menu button.
+extern const char kBlueDotOnToolsMenuButtonName[];
+extern const char kBlueDotOnToolsMenuButtonDescription[];
 
 // Title and description for the flag to control if a crash report is generated
 // on main thread freeze.
@@ -597,9 +607,10 @@ extern const char kMostVisitedTilesHorizontalRenderGroupDescription[];
 extern const char kNativeFindInPageName[];
 extern const char kNativeFindInPageDescription[];
 
-// Title and description for the flag to enable the new NTP omnibox layout.
-extern const char kNewNTPOmniboxLayoutName[];
-extern const char kNewNTPOmniboxLayoutDescription[];
+// Title and description for the new illustration in the sync opt-in promotion
+// view.
+extern const char kNewSyncOptInIllustrationName[];
+extern const char kNewSyncOptInIllustrationDescription[];
 
 // Title and description for the flag to enable overflow menu customization
 extern const char kOverflowMenuCustomizationName[];
@@ -964,19 +975,10 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 extern const char kEnableLensOverlayName[];
 extern const char kEnableLensOverlayDescription[];
 
-// Title and description for the flag to enable session serialization
-// optimizations (go/bling-session-restoration).
-extern const char kEnableSessionSerializationOptimizationsName[];
-extern const char kEnableSessionSerializationOptimizationsDescription[];
-
 // Title and description for the flag to enable the new transitions in the
 // TabGrid.
 extern const char kTabGridNewTransitionsName[];
 extern const char kTabGridNewTransitionsDescription[];
-
-// Title and description for the tab groups in grid feature.
-extern const char kTabGroupsInGridName[];
-extern const char kTabGroupsInGridDescription[];
 
 // Title and description for the tab groups on iPad feature.
 extern const char kTabGroupsIPadName[];

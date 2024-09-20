@@ -279,10 +279,6 @@ void UpdatePlatformShortcuts(
 // Tasks posted here run with BEST_EFFORT priority and block shutdown.
 void PostShortcutIOTask(base::OnceCallback<void(const ShortcutInfo&)> task,
                         std::unique_ptr<ShortcutInfo> shortcut_info);
-void PostShortcutIOTaskAndReplyWithResult(
-    base::OnceCallback<Result(const ShortcutInfo&)> task,
-    std::unique_ptr<ShortcutInfo> shortcut_info,
-    ResultCallback reply);
 
 // Run an IO task on a worker thread. Ownership of |shortcut_info| transfers
 // to the task which must delete it on the UI thread when the task is complete.

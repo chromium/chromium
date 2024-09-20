@@ -28,7 +28,7 @@ class Env;
 class Snapshot;
 }  // namespace leveldb
 
-namespace content {
+namespace content::indexed_db {
 class TransactionalLevelDBDatabase;
 class TransactionalLevelDBFactory;
 class TransactionalLevelDBIterator;
@@ -180,6 +180,6 @@ class TransactionalLevelDBDatabase
       weak_factory_for_iterators_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_TRANSACTIONAL_LEVELDB_TRANSACTIONAL_LEVELDB_DATABASE_H_

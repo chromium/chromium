@@ -5,13 +5,14 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
 
 #import "base/memory/ptr_util.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -31,13 +32,15 @@
 @implementation LocationBarMediator {
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+  BOOL _isIncognito;
 }
 
-- (instancetype)init {
+- (instancetype)initWithIsIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
     _searchEngineSupportsSearchByImage = NO;
     _searchEngineSupportsLens = NO;
+    _isIncognito = isIncognito;
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
   }
   return self;
@@ -69,12 +72,13 @@
 
 - (void)setConsumer:(id<LocationBarConsumer>)consumer {
   _consumer = consumer;
-  [consumer
-      updateSearchByImageSupported:self.searchEngineSupportsSearchByImage];
-  [consumer updateLensImageSupported:self.searchEngineSupportsLens];
+  [consumer setSearchByImageEnabled:self.searchEngineSupportsSearchByImage];
+  [consumer setLensImageEnabled:self.searchEngineSupportsLens];
+  [self updatePlaceholderType];
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
+  _templateURLService = templateURLService;
   if (templateURLService) {
     self.searchEngineSupportsSearchByImage =
         search_engines::SupportsSearchByImage(templateURLService);
@@ -84,7 +88,6 @@
     self.searchEngineSupportsSearchByImage = NO;
     _searchEngineObserver.reset();
   }
-  _templateURLService = templateURLService;
 }
 
 - (void)setSearchEngineSupportsSearchByImage:
@@ -93,8 +96,7 @@
       _searchEngineSupportsSearchByImage != searchEngineSupportsSearchByImage;
   _searchEngineSupportsSearchByImage = searchEngineSupportsSearchByImage;
   if (supportChanged) {
-    [self.consumer
-        updateSearchByImageSupported:searchEngineSupportsSearchByImage];
+    [self.consumer setSearchByImageEnabled:searchEngineSupportsSearchByImage];
   }
 }
 
@@ -102,7 +104,8 @@
   BOOL supportChanged = _searchEngineSupportsLens != searchEngineSupportsLens;
   _searchEngineSupportsLens = searchEngineSupportsLens;
   if (supportChanged) {
-    [self.consumer updateLensImageSupported:searchEngineSupportsLens];
+    [self.consumer setLensImageEnabled:searchEngineSupportsLens];
+    [self updatePlaceholderType];
   }
 }
 
@@ -126,6 +129,21 @@
   DCHECK_EQ(_webStateList, webStateList);
   if (status.active_web_state_change()) {
     [self.consumer defocusOmnibox];
+  }
+}
+
+#pragma mark - Private
+
+/// Updates the placeholder.
+- (void)updatePlaceholderType {
+  if (!IsLensOverlayAvailable()) {
+    return;
+  }
+  if (!_isIncognito &&
+      search_engines::SupportsSearchImageWithLens(self.templateURLService)) {
+    [self.consumer setPlaceholderType:LocationBarPlaceholderType::kLensOverlay];
+  } else {
+    [self.consumer setPlaceholderType:LocationBarPlaceholderType::kNone];
   }
 }
 

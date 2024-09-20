@@ -54,7 +54,8 @@
           "builder": "android-x64-rel",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-13-x64-rel/targets"
     }
   },
   "$build/reclient": {

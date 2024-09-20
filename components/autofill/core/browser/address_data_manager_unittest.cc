@@ -290,6 +290,40 @@ TEST_F(AddressDataManagerTest, GetProfiles_Order) {
                                    Pointee(profile3)));
 }
 
+// Tests that `GetProfiles()` and `GetProfilesByRecordType()` filters incomplete
+// H/W addresses.
+TEST_F(AddressDataManagerTest, GetProfiles_CompletenessFiltering) {
+  AutofillProfile local_profile = test::GetFullProfile();
+  AutofillProfile regular_account_profile = test::GetFullProfile2();
+  test_api(regular_account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  AutofillProfile complete_home_profile = test::GetFullCanadianProfile();
+  test_api(complete_home_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  // `GetIncompleteProfile1()` is only missing a phone number, but is not
+  // lacking any address information. `GetIncompleteProfile2()` is.
+  AutofillProfile incomplete_work_profile = test::GetIncompleteProfile2();
+  ASSERT_FALSE(incomplete_work_profile.HasInfo(ADDRESS_HOME_STREET_ADDRESS));
+  test_api(incomplete_work_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+
+  AddProfileToAddressDataManager(local_profile);
+  AddProfileToAddressDataManager(regular_account_profile);
+  AddProfileToAddressDataManager(complete_home_profile);
+  AddProfileToAddressDataManager(incomplete_work_profile);
+
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              testing::UnorderedElementsAre(Pointee(local_profile),
+                                            Pointee(regular_account_profile),
+                                            Pointee(complete_home_profile)));
+  EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
+                  AutofillProfile::RecordType::kAccountHome),
+              testing::UnorderedElementsAre(Pointee(complete_home_profile)));
+  EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
+                  AutofillProfile::RecordType::kAccountWork),
+              testing::IsEmpty());
+}
+
 // Test that profiles are not shown if |kAutofillProfileEnabled| is set to
 // |false|.
 TEST_F(AddressDataManagerTest, GetProfilesToSuggest_ProfileAutofillDisabled) {

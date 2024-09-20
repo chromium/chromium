@@ -30,17 +30,17 @@ constexpr size_t kMaxRecords = 1800u;
 
 void LogAverageOverdrawCountUMA(float overdraw) {
   constexpr char kAverageOverdrawHistogramName[] =
-      "Compositing.Display.Draw.AverageOverdraw";
+      "Compositing.Display.Draw.AverageOverdraw2";
   // For optimal histogram bucketing, convert floating-point values into
   // integers while preserving the desired level of decimal precision.
   constexpr int kConversionFactor = 100'000;
 
-  // The expected overdraw ranges is [1, 6].
+  // The expected overdraw ranges is [1, 12].
   UMA_HISTOGRAM_CUSTOM_COUNTS(
       kAverageOverdrawHistogramName,
       base::ClampRound<int>(overdraw * kConversionFactor),
       /*minimum=*/1 * kConversionFactor,
-      /*maximum=*/(6 * kConversionFactor) + 1, /*bucket_count=*/50);
+      /*maximum=*/(12 * kConversionFactor) + 1, /*bucket_count=*/50);
 }
 
 }  // namespace
@@ -76,6 +76,9 @@ float OverdrawTracker::EstimateOverdraw(const AggregatedFrame* frame) {
 
       auto quad_rect = gfx::ToEnclosingRect(
           quad_to_root_transform.MapRect(gfx::RectF(quad->visible_rect)));
+      if (sqs->clip_rect) {
+        quad_rect.Intersect(sqs->clip_rect.value());
+      }
 
       overdraw += quad_rect.size().GetCheckedArea();
     }

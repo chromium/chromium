@@ -1006,8 +1006,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;
-
-  base::WeakPtrFactory<WebViewImpl> weak_ptr_factory_{this};
 };
 
 // WebView is always implemented by WebViewImpl, so explicitly allow the

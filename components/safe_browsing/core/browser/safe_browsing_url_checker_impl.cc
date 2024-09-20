@@ -194,6 +194,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
     HashRealTimeSelection hash_realtime_selection,
     bool is_async_check,
+    bool check_allowlist_before_hash_database,
     SessionID tab_id)
     : headers_(headers),
       load_flags_(load_flags),
@@ -215,12 +216,10 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       hash_realtime_service_on_ui_(hash_realtime_service_on_ui),
       hash_realtime_selection_(hash_realtime_selection),
       is_async_check_(is_async_check),
+      check_allowlist_before_hash_database_(
+          check_allowlist_before_hash_database),
       tab_id_(tab_id) {
   DCHECK(url_real_time_lookup_enabled_ || can_check_db_);
-
-  // This object is used exclusively on the IO thread but may be constructed on
-  // the UI thread.
-  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 SafeBrowsingUrlCheckerImpl::~SafeBrowsingUrlCheckerImpl() {
@@ -506,7 +505,8 @@ SafeBrowsingUrlCheckerImpl::GetHashRealTimeLookupMechanism(
   }
   return std::make_unique<DatabaseManagerMechanism>(
       url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-      CheckBrowseUrlType::kHashRealTime);
+      CheckBrowseUrlType::kHashRealTime,
+      /*check_allowlist=*/false);
 }
 
 SafeBrowsingUrlCheckerImpl::KickOffLookupMechanismResult
@@ -559,12 +559,14 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
     performed_check = PerformedCheck::kHashRealTimeCheck;
     lookup_mechanism = std::make_unique<DatabaseManagerMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-        CheckBrowseUrlType::kHashRealTime);
+        CheckBrowseUrlType::kHashRealTime,
+        /*check_allowlist=*/false);
   } else {
     performed_check = PerformedCheck::kHashDatabaseCheck;
     lookup_mechanism = std::make_unique<DatabaseManagerMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-        CheckBrowseUrlType::kHashDatabase);
+        CheckBrowseUrlType::kHashDatabase,
+        /*check_allowlist=*/check_allowlist_before_hash_database_);
   }
   DCHECK(performed_check != PerformedCheck::kUnknown);
   lookup_mechanism_runner_ =

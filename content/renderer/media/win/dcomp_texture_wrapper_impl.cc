@@ -17,15 +17,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
 
-namespace {
-
-// Allow MappableSI to be used for DcompTextureWrapperImpl.
-BASE_FEATURE(kAlwaysUseMappableSIForDcompTextureWrapperImpl,
-             "AlwaysUseMappableSIForDcompTextureWrapperImpl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
-
 namespace content {
 
 // A RefCounted wrapper to destroy SharedImage associated with the `mailbox_`.
@@ -255,42 +246,19 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
                                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-  const bool is_mappable_si_enabled = base::FeatureList::IsEnabled(
-      kAlwaysUseMappableSIForDcompTextureWrapperImpl);
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb;
-  scoped_refptr<gpu::ClientSharedImage> shared_image;
-
-  if (is_mappable_si_enabled) {
-    shared_image = sii->CreateSharedImage(
-        {viz::SinglePlaneFormat::kBGRA_8888, natural_size, gfx::ColorSpace(),
-         usage, "DCOMPTextureWrapperImpl"},
-        gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
-        std::move(dx_handle));
-  } else {
-    gmb = gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
-        std::move(dx_handle), natural_size, gfx::BufferFormat::BGRA_8888,
-        gfx::BufferUsage::GPU_READ, base::NullCallback(), nullptr, nullptr);
-
-    shared_image = sii->CreateSharedImage(
-        {viz::SinglePlaneFormat::kBGRA_8888, natural_size, gfx::ColorSpace(),
-         usage, "DCOMPTextureWrapperImpl"},
-        gmb->CloneHandle());
-  }
+  auto shared_image = sii->CreateSharedImage(
+      {viz::SinglePlaneFormat::kBGRA_8888, natural_size, gfx::ColorSpace(),
+       usage, "DCOMPTextureWrapperImpl"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
+      std::move(dx_handle));
   CHECK(shared_image);
+
   gpu::Mailbox mailbox = shared_image->mailbox();
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
-  scoped_refptr<media::VideoFrame> video_frame_texture;
-  if (is_mappable_si_enabled) {
-    video_frame_texture = media::VideoFrame::WrapMappableSharedImage(
-        shared_image, sync_token, GL_TEXTURE_2D, base::NullCallback(),
-        gfx::Rect(natural_size), natural_size, base::TimeDelta::Min());
-  } else {
-    video_frame_texture = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        gfx::Rect(natural_size), natural_size, std::move(gmb), shared_image,
-        sync_token, GL_TEXTURE_2D, base::NullCallback(),
-        base::TimeDelta::Min());
-  }
+  auto video_frame_texture = media::VideoFrame::WrapMappableSharedImage(
+      shared_image, sync_token, GL_TEXTURE_2D, base::NullCallback(),
+      gfx::Rect(natural_size), natural_size, base::TimeDelta::Min());
   video_frame_texture->metadata().wants_promotion_hint = true;
   video_frame_texture->metadata().allow_overlay = true;
 

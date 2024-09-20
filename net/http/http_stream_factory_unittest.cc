@@ -359,16 +359,14 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   void OnQuicBroken() override {}
 
   void OnSwitchesToHttpStreamPool(
-      HttpStreamKey stream_key,
-      const AlternativeServiceInfo& alternative_service_info,
-      quic::ParsedQuicVersion quic_version) override {
+      HttpStreamPoolSwitchingInfo switching_info) override {
     CHECK(base::FeatureList::IsEnabled(features::kHappyEyeballsV3));
     CHECK(request_);
 
     request_ = session_->http_stream_pool()->RequestStream(
-        this, stream_key, priority_, allowed_bad_certs_,
+        this, std::move(switching_info), priority_, allowed_bad_certs_,
         enable_ip_based_pooling_, enable_alternative_services_,
-        alternative_service_info, quic_version, NetLogWithSource());
+        NetLogWithSource());
 
     if (http_stream_pool_switch_wait_closure_) {
       std::move(http_stream_pool_switch_wait_closure_).Run();
@@ -1610,12 +1608,20 @@ TEST_F(HttpStreamFactoryTest, ReprioritizeAfterStreamReceived) {
                           /*allowed_bad_certs=*/{},
                           /*enable_ip_based_pooling=*/true,
                           /*enable_alternative_services=*/true);
+  requester.MaybeWaitForSwitchesToHttpStreamPool();
   EXPECT_FALSE(requester.stream_done());
 
-  // Confirm a stream has been created by asserting that a new session
-  // has been created.  (The stream is only created at the SPDY level on
-  // first write, which happens after the request has returned a stream).
-  ASSERT_EQ(1, GetSpdySessionCount(session.get()));
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    // When the HappyEyeballsV3 is enabled, SpdySessions never created
+    // synchronously even when the mocked connects complete synchronously.
+    // There is no new session at this point.
+    ASSERT_EQ(0, GetSpdySessionCount(session.get()));
+  } else {
+    // Confirm a stream has been created by asserting that a new session
+    // has been created.  (The stream is only created at the SPDY level on
+    // first write, which happens after the request has returned a stream).
+    ASSERT_EQ(1, GetSpdySessionCount(session.get()));
+  }
 
   // Test to confirm that a SetPriority received after the stream is created
   // but before the request returns it does not crash.
@@ -2023,6 +2029,13 @@ TEST_F(HttpStreamFactoryTest,
 // Tests that when a new SpdySession is established, duplicated idle H2 sockets
 // to the same server are closed.
 TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
+  // Explicitly disable the HappyEyeballsV3 feature because this test relies on
+  // ClientSocketPool. When HappyEyeballsV3 is enabled we immediately create
+  // a SpdySession after negotiating to use HTTP/2 so there would be no idle
+  // HTTP/2 sockets when the feature is enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -2169,6 +2182,13 @@ TEST_F(HttpStreamFactoryTest, TwoSpdyConnects) {
 }
 
 TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Explicitly disable HappyEyeballsV3 because it doesn't support bidirectional
+  // streams yet.
+  // TODO(crbug.com/346835898): Support bidirectional streams in
+  // HappyEyeballsV3.
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -2656,6 +2676,11 @@ class HttpStreamFactoryBidirectionalQuicTest
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
         ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()) {
+    // Explicitly disable HappyEyeballsV3 because it doesn't support
+    // bidirectional streams.
+    // TODO(crbug.com/346835898): Support bidirectional streams in
+    // HappyEyeballsV3.
+    feature_list_.InitAndDisableFeature(features::kHappyEyeballsV3);
     FLAGS_quic_enable_http3_grease_randomness = false;
     quic_context_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
     quic::QuicEnableVersion(version_);
@@ -2732,6 +2757,7 @@ class HttpStreamFactoryBidirectionalQuicTest
   MockHostResolver* host_resolver() { return &host_resolver_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   quic::test::QuicFlagSaver saver_;
   const quic::ParsedQuicVersion version_;
   MockQuicContext quic_context_;
@@ -2759,6 +2785,13 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
 
 TEST_P(HttpStreamFactoryBidirectionalQuicTest,
        RequestBidirectionalStreamImplQuicAlternative) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Explicitly disable HappyEyeballsV3 because it doesn't support bidirectional
+  // streams yet.
+  // TODO(crbug.com/346835898): Support bidirectional streams in
+  // HappyEyeballsV3.
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   MockQuicData mock_quic_data(version());
   // Set priority to default value so that
   // QuicTestPacketMaker::MakeRequestHeadersPacket() does not add mock
@@ -2849,6 +2882,13 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
 // BidirectionalStreamQuicImpl.
 TEST_P(HttpStreamFactoryBidirectionalQuicTest,
        RequestBidirectionalStreamImplHttpJobFailsQuicJobSucceeds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Explicitly disable HappyEyeballsV3 because it doesn't support bidirectional
+  // streams yet.
+  // TODO(crbug.com/346835898): Support bidirectional streams in
+  // HappyEyeballsV3.
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   // Set up Quic data.
   MockQuicData mock_quic_data(version());
   // Set priority to default value so that
@@ -2939,6 +2979,13 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
 }
 
 TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Explicitly disable HappyEyeballsV3 because it doesn't support bidirectional
+  // streams yet.
+  // TODO(crbug.com/346835898): Support bidirectional streams in
+  // HappyEyeballsV3.
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -2987,6 +3034,11 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
 // SpdySessions have unique socket tags (e.g. one sessions should not be shared
 // amongst streams with different socket tags).
 TEST_F(HttpStreamFactoryTest, Tag) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps;
   auto socket_factory = std::make_unique<MockTaggingClientSocketFactory>();
   auto* socket_factory_ptr = socket_factory.get();
@@ -3102,6 +3154,11 @@ TEST_F(HttpStreamFactoryTest, Tag) {
 // sessions and that QuicSessions have unique socket tags (e.g. one sessions
 // should not be shared amongst streams with different socket tags).
 TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   // Prepare mock QUIC data for a first session establishment.
   MockQuicData mock_quic_data(version());
   spdy::SpdyPriority priority =
@@ -3230,6 +3287,11 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
 }
 
 TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps;
   auto socket_factory = std::make_unique<MockTaggingClientSocketFactory>();
   auto* socket_factory_ptr = socket_factory.get();
@@ -3404,6 +3466,11 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
 
 // Regression test for https://crbug.com/954503.
 TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps;
   auto socket_factory = std::make_unique<MockTaggingClientSocketFactory>();
   auto* socket_factory_ptr = socket_factory.get();
@@ -3568,7 +3635,8 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   // Verify no new sockets created.
   EXPECT_EQ(socket2, socket_factory_ptr->GetLastProducedTCPSocket());
 }
-#endif
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Test that when creating a stream all sessions that alias an IP are tried,
 // not just one.  This is important because there can be multiple sessions
@@ -3677,9 +3745,14 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
   // created.  This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(2, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(2, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  // When HappyEyeballsV3 is enabled, we create separate groups based on the
+  // destination, even when the underlying connections share the same session.
+  int expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 3 : 2;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(2, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3698,9 +3771,12 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
   // Verify the session pool reused the second session.  This will fail unless
   // the session pool supports multiple sessions aliasing a single IP.
   EXPECT_EQ(2, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(2, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 4 : 2;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(2, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3786,9 +3862,14 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(1, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(1, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  // When HappyEyeballsV3 is enabled, we create separate groups based on the
+  // destination, even when the underlying connections share the same session.
+  int expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 2 : 1;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(1, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3809,9 +3890,12 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(1, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(1, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 3 : 1;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(1, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3836,9 +3920,12 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // Verify the session pool reused the first session and no new session is
   // created.
   EXPECT_EQ(1, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(1, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 3 : 1;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(1, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3859,10 +3946,13 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // Verify the session pool reused the first session and no new session is
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
+  expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 3 : 1;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(1, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(1, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
   EXPECT_EQ(1, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3884,9 +3974,12 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(1, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(1, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 3 : 1;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(1, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));

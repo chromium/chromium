@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -237,17 +236,31 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;
-        if (intentDataProvider.get().getActivityType() == ActivityType.CUSTOM_TAB
+        boolean isAuthTab = intentDataProvider.get().isAuthTab();
+        if ((activityType == ActivityType.CUSTOM_TAB || isAuthTab)
                 && !intentDataProvider.get().isOpenedByChrome()
                 && intentDataProvider.get().getCustomTabMode() != INCOGNITO) {
-            String appId = mIntentDataProvider.get().getClientPackageName();
-            if (TextUtils.isEmpty(appId)) {
-                appId = CustomTabIntentDataProvider.getAppIdFromReferrer(activity);
+            String appId = null;
+            // AuthTab sets the ID to null by design to show the default branding (toast)
+            // every time one is launched.
+            if (!isAuthTab) {
+                appId = mIntentDataProvider.get().getClientPackageName();
+                if (TextUtils.isEmpty(appId)) {
+                    appId = CustomTabIntentDataProvider.getAppIdFromReferrer(activity);
+                }
             }
             String browserName = activity.getResources().getString(R.string.app_name);
+            int toastTemplateId =
+                    isAuthTab
+                            ? R.string.auth_tab_secured_by_chrome_template
+                            : R.string.twa_running_in_chrome_template;
             mBrandingController =
                     new BrandingController(
-                            activity, appId, browserName, new ChromePureJavaExceptionReporter());
+                            activity,
+                            appId,
+                            browserName,
+                            toastTemplateId,
+                            new ChromePureJavaExceptionReporter());
         }
         // TODO(353517557): Do initialization necessary for ActivityType.AUTH_TAB
 
@@ -497,14 +510,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     public void onPostInflationStartup() {
         super.onPostInflationStartup();
         mCustomTabHeightStrategy.onPostInflationStartup();
-        if (HistoryManager.isAppSpecificHistoryEnabled() && mAppMenuCoordinator != null) {
-            mCustomTabHistoryIPHController =
-                    new CustomTabHistoryIPHController(
-                            mActivity,
-                            mActivityTabProvider,
-                            mProfileSupplier,
-                            mAppMenuCoordinator.getAppMenuHandler());
-        }
+        mCustomTabHistoryIPHController =
+                CustomTabAppMenuHelper.maybeCreateHistoryIPHController(
+                        mAppMenuCoordinator,
+                        mActivity,
+                        mActivityTabProvider,
+                        mProfileSupplier,
+                        mIntentDataProvider.get());
     }
 
     @Override
@@ -654,7 +666,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                     .maybeLaunchPrivacySandboxDialog(
                                                             mActivity,
                                                             currentModelProfile,
-                                                            SurfaceType.AGACCT);
+                                                            SurfaceType.AGACCT,
+                                                            mWindowAndroid);
                                 }
                             }
                             if (!didShowPrompt) {

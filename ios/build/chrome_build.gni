@@ -13,9 +13,9 @@ import("//build/config/ios/ios_sdk.gni")
 assert(xcode_version_int >= 1310, "Xcode 13.1 or higher is required.")
 
 declare_args() {
-  # Enable notification center widget extensions.
-  ios_enable_content_widget_extension = true
-  ios_enable_search_widget_extension = true
+  # Disable notification center widget extensions.
+  ios_enable_content_widget_extension = false
+  ios_enable_search_widget_extension = false
 
   # Enable share extension.
   ios_enable_share_extension = true
@@ -46,6 +46,13 @@ declare_args() {
   # Label of the target providing implementation for AccountVerificationProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
+
+  # Label of the target providing implementation for PasskeyKeychainProvider.
+  # Overridden when using the Google-internal repository to build Chrome on iOS.
+  ios_passkey_keychain_provider_target = "//ios/chrome/credential_provider_extension:passkey_keychain_provider_implementation"
+
+  # Enable passkey capabilities in the Credential Provider Extension (CPE).
+  ios_cpe_enable_passkey_capabilities = false
 
   # Label of the target providing implementation for the PushNotificationServiceExtension.
   # Overridden when using the Google-internal repository to build Chrome on iOS.

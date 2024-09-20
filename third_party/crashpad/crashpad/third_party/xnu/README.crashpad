@@ -1,8 +1,8 @@
 Name: XNU
 Short Name: xnu
-URL: https://opensource.apple.com/source/xnu/
-URL: https://opensource.apple.com/tarballs/xnu/
+URL: https://github.com/apple-oss-distributions/xnu/
 Version: 6153.11.26 (from macOS 10.15.0)
+Revision: a5e7219620fa69943647714baaf632196f37249e
 License: APSL 2.0
 License File: APPLE_LICENSE
 Security Critical: no

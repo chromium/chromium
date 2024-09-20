@@ -9,7 +9,9 @@ source_set("watermark_view_lib") {
   ]
 
   deps = [
+    "//chrome/common:channel_info",
     "//components/enterprise/watermarking",
+    "//components/version_info:version_info",
     "//ui/views",
   ]
 }

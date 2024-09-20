@@ -30,7 +30,8 @@ found in the LICENSE file.
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true">
 
             <!-- Price tracking section -->
             <include layout="@layout/price_tracking_layout"/>

@@ -136,7 +136,7 @@ TEST_F(OverviewSessionMetricsRecorderTest,
   ExitOverviewAndWaitForAnimation();
 
   histogram_tester_.ExpectTotalCount(
-      "Ash.Overview.Enter.PresentationTime.UserInitiatedClamshell", 1);
+      "Ash.Overview.Enter.PresentationTime2.UserInitiatedClamshell", 1);
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
@@ -146,21 +146,21 @@ TEST_F(OverviewSessionMetricsRecorderTest,
   ExitOverviewAndWaitForAnimation();
 
   histogram_tester_.ExpectTotalCount(
-      "Ash.Overview.Enter.PresentationTime.UserInitiatedTablet", 1);
+      "Ash.Overview.Enter.PresentationTime2.UserInitiatedTablet", 1);
 
   ASSERT_TRUE(controller->StartOverview(OverviewStartAction::kTests));
   WaitForNextFramePresentation();
   ASSERT_TRUE(ExitOverview());
 
   histogram_tester_.ExpectTotalCount(
-      "Ash.Overview.Enter.PresentationTime.Other", 1);
+      "Ash.Overview.Enter.PresentationTime2.Other", 1);
 
   ASSERT_TRUE(controller->StartOverview(OverviewStartAction::kPine));
   WaitForNextFramePresentation();
   ASSERT_TRUE(ExitOverview());
 
   histogram_tester_.ExpectTotalCount(
-      "Ash.Overview.Enter.PresentationTime.InformedRestore", 1);
+      "Ash.Overview.Enter.PresentationTime2.InformedRestore", 1);
 }
 
 }  // namespace ash

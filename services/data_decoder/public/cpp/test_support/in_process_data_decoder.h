@@ -45,7 +45,7 @@ class InProcessDataDecoder
   void SimulateImageDecoderCrash(bool drop) { drop_image_decoders_ = drop; }
 
   // Same as above but for JsonParser receivers.
-  void SimulateJsonParserCrash(bool drop) { drop_json_parsers_ = drop; }
+  void SimulateJsonParserCrash(bool drop);
 
   // Configures the service to use |binder| to bind
   // WebBundleParserFactory in subsequent

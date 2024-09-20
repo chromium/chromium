@@ -47,8 +47,6 @@ class ConnectorsManagerBase {
       const;
 
  protected:
-  virtual std::optional<GURL> GetReportingConnectorUrlOverride();
-
   // Sets up |pref_change_registrar_|. Used by the constructor and
   // SetUpForTesting.
   virtual void StartObservingPrefs(PrefService* pref_service);

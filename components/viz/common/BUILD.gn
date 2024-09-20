@@ -129,7 +129,6 @@ viz_component("common") {
     "color_space_utils.h",
     "constants.cc",
     "constants.h",
-    "delegated_ink_prediction_configuration.h",
     "display/overlay_strategy.cc",
     "display/overlay_strategy.h",
     "display/renderer_settings.cc",

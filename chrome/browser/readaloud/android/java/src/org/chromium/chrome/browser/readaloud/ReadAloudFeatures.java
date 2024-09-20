@@ -183,6 +183,16 @@ public final class ReadAloudFeatures {
         return ReadAloudFeaturesJni.get().getMetricsId();
     }
 
+    /**
+     * Returns a string to include with requests to the Read Aloud service to activate experimental
+     * features. The string is constructed by combining the trial name and group name of the field
+     * trial overriding the "ReadAloudServerExperiments" feature flag (e.g. "Trial_Group"). If no
+     * trial overrides the flag, return empty string.
+     */
+    public static String getServerExperimentFlag() {
+        return ReadAloudFeaturesJni.get().getServerExperimentFlag();
+    }
+
     @NativeMethods
     public interface Natives {
         // Create a native readaloud::SyntheticTrial and return its address. It must be
@@ -202,5 +212,9 @@ public final class ReadAloudFeatures {
 
         // Get metrics client ID or empty string if it isn't available.
         String getMetricsId();
+
+        // Returns a string to include with requests to the Read Aloud service to activate
+        // experimental features.
+        String getServerExperimentFlag();
     }
 }

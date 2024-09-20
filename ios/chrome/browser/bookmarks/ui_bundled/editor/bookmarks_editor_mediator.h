@@ -49,8 +49,7 @@ class SyncService;
                     prefs:(PrefService*)prefs
     authenticationService:(AuthenticationService*)authenticationService
               syncService:(syncer::SyncService*)syncService
-             browserState:(ChromeBrowserState*)browserState
-    NS_DESIGNATED_INITIALIZER;
+                  profile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

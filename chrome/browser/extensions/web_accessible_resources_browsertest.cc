@@ -359,11 +359,10 @@ IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
 class WebAccessibleResourcesBrowserRedirectTest
     : public WebAccessibleResourcesBrowserTest {
  protected:
-  void TestBrowserRedirect(const char* kManifestFragment,
-                           const char* kHistogramName) {
+  void TestBrowserRedirect(const char* kManifest, const char* kHistogramName) {
     // Load extension.
     TestExtensionDir test_dir;
-    test_dir.WriteManifest(kManifestFragment);
+    test_dir.WriteManifest(kManifest);
     test_dir.WriteFile(FILE_PATH_LITERAL("resource.html"), "resource.html");
     test_dir.WriteFile(FILE_PATH_LITERAL("web_accessible_resource.html"),
                        "web_accessible_resource.html");
@@ -373,7 +372,7 @@ class WebAccessibleResourcesBrowserRedirectTest
 
     // Test extension resource accessibility.
     auto server_redirect = [&](int expect_net_error, const char* resource,
-                               int histogram_count) {
+                               bool is_accessible) {
       GURL gurl = embedded_test_server()->GetURL(
           "example.com",
           base::StringPrintf(
@@ -388,13 +387,12 @@ class WebAccessibleResourcesBrowserRedirectTest
       EXPECT_EQ(expect_net_error == net::OK,
                 observer.last_navigation_succeeded());
       EXPECT_EQ(expect_net_error, observer.last_net_error_code());
-      histogram_tester.ExpectBucketCount(kHistogramName, false,
-                                         histogram_count);
+      histogram_tester.ExpectBucketCount(kHistogramName, is_accessible, 1);
     };
 
     // Test cases.
-    server_redirect(net::OK, "web_accessible_resource.html", 0);
-    server_redirect(net::OK, "resource.html", 1);
+    server_redirect(net::OK, "web_accessible_resource.html", true);
+    server_redirect(net::OK, "resource.html", false);
   }
 };
 

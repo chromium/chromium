@@ -56,8 +56,10 @@ enum class SecondaryIconType {
 // These values are used to determine the types of chip add-ons which is an
 // additional UI component like the join button of calendar item.
 enum class BirchAddonType {
-  kNone,    // No add-ons.
-  kButton,  // A button with an action, e,g. the calendar join button.
+  kNone,         // No add-ons.
+  kButton,       // A button with an action, e,g. the calendar join button.
+  kCoralButton,  // A special button for coral, has a different UI and brings up
+                 // a new UI on click.
   kWeatherTempLabelF,  // A label for weather temperature in Fahrenheit.
   kWeatherTempLabelC,  // A label for weather temperature in Celsius.
 };
@@ -81,7 +83,9 @@ class ASH_EXPORT BirchItem {
   virtual std::string ToString() const = 0;
 
   // Perform the action associated with this item (e.g. open a document).
-  virtual void PerformAction() = 0;
+  // `is_post_login` is true if the chip was in a post-login overview session as
+  // opposed to an in-session overview session.
+  virtual void PerformAction(bool is_post_login) = 0;
 
   // Loads the icon for this image. This may invoke the callback immediately
   // (e.g. with a local icon) or there may be a delay for a network fetch.
@@ -163,7 +167,7 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void PerformAddonAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
   BirchAddonType GetAddonType() const override;
@@ -222,7 +226,7 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& file_url() const { return file_url_; }
@@ -259,7 +263,7 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const base::Time& timestamp() const { return timestamp_; }
@@ -301,7 +305,7 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& url() const { return url_; }
@@ -339,7 +343,7 @@ class ASH_EXPORT BirchLastActiveItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& page_url() const { return page_url_; }
@@ -363,7 +367,7 @@ class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& page_url() const { return page_url_; }
@@ -393,7 +397,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const std::u16string& guid() const { return guid_; }
@@ -435,7 +439,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& source_url() const { return source_url_; }
@@ -468,7 +472,7 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void LoadIcon(LoadIconCallback callback) const override;
   std::u16string GetAccessibleName() const override;
   void PerformAddonAction() override;
@@ -487,7 +491,9 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
 class ASH_EXPORT BirchCoralItem : public BirchItem {
  public:
   BirchCoralItem(const std::u16string& coral_title,
-                 const std::u16string& coral_text);
+                 const std::u16string& coral_text,
+                 const std::vector<GURL> page_urls,
+                 const std::vector<std::string>& app_ids);
   BirchCoralItem(BirchCoralItem&&);
   BirchCoralItem(const BirchCoralItem&);
   BirchCoralItem& operator=(const BirchCoralItem&);
@@ -497,13 +503,30 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void LoadIcon(LoadIconCallback callback) const override;
-  void PerformAddonAction() override;
   BirchAddonType GetAddonType() const override;
   std::u16string GetAddonAccessibleName() const override;
 
  private:
+  // Helper method that calls `birch_client` to retrieve the image from
+  // `favicon_service`, and passes the result back to `barrier_callback`.
+  void GetFaviconImageCoral(
+      const GURL& url,
+      base::OnceCallback<void(const ui::ImageModel&)> barrier_callback) const;
+
+  // Helper method that uses `saved_desk_delegate` to retrieve the app icon
+  // image, and passes the result back to `barrier_callback`.
+  void GetAppIconCoral(
+      const std::string& app_id,
+      base::OnceCallback<void(const ui::ImageModel&)> barrier_callback) const;
+
+  // A vector of urls representing the tabs received from coral provider.
+  std::vector<GURL> page_urls_;
+
+  // A vector of app ids representing the apps received from coral provider.
+  std::vector<std::string> app_ids_;
+
   // TODO(yulunwu):Add coral data to `BirchCoralItem`
 };
 
@@ -522,7 +545,7 @@ class ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction() override;
+  void PerformAction(bool is_post_login) override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const base::Time& first_seen() const { return first_seen_; }

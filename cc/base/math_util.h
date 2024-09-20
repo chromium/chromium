@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_BASE_MATH_UTIL_H_
 #define CC_BASE_MATH_UTIL_H_
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <limits>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "cc/base/base_export.h"
 #include "third_party/skia/include/core/SkM44.h"
@@ -116,7 +113,7 @@ struct HomogeneousCoordinate {
   SkScalar z() const { return vec[2]; }
   SkScalar w() const { return vec[3]; }
 
-  SkScalar vec[4];
+  std::array<SkScalar, 4> vec;
 };
 
 class CC_BASE_EXPORT MathUtil {
@@ -223,11 +220,11 @@ class CC_BASE_EXPORT MathUtil {
   // array are valid.
   static bool MapClippedQuad3d(const gfx::Transform& transform,
                                const gfx::QuadF& src_quad,
-                               gfx::Point3F clipped_quad[6],
+                               base::span<gfx::Point3F, 6> clipped_quad,
                                int* num_vertices_in_clipped_quad);
 
-  static gfx::RectF ComputeEnclosingRectOfVertices(const gfx::PointF vertices[],
-                                                   int num_vertices);
+  static gfx::RectF ComputeEnclosingRectOfVertices(
+      base::span<const gfx::PointF> vertices);
   static gfx::RectF ComputeEnclosingClippedRect(
       const HomogeneousCoordinate& h1,
       const HomogeneousCoordinate& h2,

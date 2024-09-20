@@ -80,9 +80,6 @@ class CC_EXPORT DroppedFrameCounter {
 
   uint32_t GetAverageThroughput() const;
 
-  double GetMostRecentAverageSmoothness() const;
-  double GetMostRecent95PercentileSmoothness() const;
-
   using SortedFrameCallback =
       base::RepeatingCallback<void(const viz::BeginFrameArgs& args,
                                    const FrameInfo&)>;

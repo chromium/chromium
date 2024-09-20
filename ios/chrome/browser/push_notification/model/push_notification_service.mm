@@ -82,6 +82,8 @@ std::string PushNotificationService::GetRepresentativeTargetIdForGaiaId(
 void PushNotificationService::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kFeaturePushNotificationPermissions);
+  registry->RegisterBooleanPref(prefs::kSendTabNotificationsPreviouslyDisabled,
+                                false);
 }
 
 void PushNotificationService::RegisterLocalStatePrefs(

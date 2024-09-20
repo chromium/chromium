@@ -65,6 +65,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
@@ -404,7 +405,9 @@ TabDragController::Liveness TabDragController::Init(
       ui::CreatePresentationTimeHistogramRecorder(
           source_context->GetWidget()->GetCompositor(),
           kTabDraggingPresentationTimeHistogram,
-          kTabDraggingPresentationTimeMaxHistogram, base::Seconds(10));
+          kTabDraggingPresentationTimeMaxHistogram,
+          ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+              base::Seconds(10)));
   // Do not release capture when transferring capture between widgets on:
   // - Desktop Linux
   //     Mouse capture is not synchronous on desktop Linux. Chrome makes
@@ -2465,7 +2468,7 @@ Browser* TabDragController::CreateBrowserForDrag(
   // maximized or fullscreen window and we do not want the newly created browser
   // window is a maximized or fullscreen window since it will prevent window
   // moving/resizing on Chrome OS. See crbug.com/1023871 for details.
-  create_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+  create_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
 
   // Don't copy the initial workspace since the *current* workspace might be
   // different and copying the workspace will move the tab to the initial one.

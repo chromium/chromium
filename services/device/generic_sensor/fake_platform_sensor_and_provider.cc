@@ -6,10 +6,14 @@
 
 #include <utility>
 
+namespace {
+
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
+
+}  // namespace
 
 namespace device {
 
@@ -23,15 +27,16 @@ FakePlatformSensor::FakePlatformSensor(
           Invoke([this](const PlatformSensorConfiguration& configuration) {
             SensorReading reading;
             // Only mocking the shared memory update for AMBIENT_LIGHT and
-            // PRESSURE type is enough.
+            // ACCELEROMETER types is enough.
             // Set the shared buffer value as frequency for testing purpose.
             switch (GetType()) {
               case mojom::SensorType::AMBIENT_LIGHT:
                 reading.als.value = configuration.frequency();
                 AddNewReading(reading);
                 break;
-              case mojom::SensorType::PRESSURE:
-                reading.pressure.value = configuration.frequency();
+              case mojom::SensorType::ACCELEROMETER:
+                reading.accel.x = reading.accel.y = reading.accel.z =
+                    configuration.frequency();
                 AddNewReading(reading);
                 break;
               default:

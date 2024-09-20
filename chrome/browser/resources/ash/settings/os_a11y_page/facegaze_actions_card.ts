@@ -28,7 +28,7 @@ import {Route, routes} from '../router.js';
 
 import {AddDialogPage} from './facegaze_actions_add_dialog.js';
 import {getTemplate} from './facegaze_actions_card.html.js';
-import {FACE_GAZE_GESTURE_TO_MACROS_PREF, FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils} from './facegaze_constants.js';
+import {AssignedKeyCombo, FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF, FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF_DICT, FACE_GAZE_GESTURE_TO_MACROS_PREF, FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils} from './facegaze_constants.js';
 
 const FaceGazeActionsCardElementBase = DeepLinkingMixin(RouteObserverMixin(
     WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
@@ -45,10 +45,10 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private showAddActionDialog_: boolean;
   private leftClickGestures_: FacialGesture[] = [];
   private dialogPageToShow_: AddDialogPage;
-  private actionToAssignGesture_: MacroName|null = null;
-  private gestureToConfigure_: FacialGesture|null = null;
+  private commandPairToConfigure_: FaceGazeCommandPair|null = null;
 
-  // This should be kept in sync with the pref with all interactions.
+  // This field stores the current state of gestures assigned to macros and
+  // custom key combinations.
   private commandPairs_: FaceGazeCommandPair[] = [];
 
   static get is() {
@@ -90,11 +90,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
         type: Number,
       },
 
-      actionToAssignGesture_: {
-        type: Object,
-      },
-
-      gestureToConfigure_: {
+      commandPairToConfigure_: {
         type: Object,
       },
     };
@@ -102,7 +98,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
   override ready(): void {
     super.ready();
-    this.updateConfiguredCommandPairsFromPrefs_();
+    this.initFromPrefs_();
   }
 
   override currentRouteChanged(route: Route): void {
@@ -119,6 +115,11 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
         Record<FacialGesture, MacroName>;
   }
 
+  private getCurrentKeyCombos_(): Record<FacialGesture, string> {
+    return {...this.get(FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF)} as
+        Record<FacialGesture, string>;
+  }
+
   private shouldDisableConfigureControls_(): boolean {
     return this.disabled ||
         !this.getPref('settings.a11y.face_gaze.actions_enabled').value;
@@ -132,14 +133,13 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
   private onAddActionDialogClose_(): void {
     this.showAddActionDialog_ = false;
-    this.actionToAssignGesture_ = null;
-    this.gestureToConfigure_ = null;
+    this.commandPairToConfigure_ = null;
   }
 
   private onConfigureGestureButtonClick_(
       e: DomRepeatEvent<FaceGazeCommandPair>): void {
     this.dialogPageToShow_ = AddDialogPage.GESTURE_THRESHOLD;
-    this.gestureToConfigure_ = e.model.item.gesture;
+    this.commandPairToConfigure_ = e.model.item;
     this.showAddActionDialog_ = true;
   }
 
@@ -147,7 +147,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       void {
     this.dialogPageToShow_ = AddDialogPage.SELECT_GESTURE;
     this.leftClickGestures_ = this.computeLeftClickGestures_();
-    this.actionToAssignGesture_ = e.model.item.action;
+    this.commandPairToConfigure_ = e.model.item;
     this.showAddActionDialog_ = true;
   }
 
@@ -160,11 +160,41 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   }
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {
-    return FaceGazeUtils.getGestureDisplayText(gesture);
+    return this.i18n(FaceGazeUtils.getGestureDisplayTextName(gesture));
   }
 
   private getGestureIconName_(gesture: FacialGesture|null): string {
     return `facegaze:${FaceGazeUtils.getGestureIconName(gesture)}`;
+  }
+
+  private getKeyComboDisplayText_(commandPair: FaceGazeCommandPair): string
+      |null {
+    if (commandPair.action !== MacroName.CUSTOM_KEY_COMBINATION ||
+        !commandPair.gesture) {
+      return null;
+    }
+
+    if (!commandPair.assignedKeyCombo) {
+      throw new Error(this.getKeyComboErrorMessage_(commandPair.gesture));
+    }
+
+    const keyCombo = commandPair.assignedKeyCombo.keyCombo;
+    let modifierDisplayText = '';
+
+    // TODO(b:322510917) Localize these strings.
+    if (keyCombo.modifiers?.ctrl) {
+      modifierDisplayText += 'Ctrl + ';
+    }
+    if (keyCombo.modifiers?.alt) {
+      modifierDisplayText += 'Alt + ';
+    }
+    if (keyCombo.modifiers?.shift) {
+      modifierDisplayText += 'Shift + ';
+    }
+    if (keyCombo.modifiers?.search) {
+      modifierDisplayText += 'Search + ';
+    }
+    return `${modifierDisplayText} ${keyCombo.keyDisplay}`;
   }
 
   // When an action is removed from the list, update the pref and then update
@@ -172,31 +202,35 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private onRemoveCommandPairButtonClick_(
       e: DomRepeatEvent<FaceGazeCommandPair>): void {
     const removedCommandPair: FaceGazeCommandPair = e.model.item;
-    this.updatePrefWithRemovedCommandPair_(removedCommandPair);
+    this.removeCommandPairFromPref_(removedCommandPair);
 
-    const removeIndex = this.commandPairs_.findIndex(
+    const removeCommandPairIndex = this.commandPairs_.findIndex(
         (item: FaceGazeCommandPair) => item.equals(removedCommandPair));
     this.splice(
         FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
-        removeIndex, 1);
+        removeCommandPairIndex, 1);
   }
 
-  private updatePrefWithRemovedCommandPair_(removedCommandPair:
-                                                FaceGazeCommandPair): void {
-    // Get current assigned gestures to macros.
+  private removeCommandPairFromPref_(removedCommandPair: FaceGazeCommandPair):
+      void {
     const assignedGestures = this.getCurrentAssignedGestures_();
 
     for (const [currentGesture, assignedMacro] of Object.entries(
              assignedGestures)) {
-      if (removedCommandPair.equals(new FaceGazeCommandPair(
-              assignedMacro, currentGesture as FacialGesture))) {
-        assignedGestures[currentGesture as FacialGesture] =
-            MacroName.UNSPECIFIED;
+      if (assignedMacro === removedCommandPair.action &&
+          currentGesture === removedCommandPair.gesture) {
+        delete assignedGestures[currentGesture as FacialGesture];
         break;
       }
     }
 
     this.set(FACE_GAZE_GESTURE_TO_MACROS_PREF, assignedGestures);
+
+    if (removedCommandPair.action === MacroName.CUSTOM_KEY_COMBINATION &&
+        removedCommandPair.gesture) {
+      this.removeKeyComboFromPref_(
+          removedCommandPair.gesture, removedCommandPair.assignedKeyCombo);
+    }
   }
 
   // When an action is added from the dialog, update the pref and then update
@@ -205,7 +239,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       e: HTMLElementEventMap[typeof FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME]):
       void {
     const newCommandPair = e.detail;
-    this.updatePrefWithAddedCommandPair_(newCommandPair);
+    this.addCommandPairToPref_(newCommandPair);
 
     // If gesture is already mapped to another action, remove that pairing as
     // gesture can only be mapped to one action.
@@ -214,11 +248,23 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
             item.action !== newCommandPair.action);
 
     if (unassignIndex >= 0) {
+      const unassignGesture = this.commandPairs_[unassignIndex].gesture;
+
       // Update configuration and notify Polymer.
       this.commandPairs_[unassignIndex].gesture = null;
       this.notifyPath(
           `${FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME}.${
               unassignIndex}.gesture`);
+
+      // Unassign key combo after gesture is unassigned so FaceGaze does not
+      // attempt to execute macro for gesture.
+      if (this.commandPairs_[unassignIndex].action ===
+              MacroName.CUSTOM_KEY_COMBINATION &&
+          unassignGesture) {
+        this.removeKeyComboFromPref_(
+            unassignGesture,
+            this.commandPairs_[unassignIndex].assignedKeyCombo);
+      }
     }
 
     if (this.dialogPageToShow_ === AddDialogPage.SELECT_GESTURE) {
@@ -246,8 +292,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     }
   }
 
-  private updatePrefWithAddedCommandPair_(newCommandPair: FaceGazeCommandPair):
-      void {
+  private addCommandPairToPref_(newCommandPair: FaceGazeCommandPair): void {
     if (!newCommandPair.gesture) {
       console.error(
           'FaceGaze added action with no valid gesture value: ' +
@@ -255,7 +300,6 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       return;
     }
 
-    // Get current assigned gestures to macros.
     const assignedGestures = this.getCurrentAssignedGestures_();
 
     // If the current gesture is already set to a macro, clear out the macro for
@@ -269,7 +313,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
           break;
         }
 
-        assignedGestures[currentGesture] = MacroName.UNSPECIFIED;
+        delete assignedGestures[currentGesture];
         break;
       }
     }
@@ -279,19 +323,69 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     }
 
     this.set(FACE_GAZE_GESTURE_TO_MACROS_PREF, assignedGestures);
+
+    if (newCommandPair.action === MacroName.CUSTOM_KEY_COMBINATION) {
+      this.addKeyComboToPref_(newCommandPair);
+    }
   }
 
-  private updateConfiguredCommandPairsFromPrefs_(): void {
-    // Get current assigned gestures to macros.
+  private addKeyComboToPref_(newCommandPair: FaceGazeCommandPair): void {
+    if (!newCommandPair.gesture) {
+      throw new Error(
+          `Expected gesture to be assigned to action ${newCommandPair.action}`);
+    }
+
+    if (!newCommandPair.assignedKeyCombo) {
+      throw new Error(this.getKeyComboErrorMessage_(newCommandPair.gesture));
+    }
+
+    this.setPrefDictEntry(
+        FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF_DICT, newCommandPair.gesture,
+        newCommandPair.assignedKeyCombo.prefString);
+  }
+
+  private removeKeyComboFromPref_(
+      gesture: FacialGesture, removedKeyCombo?: AssignedKeyCombo): void {
+    if (!removedKeyCombo) {
+      throw new Error(this.getKeyComboErrorMessage_(gesture));
+    }
+
+    const assignedKeyCombos = this.getCurrentKeyCombos_();
+
+    for (const [currentGesture, keyCombo] of Object.entries(
+             assignedKeyCombos)) {
+      if (currentGesture === gesture &&
+          keyCombo === removedKeyCombo.prefString) {
+        delete assignedKeyCombos[currentGesture as FacialGesture];
+        break;
+      }
+    }
+
+    this.set(FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF, assignedKeyCombos);
+  }
+
+  private initFromPrefs_(): void {
     const assignedGestures = this.getCurrentAssignedGestures_();
+    const currentKeyCombos = this.getCurrentKeyCombos_();
 
     for (const [currentGesture, assignedMacro] of Object.entries(
              assignedGestures)) {
       if (assignedMacro !== MacroName.UNSPECIFIED) {
+        const newGesture = currentGesture as FacialGesture;
+        const newCommandPair =
+            new FaceGazeCommandPair(assignedMacro, newGesture);
+
+        if (assignedMacro === MacroName.CUSTOM_KEY_COMBINATION) {
+          const keyCombo = currentKeyCombos[newGesture];
+          if (!keyCombo) {
+            throw new Error(this.getKeyComboErrorMessage_(newGesture));
+          }
+          newCommandPair.assignedKeyCombo = new AssignedKeyCombo(keyCombo);
+        }
+
         this.push(
             FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
-            new FaceGazeCommandPair(
-                assignedMacro, currentGesture as FacialGesture));
+            newCommandPair);
       }
     }
   }
@@ -306,6 +400,10 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     });
 
     return gestures;
+  }
+
+  private getKeyComboErrorMessage_(gesture: FacialGesture): string {
+    return `FaceGaze expected key combination to be assigned to ${gesture}.`;
   }
 }
 

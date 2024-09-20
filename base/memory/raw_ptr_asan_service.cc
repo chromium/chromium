@@ -27,7 +27,6 @@
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool/thread_group.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -48,7 +47,7 @@ constexpr uint8_t kAsanUserPoisonedMemoryMagic = 0xf7;
 // doesn't prevent sharing of PendingReport contents between unrelated tasks, so
 // we keep this at a lower-level and avoid introducing additional assumptions
 // about Chrome's sequence model.
-ABSL_CONST_INIT thread_local RawPtrAsanService::PendingReport pending_report;
+constinit thread_local RawPtrAsanService::PendingReport pending_report;
 
 }  // namespace
 

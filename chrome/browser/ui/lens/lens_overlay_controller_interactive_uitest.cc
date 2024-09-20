@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -95,7 +96,8 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       std::optional<GURL> page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-      base::span<const uint8_t> pdf_bytes,
+      base::span<const uint8_t> underlying_content_bytes,
+      const std::string& underlying_content_type,
       float ui_scale_factor) override {
     // Send response for full image callback / HandleStartQueryResponse.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -363,10 +365,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_OpenAndClose) {
       // The overlay controller is an independent floating widget associated
       // with a tab rather than a browser window, so by convention gets its own
       // element context.
-      InAnyContext(Steps(InstrumentNonTabWebView(
-                             kOverlayId, LensOverlayController::kOverlayId),
-                         WaitForWebContentsReady(
-                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      InAnyContext(Steps(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
       // Wait for the webview to finish loading to prevent re-entrancy.
       InSameContext(Steps(EnsurePresent(kOverlayId, kPathToCloseButton),
                           ExecuteJsAt(kOverlayId, kPathToCloseButton, kClickFn,
@@ -406,10 +409,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_EscapeKeyClose) {
       // The overlay controller is an independent floating widget associated
       // with a tab rather than a browser window, so by convention gets its own
       // element context.
-      InAnyContext(Steps(InstrumentNonTabWebView(
-                             kOverlayId, LensOverlayController::kOverlayId),
-                         WaitForWebContentsReady(
-                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      InAnyContext(Steps(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
       // Wait for the webview to finish loading to prevent re-entrancy.
       InSameContext(Steps(SendAccelerator(kOverlayId, escape_key),
                           WaitForHide(kOverlayId))));
@@ -453,10 +457,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
       // The overlay controller is an independent floating widget associated
       // with a tab rather than a browser window, so by convention gets its own
       // element context.
-      InAnyContext(Steps(InstrumentNonTabWebView(
-                             kOverlayId, LensOverlayController::kOverlayId),
-                         WaitForWebContentsReady(
-                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      InAnyContext(Steps(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
       // Wait for the webview to finish loading to prevent re-entrancy. Then
       // click a word to highlight it. Flush tasks after click to prevent
       // flakiness.
@@ -497,8 +502,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
 //  (2) User opens lens overlay.
 //  (3) User makes a selection that opens the results side panel.
 //  (4) User presses the escape key to close lens overlay.
-// TODO(crbug.com/340343342): Reenable on Windows and Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/340343342): Reenable on Windows, Mac, and Linux+ChromeOS Tests
+// (dbg).
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER) || \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) && !defined(NDEBUG))
 #define MAYBE_EscapeKeyCloseWithResultsPanel \
   DISABLED_EscapeKeyCloseWithResultsPanel
 #else
@@ -544,10 +551,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
       // The overlay controller is an independent floating widget
       // associated with a tab rather than a browser window, so by
       // convention gets its own element context.
-      InAnyContext(Steps(InstrumentNonTabWebView(
-                             kOverlayId, LensOverlayController::kOverlayId),
-                         WaitForWebContentsReady(
-                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      InAnyContext(Steps(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
       // Wait for the webview to finish loading to prevent re-entrancy. Then do
       // a drag offset from the center. Flush tasks after drag to prevent
       // flakiness.
@@ -614,10 +622,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_SelectManualRegion) {
       // The overlay controller is an independent floating widget
       // associated with a tab rather than a browser window, so by
       // convention gets its own element context.
-      InAnyContext(Steps(InstrumentNonTabWebView(
-                             kOverlayId, LensOverlayController::kOverlayId),
-                         WaitForWebContentsReady(
-                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      InAnyContext(Steps(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
       // Wait for the webview to finish loading to prevent re-entrancy. Then do
       // a drag offset from the center. Flush tasks after drag to prevent
       // flakiness.
@@ -670,10 +679,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_SearchForImage) {
       // The overlay controller is an independent floating widget
       // associated with a tab rather than a browser window, so by
       // convention gets its own element context.
-      InAnyContext(Steps(InstrumentNonTabWebView(
-                             kOverlayId, LensOverlayController::kOverlayId),
-                         WaitForWebContentsReady(
-                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      InAnyContext(Steps(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
 
       // The side panel should open with the results frame.
       InAnyContext(Steps(
@@ -719,10 +729,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
       // The overlay controller is an independent floating widget
       // associated with a tab rather than a browser window, so by
       // convention gets its own element context.
-      InAnyContext(Steps(InstrumentNonTabWebView(
-                             kOverlayId, LensOverlayController::kOverlayId),
-                         WaitForWebContentsReady(
-                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      InAnyContext(Steps(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
 
       // The side panel should open with the results frame.
       InAnyContext(Steps(
@@ -784,10 +795,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerPromoTest, MAYBE_ShowsPromo) {
       // The overlay controller is an independent floating widget
       // associated with a tab rather than a browser window, so by
       // convention gets its own element context.
-      InAnyContext(Steps(InstrumentNonTabWebView(
-                             kOverlayId, LensOverlayController::kOverlayId),
-                         WaitForWebContentsReady(
-                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      InAnyContext(Steps(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
       // Wait for the webview to finish loading to prevent re-entrancy. Then do
       // a drag offset from the center. Flush tasks after drag to prevent
       // flakiness.

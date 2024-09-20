@@ -209,20 +209,7 @@ bool ShouldResourceBeKeptStrongReferenceByType(
     const SecurityOrigin* settings_object_origin) {
   // Image, fonts, stylesheets and scripts are the most commonly reused scripts.
 
-  if (base::FeatureList::IsEnabled(
-          features::kMemoryCacheStrongReferenceFilterCrossOriginScripts) &&
-      resource->GetType() == ResourceType::kScript &&
-      !SecurityOrigin::Create(resource->Url())
-           ->IsSameOriginWith(settings_object_origin)) {
-    return false;
-  }
-
-  return (resource->GetType() == ResourceType::kImage &&
-          !base::FeatureList::IsEnabled(
-              features::kMemoryCacheStrongReferenceFilterImages)) ||
-         (resource->GetType() == ResourceType::kScript &&
-          !base::FeatureList::IsEnabled(
-              features::kMemoryCacheStrongReferenceFilterScripts)) ||
+  return resource->GetType() == ResourceType::kScript ||
          resource->GetType() == ResourceType::kFont ||
          resource->GetType() == ResourceType::kCSSStyleSheet ||
          resource->GetType() == ResourceType::kMock;  // For tests.
@@ -1420,13 +1407,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       // found, we may need to make it block the onload event.
       MakePreloadedResourceBlockOnloadIfNeeded(resource, params);
     } else if (IsMainThread()) {
-      if (base::FeatureList::IsEnabled(features::kScopeMemoryCachePerContext) &&
-          !in_cached_resources_map) {
-        resource = nullptr;
-      } else {
-        resource = MemoryCache::Get()->ResourceForURL(
-            params.Url(), GetCacheIdentifier(params.Url()));
-      }
+      resource = MemoryCache::Get()->ResourceForURL(
+          params.Url(), GetCacheIdentifier(params.Url()));
       if (resource) {
         policy = DetermineRevalidationPolicy(resource_type, params, *resource,
                                              is_static_data);
@@ -1738,12 +1720,9 @@ Resource* ResourceFetcher::CreateResourceForLoading(
     const ResourceFactory& factory) {
   const String cache_identifier =
       GetCacheIdentifier(params.GetResourceRequest().Url());
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kScopeMemoryCachePerContext)) {
-    DCHECK(!IsMainThread() || params.IsStaleRevalidation() ||
-           !MemoryCache::Get()->ResourceForURL(
-               params.GetResourceRequest().Url(), cache_identifier));
-  }
+  DCHECK(!IsMainThread() || params.IsStaleRevalidation() ||
+         !MemoryCache::Get()->ResourceForURL(params.GetResourceRequest().Url(),
+                                             cache_identifier));
 
   RESOURCE_LOADING_DVLOG(1) << "Loading Resource for "
                             << params.GetResourceRequest().Url().ElidedString();
@@ -3058,9 +3037,9 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
     return;
   }
 
-  static const size_t total_size_threshold = static_cast<size_t>(
+  const size_t total_size_threshold = static_cast<size_t>(
       features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
-  static const size_t resource_size_threshold = static_cast<size_t>(
+  const size_t resource_size_threshold = static_cast<size_t>(
       features::kMemoryCacheStrongReferenceResourceSizeThresholdParam.Get());
   const size_t resource_size =
       static_cast<size_t>(resource->GetResponse().DecodedBodyLength());

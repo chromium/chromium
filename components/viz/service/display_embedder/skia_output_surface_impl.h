@@ -212,6 +212,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void CleanupImageProcessor() override;
 #endif
 
+  void ReadbackForTesting(
+      CopyOutputRequest::CopyOutputRequestCallback result_callback) override;
+
  private:
   bool Initialize();
   void InitializeOnGpuThread(bool* result);

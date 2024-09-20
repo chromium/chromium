@@ -66,6 +66,11 @@ class SessionRestorationWebStateListObserver final
     return closed_web_states_;
   }
 
+  // Records that an unrealized WebState with `expected_web_state_id` is
+  // expected to be inserted in the observed WebStateList soon, and that
+  // when inserted the WebState does not have to be adopted.
+  void AddExpectedWebState(web::WebStateID expected_web_state_id);
+
   // Should be called after saving the state of the WebStateList and of
   // the WebStates to disk. The callback passed to the constructor won't
   // be called again until this method is called.
@@ -102,6 +107,7 @@ class SessionRestorationWebStateListObserver final
   std::set<web::WebState*> dirty_web_states_;
   std::set<web::WebStateID> detached_web_states_;
   std::set<web::WebStateID> inserted_web_states_;
+  std::set<web::WebStateID> expected_web_states_;
   std::set<web::WebStateID> closed_web_states_;
 };
 

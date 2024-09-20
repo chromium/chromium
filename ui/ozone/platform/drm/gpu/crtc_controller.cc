@@ -62,8 +62,15 @@ bool CrtcController::AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
     return true;
   }
 
-  if (!drm_->plane_manager()->AssignOverlayPlanes(plane_list, overlays,
-                                                  crtc_)) {
+  std::optional<gfx::Point> crtc_offset = std::nullopt;
+  if (CurrentModeIsTiled()) {
+    crtc_offset = GetTileCrtcOffset(*tile_property_);
+    crtc_offset->set_x(crtc_offset->x() * -1);
+    crtc_offset->set_y(crtc_offset->y() * -1);
+  }
+
+  if (!drm_->plane_manager()->AssignOverlayPlanes(plane_list, overlays, crtc_,
+                                                  crtc_offset)) {
     return false;
   }
 
@@ -85,6 +92,16 @@ void CrtcController::SetCursor(uint32_t handle, const gfx::Size& size) {
 void CrtcController::MoveCursor(const gfx::Point& location) {
   if (!is_enabled())
     return;
+
+  if (CurrentModeIsTiled()) {
+    const gfx::Point tiled_offset = GetTileCrtcOffset(*tile_property_);
+    gfx::Point translated_location(location.x() - tiled_offset.x(),
+                                   location.y() - tiled_offset.y());
+
+    drm_->MoveCursor(crtc_, translated_location);
+    return;
+  }
+
   drm_->MoveCursor(crtc_, location);
 }
 

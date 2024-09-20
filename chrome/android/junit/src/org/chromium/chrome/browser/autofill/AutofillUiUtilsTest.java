@@ -25,6 +25,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.url.GURL;
 
@@ -315,7 +316,7 @@ public class AutofillUiUtilsTest {
         Bitmap testImage = Bitmap.createBitmap(400, 300, Bitmap.Config.ARGB_8888);
         AutofillUiUtils.CardIconSpecs testSpecs =
                 AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), AutofillUiUtils.CardIconSize.LARGE);
+                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
 
         Bitmap resizedTestImage =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(

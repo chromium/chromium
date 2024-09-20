@@ -131,6 +131,20 @@ UIColor* SelectionCircleColor() {
     [self.layer addSublayer:_selectionCircleLayer];
     [self setClipsToBounds:YES];
     [self addSubview:_arrowView];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
+        UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
+        UITraitUserInterfaceLevel.self
+      ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateSelectionCircleColorOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -155,15 +169,16 @@ UIColor* SelectionCircleColor() {
   return currentPoint;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    _selectionCircleLayer.fillColor = SelectionCircleColor().CGColor;
+  if (@available(iOS 17, *)) {
+    return;
   }
+
+  [self updateSelectionCircleColorOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)updateFrameAndAnimateContents:(CGFloat)distance
                          forDirection:
@@ -480,6 +495,19 @@ UIColor* SelectionCircleColor() {
       [[UIBezierPath bezierPathWithOvalInRect:bounds] CGPath];
 
   return selectionCircleLayer;
+}
+
+// Update the `_selectionCircleLayer` property's fill color if the change
+// navigation view's traits caused the appearance to change colors.
+- (void)updateSelectionCircleColorOnTraitChange:
+    (UITraitCollection*)previousTraitCollection {
+  if (![self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    return;
+  }
+
+  _selectionCircleLayer.fillColor = SelectionCircleColor().CGColor;
 }
 
 @end

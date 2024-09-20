@@ -5,8 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_TOOLBAR_SECONDARY_TOOLBAR_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_SECONDARY_TOOLBAR_CONSUMER_H_
 
+#import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
+
 // Consumer protocol for the secondary toolbar.
-@protocol SecondaryToolbarConsumer
+@protocol SecondaryToolbarConsumer <ToolbarConsumer>
 
 // Notifies the consumer to turn translucent.
 - (void)makeTranslucent;

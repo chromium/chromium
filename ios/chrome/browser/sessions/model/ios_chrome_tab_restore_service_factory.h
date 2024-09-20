@@ -20,9 +20,10 @@ class TabRestoreService;
 class IOSChromeTabRestoreServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static sessions::TabRestoreService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static sessions::TabRestoreService* GetForBrowserState(ProfileIOS* profile);
 
+  static sessions::TabRestoreService* GetForProfile(ProfileIOS* profile);
   static IOSChromeTabRestoreServiceFactory* GetInstance();
 
   // Returns the default factory used to build TabRestoreServices. Can be

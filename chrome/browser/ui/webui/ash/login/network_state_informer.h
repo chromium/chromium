@@ -17,7 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
+#include "chrome/browser/ui/ash/login/captive_portal_window_proxy.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"

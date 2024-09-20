@@ -397,7 +397,8 @@ class CredentialManagerImplTest : public testing::Test,
                bool include_passwords,
                const std::vector<GURL>& federations,
                GetCallback callback) {
-    cm_service_impl_->Get(mediation, include_passwords, federations,
+    cm_service_impl_->Get(mediation, include_passwords,
+                          /*requested_credential_type_flags=*/0, federations,
                           std::move(callback));
   }
 

@@ -95,13 +95,13 @@ public interface DataSharingService {
     /** Observer to listen to the updates on any of the groups. */
     interface Observer {
         /** A group was updated where the current user continues to be a member of. */
-        void onGroupChanged(GroupData groupData);
+        default void onGroupChanged(GroupData groupData) {}
 
         /** The user either created a new group or has been invited to the existing one. */
-        void onGroupAdded(GroupData groupData);
+        default void onGroupAdded(GroupData groupData) {}
 
         /** Either group has been deleted or user has been removed from the group. */
-        void onGroupRemoved(String groupId);
+        default void onGroupRemoved(String groupId) {}
     }
 
     /**
@@ -245,4 +245,9 @@ public interface DataSharingService {
      * @return The current instance of {@link DataSharingUIDelegate}.
      */
     DataSharingUIDelegate getUIDelegate();
+
+    /**
+     * @return The current {@link ServiceStatus} of the service.
+     */
+    ServiceStatus getServiceStatus();
 }

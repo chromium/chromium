@@ -77,25 +77,20 @@ void WebTestFedCmManager::SelectFedCmAccount(
     std::move(callback).Run(false);
     return;
   }
-  const std::vector<IdentityProviderData>& idp_data =
-      auth_request->GetSortedIdpData();
-  if (idp_data.empty()) {
+  const std::vector<IdentityRequestAccountPtr>& accounts =
+      auth_request->GetAccounts();
+  if (accounts.empty()) {
     std::move(callback).Run(false);
     return;
   }
-  uint32_t current = 0;
-  for (const auto& data : idp_data) {
-    for (const IdentityRequestAccount& account : data.accounts) {
-      if (current == account_index) {
-        auth_request->AcceptAccountsDialogForDevtools(
-            data.idp_metadata.config_url, account);
-        std::move(callback).Run(true);
-        return;
-      }
-      ++current;
-    }
+  if (account_index >= accounts.size()) {
+    std::move(callback).Run(false);
+    return;
   }
-  std::move(callback).Run(false);
+  const IdentityRequestAccount& account = *accounts[account_index];
+  auth_request->AcceptAccountsDialogForDevtools(
+      account.identity_provider->idp_metadata.config_url, account);
+  std::move(callback).Run(true);
 }
 
 void WebTestFedCmManager::DismissFedCmDialog(
@@ -151,7 +146,7 @@ void WebTestFedCmManager::ClickFedCmDialogButton(
             return;
           }
           std::move(callback).Run(
-              auth_request->UseAnotherAccountForDevtools(data[0]));
+              auth_request->UseAnotherAccountForDevtools(*data[0]));
           return;
         }
         default:

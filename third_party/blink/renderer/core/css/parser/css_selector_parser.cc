@@ -69,8 +69,6 @@ CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(
     case CSSSelector::PseudoType::kPseudoDetailsContent:
     case CSSSelector::PseudoType::kPseudoPlaceholder:
     case CSSSelector::PseudoType::kPseudoFileSelectorButton:
-    case CSSSelector::PseudoType::kPseudoSelectFallbackButton:
-    case CSSSelector::PseudoType::kPseudoSelectFallbackButtonText:
     case CSSSelector::PseudoType::kPseudoPicker:
       return CSSSelector::RelationType::kUAShadow;
     case CSSSelector::PseudoType::kPseudoPart:
@@ -1186,13 +1184,8 @@ bool IsPseudoClassValidAfterPseudoElement(
       // kPseudoPopoverOpen. As part of the part-like pseudo-elements feature,
       // kPseudoPopoverOpen may be supported by kPseudoPart, in which case this
       // case could be combined with kPseudoPart.
-      if (pseudo_class == CSSSelector::kPseudoPopoverOpen) {
-        return true;
-      }
-      [[fallthrough]];
-    case CSSSelector::kPseudoSelectFallbackButton:
-    case CSSSelector::kPseudoSelectFallbackButtonText:
       return IsUserActionPseudoClass(pseudo_class) ||
+             pseudo_class == CSSSelector::kPseudoPopoverOpen ||
              pseudo_class == CSSSelector::kPseudoState ||
              pseudo_class == CSSSelector::kPseudoStateDeprecatedSyntax;
     case CSSSelector::kPseudoWebKitCustomElement:
@@ -1207,6 +1200,8 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoSearchText:
       return pseudo_class == CSSSelector::kPseudoCurrent;
     case CSSSelector::kPseudoScrollMarker:
+    case CSSSelector::kPseudoScrollNextButton:
+    case CSSSelector::kPseudoScrollPrevButton:
       // TODO(crbug.com/40824273): User action pseudos should be allowed more
       // generally after pseudo elements.
       return pseudo_class == CSSSelector::kPseudoFocus ||
@@ -1220,6 +1215,9 @@ bool IsSimpleSelectorValidAfterPseudoElement(
     const CSSSelector& simple_selector,
     CSSSelector::PseudoType compound_pseudo_element) {
   switch (compound_pseudo_element) {
+    case CSSSelector::kPseudoColumn:
+      return simple_selector.GetPseudoType() ==
+             CSSSelector::kPseudoScrollMarker;
     case CSSSelector::kPseudoUnknown:
       return true;
     case CSSSelector::kPseudoAfter:
@@ -1758,7 +1756,7 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
       return true;
     }
     case CSSSelector::kPseudoPicker:
-      if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
         return false;
       }
       [[fallthrough]];
@@ -2086,6 +2084,10 @@ CSSSelector::AttributeMatchType CSSSelectorParser::ConsumeAttributeFlags(
 bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
                                        std::pair<int, int>& result) {
   if (stream.AtEnd()) {
+    return false;
+  }
+
+  if (stream.Peek().GetBlockType() != CSSParserToken::kNotBlock) {
     return false;
   }
 

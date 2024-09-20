@@ -22,7 +22,7 @@ class FakeTachyonRequestDataProvider : public TachyonRequestDataProvider {
 
   ~FakeTachyonRequestDataProvider() override = default;
 
-  std::string client_uuid() override;
+  std::string session_id() override;
   std::string tachyon_token() override;
   std::string group_id() override;
 };

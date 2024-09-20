@@ -868,6 +868,10 @@ inline constexpr char kFaceGazeDlcSuccessNotificationHasBeenShown[] =
 // has ever been shown.
 inline constexpr char kFaceGazeDlcFailureNotificationHasBeenShown[] =
     "settings.a11y.face_gaze.dlc_failure_notification_has_been_shown";
+// An integer pref which determines the FaceGaze cursor controller movement
+// threshold.
+inline constexpr char kAccessibilityFaceGazeVelocityThreshold[] =
+    "settings.a11y.face_gaze.velocity_threshold";
 
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
@@ -2253,9 +2257,20 @@ inline constexpr char kFocusModeSelectedTask[] = "ash.focus_mode.selected_task";
 // A dictionary pref containing the set of sound section settings for the user.
 // This is synced for all user devices.
 inline constexpr char kFocusModeSoundSection[] = "ash.focus_mode.sound_section";
+// An identifier for focus mode clients that is stable across reboot for use
+// with the YMC API.
+inline constexpr char kFocusModeDeviceId[] = "ash.focus_mode.device_id";
 // An string enum pref containing the enabled sound types.
 inline constexpr char kFocusModeSoundsEnabled[] =
     "ash.focus_mode.sounds_enabled";
+// A boolean pref of whether the focus panel shows the OAuth consent screen for
+// YouTube Music.
+inline constexpr char kFocusModeYTMDisplayOAuthConsent[] =
+    "ash.focus_mode.youtube_music.oauth";
+// A boolean pref of whether the focus panel shows the view to let the user know
+// a 3 months free trial for YouTube Music.
+inline constexpr char kFocusModeYTMDisplayFreeTrial[] =
+    "ash.focus_mode.youtube_music.free_trial";
 
 // An integer pref that holds enum value of current demo mode configuration.
 // Values are defined by DemoSession::DemoModeConfig enum.

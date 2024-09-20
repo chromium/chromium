@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertFalse, assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
-import type {UserAnnotationsManagerProxy, SettingsAutofillPredictionImprovementsSectionElement} from 'chrome://settings/lazy_load.js';
+import type {UserAnnotationsManagerProxy, SettingsSimpleConfirmationDialogElement, SettingsAutofillPredictionImprovementsSectionElement} from 'chrome://settings/lazy_load.js';
 import {UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -26,7 +26,7 @@ suite('AutofillPredictionImprovementsSectionUiDisabledToggleTest', function() {
       autofill: {
         prediction_improvements: {
           enabled: {
-            key: 'autofill_prediction_improvements.enabled',
+            key: 'autofill.prediction_improvements.enabled',
             type: chrome.settingsPrivate.PrefType.BOOLEAN,
             value: false,
           },
@@ -52,7 +52,7 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
   class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy implements
       UserAnnotationsManagerProxy {
     constructor() {
-      super(['getEntries']);
+      super(['getEntries', 'deleteEntry', 'deleteAllEntries']);
     }
 
     getEntries(): Promise<chrome.autofillPrivate.UserAnnotationsEntry[]> {
@@ -69,6 +69,14 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
           value: 'Aadvantage',
         },
       ]);
+    }
+
+    deleteEntry(entryId: number): void {
+      this.methodCalled('deleteEntry', entryId);
+    }
+
+    deleteAllEntries(): void {
+      this.methodCalled('deleteAllEntries');
     }
   }
 
@@ -126,5 +134,100 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
     assertFalse(
         isVisible(section.shadowRoot!.querySelector('#entries')),
         'With the toggle disabled, the entries should be hidden');
+  });
+
+  test('testCancelingEntryDeleteDialog', async function() {
+    const deleteButton = entries.querySelector<HTMLElement>(
+        '.list-item:nth-of-type(1) cr-icon-button');
+    assertTrue(!!deleteButton);
+    deleteButton.click();
+    await flushTasks();
+
+    const deleteEntryDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#deleteEntryDialog');
+    assertTrue(
+        !!deleteEntryDialog,
+        '#deleteEntryDialog should be in DOM after clicking delete button');
+    deleteEntryDialog.$.cancel.click();
+    await flushTasks();
+
+    assertEquals(0, userAnnotationManager.getCallCount('deleteEntry'));
+    assertEquals(
+        2, entries.querySelectorAll('.list-item').length,
+        'The 2 entries should remain intact.');
+  });
+
+
+  test('testConfirmingEntryDeleteDialog', async function() {
+    const deleteButton = entries.querySelector<HTMLElement>(
+        '.list-item:nth-of-type(1) cr-icon-button');
+    assertTrue(!!deleteButton);
+    deleteButton.click();
+    await flushTasks();
+
+    const deleteEntryDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#deleteEntryDialog');
+    assertTrue(
+        !!deleteEntryDialog,
+        '#deleteEntryDialog should be in DOM after clicking delete button');
+    deleteEntryDialog.$.confirm.click();
+
+    await userAnnotationManager.whenCalled('deleteEntry');
+    await flushTasks();
+
+    assertEquals(1, userAnnotationManager.getCallCount('deleteEntry'));
+    assertEquals(1, userAnnotationManager.getArgs('deleteEntry')[0]);
+    assertEquals(
+        1, entries.querySelectorAll('.list-item').length,
+        'One of the 2 entries should be removed');
+  });
+
+  test('testCancelingDeleteAllEntriesDialog', async function() {
+    const deleteButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#deleteAllEntries');
+    assertTrue(!!deleteButton);
+    deleteButton.click();
+    await flushTasks();
+
+    const deleteAllEntriesDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#deleteAllEntriesDialog');
+    assertTrue(
+        !!deleteAllEntriesDialog, '#deleteAllEntriesDialog should be in DOM');
+    deleteAllEntriesDialog.$.cancel.click();
+    await flushTasks();
+
+    assertEquals(0, userAnnotationManager.getCallCount('deleteAllEntries'));
+    assertEquals(
+        entries.querySelectorAll('.list-item').length, 2,
+        'The 2 entries should remain intact.');
+  });
+
+  test('testConfirmingDeleteAllEntriesDialog', async function() {
+    const deleteButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#deleteAllEntries');
+    assertTrue(!!deleteButton);
+    deleteButton.click();
+    await flushTasks();
+
+    const deleteAllEntriesDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#deleteAllEntriesDialog');
+    assertTrue(!!deleteAllEntriesDialog, '#deleteEntryDialog should be in DOM');
+    deleteAllEntriesDialog.$.confirm.click();
+
+    await userAnnotationManager.whenCalled('deleteAllEntries');
+    await flushTasks();
+
+    assertEquals(1, userAnnotationManager.getCallCount('deleteAllEntries'));
+    assertEquals(
+        entries.querySelectorAll('.list-item').length, 0,
+        'All entries should be removed');
   });
 });

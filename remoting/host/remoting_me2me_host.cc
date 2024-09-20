@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -26,6 +27,8 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -70,8 +73,10 @@
 #include "remoting/host/branding.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/cloud_heartbeat_service_client.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/config_watcher.h"
+#include "remoting/host/corp_heartbeat_service_client.h"
 #include "remoting/host/corp_host_status_logger.h"
 #include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_environment.h"
@@ -88,6 +93,7 @@
 #include "remoting/host/ipc_desktop_environment.h"
 #include "remoting/host/ipc_host_event_logger.h"
 #include "remoting/host/me2me_desktop_environment.h"
+#include "remoting/host/me2me_heartbeat_service_client.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
@@ -112,6 +118,7 @@
 #include "remoting/signaling/ftl_host_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/remoting_log_to_server.h"
+#include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/webrtc/rtc_base/event_tracer.h"
 
@@ -227,6 +234,23 @@ const char kHostOfflineReasonZombieStateDetected[] = "ZOMBIE_STATE_DETECTED";
 // will not be enabled.
 const char kWebRtcTraceEventFile[] = "webrtc-trace-event-file";
 
+constexpr char kChromotingOAuthCloudScope[] =
+    "https://www.googleapis.com/auth/chromoting.cloud.host";
+constexpr char kChromotingOAuthCorpScope[] =
+    "https://www.googleapis.com/auth/chromoting.corp.host";
+constexpr char kChromotingOAuthMe2MeScope[] =
+    "https://www.googleapis.com/auth/chromoting.me2me.host";
+
+// Helper to check if a string value is in a Policy allowlist.
+bool IsInAllowlist(std::string_view value,
+                   const std::vector<std::string> allowlist) {
+  return std::find_if(allowlist.begin(), allowlist.end(),
+                      [&value](const std::string& allowed_value) {
+                        return base::EqualsCaseInsensitiveASCII(value,
+                                                                allowed_value);
+                      }) != allowlist.end();
+}
+
 }  // namespace
 
 namespace remoting {
@@ -323,6 +347,12 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Called on the UI thread to start monitoring the configuration file.
   void StartWatchingConfigChanges();
 
+  // Indicates whether |user_email| is allowed to access this machine based on
+  // |host_owner_emails_| and the client domain policies that are set.
+  // Provided as a Callback to Me2MeHostAuthenticatorFactory and is called for
+  // every connection attempt.
+  bool CheckAccessPermission(std::string_view user_email);
+
   // Called on the network thread to set the host's Authenticator factory.
   void CreateAuthenticatorFactory();
 
@@ -353,6 +383,12 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnAllowRemoteAccessConnections(const base::Value::Dict& policies);
   bool OnAllowPinAuthenticationUpdate(const base::Value::Dict& policies);
 
+  void InitializeOauth();
+  void OnOauthTokenCallback(OAuthTokenGetter::Status status,
+                            const std::string& user_email,
+                            const std::string& access_token,
+                            const std::string& scopes);
+  bool HasScope(std::string scope);
   void InitializeSignaling();
 
   void StartHostIfReady();
@@ -361,7 +397,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   // HeartbeatSender::Delegate implementation.
   void OnFirstHeartbeatSuccessful() override;
   void OnUpdateHostOwner(const std::string& host_owner) override;
-  void OnUpdateIsCorpUser(bool is_corp_user) override;
   void OnUpdateRequireSessionAuthorization(bool require_session_auth) override;
   void OnHostNotFound() override;
   void OnAuthFailed() override;
@@ -413,8 +448,10 @@ class HostProcess : public ConfigWatcher::Delegate,
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string oauth_refresh_token_;
   std::string service_account_email_;
+  std::string cloud_api_key_;
   base::Value::Dict config_;
-  std::string host_owner_;
+  std::set<std::string> host_owner_emails_;
+  std::vector<std::string> scopes_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
@@ -425,6 +462,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool enable_user_interface_ = true;
   bool allow_remote_access_connections_ = true;
   std::optional<bool> allow_pin_auth_;
+  bool is_cloud_host_ = false;
   bool is_corp_host_ = false;
   bool require_session_authorization_ = false;
   LocalSessionPoliciesProvider local_session_policies_provider_;
@@ -729,8 +767,7 @@ void HostProcess::SetState(HostState target_state) {
       break;
     case HOST_STOPPED:  // HOST_STOPPED is a terminal state.
     default:
-      NOTREACHED_IN_MIGRATION() << state_ << " -> " << target_state;
-      break;
+      NOTREACHED() << state_ << " -> " << target_state;
   }
   state_ = target_state;
 }
@@ -780,6 +817,35 @@ void HostProcess::SigTermHandler(int signal_number) {
 }
 #endif  // BUILDFLAG(IS_POSIX)
 
+bool HostProcess::CheckAccessPermission(std::string_view user_email_view) {
+  // |user_email_view| may already be in a canonical form but we transform it
+  // just in case so that it matches the format we use in |host_owner_emails_|.
+  // TODO: joedow - Add an overload for GetCanonicalEmail() which takes a
+  // std::string_view.
+  auto canonical_email = GetCanonicalEmail(std::string(user_email_view));
+  auto email_parts = base::SplitStringOnce(canonical_email, '@');
+  if (!email_parts) {
+    LOG(ERROR) << "Unexpected email address format: " << user_email_view;
+    return false;
+  }
+
+  if (!host_owner_emails_.contains(canonical_email)) {
+    LOG(ERROR) << canonical_email << " does not have access to this machine.";
+    return false;
+  }
+
+  // Verify the remote user is not disallowed based on the client domain policy.
+  if (client_domain_list_.empty()) {
+    return true;
+  }
+
+  auto [_, domain] = *email_parts;
+  bool allowed_by_policy = IsInAllowlist(domain, client_domain_list_);
+  LOG_IF(ERROR, !allowed_by_policy) << canonical_email << " has a domain which "
+                                    << "is not in the client domain allowlist.";
+  return allowed_by_policy;
+}
+
 void HostProcess::CreateAuthenticatorFactory() {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
@@ -796,13 +862,13 @@ void HostProcess::CreateAuthenticatorFactory() {
 
   auto auth_config = std::make_unique<protocol::HostAuthenticationConfig>(
       local_certificate, key_pair_);
-  if (require_session_authorization_ ||
-      (is_corp_host_ && !allow_pin_auth_.value_or(false))) {
-    if (!is_corp_host_) {
-      // TODO: joedow - Implement SessionAuthz for Cloud hosts.
-      NOTREACHED() << "SessionAuthz not yet supported for non-Corp hosts";
-    }
+  if (is_cloud_host_) {
+    CHECK(require_session_authorization_);
 
+    // TODO: joedow - Implement SessionAuthz for Cloud hosts.
+    NOTIMPLEMENTED() << "SessionAuthz not yet implemented for Cloud hosts";
+  } else if (require_session_authorization_ ||
+             (is_corp_host_ && !allow_pin_auth_.value_or(false))) {
     auth_config->AddSessionAuthzAuth(
         base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
             context_->url_loader_factory(), service_account_email_,
@@ -849,7 +915,8 @@ void HostProcess::CreateAuthenticatorFactory() {
   }
   std::unique_ptr<protocol::AuthenticatorFactory> factory =
       std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(
-          host_owner_, client_domain_list_, std::move(auth_config));
+          base::BindRepeating(&HostProcess::CheckAccessPermission, this),
+          std::move(auth_config));
 
 #if BUILDFLAG(IS_POSIX)
   // On Linux and Mac, perform a PAM authorization step after authentication.
@@ -860,9 +927,7 @@ void HostProcess::CreateAuthenticatorFactory() {
 
 // IPC::Listener implementation.
 bool HostProcess::OnMessageReceived(const IPC::Message& message) {
-  NOTREACHED_IN_MIGRATION()
-      << "Received unexpected IPC type: " << message.type();
-  return false;
+  NOTREACHED() << "Received unexpected IPC type: " << message.type();
 }
 
 void HostProcess::OnChannelError() {
@@ -1069,18 +1134,20 @@ void HostProcess::OnFirstHeartbeatSuccessful() {
 #endif
 }
 
-void HostProcess::OnUpdateHostOwner(const std::string& host_owner) {
-  if (host_owner == host_owner_) {
+void HostProcess::OnUpdateHostOwner(const std::string& owner_email) {
+  DCHECK(!owner_email.empty());
+
+  // Use a canonical email form here for martching against FTL signaling IDs.
+  auto new_owner_email = GetCanonicalEmail(owner_email);
+  if (host_owner_emails_.contains(new_owner_email)) {
     return;
   }
 
-  LOG(INFO) << "Updating host_owner from '" << host_owner_ << "' to '"
-            << host_owner << "'";
-  host_owner_ = host_owner;
-}
+  LOG(INFO) << "Adding '" << new_owner_email << "' to host owner emails.";
+  host_owner_emails_.emplace(std::move(new_owner_email));
 
-void HostProcess::OnUpdateIsCorpUser(bool is_corp_user) {
-  // TODO: joedow - Remove this helper since the host config defines this now.
+  ApplyHostDomainListPolicy();
+  ApplyUsernamePolicy();
 }
 
 void HostProcess::OnUpdateRequireSessionAuthorization(bool require) {
@@ -1212,13 +1279,16 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
                << kHostOwnerConfigPath << "`";
     return false;
   }
+  // TODO: joedow - Remove the email check once all Corp hosts have a hint set.
+  bool has_google_email = IsGoogleEmail(*host_owner);
   OnUpdateHostOwner(*host_owner);
 
-  // TODO: joedow - Remove the email check once all Corp hosts have a hint set.
-  bool has_google_email = IsGoogleEmail(host_owner_);
   auto* host_type_hint = config.FindString(kHostTypeHintPath);
+  is_cloud_host_ = (host_type_hint && *host_type_hint == kCloudHostTypeHint);
+  // TODO: joedow - Remove the !is_cloud_host override here when all Corp hosts
+  // have a hint set. This is used to allow Googlers to test with Cloud hosts.
   is_corp_host_ = (host_type_hint && *host_type_hint == kCorpHostTypeHint) ||
-                  has_google_email;
+                  (has_google_email && !is_cloud_host_);
 
   require_session_authorization_ =
       config.FindBool(kRequireSessionAuthorizationPath).value_or(false);
@@ -1243,6 +1313,15 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
     LOG(ERROR) << "Host config is missing a required path: `"
                << kHostSecretHashConfigPath << "`";
     return false;
+  }
+
+  if (is_cloud_host_) {
+    const std::string* cloud_api_key = config.FindString(kCloudApiKeyPath);
+    if (!cloud_api_key || cloud_api_key->empty()) {
+      LOG(ERROR) << "Host config is missing the cloud_api_key.";
+      return false;
+    }
+    cloud_api_key_ = *cloud_api_key;
   }
 
   return true;
@@ -1324,19 +1403,24 @@ void HostProcess::ApplyHostDomainListPolicy() {
 
   HOST_LOG << "Policy sets host domains: "
            << base::JoinString(host_domain_list_, ", ");
+  if (host_domain_list_.empty()) {
+    return;
+  }
 
-  if (!host_domain_list_.empty()) {
-    bool matched = false;
-    for (const std::string& domain : host_domain_list_) {
-      if (base::EndsWith(host_owner_, std::string("@") + domain,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-        matched = true;
-      }
+  std::set<std::string> allowed_emails;
+  for (const std::string& owner_email : host_owner_emails_) {
+    auto [_, domain] = *base::SplitStringOnce(owner_email, '@');
+    bool allowed_by_policy = IsInAllowlist(domain, host_domain_list_);
+    if (allowed_by_policy) {
+      allowed_emails.emplace(owner_email);
+    } else {
+      LOG(WARNING) << owner_email << " is not allowed by host domain policy";
     }
-    if (!matched) {
-      LOG(ERROR) << "The host domain does not match the policy.";
-      ShutdownHost(kInvalidHostDomainExitCode);
-    }
+  }
+  host_owner_emails_.swap(allowed_emails);
+  if (host_owner_emails_.empty()) {
+    LOG(ERROR) << "No owner emails are allowed based on host domain policy.";
+    ShutdownHost(kInvalidHostDomainExitCode);
   }
 }
 
@@ -1396,21 +1480,20 @@ void HostProcess::ApplyUsernamePolicy() {
     return;
   }
 
-  if (host_username_match_required_) {
-    HOST_LOG << "Policy requires host username match.";
+  if (!host_username_match_required_) {
+    HOST_LOG << "Policy does not require host username match.";
+    return;
+  }
 
-    std::string username = GetUsername();
-    bool shutdown = username.empty() ||
-                    !base::StartsWith(host_owner_, username + std::string("@"),
-                                      base::CompareCase::INSENSITIVE_ASCII);
+  HOST_LOG << "Policy requires host username match.";
 
 #if BUILDFLAG(IS_APPLE)
     // On Mac, we run as root at the login screen, so the username won't match.
     // However, there's no need to enforce the policy at the login screen, as
     // the client will have to reconnect if a login occurs.
-    if (shutdown && getuid() == 0) {
-      shutdown = false;
-    }
+  if (getuid() == 0) {
+    return;
+  }
 #endif
 
     // Curtain-mode on Windows presents the standard OS login prompt to the user
@@ -1422,17 +1505,25 @@ void HostProcess::ApplyUsernamePolicy() {
     }
 #endif  // BUILDFLAG(IS_WIN) && defined(REMOTING_RDP_SESSION)
 
-    // Shutdown the host if the username does not match.
-    if (shutdown) {
-      LOG(ERROR) << "\n Policy error: username and host owner(ignoring domain) "
-                 << "don't match:\n"
-                 << "   username:   `" << username << "`\n"
-                 << "   host owner: `" << host_owner_ << "`";
+    std::string username = GetUsername();
+    LOG(INFO) << "Current local username is '" << username << "'";
+    std::set<std::string> allowed_emails;
+    for (const std::string& owner_email : host_owner_emails_) {
+      auto [owner_username, _] = *base::SplitStringOnce(owner_email, '@');
+      if (base::EqualsCaseInsensitiveASCII(username, owner_username)) {
+        LOG(INFO) << owner_email << " matches the local username";
+        allowed_emails.emplace(owner_email);
+      } else {
+        LOG(WARNING) << owner_email << " does not match the local username";
+      }
+    }
+
+    host_owner_emails_.swap(allowed_emails);
+    if (host_owner_emails_.empty()) {
+      LOG(ERROR)
+          << "No owner emails are allowed based on match username policy.";
       ShutdownHost(kUsernameMismatchExitCode);
     }
-  } else {
-    HOST_LOG << "Policy does not require host username match.";
-  }
 }
 
 bool HostProcess::OnUsernamePolicyUpdate(const base::Value::Dict& policies) {
@@ -1599,13 +1690,10 @@ bool HostProcess::OnAllowRemoteAccessConnections(
   return false;
 }
 
-void HostProcess::InitializeSignaling() {
+void HostProcess::InitializeOauth() {
   DCHECK(!host_id_.empty());  // ApplyConfig() should already have been run.
 
-  DCHECK(!signal_strategy_);
   DCHECK(!oauth_token_getter_);
-  DCHECK(!ftl_signaling_connector_);
-  DCHECK(!heartbeat_sender_);
 
   auto oauth_credentials =
       std::make_unique<OAuthTokenGetter::OAuthAuthorizationCredentials>(
@@ -1615,6 +1703,29 @@ void HostProcess::InitializeSignaling() {
   // callback will never be invoked once it is destroyed.
   oauth_token_getter_ = std::make_unique<OAuthTokenGetterImpl>(
       std::move(oauth_credentials), context_->url_loader_factory(), false);
+
+  oauth_token_getter_->CallWithToken(base::BindOnce(
+      &HostProcess::OnOauthTokenCallback, base::Unretained(this)));
+}
+
+void HostProcess::OnOauthTokenCallback(OAuthTokenGetter::Status status,
+                                       const std::string& user_email,
+                                       const std::string& access_token,
+                                       const std::string& scopes) {
+  scopes_ = SplitString(scopes, " ", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+
+  InitializeSignaling();
+}
+
+bool HostProcess::HasScope(std::string scope) {
+  return std::find(scopes_.cbegin(), scopes_.cend(), scope) != scopes_.cend();
+}
+
+void HostProcess::InitializeSignaling() {
+  DCHECK(!signal_strategy_);
+  DCHECK(!ftl_signaling_connector_);
+  DCHECK(!heartbeat_sender_);
 
   log_to_server_ = std::make_unique<RemotingLogToServer>(
       ServerLogEntry::ME2ME,
@@ -1635,10 +1746,30 @@ void HostProcess::InitializeSignaling() {
       base::BindOnce(&HostProcess::OnAuthFailed, base::Unretained(this)));
   ftl_signaling_connector_->Start();
 
+  // Create the appropriate API service client (corp, cloud or me2me) for the
+  // HeartbeatSender, based on available OAuth scope.
+  std::unique_ptr<HeartbeatServiceClient> service_client;
+  if (HasScope(kChromotingOAuthCloudScope)) {
+    service_client = std::make_unique<CloudHeartbeatServiceClient>(
+        host_id_, cloud_api_key_, oauth_token_getter_.get(),
+        context_->url_loader_factory());
+  } else if (HasScope(kChromotingOAuthCorpScope)) {
+    service_client = std::make_unique<CorpHeartbeatServiceClient>(
+        host_id_, oauth_token_getter_.get(), context_->url_loader_factory());
+  } else if (HasScope(kChromotingOAuthMe2MeScope)) {
+    service_client = std::make_unique<Me2MeHeartbeatServiceClient>(
+        host_id_, oauth_token_getter_.get(), context_->url_loader_factory(),
+        std::nullopt);
+  } else {
+    LOG(ERROR) << "Missing required OAuth scope - can't launch host";
+    ShutdownHost(kInvalidOauthCredentialsExitCode);
+    return;
+  }
+
   heartbeat_sender_ = std::make_unique<HeartbeatSender>(
       this, host_id_, ftl_signal_strategy.get(), oauth_token_getter_.get(),
-      zombie_host_detector_.get(), context_->url_loader_factory(),
-      is_corp_host_);
+      std::move(service_client), zombie_host_detector_.get(),
+      context_->url_loader_factory(), is_corp_host_);
   signal_strategy_ = std::move(ftl_signal_strategy);
 
   zombie_host_detector_->Start();
@@ -1682,7 +1813,7 @@ void HostProcess::StartHost() {
 
   SetState(HOST_STARTED);
 
-  InitializeSignaling();
+  InitializeOauth();
 
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
@@ -1710,8 +1841,8 @@ void HostProcess::StartHost() {
     desktop_environment_options_.set_enable_user_interface(
         enable_user_interface_);
     corp_host_status_logger_ = std::make_unique<CorpHostStatusLogger>(
-        context_->url_loader_factory(), service_account_email_,
-        oauth_refresh_token_);
+        context_->url_loader_factory(), &local_session_policies_provider_,
+        service_account_email_, oauth_refresh_token_);
     corp_host_status_logger_->StartObserving(*session_manager);
   }
 
@@ -1752,7 +1883,8 @@ void HostProcess::StartHost() {
           this, signal_strategy_.get());
 
   ftl_echo_message_listener_ = std::make_unique<FtlEchoMessageListener>(
-      host_owner_, signal_strategy_.get());
+      base::BindRepeating(&HostProcess::CheckAccessPermission, this),
+      signal_strategy_.get());
 
   // Set up reporting the host status notifications.
 #if defined(REMOTING_MULTI_PROCESS)
@@ -1765,7 +1897,10 @@ void HostProcess::StartHost() {
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
 #endif  // !defined(REMOTING_MULTI_PROCESS)
 
-  host_->Start(host_owner_);
+  // The email provided here is only used for logging via OnHostStarted().
+  // TODO: joedow - Update host observer interface to handle multiple email
+  // addresses.
+  host_->Start(*host_owner_emails_.begin());
 
 #if BUILDFLAG(IS_LINUX)
   // For Windows, ChromotingHostServices connections are handled by the daemon
@@ -1842,7 +1977,7 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
     return;
   } else if (!config_.empty()) {
     if (!signal_strategy_) {
-      InitializeSignaling();
+      InitializeOauth();
     }
 
     HOST_LOG << "SendHostOfflineReason: sending " << host_offline_reason << ".";
@@ -1886,7 +2021,7 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
     context_->ui_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&HostProcess::ShutdownOnUiThread, this));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

@@ -32,6 +32,7 @@ include_rules = [
   "+net/url_request/url_request_job.h",
   "+services/device/public/mojom",
   "+services/media_session/public/cpp",
+  "+third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h",
   "+third_party/blink/renderer/platform/allow_discouraged_type.h",
   "+third_party/blink/renderer/platform/platform_export.h",
   "+third_party/blink/renderer/platform/wtf",

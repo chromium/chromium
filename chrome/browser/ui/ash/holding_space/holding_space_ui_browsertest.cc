@@ -125,9 +125,7 @@ MATCHER_P(EnabledColorId, matcher, "") {
 std::string GetAccessibleName(const views::View* view) {
   ui::AXNodeData a11y_data;
   view->GetViewAccessibility().GetAccessibleNodeData(&a11y_data);
-  std::string a11y_name;
-  a11y_data.GetStringAttribute(ax::mojom::StringAttribute::kName, &a11y_name);
-  return a11y_name;
+  return a11y_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 
 // Flushes the message loop by posting a task and waiting for it to run.

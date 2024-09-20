@@ -87,6 +87,9 @@ class ParserTest : public ::testing::Test {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
     return base::android::BuildInfo::GetInstance()->sdk_int() <=
            base::android::SDK_VERSION_NOUGAT;
+    // This test type are also unreliable on Fuchsia.
+#elif BUILDFLAG(IS_FUCHSIA)
+    return true;
 #else
     return false;
 #endif

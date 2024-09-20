@@ -7,7 +7,7 @@ package org.chromium.components.language;
 import java.util.List;
 import java.util.Locale;
 
-/** Interface for {@link LocaleManager} APIs. */
+// TODO(agrieve): Delete once unused internally.
 public interface LocaleManagerDelegate {
     /**
      * Gets the currently set system App locale. Returns null if no override

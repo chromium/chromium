@@ -1419,7 +1419,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kVisibility:
       return value_id == CSSValueID::kVisible ||
              value_id == CSSValueID::kHidden ||
-             value_id == CSSValueID::kCollapse;
+             value_id == CSSValueID::kCollapse ||
+             (RuntimeEnabledFeatures::CSSVisibilityInertEnabled() &&
+              value_id == CSSValueID::kInert);
     case CSSPropertyID::kAppRegion:
       return (value_id >= CSSValueID::kDrag &&
               value_id <= CSSValueID::kNoDrag) ||
@@ -1437,7 +1439,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id == CSSValueID::kSearchfield ||
               value_id == CSSValueID::kTextfield ||
               value_id == CSSValueID::kTextarea) ||
-             (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+             (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
               value_id == CSSValueID::kBaseSelect) ||
              (RuntimeEnabledFeatures::
                   NonStandardAppearanceValueSliderVerticalEnabled() &&

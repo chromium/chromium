@@ -276,6 +276,13 @@ bool SetupFieldTracingFromFieldTrial() {
   auto& manager = content::BackgroundTracingManager::GetInstance();
   auto field_tracing_config = tracing::GetFieldTracingConfig();
   if (field_tracing_config) {
+    if (data_filtering ==
+        content::BackgroundTracingManager::NO_DATA_FILTERING) {
+      auto enabled_scenarios = manager.AddPresetScenarios(
+          std::move(*field_tracing_config),
+          content::BackgroundTracingManager::NO_DATA_FILTERING);
+      return manager.SetEnabledScenarios(enabled_scenarios);
+    }
     return manager.InitializeFieldScenarios(std::move(*field_tracing_config),
                                             data_filtering);
   }

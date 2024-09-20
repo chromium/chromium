@@ -25,7 +25,11 @@ BrowserInfo::~BrowserInfo() = default;
 
 BrowserInfo::BrowserInfo(const BrowserInfo&) = default;
 
+BrowserInfo::BrowserInfo(BrowserInfo&&) = default;
+
 BrowserInfo& BrowserInfo::operator=(const BrowserInfo&) = default;
+
+BrowserInfo& BrowserInfo::operator=(BrowserInfo&&) = default;
 
 Status BrowserInfo::FillFromBrowserVersionResponse(
     const base::Value::Dict& response) {

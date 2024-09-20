@@ -5,10 +5,13 @@
 import("//build/buildflag_header.gni")
 import("//services/on_device_model/on_device_model.gni")
 
-source_set("cpp") {
+component("cpp") {
   output_name = "on_device_model_cpp"
   sources = [
-    # TODO b/361619655 - Move some client logic here.
+    "features.cc",
+    "features.h",
+    "text_safety_assets.cc",
+    "text_safety_assets.h",
   ]
   public_deps = [
     ":buildflags",

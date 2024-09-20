@@ -247,12 +247,13 @@ void DeriveCommandLine(const GURL& start_url,
 // current session.
 void DeriveFeatures(base::CommandLine* out_command_line) {
   auto kForwardFeatures = {
-    &features::kAutoNightLight,
-    &ash::features::kSeamlessRefreshRateSwitching,
-    &ash::standalone_browser::features::kLacrosOnly,
-    &::features::kPluginVm,
+      &features::kAutoNightLight,
+      &ash::features::kSeamlessRefreshRateSwitching,
+      &ash::standalone_browser::features::kLacrosOnly,
+      &::features::kPluginVm,
+      &display::features::kOledScaleFactorEnabled,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    &media::kPlatformHEVCDecoderSupport,
+      &media::kPlatformHEVCDecoderSupport,
 #endif
   };
   std::vector<std::string> enabled_features;

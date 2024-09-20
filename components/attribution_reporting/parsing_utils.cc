@@ -78,10 +78,6 @@ base::expected<absl::uint128, ParseError> ParseAggregationKeyPiece(
   return key_piece;
 }
 
-bool AggregationKeyIdHasValidLength(const std::string& key) {
-  return key.size() <= kMaxBytesPerAggregationKeyId;
-}
-
 std::string HexEncodeAggregationKey(absl::uint128 value) {
   std::ostringstream out;
   out << "0x";

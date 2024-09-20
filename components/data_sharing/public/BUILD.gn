@@ -20,6 +20,8 @@ source_set("public") {
     "features.h",
     "group_data.cc",
     "group_data.h",
+    "service_status.cc",
+    "service_status.h",
   ]
 
   public_deps = [
@@ -46,6 +48,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
+      "android/java/src/org/chromium/components/data_sharing/ServiceStatus.java",
       "android/java/src/org/chromium/components/data_sharing/SharedDataPreview.java",
       "android/java/src/org/chromium/components/data_sharing/SharedEntity.java",
       "android/java/src/org/chromium/components/data_sharing/configs/AvatarConfig.java",
@@ -72,6 +75,7 @@ if (is_android) {
       "data_sharing_network_loader.h",
       "data_sharing_service.h",
       "group_data.h",
+      "service_status.h",
     ]
   }
 
@@ -81,6 +85,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
+      "android/java/src/org/chromium/components/data_sharing/ServiceStatus.java",
       "android/java/src/org/chromium/components/data_sharing/SharedEntity.java",
     ]
   }

@@ -16,6 +16,10 @@
 
 namespace ml {
 
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+base::FilePath GetChromeMLPath(
+    const std::optional<std::string>& library_name = std::nullopt);
+
 // A ChromeMLHolder object encapsulates a reference to the ChromeML shared
 // library, exposing the library's API functions to callers and ensuring that
 // the library remains loaded and usable throughout the object's lifetime.
@@ -49,6 +53,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
  public:
   explicit ChromeML(const ChromeMLAPI* api);
   ~ChromeML();
+  ChromeML(const ChromeML& other) = delete;
+  ChromeML& operator=(const ChromeML& other) = delete;
+  ChromeML(ChromeML&& other) = delete;
+  ChromeML& operator=(ChromeML&& other) = delete;
 
   // Gets a lazily initialized global instance of ChromeML. May return null
   // if the underlying library could not be loaded.

@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -66,9 +67,7 @@ import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -118,67 +117,6 @@ public class CustomTabTabPersistencePolicyTest {
                             ApplicationStatus.onStateChangeForTesting(
                                     activity, ActivityState.DESTROYED));
         }
-    }
-
-    @Test
-    @Feature("TabPersistentStore")
-    @SmallTest
-    public void testDeletableMetadataSelection_NoFiles() {
-        List<File> deletableFiles =
-                CustomTabTabPersistencePolicy.getMetadataFilesForDeletion(
-                        System.currentTimeMillis(), new ArrayList<File>());
-        assertThat(deletableFiles, Matchers.emptyIterableOf(File.class));
-    }
-
-    @Test
-    @Feature("TabPersistentStore")
-    @SmallTest
-    public void testDeletableMetadataSelection_MaximumValidFiles() {
-        long currentTime = System.currentTimeMillis();
-
-        // Test the maximum allowed number of state files where they are all valid in terms of age.
-        List<File> filesToTest = new ArrayList<>();
-        filesToTest.addAll(generateMaximumStateFiles(currentTime));
-        List<File> deletableFiles =
-                CustomTabTabPersistencePolicy.getMetadataFilesForDeletion(currentTime, filesToTest);
-        assertThat(deletableFiles, Matchers.emptyIterableOf(File.class));
-    }
-
-    @Test
-    @Feature("TabPersistentStore")
-    @SmallTest
-    public void testDeletableMetadataSelection_ExceedsMaximumValidFiles() {
-        long currentTime = System.currentTimeMillis();
-
-        // Test where we exceed the maximum number of allowed state files and ensure it chooses the
-        // older file to delete.
-        List<File> filesToTest = new ArrayList<>();
-        filesToTest.addAll(generateMaximumStateFiles(currentTime));
-        File slightlyOlderFile = buildTestFile("slightlyolderfile", currentTime - 1L);
-        // Insert it into the middle just to ensure it is not picking the last file.
-        filesToTest.add(filesToTest.size() / 2, slightlyOlderFile);
-        List<File> deletableFiles =
-                CustomTabTabPersistencePolicy.getMetadataFilesForDeletion(currentTime, filesToTest);
-        assertThat(deletableFiles, Matchers.containsInAnyOrder(slightlyOlderFile));
-    }
-
-    @Test
-    @Feature("TabPersistentStore")
-    @SmallTest
-    public void testDeletableMetadataSelection_ExceedExpiryThreshold() {
-        long currentTime = System.currentTimeMillis();
-
-        // Ensure that files that exceed the allowed time threshold are removed regardless of the
-        // number of possible files.
-        List<File> filesToTest = new ArrayList<>();
-        File expiredFile =
-                buildTestFile(
-                        "expired_file",
-                        currentTime - CustomTabTabPersistencePolicy.STATE_EXPIRY_THRESHOLD);
-        filesToTest.add(expiredFile);
-        List<File> deletableFiles =
-                CustomTabTabPersistencePolicy.getMetadataFilesForDeletion(currentTime, filesToTest);
-        assertThat(deletableFiles, Matchers.containsInAnyOrder(expiredFile));
     }
 
     /** Test to ensure that an existing metadata files are deleted if no restore is requested. */
@@ -363,30 +301,13 @@ public class CustomTabTabPersistencePolicyTest {
         Assert.assertTrue(metadataFile.createNewFile());
 
         long previousTimestamp =
-                System.currentTimeMillis() - CustomTabTabPersistencePolicy.STATE_EXPIRY_THRESHOLD;
+                System.currentTimeMillis() - CustomTabFileUtils.STATE_EXPIRY_THRESHOLD;
         Assert.assertTrue(metadataFile.setLastModified(previousTimestamp));
 
         policy.performInitialization(mSequencedTaskRunner);
         policy.waitForInitializationToFinish();
 
         Assert.assertTrue(metadataFile.lastModified() > previousTimestamp);
-    }
-
-    private static List<File> generateMaximumStateFiles(long currentTime) {
-        List<File> validFiles = new ArrayList<>();
-        for (int i = 0; i < CustomTabTabPersistencePolicy.MAXIMUM_STATE_FILES; i++) {
-            validFiles.add(buildTestFile("testfile" + i, currentTime));
-        }
-        return validFiles;
-    }
-
-    private static File buildTestFile(String filename, final long lastModifiedTime) {
-        return new File(filename) {
-            @Override
-            public long lastModified() {
-                return lastModifiedTime;
-            }
-        };
     }
 
     private CustomTabActivity buildTestCustomTabActivity(
@@ -519,7 +440,8 @@ public class CustomTabTabPersistencePolicyTest {
                 new ChromeTabModelFilterFactory(customTabActivity),
                 buildTestPersistencePolicy(),
                 ActivityType.CUSTOM_TAB,
-                AsyncTabParamsManagerSingleton.getInstance());
+                AsyncTabParamsManagerSingleton.getInstance(),
+                new CipherFactory());
         TabModelSelectorImpl selector = (TabModelSelectorImpl) orchestrator.getTabModelSelector();
         selector.initializeForTesting(normalTabModel, incognitoTabModel);
         ApplicationStatus.onStateChangeForTesting(customTabActivity, ActivityState.DESTROYED);

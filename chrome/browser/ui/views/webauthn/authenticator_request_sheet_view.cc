@@ -244,11 +244,12 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     label_container->AddChildView(description_label.release());
   }
 
-  std::u16string additional_desciption = model()->GetAdditionalDescription();
-  if (!additional_desciption.empty()) {
-    auto label =
-        std::make_unique<views::Label>(std::move(additional_desciption),
-                                       views::style::CONTEXT_DIALOG_BODY_TEXT);
+  for (const std::u16string& msg : model()->GetAdditionalDescriptions()) {
+    if (msg.empty()) {
+      continue;
+    }
+    auto label = std::make_unique<views::Label>(
+        msg, views::style::CONTEXT_DIALOG_BODY_TEXT);
     label->SetMultiLine(true);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetAllowCharacterBreak(true);

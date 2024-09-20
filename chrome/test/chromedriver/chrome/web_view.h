@@ -296,6 +296,8 @@ class WebView {
 
   virtual Status HandleDialog(bool accept,
                               const std::optional<std::string>& text) = 0;
+
+  virtual WebView* FindContainerForFrame(const std::string& frame_id) = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_H_

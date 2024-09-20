@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
 
+#include <memory>
+
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/label.h"
@@ -34,9 +38,8 @@ void ChromeQuickAnswersTestBase::SetUp() {
   GetFakeUserManager()->LoginUser(account_id);
 
   SetUpInitialPrefValues();
-
-  quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>(
-      read_write_cards_ui_controller_);
+  quick_answers_controller_ =
+      CreateQuickAnswersControllerImpl(read_write_cards_ui_controller_);
 
   CreateUserSessions(/*session_count=*/1);
 }
@@ -51,6 +54,13 @@ void ChromeQuickAnswersTestBase::TearDown() {
   menu_delegate_.reset();
 
   ChromeAshTestBase::TearDown();
+}
+
+std::unique_ptr<QuickAnswersControllerImpl>
+ChromeQuickAnswersTestBase::CreateQuickAnswersControllerImpl(
+    chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller) {
+  return std::make_unique<QuickAnswersControllerImpl>(
+      read_write_cards_ui_controller);
 }
 
 void ChromeQuickAnswersTestBase::CreateAndShowBasicMenu() {

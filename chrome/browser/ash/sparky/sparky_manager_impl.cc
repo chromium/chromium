@@ -62,6 +62,54 @@ ash::MahiBrowserDelegateAsh* GetMahiBrowserDelgateAsh() {
 }  // namespace
 namespace ash {
 
+namespace {
+
+std::u16string GenerateErrorMessage(const std::string& existing_message,
+                                    manta::MantaStatusCode status_code) {
+  std::u16string message = base::UTF8ToUTF16(existing_message);
+  message += u"\nManta Error Status:";
+  switch (status_code) {
+    case manta::MantaStatusCode::kOk:
+      message += u"OK";
+      break;
+    case manta::MantaStatusCode::kGenericError:
+      message += u"Generic Error";
+      break;
+    case manta::MantaStatusCode::kInvalidInput:
+      message += u"Invalid Input";
+      break;
+    case manta::MantaStatusCode::kResourceExhausted:
+      message += u"Resource Exhausted";
+      break;
+    case manta::MantaStatusCode::kBackendFailure:
+      message += u"Backend Failure";
+      break;
+    case manta::MantaStatusCode::kMalformedResponse:
+      message += u"Malformed Response";
+      break;
+    case manta::MantaStatusCode::kNoInternetConnection:
+      message += u"No Internet Connection";
+      break;
+    case manta::MantaStatusCode::kUnsupportedLanguage:
+      message += u"Unsupported Language";
+      break;
+    case manta::MantaStatusCode::kBlockedOutputs:
+      message += u"Blocked Outputs";
+      break;
+    case manta::MantaStatusCode::kRestrictedCountry:
+      message += u"Restricted Country";
+      break;
+    case manta::MantaStatusCode::kNoIdentityManager:
+      message += u"No Identity Manager";
+      break;
+    case manta::MantaStatusCode::kPerUserQuotaExceeded:
+      message += u"Per-User Quota Exceeded";
+      break;
+  }
+  return message;
+}
+}  // namespace
+
 SparkyManagerImpl::SparkyManagerImpl(Profile* profile,
                                      manta::MantaService* manta_service)
     : profile_(profile),
@@ -105,11 +153,12 @@ void SparkyManagerImpl::AnswerQuestionRepeating(
     bool current_panel_content,
     MahiAnswerQuestionCallbackRepeating callback) {
   if (current_panel_content) {
-    // Add the current question to the dialog.
-    dialog_turns_.emplace_back(base::UTF16ToUTF8(question), manta::Role::kUser);
+    // Creates a new turn for the current question.
+    manta::proto::Turn new_turn = manta::CreateTurn(
+        base::UTF16ToUTF8(question), manta::proto::Role::ROLE_USER);
 
     auto sparky_context = std::make_unique<manta::SparkyContext>(
-        dialog_turns_, base::UTF16ToUTF8(current_panel_content_->page_content));
+        new_turn, base::UTF16ToUTF8(current_panel_content_->page_content));
     sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
     sparky_context->page_url = current_page_info_->url.spec();
     sparky_context->files = sparky_provider_->GetFilesSummary();
@@ -146,18 +195,16 @@ void SparkyManagerImpl::OnContextMenuClicked(
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.
-      ui_controller_.OpenMahiPanel(
-          context_menu_request->display_id,
-          context_menu_request->mahi_menu_bounds.has_value()
-              ? context_menu_request->mahi_menu_bounds.value()
-              : gfx::Rect());
+      OpenMahiPanel(context_menu_request->display_id,
+                    context_menu_request->mahi_menu_bounds.has_value()
+                        ? context_menu_request->mahi_menu_bounds.value()
+                        : gfx::Rect());
       return;
     case MahiContextMenuActionType::kQA:
-      ui_controller_.OpenMahiPanel(
-          context_menu_request->display_id,
-          context_menu_request->mahi_menu_bounds.has_value()
-              ? context_menu_request->mahi_menu_bounds.value()
-              : gfx::Rect());
+      OpenMahiPanel(context_menu_request->display_id,
+                    context_menu_request->mahi_menu_bounds.has_value()
+                        ? context_menu_request->mahi_menu_bounds.value()
+                        : gfx::Rect());
 
       // Ask question.
       if (!context_menu_request->question) {
@@ -176,6 +223,19 @@ void SparkyManagerImpl::OnContextMenuClicked(
     case MahiContextMenuActionType::kNone:
       return;
   }
+}
+
+void SparkyManagerImpl::OpenFeedbackDialog() {}
+
+void SparkyManagerImpl::OpenMahiPanel(int64_t display_id,
+                                      const gfx::Rect& mahi_menu_bounds) {
+  // When receiving a new open panel request, we treat it as a new session and
+  // clear the previous conversations.
+  // TODO(b:365674359) Ideally, we should clear dialog on sparky panel close
+  // instead sparky panel open.
+  sparky_provider_->ClearDialog();
+
+  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds);
 }
 
 bool SparkyManagerImpl::IsEnabled() {
@@ -223,37 +283,36 @@ void SparkyManagerImpl::RequestProviderWithQuestion(
 void SparkyManagerImpl::OnSparkyProviderQAResponse(
     MahiAnswerQuestionCallbackRepeating callback,
     manta::MantaStatus status,
-    manta::DialogTurn* latest_turn) {
+    manta::proto::Turn* latest_turn) {
   // Currently the history of dialogs will only refresh if the user closes the
   // UI and then reopens it again.
   // TODO (b/352651459): Add a refresh button to reset the dialog.
 
-  if (status.status_code != manta::MantaStatusCode::kOk) {
+  if (status.status_code != manta::MantaStatusCode::kOk && latest_turn) {
     latest_response_status_ = MahiResponseStatus::kUnknownError;
-    std::move(callback).Run(std::nullopt, latest_response_status_);
+    // Instead of relying the mahi's `MahiUiController::HandleError()`, displays
+    // customized message in the dialog.
+    std::move(callback).Run(
+        GenerateErrorMessage(latest_turn->message(), status.status_code),
+        MahiResponseStatus::kSuccess);
     return;
   }
 
   if (latest_turn) {
     latest_response_status_ = MahiResponseStatus::kSuccess;
-    callback.Run(base::UTF8ToUTF16(latest_turn->message),
+    callback.Run(base::UTF8ToUTF16(latest_turn->message()),
                  latest_response_status_);
 
-    dialog_turns_.emplace_back(std::move(*latest_turn));
-
     auto sparky_context = std::make_unique<manta::SparkyContext>(
-        dialog_turns_, base::UTF16ToUTF8(current_panel_content_->page_content));
+        *latest_turn, base::UTF16ToUTF8(current_panel_content_->page_content));
     sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
     sparky_context->page_url = current_page_info_->url.spec();
     sparky_context->files = sparky_provider_->GetFilesSummary();
     CheckTurnLimit();
 
-    // If the latest action is not the final action from the server, then an
-    // additional request is made to the server. The last action must be of type
-    // kAllDone to prevent an additional call.
-    if (!latest_turn->actions.empty() &&
-        (latest_turn->actions.back().type != manta::ActionType::kAllDone ||
-         !latest_turn->actions.back().all_done)) {
+    // If additional call is expected, then an additional request is made to the
+    // server.
+    if (sparky_provider_->is_additional_call_expected()) {
       timer_->Start(
           FROM_HERE, kWaitBeforeAdditionalCall,
           base::BindOnce(&SparkyManagerImpl::RequestProviderWithQuestion,
@@ -263,33 +322,29 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
 
   } else {
     latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
-    std::move(callback).Run(std::nullopt, latest_response_status_);
+    // Instead of relying the mahi's `MahiUiController::HandleError()`, displays
+    // customized message in the dialog.
+    std::move(callback).Run(
+        GenerateErrorMessage("Sparky Manager Error: can't find output data.",
+                             status.status_code),
+        MahiResponseStatus::kSuccess);
   }
 }
 
 void SparkyManagerImpl::CheckTurnLimit() {
-  // If the size of the dialog does not exceed the turn limit then return.
-  if (dialog_turns_.size() < kMaxConsecutiveTurns) {
+  // If the size of consecutive assistant turns at the end does not exceed the
+  // turn limit then return.
+  if (sparky_provider_->consecutive_assistant_turn_count() <
+      kMaxConsecutiveTurns) {
     return;
   }
-  // If the last action is already set to not made an additional server call
-  // then return.
-  if (dialog_turns_.back().actions.empty() ||
-      dialog_turns_.back().actions.back().type != manta::ActionType::kAllDone ||
-      dialog_turns_.back().actions.back().all_done == true) {
+  // If additional call is already unexpected then return.
+  if (!sparky_provider_->is_additional_call_expected()) {
     return;
-  }
-  // Iterate through the last n turns if any of them are from the user then
-  // return as the turn limit has not yet been reached.
-  for (int position = 1; position < kMaxConsecutiveTurns; ++position) {
-    auto turn = dialog_turns_.at(dialog_turns_.size() - kMaxConsecutiveTurns);
-    if (turn.role == manta::Role::kUser) {
-      return;
-    }
   }
   // Assign the last action as all done to prevent any additional calls to the
   // server.
-  dialog_turns_.back().actions.back().all_done = true;
+  sparky_provider_->MarkLastActionAllDone();
 }
 
 void SparkyManagerImpl::OnGetPageContentForQA(
@@ -297,19 +352,22 @@ void SparkyManagerImpl::OnGetPageContentForQA(
     MahiAnswerQuestionCallbackRepeating callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
   if (!mahi_content_ptr) {
-    std::move(callback).Run(std::nullopt,
-                            MahiResponseStatus::kContentExtractionError);
+    // Instead of relying the mahi's `MahiUiController::HandleError()`, displays
+    // customized message in the dialog.
+    std::move(callback).Run(u"Sparky Manager Error: content extraction error.",
+                            MahiResponseStatus::kSuccess);
     return;
   }
 
   // Assign current panel content and clear the current panel QA
   current_panel_content_ = std::move(mahi_content_ptr);
 
-  // Add the current question to the dialog.
-  dialog_turns_.emplace_back(base::UTF16ToUTF8(question), manta::Role::kUser);
+  // Creates a new turn for the current question.
+  manta::proto::Turn new_turn = manta::CreateTurn(
+      base::UTF16ToUTF8(question), manta::proto::Role::ROLE_USER);
 
   auto sparky_context = std::make_unique<manta::SparkyContext>(
-      dialog_turns_, base::UTF16ToUTF8(current_panel_content_->page_content));
+      new_turn, base::UTF16ToUTF8(current_panel_content_->page_content));
   sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
   sparky_context->page_url = current_page_info_->url.spec();
   sparky_context->files = sparky_provider_->GetFilesSummary();
@@ -328,7 +386,5 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
 bool SparkyManagerImpl::AllowRepeatingAnswers() {
   return true;
 }
-
-void SparkyManagerImpl::OpenFeedbackDialog() {}
 
 }  // namespace ash

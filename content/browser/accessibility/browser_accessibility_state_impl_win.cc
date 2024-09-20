@@ -168,6 +168,7 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
+  void OnUiaProviderRequested(bool uia_provider_enabled) override;
 
  private:
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
@@ -294,6 +295,12 @@ BrowserAccessibilityStateImplWin::GetProductStrings() {
   }
   return {product_components[0], product_components[1],
           CHECK_DEREF(content_client.browser()).GetUserAgent()};
+}
+
+void BrowserAccessibilityStateImplWin::OnUiaProviderRequested(
+    bool uia_provider_enabled) {
+  CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
+      .OnUiaProviderRequested(uia_provider_enabled);
 }
 
 // static

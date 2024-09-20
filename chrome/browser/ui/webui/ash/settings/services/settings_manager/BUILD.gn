@@ -55,6 +55,8 @@ source_set("unit_tests") {
 
   sources = [ "os_settings_manager_unittest.cc" ]
 
+  data = [ "//tools/metrics/histograms/metadata/chromeos_settings/enums.xml" ]
+
   deps = [
     ":settings_manager",
     "//ash/components/arc",

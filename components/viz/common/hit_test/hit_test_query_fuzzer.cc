@@ -74,7 +74,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t num_bytes) {
   AddHitTestRegion(&fuzz, &regions, &frame_sink_ids);
 
   // Create the HitTestQuery and send hit-test data.
-  viz::HitTestQuery query;
+  viz::HitTestQuery query{std::nullopt};
   query.OnAggregatedHitTestRegionListUpdated(regions);
 
   for (float x = 0; x < 1000.; x += 10) {

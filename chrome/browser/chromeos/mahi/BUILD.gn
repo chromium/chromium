@@ -25,6 +25,7 @@ static_library("mahi") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser/content_extraction",
     "//chrome/browser/favicon",
     "//chrome/browser/screen_ai:screen_ai_service_router_factory",
     "//chromeos/components/mahi/public/cpp",

@@ -126,9 +126,13 @@ class CaptureModeBehavior {
   // settings restoration or not.
   virtual void OnDemoToolsSettingsChanged();
 
-  // Notifies the behavior that a region was selected. Returns true if the
-  // behavior handled the event, false otherwise.
-  virtual bool OnRegionSelected();
+  // Notifies the behavior that a region was selected. By default this will do
+  // nothing.
+  virtual void OnRegionSelected();
+
+  // Called when the `Enter` key is pressed. By default this will perform image
+  // capture.
+  virtual void OnEnterKeyPressed();
 
  protected:
   CaptureModeBehavior(const CaptureModeSessionConfigs& configs,

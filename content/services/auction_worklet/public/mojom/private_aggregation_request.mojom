@@ -16,6 +16,12 @@ enum BaseValue {
   kScriptRunTime = 2,
   kSignalsFetchTime = 3,
   kBidRejectReason = 4,
+  // Values after this point require the feature
+  // kPrivateAggregationApiProtectedAudienceAdditionalExtensions to be on.
+  kParticipatingInterestGroupCount = 5,
+  kAverageCodeFetchTime = 6,
+  kPercentScriptsTimeout = 7,
+  kPercentInterestGroupsCumulativeTimeout = 8,
 };
 
 // Bucket's offset to add/subtract to the auction result value. Offset's `value`

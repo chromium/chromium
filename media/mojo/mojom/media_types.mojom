@@ -268,11 +268,33 @@ struct DecryptConfig {
   EncryptionPattern? encryption_pattern;
 };
 
+union DecoderBufferSideDataNextConfig {
+  AudioDecoderConfig next_audio_config;
+  VideoDecoderConfig next_video_config;
+};
+
 // This defines a mojo transport format for media::DecoderBufferSideData.
 struct DecoderBufferSideData {
+  // VP9 specific information.
   array<uint32> spatial_layers;
   array<uint8> alpha_data;
+
+  // Secure buffer handle corresponding to the decrypted contents of the
+  // associated DecoderBuffer. A non-zero value indicates this was set.
+  //
+  // Required by some hardware content protection mechanisms to ensure the
+  // decrypted buffer never leaves secure memory. When set, this DecoderBuffer
+  // generally carries the partially (headers in the clear) encrypted payload;
   uint64 secure_handle;
+
+  // These fields indicate the amount of data to discard after decoding.
+  mojo_base.mojom.TimeDelta front_discard;
+  mojo_base.mojom.TimeDelta back_discard;
+
+  // If the buffer is an end of stream buffer, presence of `next_config`
+  // indicates that the EOS is for a config change. Decoders may make more
+  // optimal flushing decisions using this information.
+  DecoderBufferSideDataNextConfig? next_config;
 };
 
 // This defines a mojo transport format for media::DecoderBuffer.
@@ -294,10 +316,6 @@ struct DecoderBuffer {
 
   // DecryptConfig for a encrypted buffer. NULL if the buffer is not encrypted.
   DecryptConfig? decrypt_config;
-
-  // These fields indicate the amount of data to discard after decoding.
-  mojo_base.mojom.TimeDelta front_discard;
-  mojo_base.mojom.TimeDelta back_discard;
 
   DecoderBufferSideData? side_data;
 };
@@ -472,10 +490,9 @@ struct GpuMemoryBufferSharedImageVideoFrameData {
   uint32 texture_target;
 };
 
-// This defines video frame data stored in texture mailboxes.
+// This defines video frame data stored in texture mailbox.
 struct MailboxVideoFrameData {
-  // Size must be kept in sync with media::VideoFrame::kMaxPlanes.
-  array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
+  gpu.mojom.MailboxHolder mailbox_holder;
   gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
 };
 

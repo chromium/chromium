@@ -34,6 +34,7 @@ android_library("java") {
     "//components/bookmarks/common/android:bookmarks_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/util/android:java",
     "//components/commerce/core/android:core_java",
@@ -49,16 +50,18 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color/price_tracking_ineligible_button_background_color.xml",
+    "java/res/color/price_tracking_ineligible_button_foreground_color.xml",
     "java/res/drawable/ic_open_in_new_20dp.xml",
     "java/res/drawable/price_insights_sheet_background.xml",
     "java/res/drawable/price_insights_sheet_bottom_corner_background.xml",
+    "java/res/drawable/price_insights_sheet_content_background.xml",
     "java/res/drawable/price_insights_sheet_price_tracking_button_disabled.xml",
     "java/res/drawable/price_insights_sheet_price_tracking_button_enabled.xml",
     "java/res/drawable/price_insights_sheet_top_corner_background.xml",
     "java/res/layout/price_history_layout.xml",
     "java/res/layout/price_insights_container.xml",
     "java/res/layout/price_tracking_layout.xml",
-    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
 }
@@ -77,6 +80,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/commerce/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
@@ -84,6 +88,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/messages/android:java",
     "//components/bookmarks/common/android:bookmarks_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/commerce/core/android:core_java",
     "//components/webapps/browser/android:webapps_jni_headers_java",
     "//content/public/android:content_full_java",

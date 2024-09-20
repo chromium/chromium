@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -29,6 +30,7 @@ namespace manta {
 namespace {
 
 constexpr char kOauthConsumerName[] = "manta_mahi";
+constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 const net::NetworkTrafficAnnotationTag kMahiTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("help_me_read_request",
@@ -72,6 +74,18 @@ const net::NetworkTrafficAnnotationTag kMahiTrafficAnnotationTag =
             }
           }
         })");
+
+constexpr char kUsedHistogram[] = "ChromeOS.Mahi.Used";
+
+// Each feature within Mahi, logged with `kUsedHistogram`.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MahiFeature {
+  kSummary = 0,
+  kQA = 1,
+  kMaxValue = kQA,
+};
 
 void OnServerResponseOrErrorReceived(
     MantaGenericCallback callback,
@@ -151,7 +165,10 @@ void MahiProvider::Summarize(const std::string& input,
       kOauthConsumerName, kMahiTrafficAnnotationTag, request,
       MantaMetricType::kMahiSummary,
       base::BindOnce(&OnServerResponseOrErrorReceived,
-                     std::move(done_callback)));
+                     std::move(done_callback)),
+      kTimeout);
+
+  base::UmaHistogramEnumeration(kUsedHistogram, MahiFeature::kSummary);
 }
 
 void MahiProvider::Outline(const std::string& input,
@@ -207,7 +224,10 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
       kOauthConsumerName, kMahiTrafficAnnotationTag, request,
       MantaMetricType::kMahiQA,
       base::BindOnce(&OnServerResponseOrErrorReceived,
-                     std::move(done_callback)));
+                     std::move(done_callback)),
+      kTimeout);
+
+  base::UmaHistogramEnumeration(kUsedHistogram, MahiFeature::kQA);
 }
 
 }  // namespace manta

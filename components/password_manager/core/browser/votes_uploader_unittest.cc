@@ -699,7 +699,7 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
       1);
 }
 
-// Tests that a negeative vote is sent if the username candidate field
+// Tests that a negative vote is sent if the username candidate field
 // value contained whitespaces.
 TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
   base::test::ScopedFeatureList feature_list;
@@ -748,6 +748,30 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
                                  /*is_password_manager_upload=*/true));
   votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
                                     FieldType::PASSWORD, std::string());
+}
+
+// Tests that a negative vote is sent if the username candidate field
+// value in forgot password form data contained whitespaces.
+TEST_F(VotesUploaderTest, UploadNotSingleUsernameForgotPasswordForWhitespaces) {
+  VotesUploader votes_uploader(&client_, false);
+  votes_uploader.AddForgotPasswordVoteData(SingleUsernameVoteData(
+      kSingleUsernameRendererId, /*username_value=*/u"some search query",
+      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
+      PasswordFormHadMatchingUsername(false)));
+  votes_uploader.CalculateUsernamePromptEditState(
+      /*saved_username=*/u"", /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
+
+  // Upload on the username form.
+  auto upload_contents_matcher = IsPasswordUpload(
+      FormSignatureIs(kSingleUsernameFormSignature),
+      FieldsContain(SingleUsernameUploadField(FieldType::NOT_USERNAME,
+                                              Field::STRONG_FORGOT_PASSWORD)));
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
+              StartUploadRequest(upload_contents_matcher, _,
+                                 /*is_password_manager_upload=*/true));
+
+  votes_uploader.MaybeSendSingleUsernameVotes();
 }
 
 // Verifies that SINGLE_USERNAME vote and NOT_EDITED_IN_PROMPT vote type

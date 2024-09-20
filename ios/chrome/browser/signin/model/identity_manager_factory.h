@@ -20,10 +20,6 @@ class IdentityManagerFactory : public ProfileKeyedServiceFactoryIOS {
   // Returns the IdentityManager instance associated with `profile`.
   static signin::IdentityManager* GetForProfile(ProfileIOS* profile);
 
-  // Deprecated, use GetForProfile().
-  static signin::IdentityManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
   // Returns an instance of the IdentityManagerFactory singleton.
   static IdentityManagerFactory* GetInstance();
 

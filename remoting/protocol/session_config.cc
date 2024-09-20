@@ -212,8 +212,7 @@ bool CandidateSessionConfig::IsSupported(const SessionConfig& config) const {
       return webrtc_supported();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::unique_ptr<CandidateSessionConfig> CandidateSessionConfig::Clone() const {

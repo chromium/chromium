@@ -4,6 +4,7 @@
 
 #include "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
@@ -17,6 +18,7 @@
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 
@@ -25,10 +27,14 @@ namespace sharing_message {
 SharingIOSPushSender::SharingIOSPushSender(
     SharingMessageBridge* sharing_message_bridge,
     const syncer::DeviceInfoTracker* device_info_tracker,
-    const syncer::LocalDeviceInfoProvider* local_device_info_provider)
+    const syncer::LocalDeviceInfoProvider* local_device_info_provider,
+    const syncer::SyncService* sync_service)
     : sharing_message_bridge_(sharing_message_bridge),
       device_info_tracker_(device_info_tracker),
-      local_device_info_provider_(local_device_info_provider) {}
+      local_device_info_provider_(local_device_info_provider),
+      sync_service_(sync_service) {
+  CHECK(sync_service_);
+}
 
 SharingIOSPushSender::~SharingIOSPushSender() = default;
 
@@ -41,12 +47,16 @@ void SharingIOSPushSender::DoSendUnencryptedMessageToDevice(
   const syncer::DeviceInfo* target_device_info =
       device_info_tracker_->GetDeviceInfo(device.guid());
 
+  sharing_message::MessageType message_type =
+      SharingPayloadCaseToMessageType(message.payload_case());
+
   // Double check that device info is not null since the list of devices could
   // have been updated.
   if (!target_device_info) {
-    std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
-                            /*message_id=*/std::nullopt,
-                            SharingChannelType::kIosPush);
+    std::move(callback).Run(
+        SharingSendMessageResult::kDeviceNotFound,
+        /*message_id=*/SharingMessageTypeToString(message_type),
+        SharingChannelType::kIosPush);
     return;
   }
 
@@ -54,20 +64,19 @@ void SharingIOSPushSender::DoSendUnencryptedMessageToDevice(
       target_device_info->sharing_info();
   if (!sharing_info.has_value() ||
       sharing_info.value().chime_representative_target_id.empty()) {
-    std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
-                            /*message_id=*/std::nullopt,
-                            SharingChannelType::kIosPush);
+    std::move(callback).Run(
+        SharingSendMessageResult::kDeviceNotFound,
+        /*message_id=*/SharingMessageTypeToString(message_type),
+        SharingChannelType::kIosPush);
     return;
   }
 
-  sharing_message::MessageType message_type =
-      SharingPayloadCaseToMessageType(message.payload_case());
-
   if (message_type == sharing_message::SEND_TAB_TO_SELF_PUSH_NOTIFICATION &&
       !CanSendSendTabPushMessage(*target_device_info)) {
-    std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                            /*message_id=*/std::nullopt,
-                            SharingChannelType::kIosPush);
+    std::move(callback).Run(
+        SharingSendMessageResult::kInternalError,
+        /*message_id=*/SharingMessageTypeToString(message_type),
+        SharingChannelType::kIosPush);
     return;
   }
 
@@ -90,16 +99,19 @@ void SharingIOSPushSender::DoSendUnencryptedMessageToDevice(
       std::move(specifics),
       base::BindOnce(&SharingIOSPushSender::OnMessageSent,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     /*message_id=*/std::string(),
+                     /*message_id=*/SharingMessageTypeToString(message_type),
                      SharingChannelType::kIosPush));
 }
 
 bool SharingIOSPushSender::CanSendSendTabPushMessage(
     const syncer::DeviceInfo& target_device_info) {
+  bool custom_passphrase_enabled =
+      sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
   return target_device_info.send_tab_to_self_receiving_enabled() &&
          target_device_info.send_tab_to_self_receiving_type() ==
              sync_pb::SyncEnums::
-                 SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION;
+                 SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION &&
+         !custom_passphrase_enabled;
 }
 
 void SharingIOSPushSender::OnMessageSent(

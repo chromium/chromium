@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/transition_pseudo_element_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -30,6 +31,26 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   using PseudoElementVector = HeapVector<Member<PseudoElement>, 2>;
   PseudoElementVector GetPseudoElements() const;
 
+  using ColumnScrollMarkersVector =
+      HeapVector<Member<ScrollMarkerPseudoElement>>;
+  const ColumnScrollMarkersVector* GetColumnScrollMarkers() const {
+    return column_scroll_markers_;
+  }
+  void AddColumnScrollMarker(ScrollMarkerPseudoElement& column_scroll_marker) {
+    if (!column_scroll_markers_) {
+      column_scroll_markers_ =
+          MakeGarbageCollected<ColumnScrollMarkersVector>();
+    }
+    DCHECK(column_scroll_markers_->Find(column_scroll_marker) == kNotFound);
+    column_scroll_markers_->push_back(column_scroll_marker);
+  }
+  void ClearColumnScrollMarkers() {
+    if (!column_scroll_markers_) {
+      return;
+    }
+    column_scroll_markers_->clear();
+  }
+
   bool HasPseudoElements() const;
   void ClearPseudoElements();
   void Trace(Visitor* visitor) const override {
@@ -44,6 +65,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_scroll_prev_button_);
     visitor->Trace(backdrop_);
     visitor->Trace(transition_data_);
+    visitor->Trace(column_scroll_markers_);
     ElementRareDataField::Trace(visitor);
   }
 
@@ -60,6 +82,12 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> backdrop_;
 
   Member<TransitionPseudoElementData> transition_data_;
+
+  // Column scroll markers are scroll marker pseudo elements
+  // created once per column (fragmentainer) with style specified with
+  // ::column::scroll-marker. They live here as array, since there is no Element
+  // for fragment, and they should appear somewhere for focus and a11y.
+  Member<ColumnScrollMarkersVector> column_scroll_markers_;
 };
 
 inline bool PseudoElementData::HasPseudoElements() const {
@@ -67,7 +95,8 @@ inline bool PseudoElementData::HasPseudoElements() const {
          backdrop_ || generated_first_letter_ || transition_data_ ||
          generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
-         generated_scroll_next_button_ || generated_scroll_prev_button_;
+         generated_scroll_next_button_ || generated_scroll_prev_button_ ||
+         (column_scroll_markers_ && !column_scroll_markers_->empty());
 }
 
 inline void PseudoElementData::ClearPseudoElements() {
@@ -81,6 +110,9 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdScrollMarker, nullptr);
   SetPseudoElement(kPseudoIdScrollNextButton, nullptr);
   SetPseudoElement(kPseudoIdScrollPrevButton, nullptr);
+  if (column_scroll_markers_) {
+    column_scroll_markers_->clear();
+  }
   if (transition_data_) {
     transition_data_->ClearPseudoElements();
     transition_data_ = nullptr;
@@ -225,6 +257,9 @@ PseudoElementData::GetPseudoElements() const {
   }
   if (generated_scroll_prev_button_) {
     result.push_back(generated_scroll_prev_button_);
+  }
+  if (column_scroll_markers_) {
+    result.AppendVector(*column_scroll_markers_);
   }
   return result;
 }

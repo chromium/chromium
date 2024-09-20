@@ -203,8 +203,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, LoadURL) {
               base::SysUTF8ToNSString(delegate.pendingURLToLoad.spec()));
 }
 
-// Tests that when modal is dismissed, mediator reset the callback passed to the
-// delegate and informs that infobar is not presenting.
+// Tests that when modal is dismissed, mediator resets the callback passed to
+// the delegate and informs that infobar is not presenting.
 TEST_F(SaveCardInfobarModalOverlayMediatorTest, OnInfoBarDismissed) {
   EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   EXPECT_CALL(*delegate_, SetInfobarIsPresenting(NO));

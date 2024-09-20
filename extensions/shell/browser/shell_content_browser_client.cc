@@ -278,7 +278,7 @@ ShellContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
         content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
     return extensions::CreateExtensionNavigationURLLoaderFactory(
         web_contents->GetBrowserContext(),
-        !!extensions::WebViewGuest::FromWebContents(web_contents));
+        !!extensions::WebViewGuest::FromFrameTreeNodeId(frame_tree_node_id));
   }
   return {};
 }

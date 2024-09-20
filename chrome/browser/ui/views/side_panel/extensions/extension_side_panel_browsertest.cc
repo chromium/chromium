@@ -4,7 +4,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
@@ -38,7 +37,6 @@
 #include "extensions/browser/test_image_loader.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/actions/actions.h"
@@ -153,12 +151,6 @@ class ExtensionSidePanelRegistryWaiter : public SidePanelRegistryObserver {
 };
 
 class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
- public:
-  ExtensionSidePanelBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {extensions_features::kExtensionSidePanelIntegration}, {});
-  }
-
  protected:
   int GetCurrentTabId() {
     return ExtensionTabUtil::GetTabId(
@@ -352,9 +344,6 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   SidePanelCoordinator* side_panel_coordinator(Browser* browser) {
     return browser->GetFeatures().side_panel_coordinator();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that only extensions with side panel content will have a SidePanelEntry
@@ -2140,39 +2129,6 @@ IN_PROC_BROWSER_TEST_F(
 // ExtensionViewHost for both global and contextual extension entries. One
 // example of this is having a link in the page that the user can open in a new
 // tab.
-
-class ExtensionSidePanelDisabledBrowserTest : public ExtensionBrowserTest {
- public:
-  ExtensionSidePanelDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        extensions_features::kExtensionSidePanelIntegration);
-  }
-
- protected:
-  SidePanelRegistry* global_registry() {
-    return browser()
-        ->GetFeatures()
-        .side_panel_coordinator()
-        ->GetWindowRegistry();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that an extension's SidePanelEntry is not registered if the
-// `kExtensionSidePanelIntegration` feature flag is not enabled.
-IN_PROC_BROWSER_TEST_F(ExtensionSidePanelDisabledBrowserTest,
-                       NoSidePanelEntry) {
-  // Load an extension and verify that it does not have a registered
-  // SidePanelEntry as the feature is disabled.
-  scoped_refptr<const extensions::Extension> extension = LoadExtension(
-      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
-  ASSERT_TRUE(extension);
-  SidePanelEntry::Key extension_key = GetKey(extension->id());
-
-  EXPECT_FALSE(global_registry()->GetEntryForKey(extension_key));
-}
 
 }  // namespace
 }  // namespace extensions

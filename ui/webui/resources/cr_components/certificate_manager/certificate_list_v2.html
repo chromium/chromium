@@ -28,7 +28,11 @@
         <!-- TODO(crbug.com/40928765): localize -->
         Import
       </cr-button>
-      <!-- TODO(crbug.com/40928765): button for "import and bind" -->
+      <cr-button hidden$="[[!showImportAndBind]]" id="importAndBindCert"
+          on-click="onImportAndBindCertClick_">
+        <!-- TODO(crbug.com/40928765): localize -->
+        Import and bind
+      </cr-button>
       <cr-button hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
           aria-label="[[i18n('certificateManagerV2ExportButtonAriaLabel', headerText)]]"
           id="exportCerts" on-click="onExportCertsClick_">
@@ -45,7 +49,9 @@
       <certificate-entry-v2
           cert-source="[[certSource]]"
           display-name="[[item.displayName]]"
-          sha256hash-hex="[[item.sha256hashHex]]">
+          sha256hash-hex="[[item.sha256hashHex]]"
+          is-deletable="[[item.isDeletable]]"
+          on-delete-result="onDeleteResult_">
       </certificate-entry-v2>
     </template>
     <div id="noCertsRow" class="cr-row no-certs" hidden="[[hasCerts_]]">

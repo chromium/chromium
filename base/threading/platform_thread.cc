@@ -6,7 +6,6 @@
 #include "base/threading/thread_id_name_manager.h"
 
 #include "base/task/current_thread.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/scheduler.h"
@@ -16,8 +15,7 @@ namespace base {
 
 namespace {
 
-ABSL_CONST_INIT thread_local ThreadType current_thread_type =
-    ThreadType::kDefault;
+constinit thread_local ThreadType current_thread_type = ThreadType::kDefault;
 
 }  // namespace
 

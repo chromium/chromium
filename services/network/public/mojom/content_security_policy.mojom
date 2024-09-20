@@ -80,7 +80,6 @@ struct CSPSourceList {
   // on the source list itself.
   bool allow_self = false;
   bool allow_star = false;
-  bool allow_response_redirects = false;
   bool allow_inline = false;
   bool allow_inline_speculation_rules = false;
   bool allow_eval = false;
@@ -107,7 +106,6 @@ enum CSPDirectiveName {
   ImgSrc,
   ManifestSrc,
   MediaSrc,
-  NavigateTo,
   ObjectSrc,
   ReportTo,
   ReportURI,

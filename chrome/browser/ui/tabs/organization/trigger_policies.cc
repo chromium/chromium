@@ -132,6 +132,10 @@ void TargetFrequencyTriggerPolicy::OnTriggerFailed() {
   backoff_level_provider_->Increment();
 }
 
+bool NeverTriggerPolicy::ShouldTrigger(float score) {
+  return false;
+}
+
 bool DemoTriggerPolicy::ShouldTrigger(float score) {
   return true;
 }

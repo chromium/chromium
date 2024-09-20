@@ -219,7 +219,7 @@ SyncTest::~SyncTest() = default;
 void SyncTest::SetUp() {
 #if BUILDFLAG(IS_ANDROID)
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    sync_test_utils_android::SetUpAuthForTesting();
+    sync_test_utils_android::SetUpFakeAuthForTesting();
   }
 #endif
 
@@ -269,7 +269,7 @@ void SyncTest::PostRunTestOnMainThread() {
 
 #if BUILDFLAG(IS_ANDROID)
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    sync_test_utils_android::TearDownAuthForTesting();
+    sync_test_utils_android::TearDownFakeAuthForTesting();
   }
 #endif
 }

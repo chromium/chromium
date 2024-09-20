@@ -9,10 +9,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -377,7 +375,14 @@ TEST_F(DialMediaSinkServiceImplTest, FetchDialAppInfoWithDiscoveryOnlySink) {
       StartMonitoringAvailableSinksForApp("YouTube");
 }
 
-TEST_F(DialMediaSinkServiceImplTest, DiscoveryOnUserGesture) {
+class DialMediaSinkServiceImplStartDiscoveryTest
+    : public DialMediaSinkServiceImplTest {
+  // Override this function so that `media_sink_service_` isn't initialized for
+  // tests yet.
+  void SetUp() override {}
+};
+
+TEST_F(DialMediaSinkServiceImplStartDiscoveryTest, DiscoveryOnUserGesture) {
   media_sink_service_->Initialize();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(dial_discovery_started());

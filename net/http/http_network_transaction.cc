@@ -775,18 +775,15 @@ void HttpNetworkTransaction::OnQuicBroken() {
 }
 
 void HttpNetworkTransaction::OnSwitchesToHttpStreamPool(
-    HttpStreamKey stream_key,
-    const AlternativeServiceInfo& alternative_service_info,
-    quic::ParsedQuicVersion quic_version) {
+    HttpStreamPoolSwitchingInfo switching_info) {
   CHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
   CHECK(stream_request_);
   stream_request_.reset();
 
   stream_request_ = session_->http_stream_pool()->RequestStream(
-      this, stream_key, priority_,
+      this, std::move(switching_info), priority_,
       /*allowed_bad_certs=*/observed_bad_certs_, enable_ip_based_pooling_,
-      enable_alternative_services_, alternative_service_info, quic_version,
-      net_log_);
+      enable_alternative_services_, net_log_);
   CHECK(!stream_request_->completed());
   // No IO completion yet.
 }
@@ -954,6 +951,8 @@ int HttpNetworkTransaction::DoCreateStream() {
   // they can also be disabled when retrying after a QUIC error).
   if (!enable_ip_based_pooling_)
     DCHECK(!enable_alternative_services_);
+
+  create_stream_start_time_ = base::TimeTicks::Now();
   if (ForWebSocketHandshake()) {
     stream_request_ =
         session_->http_stream_factory()->RequestWebSocketHandshakeStream(
@@ -974,6 +973,15 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
   if (result == OK) {
     next_state_ = STATE_CONNECTED_CALLBACK;
     DCHECK(stream_.get());
+    CHECK(!create_stream_start_time_.is_null());
+    base::UmaHistogramTimes(
+        base::StrCat(
+            {"Net.NetworkTransaction.Create",
+             (ForWebSocketHandshake() ? "WebSocketStreamTime."
+                                      : "HttpStreamTime."),
+             (IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ""),
+             NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::TimeTicks::Now() - create_stream_start_time_);
   } else if (result == ERR_HTTP_1_1_REQUIRED ||
              result == ERR_PROXY_HTTP_1_1_REQUIRED) {
     return HandleHttp11Required(result);

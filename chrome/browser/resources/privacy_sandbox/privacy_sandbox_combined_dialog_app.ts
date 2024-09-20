@@ -9,7 +9,6 @@ import './strings.m.js';
 import './shared_style.css.js';
 import './privacy_sandbox_dialog_consent_step.js';
 import './privacy_sandbox_dialog_notice_step.js';
-import './privacy_sandbox_privacy_policy_step.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -24,7 +23,6 @@ export enum PrivacySandboxCombinedDialogStep {
   CONSENT = 'consent',
   SAVING = 'saving',
   NOTICE = 'notice',
-  PRIVACYPOLICY = 'privacy-policy',
 }
 
 export interface PrivacySandboxCombinedDialogAppElement {
@@ -95,10 +93,6 @@ export class PrivacySandboxCombinedDialogAppElement extends
               () => this.promptActionOccurred(
                   PrivacySandboxPromptAction.NOTICE_SHOWN));
         });
-  }
-
-  private openPrivacyPolicyPage_() {
-    this.navigateToStep_(PrivacySandboxCombinedDialogStep.PRIVACYPOLICY);
   }
 
   private navigateToStep_(step: PrivacySandboxCombinedDialogStep):

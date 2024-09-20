@@ -6,6 +6,7 @@
 #define COMPONENTS_SENSITIVE_CONTENT_SENSITIVE_CONTENT_MANAGER_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -35,8 +36,9 @@ class SensitiveContentManager final
  private:
   // Notifies the `SensitiveContentClient` if the content sensitivity has
   // changed (i.e. the current content sensitivity is different than
-  // `last_content_was_sensitive_`).
-  void UpdateContentSensitivity();
+  // `last_content_was_sensitive_`). Returns true if the content sensitivity has
+  // changed.
+  bool UpdateContentSensitivity();
 
   // autofill::AutofillManager::Observer:
 
@@ -66,8 +68,17 @@ class SensitiveContentManager final
   // sure calls to the client are made only when the content sensitivity
   // changes, and not when it stays the same.
   bool last_content_was_sensitive_ = false;
+  // Used to record the time elapsed between when the content became sensitive
+  // and when the content became not sensitive again.
+  std::optional<base::TimeTicks> content_became_sensitive_timestamp_;
+  // Used to record the latency between when a form is first seen or last
+  // modified, until the content is marked as sensitive.
+  std::map<autofill::FormGlobalId, base::TimeTicks>
+      latency_until_sensitive_timer_;
+
   const raw_ref<SensitiveContentClient> client_;
   std::set<autofill::FieldGlobalId> sensitive_fields_;
+
   autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
       this};
 };

@@ -69,7 +69,11 @@ by a child template that "extends" this file.
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
+    {% set is_desktop_android = is_desktop_android|default(0) %}
+    {% if is_desktop_android == "true" %}
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    {% endif %}
     <!-- TODO(crbug.com/40259231): Remove this tools:ignore attribute once it's no longer necessary. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" tools:ignore="SystemPermissionTypo" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" tools:ignore="SystemPermissionTypo" />
@@ -908,7 +912,7 @@ by a child template that "extends" this file.
 
         <!-- Quick Action Search widget -->
         <receiver
-            android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
+            android:name="org.chromium.chrome.browser.shortcuts_widget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
             android:label="@string/quick_action_search_widget_title"
             android:exported="true">
             <intent-filter>
@@ -920,7 +924,7 @@ by a child template that "extends" this file.
         </receiver>
 
         <receiver
-        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
+        android:name="org.chromium.chrome.browser.shortcuts_widget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
         android:label="@string/dino_widget_text"
             android:exported="true">
             <intent-filter>
@@ -1136,6 +1140,9 @@ by a child template that "extends" this file.
             android:exported="false"/>
 
         <service android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService"
+            {% if is_desktop_android == "true" %}
+            android:foregroundServiceType="camera|microphone"
+            {% endif %}
             android:exported="false"/>
         <service android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PlaybackListenerService"
             android:foregroundServiceType="mediaPlayback" android:exported="false">
@@ -1199,7 +1206,9 @@ by a child template that "extends" this file.
             <property android:name="android.window.PROPERTY_ACTIVITY_STARTS_IN_IMMERSIVE_XR"
                 android:value="true" />
             <intent-filter>
+              <action android:name="android.intent.action.MAIN" />
               <category android:name="android.intent.category.XR" />
+              <category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />
             </intent-filter>
           </activity>
         {% endif %}

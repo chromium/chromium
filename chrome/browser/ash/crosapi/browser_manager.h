@@ -45,6 +45,7 @@
 #include "components/tab_groups/tab_group_info.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace component_updater {
@@ -244,7 +245,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
       const std::vector<GURL>& urls,
       const gfx::Rect& bounds,
       const std::vector<tab_groups::TabGroupInfo>& tab_group_infos,
-      const ui::WindowShowState show_state,
+      const ui::mojom::WindowShowState show_state,
       int32_t active_tab_index,
       int32_t first_non_pinned_tab_index,
       const std::string& app_name,

@@ -167,7 +167,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
   }
 
   if (auto* select = OwnerSelect()) {
-    CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+    CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
     // For native popups, use HTMLSelectElement's codepath. For <datalist>
     // popover popups, use the HTMLFormControlElement popover code path.
     if (select->IsAppearanceBaseButton()) {
@@ -295,7 +295,7 @@ HTMLSelectListElement* HTMLButtonElement::OwnerSelectList() const {
 }
 
 HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
-  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return nullptr;
   }
   if (auto* select = DynamicTo<HTMLSelectElement>(parentNode())) {

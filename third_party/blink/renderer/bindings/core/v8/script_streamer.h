@@ -99,7 +99,7 @@ class CORE_EXPORT ScriptStreamer : public GarbageCollected<ScriptStreamer> {
                                        ScriptStreamer::NotStreamingReason);
 
   // Returns false if we cannot stream the given encoding.
-  static bool ConvertEncoding(const char* encoding_name,
+  static bool ConvertEncoding(const AtomicString& encoding_name,
                               v8::ScriptCompiler::StreamedSource::Encoding*);
 
   // Get a successful ScriptStreamer for the given ScriptResource.

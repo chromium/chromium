@@ -21,19 +21,25 @@
 namespace {
 
 history::WebHistoryService* WebHistoryServiceGetter(
-    base::WeakPtr<ChromeBrowserState> weak_browser_state) {
-  DCHECK(weak_browser_state.get())
-      << "Getter should not be called after ChromeBrowserState destruction.";
-  return ios::WebHistoryServiceFactory::GetForBrowserState(
-      weak_browser_state.get());
+    base::WeakPtr<ProfileIOS> weak_profile) {
+  DCHECK(weak_profile.get())
+      << "Getter should not be called after ProfileIOS destruction.";
+  return ios::WebHistoryServiceFactory::GetForProfile(weak_profile.get());
 }
 
 }  // namespace
 
+// static
 TabsSearchService* TabsSearchServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+TabsSearchService* TabsSearchServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<TabsSearchService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 TabsSearchServiceFactory* TabsSearchServiceFactory::GetInstance() {
@@ -58,23 +64,21 @@ TabsSearchServiceFactory::~TabsSearchServiceFactory() = default;
 
 std::unique_ptr<KeyedService> TabsSearchServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
-  const bool is_off_the_record = browser_state->IsOffTheRecord();
+  const bool is_off_the_record = profile->IsOffTheRecord();
   return std::make_unique<TabsSearchService>(
-      is_off_the_record, BrowserListFactory::GetForBrowserState(browser_state),
-      IdentityManagerFactory::GetForProfile(browser_state),
-      SyncServiceFactory::GetForBrowserState(browser_state),
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state),
-      SessionSyncServiceFactory::GetForBrowserState(browser_state),
-      is_off_the_record
-          ? nullptr
-          : ios::HistoryServiceFactory::GetForBrowserState(
-                browser_state, ServiceAccessType::EXPLICIT_ACCESS),
+      is_off_the_record, BrowserListFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
+      IOSChromeTabRestoreServiceFactory::GetForProfile(profile),
+      SessionSyncServiceFactory::GetForProfile(profile),
+      is_off_the_record ? nullptr
+                        : ios::HistoryServiceFactory::GetForProfile(
+                              profile, ServiceAccessType::EXPLICIT_ACCESS),
       is_off_the_record ? TabsSearchService::WebHistoryServiceGetter()
                         : base::BindRepeating(&WebHistoryServiceGetter,
-                                              browser_state->AsWeakPtr()));
+                                              profile->AsWeakPtr()));
 }
 
 web::BrowserState* TabsSearchServiceFactory::GetBrowserStateToUse(

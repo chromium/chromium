@@ -44,22 +44,15 @@ namespace blink {
 WebCryptoAlgorithm NormalizeCryptoAlgorithm(
     v8::Local<v8::Object> algorithm_object,
     WebCryptoOperation operation,
-    int* exception_code,
-    WebString* error_details,
     v8::Isolate* isolate) {
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kUnknown,
-                                 "WebCryptoAlgorithm", "NormalizeAlgorithm");
-
   V8AlgorithmIdentifier* algorithm_identifier =
       MakeGarbageCollected<V8AlgorithmIdentifier>(
           ScriptValue(isolate, algorithm_object));
 
   WebCryptoAlgorithm algorithm;
+  v8::TryCatch try_catch(isolate);
   if (!NormalizeAlgorithm(isolate, algorithm_identifier, operation, algorithm,
-                          exception_state)) {
-    *exception_code = exception_state.Code();
-    *error_details = exception_state.Message();
-    exception_state.ClearException();
+                          PassThroughException(isolate))) {
     return WebCryptoAlgorithm();
   }
 

@@ -18,6 +18,7 @@
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_test_util.h"
@@ -122,14 +123,13 @@ class HttpCacheDataRemoverTest : public testing::Test {
   std::string ComputeCacheKey(const std::string& url_string) {
     GURL url(url_string);
     const auto kOrigin = url::Origin::Create(url);
+    const net::SchemefulSite kSite = net::SchemefulSite(kOrigin);
     net::HttpRequestInfo request_info;
     request_info.url = url;
     request_info.method = "GET";
-    request_info.network_isolation_key =
-        net::NetworkIsolationKey(kOrigin, kOrigin);
+    request_info.network_isolation_key = net::NetworkIsolationKey(kSite, kSite);
     request_info.network_anonymization_key =
-        net::NetworkAnonymizationKey::CreateSameSite(
-            net::SchemefulSite(kOrigin));
+        net::NetworkAnonymizationKey::CreateSameSite(kSite);
     return *net::HttpCache::GenerateCacheKeyForRequest(&request_info);
   }
 

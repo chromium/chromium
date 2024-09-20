@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -50,10 +52,12 @@ void AutofillPredictionImprovementsFillingEngineImpl::
         optimization_guide::proto::AXTreeUpdate ax_tree_update,
         PredictionsReceivedCallback callback,
         user_annotations::UserAnnotationsEntries user_annotations) {
-  // If there are no user annotations, just return the callback with the
-  // original form.
+  // At this point there should be user annotations. Return an error if there
+  // aren't.
+  // TODO(crbug.com/361414075): Check that `user_annotations` aren't empty in
+  // `AutofillPredictionImprovementsDelegate::ShouldProvidePredictionImprovements()`.
   if (user_annotations.empty()) {
-    std::move(callback).Run(std::move(form_data));
+    std::move(callback).Run(base::unexpected(false), std::nullopt);
     return;
   }
 
@@ -64,7 +68,8 @@ void AutofillPredictionImprovementsFillingEngineImpl::
   page_context->set_url(form_data.url().spec());
   page_context->set_title(ax_tree_update.tree_data().title());
   *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
-  *request.mutable_form_data() = optimization_guide::ToFormDataProto(form_data);
+  *request.mutable_form_data() =
+      ToFormDataProto(autofill::FormStructure(form_data));
   *request.mutable_entries() = {
       std::make_move_iterator(user_annotations.begin()),
       std::make_move_iterator(user_annotations.end())};
@@ -83,7 +88,7 @@ void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!execution_result.has_value()) {
-    std::move(callback).Run(base::unexpected(false));
+    std::move(callback).Run(base::unexpected(false), std::nullopt);
     return;
   }
 
@@ -92,12 +97,13 @@ void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
           optimization_guide::proto::FormsPredictionsResponse>(
           execution_result.value());
   if (!maybe_response) {
-    std::move(callback).Run(base::unexpected(false));
+    std::move(callback).Run(base::unexpected(false), std::nullopt);
     return;
   }
 
   FillFormDataWithResponse(form_data, maybe_response->form_data());
-  std::move(callback).Run(std::move(form_data));
+  std::move(callback).Run(std::move(form_data),
+                          log_entry ? log_entry->model_execution_id() : "");
 }
 
 // static

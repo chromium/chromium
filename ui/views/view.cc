@@ -246,9 +246,7 @@ View::~View() {
                              layouts_since_last_paint_);
   }
 
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewHierarchyWillBeDeleted(this);
-  }
+  observers_.Notify(&ViewObserver::OnViewHierarchyWillBeDeleted, this);
 
   life_cycle_state_ = LifeCycleState::kDestroying;
 
@@ -297,9 +295,7 @@ View::~View() {
     children_.clear();
   }
 
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewIsDeleting(this);
-  }
+  observers_.Notify(&ViewObserver::OnViewIsDeleting, this);
 
   for (ui::Layer* layer : GetLayersInOrder(ViewLayer::kExclude)) {
     layer->RemoveObserver(this);
@@ -353,9 +349,7 @@ void View::ReorderChildView(View* view, size_t index) {
   view->RemoveFromFocusList();
   SetFocusSiblings(view, pos);
 
-  for (ViewObserver& observer : observers_) {
-    observer.OnChildViewReordered(this, view);
-  }
+  observers_.Notify(&ViewObserver::OnChildViewReordered, this, view);
 
   ReorderLayers();
   InvalidateLayout();
@@ -475,9 +469,7 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
     }
   }
 
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewBoundsChanged(this);
-  }
+  observers_.Notify(&ViewObserver::OnViewBoundsChanged, this);
 
   // The property effects have already been taken into account above. No need to
   // redo them here.
@@ -966,9 +958,7 @@ void View::InvalidateLayout() {
   // valid, but not our parent.
   needs_layout_ = true;
 
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewLayoutInvalidated(this);
-  }
+  observers_.Notify(&ViewObserver::OnViewLayoutInvalidated, this);
 
   if (HasLayoutManager()) {
     GetLayoutManager()->InvalidateLayout();
@@ -2235,9 +2225,7 @@ void View::PreferredSizeChanged() {
   // ChildPreferredSizeChanged(), postpone invalidation until the events have
   // run all the way up the hierarchy.
   InvalidateLayout();
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewPreferredSizeChanged(this);
-  }
+  observers_.Notify(&ViewObserver::OnViewPreferredSizeChanged, this);
 }
 
 bool View::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -2446,16 +2434,12 @@ void View::OnLayerTransformed(const gfx::Transform& old_transform,
                               ui::PropertyChangeReason reason) {
   NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged, false);
 
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewLayerTransformed(this);
-  }
+  observers_.Notify(&ViewObserver::OnViewLayerTransformed, this);
 }
 
 void View::OnLayerClipRectChanged(const gfx::Rect& old_rect,
                                   ui::PropertyChangeReason reason) {
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewLayerClipRectChanged(this);
-  }
+  observers_.Notify(&ViewObserver::OnViewLayerClipRectChanged, this);
 }
 
 void View::OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -2648,9 +2632,7 @@ void View::Focus() {
   // TODO(crbug.com/40285437) - Get this working on Lacros as well.
   UpdateTooltipForFocus();
 
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewFocused(this);
-  }
+  observers_.Notify(&ViewObserver::OnViewFocused, this);
 }
 
 void View::Blur() {
@@ -2658,9 +2640,7 @@ void View::Blur() {
   OnBlur();
 
   if (tracker.view()) {
-    for (ViewObserver& observer : observers_) {
-      observer.OnViewBlurred(this);
-    }
+    observers_.Notify(&ViewObserver::OnViewBlurred, this);
   }
 }
 
@@ -2755,9 +2735,7 @@ void View::AfterPropertyChange(const void* key, int64_t old_value) {
                                                               this);
     }
   }
-  for (auto& observer : observers_) {
-    observer.OnViewPropertyChanged(this, key, old_value);
-  }
+  observers_.Notify(&ViewObserver::OnViewPropertyChanged, this, key, old_value);
 }
 
 void View::OnPropertyChanged(ui::metadata::PropertyKey property,
@@ -3040,9 +3018,7 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
     }
   }
 
-  for (ViewObserver& observer : observers_) {
-    observer.OnChildViewAdded(this, view);
-  }
+  observers_.Notify(&ViewObserver::OnChildViewAdded, this, view);
 }
 
 void View::DoRemoveChildView(View* view,
@@ -3103,9 +3079,7 @@ void View::DoRemoveChildView(View* view,
     UpdateTooltip();
   }
 
-  for (ViewObserver& observer : observers_) {
-    observer.OnChildViewRemoved(this, view);
-  }
+  observers_.Notify(&ViewObserver::OnChildViewRemoved, this, view);
 }
 
 void View::PropagateRemoveNotifications(View* old_parent,
@@ -3130,9 +3104,7 @@ void View::PropagateRemoveNotifications(View* old_parent,
 
   if (is_removed_from_widget) {
     RemovedFromWidget();
-    for (ViewObserver& observer : observers_) {
-      observer.OnViewRemovedFromWidget(this);
-    }
+    observers_.Notify(&ViewObserver::OnViewRemovedFromWidget, this);
   }
 }
 
@@ -3158,9 +3130,7 @@ void View::PropagateAddNotifications(const ViewHierarchyChangedDetails& details,
   ViewHierarchyChangedImpl(details);
   if (is_added_to_widget) {
     AddedToWidget();
-    for (ViewObserver& observer : observers_) {
-      observer.OnViewAddedToWidget(this);
-    }
+    observers_.Notify(&ViewObserver::OnViewAddedToWidget, this);
   }
 }
 
@@ -3178,9 +3148,7 @@ void View::ViewHierarchyChangedImpl(
     const ViewHierarchyChangedDetails& details) {
   ViewHierarchyChanged(details);
 
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewHierarchyChanged(this, details);
-  }
+  observers_.Notify(&ViewObserver::OnViewHierarchyChanged, this, details);
 
   details.parent->needs_layout_ = true;
 }
@@ -3199,9 +3167,8 @@ void View::PropagateVisibilityNotifications(View* start, bool is_visible) {
 
 void View::VisibilityChangedImpl(View* starting_from, bool is_visible) {
   VisibilityChanged(starting_from, is_visible);
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewVisibilityChanged(this, starting_from);
-  }
+  observers_.Notify(&ViewObserver::OnViewVisibilityChanged, this,
+                    starting_from);
 }
 
 void View::SnapLayerToPixelBoundary(const LayerOffsetData& offset_data) {
@@ -3323,9 +3290,7 @@ void View::SetLayerBounds(const gfx::Size& size,
 
   // Observers may need to adjust the bounds of layers in regions, so always
   // notify observers even if the bounds of `layer()` didn't change.
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewLayerBoundsSet(this);
-  }
+  observers_.Notify(&ViewObserver::OnViewLayerBoundsSet, this);
 }
 
 // Transformations -------------------------------------------------------------
@@ -3731,9 +3696,7 @@ void View::PropagateThemeChanged() {
          "the direct parent class.";
   on_theme_changed_called_ = false;
 #endif
-  for (ViewObserver& observer : observers_) {
-    observer.OnViewThemeChanged(this);
-  }
+  observers_.Notify(&ViewObserver::OnViewThemeChanged, this);
 }
 
 void View::PropagateDeviceScaleFactorChanged(float old_device_scale_factor,

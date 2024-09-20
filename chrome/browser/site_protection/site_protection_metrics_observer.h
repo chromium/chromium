@@ -13,6 +13,7 @@
 #include "base/time/clock.h"
 #include "chrome/browser/site_protection/site_familiarity_heuristic_name.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -53,6 +54,9 @@ class SiteProtectionMetricsObserver
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
+
+  // Returns whether there are any pending asynchronous tasks.
+  bool HasPendingTasksForTesting();
 
  private:
   friend class content::WebContentsUserData<SiteProtectionMetricsObserver>;
@@ -100,7 +104,10 @@ class SiteProtectionMetricsObserver
       bool has_visit_older_than_a_day_ago);
 
   void LogMetrics(std::unique_ptr<MetricsData> metrics_data,
-                  bool url_on_safe_browsing_high_confidence_allowlist);
+                  bool url_on_safe_browsing_high_confidence_allowlist,
+                  std::optional<safe_browsing::SafeBrowsingDatabaseManager::
+                                    HighConfidenceAllowlistCheckLoggingDetails>
+                      logging_details);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

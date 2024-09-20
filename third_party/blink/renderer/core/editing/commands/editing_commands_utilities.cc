@@ -98,7 +98,7 @@ bool IsNodeRendered(const Node& node) {
   if (!layout_object)
     return false;
 
-  return layout_object->Style()->Visibility() == EVisibility::kVisible;
+  return layout_object->Style()->UsedVisibility() == EVisibility::kVisible;
 }
 
 bool IsInlineElement(const Node* node) {

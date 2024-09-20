@@ -18,10 +18,7 @@ bool StructTraits<on_device_model::mojom::ModelAssetsDataView,
   std::optional<base::FilePath> weights_path, sp_model_path;
   bool ok = data.ReadWeights(&assets->weights) &&
             data.ReadWeightsPath(&weights_path) &&
-            data.ReadSpModelPath(&sp_model_path) &&
-            data.ReadTsData(&assets->ts_data) &&
-            data.ReadTsSpModel(&assets->ts_sp_model) &&
-            data.ReadLanguageDetectionModel(&assets->language_detection_model);
+            data.ReadSpModelPath(&sp_model_path);
   if (!ok) {
     return false;
   }

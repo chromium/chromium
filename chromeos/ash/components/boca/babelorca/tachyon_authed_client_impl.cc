@@ -18,8 +18,8 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_client.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 #include "chromeos/ash/components/boca/babelorca/token_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -46,47 +46,33 @@ TachyonAuthedClientImpl::TachyonAuthedClientImpl(
 TachyonAuthedClientImpl::~TachyonAuthedClientImpl() = default;
 
 void TachyonAuthedClientImpl::StartAuthedRequest(
-    const net::NetworkTrafficAnnotationTag& annotation_tag,
-    std::unique_ptr<google::protobuf::MessageLite> request_proto,
-    std::string_view url,
-    int max_retries,
-    std::unique_ptr<ResponseCallbackWrapper> response_cb) {
+    std::unique_ptr<RequestDataWrapper> request_data,
+    std::unique_ptr<google::protobuf::MessageLite> request_proto) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto serialize_cb =
       base::BindOnce(SerializeProtoToString, std::move(request_proto));
   auto reply_post_cb =
       base::BindOnce(&TachyonAuthedClientImpl::OnRequestProtoSerialized,
-                     weak_ptr_factory_.GetWeakPtr(), annotation_tag, url,
-                     max_retries, std::move(response_cb));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request_data));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, std::move(serialize_cb), std::move(reply_post_cb));
 }
 
 void TachyonAuthedClientImpl::StartAuthedRequestString(
-    const net::NetworkTrafficAnnotationTag& annotation_tag,
-    std::string request_string,
-    std::string_view url,
-    int max_retries,
-    std::unique_ptr<ResponseCallbackWrapper> response_cb) {
-  OnRequestProtoSerialized(annotation_tag, url, max_retries,
-                           std::move(response_cb), request_string);
+    std::unique_ptr<RequestDataWrapper> request_data,
+    std::string request_string) {
+  OnRequestProtoSerialized(std::move(request_data), request_string);
 }
 
 void TachyonAuthedClientImpl::OnRequestProtoSerialized(
-    const net::NetworkTrafficAnnotationTag& annotation_tag,
-    std::string_view url,
-    int max_retries,
-    std::unique_ptr<ResponseCallbackWrapper> response_cb,
+    std::unique_ptr<RequestDataWrapper> request_data,
     std::optional<std::string> request_string) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!request_string) {
-    response_cb->Run(base::unexpected(
-        ResponseCallbackWrapper::TachyonRequestError::kInternalError));
+    std::move(request_data->response_cb)
+        .Run(base::unexpected(TachyonRequestError::kInternalError));
     return;
   }
-  std::unique_ptr<RequestDataWrapper> request_data =
-      std::make_unique<RequestDataWrapper>(annotation_tag, url, max_retries,
-                                           std::move(response_cb));
   request_data->content_data = std::move(*request_string);
   const std::string* oauth_token = oauth_token_manager_->GetTokenString();
   if (oauth_token) {
@@ -104,8 +90,8 @@ void TachyonAuthedClientImpl::StartAuthedRequestInternal(
     bool has_oauth_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!has_oauth_token) {
-    request_data->response_cb->Run(base::unexpected(
-        ResponseCallbackWrapper::TachyonRequestError::kAuthError));
+    std::move(request_data->response_cb)
+        .Run(base::unexpected(TachyonRequestError::kAuthError));
     return;
   }
   std::string oauth_token = *(oauth_token_manager_->GetTokenString());
@@ -121,8 +107,8 @@ void TachyonAuthedClientImpl::OnRequestAuthFailure(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static int constexpr kMaxAuthRetries = 1;
   if (request_data->oauth_retry_num >= kMaxAuthRetries) {
-    request_data->response_cb->Run(base::unexpected(
-        ResponseCallbackWrapper::TachyonRequestError::kAuthError));
+    std::move(request_data->response_cb)
+        .Run(base::unexpected(TachyonRequestError::kAuthError));
     return;
   }
   ++(request_data->oauth_retry_num);

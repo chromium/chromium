@@ -4,29 +4,38 @@
 
 package org.chromium.components.search_engines;
 
-import android.text.TextUtils;
-
 /** Helpers to access feature params for {@link SearchEnginesFeatures}. */
 public final class SearchEnginesFeatureUtils {
-
     public static boolean clayBlockingUseFakeBackend() {
         assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
                 : "Avoid accessing params on disabled features!";
 
-        String paramValue =
-                SearchEnginesFeatures.getFieldTrialParamByFeature(
-                        SearchEnginesFeatures.CLAY_BLOCKING, "use_fake_backend");
-        return TextUtils.equals(paramValue, "true");
+        return SearchEnginesFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsBoolean(
+                        SearchEnginesFeatures.CLAY_BLOCKING, "use_fake_backend", true);
     }
 
     public static boolean clayBlockingIsDarkLaunch() {
         assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
                 : "Avoid accessing params on disabled features!";
 
-        String paramValue =
-                SearchEnginesFeatures.getFieldTrialParamByFeature(
-                        SearchEnginesFeatures.CLAY_BLOCKING, "is_dark_launch");
-        return TextUtils.equals(paramValue, "true");
+        return SearchEnginesFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsBoolean(
+                        SearchEnginesFeatures.CLAY_BLOCKING, "is_dark_launch", false);
+    }
+
+    /**
+     * Delay in milliseconds after which the blocking dialog will time out and stop blocking. Should
+     * to be a positive value. The timeout feature will be disabled if an unexpected value is
+     * provided.
+     */
+    public static int clayBlockingDialogTimeoutMillis() {
+        assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
+                : "Avoid accessing params on disabled features!";
+
+        return SearchEnginesFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsInt(
+                        SearchEnginesFeatures.CLAY_BLOCKING, "dialog_timeout_millis", 0);
     }
 
     // Do not instantiate this class.

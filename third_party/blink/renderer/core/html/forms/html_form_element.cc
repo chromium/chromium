@@ -527,9 +527,9 @@ void HTMLFormElement::ScheduleFormSubmission(
     // All other schemes are checked in the browser.
     //
     // TODO(antoniosartori): Should we keep the 'form-action' check for
-    // javascript: URLs? For 'frame-src' and 'navigate-to', we do not check
-    // javascript: URLs. Reading the specification, it looks like 'form-action'
-    // should not apply to javascript: URLs.
+    // javascript: URLs? For 'frame-src', we do not check javascript: URLs.
+    // Reading the specification, it looks like 'form-action' should not apply
+    // to javascript: URLs.
     if (!GetExecutionContext()->GetContentSecurityPolicy()->AllowFormAction(
             form_submission->Action())) {
       return;

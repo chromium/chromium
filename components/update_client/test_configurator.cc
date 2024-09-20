@@ -4,6 +4,7 @@
 
 #include "components/update_client/test_configurator.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <tuple>
@@ -49,9 +50,6 @@ std::vector<GURL> MakeDefaultUrls() {
 TestConfigurator::TestConfigurator(PrefService* pref_service)
     : enabled_cup_signing_(false),
       pref_service_(pref_service),
-      persisted_data_(
-          CreatePersistedData(pref_service,
-                              std::make_unique<TestActivityDataService>())),
       unzip_factory_(base::MakeRefCounted<update_client::UnzipChromiumFactory>(
           base::BindRepeating(&unzip::LaunchInProcessUnzipper))),
       patch_factory_(base::MakeRefCounted<update_client::PatchChromiumFactory>(
@@ -67,6 +65,9 @@ TestConfigurator::TestConfigurator(PrefService* pref_service)
           [](bool /*is_machine*/) { return UpdaterStateAttributes(); })),
       is_network_connection_metered_(false) {
   std::ignore = crx_cache_root_temp_dir_.CreateUniqueTempDir();
+  auto activity = std::make_unique<TestActivityDataService>();
+  activity_data_service_ = activity.get();
+  persisted_data_ = CreatePersistedData(pref_service, std::move(activity));
 }
 
 TestConfigurator::~TestConfigurator() = default;
@@ -185,6 +186,11 @@ bool TestConfigurator::EnabledCupSigning() const {
 PrefService* TestConfigurator::GetPrefService() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_;
+}
+
+TestActivityDataService* TestConfigurator::GetActivityDataService() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return activity_data_service_;
 }
 
 PersistedData* TestConfigurator::GetPersistedData() const {

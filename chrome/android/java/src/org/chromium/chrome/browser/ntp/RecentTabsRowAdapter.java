@@ -325,6 +325,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 viewHolder.domainView.setText("");
                 viewHolder.domainView.setVisibility(View.GONE);
             }
+            // Reset the icon view.
+            viewHolder.iconView.setVisibility(View.GONE);
             loadFavicon(viewHolder, sessionTab.url, FaviconLocality.FOREIGN);
         }
 

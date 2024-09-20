@@ -166,6 +166,8 @@ ScriptResource::ScriptResource(
           v8_compile_hints_magic_comment_runtime_enabled) {
   static bool script_streaming_enabled =
       base::FeatureList::IsEnabled(features::kScriptStreaming);
+  static bool script_streaming_for_non_http_enabled =
+      base::FeatureList::IsEnabled(features::kScriptStreamingForNonHTTP);
   // TODO(leszeks): This could be static to avoid the cost of feature flag
   // lookup on every ScriptResource creation, but it has to be re-calculated for
   // unit tests.
@@ -177,7 +179,8 @@ ScriptResource::ScriptResource(
         ScriptStreamer::NotStreamingReason::kDisabledByFeatureList);
   } else if (streaming_allowed == kNoStreaming) {
     DisableStreaming(ScriptStreamer::NotStreamingReason::kStreamingDisabled);
-  } else if (!Url().ProtocolIsInHTTPFamily()) {
+  } else if (!Url().ProtocolIsInHTTPFamily() &&
+             !script_streaming_for_non_http_enabled) {
     DisableStreaming(ScriptStreamer::NotStreamingReason::kNotHTTP);
   }
 
@@ -420,7 +423,8 @@ void ScriptResource::ResponseBodyReceived(
   CHECK_EQ(streaming_state_, StreamingState::kWaitingForDataPipe);
 
   // Checked in the constructor.
-  CHECK(Url().ProtocolIsInHTTPFamily());
+  CHECK(Url().ProtocolIsInHTTPFamily() ||
+        base::FeatureList::IsEnabled(features::kScriptStreamingForNonHTTP));
   CHECK(base::FeatureList::IsEnabled(features::kScriptStreaming));
 
   ResponseBodyLoaderClient* response_body_loader_client;

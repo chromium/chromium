@@ -24,6 +24,9 @@ class GURL;
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
 
+// Username associated with this item.
+@property(nonatomic, readonly) NSString* username;
+
 // The cell won't show a title (site name) label if it is connected to the
 // previous password item.
 @property(nonatomic, readonly) BOOL isConnectedToPreviousItem;

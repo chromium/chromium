@@ -42,6 +42,7 @@ source_set("themes") {
     "//components/pref_registry",
     "//components/resources:components_scaled_resources",
     "//components/sync/protocol",
+    "//components/sync_preferences",
     "//content/public/browser",
     "//third_party/abseil-cpp:absl",
     "//ui/color",

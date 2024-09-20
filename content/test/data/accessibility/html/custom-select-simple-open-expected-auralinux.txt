@@ -1,0 +1,7 @@
+[document web]
+++[section]
+++++[combo box] name='Fruit' expandable expanded haspopup:menu posinset:1 setsize:3
+++++++[menu] setsize:3
+++++++++[menu item] name='Apple' selectable selected posinset:1 setsize:3
+++++++++[menu item] name='Orange' selectable posinset:2 setsize:3
+++++++++[menu item] name='Banana' selectable posinset:3 setsize:3

@@ -7,8 +7,10 @@
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
@@ -22,6 +24,13 @@ namespace {
 
 // The address of this variable is used as the user data key.
 static int kContactInfoSyncBridgeUserDataKey = 0;
+
+// Different types of account profiles exist, all of which are synced through
+// CONTACT_INFO.
+DenseSet<AutofillProfile::RecordType> kAccountRecordTypes = {
+    AutofillProfile::RecordType::kAccount,
+    AutofillProfile::RecordType::kAccountHome,
+    AutofillProfile::RecordType::kAccountWork};
 
 }  // namespace
 
@@ -208,8 +217,7 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
 
 void ContactInfoSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  if (!GetAutofillTable()->RemoveAllAutofillProfiles(
-          AutofillProfile::RecordType::kAccount)) {
+  if (!GetAutofillTable()->RemoveAllAutofillProfiles(kAccountRecordTypes)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to delete profiles from table."});
   }
@@ -284,8 +292,7 @@ std::unique_ptr<syncer::MutableDataBatch>
 ContactInfoSyncBridge::GetDataAndFilter(
     base::RepeatingCallback<bool(const std::string&)> filter) {
   std::vector<AutofillProfile> profiles;
-  if (!GetAutofillTable()->GetAutofillProfiles(
-          AutofillProfile::RecordType::kAccount, profiles)) {
+  if (!GetAutofillTable()->GetAutofillProfiles(kAccountRecordTypes, profiles)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load profiles from table."});
     return nullptr;

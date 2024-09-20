@@ -227,7 +227,7 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
         /*is_page_initiated=*/false,
         /*is_error_page=*/false,
         /*is_reload=*/false,
-        /*is_history=*/false,
+        /*is_history=*/false, /*is_back=*/false, /*is_forward=*/false,
         /*committed=*/true,
         /*status_code=*/200, /*previous_page_deleted=*/true, /*load_end=*/true);
     EXPECT_FALSE(listener().HasNextMessageForAnyHost());
@@ -241,6 +241,7 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
     base::Value::Dict expected_dict = base::Value::Dict().Set("type", type);
     if (type == NavigationWebMessageSender::kOptedInMessage) {
       expected_dict.Set("supports_start_and_redirect", true);
+      expected_dict.Set("supports_history_details", true);
     }
     ASSERT_EQ(
         NavigationWebMessageSender::CreateWebMessage(std::move(expected_dict))
@@ -256,6 +257,8 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
                                   bool is_error_page,
                                   bool is_reload,
                                   bool is_history,
+                                  bool is_back,
+                                  bool is_forward,
                                   bool committed,
                                   int status_code,
                                   bool previous_page_deleted,
@@ -267,7 +270,10 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
             .Set("isSameDocument", is_same_document)
             .Set("isPageInitiated", is_page_initiated)
             .Set("isReload", is_reload)
-            .Set("isHistory", is_history);
+            .Set("isHistory", is_history)
+            .Set("isBack", is_back)
+            .Set("isForward", is_forward)
+            .Set("isRestore", false);
 
     // NAVIGATION_STARTED message.
     base::Value::Dict start_message(base_message_dict.Clone());
@@ -355,7 +361,8 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
                              /*is_page_initiated=*/false,
                              /*is_error_page=*/false,
                              /*is_reload=*/false,
-                             /*is_history=*/false,
+                             /*is_history=*/false, /*is_back=*/false,
+                             /*is_forward=*/false,
                              /*committed=*/true,
                              /*status_code=*/200,
                              /*previous_page_deleted=*/true, /*load_end=*/true);
@@ -378,7 +385,8 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
                              /*is_page_initiated=*/false,
                              /*is_error_page=*/false,
                              /*is_reload=*/true,
-                             /*is_history=*/false,
+                             /*is_history=*/false, /*is_back=*/false,
+                             /*is_forward=*/false,
                              /*committed=*/true,
                              /*status_code=*/200,
                              /*previous_page_deleted=*/true, /*load_end=*/true);
@@ -400,7 +408,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
       /*is_page_initiated=*/false,
       /*is_error_page=*/false,
       /*is_reload=*/false,
-      /*is_history=*/false,
+      /*is_history=*/false, /*is_back=*/false, /*is_forward=*/false,
       /*committed=*/true,
       /*status_code=*/200, /*previous_page_deleted=*/false, /*load_end=*/false);
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
@@ -416,7 +424,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
       /*is_page_initiated=*/false,
       /*is_error_page=*/false,
       /*is_reload=*/false,
-      /*is_history=*/true,
+      /*is_history=*/true, /*is_back=*/true, /*is_forward=*/false,
       /*committed=*/true,
       /*status_code=*/200, /*previous_page_deleted=*/false, /*load_end=*/false);
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
@@ -437,7 +445,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
       /*is_page_initiated=*/false,
       /*is_error_page=*/true,
       /*is_reload=*/false,
-      /*is_history=*/false,
+      /*is_history=*/false, /*is_back=*/false, /*is_forward=*/false,
       /*committed=*/true,
       /*status_code=*/404,
       /*previous_page_deleted=*/IsBackForwardCacheDisabled(),
@@ -500,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, NoLoadEnd) {
       /*is_page_initiated=*/false,
       /*is_error_page=*/false,
       /*is_reload=*/false,
-      /*is_history=*/false,
+      /*is_history=*/false, /*is_back=*/false, /*is_forward=*/false,
       /*committed=*/true,
       /*status_code=*/200, /*previous_page_deleted=*/true, /*load_end=*/false);
 
@@ -529,7 +537,8 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, NoLoadEnd) {
                              /*is_page_initiated=*/false,
                              /*is_error_page=*/false,
                              /*is_reload=*/false,
-                             /*is_history=*/false,
+                             /*is_history=*/false, /*is_back=*/false,
+                             /*is_forward=*/false,
                              /*committed=*/true,
                              /*status_code=*/200,
                              /*previous_page_deleted=*/true,
@@ -609,7 +618,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
       /*is_page_initiated=*/true,
       /*is_error_page=*/false,
       /*is_reload=*/false,
-      /*is_history=*/false,
+      /*is_history=*/false, /*is_back=*/false, /*is_forward=*/false,
       /*committed=*/true,
       /*status_code=*/200, /*previous_page_deleted=*/false, /*load_end=*/false);
   ASSERT_FALSE(listener().HasNextMessageForHost(host));
@@ -704,7 +713,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
       /*is_page_initiated=*/false,
       /*is_error_page=*/false,
       /*is_reload=*/false,
-      /*is_history=*/false,
+      /*is_history=*/false, /*is_back=*/false, /*is_forward=*/false,
       /*committed=*/false,
       /*status_code=*/200, /*previous_page_deleted=*/false, /*load_end=*/false);
 
@@ -717,7 +726,8 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
                              /*is_page_initiated=*/false,
                              /*is_error_page=*/false,
                              /*is_reload=*/false,
-                             /*is_history=*/false,
+                             /*is_history=*/false, /*is_back=*/false,
+                             /*is_forward=*/false,
                              /*committed=*/true,
                              /*status_code=*/200,
                              /*previous_page_deleted=*/false, false);
@@ -770,7 +780,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
       /*is_page_initiated=*/false,
       /*is_error_page=*/false,
       /*is_reload=*/false,
-      /*is_history=*/false,
+      /*is_history=*/false, /*is_back=*/false, /*is_forward=*/false,
       /*committed=*/false,
       /*status_code=*/200, /*previous_page_deleted=*/false, /*load_end=*/false);
 
@@ -789,7 +799,8 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
                              /*is_page_initiated=*/false,
                              /*is_error_page=*/false,
                              /*is_reload=*/false,
-                             /*is_history=*/false,
+                             /*is_history=*/false, /*is_back=*/false,
+                             /*is_forward=*/false,
                              /*committed=*/true,
                              /*status_code=*/200,
                              /*previous_page_deleted=*/true, /*load_end=*/true);

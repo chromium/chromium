@@ -380,7 +380,7 @@ void HTMLSelectElement::ParseAttribute(
     // FIXME: ignore for the moment.
     //
   } else if (params.name == html_names::kSelectedoptionelementAttr) {
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       HTMLSelectedOptionElement* old_selectedoption =
           DynamicTo<HTMLSelectedOptionElement>(
               getElementByIdIncludingDisconnected(*this, params.old_value));
@@ -448,7 +448,7 @@ void HTMLSelectElement::OptionElementChildrenChanged(
   }
 
   if (option.Selected()) {
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       for (HTMLSelectedOptionElement* selectedoption :
            TargetSelectedOptions()) {
         selectedoption->CloneContentsFromOptionElement(&option);
@@ -818,13 +818,20 @@ void HTMLSelectElement::OptionSelectionStateChanged(HTMLOptionElement* option,
 
 void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLFormControlElementWithState::ChildrenChanged(change);
+  bool invalidate_button = false;
   if (change.type ==
       ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
     for (Node& node : NodeTraversal::ChildrenOf(*this)) {
       ElementInserted(node);
+      if (IsA<HTMLButtonElement>(node)) {
+        invalidate_button = true;
+      }
     }
   } else if (change.type == ChildrenChangeType::kElementInserted) {
     ElementInserted(*change.sibling_changed);
+    if (IsA<HTMLButtonElement>(change.sibling_changed)) {
+      invalidate_button = true;
+    }
   } else if (change.type == ChildrenChangeType::kElementRemoved) {
     if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
       OptionRemoved(*option);
@@ -833,6 +840,8 @@ void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
       for (auto& child_option :
            Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
         OptionRemoved(child_option);
+    } else if (IsA<HTMLButtonElement>(change.sibling_changed)) {
+      invalidate_button = true;
     }
   } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
     for (Node* node : change.removed_nodes) {
@@ -842,8 +851,17 @@ void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
         for (auto& child_option :
              Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
           OptionRemoved(child_option);
+      } else if (IsA<HTMLButtonElement>(node)) {
+        invalidate_button = true;
       }
     }
+  }
+
+  if (invalidate_button &&
+      RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    GetShadowRoot()->SetDelegatesFocus(IsAppearanceBaseButton() &&
+                                       SlottedButton());
+    PseudoStateChanged(CSSSelector::kPseudoSelectHasChildButton);
   }
 }
 
@@ -980,7 +998,7 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
     SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
   }
 
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     for (HTMLSelectedOptionElement* selectedoption : TargetSelectedOptions()) {
       selectedoption->CloneContentsFromOptionElement(element);
     }
@@ -1363,8 +1381,8 @@ void HTMLSelectElement::UpdateUserAgentShadowTree(ShadowRoot& root) {
   select_type_->CreateShadowSubtree(root);
 }
 
-Element& HTMLSelectElement::InnerElementForAppearanceAuto() const {
-  return select_type_->InnerElementForAppearanceAuto();
+Element& HTMLSelectElement::InnerElement() const {
+  return select_type_->InnerElement();
 }
 
 AXObject* HTMLSelectElement::PopupRootAXObject() const {
@@ -1404,7 +1422,7 @@ const ComputedStyle* HTMLSelectElement::ItemComputedStyle(
 LayoutUnit HTMLSelectElement::ClientPaddingLeft() const {
   DCHECK(UsesMenuList());
   auto* this_box = GetLayoutBox();
-  if (!this_box || !InnerElementForAppearanceAuto().GetLayoutBox()) {
+  if (!this_box || !InnerElement().GetLayoutBox()) {
     return LayoutUnit();
   }
   LayoutTheme& theme = LayoutTheme::GetTheme();
@@ -1419,7 +1437,7 @@ LayoutUnit HTMLSelectElement::ClientPaddingLeft() const {
 LayoutUnit HTMLSelectElement::ClientPaddingRight() const {
   DCHECK(UsesMenuList());
   auto* this_box = GetLayoutBox();
-  if (!this_box || !InnerElementForAppearanceAuto().GetLayoutBox()) {
+  if (!this_box || !InnerElement().GetLayoutBox()) {
     return LayoutUnit();
   }
   LayoutTheme& theme = LayoutTheme::GetTheme();
@@ -1508,7 +1526,7 @@ void HTMLSelectElement::AttachLayoutTree(AttachContext& context) {
   select_type_->UpdateTextStyle();
 
   if (const ComputedStyle* style = GetComputedStyle()) {
-    if (style->Visibility() != EVisibility::kHidden) {
+    if (style->UsedVisibility() != EVisibility::kHidden) {
       if (IsMultiple())
         UseCounter::Count(GetDocument(), WebFeature::kSelectElementMultiple);
       else
@@ -1541,7 +1559,7 @@ void HTMLSelectElement::ChangeRendering() {
     select_type_->WillBeDestroyed();
     select_type_ = SelectType::Create(*this);
 
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       // Make <option>s render all child content when in MenuList mode in order
       // to support appearance:base-select.
       for (HTMLOptionElement* option : GetOptionList()) {
@@ -1669,10 +1687,6 @@ HTMLButtonElement* HTMLSelectElement::SlottedButton() const {
   return select_type_->SlottedButton();
 }
 
-HTMLButtonElement* HTMLSelectElement::DisplayedButton() const {
-  return select_type_->DisplayedButton();
-}
-
 HTMLElement* HTMLSelectElement::PopoverForAppearanceBase() const {
   return select_type_->PopoverForAppearanceBase();
 }
@@ -1708,10 +1722,10 @@ void HTMLSelectElement::SelectedOptionElementRemoved(
 
 FocusableState HTMLSelectElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
-  if (IsAppearanceBaseButton()) {
-    // In appearance:base-select mode, the child button gets focus instead of the
-    // select via delegatesfocus. We must return false here in order to make the
-    // delegatesfocus focusing code find the child button.
+  if (IsAppearanceBaseButton() && SlottedButton()) {
+    // In appearance:base-select mode, the child button gets focus instead of
+    // the select via delegatesfocus. We must return false here in order to make
+    // the delegatesfocus focusing code find the child button.
     return FocusableState::kNotFocusable;
   }
   return HTMLFormControlElementWithState::SupportsFocus(update_behavior);
@@ -1733,7 +1747,10 @@ HTMLSelectElement::SelectAutofillPreviewElement::SelectAutofillPreviewElement(
 const ComputedStyle*
 HTMLSelectElement::SelectAutofillPreviewElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
-  HTMLButtonElement* button = select_->DisplayedButton();
+  HTMLElement* button = select_->SlottedButton();
+  if (!button) {
+    button = select_;
+  }
   if (!button || !button->GetComputedStyle()) {
     return HTMLDivElement::CustomStyleForLayoutObject(style_recalc_context);
   }
@@ -1787,14 +1804,14 @@ void HTMLSelectElement::SelectAutofillPreviewElement::Trace(
 }
 
 HTMLSelectedOptionElement* HTMLSelectElement::selectedOptionElement() const {
-  CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   return DynamicTo<HTMLSelectedOptionElement>(
       GetElementAttribute(html_names::kSelectedoptionelementAttr));
 }
 
 void HTMLSelectElement::setSelectedOptionElement(
     HTMLSelectedOptionElement* new_selectedoption) {
-  CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   auto* old_selectedoption = selectedOptionElement();
   if (new_selectedoption) {
     SetElementAttribute(html_names::kSelectedoptionelementAttr,

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
@@ -61,7 +62,8 @@ class ArcContentFileSystemFileStreamWriter : public storage::FileStreamWriter {
                      net::CompletionOnceCallback callback);
 
   // Called when write completes.
-  void OnWrite(net::CompletionOnceCallback callback, int result);
+  void OnWrite(net::CompletionOnceCallback callback,
+               std::optional<size_t> result);
 
   // Called when opening file session completes.
   void OnOpenFileSession(scoped_refptr<net::IOBuffer> buf,

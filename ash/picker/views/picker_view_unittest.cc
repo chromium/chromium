@@ -15,7 +15,9 @@
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_category.h"
 #include "ash/picker/picker_controller.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
@@ -35,8 +37,6 @@
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_widget.h"
 #include "ash/picker/views/picker_zero_state_view.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
@@ -2200,18 +2200,23 @@ TEST_F(PickerViewTest, PressingEscClosesSubmenuThenWidget) {
 }
 
 TEST_F(PickerViewTest, PressingEscClosesPreviewThenWidget) {
-  // TODO: b/353592243 - This test breaks when the item with preview is the
-  // first item. Remove the extra Text result once it's fixed.
+  base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
-      .zero_state_suggested_results =
-          {
-              PickerTextResult(u"a"),
-              PickerLocalFileResult(u"a", /*file_path=*/{}),
-          },
+      .search_function = base::BindLambdaForTesting(
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(
+                    PickerSectionType::kLocalFiles,
+                    {{PickerLocalFileResult(u"a", /*file_path=*/{})}},
+                    /*has_more_results=*/false),
+            });
+          }),
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   PickerPreviewBubbleController& preview_controller =
       GetPickerViewFromWidget(*widget)->preview_controller_for_testing();
   PickerPreviewBubbleVisibleWaiter().Wait(&preview_controller);
@@ -2228,16 +2233,27 @@ TEST_F(PickerViewTest, PressingEscClosesPreviewThenWidget) {
 }
 
 TEST_F(PickerViewTest, TabKeyNavigatesItemWithPreview) {
+  base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
-      .zero_state_suggested_results =
-          {
-              PickerTextResult(u"Result A"),
-              PickerLocalFileResult(u"Result B", /*file_path=*/{}),
-              PickerTextResult(u"Result C"),
-          },
+      .search_function = base::BindLambdaForTesting(
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(
+                    PickerSectionType::kLocalFiles,
+                    {{
+                        PickerTextResult(u"Result A"),
+                        PickerLocalFileResult(u"Result B", /*file_path=*/{}),
+                        PickerTextResult(u"Result C"),
+                    }},
+                    /*has_more_results=*/false),
+            });
+          }),
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
 
   // Should navigate to the file result and show the preview bubble.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);

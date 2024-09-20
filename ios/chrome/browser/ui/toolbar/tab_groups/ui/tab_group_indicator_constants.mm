@@ -9,5 +9,8 @@ const CGFloat kTabGroupIndicatorVerticalMargin = 24.0f;
 const CGFloat kTabGroupIndicatorColoredDotSize = 12.0f;
 const CGFloat kTabGroupIndicatorSeparationMargin = 5.0f;
 
+const CGFloat kTabGroupIndicatorNTPTopMargin = -6.0f;
+const CGFloat kTabGroupIndicatorNTPToolbarMargin = 8.0f;
+
 NSString* const kTabGroupIndicatorViewIdentifier =
     @"kTabGroupIndicatorViewIdentifier";

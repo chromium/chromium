@@ -3557,64 +3557,6 @@ void GLES2Implementation::EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
   CheckGLError();
 }
 
-void GLES2Implementation::ConvertRGBAToYUVAMailboxesINTERNAL(
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glConvertRGBAToYUVAMailboxesINTERNAL("
-                     << GLES2Util::GetStringEnum(planes_yuv_color_space) << ", "
-                     << GLES2Util::GetStringEnum(plane_config) << ", "
-                     << GLES2Util::GetStringEnum(subsampling) << ", "
-                     << static_cast<const void*>(mailboxes) << ")");
-  uint32_t count = 80;
-  for (uint32_t ii = 0; ii < count; ++ii) {
-    GPU_CLIENT_LOG("value[" << ii << "]: " << mailboxes[ii]);
-  }
-  helper_->ConvertRGBAToYUVAMailboxesINTERNALImmediate(
-      planes_yuv_color_space, plane_config, subsampling, mailboxes);
-  CheckGLError();
-}
-
-void GLES2Implementation::ConvertYUVAMailboxesToRGBINTERNAL(
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glConvertYUVAMailboxesToRGBINTERNAL(" << src_x
-                     << ", " << src_y << ", " << width << ", " << height << ", "
-                     << GLES2Util::GetStringEnum(planes_yuv_color_space) << ", "
-                     << GLES2Util::GetStringEnum(plane_config) << ", "
-                     << GLES2Util::GetStringEnum(subsampling) << ", "
-                     << static_cast<const void*>(mailboxes) << ")");
-  uint32_t count = 144;
-  for (uint32_t ii = 0; ii < count; ++ii) {
-    GPU_CLIENT_LOG("value[" << ii << "]: " << mailboxes[ii]);
-  }
-  if (width < 0) {
-    SetGLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
-               "width < 0");
-    return;
-  }
-  if (height < 0) {
-    SetGLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
-               "height < 0");
-    return;
-  }
-  helper_->ConvertYUVAMailboxesToRGBINTERNALImmediate(
-      src_x, src_y, width, height, planes_yuv_color_space, plane_config,
-      subsampling, mailboxes);
-  CheckGLError();
-}
-
 void GLES2Implementation::ConvertYUVAMailboxesToTextureINTERNAL(
     GLuint texture,
     GLenum target,

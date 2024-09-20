@@ -22,7 +22,7 @@ static_library("scalable_iph") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser/scalable_iph:scalable_iph_factory",
+    "//chrome/browser/ash/scalable_iph",
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/scalable_iph:logger",
   ]

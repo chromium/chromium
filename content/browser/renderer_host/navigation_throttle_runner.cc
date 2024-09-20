@@ -22,6 +22,7 @@
 #include "content/browser/renderer_host/mixed_content_navigation_throttle.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.h"
 #include "content/browser/renderer_host/renderer_cancellation_throttle.h"
 #include "content/browser/renderer_host/subframe_history_navigation_throttle.h"
 #include "content/public/browser/navigation_handle.h"
@@ -263,6 +264,11 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
         BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
             request));
   }
+
+  // Add a throttle to manage top-frame navigations from a partitioned popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  AddThrottle(
+      PartitionedPopinsNavigationThrottle::MaybeCreateThrottleFor(request));
   // DO NOT ADD any throttles after this line.
 
   // Insert all testing NavigationThrottles last.

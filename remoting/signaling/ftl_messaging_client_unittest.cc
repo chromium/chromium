@@ -154,7 +154,8 @@ class FtlMessagingClientTest : public testing::Test {
 
  protected:
   ProtobufHttpTestResponder test_responder_;
-  FakeOAuthTokenGetter token_getter_{OAuthTokenGetter::Status::SUCCESS, "", ""};
+  FakeOAuthTokenGetter token_getter_{OAuthTokenGetter::Status::SUCCESS, "", "",
+                                     ""};
   std::unique_ptr<FtlMessagingClient> messaging_client_;
   raw_ptr<MockMessageReceptionChannel> mock_message_reception_channel_;
 

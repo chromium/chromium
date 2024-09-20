@@ -6,12 +6,7 @@
 
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 AITestUtils::MockModelStreamingResponder::MockModelStreamingResponder() =
     default;
@@ -70,4 +65,26 @@ AITestUtils::AITestBase::GetAIManagerRemote() {
 
 void AITestUtils::AITestBase::ResetMockHost() {
   mock_host_.reset();
+}
+
+// static
+std::string AITestUtils::GetTypeURLForProto(std::string type_name) {
+  return "type.googleapis.com/" + type_name;
+}
+
+// static
+const optimization_guide::TokenLimits& AITestUtils::GetFakeTokenLimits() {
+  static const optimization_guide::TokenLimits limits{
+      .max_tokens = 4096,
+      .max_context_tokens = 2048,
+      .max_execute_tokens = 1024,
+      .max_output_tokens = 1024,
+  };
+  return limits;
+}
+
+// static
+const optimization_guide::proto::Any& AITestUtils::GetFakeFeatureMetadata() {
+  static base::NoDestructor<optimization_guide::proto::Any> data;
+  return *data;
 }

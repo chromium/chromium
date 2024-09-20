@@ -14,6 +14,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "cc/paint/tone_map_util.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -165,16 +166,6 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   const sk_sp<SkImage>& gainmap_image() const { return gainmap_image_; }
   const SkGainmapInfo& gainmap_info() const { return gainmap_info_; }
 
-  // Return true if GetImageWithToneMapApplied() should be used instead of
-  // image().
-  bool NeedsToneMapApplied() const {
-    return has_gainmap_ || use_global_tone_map_;
-  }
-
-  // Return this image, tone mapped to match the specified HDR headroom.
-  sk_sp<SkImage> GetImageWithToneMapApplied(float hdr_headroom,
-                                            bool needs_mips) const;
-
   // Ensures the cached image has mips.
   void EnsureMips();
 
@@ -191,7 +182,6 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   size_t num_planes() const { return plane_images_.size(); }
   bool fits_on_gpu() const;
 
-  bool use_global_tone_map() const { return use_global_tone_map_; }
   const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
     return hdr_metadata_;
   }
@@ -205,9 +195,6 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   bool has_gainmap_ = false;
   sk_sp<SkImage> gainmap_image_;
   SkGainmapInfo gainmap_info_;
-
-  // HDR global tone mapping also be requested.
-  bool use_global_tone_map_ = false;
 
   // HDR metadata used by global tone map application and (potentially but not
   // yet) gain map application.

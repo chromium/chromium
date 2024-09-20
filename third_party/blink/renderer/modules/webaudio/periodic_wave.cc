@@ -181,7 +181,7 @@ PeriodicWaveImpl::PeriodicWaveImpl(float sample_rate)
 }
 
 PeriodicWaveImpl::~PeriodicWaveImpl() {
-  AdjustV8ExternalMemory(-static_cast<int64_t>(v8_external_memory_));
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
 }
 
 unsigned PeriodicWaveImpl::PeriodicWaveSize() const {
@@ -398,13 +398,6 @@ unsigned PeriodicWaveImpl::NumberOfPartialsForRange(
   return number_of_partials;
 }
 
-// Tell V8 about the memory we're using so it can properly schedule garbage
-// collects.
-void PeriodicWaveImpl::AdjustV8ExternalMemory(int64_t delta) {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(delta);
-  v8_external_memory_ += delta;
-}
-
 // Convert into time-domain wave buffers.  One table is created for each range
 // for non-aliasing playback at different playback rates.  Thus, higher ranges
 // have more high-frequency partials culled out.
@@ -464,7 +457,8 @@ void PeriodicWaveImpl::CreateBandLimitedTables(const float* real_data,
     unsigned wave_size = PeriodicWaveSize();
     std::unique_ptr<AudioFloatArray> table =
         std::make_unique<AudioFloatArray>(wave_size);
-    AdjustV8ExternalMemory(wave_size * sizeof(float));
+    external_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                        wave_size * sizeof(float));
     band_limited_tables_.push_back(std::move(table));
 
     // Apply an inverse FFT to generate the time-domain table data.

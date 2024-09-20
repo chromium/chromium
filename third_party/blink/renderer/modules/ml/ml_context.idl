@@ -54,6 +54,11 @@ dictionary MLConv2dSupportLimits {
   MLSupportLimits output;
 };
 
+dictionary MLCumulativeSumSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits output;
+};
+
 dictionary MLGatherSupportLimits {
   MLSupportLimits input;
   MLSupportLimits indices;
@@ -141,6 +146,13 @@ dictionary MLSingleInputSupportLimits {
   MLSupportLimits output;
 };
 
+dictionary MLScatterSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits indices;
+  MLSupportLimits updates;
+  MLSupportLimits output;
+};
+
 dictionary MLWhereSupportLimits {
   MLSupportLimits condition;
   MLSupportLimits trueValue;
@@ -162,6 +174,7 @@ dictionary MLOpSupportLimits {
   MLConcatSupportLimits concat;
   MLConv2dSupportLimits conv2d;
   MLConv2dSupportLimits convTranspose2d;
+  MLSingleInputSupportLimits cumulativeSum;
   MLQuantizeDequantizeLinearSupportLimits dequantizeLinear;
 
   // Element-wise binary ops.
@@ -201,6 +214,7 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits expand;
   MLGatherSupportLimits gather;
   MLGatherSupportLimits gatherElements;
+  MLGatherSupportLimits gatherND;
   MLSingleInputSupportLimits gelu;
   MLGemmSupportLimits gemm;
   MLGruSupportLimits gru;
@@ -238,6 +252,7 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits relu;
   MLSingleInputSupportLimits resample2d;
   MLSingleInputSupportLimits reshape;
+  MLScatterSupportLimits scatterND;
   MLSingleInputSupportLimits sigmoid;
   MLSingleInputSupportLimits slice;
   MLSingleInputSupportLimits softmax;
@@ -251,7 +266,7 @@ dictionary MLOpSupportLimits {
   MLWhereSupportLimits where;
 };
 
-typedef record<DOMString, MLTensor> MLNamedBuffers;
+typedef record<DOMString, MLTensor> MLNamedTensors;
 
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
@@ -281,7 +296,7 @@ typedef record<DOMString, MLTensor> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<MLTensor> createBuffer(MLTensorDescriptor descriptor);
+  ] Promise<MLTensor> createTensor(MLTensorDescriptor descriptor);
 
   // TODO(crbug.com/328105506): enable partial MLTensor reads/writes.
   // TODO(crbug.com/40278771): consider moving arguments into a dictonary 
@@ -291,8 +306,8 @@ typedef record<DOMString, MLTensor> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] void writeBuffer(
-        MLTensor dstBuffer,
+  ] void writeTensor(
+        MLTensor dstTensor,
         [AllowShared] ArrayBufferView srcData,
         optional MLSize64 srcElementOffset = 0,
         optional MLSize64 srcElementSize);
@@ -301,8 +316,8 @@ typedef record<DOMString, MLTensor> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] void writeBuffer(
-        MLTensor dstBuffer,
+  ] void writeTensor(
+        MLTensor dstTensor,
         ArrayBuffer srcData,
         optional MLSize64 srcByteOffset = 0,
         optional MLSize64 srcByteSize);
@@ -311,24 +326,24 @@ typedef record<DOMString, MLTensor> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<ArrayBuffer> readBuffer(
-        MLTensor srcBuffer);
+  ] Promise<ArrayBuffer> readTensor(
+        MLTensor sourceTensor);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<undefined> readBuffer(
-        MLTensor srcBuffer,
-        [AllowShared] ArrayBufferView dstData);
+  ] Promise<undefined> readTensor(
+        MLTensor sourceTensor,
+        [AllowShared] ArrayBufferView destinationData);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<undefined> readBuffer(
-        MLTensor srcBuffer,
-        [AllowShared] ArrayBuffer dstData);
+  ] Promise<undefined> readTensor(
+        MLTensor sourceTensor,
+        [AllowShared] ArrayBuffer destinationData);
 
   // TODO(crbug.com/1273291): enable partial buffer dispatches.
   [
@@ -337,7 +352,7 @@ typedef record<DOMString, MLTensor> MLNamedBuffers;
     RaisesException,
     Measure
   ] void dispatch(
-      MLGraph graph, MLNamedBuffers inputs, MLNamedBuffers outputs);
+      MLGraph graph, MLNamedTensors inputs, MLNamedTensors outputs);
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState

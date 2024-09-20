@@ -33,6 +33,17 @@ FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
              : FedCmRequesterFrameType::kCrossSiteIframe;
 }
 
+FedCmMetrics::NumAccounts ComputeNumMatchingAccounts(
+    size_t accounts_remaining) {
+  if (accounts_remaining == 0u) {
+    return FedCmMetrics::NumAccounts::kZero;
+  }
+  if (accounts_remaining == 1u) {
+    return FedCmMetrics::NumAccounts::kOne;
+  }
+  return FedCmMetrics::NumAccounts::kMultiple;
+}
+
 }  // namespace
 
 FedCmMetrics::FedCmMetrics(ukm::SourceId page_source_id)
@@ -45,7 +56,7 @@ void FedCmMetrics::SetSessionID(int session_id) {
 }
 
 void FedCmMetrics::RecordShowAccountsDialogTime(
-    const std::vector<IdentityProviderData>& providers,
+    const std::vector<IdentityProviderDataPtr>& providers,
     base::TimeDelta duration) {
   DCHECK_GT(session_id_, 0);
   auto RecordUkm = [&](auto& ukm_builder) {
@@ -59,9 +70,9 @@ void FedCmMetrics::RecordShowAccountsDialogTime(
   for (const auto& provider : providers) {
     // A provider may have no accounts, for instance if present due to IDP
     // mismatch.
-    if (!provider.accounts.empty()) {
+    if (!provider->has_login_status_mismatch) {
       ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
-          GetOrCreateProviderSourceId(provider.idp_metadata.config_url));
+          GetOrCreateProviderSourceId(provider->idp_metadata.config_url));
       RecordUkm(fedcm_idp_builder);
     }
   }
@@ -142,7 +153,7 @@ void FedCmMetrics::RecordContinueOnPopupTime(const GURL& provider,
 }
 
 void FedCmMetrics::RecordCancelOnDialogTime(
-    const std::vector<IdentityProviderData>& providers,
+    const std::vector<IdentityProviderDataPtr>& providers,
     base::TimeDelta duration) {
   DCHECK_GT(session_id_, 0);
   auto RecordUkm = [&](auto& ukm_builder) {
@@ -156,7 +167,7 @@ void FedCmMetrics::RecordCancelOnDialogTime(
 
   for (const auto& provider : providers) {
     ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
-        GetOrCreateProviderSourceId(provider.idp_metadata.config_url));
+        GetOrCreateProviderSourceId(provider->idp_metadata.config_url));
     RecordUkm(fedcm_idp_builder);
   }
 
@@ -164,7 +175,7 @@ void FedCmMetrics::RecordCancelOnDialogTime(
 }
 
 void FedCmMetrics::RecordAccountsDialogShownDuration(
-    const std::vector<IdentityProviderData>& providers,
+    const std::vector<IdentityProviderDataPtr>& providers,
     base::TimeDelta duration) {
   DCHECK_GT(session_id_, 0);
   auto RecordUkm = [&](auto& ukm_builder) {
@@ -178,12 +189,11 @@ void FedCmMetrics::RecordAccountsDialogShownDuration(
 
   for (const auto& provider : providers) {
     ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
-        GetOrCreateProviderSourceId(provider.idp_metadata.config_url));
+        GetOrCreateProviderSourceId(provider->idp_metadata.config_url));
     // A provider may have no accounts and be present due to IDP mismatch.
-    if (!provider.accounts.empty()) {
+    if (!provider->has_login_status_mismatch) {
       RecordUkm(fedcm_idp_builder);
     } else {
-      DCHECK(provider.has_login_status_mismatch);
       fedcm_idp_builder.SetTiming_MismatchDialogShownDuration(
           ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
       fedcm_idp_builder.SetFedCmSessionID(session_id_);
@@ -200,7 +210,7 @@ void FedCmMetrics::RecordAccountsDialogShownDuration(
 }
 
 void FedCmMetrics::RecordMismatchDialogShownDuration(
-    const std::vector<IdentityProviderData>& providers,
+    const std::vector<IdentityProviderDataPtr>& providers,
     base::TimeDelta duration) {
   DCHECK_GT(session_id_, 0);
   auto RecordUkm = [&](auto& ukm_builder) {
@@ -215,7 +225,7 @@ void FedCmMetrics::RecordMismatchDialogShownDuration(
   for (const auto& provider : providers) {
     // We should only reach this if all `providers` are a mismatch.
     ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
-        GetOrCreateProviderSourceId(provider.idp_metadata.config_url));
+        GetOrCreateProviderSourceId(provider->idp_metadata.config_url));
     RecordUkm(fedcm_idp_builder);
   }
 
@@ -465,7 +475,7 @@ void FedCmMetrics::RecordAutoReauthnMetrics(
 }
 
 void FedCmMetrics::RecordAccountsDialogShown(
-    const std::vector<IdentityProviderData>& providers) {
+    const std::vector<IdentityProviderDataPtr>& providers) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetAccountsDialogShown(true);
     ukm_builder.SetFedCmSessionID(session_id_);
@@ -476,12 +486,12 @@ void FedCmMetrics::RecordAccountsDialogShown(
 
   for (const auto& provider : providers) {
     ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
-        GetOrCreateProviderSourceId(provider.idp_metadata.config_url));
+        GetOrCreateProviderSourceId(provider->idp_metadata.config_url));
     // A provider may have no accounts and be present due to IDP mismatch.
-    if (!provider.accounts.empty()) {
+    if (!provider->has_login_status_mismatch) {
       RecordUkm(fedcm_idp_builder);
     } else {
-      DCHECK(provider.has_login_status_mismatch);
+      DCHECK(provider->has_login_status_mismatch);
       fedcm_idp_builder.SetMismatchDialogShown(true);
       fedcm_idp_builder.SetFedCmSessionID(session_id_);
       fedcm_idp_builder.Record(ukm::UkmRecorder::Get());
@@ -696,6 +706,30 @@ void FedCmMetrics::RecordTimeBetweenUserInfoAndButtonModeAPI(
                                 duration);
 }
 
+void FedCmMetrics::RecordNumMatchingAccounts(size_t accounts_remaining,
+                                             const std::string& filter_type) {
+  FedCmMetrics::NumAccounts num_matching =
+      ComputeNumMatchingAccounts(accounts_remaining);
+  base::UmaHistogramEnumeration(
+      "Blink.FedCm." + filter_type + ".NumMatchingAccounts", num_matching);
+
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  if (filter_type == "LoginHint") {
+    fedcm_builder.SetLoginHint_NumMatchingAccounts(
+        static_cast<int>(num_matching));
+  } else if (filter_type == "AccountLabel") {
+    fedcm_builder.SetAccountLabel_NumMatchingAccounts(
+        static_cast<int>(num_matching));
+  } else if (filter_type == "DomainHint") {
+    fedcm_builder.SetDomainHint_NumMatchingAccounts(
+        static_cast<int>(num_matching));
+  } else {
+    NOTREACHED();
+  }
+  fedcm_builder.SetFedCmSessionID(session_id_);
+  fedcm_builder.Record(ukm::UkmRecorder::Get());
+}
+
 ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
   auto it = provider_source_ids_.find(provider);
   if (it != provider_source_ids_.end()) {
@@ -768,14 +802,14 @@ void RecordRawAccountsSize(int size) {
   CHECK_GT(size, 0);
   base::UmaHistogramCustomCounts("Blink.FedCm.AccountsSize.Raw", size,
                                  /*min=*/1,
-                                 /*max=*/10, /*buckets=*/10);
+                                 /*exclusive_max=*/10, /*buckets=*/10);
 }
 
 void RecordReadyToShowAccountsSize(int size) {
   CHECK_GT(size, 0);
   base::UmaHistogramCustomCounts("Blink.FedCm.AccountsSize.ReadyToShow", size,
                                  /*min=*/1,
-                                 /*max=*/10, /*buckets=*/10);
+                                 /*exclusive_max=*/10, /*buckets=*/10);
 }
 
 }  // namespace content

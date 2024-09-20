@@ -20,6 +20,9 @@ using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;
 using DismissCallback =
     content::IdentityRequestDialogController::DismissCallback;
+using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+using IdentityRequestAccountPtr =
+    scoped_refptr<content::IdentityRequestAccount>;
 using TokenError = content::IdentityCredentialTokenError;
 
 // The IdentityDialogController controls the views that are used across
@@ -42,10 +45,11 @@ class IdentityDialogController
   // content::IdentityRequestDialogController
   bool ShowAccountsDialog(
       const std::string& rp_for_display,
-      const std::vector<content::IdentityProviderData>& identity_provider_data,
+      const std::vector<IdentityProviderDataPtr>& identity_provider_data,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
       content::IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      const std::optional<content::IdentityProviderData>& new_account_idp,
+      const std::vector<IdentityRequestAccountPtr>& new_accounts,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
       DismissCallback dismiss_callback,

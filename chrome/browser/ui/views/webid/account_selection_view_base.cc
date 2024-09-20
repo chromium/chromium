@@ -457,7 +457,6 @@ void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
 
 std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     const content::IdentityRequestAccount& account,
-    const content::IdentityProviderData& idp_display_data,
     std::optional<int> clickable_position,
     bool should_include_idp,
     bool is_modal_dialog,
@@ -475,6 +474,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   auto account_image_view = std::make_unique<AccountImageView>();
   account_image_view->SetImageSize({avatar_size, avatar_size});
   CHECK(clickable_position || !should_include_idp);
+  const content::IdentityProviderData& idp_data = *account.identity_provider;
   if (clickable_position) {
     BrandIconImageView* brand_icon_image_view_ptr = nullptr;
     if (should_include_idp) {
@@ -510,7 +510,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
               background_color);
       brand_icon_image_view_ptr = brand_icon_image_view.get();
       ConfigureBrandImageView(brand_icon_image_view_ptr,
-                              idp_display_data.idp_metadata.brand_icon_url);
+                              idp_data.idp_metadata.brand_icon_url);
 
       icon_container->AddChildView(std::move(brand_icon_image_view));
 
@@ -540,10 +540,9 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
       if (last_used_string) {
         footer = l10n_util::GetStringFUTF16(
             IDS_MULTI_IDP_ACCOUNT_ORIGIN_AND_LAST_USED,
-            base::UTF8ToUTF16(idp_display_data.idp_for_display),
-            *last_used_string);
+            base::UTF8ToUTF16(idp_data.idp_for_display), *last_used_string);
       } else {
-        footer = base::UTF8ToUTF16(idp_display_data.idp_for_display);
+        footer = base::UTF8ToUTF16(idp_data.idp_for_display);
       }
     }
     // We can pass crefs to OnAccountSelected because the `observer_` owns the
@@ -552,7 +551,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         base::BindRepeating(
             &AccountSelectionViewBase::Observer::OnAccountSelected,
             base::Unretained(observer_), std::cref(account),
-            std::cref(idp_display_data)),
+            std::cref(idp_data)),
         std::move(avatar_view),
         /*title=*/base::UTF8ToUTF16(account.name),
         /*subtitle=*/base::UTF8ToUTF16(account.email),
@@ -626,7 +625,7 @@ void AccountSelectionViewBase::ConfigureBrandImageView(
 
 std::unique_ptr<views::StyledLabel>
 AccountSelectionViewBase::CreateDisclosureLabel(
-    const content::IdentityProviderData& idp_display_data) {
+    const content::IdentityProviderData& idp_data) {
   // It requires a StyledLabel so that we can add the links
   // to the privacy policy and terms of service URLs.
   std::unique_ptr<views::StyledLabel> disclosure_label =
@@ -640,8 +639,7 @@ AccountSelectionViewBase::CreateDisclosureLabel(
       views::CreateEmptyBorder(gfx::Insets::TLBR(5, 0, 0, 0)));
   disclosure_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 
-  const content::ClientMetadata& client_metadata =
-      idp_display_data.client_metadata;
+  const content::ClientMetadata& client_metadata = idp_data.client_metadata;
   int disclosure_resource_id = SelectDisclosureTextResourceId(
       client_metadata.privacy_policy_url, client_metadata.terms_of_service_url);
 
@@ -659,8 +657,8 @@ AccountSelectionViewBase::CreateDisclosureLabel(
 
   // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.
   std::vector<std::u16string> replacements = {
-      base::UTF8ToUTF16(idp_display_data.idp_for_display),
-      GetPermissionFieldsString(idp_display_data.disclosure_fields)};
+      base::UTF8ToUTF16(idp_data.idp_for_display),
+      GetPermissionFieldsString(idp_data.disclosure_fields)};
   replacements.insert(replacements.end(), link_data.size() * 2,
                       std::u16string());
 

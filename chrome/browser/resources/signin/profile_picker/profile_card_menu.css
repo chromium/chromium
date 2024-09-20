@@ -131,7 +131,7 @@ cr-dialog::part(dialog) {
     color: var(--google-grey-300);
   }
 
-  #actionMenu iron-icon {
+  #actionMenu cr-icon {
     --iron-icon-fill-color: var(--google-grey-500);
   }
 

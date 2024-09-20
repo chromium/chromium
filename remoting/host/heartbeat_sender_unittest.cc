@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "remoting/base/fake_oauth_token_getter.h"
 #include "remoting/base/protobuf_http_status.h"
+#include "remoting/host/heartbeat_service_client.h"
 #include "remoting/signaling/fake_signal_strategy.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
@@ -45,6 +46,7 @@ using SendHeartbeatResponseCallback =
 constexpr char kOAuthAccessToken[] = "fake_access_token";
 constexpr char kHostId[] = "fake_host_id";
 constexpr char kUserEmail[] = "fake_user@domain.com";
+constexpr char kScopes[] = "fake_scope";
 
 constexpr char kFtlId[] = "fake_user@domain.com/chromoting_ftl_abc123";
 
@@ -65,7 +67,6 @@ struct ValidateLegacyHeartbeatOptions {
   bool use_lite_heartbeat = false;
   std::string host_owner = "";
   std::optional<bool> require_session_auth = std::nullopt;
-  std::optional<bool> is_corp_user = std::nullopt;
 };
 
 void ValidateLegacyHeartbeat(
@@ -104,9 +105,6 @@ decltype(auto) DoValidateLegacyHeartbeatAndRespondOk(
       response->set_require_session_authorization(
           *options.require_session_auth);
     }
-    if (options.is_corp_user.has_value()) {
-      response->set_is_corp_user(*options.is_corp_user);
-    }
     std::move(callback).Run(ProtobufHttpStatus::OK(), std::move(response));
   };
 }
@@ -125,10 +123,20 @@ class MockDelegate : public HeartbeatSender::Delegate {
  public:
   MOCK_METHOD0(OnFirstHeartbeatSuccessful, void());
   MOCK_METHOD1(OnUpdateHostOwner, void(const std::string& host_owner));
-  MOCK_METHOD1(OnUpdateIsCorpUser, void(bool is_corp_user));
   MOCK_METHOD1(OnUpdateRequireSessionAuthorization, void(bool require));
   MOCK_METHOD0(OnHostNotFound, void());
   MOCK_METHOD0(OnAuthFailed, void());
+};
+
+class MockHeartbeatServiceClient : public HeartbeatServiceClient {
+ public:
+  MOCK_METHOD4(SendFullHeartbeat,
+               void(bool is_initial,
+                    std::optional<std::string> signaling_id,
+                    std::optional<std::string> offline_reason,
+                    HeartbeatResponseCallback callback));
+  MOCK_METHOD1(SendLiteHeartbeat, void(HeartbeatResponseCallback callback));
+  MOCK_METHOD0(CancelPendingRequests, void());
 };
 
 class MockObserver : public HeartbeatSender::Observer {
@@ -151,10 +159,11 @@ class HeartbeatSenderTest : public testing::Test {
 
     heartbeat_sender_ = std::make_unique<HeartbeatSender>(
         &mock_delegate_, kHostId, signal_strategy_.get(), &oauth_token_getter_,
-        mock_observer_.get(), nullptr, false);
+        std::make_unique<MockHeartbeatServiceClient>(), mock_observer_.get(),
+        nullptr, false);
     auto heartbeat_client = std::make_unique<MockHeartbeatClient>();
     mock_client_ = heartbeat_client.get();
-    heartbeat_sender_->client_ = std::move(heartbeat_client);
+    heartbeat_sender_->old_client_ = std::move(heartbeat_client);
   }
 
   ~HeartbeatSenderTest() override {
@@ -164,7 +173,7 @@ class HeartbeatSenderTest : public testing::Test {
   }
 
  protected:
-  class MockHeartbeatClient : public HeartbeatSender::HeartbeatClient {
+  class MockHeartbeatClient : public HeartbeatSender::OldHeartbeatClient {
    public:
     MOCK_METHOD2(LegacyHeartbeat,
                  void(std::unique_ptr<apis::v1::HeartbeatRequest>,
@@ -200,7 +209,8 @@ class HeartbeatSenderTest : public testing::Test {
   std::unique_ptr<HeartbeatSender> heartbeat_sender_;
 
   FakeOAuthTokenGetter oauth_token_getter_{OAuthTokenGetter::Status::SUCCESS,
-                                           kUserEmail, kOAuthAccessToken};
+                                           kUserEmail, kOAuthAccessToken,
+                                           kScopes};
 };
 
 TEST_F(HeartbeatSenderTest, SendHeartbeat) {
@@ -214,7 +224,6 @@ TEST_F(HeartbeatSenderTest, SendHeartbeat) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent());
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(0);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(0);
 
   signal_strategy_->Connect();
@@ -235,7 +244,6 @@ TEST_F(HeartbeatSenderTest, SendHeartbeat_WithFqdn) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent());
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(0);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(0);
 
   signal_strategy_->Connect();
@@ -254,7 +262,6 @@ TEST_F(HeartbeatSenderTest, SendHeartbeat_WithOwnerEmail) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent());
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(1);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(0);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(0);
 
   signal_strategy_->Connect();
@@ -273,7 +280,6 @@ TEST_F(HeartbeatSenderTest, SendHeartbeat_RequireSessionAuth) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent());
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(0);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(1);
 
   signal_strategy_->Connect();
@@ -283,7 +289,6 @@ TEST_F(HeartbeatSenderTest, SendHeartbeat_RequireSessionAuth) {
 TEST_F(HeartbeatSenderTest, SendHeartbeat_IsCorpUser) {
   ValidateLegacyHeartbeatOptions optionsFirst{
       .is_initial_heartbeat = true,
-      .is_corp_user = true,
   };
 
   EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
@@ -292,7 +297,6 @@ TEST_F(HeartbeatSenderTest, SendHeartbeat_IsCorpUser) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent());
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(0);
 
   signal_strategy_->Connect();
@@ -315,7 +319,6 @@ TEST_F(HeartbeatSenderTest, SignalingReconnect_NewHeartbeats) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(0);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(0);
 
   signal_strategy_->Connect();
@@ -345,7 +348,6 @@ TEST_F(HeartbeatSenderTest, SignalingReconnect_NewHeartbeats_Lite) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(0);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(0);
 
   signal_strategy_->Connect();
@@ -362,7 +364,6 @@ TEST_F(HeartbeatSenderTest, SignalingReconnect_NewHeartbeats_Googler) {
       .is_initial_heartbeat = true,
       .set_fqdn = true,
       .require_session_auth = true,
-      .is_corp_user = true,
   };
   ValidateLegacyHeartbeatOptions options{
       .set_fqdn = true,
@@ -378,7 +379,6 @@ TEST_F(HeartbeatSenderTest, SignalingReconnect_NewHeartbeats_Googler) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(1);
 
   signal_strategy_->Connect();
@@ -404,7 +404,6 @@ TEST_F(HeartbeatSenderTest, Signaling_MultipleHeartbeats) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(0);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(0);
 
   signal_strategy_->Connect();
@@ -418,7 +417,6 @@ TEST_F(HeartbeatSenderTest, Signaling_MultipleHeartbeats_Googler) {
       .is_initial_heartbeat = true,
       .set_fqdn = true,
       .require_session_auth = true,
-      .is_corp_user = true,
   };
   ValidateLegacyHeartbeatOptions options{
       .set_fqdn = true,
@@ -434,7 +432,6 @@ TEST_F(HeartbeatSenderTest, Signaling_MultipleHeartbeats_Googler) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(1);
 
   signal_strategy_->Connect();
@@ -457,7 +454,6 @@ TEST_F(HeartbeatSenderTest, Signaling_MultipleHeartbeats_Lite) {
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(0);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(0);
 
   signal_strategy_->Connect();
@@ -487,7 +483,6 @@ TEST_F(HeartbeatSenderTest, SetHostOfflineReason) {
   EXPECT_CALL(mock_ack_callback, Run(_)).Times(1);
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
   EXPECT_CALL(mock_delegate_, OnUpdateHostOwner(_)).Times(0);
-  EXPECT_CALL(mock_delegate_, OnUpdateIsCorpUser(_)).Times(0);
   EXPECT_CALL(mock_delegate_, OnUpdateRequireSessionAuthorization(_)).Times(0);
 
   signal_strategy_->Connect();

@@ -56,6 +56,8 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
   // content::WebContentsObserver:
   void AccessibilityEventReceived(
       const ui::AXUpdatesAndEvents& details) override;
+  void AccessibilityLocationChangesReceived(
+      const std::vector<ui::AXLocationChanges>& details) override;
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
 
@@ -99,6 +101,8 @@ class ReadAnythingUntrustedPageHandler :
   ~ReadAnythingUntrustedPageHandler() override;
 
   void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
+  void AccessibilityLocationChangesReceived(
+      const std::vector<ui::AXLocationChanges>& details);
   void PrimaryPageChanged();
   void WebContentsDestroyed();
 
@@ -122,6 +126,8 @@ class ReadAnythingUntrustedPageHandler :
   void TreeRemoved(ui::AXTreeID ax_tree_id) override;
 
   // read_anything::mojom::UntrustedPageHandler:
+  void GetDependencyParserModel(
+      GetDependencyParserModelCallback callback) override;
   void GetVoicePackInfo(const std::string& language,
                         GetVoicePackInfoCallback mojo_remote_callback) override;
   void InstallVoicePack(const std::string& language,
@@ -222,6 +228,16 @@ class ReadAnythingUntrustedPageHandler :
   base::ScopedObservation<translate::TranslateDriver,
                           translate::TranslateDriver::LanguageDetectionObserver>
       translate_observation_{this};
+
+  // Called to notify this instance that the dependency parser loader
+  // is available for model requests or is invalidating existing requests
+  // specified by "is_available". The "callback" will be either forwarded to a
+  // request to get the actual model file or will be run with an empty file if
+  // the dependency parser loader is rejecting requests because the pending
+  // model request queue is already full (100 requests maximum).
+  void OnDependencyParserModelFileAvailabilityChanged(
+      GetDependencyParserModelCallback callback,
+      bool is_available);
 
   base::WeakPtrFactory<ReadAnythingUntrustedPageHandler> weak_factory_{this};
 };

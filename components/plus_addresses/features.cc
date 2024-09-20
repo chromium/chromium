@@ -18,6 +18,7 @@ constexpr char kPlusAddressLearnMoreUrlName[] = "learn-more";
 constexpr char kPlusAddressExcludedSitesName[] = "excluded-sites";
 constexpr char kPlusAddressErrorReportUrlName[] = "error-report-url";
 constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
+constexpr char kShowForwardingEmailInSuggestionName[] = "show-forwarding-email";
 
 }  // namespace
 
@@ -34,13 +35,6 @@ BASE_FEATURE(kPlusAddressAndroidManualFallbackEnabled,
              "PlusAddressAndroidManualFallbackEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// When enabled, autofill stops overriding single field form fill suggestions
-// with plus address suggestions. Instead, it shows them together in the same
-// context menu.
-BASE_FEATURE(kPlusAddressAndSingleFieldFormFill,
-             "PlusAddressAndSingleFieldFormFill",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Chrome will fetch the blocklist data using the Component
 // Updater and employ that for blocking Plus Addresses. Otherwise, the blocklist
@@ -72,6 +66,14 @@ const base::FeatureParam<bool> kDisableForForbiddenUsers{
 // When enabled, plus addresses are supported within the context menu.
 BASE_FEATURE(kPlusAddressFallbackFromContextMenu,
              "PlusAddressFallbackFromContextMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, if the user has an existing plus address for the current
+// domain, address profile suggestions will be updated to reflect the plus
+// address email instead of the stored one. Note that only profile emails
+// matching the user's GAIA account will be replaced.
+BASE_FEATURE(kPlusAddressFullFormFill,
+             "PlusAddressFullFormFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the `PlusAddressSettingService` will be consulted on whether
@@ -131,11 +133,23 @@ BASE_FEATURE(kPlusAddressProfileAwareFeatureCheck,
              "PlusAddressProfileAwareFeatureCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, creation suggestions do not contain a label prior to the user
+// acknowledging the notice.
+BASE_FEATURE(kPlusAddressSuggestionRedesign,
+             "PlusAddressSuggestionRedesign",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If set to `true`, then labels, when shown, contain information about the
+// forwarding address.
+const base::FeatureParam<bool> kShowForwardingEmailInSuggestion{
+    &kPlusAddressSuggestionRedesign, kShowForwardingEmailInSuggestionName,
+    false};
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// When enabled, plus address settings on Desktop are nested under address
-// autofill and the label for the autofill settings entry gains a subtitle.
-BASE_FEATURE(kPlusAddressSettingsRefreshDesktop,
-             "PlusAddressSettingsRefreshDesktop",
+// When enabled, we show refined error states in the onboarding dialog on
+// Desktop.
+BASE_FEATURE(kPlusAddressUpdatedErrorStatesInOnboardingModal,
+             "PlusAddressUpdatedErrorStatesInOnboardingModal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

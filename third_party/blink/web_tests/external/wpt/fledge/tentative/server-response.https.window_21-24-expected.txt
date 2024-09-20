@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Basic B&A auction - negative bid is bad
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - zero bid is bad
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - winning group did not bid
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - negative bidding group index
+  assert_true: valid key Id expected true got false
+Harness: the test ran to completion.
+

@@ -67,6 +67,9 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
       WebStateStorageIterationCompleteCallback done) final;
 
  private:
+  // Helper type used to record information about an orphaned WebState.
+  struct OrphanInfo;
+
   // Helper type used to record information about a single WebStateList.
   class WebStateListInfo;
 
@@ -74,6 +77,9 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   // contained WebStates (see SessionRestorationWebStateListObserver for
   // details).
   void MarkWebStateListDirty(WebStateList* web_state_list);
+
+  // Updates the map of orphaned WebStates.
+  void UpdateOrphanInfoMap();
 
   // Helper method that post a task to save state to storage.
   void SaveDirtySessions();
@@ -110,6 +116,9 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
 
   // Used to enforce that the identifier are not shared between Browser.
   std::set<std::string> identifiers_;
+
+  // Information about orphaned WebStates.
+  std::map<web::WebStateID, OrphanInfo> orphaned_map_;
 
   // List of pending requests from CreateUnrealizedWebState(...).
   ios::sessions::IORequestList pending_requests_;

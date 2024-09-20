@@ -20,7 +20,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
-namespace content {
+namespace content::indexed_db {
 
 class CONTENT_EXPORT IndexedDBExternalObject {
  public:
@@ -29,7 +29,7 @@ class CONTENT_EXPORT IndexedDBExternalObject {
 
   // Partially converts a list of |objects| to their mojo representation. The
   // mojo representation won't be complete until later
-  // IndexedDBBucketContext::CreateAllExternalObjects is also called with the
+  // BucketContext::CreateAllExternalObjects is also called with the
   // same parameters.
   static void ConvertToMojo(
       const std::vector<IndexedDBExternalObject>& objects,
@@ -151,6 +151,6 @@ class CONTENT_EXPORT IndexedDBExternalObject {
   base::RepeatingClosure release_callback_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_EXTERNAL_OBJECT_H_

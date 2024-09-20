@@ -510,6 +510,14 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromProductSpecifications"));
       break;
+    case AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromAccountMenuFailedSwitch"));
+      break;
+    case AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromAddressBubble"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION();
       break;
@@ -648,6 +656,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromProductSpecifications"));
       break;
+    case AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromAddressBubble"));
+      break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:
     case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
@@ -679,6 +691,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
     case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+    case AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION() << "Signin_Impression_From* user actions"
                                 << " are not recorded for access point "

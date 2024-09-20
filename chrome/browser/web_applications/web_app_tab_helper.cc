@@ -207,6 +207,32 @@ void WebAppTabHelper::OnWebAppInstallManagerDestroyed() {
   SetAppId(std::nullopt);
 }
 
+void WebAppTabHelper::InitForTabFeatures(tabs::TabInterface* tab) {
+  tab_subscriptions_.push_back(tab->RegisterDidEnterForeground(
+      base::BindRepeating(&WebAppTabHelper::TabDidEnterForeground,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab->RegisterWillEnterBackground(
+      base::BindRepeating(&WebAppTabHelper::TabWillEnterBackground,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab->RegisterWillDetach(base::BindRepeating(
+      &WebAppTabHelper::WillDetach, weak_factory_.GetWeakPtr())));
+}
+
+void WebAppTabHelper::TabDidEnterForeground(tabs::TabInterface* tab) {}
+
+void WebAppTabHelper::TabWillEnterBackground(tabs::TabInterface* tab) {}
+
+void WebAppTabHelper::WillDetach(tabs::TabInterface* tab,
+                                 tabs::TabInterface::DetachReason reason) {
+  switch (reason) {
+    case tabs::TabInterface::DetachReason::kDelete:
+      tab_subscriptions_.clear();
+      break;
+    case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
+      break;
+  }
+}
+
 void WebAppTabHelper::OnAssociatedAppChanged(
     const std::optional<webapps::AppId>& previous_app_id,
     const std::optional<webapps::AppId>& new_app_id) {

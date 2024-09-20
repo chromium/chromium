@@ -62,9 +62,6 @@
 // copy of the MojoSystemThunks struct definition.
 struct MojoSystemThunks2;
 
-// DEPRECATED: Use MojoSystemThunks2.
-struct MojoSystemThunks;
-
 namespace ash {
 namespace ime {
 
@@ -137,13 +134,7 @@ class ImeCrosPlatform {
                                      const char* file_path,
                                      SimpleDownloadCallbackV2 callback) = 0;
 
-  // DEPRECATED: Use GetMojoSystemThunks2.
-  // Returns a pointer to the Mojo system thunks.
-  // The shared library can use this pointer for its own Mojo environment in
-  // order to communicate directly with the browser process.
-  // MojoSystemThunks has a stable ABI, hence it is safe to use it from the
-  // shared library
-  virtual const MojoSystemThunks* GetMojoSystemThunks() = 0;
+  virtual const void* Unused4() = 0;
 
   // Retrieves the string value of a CrOS feature's Finch param. Only a subset
   // of CrOS features are considered (see impl for details). |feature_name| is

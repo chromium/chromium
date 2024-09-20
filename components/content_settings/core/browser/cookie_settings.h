@@ -254,6 +254,9 @@ class CookieSettings
 
   void OnCookiePreferencesChanged();
 
+  // Updates the status of cookies deprecation mitigations.
+  void OnMitigationsEnabledChanged();
+
   // content_settings::CookieSettingsBase:
   bool ShouldAlwaysAllowCookies(const GURL& url,
                                 const GURL& first_party_url) const override;

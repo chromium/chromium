@@ -29,6 +29,9 @@ enum class ClusteringRequestSource {
 struct QueryClustersFilterParams {
   QueryClustersFilterParams();
   QueryClustersFilterParams(const QueryClustersFilterParams&);
+  QueryClustersFilterParams(QueryClustersFilterParams&&);
+  QueryClustersFilterParams& operator=(const QueryClustersFilterParams&);
+  QueryClustersFilterParams& operator=(QueryClustersFilterParams&&);
   ~QueryClustersFilterParams();
 
   // Parameters related to the minimum requirements for returned clusters.

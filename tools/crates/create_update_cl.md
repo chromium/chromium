@@ -13,6 +13,12 @@ up-to-date Chromium repo.  One way to start a shift is to run `git fetch`,
 `git checkout origin/main`, and `gclient sync` (but other workflows should also
 work - e.g. ones based on `git-new-workdir`).
 
+## Avoiding Conflicts
+
+Before creating a CL stack, check for open CLs with the [`cratesio-autoupdate`
+tag](https://chromium-review.googlesource.com/q/hashtag:%22cratesio-autoupdate%22+(status:open%20OR%20status:merged)).
+Such CLs tend to conflict, so coordinate with owners of any open CLs.
+
 ## Automated step: `create_update_cl.py`
 
 The first actual step of the rotation is running the script:
@@ -109,11 +115,39 @@ closest to `origin/main`):
 1. `git commit -m 'cargo vet'`
 1. `git cl upload -m 'cargo vet'`
 
+## New transitive dependencies
+
+If the roll brings in a new transitive dependency, it will need to be
+audited in its entirety and the results recorded in
+`third_party/rust/chromium_crates_io/supply-chain/audits.toml`.
+
+The addition of transitive Rust dependencies does not need ATL approval,
+but an FYI email should be sent to
+[chrome-atls-discuss@google.com](mailto:chrome-atls-discuss@google.com)
+in order to record the addition.
+
+### Optional: Adding the transitive dependency in its own CL.
+
+If the crate and/or audit are non-trivial, it's possible to split the
+additional crate into its own CL, however then it will default to global
+visibility and allowing non-test use.
+* `gnrt add` and `gnrt vendor` can add the dependency to a fresh checkout.
+* Mark the crate as being for third-party code only by setting
+  `allow_first_party_usage` to `false` for the crate in
+  `third_party/rust/chromium_crates_io/gnrt_config.toml`.
+* If the crates making use of the transitive dependency are only allowed
+  in tests, then set `group = 'test'` for the crate in
+  `third_party/rust/chromium_crates_io/gnrt_config.toml`. This reduces
+  the level of security review required for the library.
+* `gnrt gen` will then generate the GN rules.
+* Rebase the roll CL on top of the changes to make sure the choices made above
+  are correct. `gn gen` will fail in CQ if the crate was placed in the `'test'`
+  group but needs to be visible outside of tests.
+
 ## Potential additional steps
 
-* If updating `cxx`, you may need to also update its version in:
-    - `build/rust/BUILD.gn`
-    - `third_party/rust/cxx/v1/cxx.h`
+* If updating `cxx`, you will also need to update its version in
+    - `build/rust/cxx_version.gni`
 
 * The `create_update_cl.py` script may stop early if it detects that `gnrt
   vendor` or `gnrt gen` have reported any warnings or errors (e.g. a "License

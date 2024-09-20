@@ -32,7 +32,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -112,11 +114,30 @@ class TabListViewBinder {
             ((TextView) view.findViewById(R.id.description)).setText(domain);
         } else if (TabProperties.TAB_GROUP_COLOR_ID == propertyKey) {
             setTabGroupColorIcon(view, model);
-        } else if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
-            TabGridViewBinder.setNullableClickListener(
-                    model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER),
-                    view.findViewById(R.id.end_button),
-                    model);
+        } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
+            @Nullable TabActionButtonData data = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+            @Nullable
+            TabActionListener tabActionListener = data == null ? null : data.tabActionListener;
+            ImageView actionButton = view.findViewById(R.id.end_button);
+            TabGridViewBinder.setNullableClickListener(tabActionListener, actionButton, model);
+
+            if (data == null) return;
+
+            Resources res = view.getResources();
+            if (data.type == TabActionButtonType.OVERFLOW) {
+                actionButton.setImageDrawable(
+                        ResourcesCompat.getDrawable(
+                                res, R.drawable.ic_more_vert_24dp, view.getContext().getTheme()));
+            } else if (data.type == TabActionButtonType.CLOSE) {
+                int closeButtonSize = (int) res.getDimension(R.dimen.tab_grid_close_button_size);
+                Bitmap bitmap = BitmapFactory.decodeResource(res, R.drawable.btn_close);
+                Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
+                actionButton.setImageBitmap(bitmap);
+            } else if (data.type == TabActionButtonType.SELECT) {
+                // Intentional no-op. Handled as part of setTabActionState.
+            } else {
+                assert false : "Not reached";
+            }
         } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
             TabGridViewBinder.setNullableClickListener(
                     model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
@@ -137,7 +158,8 @@ class TabListViewBinder {
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
         bindListTab(model, view, propertyKey);
 
-        if (TabProperties.IS_SELECTED == propertyKey) {
+        if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             ImageView closeButton = view.findViewById(R.id.end_button);
             ImageViewCompat.setImageTintList(
                     closeButton,
@@ -149,28 +171,6 @@ class TabListViewBinder {
             view.findViewById(R.id.end_button)
                     .setContentDescription(
                             model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING));
-        } else if (TabProperties.TAB_GROUP_INFO == propertyKey
-                || TabProperties.TAB_ID == propertyKey) {
-            @Nullable TabGroupInfo tabGroupInfo = model.get(TabProperties.TAB_GROUP_INFO);
-            ImageView actionButton = view.findViewById(R.id.end_button);
-            Resources res = view.getResources();
-
-            // Only change the drawable if the property key in question is for tab groups.
-            if (TabProperties.TAB_GROUP_INFO == propertyKey) {
-                if (tabGroupInfo.getIsTabGroup()) {
-                    actionButton.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    res,
-                                    R.drawable.ic_more_vert_24dp,
-                                    view.getContext().getTheme()));
-                } else {
-                    int closeButtonSize =
-                            (int) res.getDimension(R.dimen.tab_grid_close_button_size);
-                    Bitmap bitmap = BitmapFactory.decodeResource(res, R.drawable.btn_close);
-                    Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
-                    actionButton.setImageBitmap(bitmap);
-                }
-            }
         }
     }
 
@@ -229,7 +229,8 @@ class TabListViewBinder {
         if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             tabListView.setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
             tabListView.setItem(tabId);
-        } else if (TabProperties.IS_SELECTED == propertyKey) {
+        } else if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             boolean isSelected = model.get(TabProperties.IS_SELECTED);
             boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
             ImageView actionButton = view.findViewById(R.id.end_button);

@@ -231,6 +231,8 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // suggestion. If `false` the content part is not highlighted separately,
   // but the whole row is highlighted instead as for the control view.
   const bool suggestion_is_acceptable_;
+
+  const bool highlight_on_select_;
 };
 
 }  // namespace autofill

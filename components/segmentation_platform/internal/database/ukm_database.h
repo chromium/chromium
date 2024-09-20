@@ -99,6 +99,11 @@ class UkmDatabase {
   // URLs are removed when there are no references to the metrics.
   virtual void DeleteEntriesOlderThan(base::Time time) = 0;
 
+  // Cleans up old items from the database. Only cleans up UMA entries. UKM
+  // entries still uses `DeleteEntriesOlderThan()` instead.
+  virtual void CleanupItems(const std::string& profile_id,
+                            std::vector<CleanupItem> cleanup_items) = 0;
+
   virtual void CommitTransactionForTesting() = 0;
 };
 

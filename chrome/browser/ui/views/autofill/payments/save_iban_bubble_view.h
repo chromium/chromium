@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -24,6 +25,7 @@ namespace autofill {
 // Account Number) value that Autofill has not previously saved.
 class SaveIbanBubbleView : public AutofillLocationBarBubble,
                            public views::TextfieldController {
+  METADATA_HEADER(SaveIbanBubbleView, AutofillLocationBarBubble)
  public:
   // Bubble will be anchored to `anchor_view`.
   SaveIbanBubbleView(views::View* anchor_view,
@@ -32,6 +34,7 @@ class SaveIbanBubbleView : public AutofillLocationBarBubble,
 
   SaveIbanBubbleView(const SaveIbanBubbleView&) = delete;
   SaveIbanBubbleView& operator=(const SaveIbanBubbleView&) = delete;
+  ~SaveIbanBubbleView() override;
 
   void Show(DisplayReason reason);
 
@@ -48,7 +51,6 @@ class SaveIbanBubbleView : public AutofillLocationBarBubble,
                        const std::u16string& new_contents) override;
 
  protected:
-  ~SaveIbanBubbleView() override;
 
   virtual void CreateMainContentView();
 

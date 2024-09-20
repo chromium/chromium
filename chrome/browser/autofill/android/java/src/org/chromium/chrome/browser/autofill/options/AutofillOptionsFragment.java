@@ -28,8 +28,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     public static final String AUTOFILL_OPTIONS_REFERRER = "autofill-options-referrer";
     public static final String PREF_AUTOFILL_THIRD_PARTY_FILLING = "autofill_third_party_filling";
     public static final String PREF_THIRD_PARTY_TOGGLE_HINT = "third_party_toggle_hint";
-    public static final String PREF_THIRD_PARTY_TOGGLE_INCOGNITO_NOTE =
-            "third_party_toggle_incognito_note";
 
     private @AutofillOptionsReferrer int mReferrer;
 
@@ -71,12 +69,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         TextMessagePreference hint = findPreference(PREF_THIRD_PARTY_TOGGLE_HINT);
         assert hint != null;
         return hint;
-    }
-
-    TextMessagePreference getIncognitoNote() {
-        TextMessagePreference note = findPreference(PREF_THIRD_PARTY_TOGGLE_INCOGNITO_NOTE);
-        assert note != null;
-        return note;
     }
 
     @Override

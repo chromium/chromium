@@ -11,7 +11,7 @@ export function getHtml(this: CrIconsetElement) {
 <svg id="baseSvg" xmlns="http://www.w3.org/2000/svg"
      viewBox="0 0 ${this.size} ${this.size}"
      preserveAspectRatio="xMidYMid meet" focusable="false"
-     style="pointer-events: none; display: block; width: 100%; height 100%;">
+     style="pointer-events: none; display: block; width: 100%; height: 100%;">
  </svg>
 <slot></slot>
 `;

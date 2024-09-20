@@ -83,21 +83,18 @@
                URL:base::SysUTF8ToNSString(_node->url().spec())
         folderName:bookmark_utils_ios::TitleForBookmarkNode(_node->parent())];
   _viewController.delegate = self;
-  ChromeBrowserState* browserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(browserState);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+      ios::BookmarkModelFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
 
   _mediator = [[BookmarksEditorMediator alloc]
       initWithBookmarkModel:bookmarkModel
                bookmarkNode:_node
-                      prefs:browserState->GetPrefs()
-      authenticationService:AuthenticationServiceFactory::GetForBrowserState(
-                                browserState)
+                      prefs:profile->GetPrefs()
+      authenticationService:AuthenticationServiceFactory::GetForProfile(profile)
                 syncService:syncService
-               browserState:browserState];
+                    profile:profile];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _mediator.snackbarCommandsHandler = _snackbarCommandsHandler;

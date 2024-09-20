@@ -183,8 +183,7 @@ class NigoriDataTypeProcessorTest : public testing::Test {
   NigoriDataTypeProcessor processor_;
 };
 
-TEST_F(NigoriDataTypeProcessorTest,
-       ShouldTrackTheMetadataWhenInitialSyncDone) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldTrackTheMetadataWhenInitialSyncDone) {
   // Build a data type state with a specific cache guid.
   const std::string kOtherCacheGuid = "cache_guid";
   sync_pb::DataTypeState data_type_state;

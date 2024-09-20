@@ -30,7 +30,8 @@ void PopulateChromeRootStoreLogsAsync(
     x509_certificate_model::X509CertificateModel model(
         net::x509_util::CreateCryptoBuffer(cert_info->cert), "");
     cert_infos.push_back(certificate_manager_v2::mojom::SummaryCertInfo::New(
-        cert_info->sha256hash_hex, model.GetTitle()));
+        cert_info->sha256hash_hex, model.GetTitle(),
+        /*is_deletable=*/false));
   }
   std::move(callback).Run(std::move(cert_infos));
 }

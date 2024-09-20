@@ -72,8 +72,9 @@ const ConnectionAttempts& HttpStreamRequest::connection_attempts() const {
 
 void HttpStreamRequest::AddConnectionAttempts(
     const ConnectionAttempts& attempts) {
-  for (const auto& attempt : attempts)
+  for (const auto& attempt : attempts) {
     connection_attempts_.push_back(attempt);
+  }
 }
 
 WebSocketHandshakeStreamBase::CreateHelper*

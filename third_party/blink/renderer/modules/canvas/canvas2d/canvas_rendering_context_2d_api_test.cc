@@ -349,20 +349,24 @@ TEST_F(CanvasRenderingContext2DAPITest, GetImageDataTooBig) {
 TEST_F(CanvasRenderingContext2DAPITest,
        GetImageDataIntegerOverflowNegativeParams) {
   CreateContext(kNonOpaque);
-  DummyExceptionStateForTesting exception_state;
   ImageDataSettings* settings = ImageDataSettings::Create();
-  ImageData* image_data = Context2D()->getImageData(
-      1, -2147483647, 1, -2147483647, settings, exception_state);
-  EXPECT_EQ(nullptr, image_data);
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
+  {
+    DummyExceptionStateForTesting exception_state;
+    ImageData* image_data = Context2D()->getImageData(
+        1, -2147483647, 1, -2147483647, settings, exception_state);
+    EXPECT_EQ(nullptr, image_data);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
+  }
 
-  exception_state.ClearException();
-  image_data = Context2D()->getImageData(-2147483647, 1, -2147483647, 1,
-                                         settings, exception_state);
-  EXPECT_EQ(nullptr, image_data);
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
+  {
+    DummyExceptionStateForTesting exception_state;
+    ImageData* image_data = Context2D()->getImageData(
+        -2147483647, 1, -2147483647, 1, settings, exception_state);
+    EXPECT_EQ(nullptr, image_data);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
+  }
 }
 
 // Checks `CreateImageBitmap` throws an exception if called inside a layer.

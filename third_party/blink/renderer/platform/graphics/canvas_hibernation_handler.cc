@@ -162,7 +162,7 @@ void CanvasHibernationHandler::SaveForHibernation(
       GetMainThreadTaskRunner(), FROM_HERE,
       base::BindOnce(&CanvasHibernationHandler::OnAfterHibernation,
                      weak_ptr_factory_.GetWeakPtr(), epoch_),
-      kBeforeCompressionDelay);
+      before_compression_delay_);
 }
 
 void CanvasHibernationHandler::OnAfterHibernation(uint64_t epoch) {
@@ -198,14 +198,16 @@ void CanvasHibernationHandler::OnEncoded(
     std::unique_ptr<CanvasHibernationHandler::BackgroundTaskParams> params,
     sk_sp<SkData> encoded) {
   DCheckInvariant();
-  // Discard the compressed image, it is no longer current.
-  if (params->epoch != epoch_ || !IsHibernating()) {
-    return;
+  // Store the compressed image if it is still current.
+  if (params->epoch == epoch_ && IsHibernating()) {
+    DCHECK_EQ(image_.get(), params->image.get());
+    encoded_ = encoded;
+    image_ = nullptr;
   }
 
-  DCHECK_EQ(image_.get(), params->image.get());
-  encoded_ = encoded;
-  image_ = nullptr;
+  if (on_encoded_callback_for_testing_) {
+    on_encoded_callback_for_testing_.Run();
+  }
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

@@ -13,8 +13,11 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
+#include "build/build_config.h"
 #include "components/language_detection/core/language_detection_provider.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 #include "services/on_device_model/ml/chrome_ml.h"
@@ -26,10 +29,40 @@ using on_device_model::mojom::LoadModelResult;
 
 namespace ml {
 
-TsModel::TsModel(
-    const ChromeML& chrome_ml,
-    std::unique_ptr<translate::LanguageDetectionModel> language_detector)
-    : chrome_ml_(chrome_ml), language_detector_(std::move(language_detector)) {}
+class TsModel final : public on_device_model::mojom::TextSafetyModel {
+ public:
+  ~TsModel() override;
+
+  static std::unique_ptr<TsModel> Create(
+      const ChromeML& chrome_ml,
+      on_device_model::mojom::TextSafetyModelParamsPtr params);
+
+  // on_device_model::mojom::TextSafetyModel
+  void ClassifyTextSafety(const std::string& text,
+                          ClassifyTextSafetyCallback callback) override;
+  void DetectLanguage(const std::string& text,
+                      DetectLanguageCallback callback) override;
+
+  on_device_model::mojom::SafetyInfoPtr ClassifyTextSafety(
+      const std::string& text);
+  on_device_model::mojom::LanguageDetectionResultPtr DetectLanguage(
+      std::string_view text);
+
+ private:
+  explicit TsModel(const ChromeML& chrome_ml);
+  bool InitLanguageDetection(
+      on_device_model::mojom::LanguageModelAssetsPtr assets);
+  bool InitTextSafetyModel(
+      on_device_model::mojom::TextSafetyModelAssetsPtr assets);
+
+  const raw_ref<const ChromeML> chrome_ml_;
+  ChromeMLTSModel model_ = 0;
+  std::unique_ptr<translate::LanguageDetectionModel> language_detector_;
+  base::MemoryMappedFile data_;
+  base::MemoryMappedFile sp_model_;
+};
+
+TsModel::TsModel(const ChromeML& chrome_ml) : chrome_ml_(chrome_ml) {}
 
 DISABLE_CFI_DLSYM
 TsModel::~TsModel() {
@@ -39,50 +72,59 @@ TsModel::~TsModel() {
 }
 
 // static
-base::SequenceBound<std::unique_ptr<TsModel>> TsModel::Create(
+std::unique_ptr<TsModel> TsModel::Create(
     const ChromeML& chrome_ml,
-    on_device_model::mojom::ModelAssetsPtr ts_assets,
-    base::File language_detection_file) {
-  std::unique_ptr<translate::LanguageDetectionModel> language_detector;
-  if (language_detection_file.IsValid()) {
-    language_detector = std::make_unique<translate::LanguageDetectionModel>(
-        &language_detection::GetLanguageDetectionModel());
-    language_detector->UpdateWithFile(std::move(language_detection_file));
-    if (!language_detector->IsAvailable()) {
-      return {};
-    }
-  }
-
-  auto ts_model =
-      base::WrapUnique(new TsModel(chrome_ml, std::move(language_detector)));
-
-  if (ts_assets &&
-      (!ts_assets->ts_data.IsValid() || !ts_assets->ts_sp_model.IsValid() ||
-       !ts_model->data_.Initialize(std::move(ts_assets->ts_data)) ||
-       !ts_model->sp_model_.Initialize(std::move(ts_assets->ts_sp_model)) ||
-       !ts_model->data_.IsValid() || !ts_model->sp_model_.IsValid())) {
+    on_device_model::mojom::TextSafetyModelParamsPtr params) {
+  auto ts_model = base::WrapUnique(new TsModel(chrome_ml));
+  if (params->language_assets &&
+      !ts_model->InitLanguageDetection(std::move(params->language_assets))) {
     return {};
   }
-  base::SequenceBound<std::unique_ptr<TsModel>> result(
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-      std::move(ts_model));
-  if (ts_assets) {
-    result.AsyncCall(&TsModel::InitTextSafetyModel);
+  if (params->ts_assets &&
+      !ts_model->InitTextSafetyModel(std::move(params->ts_assets))) {
+    return {};
   }
-  return result;
+  return ts_model;
+}
+
+bool TsModel::InitLanguageDetection(
+    on_device_model::mojom::LanguageModelAssetsPtr assets) {
+#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/356380874): UpdateWithFile does not exist for iOS there is
+  // an async version but its not clear how we get this to work with the
+  // sequence bound object.
+  NOTIMPLEMENTED();
+  return {};
+#else
+  language_detector_ = std::make_unique<translate::LanguageDetectionModel>(
+      &language_detection::GetLanguageDetectionModel());
+  language_detector_->UpdateWithFile(std::move(assets->model));
+  return language_detector_->IsAvailable();
+#endif
 }
 
 DISABLE_CFI_DLSYM
-void TsModel::InitTextSafetyModel() {
+bool TsModel::InitTextSafetyModel(
+    on_device_model::mojom::TextSafetyModelAssetsPtr assets) {
+  if (!data_.Initialize(std::move(assets->data)) ||
+      !sp_model_.Initialize(std::move(assets->sp_model))) {
+    return false;
+  }
   ChromeMLTSModelDescriptor desc = {
       .model = {.data = data_.data(), .size = data_.length()},
       .sp_model = {.data = sp_model_.data(), .size = sp_model_.length()},
   };
   model_ = chrome_ml_->api().ts_api.CreateModel(&desc);
-  // TODO: b/326240401 - This happens off the main thread so the error does not
-  // get propagated. Refactor the loading code if we want to avoid crashing
-  // here.
-  CHECK(model_);
+  return bool(model_);
+}
+
+void TsModel::ClassifyTextSafety(const std::string& text,
+                                 ClassifyTextSafetyCallback callback) {
+  std::move(callback).Run(ClassifyTextSafety(text));
+}
+void TsModel::DetectLanguage(const std::string& text,
+                             DetectLanguageCallback callback) {
+  std::move(callback).Run(DetectLanguage(text));
 }
 
 DISABLE_CFI_DLSYM
@@ -123,6 +165,27 @@ on_device_model::mojom::LanguageDetectionResultPtr TsModel::DetectLanguage(
       language_detector_->DetectLanguage(base::UTF8ToUTF16(text));
   return on_device_model::mojom::LanguageDetectionResult::New(
       prediction.language, prediction.score);
+}
+
+TsHolder::TsHolder(raw_ref<const ChromeML> chrome_ml) : chrome_ml_(chrome_ml) {}
+TsHolder::~TsHolder() = default;
+
+// static
+base::SequenceBound<TsHolder> TsHolder::Create(
+    raw_ref<const ChromeML> chrome_ml) {
+  return base::SequenceBound<TsHolder>(
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+      chrome_ml);
+}
+
+void TsHolder::Reset(
+    on_device_model::mojom::TextSafetyModelParamsPtr params,
+    mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model) {
+  model_.Clear();
+  auto impl = TsModel::Create(*chrome_ml_, std::move(params));
+  if (impl) {
+    model_.Add(std::move(impl), std::move(model));
+  }
 }
 
 }  // namespace ml

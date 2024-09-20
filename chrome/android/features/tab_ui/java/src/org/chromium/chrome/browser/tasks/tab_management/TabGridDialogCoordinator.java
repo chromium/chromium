@@ -184,7 +184,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             dataSharingTabManager,
                             mComponentName,
                             showColorPickerPopupRunnable,
-                            actionConfirmationManager);
+                            actionConfirmationManager,
+                            modalDialogManager);
 
             // TODO(crbug.com/40662311) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.

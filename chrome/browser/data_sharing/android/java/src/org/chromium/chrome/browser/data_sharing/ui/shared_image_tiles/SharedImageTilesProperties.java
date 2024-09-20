@@ -18,10 +18,8 @@ class SharedImageTilesProperties {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey REMAINING_TILES =
             new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey SHOW_ADD_BUTTON =
-            new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
-        IS_LOADING, COLOR_THEME, ICON_TILES, REMAINING_TILES, SHOW_ADD_BUTTON
+        IS_LOADING, COLOR_THEME, ICON_TILES, REMAINING_TILES
     };
 }

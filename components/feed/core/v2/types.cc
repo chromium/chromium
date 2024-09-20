@@ -123,10 +123,13 @@ feedwire::ClientInfo RequestMetadata::ToClientInfo() const {
 }
 
 NetworkResponseInfo::NetworkResponseInfo() = default;
-NetworkResponseInfo::~NetworkResponseInfo() = default;
 NetworkResponseInfo::NetworkResponseInfo(const NetworkResponseInfo&) = default;
+NetworkResponseInfo::NetworkResponseInfo(NetworkResponseInfo&&) = default;
 NetworkResponseInfo& NetworkResponseInfo::operator=(
     const NetworkResponseInfo&) = default;
+NetworkResponseInfo& NetworkResponseInfo::operator=(NetworkResponseInfo&&) =
+    default;
+NetworkResponseInfo::~NetworkResponseInfo() = default;
 
 NetworkResponse::NetworkResponse() = default;
 NetworkResponse::NetworkResponse(const std::string& response_bytes,

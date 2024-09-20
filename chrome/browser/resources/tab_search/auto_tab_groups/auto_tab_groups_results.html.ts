@@ -10,12 +10,6 @@ export function getHtml(this: AutoTabGroupsResultsElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="auto-tab-groups-container">
-  <div id="header"
-      class="auto-tab-groups-header"
-      aria-live="polite"
-      aria-relevant="all">
-    ${this.getTitle()}
-  </div>
   <div id="scrollable">
     ${this.getOrganizations_().map(item => html`
       <auto-tab-groups-group

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isRTL} from 'chrome://resources/js/util.js';
-import type {IronIconsetSvgElement} from 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import type {CrIconsetElement} from 'chrome://resources/cr_elements/cr_icon/cr_iconset.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {inDarkMode} from './dark_mode_mixin.js';
 import type {LocalizedString} from './data/cdd.js';
@@ -74,9 +74,10 @@ export function observerDepsDefined(args: any[]): boolean {
  *     url(path_to_arrow) separated by a comma.
  */
 export function getSelectDropdownBackground(
-    iconset: IronIconsetSvgElement, iconName: string, el: HTMLElement): string {
+    iconset: CrIconsetElement, iconName: string, el: HTMLElement): string {
   const serializer = new XMLSerializer();
-  const iconElement = iconset.createIcon(iconName, isRTL()) as HTMLElement;
+  const iconElement = iconset.createIcon(iconName);
+  assert(iconElement);
   const dark = inDarkMode();
   const fillColor = getComputedStyle(el).getPropertyValue(
       dark ? '--google-grey-500' : '--google-grey-600');

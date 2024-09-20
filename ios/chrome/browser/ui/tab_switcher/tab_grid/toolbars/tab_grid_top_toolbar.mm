@@ -62,6 +62,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
   BOOL _scrolledToEdge;
   UIView* _scrolledBackgroundView;
+  UIView* _scrolledToTopBackgroundView;
   // Configures the responder following the receiver in the responder chain.
   UIResponder* _followingNextResponder;
 }
@@ -225,6 +226,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
   _scrolledToEdge = scrolledToEdge;
 
+  _scrolledToTopBackgroundView.hidden = !scrolledToEdge;
   _scrolledBackgroundView.hidden = scrolledToEdge;
   [_pageControl setScrollViewScrolledToEdge:scrolledToEdge];
 }
@@ -522,6 +524,12 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   AddSameConstraintsToSides(
       self, _scrolledBackgroundView,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
+
+  // Background when the content is scrolled to the top.
+  _scrolledToTopBackgroundView = CreateTabGridScrolledToEdgeBackground();
+  _scrolledToTopBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addSubview:_scrolledToTopBackgroundView];
+  AddSameConstraints(_scrolledBackgroundView, _scrolledToTopBackgroundView);
 
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.

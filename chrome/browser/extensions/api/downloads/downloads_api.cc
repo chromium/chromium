@@ -46,12 +46,13 @@
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/icon_loader.h"
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/extensions/api/downloads.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -1516,14 +1517,17 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
             download_extension_errors::kOpenPermission, &error)) {
     return RespondNow(Error(std::move(error)));
   }
-  Browser* browser = ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
-  if (Fault(!browser, download_extension_errors::kInvisibleContext, &error))
-    return RespondNow(Error(std::move(error)));
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (Fault(!web_contents, download_extension_errors::kInvisibleContext,
-            &error))
-    return RespondNow(Error(std::move(error)));
+
+  WindowController* window_controller =
+      ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
+  if (!window_controller) {
+    return RespondNow(Error(download_extension_errors::kInvisibleContext));
+  }
+  content::WebContents* active_contents = window_controller->GetActiveTab();
+  if (!active_contents) {
+    return RespondNow(Error(download_extension_errors::kInvisibleContext));
+  }
+
   // Extensions with debugger permission could fake user gestures and should
   // not be trusted.
   if (GetSenderWebContents() &&
@@ -1539,7 +1543,7 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
   // to avoid showing the prompt.
   DownloadOpenPrompt* download_open_prompt =
       DownloadOpenPrompt::CreateDownloadOpenConfirmationDialog(
-          web_contents, extension()->name(), download_item->GetFullPath(),
+          active_contents, extension()->name(), download_item->GetFullPath(),
           base::BindOnce(&DownloadsOpenFunction::OpenPromptDone, this,
                          params->download_id));
   if (on_prompt_created_cb_)
@@ -1588,28 +1592,26 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
 
   MaybeSetUiEnabled(service, incognito_service, extension(), params->enabled);
 
-  BrowserList* browsers = BrowserList::GetInstance();
-  if (browsers) {
-    for (Browser* browser : *browsers) {
-      DownloadCoreService* current_service =
-          DownloadCoreServiceFactory::GetForBrowserContext(browser->profile());
-      // The following code is to hide the download UI explicitly if the UI is
-      // set to disabled.
-      bool match_current_service = (current_service == service) ||
-                                   (current_service == incognito_service);
-      if (!match_current_service || current_service->IsDownloadUiEnabled()) {
-        continue;
-      }
-      // Calling this API affects the download bubble as well, so extensions
-      // using this API is still compatible with the new download bubble. This
-      // API will eventually be deprecated (replaced by the SetUiOptions API
-      // below).
-      if (download::IsDownloadBubbleEnabled() &&
-          browser->window()->GetDownloadBubbleUIController()) {
-        browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
-      } else if (browser->window()->IsDownloadShelfVisible()) {
-        browser->window()->GetDownloadShelf()->Close();
-      }
+  for (WindowController* window : *WindowControllerList::GetInstance()) {
+    DownloadCoreService* current_service =
+        DownloadCoreServiceFactory::GetForBrowserContext(window->profile());
+    // The following code is to hide the download UI explicitly if the UI is
+    // set to disabled.
+    bool match_current_service =
+        (current_service == service) || (current_service == incognito_service);
+    if (!match_current_service || current_service->IsDownloadUiEnabled()) {
+      continue;
+    }
+    // Calling this API affects the download bubble as well, so extensions
+    // using this API is still compatible with the new download bubble. This
+    // API will eventually be deprecated (replaced by the SetUiOptions API
+    // below).
+    Browser* browser = window->GetBrowser();
+    if (download::IsDownloadBubbleEnabled() &&
+        browser->window()->GetDownloadBubbleUIController()) {
+      browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
+    } else if (browser->window()->IsDownloadShelfVisible()) {
+      browser->window()->GetDownloadShelf()->Close();
     }
   }
 
@@ -1644,24 +1646,23 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
 
   MaybeSetUiEnabled(service, incognito_service, extension(), options.enabled);
 
-  BrowserList* browsers = BrowserList::GetInstance();
-  if (browsers) {
-    for (Browser* browser : *browsers) {
-      DownloadCoreService* current_service =
-          DownloadCoreServiceFactory::GetForBrowserContext(browser->profile());
-      // The following code is to hide the download UI explicitly if the UI is
-      // set to disabled.
-      bool match_current_service = (current_service == service) ||
-                                   (current_service == incognito_service);
-      if (!match_current_service || current_service->IsDownloadUiEnabled()) {
-        continue;
-      }
-      if (download::IsDownloadBubbleEnabled() &&
-          browser->window()->GetDownloadBubbleUIController()) {
-        browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
-      } else if (browser->window()->IsDownloadShelfVisible()) {
-        browser->window()->GetDownloadShelf()->Close();
-      }
+  for (WindowController* window : *WindowControllerList::GetInstance()) {
+    DownloadCoreService* current_service =
+        DownloadCoreServiceFactory::GetForBrowserContext(window->profile());
+    // The following code is to hide the download UI explicitly if the UI is
+    // set to disabled.
+    bool match_current_service =
+        (current_service == service) || (current_service == incognito_service);
+    if (!match_current_service || current_service->IsDownloadUiEnabled()) {
+      continue;
+    }
+
+    Browser* browser = window->GetBrowser();
+    if (download::IsDownloadBubbleEnabled() &&
+        browser->window()->GetDownloadBubbleUIController()) {
+      browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
+    } else if (browser->window()->IsDownloadShelfVisible()) {
+      browser->window()->GetDownloadShelf()->Close();
     }
   }
 

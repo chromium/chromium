@@ -17,6 +17,7 @@
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller_delegate_impl.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -363,6 +364,9 @@ TEST_F(SessionStateNotificationBlockerTest, NotificationAllowedDuringOOBE) {
           {BatteryNotification::kNotificationId, true},
           {kOOBELocaleSwitchNotificationId, true},
           {kOOBEGnubbyNotificationId, true},
+          {policy::DeviceRestrictionScheduleControllerDelegateImpl::
+               kPostLogoutNotificationId,
+           true},
           {"new-fancy-notification", false},
       };
   const SessionState kOOBEStates[] = {SessionState::OOBE,

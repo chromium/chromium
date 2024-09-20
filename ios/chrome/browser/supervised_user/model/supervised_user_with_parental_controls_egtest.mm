@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/supervised_user_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -56,6 +57,12 @@ static const char* kInterstitialFirstTimeBanner =
 @end
 
 @implementation SupervisedUserWithParentalControlsTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kIOSQuickDelete);
+  return config;
+}
 
 - (void)signInSupervisedUser {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -139,15 +146,12 @@ static const char* kInterstitialFirstTimeBanner =
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPrivacyButton()];
   [ChromeEarlGreyUI
       tapPrivacyMenuButton:chrome_test_util::ClearBrowsingDataCell()];
+
   // "Browsing history", "Cookies, Site Data" and "Cached Images and Files"
   // are the default checked options when the prefs are registered. No need to
   // modify them.
   [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
                         chrome_test_util::ClearBrowsingDataButton()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          ConfirmClearBrowsingDataButton()]
-      performAction:grey_tap()];
-
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 }

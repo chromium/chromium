@@ -89,17 +89,17 @@ suite('SidePanelShoppingListTest', () => {
     }
     const priceElements = Array.from(element.querySelectorAll('.price'));
     if (!product.info.previousPrice) {
-      assertEquals(priceElements.length, 1);
+      assertEquals(1, priceElements.length);
       assertEquals(priceElements[0]!.textContent, product.info.currentPrice);
     } else {
-      assertEquals(priceElements.length, 2);
-      assertEquals(priceElements[0]!.textContent, product.info.currentPrice);
-      assertEquals(priceElements[1]!.textContent, product.info.previousPrice);
+      assertEquals(2, priceElements.length);
+      assertEquals(product.info.currentPrice, priceElements[0]!.textContent);
+      assertEquals(product.info.previousPrice, priceElements[1]!.textContent);
     }
     const actionButton = element.querySelector<HTMLElement>('.action-button');
     assertTrue(!!actionButton);
     assertEquals(
-        actionButton.getAttribute('iron-icon'), ACTION_BUTTON_UNTRACK_IMAGE);
+        ACTION_BUTTON_UNTRACK_IMAGE, actionButton.getAttribute('iron-icon'));
     assertEquals(
         actionButton.getAttribute('title'),
         loadTimeData.getString('shoppingListUntrackPriceButtonDescription'));
@@ -109,16 +109,16 @@ suite('SidePanelShoppingListTest', () => {
       actionButton: HTMLElement, isTracking: boolean): void {
     if (isTracking) {
       assertEquals(
-          actionButton.getAttribute('iron-icon'), ACTION_BUTTON_UNTRACK_IMAGE);
+          ACTION_BUTTON_UNTRACK_IMAGE, actionButton.getAttribute('iron-icon'));
       assertEquals(
-          actionButton.getAttribute('title'),
-          loadTimeData.getString('shoppingListUntrackPriceButtonDescription'));
+          loadTimeData.getString('shoppingListUntrackPriceButtonDescription'),
+          actionButton.getAttribute('title'));
     } else {
       assertEquals(
-          actionButton.getAttribute('iron-icon'), ACTION_BUTTON_TRACK_IMAGE);
+          ACTION_BUTTON_TRACK_IMAGE, actionButton.getAttribute('iron-icon'));
       assertEquals(
-          actionButton.getAttribute('title'),
-          loadTimeData.getString('shoppingListTrackPriceButtonDescription'));
+          loadTimeData.getString('shoppingListTrackPriceButtonDescription'),
+          actionButton.getAttribute('title'));
     }
   }
 

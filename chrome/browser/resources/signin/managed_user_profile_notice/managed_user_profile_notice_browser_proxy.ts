@@ -9,23 +9,32 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+export enum BrowsingDataHandling {
+  MERGE = 'merge',
+  SEPARATE = 'separate',
+}
+
 export enum State {
   DISCLOSURE = 0,
   PROCESSING = 1,
   SUCCESS = 2,
   TIMEOUT = 3,
   ERROR = 4,
+  VALUE_PROPOSITION = 5,
+  USER_DATA_HANDLING = 6,
 }
 
 // Managed user profile info sent from C++.
 export interface ManagedUserProfileInfo {
+  accountName: string;
+  continueAs: string;
+  email: string;
   pictureUrl: string;
   showEnterpriseBadge: boolean;
   title: string;
   subtitle: string;
   enterpriseInfo: string;
   proceedLabel: string;
-  showCancelButton: boolean;
   checkLinkDataCheckboxByDefault: boolean;
 }
 

@@ -34,7 +34,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/eol/eol_incentive_util.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -569,13 +568,6 @@ void SystemTrayClientImpl::ShowEnterpriseInfo() {
   }
 
   // Otherwise show enterprise management info page.
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    crosapi::BrowserManager::Get()->SwitchToTab(
-        GURL(chrome::kChromeUIManagementURL),
-        /*path_behavior=*/NavigateParams::RESPECT);
-    return;
-  }
-
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetActiveUserProfile());
   chrome::ShowEnterpriseManagementPageInTabbedBrowser(displayer.browser());
@@ -868,6 +860,7 @@ void SystemTrayClientImpl::ShowRemapKeysSubpage(int device_id) {
 
 void SystemTrayClientImpl::ShowYouTubeMusicPremiumPage() {
   DCHECK(ash::features::IsFocusModeEnabled());
+  DCHECK(ash::features::IsFocusModeYTMEnabled());
   base::RecordAction(base::UserMetricsAction("ShowYouTubeMusicPremiumPage"));
 
   const GURL official_url(chrome::kYoutubeMusicPremiumURL);
@@ -887,8 +880,22 @@ void SystemTrayClientImpl::ShowYouTubeMusicPremiumPage() {
   }
 
   // Launch web app.
-  proxy->LaunchAppWithUrl(web_app::kYoutubeMusicAppId, ui::EF_NONE,
-                          official_url, apps::LaunchSource::kFromFocusMode);
+  proxy->LaunchAppWithUrl(
+      web_app::kYoutubeMusicAppId, ui::EF_NONE, official_url,
+      apps::LaunchSource::kFromFocusMode, /*window_info=*/nullptr,
+      base::BindOnce(
+          [](const GURL& url, apps::LaunchResult&& result) {
+            if (result.state != apps::LaunchResult::State::kSuccess) {
+              OpenInBrowser(url);
+            }
+          },
+          official_url));
+}
+
+void SystemTrayClientImpl::ShowChromebookPerksYouTubePage() {
+  DCHECK(ash::features::IsFocusModeEnabled());
+  DCHECK(ash::features::IsFocusModeYTMEnabled());
+  OpenInBrowser(GURL(chrome::kChromebookPerksYouTubePage));
 }
 
 void SystemTrayClientImpl::ShowEolInfoPage() {

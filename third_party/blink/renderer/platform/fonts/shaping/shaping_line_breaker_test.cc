@@ -107,8 +107,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatin) {
 
   String string = To16Bit(
       "Test run with multiple words and breaking "
-      "opportunities.",
-      56);
+      "opportunities.");
   LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kNormal);
   TextDirection direction = TextDirection::kLtr;
@@ -184,7 +183,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatin) {
 TEST_F(ShapingLineBreakerTest, ShapeLineLatinMultiLine) {
   Font font(font_description);
 
-  String string = To16Bit("Line breaking test case.", 24);
+  String string = To16Bit("Line breaking test case.");
   LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kNormal);
   TextDirection direction = TextDirection::kLtr;
@@ -214,7 +213,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatinMultiLine) {
 TEST_F(ShapingLineBreakerTest, ShapeLineLatinBreakAll) {
   Font font(font_description);
 
-  String string = To16Bit("Testing break type-break all.", 29);
+  String string = To16Bit("Testing break type-break all.");
   LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kBreakAll);
   TextDirection direction = TextDirection::kLtr;

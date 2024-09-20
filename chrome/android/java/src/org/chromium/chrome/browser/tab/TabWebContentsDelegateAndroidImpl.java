@@ -18,7 +18,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList.RewindableIterator;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -234,7 +233,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void visibleSSLStateChanged() {
-        PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
+        PolicyAuditor auditor = PolicyAuditor.maybeCreate();
         if (auditor != null) {
             auditor.notifyCertificateFailure(
                     PolicyAuditorJni.get().getCertificateFailure(mTab.getWebContents()),
@@ -430,13 +429,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public boolean maybeCopyContentAreaAsBitmap(Callback<Bitmap> callback) {
-        return NativePageBitmapCapturer.maybeCaptureNativeView(
-                mTab, callback, getTopControlsHeight());
+        return NativePageBitmapCapturer.maybeCaptureNativeView(mTab, callback);
     }
 
     @Override
     public Bitmap maybeCopyContentAreaAsBitmapSync() {
-        return NativePageBitmapCapturer.maybeCaptureNativeViewSync(mTab, getTopControlsHeight());
+        return NativePageBitmapCapturer.maybeCaptureNativeViewSync(mTab);
     }
 
     @Override

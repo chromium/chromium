@@ -180,15 +180,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // Called when the user has validated the download of an insecure file.
   virtual void ValidateInsecureDownload() = 0;
 
-  // Called to acquire a dangerous download. If |delete_file_afterward| is true,
-  // invokes |callback| on the UI thread with the path to the downloaded file,
-  // and removes the DownloadItem from views and history if appropriate.
-  // Otherwise, makes a temp copy of the download file, and invokes |callback|
-  // with the path to the temp copy. The caller is responsible for cleanup.
-  // Note: It is important for |callback| to be valid since the downloaded file
-  // will not be cleaned up if the callback fails.
-  virtual void StealDangerousDownload(bool delete_file_afterward,
-                                      AcquireFileCallback callback) = 0;
+  // Called to acquire a dangerous download. Mmakes a temp copy of the
+  // download file, and invokes |callback| with the path to the temp
+  // copy. The caller is responsible for cleanup.  Note: It is important
+  // for |callback| to be valid since the downloaded file will not be
+  // cleaned up if the callback fails.
+  virtual void CopyDownload(AcquireFileCallback callback) = 0;
 
   // Pause a download.  Will have no effect if the download is already
   // paused.

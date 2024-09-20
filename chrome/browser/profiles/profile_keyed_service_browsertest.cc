@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
@@ -344,6 +345,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "SystemIndicatorManager",
     "WebAppProvider",
 #endif
+    "AccountExtensionTracker",
     "AccountReconcilor",
     "ActivityLog",
     "ActivityLogPrivateAPI",
@@ -548,6 +550,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "SiteDataCacheFacadeFactory",
     "SiteEngagementService",
     "SocketManager",
+    "StorageAccessHeaderService",
     "StorageFrontend",
     "StorageNotificationService",
     "SupervisedUserService",
@@ -593,6 +596,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ZeroSuggestCacheServiceFactory",
   };
   // clang-format on
+
+  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+    guest_active_services.insert("ProductSpecificationsService");
+  }
 
   Profile* guest_profile =
       CreateProfileAndWaitForAllTasks(ProfileManager::GetGuestProfilePath());

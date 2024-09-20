@@ -15,27 +15,29 @@ suite('MojomConversionUtilsTest', () => {
     const displayName: string = 'TEST_DISPLAY_NAME';
     const gaiaId: string = 'TEST_GAIA_ID';
     const email: string = 'test@gmail.com';
+    const accessToken: string = 'testAccessToken';
 
     const groupData: GroupData = toMojomGroupData({
-      id: groupId,
-      name: groupName,
+      groupId: groupId,
+      displayName: groupName,
+      accessToken,
       members: [{
-        profileId: gaiaId,
-        displayName: displayName,
-        displayValue: email,
+        focusObfuscatedGaiaId: gaiaId,
+        displayName,
+        email,
         role: 'invitee',
-        photoUrl: avatarUrl,
+        avatarUrl,
       }],
     });
 
     const expectedGroupData: GroupData = {
-      groupId: groupId,
+      groupId,
       displayName: groupName,
-      accessToken: '',
+      accessToken,
       members: [{
-        gaiaId: gaiaId,
-        displayName: displayName,
-        email: email,
+        gaiaId,
+        displayName,
+        email,
         role: MemberRole.kInvitee,
         avatarUrl: {url: avatarUrl},
       }],

@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">អ្នកបានចូលមើល​កាលពី <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">អនុញ្ញាត</translation>
 <translation id="5048398596102334565">អនុញ្ញាតឱ្យ​គេហទំព័រ​ចូលប្រើ​ឧបករណ៍​ចាប់ចលនា (បាន​ណែនាំ)</translation>
+<translation id="5048841907079026162">គ្រប់គ្រង​ទិន្នន័យរុករក​របស់អ្នក</translation>
 <translation id="5050380848339752099">គេហទំព័រនេះនឹង​ចែករំលែក​ព័ត៌មានជាមួយ​កម្មវិធី​នៅក្រៅ​មុខងារ​ឯកជន​បន្តិចទៀតនេះ។</translation>
 <translation id="5063480226653192405">ការប្រើប្រាស់</translation>
 <translation id="5091013926750941408">គេហទំព័រសម្រាប់​ឧបករណ៍​ចល័ត</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">អនុញ្ញាតឲ្យគេហទំព័រដំណើរការ JavaScript (បានណែនាំ)</translation>
 <translation id="534295439873310000">ឧបករណ៍ NFC</translation>
 <translation id="5344522958567249764">គ្រប់គ្រង​ឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្ម</translation>
+<translation id="5373874281522292782">ក្រុមផ្ទាំង​របស់អ្នក​ត្រូវបាន​រក្សាទុក</translation>
 <translation id="5389626883706033615">គេហទំព័រ​ត្រូវបាន​ទប់ស្កាត់​មិនឱ្យ​ស្នើសុំអ្នក ដើម្បីប្រើ​ព័ត៌មានដែល​គេហទំព័រ​ទាំងនោះ​បានរក្សាទុក​ពាក់ព័ន្ធនឹងអ្នក</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ទៀត)}other{(+ # ទៀត)}}</translation>
 <translation id="5403592356182871684">ឈ្មោះ</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">ជានិច្ច</translation>
 <translation id="757524316907819857">ទប់ស្កាត់​គេហទំព័រ​មិនឱ្យ​លេងខ្លឹមសារ​ដែលមានការការពារ</translation>
 <translation id="7594634374516752650">បានភ្ជាប់ឧបករណ៍ប៊្លូធូស</translation>
+<translation id="7617547684249261169">អ្នក​អាចលុប​ប្រវត្តិ ខូគី ទិន្នន័យគេហទំព័រ​មួយចំនួន ឬ​ទាំងអស់​របស់អ្នក និង​អ្វីៗជា​ច្រើនទៀត</translation>
 <translation id="7649070708921625228">ជំនួយ</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>

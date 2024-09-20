@@ -621,11 +621,11 @@
     ],
 
     'official_reclient_x64': [
-      'official', 'reclient', 'x64',
+      'official', 'reclient', 'x64', 'minimal_symbols',
     ],
 
     'official_reclient_x86': [
-      'official', 'reclient', 'x86',
+      'official', 'reclient', 'x86', 'minimal_symbols',
     ],
 
     'official_win_arm64_pgo': [

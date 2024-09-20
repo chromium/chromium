@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Canvas fallback content blockifies children</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md" />
+  <meta name="assert" content="Canvas fallback content blockifies children." />
+</head>
+
+<style>
+  #fallback {
+    will-change: transform;
+  }
+</style>
+
+<body>
+  <canvas>
+    Text outside of span <span id="fallback">blockified text.</span>
+  </canvas>
+  <div id="ref" style="width: fit-content;">blockified text.</div>
+</body>
+
+<script>
+  const ctx = document.querySelector("canvas").getContext("2d");
+
+  const fallbackElement = document.getElementById("fallback");
+  // This call triggers the layout for the fallback content.
+  ctx.placeElement(fallbackElement, 0, 0);
+  const rect = fallbackElement.getBoundingClientRect();
+
+  const referenceDiv = document.getElementById("ref");
+  const refRect = referenceDiv.getBoundingClientRect();
+  test(function (t) {
+    assert_equals(rect.width, refRect.width);
+    assert_equals(rect.height, refRect.height);
+  }, `Verify that the dimensions of the span are correct.
+  Without blockifying the span the layout engine will crash.`);
+
+</script>
+
+</html>

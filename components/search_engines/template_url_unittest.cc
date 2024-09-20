@@ -1163,8 +1163,6 @@ TEST_F(TemplateURLTest, ReplaceCurrentPageUrl) {
 // Tests appending attribution parameter to queries originating from Play API
 // search engine.
 TEST_F(TemplateURLTest, PlayAPIAttributionEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kSearchEngineChoiceAttribution};
   const struct TestData {
     const char* url;
     std::u16string terms;
@@ -1190,7 +1188,8 @@ TEST_F(TemplateURLTest, PlayAPIAttributionEnabled) {
 
 TEST_F(TemplateURLTest, PlayAPIAttributionDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(switches::kSearchEngineChoiceAttribution);
+  feature_list.InitAndEnableFeature(
+      switches::kRemoveSearchEngineChoiceAttribution);
   const struct TestData {
     const char* url;
     std::u16string terms;
@@ -1505,13 +1504,14 @@ TEST_F(TemplateURLTest, SearchSourceId) {
   result = GURL(
       url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
   ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?source=chrome.gsc&", result.spec());
+  // The Lens Overlay url builder will handle setting the correct source.
+  EXPECT_EQ("http://google.com/?", result.spec());
 
   search_terms_args.request_source = RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX;
   result = GURL(
       url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
   ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?source=chrome.gsc&", result.spec());
+  EXPECT_EQ("http://google.com/?", result.spec());
 
   search_terms_args.request_source = RequestSource::LENS_SIDE_PANEL_SEARCHBOX;
   result = GURL(

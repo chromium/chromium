@@ -316,12 +316,15 @@ group("gn_all") {
 
     if (toolkit_views) {
       deps += [
-        "//chrome/browser/enterprise/watermark:watermark_app",
         "//ui/views:views_unittests",
         "//ui/views/examples:views_examples",
         "//ui/views/examples:views_examples_unittests",
         "//ui/views/examples:views_examples_with_content",
       ]
+    }
+
+    if (enterprise_watermark) {
+      deps += [ "//chrome/browser/enterprise/watermark:watermark_app" ]
     }
 
     if (use_aura) {
@@ -960,6 +963,7 @@ if (is_win) {
     deps = [
       "//chrome/common/win:eventlog_provider",
       "//chrome/credential_provider",
+      "//chrome/enterprise_companion:enterprise_companion_zip",
       "//chrome/installer/gcapi",
       "//chrome/installer/mini_installer",
       "//chrome/updater/win:updater_zip",

@@ -12,21 +12,18 @@
 
 namespace autofill {
 
-// Depending on `kAutofillModelPredictions`, the active and non active heuristic
-// sources will differ.
+// Depending on `kAutofillModelPredictions`, the active heuristic source will
+// differ.
 //
-// Currently, the available heuristic sources are the ML model and
-// the pattern sources. If the model predictions are disabled, then
-// only pattern sources are used. If model predictions are enabled,
-// `kMachineLearning` is also considered. Depending on
+// Currently, the available heuristic sources are the ML model and regexes.
+// If the model predictions are disabled, then only regexes are used. If model
+// predictions are enabled, `kMachineLearning` is also considered. Depending on
 // `kAutofillModelPredictionsAreActive`, use  `kMachineLearning`
 // as the active heuristic source.
 
 struct HeuristicSourceParams {
   std::optional<bool> model_predictions_feature;
-  std::string pattern_provider_feature;
   const HeuristicSource expected_active_source;
-  const DenseSet<HeuristicSource> expected_nonactive_sources;
 };
 
 class HeuristicSourceTest
@@ -46,10 +43,6 @@ class HeuristicSourceTest
     } else {
       disabled_features.push_back(features::kAutofillModelPredictions);
     }
-    enabled_features.push_back(
-        {features::kAutofillParsingPatternProvider,
-         {{features::kAutofillParsingPatternActiveSource.name,
-           test_case.pattern_provider_feature}}});
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             disabled_features);
   }
@@ -61,8 +54,6 @@ class HeuristicSourceTest
 TEST_P(HeuristicSourceTest, HeuristicSourceParams) {
   const HeuristicSourceParams& test_case = GetParam();
   EXPECT_EQ(GetActiveHeuristicSource(), test_case.expected_active_source);
-  EXPECT_EQ(GetNonActiveHeuristicSources(),
-            test_case.expected_nonactive_sources);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -73,46 +64,25 @@ INSTANTIATE_TEST_SUITE_P(
 // instances.
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         HeuristicSourceParams{
-            .pattern_provider_feature = "legacy",
-            .expected_active_source = HeuristicSource::kLegacy,
-            .expected_nonactive_sources = {}},
+            .expected_active_source = HeuristicSource::kLegacyRegexes},
 
         HeuristicSourceParams{
             .model_predictions_feature = true,
-            .pattern_provider_feature = "legacy",
-            .expected_active_source = HeuristicSource::kMachineLearning,
-            .expected_nonactive_sources = {}},
-
-        HeuristicSourceParams {
-          .model_predictions_feature = false,
-          .pattern_provider_feature = "legacy",
-          .expected_active_source = HeuristicSource::kLegacy,
-          .expected_nonactive_sources = {
-            HeuristicSource::kMachineLearning
-          }
-        }
-#else
-        HeuristicSourceParams{
-            .model_predictions_feature = true,
-            .pattern_provider_feature = "default",
-            .expected_active_source = HeuristicSource::kMachineLearning,
-            .expected_nonactive_sources = {HeuristicSource::kDefault}},
+            .expected_active_source = HeuristicSource::kMachineLearning},
 
         HeuristicSourceParams{
             .model_predictions_feature = false,
-            .pattern_provider_feature = "default",
-            .expected_active_source = HeuristicSource::kDefault,
-            .expected_nonactive_sources = {HeuristicSource::kExperimental,
-                                           HeuristicSource::kMachineLearning}},
+            .expected_active_source = HeuristicSource::kLegacyRegexes}
+#else
         HeuristicSourceParams{
-            .pattern_provider_feature = "default",
-            .expected_active_source = HeuristicSource::kDefault,
-            .expected_nonactive_sources = {HeuristicSource::kExperimental}},
+            .model_predictions_feature = true,
+            .expected_active_source = HeuristicSource::kMachineLearning},
 
         HeuristicSourceParams{
-            .pattern_provider_feature = "experimental",
-            .expected_active_source = HeuristicSource::kExperimental,
-            .expected_nonactive_sources = {}}
+            .model_predictions_feature = false,
+            .expected_active_source = HeuristicSource::kDefaultRegexes},
+        HeuristicSourceParams{
+            .expected_active_source = HeuristicSource::kDefaultRegexes}
 #endif
         ));
 

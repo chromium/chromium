@@ -98,9 +98,7 @@ class TestTargetConfig : public TargetConfig {
   void AddKernelObjectToClose(HandleToClose handle_info) override {}
   void SetDisconnectCsrss() override {}
 
-  ResultCode AddAppContainerProfile(
-      const wchar_t* package_name,
-      ACProfileRegistration registration) override {
+  ResultCode AddAppContainerProfile(const wchar_t* package_name) override {
     app_container_ = AppContainerBase::Open(package_name);
     if (!app_container_) {
       return SBOX_ERROR_CREATE_APPCONTAINER;

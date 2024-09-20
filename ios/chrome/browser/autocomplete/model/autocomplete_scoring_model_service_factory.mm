@@ -27,9 +27,15 @@ AutocompleteScoringModelServiceFactory::GetInstance() {
 // static
 AutocompleteScoringModelService*
 AutocompleteScoringModelServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+AutocompleteScoringModelService*
+AutocompleteScoringModelServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<AutocompleteScoringModelService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 AutocompleteScoringModelServiceFactory::AutocompleteScoringModelServiceFactory()
@@ -45,10 +51,9 @@ AutocompleteScoringModelServiceFactory::
 std::unique_ptr<KeyedService>
 AutocompleteScoringModelServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   OptimizationGuideService* optimization_guide =
-      OptimizationGuideServiceFactory::GetForProfile(chrome_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(profile);
   return optimization_guide ? std::make_unique<AutocompleteScoringModelService>(
                                   optimization_guide)
                             : nullptr;

@@ -53,6 +53,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for LocationBarModel. */
 @RunWith(ParameterizedRunner.class)
@@ -140,6 +141,59 @@ public class LocationBarModelTest {
                 }
             }
             return result;
+        }
+    }
+
+    @Test
+    @MediumTest
+    @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
+    public void testOnIncognitoStateChange_toolbarDataProvider(
+            boolean fromIncognito, boolean toIncognito) {
+        AtomicReference<Integer> incognitoStateObserverCallCount =
+                new AtomicReference<>(Integer.valueOf(0));
+        // Add a regular tab next to the one created in setup.
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
+        // Add two incognito tabs.
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
+
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        LocationBarModel locationBarModel =
+                activity.getToolbarManager().getLocationBarModelForTesting();
+        ToolbarDataProvider.Observer observer =
+                new ToolbarDataProvider.Observer() {
+                    @Override
+                    public void onIncognitoStateChanged() {
+                        assertEquals(toIncognito, locationBarModel.isIncognito());
+                        incognitoStateObserverCallCount.set(Integer.valueOf(1));
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .selectModel(fromIncognito);
+                    locationBarModel.addToolbarDataProviderObserver(observer);
+
+                    // Switch to an existing tab.
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .selectModel(/* incognito= */ toIncognito);
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .getCurrentModel()
+                            .setIndex(0, TabSelectionType.FROM_USER);
+                });
+
+        assertEquals(toIncognito, locationBarModel.isIncognito());
+        if (fromIncognito != toIncognito) {
+            assertEquals(Integer.valueOf(1), incognitoStateObserverCallCount.get());
+        } else {
+            assertEquals(Integer.valueOf(0), incognitoStateObserverCallCount.get());
         }
     }
 

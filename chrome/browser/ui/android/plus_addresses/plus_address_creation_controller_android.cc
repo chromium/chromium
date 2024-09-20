@@ -77,6 +77,18 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
           GetWeakPtr()));
 }
 
+void PlusAddressCreationControllerAndroid::TryAgainToReservePlusAddress() {
+  PlusAddressService* plus_address_service = GetPlusAddressService();
+  if (!plus_address_service) {
+    return;
+  }
+  plus_address_service->ReservePlusAddress(
+      relevant_origin_,
+      base::BindOnce(
+          &PlusAddressCreationControllerAndroid::OnPlusAddressReserved,
+          GetWeakPtr()));
+}
+
 void PlusAddressCreationControllerAndroid::OnRefreshClicked() {
   PlusAddressService* plus_address_service = GetPlusAddressService();
   if (!plus_address_service) {
@@ -161,15 +173,21 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
 
 void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
+  CHECK(plus_profile_.has_value());
   if (maybe_plus_profile.has_value()) {
     const bool was_notice_shown = ShouldShowNotice();
     if (was_notice_shown) {
       GetPlusAddressSettingService()->SetHasAcceptedNotice();
     }
-    std::move(callback_).Run(*maybe_plus_profile->plus_address);
-    RecordModalShownOutcome(
-        metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
-        was_notice_shown);
+    if (maybe_plus_profile->plus_address == plus_profile_->plus_address) {
+      std::move(callback_).Run(*maybe_plus_profile->plus_address);
+      RecordModalShownOutcome(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          was_notice_shown);
+    } else {
+      modal_error_status_ =
+          metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
+    }
   } else {
     modal_error_status_ =
         metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
@@ -178,7 +196,14 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
   // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
   // prior to service response, `view_` will be null.
   if (view_) {
-    view_->ShowConfirmResult(maybe_plus_profile);
+    view_->ShowConfirmResult(/*maybe_plus_profile=*/maybe_plus_profile,
+                             /*reserved_plus_profile=*/plus_profile_.value());
+  }
+
+  // The confirmed plus address might be different from the reserved on. Persist
+  // the latest valid plus address in any case.
+  if (maybe_plus_profile.has_value()) {
+    plus_profile_ = maybe_plus_profile.value();
   }
 }
 

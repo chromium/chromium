@@ -26,6 +26,7 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -66,8 +67,6 @@ MergeEngineRequirements ComputeMergeEnginesRequirements(
       TemplateURLPrepopulateData::GetDataVersion(prefs);
   const int country_id = search_engine_choice_service->GetCountryId();
   const bool should_keywords_use_extended_list =
-      search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny) &&
       search_engines::IsEeaChoiceCountry(country_id);
 
   bool update_builtin_keywords;
@@ -421,8 +420,7 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
 }
 
 const std::string& GetDefaultSearchProviderGuidFromPrefs(PrefService& prefs) {
-  return search_engines::IsChoiceScreenFlagEnabled(
-             search_engines::ChoicePromo::kAny)
+  return base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)
              ? prefs.GetString(prefs::kDefaultSearchProviderGUID)
              : prefs.GetString(prefs::kSyncedDefaultSearchProviderGUID);
 }
@@ -430,8 +428,7 @@ const std::string& GetDefaultSearchProviderGuidFromPrefs(PrefService& prefs) {
 void SetDefaultSearchProviderGuidToPrefs(PrefService& prefs,
                                          const std::string& value) {
   prefs.SetString(prefs::kSyncedDefaultSearchProviderGUID, value);
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
     prefs.SetString(prefs::kDefaultSearchProviderGUID, value);
   }
 }

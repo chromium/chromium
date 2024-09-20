@@ -136,7 +136,9 @@ class AXNativeWidgetMacTest : public test::WidgetTest {
 
   void SetUp() override {
     test::WidgetTest::SetUp();
-    widget_delegate_.InitWidget(CreateParams(Widget::InitParams::TYPE_WINDOW));
+    widget_delegate_.InitWidget(
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW));
     widget()->Show();
   }
 

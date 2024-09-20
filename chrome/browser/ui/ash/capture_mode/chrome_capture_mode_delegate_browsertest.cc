@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
 
   // Successfully finalized to the same location.
   base::test::TestFuture<bool, const base::FilePath&> path_future;
-  delegate->FinalizeSavedFile(path_future.GetCallback(), path);
+  delegate->FinalizeSavedFile(path_future.GetCallback(), path, gfx::Image());
   EXPECT_TRUE(path_future.Get<0>());
   EXPECT_EQ(path_future.Get<1>(), path);
 
@@ -68,7 +68,8 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
 
   // Check that the file is successfully finalized to different location.
   base::test::TestFuture<bool, const base::FilePath&> path_future;
-  delegate->FinalizeSavedFile(path_future.GetCallback(), redirected_path);
+  delegate->FinalizeSavedFile(path_future.GetCallback(), redirected_path,
+                              gfx::Image());
   EXPECT_TRUE(path_future.Get<0>());
 
   // Check that file now exists in OneDrive.

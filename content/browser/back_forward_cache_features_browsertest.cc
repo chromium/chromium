@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/back_forward_cache_browsertest.h"
-
 #include "base/containers/contains.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/back_forward_cache_browsertest.h"
+#include "content/browser/generic_sensor/frame_sensor_provider_proxy.h"
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
@@ -4250,7 +4250,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
             EvalJs(rfh_a, "video.testObserverEvents"));
 }
 
-class SensorBackForwardCacheBrowserTest : public BackForwardCacheBrowserTest {
+class SensorBackForwardCacheBrowserTest
+    : public BackForwardCacheBrowserTest,
+      public testing::WithParamInterface<bool> {
  protected:
   SensorBackForwardCacheBrowserTest() {
     WebContentsSensorProviderProxy::OverrideSensorProviderBinderForTesting(
@@ -4271,6 +4273,11 @@ class SensorBackForwardCacheBrowserTest : public BackForwardCacheBrowserTest {
     BackForwardCacheBrowserTest::SetUpOnMainThread();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kAllowSensorsToEnterBfcache, "", "");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+
   std::unique_ptr<device::FakeSensorProvider> provider_;
 
  private:
@@ -4278,39 +4285,304 @@ class SensorBackForwardCacheBrowserTest : public BackForwardCacheBrowserTest {
       mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
     provider_->Bind(std::move(receiver));
   }
+
+  base::OnceClosure quit_closure_;
 };
 
+// Tests that Accelerometer sensor is suspended while in bfcache. Note that
+// we are only testing FakeSensor::Suspend() and FakeSensor::Resume() are
+// called, and they have no implementation.
+//
+// TODO(crbug.com/364143617): Focus not retrieved on Android bots and thus
+// sensors are not automatically resumed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccelerometerPausedWhileCached \
+  DISABLED_AccelerometerPausedWhileCached
+#else
+#define MAYBE_AccelerometerPausedWhileCached AccelerometerPausedWhileCached
+#endif
 IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
-                       AccelerometerNotCached) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+                       MAYBE_AccelerometerPausedWhileCached) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(
+      https_server()->GetURL("a.test", "/back_forward_cache/sensor.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // JS to cause a page to listen to, capture and validate accelerometer events.
+  const std::string accelerometer_js = R"(
+    sensor = new Accelerometer({ frequency: 60 });
+    sensor.addEventListener('reading', handleEvent);
+    sensor.start();
+  )";
+  provider_->SetAccelerometerData(1.0, 2.0, 3.0);
+  ASSERT_TRUE(ExecJs(rfh_a.get(), accelerometer_js));
+  ASSERT_EQ(1, EvalJs(rfh_a.get(), "waitForEventsPromise(1)"));
+  provider_->UpdateAccelerometerData(1.0, 2.0, 3.1);
+  ASSERT_EQ(2, EvalJs(rfh_a.get(), "waitForEventsPromise(2)"));
+  provider_->UpdateAccelerometerData(1.0, 2.0, 3.2);
+  ASSERT_EQ(3, EvalJs(rfh_a.get(), "waitForEventsPromise(3)"));
 
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
-    new Promise(resolve => {
-      const sensor = new Accelerometer();
-      sensor.addEventListener('reading', () => { resolve(); });
-      sensor.start();
-    })
-  )"));
+  // We should have 3 events with x=1.0.
+  ASSERT_EQ("pass", EvalJs(rfh_a.get(), "validateEvents(1.0)"));
 
   // 2) Navigate to B.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  ASSERT_NE(rfh_a.get(), rfh_b.get());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // - Page A should not be in the cache.
-  delete_observer_rfh_a.WaitUntilDeleted();
+  ASSERT_TRUE(provider_->WaitForAccelerometerSuspend(/*suspend=*/true));
 
-  // 3) Go back.
+  // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
-                    {blink::scheduler::WebSchedulerTrackedFeature::
-                         kRequestedBackForwardCacheBlockedSensors},
-                    {}, {}, {}, FROM_HERE);
+  ExpectRestored(FROM_HERE);
+  ASSERT_EQ(rfh_a.get(), current_frame_host());
+
+  // Sensor must be activated once coming back to the page.
+  ASSERT_TRUE(provider_->WaitForAccelerometerSuspend(/*suspend=*/false));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "sensor.activated"));
+  // New update should arrive.
+  provider_->UpdateAccelerometerData(1.0, 2.0, 3.4);
+  // 4 to 5 events should arrive.
+  ASSERT_TRUE(ExecJs(rfh_a.get(), "waitForEventsPromise(4)"));
+}
+
+// Tests that Ambient Light sensor is suspended while in bfcache. Note that
+// we are only testing FakeSensor::Suspend() and FakeSensor::Resume() are
+// called, and they have no implementation.
+//
+// TODO(crbug.com/364143617): Focus not retrieved on Android bots and thus
+// sensors are not automatically resumed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AmbientLightPausedWhileCached \
+  DISABLED_AmbientLightPausedWhileCached
+#else
+#define MAYBE_AmbientLightPausedWhileCached AmbientLightPausedWhileCached
+#endif
+IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
+                       MAYBE_AmbientLightPausedWhileCached) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(
+      https_server()->GetURL("a.test", "/back_forward_cache/sensor.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  const std::string ambient_light_js = R"(
+    sensor = new AmbientLightSensor();
+    sensor.addEventListener('reading', handleEvent);
+    sensor.start();
+  )";
+  provider_->SetAmbientLightSensorData(1.0);
+  ASSERT_TRUE(ExecJs(rfh_a.get(), ambient_light_js));
+  ASSERT_EQ(1, EvalJs(rfh_a.get(), "waitForEventsPromise(1)"));
+  provider_->UpdateAmbientLightSensorData(1.0);
+  ASSERT_EQ(2, EvalJs(rfh_a.get(), "waitForEventsPromise(2)"));
+  provider_->UpdateAmbientLightSensorData(1.0);
+  ASSERT_EQ(3, EvalJs(rfh_a.get(), "waitForEventsPromise(3)"));
+
+  // We should have 3 events with value=1.0.
+  ASSERT_EQ("pass", EvalJs(rfh_a.get(), "validateEvents(1.0)"));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  ASSERT_NE(rfh_a.get(), rfh_b.get());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_TRUE(provider_->WaitForAmbientLightSensorSuspend(/*suspend=*/true));
+
+  // 3) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  ASSERT_EQ(rfh_a.get(), current_frame_host());
+  ASSERT_TRUE(provider_->WaitForAmbientLightSensorSuspend(/*suspend=*/false));
+
+  // Sensor must be activated once coming back to the page.
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "sensor.activated"));
+  // New update should arrive.
+  provider_->UpdateAmbientLightSensorData(1.0);
+  // 4 to 5 events should arrive.
+  ASSERT_TRUE(ExecJs(rfh_a.get(), "waitForEventsPromise(4)"));
+}
+
+// Tests that Linear Acceleration sensor is suspended while in bfcache.
+// Note that we are only testing FakeSensor::Suspend() and
+// FakeSensor::Resume() are called, and they have no implementation.
+//
+// TODO(crbug.com/364143617): Focus not retrieved on Android bots and thus
+// sensors are not automatically resumed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_LinearAccelerationPausedWhileCached \
+  DISABLED_LinearAccelerationPausedWhileCached
+#else
+#define MAYBE_LinearAccelerationPausedWhileCached \
+  LinearAccelerationPausedWhileCached
+#endif
+IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
+                       MAYBE_LinearAccelerationPausedWhileCached) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(
+      https_server()->GetURL("a.test", "/back_forward_cache/sensor.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  const std::string la_js = R"(
+    sensor = new LinearAccelerationSensor({ frequency: 60 });
+    sensor.addEventListener('reading', handleEvent);
+    sensor.start();
+  )";
+  provider_->SetLinearAccelerationSensorData(1.0, 2.0, 3.0);
+  ASSERT_TRUE(ExecJs(rfh_a.get(), la_js));
+  ASSERT_EQ(1, EvalJs(rfh_a.get(), "waitForEventsPromise(1)"));
+  provider_->UpdateLinearAccelerationSensorData(1.0, 2.0, 3.1);
+  ASSERT_EQ(2, EvalJs(rfh_a.get(), "waitForEventsPromise(2)"));
+  provider_->UpdateLinearAccelerationSensorData(1.0, 2.0, 3.2);
+  ASSERT_EQ(3, EvalJs(rfh_a.get(), "waitForEventsPromise(3)"));
+
+  // We should have 3 events with value=1.0.
+  ASSERT_EQ("pass", EvalJs(rfh_a.get(), "validateEvents(1.0)"));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  ASSERT_NE(rfh_a.get(), rfh_b.get());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_TRUE(
+      provider_->WaitForLinearAccelerationSensorSuspend(/*suspend=*/true));
+
+  // 3) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  ASSERT_EQ(rfh_a.get(), current_frame_host());
+  ASSERT_TRUE(
+      provider_->WaitForLinearAccelerationSensorSuspend(/*suspend=*/false));
+
+  // Sensor must be activated once coming back to the page.
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "sensor.activated"));
+  // New update should arrive.
+  provider_->UpdateLinearAccelerationSensorData(1.0, 2.0, 3.4);
+  // 4 to 5 events should arrive.
+  ASSERT_TRUE(ExecJs(rfh_a.get(), "waitForEventsPromise(4)"));
+}
+
+// Tests that Gravity sensor is suspended while in bfcache.
+//
+// TODO(crbug.com/364143617): Focus not retrieved on Android bots and thus
+// sensors are not automatically resumed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_GravityPausedWhileCached DISABLED_GravityPausedWhileCached
+#else
+#define MAYBE_GravityPausedWhileCached GravityPausedWhileCached
+#endif
+IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
+                       MAYBE_GravityPausedWhileCached) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(
+      https_server()->GetURL("a.test", "/back_forward_cache/sensor.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  const std::string gravity_js = R"(
+    sensor = new GravitySensor({ frequency: 60 });
+    sensor.addEventListener('reading', handleEvent);
+    sensor.start();
+  )";
+  provider_->SetGravitySensorData(1.0, 2.0, 3.0);
+  ASSERT_TRUE(ExecJs(rfh_a.get(), gravity_js));
+  ASSERT_EQ(1, EvalJs(rfh_a.get(), "waitForEventsPromise(1)"));
+  provider_->UpdateGravitySensorData(1.0, 2.0, 3.1);
+  ASSERT_EQ(2, EvalJs(rfh_a.get(), "waitForEventsPromise(2)"));
+  provider_->UpdateGravitySensorData(1.0, 2.0, 3.2);
+  ASSERT_EQ(3, EvalJs(rfh_a.get(), "waitForEventsPromise(3)"));
+
+  // We should have 3 events with value=1.0.
+  ASSERT_EQ("pass", EvalJs(rfh_a.get(), "validateEvents(1.0)"));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  ASSERT_NE(rfh_a.get(), rfh_b.get());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_TRUE(provider_->WaitForGravitySensorSuspend(/*suspend=*/true));
+
+  // 3) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  ASSERT_EQ(rfh_a.get(), current_frame_host());
+  ASSERT_TRUE(provider_->WaitForGravitySensorSuspend(/*suspend=*/false));
+
+  // Sensor must be activated once coming back to the page.
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "sensor.activated"));
+  // New update should arrive.
+  provider_->UpdateGravitySensorData(1.0, 2.0, 3.4);
+  // 4 to 5 events should arrive.
+  ASSERT_TRUE(ExecJs(rfh_a.get(), "waitForEventsPromise(4)"));
+}
+
+// Tests that Gyroscope sensor is suspended while in bfcache. Note that
+// we are only testing FakeSensor::Suspend() and FakeSensor::Resume() are
+// called, and they have no implementation.
+//
+// TODO(crbug.com/364143617): Focus not retrieved on Android bots and thus
+// sensors are not automatically resumed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_GyroscopePausedWhileCached DISABLED_GyroscopePausedWhileCached
+#else
+#define MAYBE_GyroscopePausedWhileCached GyroscopePausedWhileCached
+#endif
+IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
+                       MAYBE_GyroscopePausedWhileCached) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(
+      https_server()->GetURL("a.test", "/back_forward_cache/sensor.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  const std::string gyro_js = R"(
+    sensor = new Gyroscope({ frequency: 60 });
+    sensor.addEventListener('reading', handleEvent);
+    sensor.start();
+  )";
+  provider_->SetGyroscopeData(1.0, 2.0, 3.0);
+  ASSERT_TRUE(ExecJs(rfh_a.get(), gyro_js));
+  ASSERT_EQ(1, EvalJs(rfh_a.get(), "waitForEventsPromise(1)"));
+  provider_->UpdateGyroscopeData(1.0, 2.0, 3.1);
+  ASSERT_EQ(2, EvalJs(rfh_a.get(), "waitForEventsPromise(2)"));
+  provider_->UpdateGyroscopeData(1.0, 2.0, 3.2);
+  ASSERT_EQ(3, EvalJs(rfh_a.get(), "waitForEventsPromise(3)"));
+
+  // We should have 3 events with value=1.0.
+  ASSERT_EQ("pass", EvalJs(rfh_a.get(), "validateEvents(1.0)"));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  ASSERT_NE(rfh_a.get(), rfh_b.get());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_TRUE(provider_->WaitForGyroscopeSuspend(/*suspend=*/true));
+
+  // 3) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  ASSERT_EQ(rfh_a.get(), current_frame_host());
+  ASSERT_TRUE(provider_->WaitForGyroscopeSuspend(/*suspend=*/false));
+
+  // Sensor must be activated once coming back to the page.
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "sensor.activated"));
+  // New update should arrive.
+  provider_->UpdateGyroscopeData(1.0, 2.0, 3.4);
+  // 4 to 5 events should arrive.
+  ASSERT_TRUE(ExecJs(rfh_a.get(), "waitForEventsPromise(4)"));
 }
 
 IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest, OrientationCached) {
@@ -4334,8 +4606,7 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest, OrientationCached) {
   EXPECT_THAT(rfh_a, InBackForwardCache());
 }
 
-// Tests that the orientation sensor's events are not delivered to a page in the
-// back-forward cache.
+// Tests that the orientation sensor is suspended while in bfcache.
 //
 // This sets some JS functions in the pages to enable the sensors, capture and
 // validate the events. The a-page should only receive events with alpha=0, the
@@ -4355,126 +4626,88 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest, OrientationCached) {
 IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
                        MAYBE_SensorPausedWhileCached) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
+  GURL url_a(
+      https_server()->GetURL("a.test", "/back_forward_cache/sensor.html"));
+  GURL url_b(
+      https_server()->GetURL("b.test", "/back_forward_cache/sensor.html"));
 
   provider_->SetRelativeOrientationSensorData(0, 0, 0);
 
-  // JS to cause a page to listen to, capture and validate orientation events.
-  const std::string sensor_js = R"(
-    // Collects events that have happened so far.
-    var events = [];
-    // If set, will be called by handleEvent.
-    var pendingResolve = null;
-
-    // Handles one event, pushing it to |events| and calling |pendingResolve| if
-    // set.
+  const std::string orientation_js = R"(
+    // Override the function.
     function handleEvent(event) {
-      events.push(event);
-      if (pendingResolve !== null) {
-        pendingResolve('event');
-        pendingResolve = null;
-      }
-    }
-
-    // Returns a promise that will resolve when the events array has at least
-    // |eventCountMin| elements. Returns the number of elements.
-    function waitForEventsPromise(eventCountMin) {
-      if (events.length >= eventCountMin) {
-        return Promise.resolve(events.length);
-      }
-      return new Promise(resolve => {
-        pendingResolve = resolve;
-      }).then(() => waitForEventsPromise(eventCountMin));
-    }
-
-    // Pretty print an orientation event.
-    function eventToString(event) {
-      return `${event.alpha} ${event.beta} ${event.gamma}`;
-    }
-
-    // Ensure that that |expectedAlpha| matches the alpha of all events.
-    function validateEvents(expectedAlpha) {
-      if (expectedAlpha === null) {
-        return "fail expectedAlpha === null";
-      }
-      let count = 0;
-      for (event of events) {
-        count++;
-        if (Math.abs(event.alpha - expectedAlpha) > 0.01) {
-          return `fail - ${count}/${events.length}: ` +
-              `${expectedAlpha} != ${event.alpha} (${eventToString(event)})`;
+        values.push(event.alpha);
+        if (pendingResolve !== null) {
+          pendingResolve('event');
+          pendingResolve = null;
         }
-      }
-      return 'pass';
     }
-
     window.addEventListener('deviceorientation', handleEvent);
   )";
 
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
 
-  ASSERT_TRUE(ExecJs(rfh_a, sensor_js));
+  ASSERT_TRUE(ExecJs(rfh_a.get(), orientation_js));
 
   // Collect 3 orientation events.
-  ASSERT_EQ(1, EvalJs(rfh_a, "waitForEventsPromise(1)"));
+  ASSERT_EQ(1, EvalJs(rfh_a.get(), "waitForEventsPromise(1)"));
   provider_->UpdateRelativeOrientationSensorData(0, 0, 0.2);
-  ASSERT_EQ(2, EvalJs(rfh_a, "waitForEventsPromise(2)"));
+  ASSERT_EQ(2, EvalJs(rfh_a.get(), "waitForEventsPromise(2)"));
   provider_->UpdateRelativeOrientationSensorData(0, 0, 0.4);
-  ASSERT_EQ(3, EvalJs(rfh_a, "waitForEventsPromise(3)"));
+  ASSERT_EQ(3, EvalJs(rfh_a.get(), "waitForEventsPromise(3)"));
   // We should have 3 events with alpha=0.
-  ASSERT_EQ("pass", EvalJs(rfh_a, "validateEvents(0)"));
+  ASSERT_EQ("pass", EvalJs(rfh_a.get(), "validateEvents(0)"));
 
   // 2) Navigate to B.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  RenderFrameHostImpl* rfh_b = current_frame_host();
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
 
   ASSERT_FALSE(delete_observer_rfh_a.deleted());
-  ASSERT_THAT(rfh_a, InBackForwardCache());
-  ASSERT_NE(rfh_a, rfh_b);
+  ASSERT_THAT(rfh_a.get(), InBackForwardCache());
+  ASSERT_NE(rfh_a.get(), rfh_b.get());
 
-  // Change the orientation data before executing |sensor_js|, otherwise a
+  // Change the orientation data before executing |orientation_js|, otherwise a
   // deviceorientation event might be fired before the call below and the first
   // registered event will have the previous data (0 0 0.4).
   provider_->SetRelativeOrientationSensorData(1, 0, 0);
-  ASSERT_TRUE(ExecJs(rfh_b, sensor_js));
+  ASSERT_TRUE(ExecJs(rfh_b.get(), orientation_js));
 
   // Collect 3 orientation events.
-  ASSERT_EQ(1, EvalJs(rfh_b, "waitForEventsPromise(1)"));
+  ASSERT_EQ(1, EvalJs(rfh_b.get(), "waitForEventsPromise(1)"));
   provider_->UpdateRelativeOrientationSensorData(1, 0, 0.2);
-  ASSERT_EQ(2, EvalJs(rfh_b, "waitForEventsPromise(2)"));
+  ASSERT_EQ(2, EvalJs(rfh_b.get(), "waitForEventsPromise(2)"));
   provider_->UpdateRelativeOrientationSensorData(1, 0, 0.4);
-  ASSERT_EQ(3, EvalJs(rfh_b, "waitForEventsPromise(3)"));
+  ASSERT_EQ(3, EvalJs(rfh_b.get(), "waitForEventsPromise(3)"));
   // We should have 3 events with alpha=1.
-  ASSERT_EQ("pass", EvalJs(rfh_b, "validateEvents(1)"));
+  ASSERT_EQ("pass", EvalJs(rfh_b.get(), "validateEvents(1)"));
 
   // 3) Go back to A.
   provider_->UpdateRelativeOrientationSensorData(0, 0, 0);
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ASSERT_EQ(rfh_a, current_frame_host());
+  ASSERT_EQ(rfh_a.get(), current_frame_host());
 
   // Collect 3 orientation events.
   provider_->UpdateRelativeOrientationSensorData(0, 0, 0);
   // There are 2 processes so, it's possible that more events crept in. So we
   // capture how many there are at this point and uses to wait for at least 3
   // more.
-  int count = EvalJs(rfh_a, "waitForEventsPromise(4)").ExtractInt();
+  int count = EvalJs(rfh_a.get(), "waitForEventsPromise(4)").ExtractInt();
   provider_->UpdateRelativeOrientationSensorData(0, 0, 0.2);
   count++;
-  ASSERT_EQ(count, EvalJs(rfh_a, base::StringPrintf("waitForEventsPromise(%d)",
-                                                    count)));
+  ASSERT_EQ(count, EvalJs(rfh_a.get(), base::StringPrintf(
+                                           "waitForEventsPromise(%d)", count)));
   provider_->UpdateRelativeOrientationSensorData(0, 0, 0.4);
   count++;
-  ASSERT_EQ(count, EvalJs(rfh_a, base::StringPrintf("waitForEventsPromise(%d)",
-                                                    count)));
+  ASSERT_EQ(count, EvalJs(rfh_a.get(), base::StringPrintf(
+                                           "waitForEventsPromise(%d)", count)));
 
   // We should have the earlier 3 plus another 3 events with alpha=0.
-  ASSERT_EQ("pass", EvalJs(rfh_a, "validateEvents(0)"));
+  ASSERT_EQ("pass", EvalJs(rfh_a.get(), "validateEvents(0)"));
 }
 
 // This tests that even if a page initializes WebRTC, tha page can be cached as

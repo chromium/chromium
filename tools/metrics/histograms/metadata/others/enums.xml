@@ -33,13 +33,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="BuyerAndSellerReportingId"/>
 </enum>
 
-<enum name="DisplayServerSupport">
-  <int value="0" label="None"/>
-  <int value="1" label="X11"/>
-  <int value="2" label="XWayland"/>
-  <int value="3" label="Wayland"/>
-</enum>
-
 <enum name="HappinessTrackingSurvey">
   <summary>Possible survey states and answers for each question.</summary>
   <int value="1" label="Survey Triggered"/>
@@ -117,11 +110,37 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Feedback Tool System Logs"/>
 </enum>
 
+<enum name="RequestWorkletServiceOutcome">
+  <summary>
+    The outcome of AuctionProcessManager::RequestWorkletService().
+  </summary>
+  <int value="0" label="Hit process limit"/>
+  <int value="1" label="Used shared process"/>
+  <int value="2" label="Used existing dedicated process"/>
+  <int value="3" label="Created new dedicated process"/>
+</enum>
+
 <enum name="SalientImageUrlFetchResult">
   <int value="0" label="Failed to fetch salient image url from network."/>
   <int value="1" label="A previous network request failed."/>
   <int value="2" label="Successfully fetched salient image url from network."/>
   <int value="3" label="Succeessfully got salient image url from local cache."/>
+</enum>
+
+<enum name="SecretPortalKeyProviderInitStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="NoService"/>
+  <int value="2" label="PipeFailed"/>
+  <int value="3" label="InvalidResponseFormat"/>
+  <int value="4" label="ResponsePathMismatch"/>
+  <int value="5" label="PipeReadFailed"/>
+  <int value="6" label="EmptySecret"/>
+  <int value="7" label="NoResponse"/>
+  <int value="8" label="SignalReadFailed"/>
+  <int value="9" label="UserCancelledUnlock"/>
+  <int value="10" label="(Obsolete) DestructedBeforeComplete"/>
+  <int value="11" label="SignalConnectFailed"/>
+  <int value="12" label="SignalParseFailed"/>
 </enum>
 
 <enum name="SilentPushEvent">

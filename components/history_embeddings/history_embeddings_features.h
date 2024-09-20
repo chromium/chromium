@@ -117,10 +117,6 @@ extern const base::FeatureParam<bool> kUseUrlFilter;
 // for before being torn down to reduce memory usage.
 extern const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout;
 
-// Comma-separated list of decimal integer hash values to decode as a set of
-// uint32_t. These can match against either one or two word phrases.
-extern const base::FeatureParam<std::string> kFilterHashes;
-
 // Specifies whether the history clusters side panel UI also searches and shows
 // history embeddings.
 extern const base::FeatureParam<bool> kEnableSidePanel;

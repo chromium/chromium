@@ -43,6 +43,7 @@ class ChromeAccountManagerService;
 // Initializes the mediator with a given `webState`.
 - (instancetype)
          initWithWebState:(web::WebState*)webState
+                   isRoot:(BOOL)isRoot
                  identity:(id<SystemIdentity>)identity
                     title:(NSString*)title
                     query:(DriveListQuery)query

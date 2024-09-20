@@ -144,23 +144,6 @@ Action::~Action() = default;
 Action::Action(const Action&) = default;
 Action& Action::operator=(const Action&) = default;
 
-DialogTurn::DialogTurn(const std::string& message,
-                       Role role,
-                       std::vector<Action> actions)
-    : message(message), role(role), actions(actions) {}
-
-DialogTurn::DialogTurn(const std::string& message, Role role)
-    : message(message), role(role) {}
-
-DialogTurn::~DialogTurn() = default;
-
-DialogTurn::DialogTurn(const DialogTurn&) = default;
-DialogTurn& DialogTurn::operator=(const DialogTurn&) = default;
-
-void DialogTurn::AppendAction(Action action) {
-  actions.emplace_back(action);
-}
-
 proto::Role GetRole(Role role) {
   const auto iter = role_to_proto_map.find(role);
   return iter != role_to_proto_map.end() ? iter->second
@@ -302,97 +285,6 @@ std::unique_ptr<SettingsData> ObtainSettingFromProto(
       GetSettingsValue(setting_proto.value(), *pref_type));
 }
 
-DialogTurn ConvertDialogToStruct(proto::Turn* turn_proto) {
-  DialogTurn dialog =
-      DialogTurn(turn_proto->message(),
-                 turn_proto->role() == proto::ROLE_ASSISTANT ? Role::kAssistant
-                                                             : Role::kUser);
-  if (turn_proto->action_size() == 0) {
-    return dialog;
-  }
-
-  for (int position = 0; position < turn_proto->action_size(); ++position) {
-    auto action_proto = turn_proto->action().at(position);
-    if (action_proto.has_launch_app_id()) {
-      auto action = Action(ActionType::kLaunchApp);
-      action.launched_app = action_proto.launch_app_id();
-      dialog.AppendAction(action);
-    } else if (action_proto.has_update_setting()) {
-      auto setting_proto = action_proto.update_setting();
-      std::unique_ptr<SettingsData> setting_data =
-          ObtainSettingFromProto(setting_proto);
-      if (!setting_data) {
-        DVLOG(1) << "Invalid setting type for" << setting_proto.settings_id();
-        continue;
-      }
-      dialog.AppendAction(Action(*setting_data.get()));
-    } else if (action_proto.has_all_done()) {
-      dialog.AppendAction(Action(action_proto.all_done()));
-    } else if (action_proto.has_click() && action_proto.click().has_x_pos() &&
-               action_proto.click().has_y_pos()) {
-      dialog.AppendAction(Action(ClickAction(action_proto.click().x_pos(),
-                                             action_proto.click().y_pos())));
-    } else if (action_proto.has_text_entry() &&
-               action_proto.text_entry().has_text()) {
-      auto action = Action(ActionType::kTextEntry);
-      action.text_entry = action_proto.text_entry().text();
-      dialog.AppendAction(action);
-    } else if (action_proto.has_file_action()) {
-      if (action_proto.file_action().has_launch_file_path()) {
-        dialog.AppendAction(
-            Action(FileAction(action_proto.file_action().launch_file_path()),
-                   ActionType::kLaunchFile));
-      }
-    }
-  }
-  return dialog;
-}
-
-void AddDialogToSparkyContext(const std::vector<DialogTurn>& dialog,
-                              proto::SparkyContextData* sparky_context_proto) {
-  for (const auto& dialog_turn : dialog) {
-    auto* dialog_proto = sparky_context_proto->add_conversation();
-    dialog_proto->set_message(dialog_turn.message);
-    dialog_proto->set_role(GetRole(dialog_turn.role));
-    for (const auto& action : dialog_turn.actions) {
-      auto* action_proto = dialog_proto->add_action();
-      if (action.type == ActionType::kLaunchApp &&
-          !action.launched_app.empty()) {
-        action_proto->set_launch_app_id(action.launched_app);
-      } else if (action.type == ActionType::kSetting &&
-                 action.updated_setting.has_value()) {
-        auto setting_type = VerifyValueAndConvertPrefTypeToSettingType(
-            action.updated_setting.value().pref_type,
-            action.updated_setting.value().GetValue());
-        if (setting_type == std::nullopt) {
-          DVLOG(1) << "Invalid setting type for"
-                   << action.updated_setting.value().pref_name;
-          continue;
-        }
-        auto* setting_proto = action_proto->mutable_update_setting();
-        AddSettingProto(action.updated_setting.value(), setting_proto,
-                        setting_type.value());
-      } else if (action.type == ActionType::kClick &&
-                 action.click.has_value()) {
-        auto* click_proto = action_proto->mutable_click();
-        click_proto->set_x_pos(action.click->x_pos);
-        click_proto->set_y_pos(action.click->y_pos);
-      } else if (action.type == ActionType::kLaunchFile &&
-                 action.file_action.has_value() &&
-                 !action.file_action->launch_file_path.empty()) {
-        auto* file_action = action_proto->mutable_file_action();
-        file_action->set_launch_file_path(action.file_action->launch_file_path);
-      } else if (action.type == ActionType::kAllDone) {
-        action_proto->set_all_done(action.all_done);
-      } else if (action.type == ActionType::kTextEntry &&
-                 !action.text_entry.empty()) {
-        auto* text_entry = action_proto->mutable_text_entry();
-        text_entry->set_text(action.text_entry);
-      }
-    }
-  }
-}
-
 std::set<std::string> COMPONENT_EXPORT(MANTA)
     GetSelectedFilePaths(const proto::FileRequest& file_request) {
   std::set<std::string> set_file_paths;
@@ -431,6 +323,13 @@ std::vector<FileData> GetFileDataFromProto(
     }
   }
   return files_data;
+}
+
+proto::Turn CreateTurn(const std::string& message, manta::proto::Role role) {
+  manta::proto::Turn turn;
+  turn.set_message(message);
+  turn.set_role(role);
+  return turn;
 }
 
 }  // namespace manta

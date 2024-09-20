@@ -29,8 +29,9 @@ IDBValue::IDBValue(
       file_system_access_tokens_(std::move(file_system_access_tokens)) {}
 
 IDBValue::~IDBValue() {
-  if (isolate_ && external_allocated_size_)
-    isolate_->AdjustAmountOfExternalAllocatedMemory(-external_allocated_size_);
+  if (isolate_) {
+    external_memory_accounter_.Clear(isolate_.get());
+  }
 }
 
 scoped_refptr<SerializedScriptValue> IDBValue::CreateSerializedValue() const {
@@ -46,19 +47,18 @@ void IDBValue::SetIsolate(v8::Isolate* isolate) {
   DCHECK(!isolate_) << "SetIsolate must be called at most once";
 
   isolate_ = isolate;
-  external_allocated_size_ = DataSize();
-  if (external_allocated_size_)
-    isolate_->AdjustAmountOfExternalAllocatedMemory(external_allocated_size_);
+  size_t external_allocated_size = DataSize();
+  if (external_allocated_size) {
+    external_memory_accounter_.Increase(isolate_.get(),
+                                        external_allocated_size);
+  }
 }
 
 void IDBValue::SetData(Vector<char>&& new_data) {
   DCHECK(isolate_)
       << "Value unwrapping should be done after an isolate has been associated";
 
-  int64_t old_external_allocated_size = external_allocated_size_;
-  external_allocated_size_ = new_data.size();
-  isolate_->AdjustAmountOfExternalAllocatedMemory(external_allocated_size_ -
-                                                  old_external_allocated_size);
+  external_memory_accounter_.Set(isolate_.get(), new_data.size());
 
   data_ = std::move(new_data);
 }

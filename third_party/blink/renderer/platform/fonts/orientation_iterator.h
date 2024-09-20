@@ -19,10 +19,11 @@ class PLATFORM_EXPORT OrientationIterator {
   enum RenderOrientation {
     kOrientationKeep,
     kOrientationRotateSideways,
-    kOrientationInvalid
+    kOrientationInvalid,
 
-    // When adding values, ensure `kRenderOrientationBits` in
-    // `InlineItemSegment` is in sync.
+    // When adding values, ensure `kMaxEnumValue` is the largest value to store
+    // (values that can be returned for non-empty inputs).
+    kMaxEnumValue = kOrientationRotateSideways,
   };
 
   OrientationIterator(const UChar* buffer,

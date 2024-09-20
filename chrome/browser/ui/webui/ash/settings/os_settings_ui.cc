@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_parental_controls_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/app_permission_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/magic_boost_notice_page_handler_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
@@ -69,6 +70,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -327,7 +329,8 @@ void OSSettingsUI::BindInterface(
   auto* provider =
       OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
           ->input_device_settings_provider();
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsAccessibilityFaceGazeEnabled()) {
     provider->Initialize(web_ui());
   }
   provider->BindInterface(std::move(receiver));
@@ -351,7 +354,8 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<::ash::common::mojom::ShortcutInputProvider>
         receiver) {
-  CHECK(features::IsPeripheralCustomizationEnabled());
+  CHECK(features::IsPeripheralCustomizationEnabled() ||
+        ::features::IsAccessibilityFaceGazeEnabled());
   auto* shortcut_input_provider =
       OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
           ->shortcut_input_provider();
@@ -445,6 +449,14 @@ void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<date_time::mojom::PageHandlerFactory> receiver) {
   date_time_handler_factory_ = std::make_unique<DateTimeHandlerFactory>(
       web_ui(), Profile::FromWebUI(web_ui()), std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<magic_boost_handler::mojom::PageHandlerFactory>
+        receiver) {
+  magic_boost_notice_page_handler_factory_ =
+      std::make_unique<MagicBoostNoticePageHandlerFactory>(
+          Profile::FromWebUI(web_ui()), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)

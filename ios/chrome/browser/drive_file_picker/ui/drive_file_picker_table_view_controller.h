@@ -10,7 +10,7 @@
 
 @protocol DriveFilePickerCommands;
 @protocol DriveFilePickerMutator;
-@class DriveItemIdentifier;
+@protocol DriveFilePickerTableViewControllerDelegate;
 
 // TableViewController presenting a list of Drive files and folders. This should
 // be pushed onto the DriveFilePickerNavigationController.
@@ -21,6 +21,9 @@
 @property(nonatomic, weak) id<DriveFilePickerMutator> mutator;
 // Drive file picker handler.
 @property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
+// View controller delegate.
+@property(nonatomic, weak) id<DriveFilePickerTableViewControllerDelegate>
+    delegate;
 
 @end
 

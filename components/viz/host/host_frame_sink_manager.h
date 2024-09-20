@@ -370,7 +370,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   // TODO(jonross): Separate out all hit testing work into its own separate
   // class.
-  base::ObserverList<HitTestRegionObserver>::Unchecked observers_;
+  base::ObserverList<HitTestRegionObserver> observers_;
 
 #if BUILDFLAG(IS_ANDROID)
   uint32_t next_cache_back_buffer_id_ = 1;

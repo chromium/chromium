@@ -47,20 +47,22 @@ class MojoChannel : public MojoChannelBase {
   }
 
   void QueryVersion() {
-    // Note: the callback will not be called if |remote_| is destroyed.
+    // Note: the callback will not be called if `remote_` is destroyed.
     remote_.QueryVersion(
         base::BindOnce(&MojoChannel::OnVersionReady, base::Unretained(this)));
   }
 
- private:
+  // `OnVersionReady` is called directly when the interface version is already
+  // stored in `remote_`.
   void OnVersionReady(uint32_t unused_version) {
     holder_->SetInstance(remote_.get(), remote_.version());
   }
 
+ private:
   // Externally owned ConnectionHolder instance.
   const raw_ptr<ConnectionHolder<InstanceType, HostType>> holder_;
 
-  // Put as a last member to ensure that any callback tied to the |remote_|
+  // Put as a last member to ensure that any callback tied to the `remote_`
   // is not invoked.
   mojo::Remote<InstanceType> remote_;
 };

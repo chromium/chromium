@@ -1040,9 +1040,9 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
     LogManager* log_manager) {
   ParsingContext context(client_country, language_code,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-                         PatternSource::kDefault,
+                         PatternFile::kDefault,
 #else
-                         PatternSource::kLegacy,
+                         PatternFile::kLegacy,
 #endif
                          GetActiveRegexFeatures());
 

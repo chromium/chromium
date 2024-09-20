@@ -41,6 +41,10 @@ class VirtualCardEnrollUiModel;
 // Sends a command to show the bottom sheet to edit an address.
 - (void)showEditAddressBottomSheet;
 
+// Sends a command to stop showing the bottom sheet to edit an address provided
+// it's shown.
+- (void)dismissEditAddressBottomSheet;
+
 // Commands to manage the Autofill error dialog.
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext;

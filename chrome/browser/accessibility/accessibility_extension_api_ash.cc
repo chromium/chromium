@@ -602,10 +602,12 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
   bool dictation_enabled = AccessibilityManager::Get()->IsDictationEnabled();
   bool from_accessibility_common =
       extension_id() == extension_misc::kAccessibilityCommonExtensionId;
-  if (dictation_enabled && from_accessibility_common &&
+  bool facegaze_enabled = AccessibilityManager::Get()->IsFaceGazeEnabled();
+  if ((dictation_enabled || facegaze_enabled) && from_accessibility_common &&
       params->use_rewriters.has_value() && params->use_rewriters.value()) {
-    // TODO(b/259397131): Remove the `useRewriters` property and remove this
-    // if statement.
+    // TODO(b/259397131): Remove the `useRewriters` property.
+    // Call SendEventToSink so that the event can be processed by event
+    // rewriters, like Game Controls.
     host->SendEventToSink(&synthetic_key_event);
   } else {
     host->DeliverEventToSink(&synthetic_key_event);

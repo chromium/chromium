@@ -100,8 +100,7 @@ TEST_F(RenderProcessHostUnitTest, RendererProcessLimit) {
 
   // Verify that the renderer sharing will happen.
   GURL test_url("http://foo.com");
-  EXPECT_TRUE(RenderProcessHostImpl::ShouldTryToUseExistingProcessHost(
-      browser_context(), test_url));
+  EXPECT_TRUE(RenderProcessHostImpl::IsProcessLimitReached());
 }
 #endif
 
@@ -116,8 +115,10 @@ TEST_F(RenderProcessHostUnitTest, NoRendererProcessLimitOnAndroidOrChromeOS) {
 
   // Verify that the renderer sharing still won't happen.
   GURL test_url("http://foo.com");
-  EXPECT_FALSE(RenderProcessHostImpl::ShouldTryToUseExistingProcessHost(
-      browser_context(), test_url));
+  EXPECT_FALSE(
+      GetContentClientForTesting()
+          ->browser()
+          ->ShouldTryToUseExistingProcessHost(browser_context(), test_url));
 }
 #endif
 

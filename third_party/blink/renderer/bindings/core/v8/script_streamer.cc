@@ -167,9 +167,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
           // either share ownership of the chunks, or only give chunks back to
           // the client once the streaming completes.
           Vector<char> copy_for_decoder;
-          copy_for_decoder.Append(
-              base::as_chars(buffer).data(),
-              base::checked_cast<wtf_size_t>(buffer.size()));
+          copy_for_decoder.AppendSpan(base::as_chars(buffer));
           if (absl::holds_alternative<ScriptDecoder*>(script_decoder_)) {
             absl::get<ScriptDecoder*>(script_decoder_)
                 ->DidReceiveData(std::move(copy_for_decoder));
@@ -452,17 +450,16 @@ void ScriptStreamer::RecordStreamingHistogram(
 }
 
 bool ScriptStreamer::ConvertEncoding(
-    const char* encoding_name,
+    const AtomicString& encoding_name,
     v8::ScriptCompiler::StreamedSource::Encoding* encoding) {
   // Here's a list of encodings we can use for streaming. These are
   // the canonical names.
-  if (strcmp(encoding_name, "windows-1252") == 0 ||
-      strcmp(encoding_name, "ISO-8859-1") == 0 ||
-      strcmp(encoding_name, "US-ASCII") == 0) {
+  if (encoding_name == "windows-1252" || encoding_name == "ISO-8859-1" ||
+      encoding_name == "US-ASCII") {
     *encoding = v8::ScriptCompiler::StreamedSource::WINDOWS_1252;
     return true;
   }
-  if (strcmp(encoding_name, "UTF-8") == 0) {
+  if (encoding_name == "UTF-8") {
     *encoding = v8::ScriptCompiler::StreamedSource::UTF8;
     return true;
   }
@@ -645,7 +642,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
         std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
             TextResourceDecoderOptions::kPlainTextContent,
             WTF::TextEncoding(script_resource_->Encoding()))));
-    decoder->CheckForBOM(maybe_bom, kMaximumLengthOfBOM);
+    decoder->CheckForBOM(maybe_bom);
 
     // The encoding may change when we see the BOM. Check for BOM now
     // and update the encoding from the decoder when necessary. Suppress
@@ -1014,12 +1011,12 @@ class InlineSourceStream final
       return 0;
     }
 
-    size_t size = text_.CharactersSizeInBytes();
-    auto data_copy = std::make_unique<uint8_t[]>(size);
-    memcpy(data_copy.get(), text_.Bytes(), size);
+    auto text_bytes = text_.RawByteSpan();
+    size_t size = text_bytes.size();
+    auto data_copy = base::HeapArray<uint8_t>::CopiedFrom(text_bytes);
     text_ = String();
 
-    *src = data_copy.release();
+    *src = std::move(data_copy).leak().data();
     return size;
   }
 
@@ -1640,9 +1637,7 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
   std::unique_ptr<TextResourceDecoder> decoder(
       std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent, encoding_)));
-  std::string_view chars =
-      base::as_string_view(data.first(kMaximumLengthOfBOM));
-  decoder->CheckForBOM(chars.data(), static_cast<wtf_size_t>(chars.size()));
+  decoder->CheckForBOM(base::as_chars(data.first(kMaximumLengthOfBOM)));
   MojoResult end_read_result = body_->EndReadData(0);
   CHECK_EQ(end_read_result, MOJO_RESULT_OK);
   v8::ScriptCompiler::StreamedSource::Encoding script_source_encoding =

@@ -47,11 +47,13 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   bool IsRemoving() const override;
   void Remove(browsing_data::TimePeriod time_period,
               BrowsingDataRemoveMask remove_mask,
-              base::OnceClosure callback) override;
+              base::OnceClosure callback,
+              RemovalParams params = RemovalParams::Default()) override;
   void RemoveInRange(base::Time start_time,
                      base::Time end_time,
                      BrowsingDataRemoveMask mask,
-                     base::OnceClosure callback) override;
+                     base::OnceClosure callback,
+                     RemovalParams params = RemovalParams::Default()) override;
   // May be called with a meaningful value prior to using `Remove` or
   // `RemoveInRange` if `BrowsingDataRemoveMask::CLOSE_TABS` is selected, to
   // avoid having to fetch this info from persisted storage again.
@@ -64,7 +66,8 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
     RemovalTask(base::Time delete_begin,
                 base::Time delete_end,
                 BrowsingDataRemoveMask mask,
-                base::OnceClosure callback);
+                base::OnceClosure callback,
+                RemovalParams params);
     RemovalTask(RemovalTask&& other) noexcept;
     ~RemovalTask();
 
@@ -72,6 +75,7 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
     base::Time delete_end;
     BrowsingDataRemoveMask mask;
     base::OnceClosure callback;
+    RemovalParams params;
     base::Time task_started;
   };
 
@@ -90,10 +94,11 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   void RunNextTask();
 
   // If necessary, shows an activity indicator while the deletion is ongoing.
-  void PrepareForRemoval(BrowsingDataRemoveMask mask);
+  void PrepareForRemoval(BrowsingDataRemoveMask mask, RemovalParams params);
 
-  // Removes the activity indicator, reloads all web states and resets NTPs.
-  void CleanupAfterRemoval(BrowsingDataRemoveMask mask);
+  // If necessary, removes the activity indicator, reloads all web states and
+  // resets NTPs.
+  void CleanupAfterRemoval(BrowsingDataRemoveMask mask, RemovalParams params);
 
   // Removes the specified items related to browsing.
   void RemoveImpl(base::Time delete_begin,

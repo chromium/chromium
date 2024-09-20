@@ -58,8 +58,7 @@ ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      kExceptionMessageRequestAborted);
+    ThrowAbortedException(exception_state);
     return ScriptPromise<IDLString>();
   }
   const String context_string = options->getContextOr(String());
@@ -93,8 +92,7 @@ ReadableStream* AIWriter::writeStreaming(ScriptState* script_state,
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      kExceptionMessageRequestAborted);
+    ThrowAbortedException(exception_state);
     return nullptr;
   }
   const String context_string = options->getContextOr(String());

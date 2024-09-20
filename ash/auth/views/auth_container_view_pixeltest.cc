@@ -135,12 +135,17 @@ TEST_F(AuthContainerPixelTest, PinStatusTest) {
   // Turn off the PIN factor availability.
   test_api_->GetView()->SetHasPin(false);
 
-  const std::u16string status_message = u"Too many failed attempts.";
-  test_api_->GetView()->SetPinStatus(status_message);
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "SetPinStatus", /*revision_number=*/0, container_view_));
+  const std::u16string status_message = u"Too many PIN attempts";
 
-  test_api_->GetView()->SetPinStatus(u"");
+  cryptohome::PinStatus pin_status(base::TimeDelta::Max());
+
+  test_api_->GetView()->SetPinStatus(
+      std::make_unique<cryptohome::PinStatus>(pin_status));
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "SetPinStatus", /*revision_number=*/1, container_view_));
+
+  test_api_->GetView()->SetPinStatus(nullptr);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "PasswordOnly", /*revision_number=*/0, container_view_));
 }

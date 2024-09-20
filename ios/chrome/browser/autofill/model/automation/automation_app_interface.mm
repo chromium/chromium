@@ -131,10 +131,9 @@ NSError* PrepareAutofillProfileWithValues(
 
   // Clear all existing local data and save the profile and credit card
   // generated to the personal data manager.
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profileIOS = chrome_test_util::GetOriginalProfile();
   PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForBrowserState(browser_state);
+      PersonalDataManagerFactory::GetForProfile(profileIOS);
   for (const autofill::CreditCard* local_card :
        personal_data_manager->payments_data_manager().GetLocalCreditCards()) {
     personal_data_manager->RemoveByGUID(local_card->guid());

@@ -431,7 +431,7 @@ void FastCheckoutClientImpl::TryToFillForms() {
     if (ShouldFillForm(*form, autofill::FormType::kCreditCardForm)) {
       autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/true);
-      autofill::CreditCard* credit_card = GetSelectedCreditCard();
+      const autofill::CreditCard* credit_card = GetSelectedCreditCard();
       if (field && !credit_card_form_global_id_ && credit_card) {
         if (autofill::CreditCard::IsLocalCard(credit_card)) {
           FillCreditCardForm(*form, *field, *credit_card, u"");
@@ -606,7 +606,7 @@ void FastCheckoutClientImpl::A11yAnnounce(
     autofill::FormSignature form_signature,
     bool is_credit_card_form) {
   if (is_credit_card_form) {
-    if (autofill::CreditCard* credit_card = GetSelectedCreditCard()) {
+    if (const autofill::CreditCard* credit_card = GetSelectedCreditCard()) {
       accessibility_service_->Announce(l10n_util::GetStringFUTF16(
           IDS_FAST_CHECKOUT_A11Y_CREDIT_CARD_FORM_FILLED,
           credit_card->HasNonEmptyValidNickname()

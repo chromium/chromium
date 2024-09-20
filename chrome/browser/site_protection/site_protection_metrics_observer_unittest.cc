@@ -20,6 +20,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,12 +38,13 @@ class TestSafeBrowsingDatabaseManager : public MockSafeBrowsingDatabaseManager {
     url_on_high_confidence_allowlist_ = url;
   }
 
-  std::optional<HighConfidenceAllowlistCheckLoggingDetails>
-  CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
-      base::OnceCallback<void(bool)> callback) override {
-    std::move(callback).Run((url == url_on_high_confidence_allowlist_));
-    return std::nullopt;
+      CheckUrlForHighConfidenceAllowlistCallback callback) override {
+    std::move(callback).Run(
+        /*url_on_high_confidence_allowlist=*/(
+            url == url_on_high_confidence_allowlist_),
+        /*logging_details=*/std::nullopt);
   }
 
  protected:
@@ -71,10 +73,7 @@ class SiteProtectionMetricsObserverTest
 
     browser_process_ = TestingBrowserProcess::GetGlobal();
 
-    // Create services which observe page navigation.
-    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
-        web_contents());
-    SiteProtectionMetricsObserver::CreateForWebContents(web_contents());
+    SetUpForNewWebContents();
 
     safe_browsing_database_manager_ =
         base::MakeRefCounted<TestSafeBrowsingDatabaseManager>();
@@ -110,14 +109,54 @@ class SiteProtectionMetricsObserverTest
         HistoryServiceFactory::GetDefaultFactory()}};
   }
 
-  history::HistoryService* GetHistoryService() {
+  void SetIncognito() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto* global_browser_process = TestingBrowserProcess::GetGlobal();
+    global_browser_process->SetLocalState(nullptr);
+#endif
+
+    Profile* const otr_profile =
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    EXPECT_TRUE(otr_profile->IsIncognitoProfile());
+    scoped_refptr<content::SiteInstance> site_instance =
+        content::SiteInstance::Create(otr_profile);
+    SetContents(content::WebContentsTester::CreateTestWebContents(
+        otr_profile, std::move(site_instance)));
+
+    SetUpForNewWebContents();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    global_browser_process->SetLocalState(profile()->GetPrefs());
+#endif
+  }
+
+  void SetUpForNewWebContents() {
+    // Create services which observe page navigation.
+    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
+        web_contents());
+    SiteProtectionMetricsObserver::CreateForWebContents(web_contents());
+  }
+
+  history::HistoryService* GetRegularProfileHistoryService() {
     return HistoryServiceFactory::GetForProfile(
         profile(), ServiceAccessType::IMPLICIT_ACCESS);
   }
 
-  void AddPageVisitedYesterday(const GURL& url) {
-    GetHistoryService()->AddPage(url, (base::Time::Now() - base::Hours(25)),
-                                 history::SOURCE_BROWSED);
+  void AddPageVisitedYesterdayToRegularProfile(const GURL& url) {
+    GetRegularProfileHistoryService()->AddPage(
+        url, (base::Time::Now() - base::Hours(25)), history::SOURCE_BROWSED);
+  }
+
+  void NavigateAndWaitForHistogram(const GURL& url,
+                                   const std::string& histogram_name) {
+    base::RunLoop run_loop;
+    base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
+        histogram_name,
+        base::BindLambdaForTesting(
+            [&](const char* histogram_name, uint64_t name_hash,
+                base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+    NavigateAndCommit(url);
+    run_loop.Run();
   }
 
   void NavigateAndCheckRecordedHeuristicHistograms(
@@ -127,15 +166,7 @@ class SiteProtectionMetricsObserverTest
         "SafeBrowsing.SiteProtection.FamiliarityHeuristic";
 
     base::HistogramTester histogram_tester;
-
-    base::RunLoop run_loop;
-    base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
-        kFamiliarityHistogramName,
-        base::BindLambdaForTesting(
-            [&](const char* histogram_name, uint64_t name_hash,
-                base::HistogramBase::Sample sample) { run_loop.Quit(); }));
-    NavigateAndCommit(url);
-    run_loop.Run();
+    NavigateAndWaitForHistogram(url, kFamiliarityHistogramName);
 
     histogram_tester.ExpectTotalCount(kFamiliarityHistogramName,
                                       expected_heuristics.size());
@@ -182,9 +213,9 @@ TEST_F(SiteProtectionMetricsObserverTest, NoHistoryOlderThanADayAgo) {
   GURL kUrlVisitedToday("https://baz.com");
 
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  GetHistoryService()->AddPage(kUrlVisited8HoursAgo,
-                               (base::Time::Now() - base::Hours(8)),
-                               history::SOURCE_BROWSED);
+  GetRegularProfileHistoryService()->AddPage(
+      kUrlVisited8HoursAgo, (base::Time::Now() - base::Hours(8)),
+      history::SOURCE_BROWSED);
 
   NavigateAndCheckRecordedHeuristicHistograms(
       kUrlVisitedToday,
@@ -202,14 +233,14 @@ TEST_F(SiteProtectionMetricsObserverTest, VisitInHistoryMoreThanADayAgo) {
   GURL kUrlVisited8HoursAgo("https://bar.com");
   GURL kUrlVisited1HourAgo("https://baz.com");
 
-  GetHistoryService()->AddPage(kUrlVisitedYesterday,
-                               (base::Time::Now() - base::Hours(25)),
-                               history::SOURCE_BROWSED);
-  GetHistoryService()->AddPage(kUrlVisited8HoursAgo,
-                               (base::Time::Now() - base::Hours(8)),
-                               history::SOURCE_BROWSED);
-  GetHistoryService()->AddPage(kUrlVisited1HourAgo, base::Time::Now(),
-                               history::SOURCE_BROWSED);
+  GetRegularProfileHistoryService()->AddPage(
+      kUrlVisitedYesterday, (base::Time::Now() - base::Hours(25)),
+      history::SOURCE_BROWSED);
+  GetRegularProfileHistoryService()->AddPage(
+      kUrlVisited8HoursAgo, (base::Time::Now() - base::Hours(8)),
+      history::SOURCE_BROWSED);
+  GetRegularProfileHistoryService()->AddPage(
+      kUrlVisited1HourAgo, base::Time::Now(), history::SOURCE_BROWSED);
 
   {
     ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -249,7 +280,7 @@ TEST_F(SiteProtectionMetricsObserverTest, VisitInHistoryMoreThanADayAgo) {
 // Test the histograms which are logged by SiteProtectionMetricsObserver for
 // different levels of site engagement.
 TEST_F(SiteProtectionMetricsObserverTest, SiteEngagementScore) {
-  AddPageVisitedYesterday(GURL("https://bar.com"));
+  AddPageVisitedYesterdayToRegularProfile(GURL("https://bar.com"));
 
   GURL kUrl("https://foo.com");
   site_engagement::SiteEngagementService* site_engagement_service =
@@ -283,7 +314,7 @@ TEST_F(SiteProtectionMetricsObserverTest, SiteEngagementScore) {
 // That that SiteProtectionMetricsObserver ignores engagement due to the
 // in-progress navigation.
 TEST_F(SiteProtectionMetricsObserverTest, IgnoreCurrentNavigationEngagement) {
-  AddPageVisitedYesterday(GURL("https://bar.com"));
+  AddPageVisitedYesterdayToRegularProfile(GURL("https://bar.com"));
 
   GURL kUrl("https://foo.com");
   base::HistogramTester histogram_tester;
@@ -317,8 +348,8 @@ TEST_F(SiteProtectionMetricsObserverTest, SiteEngagementScoreUkm) {
   site_engagement::SiteEngagementService* site_engagement_service =
       site_engagement::SiteEngagementServiceFactory::GetForProfile(profile());
   site_engagement_service->ResetBaseScoreForURL(kUrl, kSiteEngagement);
-  GetHistoryService()->AddPage(kUrl, (base::Time::Now() - base::Hours(1)),
-                               history::SOURCE_BROWSED);
+  GetRegularProfileHistoryService()->AddPage(
+      kUrl, (base::Time::Now() - base::Hours(1)), history::SOURCE_BROWSED);
 
   NavigateAndCheckRecordedHeuristicUkm(kUrl, "SiteEngagementScore",
                                        kExpectedUkmSiteEngagement);
@@ -327,7 +358,7 @@ TEST_F(SiteProtectionMetricsObserverTest, SiteEngagementScoreUkm) {
 // Test that SiteProtectionMetricsObserver logs the correct histograms and UKM
 // if the site is on the safe browsing global allowlist.
 TEST_F(SiteProtectionMetricsObserverTest, GlobalAllowlistMatch) {
-  AddPageVisitedYesterday(GURL("https://baz.com"));
+  AddPageVisitedYesterdayToRegularProfile(GURL("https://baz.com"));
 
   GURL kUrlOnHighConfidenceAllowlist("https://foo.com");
   GURL kRegularUrl("https://bar.com");
@@ -358,12 +389,57 @@ TEST_F(SiteProtectionMetricsObserverTest, AnyHeuristicsMatchUkm) {
   GURL kUrlVisitedYesterday("https://foo.com");
   GURL kUrlVisitedNever("https://bar.com");
 
-  AddPageVisitedYesterday(kUrlVisitedYesterday);
+  AddPageVisitedYesterdayToRegularProfile(kUrlVisitedYesterday);
 
   NavigateAndCheckRecordedHeuristicUkm(kUrlVisitedYesterday,
                                        "AnyHeuristicsMatch", true);
   NavigateAndCheckRecordedHeuristicUkm(kUrlVisitedNever, "AnyHeuristicsMatch",
                                        false);
+}
+
+// Test that the SiteProtectionMetricsObserver does not log any metrics for
+// file:// URLs.
+TEST_F(SiteProtectionMetricsObserverTest, FileUrlNoMetricsLogged) {
+  GURL kFileUrlVisitedNever("file:///usr/");
+  GURL kUrlVisitedNever("https://bar.com");
+
+  SiteProtectionMetricsObserver* site_protection_observer =
+      SiteProtectionMetricsObserver::FromWebContents(web_contents());
+
+  base::HistogramTester histogram_tester;
+
+  // Check that there are no pending asynchronous tasks which would perhaps log
+  // UMA when run.
+  NavigateAndCommit(kFileUrlVisitedNever);
+  EXPECT_FALSE(site_protection_observer->HasPendingTasksForTesting());
+
+  // Check that there are pending asynchronous tasks which would log UMA when
+  // run.
+  NavigateAndCommit(kUrlVisitedNever);
+  EXPECT_TRUE(site_protection_observer->HasPendingTasksForTesting());
+
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.SiteProtection.FamiliarityHeuristic", 0u);
+}
+
+// Test that SiteProtectionMetricsObserver logs to
+// SafeBrowsing.SiteProtection.FamiliarityHeuristic.OffTheRecord when in
+// incognito.
+TEST_F(SiteProtectionMetricsObserverTest, Incognito) {
+  const char kRegularProfileHistogramName[] =
+      "SafeBrowsing.SiteProtection.FamiliarityHeuristic";
+  const char kOffTheRecordHistogramName[] =
+      "SafeBrowsing.SiteProtection.FamiliarityHeuristic.OffTheRecord";
+  GURL kUrlVisitedNever("https://bar.com");
+
+  SetIncognito();
+
+  base::HistogramTester histogram_tester;
+  NavigateAndWaitForHistogram(kUrlVisitedNever, kOffTheRecordHistogramName);
+  histogram_tester.ExpectUniqueSample(
+      kOffTheRecordHistogramName,
+      SiteFamiliarityHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo, 1);
+  histogram_tester.ExpectTotalCount(kRegularProfileHistogramName, 0u);
 }
 
 }  // namespace site_protection

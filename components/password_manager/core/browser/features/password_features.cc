@@ -23,11 +23,11 @@ BASE_FEATURE(kAutofillPasswordUserPerceptionSurvey,
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kAuthenticateUsingUserConsentVerifierInteropApi,
              "AuthenticateUsingUserConsentVerifierInteropApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAuthenticateUsingUserConsentVerifierApi,
              "AuthenticateUsingUserConsentVerifierApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kBiometricTouchToFill,
@@ -73,9 +73,15 @@ BASE_FEATURE(kLocalStateEnterprisePasswordHashes,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-BASE_FEATURE(kPasswordGenerationExperiment,
-             "PasswordGenerationExperiment",
+
+BASE_FEATURE(kPasswordGenerationChunking,
+             "PasswordGenerationChunkPassword",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPasswordGenerationSoftNudge,
+             "PasswordGenerationSoftNudge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif
 
 BASE_FEATURE(kPasswordManagerLogToTerminal,
@@ -96,11 +102,17 @@ BASE_FEATURE(kRestartToGainAccessToKeychain,
 #endif
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kScreenlockReauthPromoCard,
              "ScreenlockReauthPromoCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_FEATURE(kBiometricsAuthForPwdFill,
+             "BiometricsAuthForPwdFill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BASE_FEATURE(kSkipUndecryptablePasswords,
              "SkipUndecryptablePasswords",
@@ -118,6 +130,10 @@ BASE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
              "UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBiometricAuthIdentityCheck,
+             "BiometricAuthIdentityCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers,

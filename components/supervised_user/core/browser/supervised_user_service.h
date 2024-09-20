@@ -164,9 +164,17 @@ class SupervisedUserService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
                            ClassificationIsSlowerThanHttp);
   FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ReverseOrderOfResponsesAfterContentIsReady);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
+                           ClassificationIsFasterThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
+                           ClassificationIsSlowerThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
                            ShortCircuitsSynchronousBlock);
-  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
                            HandlesLateAsynchronousBlock);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
+                           OutOfOrderClassification);
 
   // Method used in testing to set the given test_filter as the url_filter_
   void SetURLFilterForTesting(

@@ -90,55 +90,6 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
   return text_content;
 }
 
-// https://crbug.com/40889544 - to be removed once we gather some info on
-// the reason for the macOS exception being thrown.
-std::u16string AXPlatformNodeDelegate::GetTextContentUTF16WithInvisibles()
-    const {
-  if (node_) {
-    return node_->GetTextContentUTF16();
-  }
-
-  // Unlike in web content the "kValue" attribute always takes precedence,
-  // because we assume that users of the base impl, such as Views controls,
-  // are carefully crafted by hand, in contrast to HTML pages, where any content
-  // that might be present in the shadow DOM (AKA in the internal accessibility
-  // tree) is actually used by the renderer when assigning the "kValue"
-  // attribute, including any redundant white space.
-  std::u16string value =
-      GetString16Attribute(ax::mojom::StringAttribute::kValue);
-  if (!value.empty()) {
-    return value;
-  }
-
-  // The name of a leaf node in Views is displayed inside the View, i.e.
-  // `GetNameFrom` == `ax::mojom::NameFrom::kContents`, except in text fields,
-  // where the name attribute is the field's label and the value attribute is
-  // the field's text contents. For maximum compatibility with the Web code, we
-  // compute the text of a non-leaf text field from the text contents of its
-  // children, even though we currently know of no such text field in Views.
-  //
-  // TODO(crbug.com/40662009): The check for `IsInvisibleOrIgnored()`
-  // should not be needed. `ChildAtIndex()` and `GetChildCount()` are already
-  // supposed to skip over nodes that are invisible or ignored, but
-  // `ViewAXPlatformNodeDelegate` does not currently implement this behavior.
-  //  if (IsLeaf() && !GetData().IsTextField() && !IsInvisibleOrIgnored()) {
-  //    return GetString16Attribute(ax::mojom::StringAttribute::kName);
-  //  }
-
-  std::u16string text_content;
-  for (size_t i = 0; i < GetChildCount(); ++i) {
-    // TODO(nektar): Add const to all tree traversal methods and remove
-    // const_cast.
-    const AXPlatformNode* child = AXPlatformNode::FromNativeViewAccessible(
-        const_cast<AXPlatformNodeDelegate*>(this)->ChildAtIndex(i));
-    if (!child || !child->GetDelegate()) {
-      continue;
-    }
-    text_content += child->GetDelegate()->GetTextContentUTF16WithInvisibles();
-  }
-  return text_content;
-}
-
 int AXPlatformNodeDelegate::GetTextContentLengthUTF16() const {
   // TODO(accessibility): Simplify once ViewsAX is complete.
   if (node_) {
@@ -563,15 +514,17 @@ AXPlatformNode* AXPlatformNodeDelegate::GetTargetNodeForRelation(
 std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
     ax::mojom::IntListAttribute attr) {
   DCHECK(IsNodeIdIntListAttribute(attr));
-  std::vector<int32_t> target_ids;
-  if (!GetIntListAttribute(attr, &target_ids))
+  if (!HasIntListAttribute(attr)) {
     return std::vector<AXPlatformNode*>();
+  }
 
   // If we use std::set to eliminate duplicates, the resulting set will be
   // sorted by the id and we will lose the original order which may be of
   // interest to ATs. The number of ids should be small.
 
   std::vector<AXPlatformNode*> nodes;
+  const std::vector<int32_t>& target_ids = GetIntListAttribute(attr);
+
   for (int32_t target_id : target_ids) {
     AXPlatformNode* target = GetFromNodeID(target_id);
     if (IsValidRelationTarget(target) && !base::Contains(nodes, target)) {
@@ -765,9 +718,11 @@ const std::string& AXPlatformNodeDelegate::GetStringAttribute(
 bool AXPlatformNodeDelegate::GetStringAttribute(
     ax::mojom::StringAttribute attribute,
     std::string* value) const {
-  if (node_)
-    return node_->GetStringAttribute(attribute, value);
-  return GetData().GetStringAttribute(attribute, value);
+  bool found = HasStringAttribute(attribute);
+  if (found) {
+    *value = GetStringAttribute(attribute);
+  }
+  return found;
 }
 
 std::u16string AXPlatformNodeDelegate::GetString16Attribute(
@@ -780,9 +735,11 @@ std::u16string AXPlatformNodeDelegate::GetString16Attribute(
 bool AXPlatformNodeDelegate::GetString16Attribute(
     ax::mojom::StringAttribute attribute,
     std::u16string* value) const {
-  if (node_)
-    return node_->GetString16Attribute(attribute, value);
-  return GetData().GetString16Attribute(attribute, value);
+  bool found = HasStringAttribute(attribute);
+  if (found) {
+    *value = GetString16Attribute(attribute);
+  }
+  return found;
 }
 
 const std::string& AXPlatformNodeDelegate::GetInheritedStringAttribute(
@@ -827,9 +784,11 @@ const std::vector<int32_t>& AXPlatformNodeDelegate::GetIntListAttribute(
 bool AXPlatformNodeDelegate::GetIntListAttribute(
     ax::mojom::IntListAttribute attribute,
     std::vector<int32_t>* value) const {
-  if (node_)
-    return node_->GetIntListAttribute(attribute, value);
-  return GetData().GetIntListAttribute(attribute, value);
+  bool found = HasIntListAttribute(attribute);
+  if (found) {
+    *value = GetIntListAttribute(attribute);
+  }
+  return found;
 }
 
 bool AXPlatformNodeDelegate::HasStringListAttribute(
@@ -849,9 +808,11 @@ const std::vector<std::string>& AXPlatformNodeDelegate::GetStringListAttribute(
 bool AXPlatformNodeDelegate::GetStringListAttribute(
     ax::mojom::StringListAttribute attribute,
     std::vector<std::string>* value) const {
-  if (node_)
-    return node_->GetStringListAttribute(attribute, value);
-  return GetData().GetStringListAttribute(attribute, value);
+  bool found = HasStringListAttribute(attribute);
+  if (found) {
+    *value = GetStringListAttribute(attribute);
+  }
+  return found;
 }
 
 bool AXPlatformNodeDelegate::HasHtmlAttribute(const char* attribute) const {

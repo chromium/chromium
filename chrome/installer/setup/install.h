@@ -61,10 +61,10 @@ bool CreateVisualElementsManifest(const base::FilePath& src_path,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Returns the command line to run os_update_handler, if the Windows version
 // changed, std::nullopt otherwise.
-// `target_path` : the path to the Chrome install directory.
+// `installer_state` : used to determine file path and install level.
 // `command_line` : the command line of the current process.
 std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
-    const base::FilePath& target_path,
+    const InstallerState& installer_state,
     const std::wstring& installed_version,
     const base::CommandLine& command_line);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

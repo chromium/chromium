@@ -11,19 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_client.h"
 #include "extensions/buildflags/buildflags.h"
 
 class Profile;
-
-namespace syncer {
-class DataTypeController;
-class DataTypeStoreService;
-class SyncService;
-class SyncableService;
-}  // namespace syncer
 
 namespace browser_sync {
 
@@ -39,10 +31,6 @@ class ChromeSyncClient : public syncer::SyncClient {
   ChromeSyncClient& operator=(const ChromeSyncClient&) = delete;
 
   ~ChromeSyncClient() override;
-
-  // TODO(crbug.com/335688372): Inline this in the sync_service_factory.cc.
-  syncer::DataTypeController::TypeVector CreateDataTypeControllers(
-      syncer::SyncService* sync_service);
 
   // SyncClient implementation.
   PrefService* GetPrefService() override;
@@ -69,32 +57,13 @@ class ChromeSyncClient : public syncer::SyncClient {
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
-  // Convenience function that exercises DataTypeStoreServiceFactory.
-  syncer::DataTypeStoreService* GetDataTypeStoreService();
-
-  // Convenience function used during controller creation.
-  base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
-      syncer::DataType type);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Creates the DataTypeController for syncer::APPS.
-  std::unique_ptr<syncer::DataTypeController> CreateAppsDataTypeController();
-
-  // Creates the DataTypeController for syncer::APP_SETTINGS.
-  std::unique_ptr<syncer::DataTypeController>
-  CreateAppSettingsDataTypeController(syncer::SyncService* sync_service);
-
-  // Creates the DataTypeController for syncer::WEB_APPS.
-  std::unique_ptr<syncer::DataTypeController> CreateWebAppsDataTypeController();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
   const raw_ptr<Profile> profile_;
 
   // The sync engine factory in use by this client.
   std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
 
   // Generates and monitors the ExtensionsActivity object used by sync.
-  ExtensionsActivityMonitor extensions_activity_monitor_;
+  browser_sync::ExtensionsActivityMonitor extensions_activity_monitor_;
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;

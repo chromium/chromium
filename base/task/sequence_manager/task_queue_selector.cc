@@ -20,9 +20,6 @@ namespace base {
 namespace sequence_manager {
 namespace internal {
 
-std::atomic_int TaskQueueSelector::g_max_delayed_starvation_tasks =
-    TaskQueueSelector::kDefaultMaxDelayedStarvationTasks;
-
 TaskQueueSelector::TaskQueueSelector(
     scoped_refptr<const AssociatedThreadId> associated_thread,
     const SequenceManager::Settings& settings)
@@ -37,12 +34,6 @@ TaskQueueSelector::TaskQueueSelector(
 }
 
 TaskQueueSelector::~TaskQueueSelector() = default;
-
-// static
-void TaskQueueSelector::InitializeFeatures() {
-  g_max_delayed_starvation_tasks.store(kMaxDelayedStarvationTasksParam.Get(),
-                                       std::memory_order_relaxed);
-}
 
 void TaskQueueSelector::AddQueue(internal::TaskQueueImpl* queue,
                                  TaskQueue::QueuePriority priority) {

@@ -187,7 +187,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     Scroll and zoom the contents of your shared tab
   </message>
   <message name="IDS_WEB_APP_INSTALLATION_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to install a web app.">
-    Ask to install web apps
+    Be able to install web apps
   </message>
   <message name="IDS_PERMISSION_ALLOW" desc="Label on button to allow a permissions request.">
     Allow
@@ -326,6 +326,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_POINTER_LOCK_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to lock and use mouse input.">
       Lock your mouse?
     </message>
+    <message name="IDS_WEB_APP_INSTALLATION_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to install web apps.">
+      Install web apps?
+    </message>
 
     <message name="IDS_HAND_TRACKING_PERMISSION_CHIP" desc="Button text representing a request for using hand tracking from a website. When clicked, shows a permission prompt bubble with more information.">
       Allow hand tracking?
@@ -431,6 +434,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     </message>
     <message name="IDS_PERMISSIONS_POINTER_LOCK_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a mouse lock permission requested has been denied.">
       Mouse lock not allowed
+    </message>
+    <message name="IDS_PERMISSIONS_WEB_INSTALL_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a web app installation permission requested has been granted.">
+      Install web apps allowed
+    </message>
+    <message name="IDS_PERMISSIONS_WEB_INSTALL_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a web app installation permission requested has been denied.">
+      Install web apps not allowed
     </message>
   </if>
   <if expr="is_chromeos">

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/debug/stack_trace.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -20,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
+#include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
@@ -361,6 +363,12 @@ SkBitmap CorrectColorOfBitMap(SkBitmap& originalBitmap) {
   return converted;
 }
 
+// Returns the dependency parser model for this renderer process.
+DependencyParserModel& GetDependencyParserModel() {
+  static base::NoDestructor<DependencyParserModel> instance;
+  return *instance;
+}
+
 }  // namespace
 
 // static
@@ -421,6 +429,8 @@ ReadAnythingAppController::ReadAnythingAppController(
     model_.SetDataCollectionForScreen2xCallback(base::BindRepeating(
         &ReadAnythingAppController::Distill, base::Unretained(this)));
   }
+
+  model_observer_.Observe(&model_);
 }
 
 ReadAnythingAppController::~ReadAnythingAppController() {
@@ -446,7 +456,7 @@ void ReadAnythingAppController::OnNodeDataChanged(
 
 void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                     ui::AXNode* node) {
-  ui::AXNodeID node_id = node->id();
+  ui::AXNodeID node_id = CHECK_DEREF(node).id();
   if (model_.display_node_ids().contains(node_id)) {
     displayed_nodes_pending_deletion_.insert(node_id);
   }
@@ -477,11 +487,6 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
     const std::vector<ui::AXEvent>& events) {
-  // We will need to observe the tree which is added only after the model
-  // processes an accessibility event. So check to see if the tree exists or not
-  // yet.
-  bool had_tree = model_.ContainsTree(tree_id);
-
   // Remove the const-ness of the data here so that subsequent methods can move
   // the data.
   model_.AccessibilityEventReceived(
@@ -492,13 +497,6 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 
   if (tree_id != model_.active_tree_id()) {
     return;
-  }
-
-  // If the tree was added, start observing.
-  if (!had_tree && model_.ContainsTree(tree_id)) {
-    // Observe the tree.
-    ui::AXSerializableTree* tree = model_.GetTreeFromId(tree_id);
-    tree->AddObserver(this);
   }
 
   if (model_.requires_distillation()) {
@@ -521,6 +519,21 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   if (model_.reset_draw_timer()) {
     post_user_entry_draw_timer_.Reset();
     model_.set_reset_draw_timer(false);
+  }
+}
+
+void ReadAnythingAppController::AccessibilityLocationChangesReceived(
+    const std::vector<ui::AXLocationChanges>& details) {
+  // Listen to location change notifications to update locations of the nodes
+  // accordingly.
+  for (auto& change : details) {
+    ui::AXNode* ax_node = model_.GetAXNode(change.id);
+    if (!ax_node) {
+      continue;
+    }
+    ax_node->SetLocation(change.new_location.offset_container_id,
+                         change.new_location.bounds,
+                         change.new_location.transform.get());
   }
 }
 
@@ -885,10 +898,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnLanguagePrefChange)
       .SetMethod("getLanguagesEnabledInPref",
                  &ReadAnythingAppController::GetLanguagesEnabledInPref)
-      .SetMethod("turnedHighlightOn",
-                 &ReadAnythingAppController::TurnedHighlightOn)
-      .SetMethod("turnedHighlightOff",
-                 &ReadAnythingAppController::TurnedHighlightOff)
       .SetMethod("onHighlightGranularityChanged",
                  &ReadAnythingAppController::OnHighlightGranularityChanged)
       .SetMethod("getLineSpacingValue",
@@ -1455,6 +1464,16 @@ void ReadAnythingAppController::OnConnected() {
       page_handler_.BindNewPipeAndPassReceiver());
   render_frame()->GetBrowserInterfaceBroker().GetInterface(
       std::move(page_handler_factory_receiver));
+
+  // Get the dependency parser model used by phrase-based highlighting.
+  DependencyParserModel& dependency_parser_model = GetDependencyParserModel();
+  if (dependency_parser_model.IsAvailable()) {
+    return;
+  }
+
+  page_handler_->GetDependencyParserModel(
+      base::BindOnce(&ReadAnythingAppController::UpdateDependencyParserModel,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ReadAnythingAppController::OnCopy() const {
@@ -1554,18 +1573,6 @@ void ReadAnythingAppController::OnLanguagePrefChange(const std::string& lang,
                                                      bool enabled) {
   page_handler_->OnLanguagePrefChange(lang, enabled);
   read_aloud_model_.SetLanguageEnabled(lang, enabled);
-}
-
-void ReadAnythingAppController::TurnedHighlightOn() {
-  auto granularity = read_anything::mojom::HighlightGranularity::kOn;
-  page_handler_->OnHighlightGranularityChanged(granularity);
-  read_aloud_model_.set_highlight_granularity((int)granularity);
-}
-
-void ReadAnythingAppController::TurnedHighlightOff() {
-  auto granularity = read_anything::mojom::HighlightGranularity::kOff;
-  page_handler_->OnHighlightGranularityChanged(granularity);
-  read_aloud_model_.set_highlight_granularity((int)granularity);
 }
 
 void ReadAnythingAppController::OnHighlightGranularityChanged(
@@ -1681,6 +1688,10 @@ void ReadAnythingAppController::PreprocessTextForSpeech() {
                                                : &model_.selection_node_ids();
   read_aloud_model_.PreprocessTextForSpeech(model_.is_pdf(), model_.IsDocs(),
                                             node_ids);
+  if (features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
+    DependencyParserModel& model = GetDependencyParserModel();
+    read_aloud_model_.PreprocessPhrasesForText(model);
+  }
 }
 
 void ReadAnythingAppController::MovePositionToNextGranularity() {
@@ -1807,13 +1818,14 @@ int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
 }
 
 v8::Local<v8::Value>
-ReadAnythingAppController::GetHighlightForCurrentSegmentIndex(int index) {
+ReadAnythingAppController::GetHighlightForCurrentSegmentIndex(int index,
+                                                              bool phrases) {
   v8::Isolate* isolate =
       render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   auto context = isolate->GetCurrentContext();
 
   std::vector<ReadAloudTextSegment> nodes =
-      read_aloud_model_.GetHighlightForCurrentSegmentIndex(index);
+      read_aloud_model_.GetHighlightForCurrentSegmentIndex(index, phrases);
 
   v8::Local<v8::Array> highlight_array = v8::Array::New(isolate, nodes.size());
   for (int i = 0; i < (int)nodes.size(); i++) {
@@ -1849,4 +1861,33 @@ void ReadAnythingAppController::OnScrolledToBottom() {
 bool ReadAnythingAppController::IsDocsLoadMoreButtonVisible() const {
   return (features::IsReadAnythingDocsLoadMoreButtonEnabled() &&
           IsGoogleDocs());
+}
+
+void ReadAnythingAppController::UpdateDependencyParserModel(
+    base::File model_file) {
+  DependencyParserModel& dependency_parser_model = GetDependencyParserModel();
+  dependency_parser_model.UpdateWithFile(std::move(model_file));
+}
+
+DependencyParserModel&
+ReadAnythingAppController::GetDependencyParserModelForTesting() {
+  return GetDependencyParserModel();
+}
+
+void ReadAnythingAppController::OnTreeAdded(ui::AXTree* tree) {
+  auto observation =
+      std::make_unique<base::ScopedObservation<ui::AXTree, ui::AXTreeObserver>>(
+          this);
+  observation->Observe(tree);
+  tree_observers_.push_back(std::move(observation));
+}
+
+void ReadAnythingAppController::OnTreeRemoved(ui::AXTree* tree) {
+  auto it = base::ranges::find_if(tree_observers_,
+                                  [tree](const auto& observation) -> bool {
+                                    return observation->GetSource() == tree;
+                                  });
+  if (it != tree_observers_.end()) {
+    tree_observers_.erase(it);
+  }
 }

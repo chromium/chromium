@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://lens/translate_button.js';
+import 'chrome-untrusted://lens-overlay/translate_button.js';
 
-import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
-import {LanguageBrowserProxyImpl} from 'chrome-untrusted://lens/language_browser_proxy.js';
-import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import {ShimmerControlRequester} from 'chrome-untrusted://lens/selection_utils.js';
-import type {TranslateButtonElement} from 'chrome-untrusted://lens/translate_button.js';
+import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
+import {LanguageBrowserProxyImpl} from 'chrome-untrusted://lens-overlay/language_browser_proxy.js';
+import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import {ShimmerControlRequester} from 'chrome-untrusted://lens-overlay/selection_utils.js';
+import type {TranslateButtonElement} from 'chrome-untrusted://lens-overlay/translate_button.js';
 import type {CrButtonElement} from 'chrome-untrusted://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -26,6 +26,21 @@ suite('OverlayTranslateButton', function() {
   let testLanguageBrowserProxy: TestLanguageBrowserProxy;
   let metrics: MetricsTracker;
 
+  // Remove CSS transitions to prevent race conditions due to an element not
+  // being visible.
+  function disableCssTransitions(element: TranslateButtonElement) {
+    const sheet = new CSSStyleSheet();
+    sheet.insertRule('* { transition: none !important; }');
+    const shadow = element.shadowRoot!;
+    shadow.adoptedStyleSheets = [sheet];
+  }
+
+  // Check if the element is rendered by checking if it is visible and its
+  // opacity is not hiding it.
+  function isRendered(el: HTMLElement) {
+    return isVisible(el) && getComputedStyle(el).opacity !== '0';
+  }
+
   setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
     // guarantee that any singleton instances don't change while any UI is still
@@ -41,17 +56,18 @@ suite('OverlayTranslateButton', function() {
 
     overlayTranslateButtonElement = document.createElement('translate-button');
     document.body.appendChild(overlayTranslateButtonElement);
+    disableCssTransitions(overlayTranslateButtonElement);
     metrics = fakeMetricsPrivate();
     await flushTasks();
   });
 
   test('TranslateButtonClick', async () => {
-    assertFalse(isVisible(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
 
     const focusRegionEventPromise =
         eventToPromise('focus-region', document.body);
     // Click the translate button to show the language picker.
-    overlayTranslateButtonElement.$.translateButton.click();
+    overlayTranslateButtonElement.$.translateEnableButton.click();
     // Clicking the translate button should focus the shimmer.
     const focusRegionEvent = await focusRegionEventPromise;
     assertEquals(
@@ -70,13 +86,13 @@ suite('OverlayTranslateButton', function() {
     assertEquals(targetLanguage, expectedTargetLanguage);
 
     // Language picker should now be visible.
-    assertTrue(isVisible(overlayTranslateButtonElement.$.languagePicker));
+    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
 
-    // Clicking again should toggle the language picker but not send another
-    // request.
+    // Clicking again should toggle the language picker and send a end
+    // translate mode request.
     const unfocusRegionEventPromise =
         eventToPromise('unfocus-region', document.body);
-    overlayTranslateButtonElement.$.translateButton.click();
+    overlayTranslateButtonElement.$.translateDisableButton.click();
     // Clicking the translate button again should unfocus the shimmer.
     await unfocusRegionEventPromise;
     const unfocusRegionEvent = await unfocusRegionEventPromise;
@@ -85,6 +101,9 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         1,
         testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));
+    assertEquals(
+        1,
+        testBrowserProxy.handler.getCallCount('issueEndTranslateModeRequest'));
     assertEquals(
         1,
         metrics.count(
@@ -107,7 +126,7 @@ suite('OverlayTranslateButton', function() {
             UserAction.kTranslateButtonDisableAction));
 
     // Language picker should be hidden again.
-    assertFalse(isVisible(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
   });
 
   test('SourceLanguageButtonClick', () => {
@@ -115,7 +134,7 @@ suite('OverlayTranslateButton', function() {
         isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
 
     // Click the translate button to show the language picker.
-    overlayTranslateButtonElement.$.translateButton.click();
+    overlayTranslateButtonElement.$.translateEnableButton.click();
 
     // The source language button should be visible but the language picker menu
     // should not be visible.
@@ -136,7 +155,7 @@ suite('OverlayTranslateButton', function() {
         isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
 
     // Click the translate button to show the language picker.
-    overlayTranslateButtonElement.$.translateButton.click();
+    overlayTranslateButtonElement.$.translateEnableButton.click();
 
     // The target language button should be visible but the language picker menu
     // should not be visible.
@@ -157,7 +176,7 @@ suite('OverlayTranslateButton', function() {
         isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
 
     // Click the translate button to show the language picker.
-    overlayTranslateButtonElement.$.translateButton.click();
+    overlayTranslateButtonElement.$.translateEnableButton.click();
 
     // The source language button should be visible but the language picker menu
     // should not be visible.
@@ -243,7 +262,7 @@ suite('OverlayTranslateButton', function() {
         isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
 
     // Click the translate button to show the language picker.
-    overlayTranslateButtonElement.$.translateButton.click();
+    overlayTranslateButtonElement.$.translateEnableButton.click();
 
     // The target language button should be visible but the language picker menu
     // should not be visible.
@@ -314,7 +333,7 @@ suite('OverlayTranslateButton', function() {
     await waitAfterNextRender(overlayTranslateButtonElement);
 
     // Click the translate button to show the language picker.
-    overlayTranslateButtonElement.$.translateButton.click();
+    overlayTranslateButtonElement.$.translateEnableButton.click();
 
     // Source language should show the detected language.
     assertEquals(

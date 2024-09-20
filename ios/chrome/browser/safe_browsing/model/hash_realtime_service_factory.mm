@@ -24,10 +24,15 @@ network::mojom::NetworkContext* GetNetworkContext() {
 
 // static
 safe_browsing::HashRealTimeService*
-HashRealTimeServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+HashRealTimeServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+safe_browsing::HashRealTimeService* HashRealTimeServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<safe_browsing::HashRealTimeService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -52,11 +57,10 @@ HashRealTimeServiceFactory::BuildServiceInstanceFor(
   if (!safe_browsing_service) {
     return nullptr;
   }
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::HashRealTimeService>(
       base::BindRepeating(&GetNetworkContext),
-      VerdictCacheManagerFactory::GetForBrowserState(chrome_browser_state),
-      OhttpKeyServiceFactory::GetForBrowserState(chrome_browser_state),
+      VerdictCacheManagerFactory::GetForProfile(profile),
+      OhttpKeyServiceFactory::GetForProfile(profile),
       /*webui_delegate=*/nullptr);
 }

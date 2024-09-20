@@ -19,9 +19,11 @@
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/form_filler.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
@@ -171,6 +173,20 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
                                AutofillSuggestionTriggerSource)>
   CreateUpdateSuggestionsCallback();
 
+  // Returns a callback that, when run, attempts to close the currently shown
+  // suggestion UI. If the `SuggestionUiSessionId` of the currently showing UI
+  // surface has changed between when this callback is created and when it is
+  // run, running it is a no-op. The callback is also safe to call even if
+  // `this` is no longer alive.
+  base::OnceCallback<void(SuggestionHidingReason)>
+  CreateHideSuggestionsCallback();
+
+  // Creates a callback that, when run, fills the field that was last queried
+  // when the callback was created.
+  base::RepeatingCallback<void(const std::u16string&)>
+  CreateSingleFieldFillCallback(SuggestionType suggestion_type,
+                                std::optional<FieldType> field_type_used);
+
   // Private handler for DidAcceptSuggestions for address related suggestions.
   void DidAcceptAddressSuggestion(const Suggestion& suggestion,
                                   const SuggestionMetadata& metadata);
@@ -178,6 +194,15 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // Private handler for DidAcceptSuggestions for payments related suggestions.
   void DidAcceptPaymentsSuggestion(const Suggestion& suggestion,
                                    const SuggestionMetadata& metadata);
+
+  // Creates a specialized version of a single field fill callback that converts
+  // the argument from UTF8 to UTF16 and set `EMAIL_ADDRESS` as the filled type.
+  PlusAddressCallback CreatePlusAddressCallback(SuggestionType suggestion_type);
+
+  // Informs the `AutofillPlusAddress` delegate and passes callbacks for
+  // hiding/updating suggestions UI and filling.
+  void DidAcceptCreateNewPlusAddressInlineSuggestion(
+      const Suggestion& suggestion);
 
   // Shows the address editor to the user. The Autofill profile to edit is
   // determined by passed `guid`.
@@ -245,6 +270,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   void FillCreditCardFieldByFieldFillingSuggestion(
       const CreditCard& credit_card,
       const Suggestion& suggestion);
+
+  // Fills `values_to_fill` into the fields of `query_form_`.
+  void FillPredictionImprovements(const Suggestion& suggestion);
 
   // Triggered when the user closes the authentication flow needed to access
   // the number and cvc of the `credit_card`.

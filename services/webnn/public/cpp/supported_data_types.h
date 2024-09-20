@@ -42,7 +42,7 @@ static constexpr SupportedDataTypes kFloat16To32Ints32To64 = {
     OperandDataType::kInt32,   OperandDataType::kUint32,
     OperandDataType::kInt64,   OperandDataType::kUint64};
 
-static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes = {
+static constexpr SupportedDataTypes kGatherScatterIndicesSupportedDataTypes = {
     OperandDataType::kInt32, OperandDataType::kUint32, OperandDataType::kInt64};
 
 }  // namespace DataTypeConstraint

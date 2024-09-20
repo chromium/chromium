@@ -36,6 +36,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -102,8 +103,11 @@ class TestAmbientObserver
     ambient_ui_visibility_ = visibility;
   }
 
-  void OnGeolocationPermissionForSystemServicesChanged(bool enabled) override {
+  void OnGeolocationPermissionForSystemServicesChanged(
+      bool enabled,
+      bool is_user_modifiable) override {
     geolocation_permission_enabled_ = enabled;
+    is_geolocation_user_modifiable_ = is_user_modifiable;
   }
 
   mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
@@ -156,6 +160,11 @@ class TestAmbientObserver
     return geolocation_permission_enabled_;
   }
 
+  bool is_geolocation_user_modifiable() {
+    ambient_observer_receiver_.FlushForTesting();
+    return is_geolocation_user_modifiable_;
+  }
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientObserver>
       ambient_observer_receiver_{this};
@@ -170,6 +179,7 @@ class TestAmbientObserver
   ash::AmbientUiVisibility ambient_ui_visibility_ =
       ash::AmbientUiVisibility::kClosed;
   bool geolocation_permission_enabled_ = true;
+  bool is_geolocation_user_modifiable_ = true;
   std::vector<ash::personalization_app::mojom::AmbientModeAlbumPtr> albums_;
   std::vector<GURL> previews_;
 };
@@ -292,6 +302,11 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     return test_ambient_observer_.is_geolocation_enabled();
   }
 
+  bool ObservedGeolocationIsManaged() {
+    ambient_provider_remote_.FlushForTesting();
+    return !test_ambient_observer_.is_geolocation_user_modifiable();
+  }
+
   std::optional<ash::AmbientSettings>& settings() {
     return ambient_provider_->settings_;
   }
@@ -301,7 +316,10 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
                                       enabled);
   }
 
-  void SetGeolocationPref(bool enabled) {
+  // Depending on the `managed` argument, sets the value of the
+  // `kUserGeolocationAccessLevel` pref either in `PrefStoreType::MANAGED_STORE`
+  // or in `PrefStoreType::USER_STORE` PrefStore.
+  void SetGeolocationPref(bool enabled, bool managed) {
     GeolocationAccessLevel level;
     if (enabled) {
       level = GeolocationAccessLevel::kOnlyAllowedForSystem;
@@ -309,8 +327,15 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
       level = GeolocationAccessLevel::kDisallowed;
     }
 
-    profile()->GetPrefs()->SetInteger(ash::prefs::kUserGeolocationAccessLevel,
-                                      static_cast<int>(level));
+    if (managed) {
+      profile()->GetTestingPrefService()->SetManagedPref(
+          ash::prefs::kUserGeolocationAccessLevel,
+          base::Value(static_cast<int>(level)));
+    } else {
+      profile()->GetTestingPrefService()->SetUserPref(
+          ash::prefs::kUserGeolocationAccessLevel,
+          base::Value(static_cast<int>(level)));
+    }
   }
 
   void SetAmbientTheme(mojom::AmbientTheme ambient_theme) {
@@ -639,11 +664,26 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 TEST_F(PersonalizationAppAmbientProviderImplTest,
        ShouldCallOnGeolocationPermissionForSystemServicesChanged) {
   SetAmbientObserver();
+
+  // Check default values:
   EXPECT_TRUE(ObservedGeolocationPermissionEnabled());
-  SetGeolocationPref(/*enabled=*/false);
+  EXPECT_FALSE(ObservedGeolocationIsManaged());
+
+  // Check consumer scenario:
+  SetGeolocationPref(/*enabled=*/false, /*managed=*/false);
   EXPECT_FALSE(ObservedGeolocationPermissionEnabled());
-  SetGeolocationPref(/*enabled=*/true);
+  EXPECT_FALSE(ObservedGeolocationIsManaged());
+  SetGeolocationPref(/*enabled=*/true, /*managed=*/false);
   EXPECT_TRUE(ObservedGeolocationPermissionEnabled());
+  EXPECT_FALSE(ObservedGeolocationIsManaged());
+
+  // Check managed scenario:
+  SetGeolocationPref(/*enabled=*/false, /*managed=*/true);
+  EXPECT_FALSE(ObservedGeolocationPermissionEnabled());
+  EXPECT_TRUE(ObservedGeolocationIsManaged());
+  SetGeolocationPref(/*enabled=*/true, /*managed=*/true);
+  EXPECT_TRUE(ObservedGeolocationPermissionEnabled());
+  EXPECT_TRUE(ObservedGeolocationIsManaged());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, SetTopicSource) {

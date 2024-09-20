@@ -47,6 +47,7 @@ class PasswordReuseModalWarningDialog
       views::Label* message_body_label);
 
   // views::DialogDelegateView:
+  gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   std::u16string GetWindowTitle() const override;

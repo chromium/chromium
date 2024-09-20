@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,18 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.hub.HubManager;
-import org.chromium.chrome.browser.hub.Pane;
-import org.chromium.chrome.browser.hub.PaneId;
-import org.chromium.chrome.browser.hub.PaneManager;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -41,7 +28,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 /** Unit test for {@link CloseAllTabsHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION)
+@EnableFeatures(ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION_KILL_SWITCH)
 public class CloseAllTabsHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -51,21 +38,6 @@ public class CloseAllTabsHelperUnitTest {
     @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Mock private TabModel mRegularTabModel;
     @Mock private TabModel mIncognitoTabModel;
-    @Mock private TabSwitcher mRegularTabSwitcher;
-    @Mock private TabSwitcher mIncognitoTabSwitcher;
-    @Mock private HubManager mHubManager;
-    @Mock private PaneManager mPaneManager;
-    @Mock private Pane mPane;
-
-    private LazyOneshotSupplier<HubManager> mHubManagerSupplier;
-    private final OneshotSupplierImpl<TabSwitcher> mRegularTabSwitcherSupplier =
-            new OneshotSupplierImpl<>();
-    private final OneshotSupplierImpl<TabSwitcher> mIncognitoTabSwitcherSupplier =
-            new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Pane> mFocusedPaneSupplier =
-            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -76,20 +48,6 @@ public class CloseAllTabsHelperUnitTest {
                 .thenReturn(mIncognitoTabGroupModelFilter);
         when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-
-        mRegularTabSwitcherSupplier.set(mRegularTabSwitcher);
-        mIncognitoTabSwitcherSupplier.set(mIncognitoTabSwitcher);
-
-        mHubVisibilitySupplier.set(false);
-        when(mHubManager.getHubVisibilitySupplier()).thenReturn(mHubVisibilitySupplier);
-
-        when(mPane.getPaneId()).thenReturn(PaneId.BOOKMARKS);
-        mFocusedPaneSupplier.set(mPane);
-        when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
-        when(mHubManager.getPaneManager()).thenReturn(mPaneManager);
-
-        mHubManagerSupplier = LazyOneshotSupplier.fromValue(mHubManager);
-        assertNotNull(mHubManagerSupplier.get());
     }
 
     @Test
@@ -101,152 +59,26 @@ public class CloseAllTabsHelperUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION)
-    public void testBuildCloseAllTabsRunnable_RegularDefault() {
+    public void testBuildCloseAllTabsRunnable_Regular() {
         Runnable r =
                 CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                        mHubManagerSupplier,
-                        mRegularTabSwitcherSupplier,
-                        mIncognitoTabSwitcherSupplier,
-                        mTabModelSelector,
-                        /* isIncognitoOnly= */ false);
+                        mTabModelSelector, /* isIncognitoOnly= */ false);
         r.run();
 
         verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
         verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
-
-        verifyNoInteractions(mRegularTabSwitcher);
-        verifyNoInteractions(mIncognitoTabSwitcher);
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION)
-    public void testBuildCloseAllTabsRunnable_IncognitoDefault() {
+    public void testBuildCloseAllTabsRunnable_Incognito() {
         Runnable r =
                 CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                        mHubManagerSupplier,
-                        mRegularTabSwitcherSupplier,
-                        mIncognitoTabSwitcherSupplier,
-                        mTabModelSelector,
-                        /* isIncognitoOnly= */ true);
+                        mTabModelSelector, /* isIncognitoOnly= */ true);
         r.run();
 
         verify(mIncognitoTabModel).closeTabs(argThat(params -> params.isAllTabs));
 
-        verifyNoInteractions(mRegularTabSwitcher);
-        verifyNoInteractions(mIncognitoTabSwitcher);
         verify(mRegularTabGroupModelFilter, never()).closeTabs(any());
         verify(mIncognitoTabGroupModelFilter, never()).closeTabs(any());
-    }
-
-    @Test
-    public void testBuildCloseAllTabsRunnable_AnimationFallback_HubVisibleWrongPane() {
-        when(mPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
-        mHubVisibilitySupplier.set(true);
-        Runnable r =
-                CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                        mHubManagerSupplier,
-                        mRegularTabSwitcherSupplier,
-                        mIncognitoTabSwitcherSupplier,
-                        mTabModelSelector,
-                        /* isIncognitoOnly= */ true);
-        r.run();
-
-        verify(mIncognitoTabModel).closeTabs(argThat(params -> params.isAllTabs));
-
-        verifyNoInteractions(mRegularTabSwitcher);
-        verifyNoInteractions(mIncognitoTabSwitcher);
-        verify(mRegularTabGroupModelFilter, never()).closeTabs(any());
-        verify(mIncognitoTabGroupModelFilter, never()).closeTabs(any());
-    }
-
-    @Test
-    public void testBuildCloseAllTabsRunnable_AnimationFallback_HubInvisibleRightPane() {
-        when(mPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
-        Runnable r =
-                CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                        mHubManagerSupplier,
-                        mRegularTabSwitcherSupplier,
-                        mIncognitoTabSwitcherSupplier,
-                        mTabModelSelector,
-                        /* isIncognitoOnly= */ false);
-        r.run();
-
-        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
-        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
-
-        verifyNoInteractions(mRegularTabSwitcher);
-        verifyNoInteractions(mIncognitoTabSwitcher);
-    }
-
-    @Test
-    public void testBuildCloseAllTabsRunnable_CustomAnimation_IncognitoOnly() {
-        mHubVisibilitySupplier.set(true);
-        when(mPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
-        Runnable r =
-                CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                        mHubManagerSupplier,
-                        mRegularTabSwitcherSupplier,
-                        mIncognitoTabSwitcherSupplier,
-                        mTabModelSelector,
-                        /* isIncognitoOnly= */ true);
-
-        doCallback(0, (Runnable onAnimationEnd) -> onAnimationEnd.run())
-                .when(mIncognitoTabSwitcher)
-                .showCloseAllTabsAnimation(any());
-        r.run();
-
-        verify(mIncognitoTabSwitcher).showCloseAllTabsAnimation(any());
-        verify(mIncognitoTabModel).closeTabs(argThat(params -> params.isAllTabs));
-
-        verifyNoInteractions(mRegularTabSwitcher);
-        verify(mRegularTabGroupModelFilter, never()).closeTabs(any());
-        verify(mIncognitoTabGroupModelFilter, never()).closeTabs(any());
-    }
-
-    @Test
-    public void testBuildCloseAllTabsRunnable_CustomAnimation_All_RegularPane() {
-        mHubVisibilitySupplier.set(true);
-        when(mPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
-        Runnable r =
-                CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                        mHubManagerSupplier,
-                        mRegularTabSwitcherSupplier,
-                        mIncognitoTabSwitcherSupplier,
-                        mTabModelSelector,
-                        /* isIncognitoOnly= */ false);
-
-        doCallback(0, (Runnable onAnimationEnd) -> onAnimationEnd.run())
-                .when(mRegularTabSwitcher)
-                .showCloseAllTabsAnimation(any());
-        r.run();
-
-        verify(mRegularTabSwitcher).showCloseAllTabsAnimation(any());
-        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
-        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
-        verifyNoInteractions(mIncognitoTabSwitcher);
-    }
-
-    @Test
-    public void testBuildCloseAllTabsRunnable_CloseAllAnimation_All_IncognitoPane() {
-        mHubVisibilitySupplier.set(true);
-        when(mPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
-        Runnable r =
-                CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                        mHubManagerSupplier,
-                        mRegularTabSwitcherSupplier,
-                        mIncognitoTabSwitcherSupplier,
-                        mTabModelSelector,
-                        /* isIncognitoOnly= */ false);
-
-        doCallback(0, (Runnable onAnimationEnd) -> onAnimationEnd.run())
-                .when(mIncognitoTabSwitcher)
-                .showCloseAllTabsAnimation(any());
-        r.run();
-
-        verify(mIncognitoTabSwitcher).showCloseAllTabsAnimation(any());
-        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
-        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
-        verifyNoInteractions(mRegularTabSwitcher);
     }
 }

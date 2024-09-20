@@ -173,8 +173,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   // Simulate failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Tap the action in the manual fallback UI.
   [[EarlGrey selectElementWithMatcher:manual_fallback_action_matcher]
@@ -663,8 +662,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Setup failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   [self openOtherPasswords];
 
@@ -1189,8 +1187,10 @@ void CheckKeyboardIsUpAndNotCovered() {
   [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
                                           kExampleUsername))]
       performAction:grey_replaceText(@"new username")];
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
 
-  // Tap Done Button.
+  // Tap the "Done" button to dismiss the view.
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 

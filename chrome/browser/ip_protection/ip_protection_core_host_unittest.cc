@@ -9,18 +9,19 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/ip_protection/common/ip_protection_config_http.h"
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -34,7 +35,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
-#include "services/network/test/test_shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
@@ -47,50 +49,12 @@ constexpr char kTryGetAuthTokensResultHistogram[] =
     "NetworkService.IpProtection.TryGetAuthTokensResult";
 constexpr char kOAuthTokenFetchHistogram[] =
     "NetworkService.IpProtection.OAuthTokenFetchTime";
+constexpr char kTryGetAuthTokensErrorHistogram[] =
+    "NetworkService.IpProtection.TryGetAuthTokensErrors";
 constexpr char kTokenBatchHistogram[] =
     "NetworkService.IpProtection.TokenBatchRequestTime";
 
 constexpr char kTestEmail[] = "test@example.com";
-
-class MockIpProtectionProxyConfigRetriever
-    : public ip_protection::IpProtectionProxyConfigRetriever {
- public:
-  using MockGetProxyConfig = base::RepeatingCallback<
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>()>;
-  // Construct a mock retriever that will call the given closure for each call
-  // to GetProxyConfig.
-  explicit MockIpProtectionProxyConfigRetriever(
-      MockGetProxyConfig get_proxy_config)
-      : ip_protection::IpProtectionProxyConfigRetriever(
-            base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-            "test_service_type",
-            "test_api_key"),
-        get_proxy_config_(get_proxy_config) {}
-
-  // Construct a mock retriever that always returns the same response.
-  explicit MockIpProtectionProxyConfigRetriever(
-      std::optional<ip_protection::GetProxyConfigResponse>
-          proxy_config_response)
-      : MockIpProtectionProxyConfigRetriever(base::BindLambdaForTesting(
-            [proxy_config_response = std::move(proxy_config_response)]()
-                -> base::expected<ip_protection::GetProxyConfigResponse,
-                                  std::string> {
-              if (!proxy_config_response.has_value()) {
-                return base::unexpected("uhoh");
-              }
-              return base::ok(*proxy_config_response);
-            })) {}
-
-  void GetProxyConfig(
-      std::optional<std::string> oauth_token,
-      IpProtectionProxyConfigRetriever::GetProxyConfigCallback callback,
-      bool for_testing = false) override {
-    std::move(callback).Run(get_proxy_config_.Run());
-  }
-
- private:
-  MockGetProxyConfig get_proxy_config_;
-};
 
 enum class PrimaryAccountBehavior {
   // Primary account not set.
@@ -138,21 +102,24 @@ class IpProtectionCoreHostTest : public testing::Test {
             /*is_incognito=*/false);
     auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
     bsa_ = bsa.get();
-    getter_ = std::make_unique<IpProtectionCoreHost>(
+    core_host_ = std::make_unique<IpProtectionCoreHost>(
         IdentityManager(), tracking_protection_settings_.get(), prefs(),
         /*profile=*/nullptr);
-    getter_->SetUpForTesting(
-        std::make_unique<MockIpProtectionProxyConfigRetriever>(std::nullopt),
-        base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-        std::move(bsa));
+    core_host_->SetUpForTesting(test_url_loader_factory_.GetSafeWeakWrapper(),
+                                std::move(bsa));
+
+    token_server_get_proxy_config_url_ = GURL(base::StrCat(
+        {net::features::kIpPrivacyTokenServer.Get(),
+         net::features::kIpPrivacyTokenServerGetProxyConfigPath.Get()}));
+    ASSERT_TRUE(token_server_get_proxy_config_url_.is_valid());
   }
 
   void TearDown() override {
-    // Remove the raw_ptr to the Mock BSA before `getter_` frees it.
+    // Remove the raw_ptr to the Mock BSA before `core_host_` frees it.
     bsa_ = nullptr;
     host_content_settings_map_->ShutdownOnUIThread();
     tracking_protection_settings_->Shutdown();
-    getter_->Shutdown();
+    core_host_->Shutdown();
   }
 
   // Get the IdentityManager for this test.
@@ -210,19 +177,11 @@ class IpProtectionCoreHostTest : public testing::Test {
                         network::mojom::IpProtectionProxyLayer proxy_layer) {
     SetupAccount();
 
-    getter_->TryGetAuthTokens(num_tokens, proxy_layer,
-                              tokens_future_.GetCallback());
+    core_host_->TryGetAuthTokens(num_tokens, proxy_layer,
+                                 tokens_future_.GetCallback());
 
     RespondToAccessTokenRequest();
     ASSERT_TRUE(tokens_future_.Wait()) << "TryGetAuthTokens did not call back";
-  }
-
-  void GetProxyListWithOAuthToken() {
-    SetupAccount();
-
-    getter_->GetProxyList(proxy_list_future_.GetCallback());
-
-    RespondToAccessTokenRequest();
   }
 
   // Set the CanUseChromeIpProtection account capability. The capability tribool
@@ -272,6 +231,12 @@ class IpProtectionCoreHostTest : public testing::Test {
                          const std::optional<GeoHint>&>
       proxy_list_future_;
 
+  // URL loader factory used for all fetchers.
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
+  // URL at which getProxyConfig is invoked.
+  GURL token_server_get_proxy_config_url_;
+
   // Test environment for IdentityManager. This must come after the
   // TaskEnvironment.
   signin::IdentityTestEnvironment identity_test_env_;
@@ -290,9 +255,9 @@ class IpProtectionCoreHostTest : public testing::Test {
 
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 
-  std::unique_ptr<IpProtectionCoreHost> getter_;
+  std::unique_ptr<IpProtectionCoreHost> core_host_;
   // quiche::BlindSignAuthInterface owned and used by the sequence bound
-  // ip_protection_token_fetcher_ in getter_.
+  // ip_protection_token_fetcher_ in core_host_.
   raw_ptr<ip_protection::MockBlindSignAuth> bsa_;
 };
 
@@ -449,6 +414,10 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError400) {
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA400, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensErrorHistogram,
+      4043967578,  // base::PersistentHash("INVALID_ARGUMENT: uhoh")
+      1);
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
@@ -469,6 +438,10 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError401) {
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA401, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensErrorHistogram,
+      4264091263,  // base::PersistentHash("UNAUTHENTICATED: uhoh")
+      1);
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
@@ -489,6 +462,11 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError403) {
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA403, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensErrorHistogram,
+      4104528123,  // base::PersistentHash("PERMISSION_DENIED: uhoh")
+      1);
+  // Failed to parse GetInitialDataResponse
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
@@ -509,6 +487,10 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSAOther, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensErrorHistogram,
+      2844845398,  // base::PersistentHash("UNKNOWN: uhoh")
+      1);
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
@@ -650,8 +632,9 @@ TEST_F(IpProtectionCoreHostTest, SessionRefreshTriggersBackoffReset) {
       const std::optional<std::vector<BlindSignedAuthToken>>&,
       std::optional<base::Time>>
       tokens_future;
-  getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB,
-                            tokens_future.GetCallback());
+  core_host_->TryGetAuthTokens(1,
+                               network::mojom::IpProtectionProxyLayer::kProxyB,
+                               tokens_future.GetCallback());
   const std::optional<base::Time>& try_again_after =
       tokens_future.Get<std::optional<base::Time>>();
   ASSERT_TRUE(try_again_after);
@@ -665,8 +648,9 @@ TEST_F(IpProtectionCoreHostTest, SessionRefreshTriggersBackoffReset) {
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint_)});
   tokens_future.Clear();
-  getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB,
-                            tokens_future.GetCallback());
+  core_host_->TryGetAuthTokens(1,
+                               network::mojom::IpProtectionProxyLayer::kProxyB,
+                               tokens_future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now());
   const std::optional<std::vector<BlindSignedAuthToken>>& tokens =
@@ -682,32 +666,28 @@ TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
                    std::optional<base::TimeDelta> backoff, bool exponential) {
     SCOPED_TRACE(::testing::Message()
                  << "result: " << static_cast<int>(result));
-    EXPECT_EQ(getter_->CalculateBackoff(result), backoff);
+    EXPECT_EQ(core_host_->CalculateBackoff(result), backoff);
     if (backoff && exponential) {
-      EXPECT_EQ(getter_->CalculateBackoff(result), (*backoff) * 2);
-      EXPECT_EQ(getter_->CalculateBackoff(result), (*backoff) * 4);
+      EXPECT_EQ(core_host_->CalculateBackoff(result), (*backoff) * 2);
+      EXPECT_EQ(core_host_->CalculateBackoff(result), (*backoff) * 4);
     } else {
-      EXPECT_EQ(getter_->CalculateBackoff(result), backoff);
+      EXPECT_EQ(core_host_->CalculateBackoff(result), backoff);
     }
   };
 
   check(kSuccess, std::nullopt, false);
   check(kFailedNotEligible,
-        ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff,
-        false);
-  check(kFailedBSA400,
-        ip_protection::IpProtectionCoreHostHelper::kBugBackoff, true);
-  check(kFailedBSA401,
-        ip_protection::IpProtectionCoreHostHelper::kBugBackoff, true);
+        ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff, false);
+  check(kFailedBSA400, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
+        true);
+  check(kFailedBSA401, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
+        true);
   check(kFailedBSA403,
-        ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff,
-        false);
+        ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff, false);
   check(kFailedBSAOther,
-        ip_protection::IpProtectionCoreHostHelper::kTransientBackoff,
-        true);
+        ip_protection::IpProtectionCoreHostHelper::kTransientBackoff, true);
   check(kFailedOAuthTokenTransient,
-        ip_protection::IpProtectionCoreHostHelper::kTransientBackoff,
-        true);
+        ip_protection::IpProtectionCoreHostHelper::kTransientBackoff, true);
 
   check(kFailedNoAccount, base::TimeDelta::Max(), false);
   // The account-related backoffs should not be changed except by account change
@@ -716,8 +696,8 @@ TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
   // The backoff time should have been reset.
-  check(kFailedBSA400,
-        ip_protection::IpProtectionCoreHostHelper::kBugBackoff, true);
+  check(kFailedBSA400, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
+        true);
 
   check(kFailedOAuthTokenPersistent, base::TimeDelta::Max(), false);
   check(kFailedBSA400, base::TimeDelta::Max(), false);
@@ -730,15 +710,113 @@ TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account_info.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::State::NONE));
-  check(kFailedBSA400,
-        ip_protection::IpProtectionCoreHostHelper::kBugBackoff, true);
+  check(kFailedBSA400, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
+        true);
+}
+
+TEST_F(IpProtectionCoreHostTest, GetProxyListWithApiKey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {
+          {net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.name,
+           "false"},
+      });
+  std::vector<net::ProxyChain> response_proxy_list = {
+      ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
+          {"proxyA", "proxyB"}),
+  };
+
+  ip_protection::GetProxyConfigResponse response;
+  auto* chain = response.add_proxy_chain();
+  chain->set_proxy_a("proxyA");
+  chain->set_proxy_b("proxyB");
+  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
+  std::string response_str = response.SerializeAsString();
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(request.url.is_valid());
+        ASSERT_EQ(request.url, token_server_get_proxy_config_url_);
+        EXPECT_TRUE(request.headers.HasHeader("X-Goog-Api-Key"));
+        EXPECT_FALSE(request.headers.HasHeader("Authentication"));
+        auto head = network::mojom::URLResponseHead::New();
+        test_url_loader_factory_.AddResponse(
+            token_server_get_proxy_config_url_, std::move(head), response_str,
+            network::URLLoaderCompletionStatus(net::OK));
+      }));
+
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
+  EXPECT_THAT(proxy_list.value(),
+              testing::ElementsAreArray(response_proxy_list));
+
+  ASSERT_TRUE(geo_hint.has_value());  // Check that GeoHint is not null.
+  EXPECT_TRUE(geo_hint == geo_hint_);
+}
+
+TEST_F(IpProtectionCoreHostTest, GetProxyListWithOAuthToken) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {
+          {net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.name,
+           "true"},
+      });
+  std::vector<net::ProxyChain> response_proxy_list = {
+      ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
+          {"proxyA", "proxyB"}),
+  };
+
+  ip_protection::GetProxyConfigResponse response;
+  auto* chain = response.add_proxy_chain();
+  chain->set_proxy_a("proxyA");
+  chain->set_proxy_b("proxyB");
+  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
+  std::string response_str = response.SerializeAsString();
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(request.url.is_valid());
+        ASSERT_EQ(request.url, token_server_get_proxy_config_url_);
+        EXPECT_FALSE(request.headers.HasHeader("X-Goog-Api-Key"));
+        EXPECT_TRUE(request.headers.HasHeader("Authorization"));
+        auto head = network::mojom::URLResponseHead::New();
+        test_url_loader_factory_.AddResponse(
+            token_server_get_proxy_config_url_, std::move(head), response_str,
+            network::URLLoaderCompletionStatus(net::OK));
+      }));
+
+  SetupAccount();
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
+  RespondToAccessTokenRequest();
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
+  EXPECT_THAT(proxy_list.value(),
+              testing::ElementsAreArray(response_proxy_list));
+
+  ASSERT_TRUE(geo_hint.has_value());  // Check that GeoHint is not null.
+  EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
 TEST_F(IpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
   std::vector<net::ProxyChain> proxy_override_list = {
-      ip_protection::IpProtectionProxyConfigFetcher::MakeChainForTesting(
+      ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
           {"proxyAOverride", "proxyBOverride"}),
-      ip_protection::IpProtectionProxyConfigFetcher::MakeChainForTesting(
+      ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
           {"proxyAOverride", "proxyBOverride"}),
   };
   base::test::ScopedFeatureList scoped_feature_list;
@@ -763,14 +841,12 @@ TEST_F(IpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
   response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
   response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
   response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
+  std::string response_str = response.SerializeAsString();
 
-  auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
-  bsa_ = bsa.get();
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-      std::move(bsa));
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  test_url_loader_factory_.AddResponse(
+      token_server_get_proxy_config_url_.spec(), response_str);
+
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
 
   // Extract tuple elements for individual comparison.
@@ -788,32 +864,28 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
   // Count each call to the retriever's GetProxyConfig and return an error.
   int get_proxy_config_calls = 0;
   bool get_proxy_config_fails = true;
-  MockIpProtectionProxyConfigRetriever::MockGetProxyConfig
-      mock_get_proxy_config = base::BindLambdaForTesting(
-          [&]() -> base::expected<ip_protection::GetProxyConfigResponse,
-                                  std::string> {
-            get_proxy_config_calls++;
-            if (get_proxy_config_fails) {
-              return base::unexpected("uhoh");
-            } else {
-              ip_protection::GetProxyConfigResponse response;
-              return base::ok(response);
-            }
-          });
-
-  auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
-  bsa_ = bsa.get();
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(
-          mock_get_proxy_config),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-      std::move(bsa));
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(request.url.is_valid());
+        ASSERT_EQ(request.url, token_server_get_proxy_config_url_);
+        get_proxy_config_calls++;
+        if (get_proxy_config_fails) {
+          test_url_loader_factory_.AddResponse(
+              token_server_get_proxy_config_url_.spec(), "",
+              net::HTTP_INTERNAL_SERVER_ERROR);
+        } else {
+          ip_protection::GetProxyConfigResponse response;
+          test_url_loader_factory_.AddResponse(
+              token_server_get_proxy_config_url_.spec(),
+              response.SerializeAsString());
+        }
+      }));
 
   auto call_get_proxy_list = [this](bool expect_success) {
     base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
                            const std::optional<GeoHint>&>
         future;
-    this->getter_->GetProxyList(future.GetCallback());
+    this->core_host_->GetProxyList(future.GetCallback());
     ASSERT_TRUE(future.Wait());
 
     // Extract tuple elements for individual comparison.
@@ -842,7 +914,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
   EXPECT_EQ(get_proxy_config_calls, 1);
 
   const base::TimeDelta timeout = ip_protection::
-      IpProtectionProxyConfigFetcher::kGetProxyConfigFailureTimeout;
+      IpProtectionProxyConfigDirectFetcher::kGetProxyConfigFailureTimeout;
 
   // A call after the timeout is allowed to proceed, but fails so the new
   // backoff is 2*timeout.
@@ -881,26 +953,9 @@ TEST_F(IpProtectionCoreHostTest, GetProxyList_IpProtectionDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
 
-  ip_protection::GetProxyConfigResponse response;
-  auto* chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy1");
-  chain->set_proxy_b("proxy1b");
-  chain->set_chain_id(1);
-
-  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
-
-  auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
-  bsa_ = bsa.get();
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-      std::move(bsa));
-
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
 
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
 
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
 

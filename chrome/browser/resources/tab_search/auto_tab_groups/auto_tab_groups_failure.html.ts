@@ -11,12 +11,6 @@ export function getHtml(this: AutoTabGroupsFailureElement) {
   return html`<!--_html_template_start_-->
 <div class="auto-tab-groups-container">
   <div class="auto-tab-groups-text-container">
-    <div id="header"
-        class="auto-tab-groups-header"
-        aria-live="polite"
-        aria-relevant="all">
-      ${this.getTitle(this.error)}
-    </div>
     <div class="auto-tab-groups-body">
       <localized-link localized-string="${this.getBody_()}"
           @link-clicked="${this.onCheckNow_}"></localized-link>

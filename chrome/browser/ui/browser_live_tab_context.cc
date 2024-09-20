@@ -48,6 +48,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -193,7 +194,7 @@ const gfx::Rect BrowserLiveTabContext::GetRestoredBounds() const {
   return browser_->window()->GetRestoredBounds();
 }
 
-ui::WindowShowState BrowserLiveTabContext::GetRestoredState() const {
+ui::mojom::WindowShowState BrowserLiveTabContext::GetRestoredState() const {
   return browser_->window()->GetRestoredState();
 }
 
@@ -246,6 +247,15 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
         tab_group_service->AddGroup(
             tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
                 tab.group.value()));
+
+        if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+          // Ensure we listen for changes to the newly created group.
+          // This is done automatically for the old service, not the new one.
+          std::optional<tab_groups::SavedTabGroup> s =
+              tab_group_service->GetGroup(group_id.value());
+          tab_group_service->ConnectLocalTabGroup(s->saved_guid(),
+                                                  group_id.value());
+        }
       }
     }
   } else {
@@ -353,7 +363,7 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
     sessions::SessionWindow::WindowType type,
     const std::string& app_name,
     const gfx::Rect& bounds,
-    ui::WindowShowState show_state,
+    ui::mojom::WindowShowState show_state,
     const std::string& workspace,
     const std::string& user_title,
     const std::map<std::string, std::string>& extra_data) {

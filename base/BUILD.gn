@@ -901,6 +901,7 @@ component("base") {
     "types/expected_macros.h",
     "types/fixed_array.h",
     "types/id_type.h",
+    "types/is_arc_pointer.h",
     "types/is_complete.h",
     "types/is_instantiation.h",
     "types/optional_ref.h",
@@ -1135,6 +1136,8 @@ component("base") {
       "android/android_hardware_buffer_compat.h",
       "android/android_image_reader_compat.cc",
       "android/android_image_reader_compat.h",
+      "android/android_input_receiver_compat.cc",
+      "android/android_input_receiver_compat.h",
       "android/apk_assets.cc",
       "android/apk_assets.h",
       "android/application_status_listener.cc",
@@ -2806,6 +2809,10 @@ test("base_perftests") {
     "//testing:run_perf_test",
   ]
 
+  if (is_win) {
+    sources += [ "time/time_win_perftest.cc" ]
+  }
+
   if (is_android) {
     deps += [ "//testing/android/native_test:native_test_native_code" ]
     shard_timeout = 600
@@ -3798,6 +3805,7 @@ test("base_unittests") {
     }
 
     sources += [
+      "android/android_input_receiver_compat_unittest.cc",
       "android/application_status_listener_unittest.cc",
       "android/binder_unittest.cc",
       "android/child_process_unittest.cc",
@@ -3834,6 +3842,7 @@ test("base_unittests") {
       "test/launcher/test_results_tracker_unittest.cc",
     ]
     deps += [
+      ":base_jni",
       ":base_unittest_support_java",
       ":base_unittest_support_jni",
       "//base/test:test_support_java",
@@ -3855,6 +3864,7 @@ test("base_unittests") {
       "apple/dispatch_source_mach_unittest.cc",
       "apple/foundation_util_unittest.mm",
       "strings/sys_string_conversions_apple_unittest.mm",
+      "types/is_arc_pointer_unittest.mm",
     ]
   }
 
@@ -4168,6 +4178,7 @@ if (enable_nocompile_tests) {
       "metrics/histogram_nocompile.nc",
       "no_destructor_nocompile.nc",
       "observer_list_nocompile.nc",
+      "run_loop_nocompile.nc",
       "sequence_checker_nocompile.nc",
       "strings/cstring_view_nocompile.nc",
       "strings/stringprintf_nocompile.nc",
@@ -4254,6 +4265,7 @@ if (is_android || is_robolectric) {
       "java/lang/Runnable.class",
       "java/lang/Runtime.class",
       "java/lang/Throwable.class",
+      "java/nio/Buffer.class",
     ]
   }
 
@@ -4751,6 +4763,7 @@ if (is_android) {
       ":stream_util_java",
       ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_documentfile_documentfile_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
     sources = [ "android/java/src/org/chromium/base/ContentUriUtils.java" ]
@@ -5057,6 +5070,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/Features.java",
       "test/android/javatests/src/org/chromium/base/test/util/FieldTrials.java",
       "test/android/javatests/src/org/chromium/base/test/util/HistogramWatcher.java",
+      "test/android/javatests/src/org/chromium/base/test/util/ImportantFormFactors.java",
       "test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferences.java",
       "test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferencesContext.java",
       "test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java",
@@ -5108,7 +5122,6 @@ if (is_android) {
     srcjar_deps = [ ":base_java_test_support_uncommon_jni" ]
     sources = [
       "test/android/javatests/src/org/chromium/base/FakeTimeTestRule.java",
-      "test/android/javatests/src/org/chromium/base/test/BundleTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/SetUpStatement.java",
       "test/android/javatests/src/org/chromium/base/test/SetUpTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/task/SchedulerTestHelpers.java",
@@ -5148,14 +5161,12 @@ if (is_android) {
     # jar_excluded_patterns.
     srcjar_deps = [ "//build/android:native_libraries_gen" ]
 
-    annotation_processor_deps =
-        [ "//third_party/android_deps:auto_service_processor" ]
     deps = [
       ":base_java",
       ":base_java_test_support",
       "//base:base_cached_flags_java",
+      "//build/android:build_java",
       "//testing/android/junit:junit_test_support",
-      "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/hamcrest:hamcrest_java",

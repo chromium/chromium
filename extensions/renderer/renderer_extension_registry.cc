@@ -5,11 +5,14 @@
 #include "extensions/renderer/renderer_extension_registry.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/unguessable_token.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/renderer/extensions_renderer_client.h"
 
 namespace extensions {
 
@@ -51,6 +54,25 @@ bool RendererExtensionRegistry::Insert(
     const scoped_refptr<const Extension>& extension) {
   DCHECK(content::RenderThread::Get());
   base::AutoLock lock(lock_);
+
+  if (!BackgroundInfo::IsServiceWorkerBased(extension.get())) {
+    // Non-SW based extension should never have an activation token.
+    CHECK(!base::Contains(worker_activation_tokens_, extension->id()));
+    return extensions_.Insert(extension);
+  }
+
+  ExtensionsRendererClient* client = ExtensionsRendererClient::Get();
+
+  // SW based extensions should always have an activation token, except for
+  // incognito processes for a spanning mode extension
+  bool is_incognito_spanning = client->IsIncognitoProcess() &&
+                               IncognitoInfo::IsSpanningMode(extension.get());
+  if (is_incognito_spanning) {
+    CHECK(!base::Contains(worker_activation_tokens_, extension->id()));
+  } else {
+    CHECK(base::Contains(worker_activation_tokens_, extension->id()));
+  }
+
   return extensions_.Insert(extension);
 }
 
@@ -100,7 +122,6 @@ void RendererExtensionRegistry::SetWorkerActivationToken(
     const scoped_refptr<const Extension>& extension,
     base::UnguessableToken worker_activation_token) {
   DCHECK(content::RenderThread::Get());
-  DCHECK(Contains(extension->id()));
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension.get()));
 
   base::AutoLock lock(lock_);

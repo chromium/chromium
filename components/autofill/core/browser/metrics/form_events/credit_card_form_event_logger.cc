@@ -275,7 +275,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       // and that card was selected.
       for (const Suggestion& suggestion : suggestions_) {
         // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
-        CreditCard* suggested_credit_card =
+        const CreditCard* suggested_credit_card =
             personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
                 suggestion.GetBackendId<Suggestion::Guid>().value());
         if (!suggested_credit_card) {
@@ -484,7 +484,11 @@ void CreditCardFormEventLogger::Log(FormEvent event,
     };
     return ".WithBothServerAndLocalData";
   }();
-  for (FormTypeNameForLogging form_type : GetFormTypesForLogging(form)) {
+  for (FormTypeNameForLogging form_type :
+       base::FeatureList::IsEnabled(
+           features::kAutofillEnableLogFormEventsToAllParsedFormTypes)
+           ? parsed_form_types_
+           : GetFormTypesForLogging(form)) {
     std::string name = base::StrCat(
         {"Autofill.FormEvents.", FormTypeNameForLoggingToStringView(form_type),
          data_suffix});
@@ -720,7 +724,7 @@ FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(
 void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
     UnmaskAuthFlowType flow,
     UnmaskAuthFlowEvent event) {
-  std::string flow_type_suffix;
+  std::string_view flow_type_suffix;
   switch (flow) {
     case UnmaskAuthFlowType::kCvc:
       flow_type_suffix = ".Cvc";
@@ -742,19 +746,21 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
       break;
     case UnmaskAuthFlowType::kThreeDomainSecure:
     case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
-      // TODO(crbug.com/41494927): Add logging for kThreeDomainSecure and
-      // kThreeDomainSecureConsentAlreadyGiven.
+      flow_type_suffix = ".ThreeDomainSecure";
+      break;
     case UnmaskAuthFlowType::kNone:
       // TODO(crbug.com/40216473): Fix Autofill.BetterAuth logging.
       return;
   }
-  std::string card_type_suffix =
+  std::string_view card_type_suffix =
       latest_selected_card_was_virtual_card_ ? ".VirtualCard" : ".ServerCard";
 
   base::UmaHistogramEnumeration(
-      "Autofill.BetterAuth.FlowEvents" + flow_type_suffix, event);
+      base::StrCat({"Autofill.BetterAuth.FlowEvents", flow_type_suffix}),
+      event);
   base::UmaHistogramEnumeration(
-      "Autofill.BetterAuth.FlowEvents" + flow_type_suffix + card_type_suffix,
+      base::StrCat({"Autofill.BetterAuth.FlowEvents", flow_type_suffix,
+                    card_type_suffix}),
       event);
 }
 

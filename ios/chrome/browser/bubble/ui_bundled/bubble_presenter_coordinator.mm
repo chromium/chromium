@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ui/base/device_form_factor.h"
@@ -34,10 +35,10 @@
 }
 
 - (void)start {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
 
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   OverlayPresenter* webContentPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
   OverlayPresenter* infobarBannerPresenter = OverlayPresenter::FromBrowser(
@@ -82,16 +83,16 @@
 #pragma mark - HelpCommands
 
 - (void)presentInProductHelpWithType:(InProductHelpType)type {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
       deviceSwitcherResultDispatcher = nullptr;
-  if (!browserState->IsOffTheRecord()) {
-    deviceSwitcherResultDispatcher =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(browserState);
+  if (!profile->IsOffTheRecord()) {
+    deviceSwitcherResultDispatcher = segmentation_platform::
+        SegmentationPlatformServiceFactory::GetDispatcherForProfile(profile);
   }
   CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
-
+  id<PopupMenuCommands> popupMenuHandler =
+      HandlerForProtocol(commandDispatcher, PopupMenuCommands);
   switch (type) {
     case InProductHelpType::kDiscoverFeedMenu: {
       [_presenter presentDiscoverFeedMenuTipBubble];
@@ -102,24 +103,29 @@
       break;
     }
     case InProductHelpType::kFollowWhileBrowsing: {
-      [_presenter
-          presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
-              DiscoverFeedServiceFactory::GetForBrowserState(browserState)
-                  ->GetFeedMetricsRecorder()];
+      [_presenter presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
+                      DiscoverFeedServiceFactory::GetForProfile(profile)
+                          ->GetFeedMetricsRecorder()
+                                                       popupMenuHandler:
+                                                           popupMenuHandler];
       break;
     }
     case InProductHelpType::kDefaultSiteView: {
-      [_presenter presentDefaultSiteViewTipBubbleWithSettingsMap:
-                      ios::HostContentSettingsMapFactory::GetForBrowserState(
-                          browserState)];
+      [_presenter
+          presentDefaultSiteViewTipBubbleWithSettingsMap:
+              ios::HostContentSettingsMapFactory::GetForProfile(profile)
+                                        popupMenuHandler:popupMenuHandler];
       break;
     }
     case InProductHelpType::kWhatsNew: {
-      [_presenter presentWhatsNewBottomToolbarBubble];
+      [_presenter presentWhatsNewBottomToolbarBubbleWithPopupMenuHandler:
+                      popupMenuHandler];
       break;
     }
     case InProductHelpType::kPriceNotificationsWhileBrowsing: {
-      [_presenter presentPriceNotificationsWhileBrowsingTipBubble];
+      [_presenter
+          presentPriceNotificationsWhileBrowsingTipBubbleWithPopupMenuHandler:
+              popupMenuHandler];
       break;
     }
     case InProductHelpType::kLensKeyboard: {
@@ -170,6 +176,10 @@
     }
     case InProductHelpType::kToolbarSwipe: {
       [_presenter presentToolbarSwipeGestureInProductHelp];
+      break;
+    }
+    case InProductHelpType::kLensOverlayEntrypoint: {
+      [_presenter presentLensOverlayTipBubble];
       break;
     }
   }

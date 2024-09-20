@@ -9,6 +9,7 @@
 
 namespace remote_cocoa::features {
 BASE_DECLARE_FEATURE(kImmersiveFullscreenSpaceSwitchMitigation);
+BASE_DECLARE_FEATURE(kImmersiveFullscreenOverlayWindowDebug);
 }  // namespace remote_cocoa::features
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_FEATURES_H_

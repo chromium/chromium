@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="WebAuthentication.Android.CredManAvailability" enum="Boolean"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManModalRequests"
-    enum="CredManGetRequestEnum" expires_after="2025-01-05">
+    enum="CredManGetRequestEnum" expires_after="2025-03-09">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -316,6 +316,40 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the transport used when an authenticator responds with success to a
     WebAuthentication MakeCredential request.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey"
+    enum="SignalAllAcceptedCredentialsResult" expires_after="2025-09-17">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of a website calling
+    PublicKeyCredential.signalAllAcceptedCredentials with respect to Google
+    Password Manager passkeys.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey"
+    enum="SignalCurrentUserDetailsResult" expires_after="2025-09-17">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of a website calling
+    PublicKeyCredential.signalCurrentUserDetails with respect to Google Password
+    Manager passkeys.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey"
+    enum="SignalUnknownCredentialResult" expires_after="2025-09-17">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of a website calling
+    PublicKeyCredential.signalUnknownCredential with respect to Google Password
+    Manager passkeys.
   </summary>
 </histogram>
 

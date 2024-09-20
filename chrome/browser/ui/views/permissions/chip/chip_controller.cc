@@ -201,14 +201,47 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
   ResetTimers();
 
   disallowed_custom_cursors_scope_.RunAndReset();
+
+  if (!prompt_decision_.has_value()) {
+    observation_.Reset();
+    widget->RemoveObserver(this);
+    bubble_tracker_.SetView(nullptr);
+    // This method will be called only if a user dismissed permission prompt
+    // popup bubble. In case the user made decision, prompt_decision_ will not
+    // be empty.
+    OnPromptBubbleDismissed();
+  }
+}
+
+void ChipController::OnWidgetDestroyed(views::Widget* widget) {
   widget->RemoveObserver(this);
+  bubble_tracker_.SetView(nullptr);
 
-  observation_.Reset();
+  if (!prompt_decision_.has_value()) {
+    return;
+  }
 
-  // This method will be called only if a user dismissed permission prompt
-  // popup bubble. In all other cases, `OnRequestDecided` is called and Widget
-  // observer gets unsubscribed.
-  OnPromptBubbleDismissed();
+  permissions::PermissionAction action = prompt_decision_.value();
+  prompt_decision_.reset();
+
+  if (!active_chip_permission_request_manager_.has_value() ||
+      !active_chip_permission_request_manager_.value()->IsRequestInProgress()) {
+    return;
+  }
+
+  switch (action) {
+    case permissions::PermissionAction::GRANTED:
+      active_chip_permission_request_manager_.value()->Accept();
+      break;
+    case permissions::PermissionAction::GRANTED_ONCE:
+      active_chip_permission_request_manager_.value()->AcceptThisTime();
+      break;
+    case permissions::PermissionAction::DENIED:
+      active_chip_permission_request_manager_.value()->Deny();
+      break;
+    default:
+      NOTREACHED_IN_MIGRATION();
+  }
 }
 
 void ChipController::OnWidgetActivationChanged(views::Widget* widget,
@@ -350,6 +383,21 @@ void ChipController::ShowPermissionPrompt(
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate) {
   is_bubble_suppressed_ = false;
   ShowPermissionUi(delegate);
+}
+
+void ChipController::ClosePermissionPrompt() {
+  views::Widget* const bubble_widget = GetBubbleWidget();
+  // If a user decided on a prompt, the widget should not be `nullptr` as it is
+  // 1:1 with the prompt.
+  CHECK(bubble_widget);
+  bubble_widget->Close();
+}
+
+void ChipController::PromptDecided(permissions::PermissionAction action) {
+  prompt_decision_ = action;
+  // Keep prompt decision inside ChipController and wait for `widget` to be
+  // closed.
+  ClosePermissionPrompt();
 }
 
 void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {

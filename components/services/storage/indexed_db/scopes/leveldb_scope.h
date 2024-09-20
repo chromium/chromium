@@ -27,7 +27,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // LevelDBScope is a specialized type of transaction used only for writing data,
 // and is created using the |LevelDBScopes::CreateScope| method.
@@ -192,6 +192,6 @@ class LevelDBScope {
   std::string value_buffer_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPE_H_

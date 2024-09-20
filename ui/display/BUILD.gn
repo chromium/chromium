@@ -301,7 +301,7 @@ static_library("test_support") {
     public_deps += [ "//ui/display:managed_display_info" ]
   }
 
-  if (!is_mac && !is_win &&
+  if (!is_mac && !is_win && !is_chromeos_ash &&
       !(is_linux && ozone_platform_x11 && enable_remoting)) {
     sources += [
       # Virtual display util stub for unimplemented platforms.

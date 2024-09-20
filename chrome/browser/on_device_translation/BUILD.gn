@@ -8,7 +8,10 @@ source_set("prefs") {
     "pref_names.h",
   ]
 
-  deps = [ "//components/prefs" ]
+  deps = [
+    ":language_pack_util",
+    "//components/prefs",
+  ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
@@ -23,4 +26,13 @@ source_set("constants") {
     "//base",
     "//components/component_updater:component_updater_paths",
   ]
+}
+
+source_set("language_pack_util") {
+  sources = [
+    "language_pack_util.cc",
+    "language_pack_util.h",
+  ]
+
+  deps = [ "//base" ]
 }

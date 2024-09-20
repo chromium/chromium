@@ -9,9 +9,12 @@
 
 #include "chrome/services/util_win/public/mojom/util_win_mojom_traits.h"
 
+#include <limits.h> /* UINT_MAX */
+
 #include <utility>
 
 #include "base/notreached.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/shortcut.h"
@@ -287,6 +290,57 @@ bool StructTraits<chrome::mojom::AntiVirusProductDataView,
     return false;
   if (!product_version.empty())
     output->set_product_version(std::move(product_version));
+
+  return true;
+}
+
+// static
+bool StructTraits<chrome::mojom::TpmIdentifierDataView,
+                  metrics::SystemProfileProto_TpmIdentifier>::
+    Read(chrome::mojom::TpmIdentifierDataView input,
+         metrics::SystemProfileProto_TpmIdentifier* output) {
+  if (input.manufacturer_id() == 0u) {
+    // If manufacturer_id is it's default value metrics will not be
+    // reported.
+    return false;
+  }
+  output->set_manufacturer_id(input.manufacturer_id());
+
+  std::optional<std::string> manufacturer_version;
+  if (input.ReadManufacturerVersion(&manufacturer_version)) {
+    if (manufacturer_version.has_value()) {
+      output->set_manufacturer_version(std::move(manufacturer_version.value()));
+    }
+  }
+
+  std::optional<std::string> manufacturer_version_info;
+  if (input.ReadManufacturerVersionInfo(&manufacturer_version_info)) {
+    if (manufacturer_version_info.has_value()) {
+      output->set_manufacturer_version_info(
+          std::move(manufacturer_version_info.value()));
+    }
+  }
+
+  std::optional<std::string> tpm_specific_version;
+  if (input.ReadTpmSpecificVersion(&tpm_specific_version)) {
+    if (tpm_specific_version.has_value()) {
+      output->set_tpm_specific_version(std::move(tpm_specific_version.value()));
+    }
+  }
+
+  // If the hashes are 0, they have not been set and wont be reported
+  if (input.manufacturer_version_hash() != 0u) {
+    output->set_manufacturer_version_hash(input.manufacturer_version_hash());
+  }
+
+  if (input.manufacturer_version_info_hash() != 0u) {
+    output->set_manufacturer_version_info_hash(
+        input.manufacturer_version_info_hash());
+  }
+
+  if (input.tpm_specific_version_hash() != 0u) {
+    output->set_tpm_specific_version_hash(input.tpm_specific_version_hash());
+  }
 
   return true;
 }

@@ -70,6 +70,24 @@ class DawnD3DImageRepresentation : public DawnImageRepresentation {
   std::vector<wgpu::TextureFormat> view_formats_;
 };
 
+class DawnD3DBufferRepresentation : public DawnBufferRepresentation {
+ public:
+  DawnD3DBufferRepresentation(SharedImageManager* manager,
+                              SharedImageBacking* backing,
+                              MemoryTypeTracker* tracker,
+                              const wgpu::Device& device,
+                              wgpu::BackendType backend_type);
+  ~DawnD3DBufferRepresentation() override;
+
+  wgpu::Buffer BeginAccess(wgpu::BufferUsage usage) override;
+  void EndAccess() override;
+
+ private:
+  const wgpu::Device device_;
+  const wgpu::BackendType backend_type_;
+  wgpu::Buffer buffer_;
+};
+
 // Representation of a D3DImageBacking as an overlay.
 class OverlayD3DImageRepresentation : public OverlayImageRepresentation {
  public:

@@ -67,16 +67,14 @@ NDEFMessage* NDEFMessage::Create(const ScriptState* script_state,
   // https://w3c.github.io/web-nfc/#creating-ndef-message
   switch (source->GetContentType()) {
     case V8NDEFMessageSource::ContentType::kArrayBuffer: {
-      WTF::Vector<uint8_t> payload_data;
-      size_t byte_length = source->GetAsArrayBuffer()->ByteLength();
-      if (byte_length > std::numeric_limits<wtf_size_t>::max()) {
+      const DOMArrayBuffer* buffer = source->GetAsArrayBuffer();
+      if (buffer->ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
         exception_state.ThrowRangeError(
             "Buffer size exceeds maximum heap object size.");
         return nullptr;
       }
-      payload_data.Append(
-          static_cast<uint8_t*>(source->GetAsArrayBuffer()->Data()),
-          static_cast<wtf_size_t>(byte_length));
+      Vector<uint8_t> payload_data;
+      payload_data.AppendSpan(buffer->ByteSpan());
       NDEFMessage* message = MakeGarbageCollected<NDEFMessage>();
       message->records_.push_back(MakeGarbageCollected<NDEFRecord>(
           String() /* id */, "application/octet-stream",
@@ -84,16 +82,15 @@ NDEFMessage* NDEFMessage::Create(const ScriptState* script_state,
       return message;
     }
     case V8NDEFMessageSource::ContentType::kArrayBufferView: {
-      size_t byte_length = source->GetAsArrayBufferView()->byteLength();
-      if (byte_length > std::numeric_limits<wtf_size_t>::max()) {
+      const DOMArrayBufferView* buffer_view =
+          source->GetAsArrayBufferView().Get();
+      if (buffer_view->byteLength() > std::numeric_limits<wtf_size_t>::max()) {
         exception_state.ThrowRangeError(
             "Buffer size exceeds maximum heap object size.");
         return nullptr;
       }
-      WTF::Vector<uint8_t> payload_data;
-      payload_data.Append(
-          static_cast<uint8_t*>(source->GetAsArrayBufferView()->BaseAddress()),
-          static_cast<wtf_size_t>(byte_length));
+      Vector<uint8_t> payload_data;
+      payload_data.AppendSpan(buffer_view->ByteSpan());
       NDEFMessage* message = MakeGarbageCollected<NDEFMessage>();
       message->records_.push_back(MakeGarbageCollected<NDEFRecord>(
           String() /* id */, "application/octet-stream",

@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -23,6 +24,13 @@
 namespace content {
 class WebUI;
 }  // namespace content
+
+class InternalsUI;
+
+class InternalsUIConfig : public content::DefaultWebUIConfig<InternalsUI> {
+ public:
+  InternalsUIConfig();
+};
 
 // Client could put debug WebUI as sub-URL under chrome://internals/.
 // e.g. chrome://internals/your-feature.

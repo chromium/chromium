@@ -39,6 +39,17 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
             this.onContentSizeChanging_(/*expanding=*/ true);
             this.promptActionOccurred(
                 PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
+            // If the iframe hasn't been loaded yet, load it the first time the
+            // learn more expand section is clicked.
+            const iframe = this.shadowRoot!.querySelector<HTMLIFrameElement>(
+                '#privacyPolicy');
+            if (iframe && iframe!.src === '') {
+              this.shadowRoot!.querySelector<HTMLElement>(
+                                  '.iframe-container')!.style.display = 'block';
+              this.shadowRoot!
+                  .querySelector<HTMLIFrameElement>('#privacyPolicy')!.src =
+                  'chrome-untrusted://privacy-sandbox-dialog/privacy-policy';
+            }
           }
           if (!newValue && oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ false);

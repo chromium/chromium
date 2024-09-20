@@ -60,7 +60,8 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   class Delegate {
    public:
     virtual void ShowProactiveNudge(autofill::FormGlobalId form,
-                                    autofill::FieldGlobalId field) = 0;
+                                    autofill::FieldGlobalId field,
+                                    compose::ComposeEntryPoint entry_point) = 0;
 
     virtual compose::PageUkmTracker* GetPageUkmTracker() = 0;
 

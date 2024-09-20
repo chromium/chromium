@@ -20,16 +20,15 @@ class BrowserState;
 }
 
 // Singleton that owns RealTimeUrlLookupService objects, one for each active
-// ChromeBrowserState. It returns nullptr for Incognito browser states.
+// profile. It returns nullptr for Incognito profiles.
 class RealTimeUrlLookupServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the instance of RealTimeUrlLookupService associated with this
-  // browser state, creating one if none exists and the given browser state is
-  // not in Incognito mode.
+  // TODO(crbug.com/358301380): remove this method.
   static safe_browsing::RealTimeUrlLookupService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
-  // Returns the singleton instance of RealTimeUrlLookupServiceFactory.
+      ProfileIOS* profile);
+  // Returns null if `profile` is in Incognito mode.
+  static safe_browsing::RealTimeUrlLookupService* GetForProfile(
+      ProfileIOS* profile);
   static RealTimeUrlLookupServiceFactory* GetInstance();
 
  private:

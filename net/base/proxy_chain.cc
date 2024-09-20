@@ -12,10 +12,24 @@
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "build/buildflag.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/net_buildflags.h"
 
 namespace net {
+
+namespace {
+bool ShouldAllowQuicForAllChains() {
+  bool should_allow = false;
+
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+  should_allow = true;
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+
+  return should_allow;
+}
+}  // namespace
 
 ProxyChain::ProxyChain() {
   proxy_server_list_ = std::nullopt;
@@ -148,14 +162,24 @@ bool ProxyChain::IsValidInternal() const {
   if (is_direct()) {
     return true;
   }
+  bool should_allow_quic =
+      is_for_ip_protection() || ShouldAllowQuicForAllChains();
   if (is_single_proxy()) {
     bool is_valid = proxy_server_list_.value().at(0).is_valid();
     if (proxy_server_list_.value().at(0).is_quic()) {
-      is_valid = is_valid && is_for_ip_protection();
+      is_valid = is_valid && should_allow_quic;
     }
     return is_valid;
   }
   DCHECK(is_multi_proxy());
+
+#if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+  // A chain can only be multi-proxy in release builds if it is for ip
+  // protection.
+  if (!is_for_ip_protection() && is_multi_proxy()) {
+    return false;
+  }
+#endif  // !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
   // Verify that the chain is zero or more SCHEME_QUIC servers followed by zero
   // or more SCHEME_HTTPS servers.
@@ -175,8 +199,9 @@ bool ProxyChain::IsValidInternal() const {
     }
   }
 
-  // QUIC is only allowed for IP protection.
-  return !seen_quic || is_for_ip_protection();
+  // QUIC is only allowed for IP protection unless in debug builds where it is
+  // generally available.
+  return !seen_quic || should_allow_quic;
 }
 
 std::ostream& operator<<(std::ostream& os, const ProxyChain& proxy_chain) {

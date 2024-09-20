@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">प्रॉम्प्ट एंटर करा</translation>
 <translation id="115705039208660697">अननस</translation>
 <translation id="1164939766849482256">डॉन टू डार्क स्क्रीन सेव्हर</translation>
+<translation id="1166688493741195933">रेकॉर्डिंगची नावे जनरेट करता आली नाहीत</translation>
 <translation id="1167755866710282443">की कस्टमाइझ करण्यासाठी मेनू उघडा. हलवण्यासाठी मेनू ड्रॅग करा.</translation>
 <translation id="1171349345463658120">वाळूचे सरोवर</translation>
 <translation id="1173894706177603556">नाव बदला</translation>
@@ -52,6 +53,7 @@
 <translation id="1204296502688602597">DNS लेटन्सी</translation>
 <translation id="1207734034680156868">सूचना तुमच्या वर्णनावर आधारित आहेत</translation>
 <translation id="121090498480012229">मीडिया प्ले करा किंवा थांबवा</translation>
+<translation id="1216675364136048456">बंद करा</translation>
 <translation id="1223498995510244364">सारांश द्या</translation>
 <translation id="123124571410524056">पोर्टल असल्याची शक्यता आहे</translation>
 <translation id="1232610416724362657">धबधबा</translation>
@@ -125,9 +127,11 @@
 <translation id="1567064801249837505">अल्बम</translation>
 <translation id="1572585716423026576">वॉलपेपर म्हणून सेट करा</translation>
 <translation id="1578784163189013834">स्क्रीन सेव्हर बॅकग्राउंड निवडा</translation>
+<translation id="1587031308639983732">वेळेवर आधारित बदल हे कदाचित अचूक नसू शकतात. हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1591562245178063882">या महिन्यात</translation>
 <translation id="1593528591614229756">तुमच्या मोबाइल पुरवठादार किंवा अ‍ॅडमिनिस्ट्रेटरद्वारे दिलेले APNs निवडण्याची खात्री करा. APN निवडल्याने कोणतीही कस्टम APNs बंद होतील. चुकीची APNs तुमच्या मोबाइल कनेक्शनमध्ये व्यत्यय आणू शकतात. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">ट्रान्स्क्रिप्ट लपवा</translation>
 <translation id="160633243685262989">इमेजचे पूर्वावलोकन करा</translation>
 <translation id="1611649489706141841">फॉरवर्ड करा</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> पासूनचा डेटा वापर</translation>
@@ -141,7 +145,9 @@
 <translation id="1643449475550628585">वॉलपेपर इमेज रोज बदला</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1651925268237749928">तुम्ही शेअर केलेला अल्बम निवडला आहे. इतर लोक फोटो जोडू किंवा बदलू शकतात. तुमच्या वॉलपेपरवर असे फोटो वापरलेले असू शकतात जे सध्या या अल्बममध्ये नाहीत.</translation>
+<translation id="1661512400125589646">थांबवा</translation>
 <translation id="1661865805917886535">काही खाते आणि सिस्टीम माहिती Google ला पाठवली जाऊ शकते. आम्ही आमचे गोपनीयता धोरण (<ph name="PRIVACYPOLICYURL" />) आणि सेवा अटी (<ph name="TERMSOFSERVICEURL" />) यांच्या अधीन राहून, या माहितीचा वापर तांत्रिक समस्या सोडवण्यात व आमच्या सेवेमध्ये सुधारणा करण्यात मदत करण्यासाठी करतो. आशयासंबंधित बदलांची विनंती करण्यासाठी, कायदेशीर मदत (<ph name="LEGALHELPPAGEURL" />) यावर जा.</translation>
+<translation id="1662699081856352167">सारांश यशस्वीरीत्या जनरेट केला आहे</translation>
 <translation id="1662989795263954667">थांबले - शाई संपली आहे</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> चे पूर्वावलोकन करा</translation>
 <translation id="1668469839109562275">बिल्ट-इन VPN</translation>
@@ -150,6 +156,7 @@
 <translation id="1672499492233627739">वेबकॅम व्हिडिओ फीड</translation>
 <translation id="1676557873873341166">व्हिडिओ घेत आहे</translation>
 <translation id="1684279041537802716">अ‍ॅक्सेंट रंग</translation>
+<translation id="1697278726914783200">रेकॉर्ड करा</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS रिसॉल्व्हर प्रेझेंट</translation>
 <translation id="1708602061922134366">Google निळा</translation>
@@ -167,10 +174,12 @@
 <translation id="1753496554272155572">वॉलपेपर पूर्वावलोकनामधून बाहेर पडा</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> साठी संपादित करा बटण.</translation>
 <translation id="1755556344721611131">निदान करण्यासाठी अ‍ॅप</translation>
+<translation id="1756681705074952506">इनपुट पद्धत</translation>
 <translation id="175763766237925754">चांगला (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">ट्रान्स्क्रिप्ट</translation>
 <translation id="1765169783255151332">की झटपट स्विच करा</translation>
 <translation id="1768959921651994223">ऑथेंटिकेशन प्रकार</translation>
 <translation id="1776228893584526149">वॉलपेपरचा टोन</translation>
@@ -215,6 +224,7 @@
 <translation id="1954818433534793392">इमारत</translation>
 <translation id="1962550982027027473">डीफॉल्ट APN ची आवश्यकता आहे</translation>
 <translation id="1967860190218310525">नवीन APN तयार करा</translation>
+<translation id="1967917622327567355">ट्रान्स्क्रिप्ट दाखवा</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">पारंपरिक</translation>
 <translation id="1977994649430373166">Google प्रोफाइल फोटो</translation>
@@ -247,6 +257,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> फोटो</translation>
+<translation id="2154460308960858308">शोध साफ करा</translation>
 <translation id="2156072344042480449">तुमचे २ सर्वात अलीकडील प्रॉम्प्ट. हे प्रॉम्प्ट तुम्ही या पेजवर असतानाच वापरू शकता.</translation>
 <translation id="2157660087437850958">इमोजी पिकर</translation>
 <translation id="2157959690810728433">क्‍यूमध्ये आहे</translation>
@@ -258,6 +269,7 @@
 <translation id="2180197493692062006">काहीतरी चूक झाली. अ‍ॅप पुन्हा उघडण्याचा प्रयत्न करा.</translation>
 <translation id="2189104374785738357">APN शी संबंधित तपशील संपादित करा</translation>
 <translation id="2195732836444333448">आता मर्यादा गाठली आहे. लवकरच परत या.</translation>
+<translation id="2197185031095816179">सुरक्षितता रीसेट केल्यामुळे नको असलेली पॉप-अप काढून टाकण्यात, नेटवर्कसंबंधित समस्यांचे निराकरण करण्यात आणि इतर अनपेक्षित समस्या संबोधण्यात मदत होऊ शकते.</translation>
 <translation id="2201758491318984023">सायकल</translation>
 <translation id="2203272733515928691">गरम पाण्याचा झरा</translation>
 <translation id="2203642483788377106">कडा</translation>
@@ -274,7 +286,6 @@
 <translation id="2230624078793142213">आणखी तयार करा</translation>
 <translation id="2236746079896696523">कीबोर्ड बॅकलाइट टॉगल</translation>
 <translation id="2240366984605217732">लेआउट स्विच</translation>
-<translation id="2242381852034179222">हे वैशिष्‍ट्य तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केलेले आहे</translation>
 <translation id="2244834438220057800">हिरवा</translation>
 <translation id="225692081236532131">सक्रियन स्थिती</translation>
 <translation id="2267285889943769271">स्क्रीनशॉट जोडा</translation>
@@ -332,6 +343,7 @@
 <translation id="2560876255701405320">ऑडिओ रेकॉर्डिंगची सूची</translation>
 <translation id="2561093647892030937">लिंबे</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> चाचणी रन होत आहे...</translation>
+<translation id="2573178735329662769">सर्व Chromebook ऑडिओ रेकॉर्ड करत आहे</translation>
 <translation id="2575552334616524665">तुम्ही हे सेटिंग्ज मध्ये किंवा <ph name="THREE_DOTS_MENU_ICON" /> मेनूमध्ये सुरू करू शकता</translation>
 <translation id="2576253868710695442">यासाठी कमाल २GB स्टोरेज लागेल</translation>
 <translation id="2584547424703650812">ग्लोस्केप</translation>
@@ -484,6 +496,7 @@
 <translation id="3502426834823382181">सर्व अ‍ॅप्स पहा</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />परफॉर्मन्स माग डेटा<ph name="END_LINK1" /> पाठवा</translation>
 <translation id="3517001332549868749">ChromeOS अपडेट</translation>
+<translation id="3522508178835057262">सध्या, <ph name="MAX_WORD_LENGTH" /> हून अधिक शब्दांच्या ट्रान्स्क्रिप्टला सपोर्ट नाही</translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
 <translation id="353214771040290298">संपादन पूर्ण झाले</translation>
 <translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
@@ -492,12 +505,14 @@
 <translation id="3557205324756024651">स्थानिक आयडेंटिटी (पर्यायी)</translation>
 <translation id="3565064564551103223">आयपीना अनुमती दिली</translation>
 <translation id="3569407787324516067">स्क्रीन सेव्हर</translation>
+<translation id="3571184524500629183">शोध बंद करा</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
 <translation id="3583278742022654445">सिग्नलची क्षमता कमकुवत आहे. वाय-फाय सिग्नल स्रोताच्या जवळ जाण्याचा प्रयत्न करा.</translation>
 <translation id="3588034708467091142">तुम्ही इंटरनेटशी कनेक्ट केलेले असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> हे <ph name="APN_NAME" /> चे वापरकर्त्यासाठी अनुकूल नाव आहे.</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
+<translation id="3600063043775287169">Chromebook ऑडिओ सुरू असताना, रेकॉर्डर या डिव्हाइसवर प्ले होणारे सर्व ऑडिओ कॅप्चर करते. तुम्हाला सर्व आवाज रेकॉर्ड करायचे आहेत याची खात्री करा.</translation>
 <translation id="3600339377155080675">स्क्रीन मिरर करा</translation>
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3603829704940252505">अवतार</translation>
@@ -514,6 +529,7 @@
 <translation id="3661106764436337772">जलद आणि अधिक आत्मविश्वासाने लिहा</translation>
 <translation id="3662461537616691585">बर्गंडी आणि मरून</translation>
 <translation id="3668449597372804501">क्लाउड फ्लो वॉलपेपर</translation>
+<translation id="3668570675727296296">भाषा सेटिंग्ज</translation>
 <translation id="3675132884790542448">डुकरे</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
@@ -521,6 +537,7 @@
 <translation id="3715651196924935218">फ्लोटमधून बाहेर पडा</translation>
 <translation id="3716250181321371108">नियंत्रण तयार करा</translation>
 <translation id="3716830479327464973">तुम्ही याला अनुमती दिल्यावर, पुढील गोष्टींसाठी Recorder तुमच्या ऑडिओ रेकॉर्डिंगचे विश्लेषण करेल:</translation>
+<translation id="3719826155360621982">होम पेज</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> परीक्षणे)</translation>
 <translation id="3748026146096797577">कनेक्टेड नाही</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
@@ -529,11 +546,13 @@
 <translation id="3780740315729837296">कीबोर्डची की असाइन करा</translation>
 <translation id="3784455785234192852">लॉक करा</translation>
 <translation id="3785643128701396311">पिक्सेल आर्ट</translation>
+<translation id="3799381533888781854">बंद आहे - हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>
 <translation id="380097101658023925">RGB नियंत्रणे</translation>
 <translation id="38114475217616659">सर्व इतिहास साफ करा</translation>
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
 <translation id="382043424867370667">सनसेट वॉलपेपर</translation>
 <translation id="3824259034819781947">फाइल अटॅच करा</translation>
+<translation id="3836587210832263413">फक्त तुमचा विश्वास असलेली एक्स्टेंशन सुरू करा</translation>
 <translation id="3838338534323494292">नवीन पासवर्ड</translation>
 <translation id="3845880861638660475">डायलॉग बंद करण्यासाठी,<ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> प्रेस करा.</translation>
 <translation id="3848280697030027394">कीबोर्ड गडद</translation>
@@ -579,6 +598,7 @@
 <translation id="4046123991198612571">पुढील ट्रॅक</translation>
 <translation id="404928562651467259">चेतावणी:</translation>
 <translation id="4050208988451295487">काही पर्याय:</translation>
+<translation id="405181879009056822">ChromeOS सेटिंग्ज</translation>
 <translation id="4054683689023980771">इमेज डाउनलोड करत आहे</translation>
 <translation id="4059839844193047929">हे पेज सोडल्याने तुमचे सद्य रेकॉर्डिंग संपेल</translation>
 <translation id="4063039537646912479">फिकट निळे</translation>
@@ -593,6 +613,7 @@
 <translation id="4111761024568264522">USB टचपॅड</translation>
 <translation id="4113067922640381334">तुम्हाला आता नवीन <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> चा अ‍ॅक्सेस आहे</translation>
 <translation id="4117637339509843559">गडद मोड</translation>
+<translation id="4126551873361000548">१० सेकंद मागे जा</translation>
 <translation id="4130035430755296270">आणखी लेआउट पर्यायांसाठी फिरवत रहा</translation>
 <translation id="4130750466177569591">मला मान्य आहे</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
@@ -622,6 +643,7 @@
 <translation id="4251839292699800785">शैलीदार कार्यालय</translation>
 <translation id="4258281355379922695">HTTP लेटन्सी</translation>
 <translation id="4266143281602681663">सूत</translation>
+<translation id="4269815121975886860">स्टार्टअप प्राधान्ये</translation>
 <translation id="4271957103967917607">फुल स्क्रीन पहा</translation>
 <translation id="4275663329226226506">माध्यम</translation>
 <translation id="4278766082079064416">शॉर्टकट हा "<ph name="CONFLICT_ACCEL_NAME" />" साठी वापरला जात आहे. विवादाचे निराकरण करण्यासाठी संपादित करा किंवा काढून टाका.</translation>
@@ -673,6 +695,7 @@
 <translation id="4507392511610824664">ब्राइटनेस वाढवा</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
 <translation id="4513946894732546136">फीडबॅक</translation>
+<translation id="4516323842122524821">व्हॉल्यूम</translation>
 <translation id="4521826082652183069">विषयाच्या पर्यायी नावाची जुळणी</translation>
 <translation id="4522570452068850558">तपशील</translation>
 <translation id="4536864596629708641">आयपी कॉन्फिगरेशन</translation>
@@ -689,8 +712,10 @@
 <translation id="458794348635939462">सर्व होस्टचे निराकरण करता आले नाही</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4594021849294327751">ट्रान्स्क्रिप्ट तयार करा</translation>
+<translation id="4602266091140407479">माइक</translation>
 <translation id="4607282946861182308">याच्या इमेज तयार करू शकत नाही. दुसरा प्रॉम्प्ट वापरून पहा.</translation>
 <translation id="4609350030397390689">कीबोर्डचा ब्राइटनेस कमी करा</translation>
+<translation id="4623061655523261501">रेकॉर्डिंगची नावे यशस्वीरीत्या जनरेट केली आहेत</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="463791356324567266">स्कॅनिंग रद्द करत आहे...</translation>
 <translation id="4644611440022666152">सुरू करा आणि डाउनलोड करा</translation>
@@ -726,6 +751,7 @@
 <translation id="4809927044794281115">फिकट थीम</translation>
 <translation id="4813136279048157860">माझ्या इमेज</translation>
 <translation id="4813345808229079766">कनेक्शन</translation>
+<translation id="4824527342590024245">सध्या, <ph name="MIN_WORD_LENGTH" /> हून कमी शब्दांच्या ट्रान्स्क्रिप्टला सपोर्ट नाही.</translation>
 <translation id="4830894019733815633">मोठी दरी</translation>
 <translation id="4832079907277790330">Files अ‍ॅपमध्ये फोल्डर निवडा...</translation>
 <translation id="4835901797422965222">कोणतीही अ‍ॅक्टिव्ह नेटवर्क नाहीत</translation>
@@ -754,8 +780,10 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंदांत <ph name="RATE" /> शुल्क आकारले.</translation>
 <translation id="4930320165497208503">कनेक्शन सेट किंवा अपडेट करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="4932733599132424254">तारीख</translation>
+<translation id="4946927805998996217">सारांश जनरेट करत आहे</translation>
 <translation id="4950314376641394653">फर्मवेअर <ph name="DEVICE_NAME" /> हे <ph name="VERSION" /> आवृत्तीवर अपडेट केले गेले आहे</translation>
 <translation id="4950893758552030541">झाडांचा बोगदा</translation>
+<translation id="4965661459364092269">सुरक्षितता रीसेट पूर्ण झाले आहे</translation>
 <translation id="4965703485264574128">अंदाजे परिणामासाठी <ph name="CONVERSION_RATE" /> ने <ph name="CATEGORY_TEXT" /> मूल्याचा गुणाकार करा</translation>
 <translation id="4969079779290789265">स्प्लिट करा</translation>
 <translation id="4972592110715526173">मोड बदला</translation>
@@ -776,6 +804,7 @@
 <translation id="5049856988445523908">सिम लॉक केले (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">गट नाव</translation>
 <translation id="5051044138948155788">हे एकमेव पेज आहे. हे तुम्हाला स्कॅनिंग सुरुवात स्क्रीनवर घेऊन जाईल.</translation>
+<translation id="5053233795640754917">थांबवा</translation>
 <translation id="5078711626843651677">स्पीकरला लेबल करणे पूर्ण होईपर्यंत व्हॉइस मॉडेल डिव्हाइसवर तात्पुरती स्टोअर केली जातात. तुम्ही हे सेटिंग्ज मध्ये कधीही बंद करू शकता.</translation>
 <translation id="5078983345702708852">आधुनिक</translation>
 <translation id="5087864757604726239">मागे</translation>
@@ -783,6 +812,7 @@
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> ची USB केबल अनप्लग करून नंतर ती पुन्हा घाला</translation>
+<translation id="5095864667399748231">म्यूटवर टॉगल करा</translation>
 <translation id="5099354524039520280">वर</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> कीशिवाय शॉर्टकटचा वापर केल्याने, काही अ‍ॅप्सच्या शॉर्टकटमध्ये समस्या निर्माण होऊ शकतात. हा शॉर्टकट वापरणे पुढे सुरू ठेवण्यासाठी, तो पुन्हा प्रेस करा किंवा <ph name="KEY" /> की वापरून नवीन शॉर्टकट प्रेस करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">समानार्थी:</translation>
@@ -811,11 +841,13 @@
 <translation id="5229104491259541281">"<ph name="QUERY" />" चे रूपांतर करा</translation>
 <translation id="5229344016299762883">फुलस्क्रीनमधून बाहेर पडा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
+<translation id="5236119614998611749">सारांश जनरेट करता आला नाही</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुम्ही प्रत्येक वेळी लॉग इन करता, तेव्हा "<ph name="APP_NAME" />" हे आपोआप सुरू होण्यासाठी सेट केले आहे.}=2{तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुम्ही प्रत्येक वेळी लॉग इन करता, तेव्हा "<ph name="APP_NAME" />" आणि इतर १ ॲप हे आपोआप सुरू होण्यासाठी सेट केले आहे.}other{तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुम्ही प्रत्येक वेळी लॉग इन करता, तेव्हा "<ph name="APP_NAME" />" आणि इतर # ॲप्स ही आपोआप सुरू होण्यासाठी सेट केली आहेत.}}</translation>
 <translation id="5248419081947706722">निळा</translation>
 <translation id="5252456968953390977">रोमिंग</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_TONE" /> खोलीमधील पुस्तकांचे <ph name="SIMPLE_STYLE" /> कपाट</translation>
 <translation id="5257811368506016604">फिकट रंगाचा मोड सुरू करा</translation>
+<translation id="5261479807286543505">स्टार्टअप सेटिंग्ज</translation>
 <translation id="5264277876637023664">सीपीयू चाचणी रन करा</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN बंद केले आहे.</translation>
@@ -825,6 +857,7 @@
 <translation id="5292579816060236070">सनराइझ वॉलपेपर</translation>
 <translation id="5294769550414936029">आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">विंडो या डेस्कवर हलवा</translation>
+<translation id="5302048478445481009">भाषा</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> चा विशेष वॉलपेपर</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ओळख</translation>
@@ -924,9 +957,11 @@
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
 <translation id="5876385649737594562">पर्याय निवडण्यासाठी सुरू करा</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" /> थांबवा</translation>
 <translation id="588258955323874662">क्षेत्रे</translation>
 <translation id="5893975327266416093">असाइन करण्यासाठी कीबोर्ड की वर टॅप करा</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
+<translation id="5896602941605730551">प्ले करा</translation>
 <translation id="5901630391730855834">पिवळा</translation>
 <translation id="5903200662178656908">डिव्हाइस हे कीबोर्ड आणि माउस यांचे काँबो आहे.</translation>
 <translation id="5904994456462260490">नवीन APN जोडा</translation>
@@ -991,6 +1026,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319"><ph name="DATE" /> रोजी तयार केला</translation>
 <translation id="6189418609903030344">वापरानुसार बॅटरीची क्षमता कमी होत जाते</translation>
+<translation id="6189987971574353264">प्ले करा</translation>
 <translation id="6191293864534840972">समस्या असलेले नेम सर्व्हर</translation>
 <translation id="6196607555925437199">पुन्हा तयार करा</translation>
 <translation id="6205145102504628069">ढगांचा प्रवाह</translation>
@@ -1012,6 +1048,8 @@
 <translation id="628726841779494414">प्रिंटर सेटिंग्जमध्ये तुमचे प्रिंटर व्यवस्थापित करा</translation>
 <translation id="6292095526077353682">चार्ज करताना, इतक्या वेळेसाठी स्क्रीन सेव्हर दाखवा</translation>
 <translation id="629550705077076970">कीबोर्ड मंद करणे</translation>
+<translation id="6301193653204230066">सुरक्षितता रीसेट केल्यामुळे Chrome ब्राउझर एक्स्टेंशन बंद होतात आणि नेटवर्क व इतर सेटिंग्ज सुरक्षित डीफॉल्टवर रीसेट होतात.
+          तुमचे टॅब, फाइल, कुकी आणि इतिहास बदलणार नाही.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> चाचणी रद्द करण्यात आली आहे</translation>
 <translation id="631063167932043783">अ‍ॅप एक्सप्लोर करा</translation>
 <translation id="6318437367327684789">कायमचे</translation>
@@ -1021,6 +1059,7 @@
 <translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="6327262166342360252">हा वॉलपेपर AI सह खालील मजकूर वापरून तयार केला आहे: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ऑटोमॅटिक गडद थीम</translation>
+<translation id="6335228876613776082">मॉडेल डाउनलोड करणे पूर्ण झाले आहे</translation>
 <translation id="6340526405444716530">पर्सनलायझेशन</translation>
 <translation id="6348252528297699679">तुम्ही सेटिंग्ज &gt; गोपनीयता आणि सुरक्षा &gt; गोपनीयता नियंत्रणे &gt; स्थान अ‍ॅक्सेस यामध्ये स्थान बंद करू शकता. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">वापरकर्ता नाव आणि पासवर्ड</translation>
@@ -1119,13 +1158,16 @@
 <translation id="6761537227090937007">हाय-रिझोल्यूशन इमेज तयार करत आहे…</translation>
 <translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
 <translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
+<translation id="6786747875388722282">विस्तार</translation>
 <translation id="6791471867139427246">कीबोर्डच्या लाइटचा रंग</translation>
 <translation id="6796229976413584781">शॉर्टकट हटवला आहे</translation>
 <translation id="6798678288485555829">मजकुरासंबंधी नेव्हिगेशन</translation>
 <translation id="680983167891198932">की</translation>
 <translation id="6816797338148849397">तुमच्या निवडीशी संबंधित माहिती उपलब्ध आहे. अ‍ॅक्सेस करण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="6831043979455480757">भाषांतर करा</translation>
+<translation id="6846843854964504403">सुरक्षितता रीसेट</translation>
 <translation id="6853312040151791195">डिस्चार्ज होण्याचा रेट</translation>
+<translation id="6862228900689076919">हे वैशिष्‍ट्य तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केलेले आहे</translation>
 <translation id="6862416241246624313">फीडबॅक सबमिट केला आहे</translation>
 <translation id="6866732840889595464">डेझी</translation>
 <translation id="6871256179359663621">फिकट जांभळे</translation>
@@ -1137,6 +1179,7 @@
 <translation id="6910312834584889076">स्कॅनरचे कव्हर उघडे आहे. कव्हर बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6910845598686542904">रेकॉर्डिंगमध्ये डिटेक्ट केलेल्या आवाजांच्या मॉडेलची गणना करा</translation>
 <translation id="6911383237894364323">मीडिया सर्व्हरशी कनेक्ट करता आले नाही</translation>
+<translation id="6927968682840110570">रेकॉर्डिंगचे नाव</translation>
 <translation id="6930242544192836755">कालावधी</translation>
 <translation id="6930597342185648547">बॅकग्राउंडविषयी</translation>
 <translation id="6939667434404433010">रेकॉर्डिंगचे नाव शोधा</translation>
@@ -1179,6 +1222,7 @@
 <translation id="708426984172631313">थांबवली</translation>
 <translation id="7086168019478250425">बायोल्युमिसेंट समुद्रकिनारा</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">रेकॉर्डिंगची नावे जनरेट करत आहे</translation>
 <translation id="7097908713073775559">रंगीत</translation>
 <translation id="710028965487274708">अयशस्वी झाले - ऑथोरायझेशन करता आले नाही</translation>
 <translation id="7101959270679078188">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> अनलॉक करा</translation>
@@ -1249,6 +1293,7 @@
 <translation id="7378170410161264436">बोलणे असलेल्या रेकॉर्डिंगसाठी Recorder हे ट्रान्स्क्रिप्शन तयार करू शकते.
 ही ट्रान्स्क्रिप्शन मिळवण्यासाठी ट्रान्स्क्रिप्शन मॉडेल (कमाल १०० MB) डाउनलोड करा.</translation>
 <translation id="7384004438856720753">महाल</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" /> यासाठी आणखी पर्याय</translation>
 <translation id="7388959671917308825">बिल्ट-इन टचपॅड</translation>
 <translation id="7397270852490618635">फिकट थीम बंद करा</translation>
 <translation id="7401543881546089382">शॉर्टकट हटवा</translation>
@@ -1270,6 +1315,7 @@
 <translation id="7513770521371759388">तळाशी</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" /> प्ले करा</translation>
 <translation id="7525067979554623046">तयार करा</translation>
 <translation id="7528507600602050979">मदत आशय उपलब्ध नाही</translation>
 <translation id="7535791657097741517">फिकट थीम सुरू करा</translation>
@@ -1282,6 +1328,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB टचस्क्रीन</translation>
 <translation id="757747079855995705">दगड</translation>
+<translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> शिल्लक</translation>
 <translation id="7613724632293948900">माउस आणि अ‍ॅरो की वापरून स्थिती पुन्हा बदला.</translation>
 <translation id="7618774594543487847">न्यूट्रल</translation>
@@ -1308,9 +1355,11 @@
 <translation id="7746357909584236306">संपादन करण्यायोग्य</translation>
 <translation id="7747039790905080783">आधीपासून शेअर केलेली की</translation>
 <translation id="7752963721013053477">डॉन टू डार्क - विशिष्ट</translation>
+<translation id="7760571082554155847">होमपेज सेटिंग्ज</translation>
 <translation id="7762130827864645708">तुमचा पासवर्ड यशस्वीरीत्या बदलला होता. कृपया आतापासून नवीन पासवर्ड वापरा.</translation>
 <translation id="7763470514545477072">डोमेन सफिक्स जुळणी</translation>
 <translation id="7769672763586021400">मॉडेल आयडी</translation>
+<translation id="7774759755755950354">मागे जा</translation>
 <translation id="7778717409420828014">तुमचा फीडबॅक आम्हाला Chromebook अनुभवामध्ये सुधारणा करण्यात मदत करू शकतो आणि त्याचे आमच्या टीमकडून पुनरावलोकन केले जाईल. मोठ्या प्रमाणात तक्रारी मिळाल्यामुळे, आम्हाला उत्तर पाठवता येणार नाही.</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7784116172884276937">कोणतेही DNS सर्व्हर सेट केलेले नाहीत</translation>
@@ -1343,11 +1392,13 @@
 <translation id="7897043345768902965">पादचारी मार्ग</translation>
 <translation id="7902285181767404769">रेकॉर्ड करताना नोटिफिकेशन सायलंट करा</translation>
 <translation id="7903695460270716054">निवडक आर्टवर्क आणि इमेज निवडा</translation>
+<translation id="7912005977894000746">मुख्य पेजवर परत जा</translation>
 <translation id="7915220255123750251">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APNs ही मोबाइल नेटवर्क आणि इंटरनेट यांदरम्यान कनेक्शन जोडतात.</translation>
 <translation id="7936303884198020182">नेम सर्व्हर आढळले नाहीत</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7943235353293548836">परसिस्टंट कीपअलाइव्ह इंटर्व्हल</translation>
 <translation id="7943516765291457328">जवळपासच्या हॉटस्पॉटसाठी स्कॅन करण्याकरिता ब्लूटूथ सुरू करा</translation>
+<translation id="7944482598620888754">साइटचा आशय</translation>
 <translation id="7944562637040950644">कीबोर्ड बॅकलाइट टॉगल करा</translation>
 <translation id="7953669802889559161">इनपुट</translation>
 <translation id="7955587717700691983">ब्लूटूथ कीबोर्ड</translation>
@@ -1355,6 +1406,7 @@
 <translation id="7971535376154084247">साधारण नियंत्रणे</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> नेटवर्कमध्ये सामील होण्यासाठी, सेटिंग्ज वर जा</translation>
 <translation id="7978412674231730200">प्रायव्हेट की</translation>
+<translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" आपोआप सुरू केले गेले होते}other{# ॲप्स आपोआप सुरू केली गेली होती}}</translation>
 <translation id="7994702968232966508">EAP पद्धत</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
@@ -1383,6 +1435,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8132480444149501833">ट्रॅफिक काउंटरची विनंती करा</translation>
+<translation id="8135609423982943441">तुमचे Chromebook सुरक्षित डीफॉल्टवर रीसेट केले आहे. तुम्ही सेटिंग्ज मध्ये हे बदल कधीही अ‍ॅडजस्ट करू शकता.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> निवडा</translation>
 <translation id="8151185429379586178">डेव्हलपर टूल</translation>
@@ -1400,6 +1453,7 @@
 <translation id="8227119283605456246">फाइल अटॅच करा</translation>
 <translation id="8227488649450500937">यांपैकी एक प्रॉम्प्ट वापरून पहा किंवा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रॉम्प्टिंग मार्गदर्शक<ph name="END_LINK_PROMPTING_GUIDE" /> पहा</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
+<translation id="8236972776513018241">ट्रान्स्क्रिप्ट</translation>
 <translation id="8238771987802558562">APN निवडा</translation>
 <translation id="8246209727385807362">माहीत नसलेला वाहक</translation>
 <translation id="8250926778281121244">रस्ट</translation>
@@ -1412,6 +1466,7 @@
 <translation id="8291967909914612644">होम पुरवठादार देश</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8302368968391049045">HTTPS फायरवॉल</translation>
+<translation id="8308787307410010965">साइट आशय सेटिंग्ज</translation>
 <translation id="8312330582793120272">मीडिया प्ले करा</translation>
 <translation id="8318753676953949627">कोणत्याही इमेज नाहीत</translation>
 <translation id="8320910311642849813">जंगल</translation>
@@ -1441,6 +1496,7 @@
 <translation id="8424039430705546751">खाली</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8431300646573772016">ChromeOS मध्ये नवीन</translation>
+<translation id="8433186206711564395">नेटवर्क सेटिंग्ज</translation>
 <translation id="843568408673868420">इंटरनेट कनेक्टिव्हिटी</translation>
 <translation id="844521431886043384">DNS सेट केलेली नाही</translation>
 <translation id="8456200178779628126">वाचन आणि लेखन यामध्ये मदत मिळवण्यासाठी Google AI वापरा</translation>
@@ -1499,10 +1555,13 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos अल्बम</translation>
 <translation id="8775713578693478175">मोडेम APN</translation>
+<translation id="877735394245039557">मॉडेल डाउनलोड करणे प्रगतीपथावर आहे</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">या नेटवर्कवर कॅप्टिव्ह पोर्टल असू शकते</translation>
+<translation id="8797082062139985406">Google AI वापरून नाव तयार करा</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8798441408945964110">प्रदात्याचे नाव</translation>
+<translation id="8808828119384186784">Chrome सेटिंग्ज</translation>
 <translation id="8814190375133053267">वाय-फाय</translation>
 <translation id="8818152010000655963">वॉलपेपर</translation>
 <translation id="8820457400746201697">निळा टच पॉइंट कृतीवर हलवा. कस्टमाइझ करण्यासाठी सहयोगी की निवडा.</translation>
@@ -1520,6 +1579,7 @@
 <translation id="8864415976656252616">कोणताही सुचवलेला आशय नाही. सर्वोत्तम मदत आशय पहा.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">डिव्हाइस हे टॅबलेट आहे.</translation>
+<translation id="8878117140814294155">मायक्रोफोन वर म्यूट टॉगल करा</translation>
 <translation id="8881098542468797602">चाचणी यशस्वी झाली</translation>
 <translation id="8882789155418924367">घुबडे</translation>
 <translation id="8892443466059986410">शॉर्टकट संपादित करणे रद्द करा</translation>

@@ -38,25 +38,27 @@ void PowerMonitorMessageBroadcaster::AddClient(
     return;
   }
 
-  bool on_battery_power = power_monitor->IsOnBatteryPower();
-
+  base::PowerStateObserver::BatteryPowerStatus battery_power_status =
+      power_monitor->GetBatteryPowerStatus();
   // If the state has changed since we last checked, update all clients.
-  if (on_battery_power != on_battery_power_) {
-    OnPowerStateChange(on_battery_power);
+  if (battery_power_status != battery_power_status_) {
+    OnBatteryPowerStatusChange(battery_power_status);
     return;
   }
 
-  // New clients default to on_battery_power == false. Only update this new
-  // client if on_battery_power_ == true;
-  if (on_battery_power_) {
-    clients_.Get(element_id)->PowerStateChange(on_battery_power_);
+  // New clients default to battery_power_status_ == kUnknown. Only update this
+  // new client if battery power status isn't unknown;
+  if (battery_power_status_ !=
+      base::PowerStateObserver::BatteryPowerStatus::kUnknown) {
+    clients_.Get(element_id)->PowerStateChange(battery_power_status_);
   }
 }
 
-void PowerMonitorMessageBroadcaster::OnPowerStateChange(bool on_battery_power) {
-  on_battery_power_ = on_battery_power;
+void PowerMonitorMessageBroadcaster::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  battery_power_status_ = battery_power_status;
   for (auto& client : clients_)
-    client->PowerStateChange(on_battery_power_);
+    client->PowerStateChange(battery_power_status_);
 }
 
 void PowerMonitorMessageBroadcaster::OnSuspend() {

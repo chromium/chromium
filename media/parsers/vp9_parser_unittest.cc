@@ -669,7 +669,7 @@ TEST_P(Vp9ParserTest, VerifyFirstFrame) {
 INSTANTIATE_TEST_SUITE_P(All, Vp9ParserTest, ::testing::ValuesIn(kTestParams));
 
 TEST_F(Vp9ParserTest, CheckColorSpace) {
-  Vp9FrameHeader fhdr{};
+  Vp9FrameHeader fhdr;
   EXPECT_FALSE(fhdr.GetColorSpace().IsSpecified());
   fhdr.color_space = Vp9ColorSpace::BT_709;
   EXPECT_EQ(VideoColorSpace::REC709(), fhdr.GetColorSpace());

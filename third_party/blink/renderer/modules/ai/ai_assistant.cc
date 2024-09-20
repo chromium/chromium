@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/modules/ai/ai_assistant.h"
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 
@@ -19,7 +20,12 @@ AIAssistant::AIAssistant(ExecutionContext* context,
                          scoped_refptr<base::SequencedTaskRunner> task_runner)
     : ExecutionContextClient(context),
       text_session_(text_session),
-      task_runner_(task_runner) {}
+      task_runner_(task_runner) {
+  auto info = text_session_->GetInfo();
+  if (info) {
+    SetInfo(std::move(info));
+  }
+}
 
 void AIAssistant::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
@@ -53,8 +59,7 @@ ScriptPromise<IDLString> AIAssistant::prompt(ScriptState* script_state,
       AIMetrics::AISessionType::kAssistant,
       WTF::BindOnce(&AIAssistant::OnResponseComplete,
                     WrapWeakPersistent(this)));
-  text_session_->GetRemoteTextSession()->Prompt(input,
-                                                std::move(pending_remote));
+  text_session_->GetAIRemote()->Prompt(input, std::move(pending_remote));
   return promise;
 }
 
@@ -85,35 +90,8 @@ ReadableStream* AIAssistant::promptStreaming(ScriptState* script_state,
           AIMetrics::AISessionType::kAssistant,
           WTF::BindOnce(&AIAssistant::OnResponseComplete,
                         WrapWeakPersistent(this)));
-  text_session_->GetRemoteTextSession()->Prompt(input,
-                                                std::move(pending_remote));
+  text_session_->GetAIRemote()->Prompt(input, std::move(pending_remote));
   return readable_stream;
-}
-
-uint64_t AIAssistant::maxTokens() const {
-  blink::mojom::blink::AITextSessionInfoPtr info = text_session_->GetInfo();
-  CHECK(info);
-  return info->max_tokens;
-}
-
-uint64_t AIAssistant::tokensSoFar() const {
-  return current_tokens_;
-}
-
-uint64_t AIAssistant::tokensLeft() const {
-  return maxTokens() - tokensSoFar();
-}
-
-uint32_t AIAssistant::topK() const {
-  blink::mojom::blink::AITextSessionInfoPtr info = text_session_->GetInfo();
-  CHECK(info);
-  return info->sampling_params->top_k;
-}
-
-float AIAssistant::temperature() const {
-  blink::mojom::blink::AITextSessionInfoPtr info = text_session_->GetInfo();
-  CHECK(info);
-  return info->sampling_params->temperature;
 }
 
 ScriptPromise<AIAssistant> AIAssistant::clone(ScriptState* script_state,
@@ -140,13 +118,14 @@ ScriptPromise<AIAssistant> AIAssistant::clone(ScriptState* script_state,
   AIAssistant* cloned_assistant = MakeGarbageCollected<AIAssistant>(
       GetExecutionContext(), cloned_session, task_runner_);
   cloned_assistant->current_tokens_ = current_tokens_;
-  text_session_->GetRemoteTextSession()->Fork(
+  text_session_->GetAIRemote()->Fork(
       cloned_assistant->text_session_->GetModelSessionReceiver(),
       WTF::BindOnce(
           [](ScriptPromiseResolver<AIAssistant>* resolver,
              AIAssistant* cloned_assistant,
-             blink::mojom::blink::AITextSessionInfoPtr info) {
+             blink::mojom::blink::AIAssistantInfoPtr info) {
             if (info) {
+              cloned_assistant->SetInfo(info->Clone());
               cloned_assistant->text_session_->SetInfo(
                   base::PassKey<AIAssistant>(), std::move(info));
               resolver->Resolve(cloned_assistant);
@@ -175,7 +154,7 @@ void AIAssistant::destroy(ScriptState* script_state,
       AIMetrics::AIAPI::kSessionDestroy);
 
   if (text_session_) {
-    text_session_->GetRemoteTextSession()->Destroy();
+    text_session_->GetAIRemote()->Destroy();
     text_session_ = nullptr;
   }
 }
@@ -184,6 +163,13 @@ void AIAssistant::OnResponseComplete(std::optional<uint64_t> current_tokens) {
   if (current_tokens.has_value()) {
     current_tokens_ = current_tokens.value();
   }
+}
+
+void AIAssistant::SetInfo(const blink::mojom::blink::AIAssistantInfoPtr info) {
+  CHECK(info);
+  top_k_ = info->sampling_params->top_k;
+  temperature_ = info->sampling_params->temperature;
+  max_tokens_ = info->max_tokens;
 }
 
 }  // namespace blink

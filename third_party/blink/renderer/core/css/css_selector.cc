@@ -70,11 +70,18 @@ unsigned MaximumSpecificity(const CSSSelectorList* list) {
 
 }  // namespace
 
-unsigned MaximumSpecificity(const CSSSelector* first_selector) {
+// Returns the maximum specificity across a selector list, only including
+// the (complex) selectors for which the `predicate` returns true.
+template <typename Predicate>
+unsigned MaximumSpecificity(
+    const CSSSelector* first_selector,
+    Predicate predicate = [](const CSSSelector*) { return true; }) {
   unsigned specificity = 0;
   for (const CSSSelector* s = first_selector; s;
        s = CSSSelectorList::Next(*s)) {
-    specificity = std::max(specificity, s->Specificity());
+    if (predicate(s)) {
+      specificity = std::max(specificity, s->Specificity());
+    }
   }
   return specificity;
 }
@@ -206,7 +213,11 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
             // & in a non-nesting context matches nothing.
             return 0;
           }
-          return MaximumSpecificity(data_.parent_rule_->FirstSelector());
+          return MaximumSpecificity(
+              data_.parent_rule_->FirstSelector(),
+              [](const CSSSelector* selector) {
+                return selector->IsAllowedInParentPseudo();
+              });
         case kPseudoNthChild:
         case kPseudoNthLastChild:
           if (SelectorList()) {
@@ -336,6 +347,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdScrollNextButton;
     case kPseudoScrollPrevButton:
       return kPseudoIdScrollPrevButton;
+    case kPseudoColumn:
+      return kPseudoIdColumn;
     case kPseudoScrollbarButton:
       return kPseudoIdScrollbarButton;
     case kPseudoScrollbarCorner:
@@ -364,10 +377,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdFileSelectorButton;
     case kPseudoDetailsContent:
       return kPseudoIdDetailsContent;
-    case kPseudoSelectFallbackButton:
-      return kPseudoIdSelectFallbackButton;
-    case kPseudoSelectFallbackButtonText:
-      return kPseudoIdSelectFallbackButtonText;
     case kPseudoPicker:
       // NOTE: When we support more than one argument to ::picker() we will
       // need to refactor something here (possibly the callers of this method)
@@ -468,6 +477,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoRightPage:
     case kPseudoRoot:
     case kPseudoScope:
+    case kPseudoSelectHasChildButton:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoSlotted:
@@ -528,6 +538,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
     {"-internal-popover-in-top-layer", CSSSelector::kPseudoPopoverInTopLayer},
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
+    {"-internal-select-has-child-button",
+     CSSSelector::kPseudoSelectHasChildButton},
     {"-internal-selector-fragment-anchor",
      CSSSelector::kPseudoSelectorFragmentAnchor},
     {"-internal-shadow-host-has-non-auto-appearance",
@@ -559,6 +571,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"before", CSSSelector::kPseudoBefore},
     {"checked", CSSSelector::kPseudoChecked},
     {"closed", CSSSelector::kPseudoClosed},
+    {"column", CSSSelector::kPseudoColumn},
     {"corner-present", CSSSelector::kPseudoCornerPresent},
     {"cue", CSSSelector::kPseudoWebKitCustomElement},
     {"current", CSSSelector::kPseudoCurrent},
@@ -621,9 +634,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"scroll-next-button", CSSSelector::kPseudoScrollNextButton},
     {"scroll-prev-button", CSSSelector::kPseudoScrollPrevButton},
     {"search-text", CSSSelector::kPseudoSearchText},
-    {"select-fallback-button", CSSSelector::kPseudoSelectFallbackButton},
-    {"select-fallback-button-text",
-     CSSSelector::kPseudoSelectFallbackButtonText},
     {"selection", CSSSelector::kPseudoSelection},
     {"single-button", CSSSelector::kPseudoSingleButton},
     {"spelling-error", CSSSelector::kPseudoSpellingError},
@@ -740,16 +750,20 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if (match->type == CSSSelector::kPseudoColumn &&
+      !RuntimeEnabledFeatures::CSSPseudoColumnEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   if ((match->type == CSSSelector::kPseudoOpen ||
        match->type == CSSSelector::kPseudoClosed) &&
       !RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
-  if ((match->type == CSSSelector::kPseudoSelectFallbackButton ||
-       match->type == CSSSelector::kPseudoSelectFallbackButtonText ||
+  if ((match->type == CSSSelector::kPseudoSelectHasChildButton ||
        match->type == CSSSelector::kPseudoPicker) &&
-      !RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      !RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -850,8 +864,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoScrollMarkerGroup:
     case kPseudoScrollNextButton:
     case kPseudoScrollPrevButton:
-    case kPseudoSelectFallbackButton:
-    case kPseudoSelectFallbackButtonText:
+    case kPseudoColumn:
     case kPseudoPicker:
     case kPseudoSelection:
     case kPseudoWebKitCustomElement:
@@ -880,6 +893,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoHostHasNonAutoAppearance:
     case kPseudoIsHtml:
     case kPseudoListBox:
+    case kPseudoSelectHasChildButton:
     case kPseudoMultiSelectFocus:
     case kPseudoSpatialNavigationFocus:
     case kPseudoVideoPersistent:
@@ -1454,6 +1468,7 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPseudoHasDatalist:
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:
+    case CSSSelector::kPseudoSelectHasChildButton:
     case CSSSelector::kPseudoHostHasNonAutoAppearance:
       // TODO(https://crbug.com/1346456): Many pseudos should probably be
       // added to this list.  The default: case below should also be removed
@@ -1537,6 +1552,16 @@ bool CSSSelector::MatchesPseudoElement() const {
   return false;
 }
 
+bool CSSSelector::IsAllowedInParentPseudo() const {
+  // Pseudo-elements are not allowed (parse-time) within :is(), but using
+  // nesting you can still get effectively that same situation using
+  // e.g. "div, ::before { & {} }". Since '::before' is "contextually invalid",
+  // it should not contribute to specificity.
+  //
+  // https://github.com/w3c/csswg-drafts/issues/9600
+  return !MatchesPseudoElement();
+}
+
 bool CSSSelector::IsTreeAbidingPseudoElement() const {
   return Match() == CSSSelector::kPseudoElement &&
          (GetPseudoType() == kPseudoBefore || GetPseudoType() == kPseudoAfter ||
@@ -1544,8 +1569,6 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoPlaceholder ||
           GetPseudoType() == kPseudoFileSelectorButton ||
           GetPseudoType() == kPseudoBackdrop ||
-          GetPseudoType() == kPseudoSelectFallbackButton ||
-          GetPseudoType() == kPseudoSelectFallbackButtonText ||
           GetPseudoType() == kPseudoPicker);
 }
 
@@ -1565,8 +1588,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoFileSelectorButton:
     case kPseudoFirstLine:
     case kPseudoFirstLetter:
-    case kPseudoSelectFallbackButton:
-    case kPseudoSelectFallbackButtonText:
     case kPseudoPicker:
     case kPseudoSelection:
     case kPseudoSearchText:
@@ -1589,6 +1610,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoScrollMarker:
     case kPseudoScrollMarkerGroup:
     case kPseudoScrollNextButton:
+    case kPseudoColumn:
     case kPseudoScrollPrevButton:
     case kPseudoWebKitCustomElement:
     case kPseudoBlinkInternalElement:
@@ -1745,6 +1767,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoHostContext:
     case kPseudoHostHasNonAutoAppearance:
     case kPseudoScope:
+    case kPseudoSelectHasChildButton:
       return false;
 
     case kPseudoTrue:

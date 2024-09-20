@@ -3036,6 +3036,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // http POST requests, cannot be synced across machines as the request body
   // is no longer available when reloading the URL.
   virtual bool IsSaveableNavigation(NavigationHandle* navigation_handle);
+
+#if BUILDFLAG(IS_WIN)
+  // Invoked when an accessibility client requests the UI automation root object
+  // for a window. `uia_provider_enabled` is true when the request was
+  // satisfied, and false when the request was refused.
+  virtual void OnUiaProviderRequested(bool uia_provider_enabled);
+#endif
 };
 
 }  // namespace content

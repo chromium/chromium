@@ -81,14 +81,14 @@ public class MenuSheetContentUnitTest {
     public void testNotifySheetClosed() {
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mContent);
         mContent.notifySheetClosed(mContent);
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
+        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, false);
     }
 
     @Test
-    public void testOpenSheet() {
+    public void testOpenParent() {
         mContent.openSheet(mBottomSheetContent);
+        // Hiding self will show the parent sheet.
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
     }
 
     @Test
@@ -155,7 +155,6 @@ public class MenuSheetContentUnitTest {
     public void testHandleBackPress() {
         mContent.handleBackPress();
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
     }
 
     @Test

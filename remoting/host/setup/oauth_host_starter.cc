@@ -21,6 +21,8 @@
 #include "remoting/base/directory_service_client.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
 #include "remoting/base/protobuf_http_status.h"
+#include "remoting/host/host_config.h"
+#include "remoting/host/pin_hash.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_base.h"
 #include "remoting/proto/remoting/v1/directory_messages.pb.h"
@@ -45,6 +47,7 @@ class OAuthHostStarter : public HostStarterBase {
   void RegisterNewHost(const std::string& public_key,
                        std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
+  void ApplyConfigValues(base::Value::Dict& config) override;
 
   // DirectoryServiceClient callbacks.
   void OnDeleteHostResponse(
@@ -101,6 +104,14 @@ void OAuthHostStarter::RemoveOldHostFromDirectory(
   } else {
     std::move(on_host_removed_).Run();
   }
+}
+
+void OAuthHostStarter::ApplyConfigValues(base::Value::Dict& config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  config.Set(kHostTypeHintPath, kMe2MeHostTypeHint);
+  config.Set(kHostSecretHashConfigPath,
+             MakeHostPinHash(params().id, params().pin));
 }
 
 void OAuthHostStarter::OnRegisterHostResponse(

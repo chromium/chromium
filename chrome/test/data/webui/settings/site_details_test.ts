@@ -72,7 +72,7 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.JAVASCRIPT,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.JAVASCRIPT_JIT,
+              ContentSettingsTypes.JAVASCRIPT_OPTIMIZER,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.SOUND,

@@ -134,9 +134,8 @@ TEST_F(GpuBlocklistTest, TestBlocklistIsValid) {
   EXPECT_EQ(real_max_entry_id, max_entry_id);
 }
 
-void TestBlockList(const GpuControlList::Entry* entries, size_t count) {
-  for (size_t i = 0; i < count; ++i) {
-    const auto& entry = entries[i];
+void TestBlockList(base::span<const GpuControlList::Entry> entries) {
+  for (const auto& entry : entries) {
     if (const auto* gl_strings = entry.conditions.gl_strings) {
       if (gl_strings->gl_vendor) {
         EXPECT_TRUE(RE2(gl_strings->gl_vendor).ok())
@@ -181,9 +180,8 @@ void TestBlockList(const GpuControlList::Entry* entries, size_t count) {
 
 // It checks software_rendering_list.json
 TEST_F(GpuBlocklistTest, VerifyGLStrings) {
-  TestBlockList(kSoftwareRenderingListEntries,
-                kSoftwareRenderingListEntryCount);
-  TestBlockList(kGpuDriverBugListEntries, kGpuDriverBugListEntryCount);
+  TestBlockList(kSoftwareRenderingListEntries);
+  TestBlockList(kGpuDriverBugListEntries);
 }
 
 }  // namespace gpu

@@ -60,7 +60,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       const base::android::JavaParamRef<jstring>& j_omnibox_text,
       const base::android::JavaParamRef<jstring>& j_current_url,
       jint j_page_classification,
-      const base::android::JavaParamRef<jstring>& j_current_title);
+      const base::android::JavaParamRef<jstring>& j_current_title,
+      bool is_on_focus_context);
   void Stop(JNIEnv* env, bool clear_result);
   void ResetSession(JNIEnv* env);
 
@@ -118,6 +119,14 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
                                 uintptr_t match_ptr);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
+
+  template <typename T>
+  T* SetAutocompleteControllerForTesting(
+      std::unique_ptr<T> autocomplete_controller) {
+    T* result = autocomplete_controller.get();
+    autocomplete_controller_ = std::move(autocomplete_controller);
+    return result;
+  }
 
   class Factory : public ProfileKeyedServiceFactory {
    public:

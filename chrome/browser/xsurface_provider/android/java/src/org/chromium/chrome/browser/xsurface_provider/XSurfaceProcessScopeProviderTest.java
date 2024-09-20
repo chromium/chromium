@@ -15,10 +15,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface_provider.hooks.XSurfaceHooks;
-import org.chromium.chrome.browser.xsurface_provider.hooks.XSurfaceHooksImpl;
 
 /** Tests for {@link XSurfaceProcessScopeProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -29,7 +29,7 @@ public class XSurfaceProcessScopeProviderTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        XSurfaceHooksImpl.setInstanceForTesting(mXSurfaceHooks);
+        ServiceLoaderUtil.setInstanceForTesting(XSurfaceHooks.class, mXSurfaceHooks);
     }
 
     @Test

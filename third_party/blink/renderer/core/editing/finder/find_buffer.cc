@@ -95,6 +95,19 @@ bool ShouldIgnoreContents(const Node& node) {
               DisplayLockActivationReason::kFindInPage));
 }
 
+std::optional<UChar> CharConstantForNode(const Node& node) {
+  if (!IsA<HTMLElement>(node)) {
+    return std::nullopt;
+  }
+  if (IsA<HTMLWBRElement>(To<HTMLElement>(node))) {
+    return std::nullopt;
+  }
+  if (IsA<HTMLBRElement>(To<HTMLElement>(node))) {
+    return kNewlineCharacter;
+  }
+  return kNonCharacter;
+}
+
 // Returns the first ancestor element that isn't searchable. In other words,
 // either ShouldIgnoreContents() returns true for it or it has a display: none
 // style.  Returns nullptr if no such ancestor exists.
@@ -150,7 +163,7 @@ Node* GetVisibleTextNode(Node& start_node) {
       node = Direction::NextSkippingSubtree(*node);
       continue;
     }
-    if (style && style->Visibility() == EVisibility::kVisible &&
+    if (style && style->UsedVisibility() == EVisibility::kVisible &&
         node->IsTextNode()) {
       return node;
     }
@@ -181,14 +194,15 @@ bool AreInOrder(const Node& start, const Node& end) {
 }  // namespace
 
 // FindBuffer implementation.
-FindBuffer::FindBuffer(const EphemeralRangeInFlatTree& range) {
+FindBuffer::FindBuffer(const EphemeralRangeInFlatTree& range,
+                       RubySupport ruby_support) {
   DCHECK(range.IsNotNull() && !range.IsCollapsed()) << range;
-  CollectTextUntilBlockBoundary(range);
+  CollectTextUntilBlockBoundary(range, ruby_support);
 }
 
 bool FindBuffer::IsInvalidMatch(MatchResultICU match) const {
   // Invalid matches are a result of accidentally matching elements that are
-  // replaced with the max code point, and may lead to crashes. To avoid
+  // replaced with the kNonCharacter, and may lead to crashes. To avoid
   // crashing, we should skip the matches that are invalid - they would have
   // either an empty position or a non-offset-in-anchor position.
   const unsigned start_index = match.start;
@@ -249,7 +263,8 @@ EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
       break;
 
     FindBuffer buffer(
-        EphemeralRangeInFlatTree(start_position, range.EndPosition()));
+        EphemeralRangeInFlatTree(start_position, range.EndPosition()),
+        RubySupport(options.IsRubySupported()));
     FindResults match_results = buffer.FindMatches(search_text, options);
     if (!match_results.IsEmpty()) {
       if (!options.IsBackwards()) {
@@ -311,8 +326,9 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
     const ComputedStyle* style = node->GetComputedStyle();
     if (ShouldIgnoreContents(*node) || !style ||
         style->Display() == EDisplay::kNone ||
-        style->Visibility() != EVisibility::kVisible)
+        style->UsedVisibility() != EVisibility::kVisible) {
       continue;
+    }
 
     if (node->GetLayoutObject() &&
         *OffsetMapping::GetInlineFormattingContextOf(
@@ -361,12 +377,14 @@ FindResults FindBuffer::FindMatches(const WebString& search_text,
   String search_text_16_bit = search_text;
   search_text_16_bit.Ensure16Bit();
   FoldQuoteMarksAndSoftHyphens(search_text_16_bit);
-  return FindResults(*this, &text_searcher_, buffer_, search_text_16_bit,
-                     options);
+  // TODO(crbug.com/40755728): Provide additional text buffers.
+  return FindResults(this, &text_searcher_, buffer_,
+                     /* extra_buffers */ nullptr, search_text_16_bit, options);
 }
 
 void FindBuffer::CollectTextUntilBlockBoundary(
-    const EphemeralRangeInFlatTree& range) {
+    const EphemeralRangeInFlatTree& range,
+    RubySupport ruby_support) {
   // Collects text until block boundary located at or after |start_node|
   // to |buffer_|. Saves the next starting node after the block to
   // |node_after_block_|.
@@ -408,7 +426,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       }
       // Replace the node with char constants so we wouldn't encounter this node
       // or its descendants later.
-      ReplaceNodeWithCharConstants(*node);
+      ReplaceNodeWithCharConstants(*node, buffer_);
       node = FlatTreeTraversal::NextSkippingChildren(*node);
       continue;
     }
@@ -429,7 +447,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       continue;
     }
 
-    if (style->Visibility() == EVisibility::kVisible &&
+    if (style->UsedVisibility() == EVisibility::kVisible &&
         node->GetLayoutObject()) {
       // This node is in its own sub-block separate from our starting position.
       if (last_added_text_node && last_added_text_node->GetLayoutObject() &&
@@ -439,10 +457,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       const auto* text_node = DynamicTo<Text>(node);
       if (text_node) {
         last_added_text_node = node;
-        LayoutBlockFlow& block_flow =
-            *OffsetMapping::GetInlineFormattingContextOf(
-                *text_node->GetLayoutObject());
-        AddTextToBuffer(*text_node, block_flow, range);
+        AddTextToBuffer(*text_node, range, buffer_, &buffer_node_mappings_);
       }
     }
     if (node == end_node) {
@@ -452,22 +467,14 @@ void FindBuffer::CollectTextUntilBlockBoundary(
     node = FlatTreeTraversal::Next(*node);
   }
   node_after_block_ = node;
-  FoldQuoteMarksAndSoftHyphens(buffer_.data(), buffer_.size());
+  FoldQuoteMarksAndSoftHyphens(base::span(buffer_));
 }
 
-void FindBuffer::ReplaceNodeWithCharConstants(const Node& node) {
-  if (!IsA<HTMLElement>(node))
-    return;
-
-  if (IsA<HTMLWBRElement>(To<HTMLElement>(node)))
-    return;
-
-  if (IsA<HTMLBRElement>(To<HTMLElement>(node))) {
-    buffer_.push_back(kNewlineCharacter);
-    return;
+void FindBuffer::ReplaceNodeWithCharConstants(const Node& node,
+                                              Vector<UChar>& buffer) {
+  if (std::optional<UChar> ch = CharConstantForNode(node)) {
+    buffer.push_back(*ch);
   }
-
-  buffer_.push_back(kMaxCodepoint);
 }
 
 EphemeralRangeInFlatTree FindBuffer::RangeFromBufferIndex(
@@ -519,8 +526,11 @@ PositionInFlatTree FindBuffer::PositionAtEndOfCharacterAtIndex(
 }
 
 void FindBuffer::AddTextToBuffer(const Text& text_node,
-                                 LayoutBlockFlow& block_flow,
-                                 const EphemeralRangeInFlatTree& range) {
+                                 const EphemeralRangeInFlatTree& range,
+                                 Vector<UChar>& buffer,
+                                 Vector<BufferNodeMapping>* mappings) {
+  LayoutBlockFlow& block_flow = *OffsetMapping::GetInlineFormattingContextOf(
+      *text_node.GetLayoutObject());
   if (!offset_mapping_) {
     offset_mapping_ = InlineNode::GetOffsetMapping(&block_flow);
 
@@ -547,17 +557,19 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
        offset_mapping_->GetMappingUnitsForDOMRange(
            EphemeralRange(node_start, node_end))) {
     if (first_unit || last_unit_end != unit.TextContentStart()) {
-      // This is the first unit, or the units are not consecutive, so we need to
-      // insert a new BufferNodeMapping.
-      buffer_node_mappings_.push_back(
-          BufferNodeMapping({buffer_.size(), unit.TextContentStart()}));
+      if (mappings) {
+        // This is the first unit, or the units are not consecutive, so we need
+        // to insert a new BufferNodeMapping.
+        mappings->push_back(
+            BufferNodeMapping({buffer.size(), unit.TextContentStart()}));
+      }
       first_unit = false;
     }
     String text_for_unit =
         mapped_text.Substring(unit.TextContentStart(),
                               unit.TextContentEnd() - unit.TextContentStart());
     text_for_unit.Ensure16Bit();
-    buffer_.Append(text_for_unit.Characters16(), text_for_unit.length());
+    buffer.AppendSpan(text_for_unit.Span16());
     last_unit_end = unit.TextContentEnd();
   }
 }

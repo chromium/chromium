@@ -89,6 +89,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/file_url_loader.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/network_service_instance.h"
@@ -132,6 +133,7 @@
 #include "ui/resources/grit/ui_resources.h"
 
 using content::BrowserThread;
+using content::FrameType;
 using content::WebContents;
 using safe_browsing::AsyncCheckTracker;
 using safe_browsing::hash_realtime_utils::HashRealTimeSelection;
@@ -196,9 +198,12 @@ base::WeakPtr<AsyncCheckTracker> GetAsyncCheckTracker(
     return nullptr;
   }
 
+  // Setting should_sync_checker_check_allowlist to false since the allowlist
+  // is not available on WebView.
   return AsyncCheckTracker::GetOrCreateForWebContents(
              web_contents,
-             AwBrowserProcess::GetInstance()->GetSafeBrowsingUIManager())
+             AwBrowserProcess::GetInstance()->GetSafeBrowsingUIManager(),
+             /*should_sync_checker_check_allowlist=*/false)
       ->GetWeakPtr();
 }
 
@@ -641,6 +646,19 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
     throttles.push_back(
         std::make_unique<XrwNavigationThrottle>(navigation_handle));
   }
+
+  if ((navigation_handle->GetNavigatingFrameType() ==
+           FrameType::kPrimaryMainFrame ||
+       navigation_handle->GetNavigatingFrameType() == FrameType::kSubframe) &&
+      navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
+    AwSupervisedUserUrlClassifier* urlClassifier =
+        AwSupervisedUserUrlClassifier::GetInstance();
+    if (urlClassifier->ShouldCreateThrottle()) {
+      throttles.push_back(std::make_unique<AwSupervisedUserThrottle>(
+          navigation_handle, urlClassifier));
+    }
+  }
+
   return throttles;
 }
 
@@ -698,17 +716,6 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
     if (is_load_url || is_go_back_forward || is_reload) {
       result.push_back(std::make_unique<AwURLLoaderThrottle>(
           static_cast<AwBrowserContext*>(browser_context)));
-    }
-  }
-
-  if ((request.destination == network::mojom::RequestDestination::kDocument ||
-       request.destination == network::mojom::RequestDestination::kIframe) &&
-      request.url.SchemeIsHTTPOrHTTPS()) {
-    AwSupervisedUserUrlClassifier* urlClassifier =
-        AwSupervisedUserUrlClassifier::GetInstance();
-    if (urlClassifier->ShouldCreateThrottle()) {
-      result.push_back(
-          std::make_unique<AwSupervisedUserThrottle>(urlClassifier));
     }
   }
 
@@ -842,6 +849,9 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
 
 bool AwContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChange(
     const content::RenderFrameHost& rfh) {
+  if (!base::FeatureList::IsEnabled(features::kWebViewRenderDocument)) {
+    return false;
+  }
   content::RenderFrameHost* rfh_ptr =
       const_cast<content::RenderFrameHost*>(&rfh);
   content::WebContents* web_contents =

@@ -7,8 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
+
 @class SceneState;
-enum SceneActivationLevel : NSUInteger;
 
 // Observer for a SceneState.
 @protocol SceneStateObserver <NSObject>

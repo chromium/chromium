@@ -27,41 +27,40 @@ class PlusAddressWebDataService;
 
 namespace ios {
 // Singleton that owns all WebDataServiceWrappers and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the AutofillWebDataService associated with `browser_state`.
-  static WebDataServiceWrapper* GetForBrowserState(
-      ChromeBrowserState* browser_state,
-      ServiceAccessType access_type);
-  static WebDataServiceWrapper* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state,
+  // Returns the AutofillWebDataService associated with `profile`.
+  static WebDataServiceWrapper* GetForProfile(ProfileIOS* profile,
+                                              ServiceAccessType access_type);
+  static WebDataServiceWrapper* GetForProfileIfExists(
+      ProfileIOS* profile,
       ServiceAccessType access_type);
 
-  // Returns the AutofillWebDataService associated with `browser_state`.
+  // Returns the AutofillWebDataService associated with `profile`.
   static scoped_refptr<autofill::AutofillWebDataService>
-  GetAutofillWebDataForBrowserState(ChromeBrowserState* browser_state,
-                                    ServiceAccessType access_type);
-
-  // Returns the account-scoped AutofillWebDataService associated with the
-  // `browser_state`.
-  static scoped_refptr<autofill::AutofillWebDataService>
-  GetAutofillWebDataForAccount(ChromeBrowserState* browser_state,
+  GetAutofillWebDataForProfile(ProfileIOS* profile,
                                ServiceAccessType access_type);
 
-  // Returns the KeywordWebDataService associated with `browser_state`.
-  static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForBrowserState(
-      ChromeBrowserState* browser_state,
+  // Returns the account-scoped AutofillWebDataService associated with the
+  // `profile`.
+  static scoped_refptr<autofill::AutofillWebDataService>
+  GetAutofillWebDataForAccount(ProfileIOS* profile,
+                               ServiceAccessType access_type);
+
+  // Returns the KeywordWebDataService associated with `profile`.
+  static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForProfile(
+      ProfileIOS* profile,
       ServiceAccessType access_type);
 
-  // Returns the PlusAddressWebDataService associated with `browser_state`.
+  // Returns the PlusAddressWebDataService associated with `profile`.
   static scoped_refptr<plus_addresses::PlusAddressWebDataService>
-  GetPlusAddressWebDataForBrowserState(ChromeBrowserState* browser_state,
-                                       ServiceAccessType access_type);
+  GetPlusAddressWebDataForProfile(ProfileIOS* profile,
+                                  ServiceAccessType access_type);
 
-  // Returns the TokenWebData associated with `browser_state`.
-  static scoped_refptr<TokenWebData> GetTokenWebDataForBrowserState(
-      ChromeBrowserState* browser_state,
+  // Returns the TokenWebData associated with `profile`.
+  static scoped_refptr<TokenWebData> GetTokenWebDataForProfile(
+      ProfileIOS* profile,
       ServiceAccessType access_type);
 
   static WebDataServiceFactory* GetInstance();

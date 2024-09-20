@@ -84,14 +84,12 @@
 - (void)start {
   [super start];
   // TODO(crbug.com/40251259): Create a mediator.
-  ChromeBrowserState* browserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(browserState);
+      ios::BookmarkModelFactory::GetForProfile(profile);
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   _viewController = [[BookmarksFolderEditorViewController alloc]
       initWithBookmarkModel:bookmarkModel
                  folderNode:_folderNode

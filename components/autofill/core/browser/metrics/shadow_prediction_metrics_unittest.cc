@@ -9,18 +9,27 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/form_data_test_api.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::autofill::mojom::SubmissionSource;
 using ::base::Bucket;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
 namespace autofill::autofill_metrics {
+
+namespace {
+
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+void LogShadowPredictions(FormStructure& form, HeuristicSource active_source) {
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    LogShadowPredictionComparison(*field, active_source);
+  }
+}
+#endif
 
 // These mirrors some of the values of `AutofillPredictionsComparisonResult`
 // defined in tools/metrics/histograms/enums.xml. The
@@ -45,27 +54,6 @@ enum AutofillPredictionsComparisonResult {
   kSearchTermSamePredictionValueDisagrees = 584,
 #endif
 };
-
-namespace {
-
-// Get a form with 2 fields.
-FormData GetFormWith2Fields(const GURL& form_origin) {
-  return test::GetFormData(
-      {.description_for_logging = "ShadowPredictions",
-       .fields =
-           {
-               {
-                   .label = u"Name",
-                   .name = u"name",
-               },
-               {
-                   .label = u"Email",
-                   .name = u"email",
-               },
-           },
-       .renderer_id = test::MakeFormRendererId(),
-       .main_frame_origin = url::Origin::Create(form_origin)});
-}
 
 // Test that various combinations of predictions and values are mapped to the
 // correct value in the metric enum.
@@ -124,72 +112,42 @@ TEST(AutofillShadowPredictionComparisonTest, ComparisonContainsAllTypes) {
   }
 }
 
-class AutofillShadowPredictionMetricsTest : public AutofillMetricsBaseTest,
-                                            public testing::Test {
- public:
-  void SetUp() override { SetUpHelper(); }
-  void TearDown() override { TearDownHelper(); }
-};
-
-// When shadow predictions are not calculated, the shadow prediction metrics
-// should report `0`.
-TEST_F(AutofillShadowPredictionMetricsTest,
-       SubmissionWithoutShadowPredictions) {
-  FormData form = GetFormWith2Fields(autofill_client_->form_origin());
-  test_api(form).field(0).set_value(
-      u"Elvis Aaron Presley");  // A known `NAME_FULL`.
-  test_api(form).field(1).set_value(
-      u"buddy@gmail.com");  // A known `EMAIL_ADDRESS`.
-
-  std::vector<FieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS};
-  std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
-
-  // Simulate having seen this form on page load.
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-
-  // Simulate form submission.
-  base::HistogramTester histogram_tester;
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
-                                     SubmissionSource::FORM_SUBMISSION);
-
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  histogram_tester.ExpectBucketCount(
-      "Autofill.ShadowPredictions.ExperimentalToDefault", kNoPrediction, 2);
-#else
+// When default is active, no shadow predictions metrics should be reported.
+TEST(AutofillShadowPredictionMetricsTest, SubmissionWithoutShadowPredictions) {
+  FormStructure form(FormData{});
+  test_api(form).PushField().set_possible_types({NAME_FULL});
+  test_api(form).PushField().set_possible_types({EMAIL_ADDRESS});
+  test_api(form).SetFieldTypes(/*heuristic_types=*/{NAME_FULL, EMAIL_ADDRESS},
+                               /*server_types=*/{NAME_FULL, EMAIL_ADDRESS});
+
+  base::HistogramTester histogram_tester;
+  LogShadowPredictions(form, HeuristicSource::kDefaultRegexes);
+
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.ShadowPredictions.ExperimentalToDefault"),
               IsEmpty());
-#endif
 }
 
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
 // Test that Autofill.ShadowPredictions.* describes the differences between the
 // predictions and the submitted values.
-TEST_F(AutofillShadowPredictionMetricsTest,
-       SubmissionWithAgreeingShadowPredictions) {
-  FormData form = GetFormWith2Fields(autofill_client_->form_origin());
-  test_api(form).field(0).set_value(
-      u"Elvis Aaron Presley");  // A known `NAME_FULL`.
-  test_api(form).field(1).set_value(
-      u"buddy@gmail.com");  // A known `EMAIL_ADDRESS`.
+TEST(AutofillShadowPredictionMetricsTest,
+     SubmissionWithAgreeingShadowPredictions) {
+  FormStructure form(FormData{});
+  test_api(form).PushField().set_possible_types({NAME_FULL});
+  test_api(form).PushField().set_possible_types({EMAIL_ADDRESS});
+  test_api(form)
+      .SetFieldTypes(/*heuristic_types=*/
+                     {{{HeuristicSource::kDefaultRegexes, NAME_FULL},
+                       {HeuristicSource::kExperimentalRegexes, NAME_FULL}},
+                      {{HeuristicSource::kDefaultRegexes, SEARCH_TERM},
+                       {HeuristicSource::kExperimentalRegexes, EMAIL_ADDRESS}}},
+                     {NAME_FULL, EMAIL_ADDRESS});
 
-  std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
-
-  // Simulate having seen this form on page load.
-  autofill_manager().AddSeenForm(
-      form,
-      {// Field 0
-       {{HeuristicSource::kDefault, NAME_FULL},
-        {HeuristicSource::kExperimental, NAME_FULL}},
-       // Field 1
-       {{HeuristicSource::kDefault, SEARCH_TERM},
-        {HeuristicSource::kExperimental, EMAIL_ADDRESS}}},
-      server_types);
-
-  // Simulate form submission.
   base::HistogramTester histogram_tester;
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
-                                     SubmissionSource::FORM_SUBMISSION);
+  // Shadow predictions between default and experiment are only emitted if
+  // experimental is active.
+  LogShadowPredictions(form, HeuristicSource::kExperimentalRegexes);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -201,29 +159,15 @@ TEST_F(AutofillShadowPredictionMetricsTest,
 
 // Test that Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer compares
 // heuristics to server predictions.
-TEST_F(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
-  constexpr HeuristicSource source = HeuristicSource::kDefault;
+TEST(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
+  FormStructure form(FormData{});
+  test_api(form).PushField().set_possible_types({NAME_FULL});
+  test_api(form).PushField().set_possible_types({EMAIL_ADDRESS});
+  test_api(form).SetFieldTypes(/*heuristic_types=*/{NAME_FULL, SEARCH_TERM},
+                               /*server_types=*/{NAME_FULL, EMAIL_ADDRESS});
 
-  FormData form = GetFormWith2Fields(autofill_client_->form_origin());
-  test_api(form).field(0).set_value(
-      u"Elvis Aaron Presley");  // A known `NAME_FULL`.
-  test_api(form).field(1).set_value(
-      u"buddy@gmail.com");  // A known `EMAIL_ADDRESS`.
-
-  std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
-
-  // Simulate having seen this form on page load.
-  autofill_manager().AddSeenForm(form,
-                                 {// Field 0
-                                  {{source, NAME_FULL}},
-                                  // Field 1
-                                  {{source, SEARCH_TERM}}},
-                                 server_types);
-
-  // Simulate form submission.
   base::HistogramTester histogram_tester;
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
-                                     SubmissionSource::FORM_SUBMISSION);
+  LogShadowPredictions(form, HeuristicSource::kDefaultRegexes);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(

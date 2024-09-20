@@ -17,7 +17,6 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -118,13 +117,11 @@ public class TestSurveyUtils {
     /** Test impl of factory that generate SurveyClient using test set up. */
     static class TestSurveyFactory extends SurveyClientFactory {
         private final AlwaysSucceedSurveyController mTestController;
-        private final ObservableSupplierImpl<Boolean> mCrashUploadPermissionSupplier;
         private final SharedPreferences mMetadata;
 
         TestSurveyFactory() {
             super(null);
             mTestController = new AlwaysSucceedSurveyController();
-            mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>();
             mCrashUploadPermissionSupplier.set(true);
 
             mMetadata = new InMemorySharedPreferences();

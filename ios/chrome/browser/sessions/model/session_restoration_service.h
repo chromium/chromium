@@ -65,7 +65,8 @@ class SessionRestorationService : public KeyedService {
 
   // Asynchronously loads data for `web_state` owned by `browser` that is
   // unrealized. Invokes `callback` with the data loaded from disk on the
-  // calling sequence.
+  // calling sequence. It is an error to call this method with a realized
+  // WebState.
   //
   // If the method `SetSessionID(...)` has not been called for `browser`,
   // or if the method `Disconnect(...)` has already been called, then the

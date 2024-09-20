@@ -4441,6 +4441,56 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GURL("about:blank"), web_contents_b->GetLastCommittedURL());
 }
 
+// Check that when RenderProcessHostImpl::DisableRefCounts is called while a
+// NavigationStateKeepAlive exists, the navigation still succeeds. This is a
+// regression test for crbug.com/348150830.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       DisableRefCountsWhileKeepAliveExists) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // This test needs the browser process to call DisableRefCounts after the form
+  // submission's NavigationStateKeepAlive is created and before the task that
+  // sends the BeginNavigation IPC. To do this, use EvalJS to return a string to
+  // the test framework between those two renderer-side tasks, allowing the
+  // browser process to reset the counts before the BeginNavigation IPC is
+  // received and the NavigationStateKeepAlive is destroyed.
+  std::string expected_str("Placeholder value");
+  std::string js_str = base::StringPrintf(
+      "f = document.createElement('form');"
+      "f.action = 'about:blank';"
+      "document.body.appendChild(f);"
+      "f.submit();"
+      "'%s';",
+      expected_str.c_str());
+
+  TestNavigationObserver observer(shell()->web_contents());
+  EXPECT_EQ(expected_str, EvalJs(shell(), js_str).ExtractString());
+
+  // Expect at this point that a NavigationStateKeepAlive has been created for
+  // the form submission.
+  NavigationStateKeepAlive* keep_alive =
+      current_frame_host()->GetStoragePartition()->GetNavigationStateKeepAlive(
+          current_frame_host()->GetFrameToken());
+  ASSERT_TRUE(keep_alive);
+
+  // Disable ref counts on the process, which resets all ref counts to 0. This
+  // seems to happen in practice in https://crbug.com/348150830 when a
+  // BrowserContext is closed before all of its frames are properly cleaned up,
+  // but the exact repro steps for this aren't known, so simulate this behavior
+  // with an explicit DisableRefCounts() call.
+  current_frame_host()->GetProcess()->DisableRefCounts();
+
+  // Wait for the navigation to complete. At that point, the
+  // NavigationStateKeepAlive goes away, which can possibly decrement the
+  // associated ref count. Since DisableRefCounts() was called, the ref count
+  // should not be further decremented, and the navigation should complete
+  // successfully.
+  observer.Wait();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+  EXPECT_TRUE(current_frame_host()->GetLastCommittedURL().IsAboutBlank());
+}
+
 using MediaNavigationBrowserTest = NavigationBaseBrowserTest;
 
 // Media navigations synchronously complete the time of the `CommitNavigation`
@@ -9137,7 +9187,7 @@ IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  SpareRenderProcessHostManager::GetInstance().CleanupSpareRenderProcessHost();
+  SpareRenderProcessHostManager::Get().CleanupSpare();
   SpareRenderProcessObserver render_process_observer;
 
   GURL url = embedded_test_server()->GetURL("b.com", "/title1.html");
@@ -9486,14 +9536,8 @@ class VisualPropertiesSynchronization : public NavigationBrowserTest {
 // Verify that when a cross-origin subframe initiates a top-level navigation to
 // a same-origin (with respect to itself) URL, that the visual properties
 // are invalidated correctly.
-// TODO(https://crbug.com/361299696): Flaky on Fuchsia and ChromeOS Ash.
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_RemoteToLocalTransition DISABLED_RemoteToLocalTransition
-#else
-#define MAYBE_RemoteToLocalTransition RemoteToLocalTransition
-#endif
 IN_PROC_BROWSER_TEST_F(VisualPropertiesSynchronization,
-                       MAYBE_RemoteToLocalTransition) {
+                       RemoteToLocalTransition) {
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b_top_level(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL url_b_iframe(embedded_test_server()->GetURL("b.com", "/title2.html"));
@@ -9565,6 +9609,11 @@ IN_PROC_BROWSER_TEST_F(VisualPropertiesSynchronization,
   EXPECT_TRUE(visual_properties);
   EXPECT_NE(gfx::Size(0, 0), visual_properties->visible_viewport_size);
 
+  // Ensure a frame has been produced.
+  ASSERT_TRUE(
+      EvalJsAfterLifecycleUpdate(web_contents->GetPrimaryMainFrame(), "", "")
+          .error.empty());
+
   // Verify the renderer received the correct size for the viewport.
   EXPECT_GT(EvalJs(web_contents->GetPrimaryMainFrame(), "window.innerWidth;")
                 .ExtractDouble(),
@@ -9614,7 +9663,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, ReuseSpareRenderer) {
-  SpareRenderProcessHostManager::GetInstance().CleanupSpareRenderProcessHost();
+  SpareRenderProcessHostManager::Get().CleanupSpare();
   SpareRenderProcessObserver render_process_observer;
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
@@ -9622,9 +9671,7 @@ IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, ReuseSpareRenderer) {
   RenderProcessHost* created_process =
       render_process_observer.spare_render_process_host();
   ASSERT_TRUE(!!created_process);
-  ASSERT_EQ(
-      SpareRenderProcessHostManager::GetInstance().spare_render_process_host(),
-      created_process);
+  ASSERT_EQ(SpareRenderProcessHostManager::Get().spare(), created_process);
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   ASSERT_TRUE(NavigateToURL(
@@ -9635,12 +9682,11 @@ IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, ReuseSpareRenderer) {
 IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, RendererTimeout) {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       new base::TestMockTimeTaskRunner();
-  SpareRenderProcessHostManager& manager =
-      SpareRenderProcessHostManager::GetInstance();
+  SpareRenderProcessHostManager& manager = SpareRenderProcessHostManager::Get();
   manager.SetDeferTimerTaskRunnerForTesting(task_runner);
   const base::TimeDelta kTimeout = base::Seconds(10);
 
-  SpareRenderProcessHostManager::GetInstance().CleanupSpareRenderProcessHost();
+  manager.CleanupSpare();
   SpareRenderProcessObserver render_process_observer;
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
@@ -9648,20 +9694,19 @@ IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, RendererTimeout) {
   RenderProcessHost* created_process =
       render_process_observer.spare_render_process_host();
   ASSERT_TRUE(!!created_process);
-  ASSERT_EQ(manager.spare_render_process_host(), created_process);
+  ASSERT_EQ(manager.spare(), created_process);
 
   if (!SpareRendererHasTimeout()) {
     // Warming up a spare renderer with a timeout shall not override
     // a spare renderer without a timeout.
-    manager.WarmupSpareRenderProcessHost(
-        shell()->web_contents()->GetBrowserContext(), kTimeout);
+    manager.WarmupSpare(shell()->web_contents()->GetBrowserContext(), kTimeout);
   }
   task_runner->FastForwardBy(kTimeout);
   base::RunLoop().RunUntilIdle();
   if (SpareRendererHasTimeout()) {
-    ASSERT_FALSE(!!manager.spare_render_process_host());
+    ASSERT_FALSE(!!manager.spare());
   } else {
-    ASSERT_EQ(created_process, manager.spare_render_process_host());
+    ASSERT_EQ(created_process, manager.spare());
   }
 }
 #endif

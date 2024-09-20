@@ -80,6 +80,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/test/test_network_context.h"
+#include "services/video_effects/public/cpp/video_effects_service_host.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -145,6 +146,11 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/web_applications/web_app_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_WIN)
+#include "base/test/mock_entropy_provider.h"
+#include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/web_applications/web_app.h"
@@ -715,7 +721,8 @@ TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsProcessor) {
   mojo::Remote<video_effects::mojom::VideoEffectsService> service;
   video_effects::FakeVideoEffectsService fake_effects_service(
       service.BindNewPipeAndPassReceiver());
-  auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
+  auto service_reset =
+      video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
   std::unique_ptr<base::test::TestFuture<void>> effects_processor_future =
       fake_effects_service.GetEffectsProcessorCreationFuture();
@@ -1567,9 +1574,6 @@ TEST_F(DisableWebAuthnWithBrokenCertsTest, IgnoreCertificateErrorsFlag) {
 }
 
 TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kTopChromeWebUIUsesSpareRenderer);
   using SpareProcessRefusedByEmbedderReason =
       content::ContentBrowserClient::SpareProcessRefusedByEmbedderReason;
   ChromeContentBrowserClient browser_client;
@@ -1582,11 +1586,6 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::NoProfile,
             browser_client.ShouldUseSpareRenderProcessHost(
                 nullptr, GURL("https://www.example.com")));
-
-  // Chrome top UI URL
-  EXPECT_EQ(SpareProcessRefusedByEmbedderReason::TopFrameChromeWebUI,
-            browser_client.ShouldUseSpareRenderProcessHost(
-                &profile_, GURL("chrome://test.top-chrome")));
 
 #if !BUILDFLAG(IS_ANDROID)
   // Chrome-search URL
@@ -1602,3 +1601,59 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
                 &profile_, GURL("chrome-extension://test-extension/")));
 #endif
 }
+
+#if BUILDFLAG(IS_WIN)
+class ChromeContentBrowserClientFieldTrialTest
+    : public ChromeContentBrowserClientTest {
+ protected:
+  ChromeContentBrowserClientFieldTrialTest() {
+    base::MockEntropyProvider entropy_provider(0.9);
+    trial_ = base::FieldTrialList::FactoryGetFieldTrial(
+        "UiaProviderWin", 100, "Default_1234", entropy_provider);
+  }
+
+  ChromeContentBrowserClient& client() { return client_; }
+
+ private:
+  ScopedTestingLocalState testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+  ScopedMetricsServiceForSyntheticTrials metrics_service_{
+      TestingBrowserProcess::GetGlobal()};
+  ChromeContentBrowserClient client_;
+  scoped_refptr<base::FieldTrial> trial_;
+};
+
+TEST_F(ChromeContentBrowserClientFieldTrialTest,
+       OnUiaProviderRequestedNoStudy) {
+  client().OnUiaProviderRequested(false);
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Control"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Enabled"));
+}
+
+TEST_F(ChromeContentBrowserClientFieldTrialTest,
+       OnUiaProviderRequestedEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitFromCommandLine(
+      "UiaProvider<UiaProviderWin.Enabled_12345:k/v", {});
+  client().OnUiaProviderRequested(true);
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Control"));
+  ASSERT_TRUE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                  "Enabled"));
+}
+
+TEST_F(ChromeContentBrowserClientFieldTrialTest,
+       OnUiaProviderRequestedControl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "UiaProvider<UiaProviderWin.Control_12345:k/v", {});
+  client().OnUiaProviderRequested(false);
+  ASSERT_TRUE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                  "Control"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Enabled"));
+}
+#endif  // BUILDFLAG(IS_WIN)

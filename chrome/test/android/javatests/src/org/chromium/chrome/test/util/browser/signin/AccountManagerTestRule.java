@@ -196,13 +196,12 @@ public class AccountManagerTestRule implements TestRule {
 
     /** Tears down the AccountManagerFacade mock and signs out if user is signed in. */
     public void tearDownRule() {
-        AccountManagerFacadeProvider.resetInstanceForTests();
         if (mFakeAccountInfoService != null) AccountInfoServiceProvider.resetForTests();
     }
 
     /**
-     * Adds an observer that detects changes in the account state propagated by the
-     * IdentityManager object.
+     * Adds an observer that detects changes in the account state propagated by the IdentityManager
+     * object.
      */
     public void observeIdentityManager(IdentityManager identityManager) {
         identityManager.addObserver(mFakeAccountInfoService);
@@ -342,7 +341,7 @@ public class AccountManagerTestRule implements TestRule {
 
     /** Converts an account email to its corresponding CoreAccountInfo object. */
     public CoreAccountInfo toCoreAccountInfo(String accountEmail) {
-        String accountGaiaId = mFakeAccountManagerFacade.getAccountGaiaId(accountEmail);
+        String accountGaiaId = FakeAccountManagerFacade.toGaiaId(accountEmail);
         return CoreAccountInfo.createFromEmailAndGaiaId(accountEmail, accountGaiaId);
     }
 

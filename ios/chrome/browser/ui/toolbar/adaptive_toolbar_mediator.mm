@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -167,33 +168,35 @@
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
+
+  if (status.active_web_state_change()) {
+    self.webState = status.new_active_web_state;
+  }
+
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+
+  [self.consumer setTabGridButtonStyle:[self tabGridButtonStyleToDisplay]];
+
+  const int tabCount = [self tabCountToDisplay];
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
-      // The activation is handled after this switch statement.
+      [self.consumer setTabCount:tabCount addedInBackground:NO];
       break;
-    case WebStateListChange::Type::kDetach: {
-      if (webStateList->IsBatchInProgress()) {
-        break;
-      }
-
-      [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
+    case WebStateListChange::Type::kDetach:
+      [self.consumer setTabCount:tabCount addedInBackground:NO];
       break;
-    }
     case WebStateListChange::Type::kMove:
-      // Do nothing when a WebState is moved.
+      [self.consumer setTabCount:tabCount addedInBackground:NO];
       break;
     case WebStateListChange::Type::kReplace:
       // Do nothing when a WebState is replaced.
       break;
-    case WebStateListChange::Type::kInsert: {
-      if (webStateList->IsBatchInProgress()) {
-        break;
-      }
-
-      [self.consumer setTabCount:_webStateList->count()
+    case WebStateListChange::Type::kInsert:
+      [self.consumer setTabCount:tabCount
                addedInBackground:!status.active_web_state_change()];
       break;
-    }
     case WebStateListChange::Type::kGroupCreate:
       // Do nothing when a group is created.
       break;
@@ -207,15 +210,12 @@
       // Do nothing when a group is deleted.
       break;
   }
-
-  if (status.active_web_state_change()) {
-    self.webState = status.new_active_web_state;
-  }
 }
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
   DCHECK_EQ(_webStateList, webStateList);
-  [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
+  [self.consumer setTabGridButtonStyle:[self tabGridButtonStyleToDisplay]];
+  [self.consumer setTabCount:[self tabCountToDisplay] addedInBackground:NO];
 }
 
 #pragma mark - AdaptiveToolbarMenusProvider
@@ -532,6 +532,34 @@
       defaultURL->GetEngineType(self.templateURLService->search_terms_data()) ==
           SEARCH_ENGINE_GOOGLE;
   return isGoogleDefaultSearchProvider;
+}
+
+// Returns the tab count to display in the Tab Grid button.
+- (int)tabCountToDisplay {
+  if (IsTabGroupIndicatorEnabled()) {
+    const int active_index = _webStateList->active_index();
+    if (active_index != WebStateList::kInvalidIndex) {
+      const TabGroup* activeTabGroup =
+          _webStateList->GetGroupOfWebStateAt(active_index);
+      if (activeTabGroup) {
+        return activeTabGroup->range().count();
+      }
+    }
+  }
+  return _webStateList->count();
+}
+
+// Returns the style to display in the Tab Grid button.
+- (ToolbarTabGridButtonStyle)tabGridButtonStyleToDisplay {
+  if (IsTabGroupIndicatorEnabled()) {
+    const int active_index = _webStateList->active_index();
+    if (active_index != WebStateList::kInvalidIndex) {
+      if (_webStateList->GetGroupOfWebStateAt(active_index)) {
+        return ToolbarTabGridButtonStyle::kTabGroup;
+      }
+    }
+  }
+  return ToolbarTabGridButtonStyle::kNormal;
 }
 
 @end

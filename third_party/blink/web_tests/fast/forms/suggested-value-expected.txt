@@ -99,13 +99,6 @@ instead of "initial value".
 |       id="select-options"
 |     <slot>
 |       id="select-button"
-|       <button>
-|         pseudo="select-fallback-button"
-|         shadow:pseudoId="select-fallback-button"
-|         <span>
-|           pseudo="select-fallback-button-text"
-|           shadow:pseudoId="select-fallback-button-text"
-|           "initial value"
 |     <div>
 |       popover="auto"
 |       pseudo="picker(select)"

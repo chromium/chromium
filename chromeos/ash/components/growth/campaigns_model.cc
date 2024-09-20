@@ -273,6 +273,7 @@ const base::Feature* SelectFeatureByIndex(const base::Feature* features[],
 }  // namespace
 
 Trigger::Trigger(TriggerType type) : type(type) {}
+Trigger::~Trigger() = default;
 
 Campaigns* GetMutableCampaignsBySlot(CampaignsPerSlot* campaigns_per_slot,
                                      Slot slot) {

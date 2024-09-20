@@ -12,7 +12,6 @@ enum VirtualSensorType {
   "gyroscope",
   "linear-acceleration",
   "magnetometer",
-  "proximity",
   "relative-orientation",
 };
 

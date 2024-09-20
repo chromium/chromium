@@ -174,7 +174,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // https://html.spec.whatwg.org/C/#resolve-a-module-specifier
   virtual KURL ResolveModuleSpecifier(const String& module_request,
                                       const KURL& base_url,
-                                      String* failure_reason = nullptr) = 0;
+                                      String* failure_reason) = 0;
 
   // https://tc39.github.io/proposal-dynamic-import/#sec-hostimportmoduledynamically
   virtual void ResolveDynamically(const ModuleRequest& module_request,

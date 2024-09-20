@@ -13,8 +13,10 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/dips/dips_navigation_flow_detector_wrapper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -30,10 +33,12 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/browser/user_annotations/user_annotations_web_contents_observer.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/permissions/permission_indicators_tab_data.h"
-#include "extensions/common/extension_features.h"
 
 namespace tabs {
 
@@ -115,6 +120,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab.GetContents());
   }
 
+  if (web_app::AreWebAppsEnabled(profile)) {
+    auto* web_app_tab_helper =
+        web_app::WebAppTabHelper::FromWebContents(tab.GetContents());
+    web_app_tab_helper->InitForTabFeatures(&tab);
+  }
+
   // FedCM is supported in general web content, but not in chrome UI. Of the
   // BrowserWindow types, devtools show Chrome UI and the rest show general web
   // content.
@@ -127,11 +138,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
     extensions::ExtensionSidePanelManager::CreateForTab(
         profile, tab.GetContents(), side_panel_registry_.get());
-  }
 
   data_protection_controller_ = std::make_unique<
       enterprise_data_protection::DataProtectionNavigationController>(&tab);
@@ -140,6 +148,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   read_anything_side_panel_controller_ =
       std::make_unique<ReadAnythingSidePanelController>(
           &tab, side_panel_registry_.get());
+
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
+    CreateFingerprintingProtectionWebContentsHelper(
+        tab.GetContents(), profile->GetPrefs(),
+        TrackingProtectionSettingsFactory::GetForProfile(profile),
+        profile->IsIncognitoProfile());
+  }
 }
 
 TabFeatures::TabFeatures() = default;
@@ -182,11 +198,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   // scoped.
   side_panel_registry_->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
     extensions::ExtensionSidePanelManager::GetForTabForTesting(old_contents)
         ->WillDiscard();
-  }
 
   if (commerce_ui_tab_helper_) {
     commerce_ui_tab_helper_.reset();
@@ -211,12 +224,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab->GetContents());
   }
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
     extensions::ExtensionSidePanelManager::CreateForTab(
         Profile::FromBrowserContext(new_contents->GetBrowserContext()),
         new_contents, side_panel_registry_.get());
-  }
 }
 
 }  // namespace tabs

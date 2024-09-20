@@ -10,7 +10,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "third_party/leveldatabase/src/include/leveldb/env.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // static
 scoped_refptr<LevelDBState> LevelDBState::CreateForDiskDB(
@@ -68,4 +68,4 @@ LevelDBState::~LevelDBState() {
     signal_on_destruction_->Signal();
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

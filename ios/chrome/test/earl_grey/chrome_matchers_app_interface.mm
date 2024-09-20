@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -662,19 +663,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)clearBrowsingDataButton {
-  return grey_accessibilityID(kClearBrowsingDataButtonIdentifier);
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_IOS_DELETE_BROWSING_DATA_BUTTON)),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_userInteractionEnabled(), nil);
 }
 
 + (id<GREYMatcher>)clearBrowsingDataView {
-  return grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)confirmClearBrowsingDataButton {
   return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON)),
-      grey_accessibilityTrait(UIAccessibilityTraitButton),
-      grey_not(grey_accessibilityID(kClearBrowsingDataButtonIdentifier)),
-      grey_userInteractionEnabled(), nil);
+      grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier),
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE)),
+      nil);
 }
 
 + (id<GREYMatcher>)settingsDoneButton {
@@ -906,11 +906,19 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)browsingDataButtonMatcher {
+  return grey_accessibilityID(kQuickDeleteBrowsingDataButtonIdentifier);
+}
+
++ (id<GREYMatcher>)browsingDataConfirmButtonMatcher {
+  return grey_accessibilityID(kQuickDeleteBrowsingDataConfirmButtonIdentifier);
+}
+
 + (id<GREYMatcher>)clearBrowsingHistoryButton {
   // Needs to use grey_sufficientlyVisible() to make the difference between a
   // cell used by the tableview and a invisible recycled cell.
   return grey_allOf(
-      grey_accessibilityID(kClearBrowsingHistoryCellAccessibilityIdentifier),
+      grey_accessibilityID(kQuickDeleteBrowsingDataHistoryIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 
@@ -922,7 +930,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   // Needs to use grey_sufficientlyVisible() to make the difference between a
   // cell used by the tableview and a invisible recycled cell.
   return grey_allOf(
-      grey_accessibilityID(kClearCookiesCellAccessibilityIdentifier),
+      grey_accessibilityID(kQuickDeleteBrowsingDataSiteDataIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 
@@ -930,7 +938,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   // Needs to use grey_sufficientlyVisible() to make the difference between a
   // cell used by the tableview and a invisible recycled cell.
   return grey_allOf(
-      grey_accessibilityID(kClearCacheCellAccessibilityIdentifier),
+      grey_accessibilityID(kQuickDeleteBrowsingDataCacheIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 
@@ -938,7 +946,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   // Needs to use grey_sufficientlyVisible() to make the difference between a
   // cell used by the tableview and a invisible recycled cell.
   return grey_allOf(
-      grey_accessibilityID(kClearSavedPasswordsCellAccessibilityIdentifier),
+      grey_accessibilityID(kQuickDeleteBrowsingDataPasswordsIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 
@@ -946,7 +954,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   // Needs to use grey_sufficientlyVisible() to make the difference between a
   // cell used by the tableview and a invisible recycled cell.
   return grey_allOf(
-      grey_accessibilityID(kClearAutofillCellAccessibilityIdentifier),
+      grey_accessibilityID(kQuickDeleteBrowsingDataAutofillIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 

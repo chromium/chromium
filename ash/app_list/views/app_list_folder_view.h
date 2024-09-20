@@ -181,10 +181,8 @@ class ASH_EXPORT AppListFolderView : public views::View,
   void ReparentItem(AppsGridView::Pointer pointer,
                     AppListItemView* original_drag_view,
                     const gfx::Point& drag_point_in_folder_grid) override;
-  void DispatchEndDragEventForReparent(
-      bool events_forwarded_to_drag_drop_host,
-      bool cancel_drag,
-      std::unique_ptr<AppDragIconProxy> drag_icon_proxy) override;
+  void DispatchEndDragEventForReparent(bool events_forwarded_to_drag_drop_host,
+                                       bool cancel_drag) override;
   void Close() override;
   bool IsDragPointOutsideOfFolder(const gfx::Point& drag_point) override;
   bool IsOEMFolder() const override;

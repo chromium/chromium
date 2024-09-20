@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
+#import "ui/base/mojom/window_show_state.mojom.h"
 #import "url/gurl.h"
 
 namespace {
@@ -48,7 +49,7 @@ IOSChromeTabRestoreServiceClient::CreateLiveTabContext(
     sessions::SessionWindow::WindowType type,
     const std::string& /* app_name */,
     const gfx::Rect& /* bounds */,
-    ui::WindowShowState /* show_state */,
+    ui::mojom::WindowShowState /* show_state */,
     const std::string& /* workspace */,
     const std::string& /* user_title */,
     const std::map<std::string, std::string>& /* extra_data */) {

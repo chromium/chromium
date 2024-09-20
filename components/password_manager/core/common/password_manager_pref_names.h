@@ -51,6 +51,20 @@ inline constexpr char kDeletingUndecryptablePasswordsEnabled[] =
 
 #if BUILDFLAG(IS_ANDROID)
 
+// The timestamp at which the UPM password access loss warning was last
+// shown to the user at the time of Chrome startup in microseconds since Windows
+// epoch. This is needed to ensure that the UI is prompted only once per given
+// time interval (currently seven days).
+inline constexpr char kPasswordAccessLossWarningShownAtStartupTimestamp[] =
+    "password_access_loss_warning_shown_at_startup_timestamp";
+
+// The timestamp at which the UPM password access loss warning was last
+// shown to the user in microseconds since Windows epoch. This is needed to
+// ensure that the UI is prompted only once per given time interval (currently
+// one day).
+inline constexpr char kPasswordAccessLossWarningShownTimestamp[] =
+    "password_access_loss_warning_shown_timestamp";
+
 // Boolean pref indicating if the one-time notice for account storage was shown.
 // The notice informs passwords will start being saved to the signed-in account.
 inline constexpr char kAccountStorageNoticeShown[] =
@@ -276,7 +290,7 @@ inline constexpr char kProfileStoreDateLastUsedForFilling[] =
 inline constexpr char kAccountStoreDateLastUsedForFilling[] =
     "password_manager.account_store_date_last_used_for_filling";
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Integer indicating how many times user saw biometric authentication before
 // filling promo.
 inline constexpr char kBiometricAuthBeforeFillingPromoShownCounter[] =
@@ -291,20 +305,16 @@ inline constexpr char kHadBiometricsAvailable[] =
     "password_manager.had_biometrics_available";
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
 // Boolean indicating whether user enabled biometric authentication before
 // filling.
 inline constexpr char kBiometricAuthenticationBeforeFilling[] =
     "password_manager.biometric_authentication_filling";
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-// How many times in a row the password generation popup in `kNudgePassword`
-// experiment was dismissed by the user. The counter resets when the user
-// accepts password generation.
-inline constexpr char kPasswordGenerationNudgePasswordDismissCount[] =
-    "password_generation_nudge_password_dismiss_count";
-
 // A list of available promo cards with related information which are displayed
 // in the Password Manager UI.
 inline constexpr char kPasswordManagerPromoCardsList[] =

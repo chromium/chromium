@@ -348,13 +348,19 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       suggestion.type == autofill::SuggestionType::kCreateNewPlusAddress ||
       (base::FeatureList::IsEnabled(
            autofill::features::kAutofillEnableVirtualCards) &&
-       suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry)) {
+       suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry) ||
+      ((base::FeatureList::IsEnabled(
+            autofill::features::kAutofillAddressFieldSwapping) &&
+        suggestion.type ==
+            autofill::SuggestionType::kAddressFieldByFieldFilling))) {
     _pendingAutocompleteFieldID = fieldRendererID;
     if (_suggestionDelegate) {
       autofill::Suggestion autofill_suggestion;
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
       autofill_suggestion.type = suggestion.type;
+      autofill_suggestion.field_by_field_filling_type_used =
+          suggestion.fieldByFieldFillingTypeUsed;
       if (!suggestion.backendIdentifier.length) {
         autofill_suggestion.payload = autofill::Suggestion::BackendId();
       } else {
@@ -583,7 +589,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
         (base::FeatureList::IsEnabled(
              autofill::features::kAutofillEnableVirtualCards) &&
          popup_suggestion.type ==
-             autofill::SuggestionType::kVirtualCreditCardEntry)) {
+             autofill::SuggestionType::kVirtualCreditCardEntry) ||
+        (base::FeatureList::IsEnabled(
+             autofill::features::kAutofillAddressFieldSwapping) &&
+         popup_suggestion.type ==
+             autofill::SuggestionType::kAddressFieldByFieldFilling)) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
       if (popup_suggestion.type ==
               autofill::SuggestionType::kAutocompleteEntry &&
@@ -649,19 +659,25 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
             ? SysUTF16ToNSString(*popup_suggestion.acceptance_a11y_announcement)
             : nil;
 
+    autofill::FieldType fieldByFieldFillingTypeUsed =
+        (popup_suggestion.field_by_field_filling_type_used
+             ? *popup_suggestion.field_by_field_filling_type_used
+             : autofill::FieldType::EMPTY_TYPE);
+
     FormSuggestion* suggestion = [FormSuggestion
-               suggestionWithValue:value
-                        minorValue:minorValue
-                displayDescription:displayDescription
-                              icon:icon
-                              type:popup_suggestion.type
-                 backendIdentifier:SysUTF8ToNSString(
-                                       popup_suggestion
-                                           .GetBackendId<
-                                               autofill::Suggestion::Guid>()
-                                           .value())
-                    requiresReauth:NO
-        acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
+                suggestionWithValue:value
+                         minorValue:minorValue
+                 displayDescription:displayDescription
+                               icon:icon
+                               type:popup_suggestion.type
+                  backendIdentifier:SysUTF8ToNSString(
+                                        popup_suggestion
+                                            .GetBackendId<
+                                                autofill::Suggestion::Guid>()
+                                            .value())
+        fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
+                     requiresReauth:NO
+         acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
     suggestion.featureForIPH = SuggestionFeatureForIPH::kUnknown;
     if (popup_suggestion.feature_for_iph ==

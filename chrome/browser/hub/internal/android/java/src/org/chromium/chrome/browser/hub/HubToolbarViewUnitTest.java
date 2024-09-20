@@ -17,6 +17,8 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_V
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import android.app.Activity;
@@ -43,6 +45,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -71,6 +74,7 @@ public class HubToolbarViewUnitTest {
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
     private FrameLayout mMenuButtonContainer;
+    private View mSearchBox;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -87,6 +91,7 @@ public class HubToolbarViewUnitTest {
         mActionButton = mToolbar.findViewById(R.id.toolbar_action_button);
         mPaneSwitcher = mToolbar.findViewById(R.id.pane_switcher);
         mMenuButtonContainer = mToolbar.findViewById(R.id.menu_button_container);
+        mSearchBox = mToolbar.findViewById(R.id.search_box);
         mActivity.setContentView(mToolbar);
 
         mPropertyModel = new PropertyModel(HubToolbarProperties.ALL_KEYS);
@@ -224,5 +229,29 @@ public class HubToolbarViewUnitTest {
         assertEquals(lookup.get(0), lookup.get(0));
         assertEquals(lookup.get(1), lookup.get(1));
         assertNotEquals(lookup.get(0), lookup.get(1));
+    }
+
+    @Test
+    @MediumTest
+    public void testSearchBoxVisibility() {
+        // GONE by default (defined in the xml).
+        assertEquals(View.GONE, mSearchBox.getVisibility());
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
+        assertEquals(View.VISIBLE, mSearchBox.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    public void testSearchBoxListener() {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        Runnable testListener =
+                () -> {
+                    callbackHelper.notifyCalled();
+                };
+
+        assertEquals(0, callbackHelper.getCallCount());
+        mPropertyModel.set(SEARCH_BOX_LISTENER, testListener);
+        mSearchBox.performClick();
+        assertEquals(1, callbackHelper.getCallCount());
     }
 }

@@ -55,12 +55,12 @@
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    ChromeBrowserState* browserState = browser->GetBrowserState();
+    ProfileIOS* profile = browser->GetProfile();
 
     // Address Save Prompt is not shown in the incognito mode.
-    CHECK(!browserState->IsOffTheRecord());
+    CHECK(!profile->IsOffTheRecord());
     _personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
+        autofill::PersonalDataManagerFactory::GetForProfile(profile);
 
     _webState = browser->GetWebStateList()->GetActiveWebState();
   }

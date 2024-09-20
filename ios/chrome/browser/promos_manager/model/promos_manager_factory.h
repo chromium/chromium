@@ -12,11 +12,13 @@
 class PromosManager;
 
 // Singleton that owns all PromosManagers and associates them with
-// ChromeBrowserState.
+// Profile.
 class PromosManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static PromosManager* GetForBrowserState(ChromeBrowserState* browser_state);
 
+  static PromosManager* GetForProfile(ProfileIOS* profile);
   static PromosManagerFactory* GetInstance();
 
   PromosManagerFactory(const PromosManagerFactory&) = delete;

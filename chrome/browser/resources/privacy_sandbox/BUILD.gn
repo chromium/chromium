@@ -30,7 +30,6 @@ build_webui("build") {
     "privacy_sandbox_dialog_app.ts",
     "privacy_sandbox_combined_dialog_app.ts",
     "privacy_sandbox_notice_dialog_app.ts",
-    "privacy_sandbox_privacy_policy_step.ts",
     "privacy_sandbox_notice_restricted_dialog_app.ts",
     "privacy_sandbox_dialog_consent_step.ts",
     "privacy_sandbox_dialog_notice_step.ts",

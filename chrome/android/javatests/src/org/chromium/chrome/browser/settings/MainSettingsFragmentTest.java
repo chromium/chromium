@@ -61,7 +61,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -112,6 +111,7 @@ import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
@@ -323,7 +323,6 @@ public class MainSettingsFragmentTest {
         if (supportThirdPartyFillingSetting()) {
             assertSettingsExists(MainSettings.PREF_AUTOFILL_OPTIONS, null);
             assertSettingsExists(MainSettings.PREF_AUTOFILL_SECTION, null);
-            assertSettingsExists(MainSettings.PREF_PRIVACY_SECTION, null);
         } else {
             Assert.assertNull(
                     "Third party filling setting should be hidden",
@@ -331,9 +330,6 @@ public class MainSettingsFragmentTest {
             Assert.assertNull(
                     "Autofill section header should be hidden",
                     mMainSettings.findPreference(MainSettings.PREF_AUTOFILL_SECTION));
-            Assert.assertNull(
-                    "Privacy section header should be hidden",
-                    mMainSettings.findPreference(MainSettings.PREF_PRIVACY_SECTION));
         }
         assertSettingsExists(MainSettings.PREF_PASSWORDS, PasswordSettings.class);
         assertSettingsExists("autofill_payment_methods", AutofillPaymentMethodsFragment.class);
@@ -950,8 +946,7 @@ public class MainSettingsFragmentTest {
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
 
         // Close settings activity.
-        Activity activity = mMainSettings.getActivity();
-        ApplicationTestUtils.finishActivity(activity);
+        mSettingsActivityTestRule.finishActivity();
 
         // Launch settings activity again.
         mSettingsActivityTestRule.startSettingsActivity();
@@ -1211,6 +1206,24 @@ public class MainSettingsFragmentTest {
                     "Safety hub setting should be hidden",
                     mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
         }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testAndroidAdressBarFlagOn() {
+        launchSettingsActivity();
+        assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testAndroidAdressBarFlagOff() {
+        launchSettingsActivity();
+        Assert.assertNull(
+                "Address Bar should not be shown when flag is off",
+                mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR));
     }
 
     private void launchSettingsActivity() {

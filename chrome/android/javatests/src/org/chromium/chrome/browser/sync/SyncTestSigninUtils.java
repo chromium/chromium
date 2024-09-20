@@ -31,15 +31,15 @@ final class SyncTestSigninUtils {
         sSigninTestRule.signOut();
     }
 
-    /** Sets up the test authentication environment with fake services. */
+    /** Sets up the fake authentication environment. */
     @CalledByNative
-    private static void setUpAuthForTesting() {
+    private static void setUpFakeAuthForTesting() {
         sSigninTestRule.setUpRule();
     }
 
-    /** Tears down the test authentication environment. */
+    /** Tears down the fake authentication environment. */
     @CalledByNative
-    private static void tearDownAuthForTesting() {
+    private static void tearDownFakeAuthForTesting() {
         // The seeded account is removed automatically when user signs out
         sSigninTestRule.tearDownRule();
     }

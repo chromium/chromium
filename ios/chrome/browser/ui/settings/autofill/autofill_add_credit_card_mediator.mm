@@ -75,7 +75,7 @@
     return;
   }
 
-  autofill::CreditCard* savedCreditCard =
+  const autofill::CreditCard* savedCreditCard =
       _personalDataManager->payments_data_manager().GetCreditCardByNumber(
           base::SysNSStringToUTF8(cardNumber));
 

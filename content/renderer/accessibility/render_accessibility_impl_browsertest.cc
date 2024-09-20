@@ -214,9 +214,8 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
   const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
   for (const auto& update : base::Reversed(updates)) {
     for (const ui::AXNodeData& node : update.nodes) {
-      std::string name;
-      if (node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name) &&
-          name == "first") {
+      if (node.GetStringAttribute(ax::mojom::StringAttribute::kName) ==
+          "first") {
         expected_id = node.id;
         expected_bounds = node.relative_bounds;
         expected_bounds.bounds.set_y(expected_bounds.bounds.y() +
@@ -283,8 +282,8 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
   const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
   for (const ui::AXTreeUpdate& update : updates) {
     for (const ui::AXNodeData& node : update.nodes) {
-      std::string name;
-      node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name);
+      const std::string& name =
+          node.GetStringAttribute(ax::mojom::StringAttribute::kName);
       if (name == "first" || name == "second") {
         ui::AXRelativeBounds ax_bounds = node.relative_bounds;
         ax_bounds.bounds.set_y(ax_bounds.bounds.y() + scroll_offset_y);

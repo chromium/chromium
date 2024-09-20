@@ -47,11 +47,11 @@ class IOSSSLErrorHandlerWithoutTabHelpersTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web_state_->SetBrowserState(browser_state_.get());
+    web_state_->SetBrowserState(profile_.get());
 
-    browser_state_->SetSharedURLLoaderFactory(
+    profile_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_loader_factory_));
     test_loader_factory_.AddResponse("http://www.gstatic.com/generate_204", "",
@@ -62,7 +62,7 @@ class IOSSSLErrorHandlerWithoutTabHelpersTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_ =
       std::make_unique<web::FakeWebState>();
 

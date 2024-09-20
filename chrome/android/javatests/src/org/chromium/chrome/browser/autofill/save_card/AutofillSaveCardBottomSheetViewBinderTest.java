@@ -175,18 +175,6 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         assertEquals(R.id.legal_message, mView.mLegalMessage.getId());
         assertThat(String.valueOf(mView.mLegalMessage.getText()), isEmptyString());
 
-        bind(mModelBuilder.with(AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE, null));
-        assertThat(String.valueOf(mView.mLegalMessage.getText()), isEmptyString());
-        assertEquals(View.GONE, mView.mLegalMessage.getVisibility());
-
-        bind(
-                mModelBuilder.with(
-                        AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
-                        new AutofillSaveCardBottomSheetProperties.LegalMessage(
-                                /* lines= */ null, /* link= */ null)));
-        assertThat(String.valueOf(mView.mLegalMessage.getText()), isEmptyString());
-        assertEquals(View.GONE, mView.mLegalMessage.getVisibility());
-
         bind(
                 mModelBuilder.with(
                         AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
@@ -298,10 +286,6 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
 
     private void verifyPropertyBoundToTextView(
             TextView view, ReadableObjectPropertyKey<String> property) {
-        bind(mModelBuilder.with(property, null));
-        assertEquals(View.GONE, view.getVisibility());
-        assertThat(String.valueOf(view.getText()), isEmptyString());
-
         bind(mModelBuilder.with(property, ""));
         assertEquals(View.GONE, view.getVisibility());
         assertThat(String.valueOf(view.getText()), isEmptyString());

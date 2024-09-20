@@ -1,6 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+"""Codegen for FooJni.java files."""
 
 import java_types
 import common
@@ -84,7 +85,7 @@ private static {ctx.interface_name} testInstance;
 
 public static final JniStaticTestMocker<{ctx.interface_name}> TEST_HOOKS =
     new JniStaticTestMocker<{ctx.interface_name}>()""")
-  with sb.block(end='};\n'):
+  with sb.block(after=';'):
     sb(f"""\
 @Override
 public void setInstanceForTesting({ctx.interface_name} instance)""")

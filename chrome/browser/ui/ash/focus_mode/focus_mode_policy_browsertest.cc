@@ -9,6 +9,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_view.h"
 #include "ash/system/unified/quick_settings_view.h"
@@ -36,6 +37,13 @@ class FocusModePolicyTest : public policy::PolicyTest {
   ~FocusModePolicyTest() override = default;
 
  protected:
+  void SetUpOnMainThread() override {
+    policy::PolicyTest::SetUpOnMainThread();
+    FocusModeController::Get()
+        ->focus_mode_sounds_controller()
+        ->SetIsMinorUserForTesting(false);
+  }
+
   void SetPolicyValue(std::string_view value) {
     policy::PolicyMap policies;
     SetPolicy(&policies, policy::key::kFocusModeSoundsEnabled,

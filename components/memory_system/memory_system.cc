@@ -14,7 +14,6 @@
 #include "components/memory_system/memory_system_features.h"
 #include "components/memory_system/parameters.h"
 #include "partition_alloc/buildflags.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(ENABLE_GWP_ASAN)
 #include "components/gwp_asan/client/gwp_asan.h"  // nogncheck

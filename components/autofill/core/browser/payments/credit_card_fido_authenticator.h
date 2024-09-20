@@ -158,7 +158,7 @@ class CreditCardFidoAuthenticator
 
  private:
   friend class BrowserAutofillManagerTest;
-  friend class CreditCardAccessManagerTest;
+  friend class CreditCardAccessManagerTestBase;
   friend class CreditCardFidoAuthenticatorTest;
   friend class TestCreditCardFidoAuthenticator;
   FRIEND_TEST_ALL_PREFIXES(CreditCardFidoAuthenticatorTest,

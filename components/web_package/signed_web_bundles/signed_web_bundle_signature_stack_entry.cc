@@ -26,9 +26,16 @@ bool SignedWebBundleSignatureStackEntry::operator!=(
 SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(
     const SignedWebBundleSignatureStackEntry&) = default;
 
+SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(
+    SignedWebBundleSignatureStackEntry&&) = default;
+
 SignedWebBundleSignatureStackEntry&
 SignedWebBundleSignatureStackEntry::operator=(
     const SignedWebBundleSignatureStackEntry&) = default;
+
+SignedWebBundleSignatureStackEntry&
+SignedWebBundleSignatureStackEntry::operator=(
+    SignedWebBundleSignatureStackEntry&&) = default;
 
 SignedWebBundleSignatureStackEntry::~SignedWebBundleSignatureStackEntry() =
     default;

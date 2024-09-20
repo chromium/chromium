@@ -429,6 +429,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsvBrowserBackIcon;
     case kKeyboardShortcutBrowserForward:
       return &kKsvBrowserForwardIcon;
+    case kKeyboardShortcutBrowserHome:
+      return &kKsvBrowserHomeIcon;
     case kKeyboardShortcutBrowserRefresh:
       return &kKsvReloadIcon;
     case kKeyboardShortcutBrowserSearch:
@@ -453,6 +455,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
 #endif
     case kKeyboardShortcutMediaFastForward:
       return &kKsMediaFastForwardIcon;
+    case kKeyboardShortcutMediaLaunchMail:
+      return &kKsMediaLaunchMailIcon;
     case kKeyboardShortcutMediaPause:
       return &kKsMediaPauseIcon;
     case kKeyboardShortcutMediaPlay:
@@ -528,6 +532,12 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsKeyboardBrightnessUpIcon;
     case kKeyboardShortcutKeyboardBacklightToggle:
       return &kKsKeyboardBrightnessToggleIcon;
+    // Accessibility.
+    case kKeyboardShortcutAccessibility:
+      return &kKsAccessibilityIcon;
+    // Context menu.
+    case kKeyboardShortcutContextMenu:
+      return &kKsContextMenuIcon;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case kKeyboardShortcutKeyboardRightAlt:
       return &kRightAltInternalIcon;

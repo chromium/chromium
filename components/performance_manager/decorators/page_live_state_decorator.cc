@@ -45,6 +45,14 @@ class PageLiveStateDataImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_connected_to_bluetooth_device_;
   }
+  bool IsConnectedToHidDevice() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_connected_to_hid_device_;
+  }
+  bool IsConnectedToSerialPort() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_connected_to_serial_port_;
+  }
   bool IsCapturingVideo() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_capturing_video_;
@@ -100,6 +108,12 @@ class PageLiveStateDataImpl
   void SetIsConnectedToBluetoothDeviceForTesting(bool value) override {
     set_is_connected_to_bluetooth_device(value);
   }
+  void SetIsConnectedToHidDeviceForTesting(bool value) override {
+    set_is_connected_to_hid_device(value);
+  }
+  void SetIsConnectedToSerialPortForTesting(bool value) override {
+    set_is_connected_to_serial_port(value);
+  }
   void SetIsCapturingVideoForTesting(bool value) override {
     set_is_capturing_video(value);
   }
@@ -153,6 +167,26 @@ class PageLiveStateDataImpl
     is_connected_to_bluetooth_device_ = is_connected_to_bluetooth_device;
     for (auto& obs : observers_)
       obs.OnIsConnectedToBluetoothDeviceChanged(page_node_);
+  }
+  void set_is_connected_to_hid_device(bool is_connected_to_hid_device) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (is_connected_to_hid_device_ == is_connected_to_hid_device) {
+      return;
+    }
+    is_connected_to_hid_device_ = is_connected_to_hid_device;
+    for (auto& obs : observers_) {
+      obs.OnIsConnectedToHidDeviceChanged(page_node_);
+    }
+  }
+  void set_is_connected_to_serial_port(bool is_connected_to_serial_port) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (is_connected_to_serial_port_ == is_connected_to_serial_port) {
+      return;
+    }
+    is_connected_to_serial_port_ = is_connected_to_serial_port;
+    for (auto& obs : observers_) {
+      obs.OnIsConnectedToSerialPortChanged(page_node_);
+    }
   }
   void set_is_capturing_video(bool is_capturing_video) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -258,6 +292,10 @@ class PageLiveStateDataImpl
       false;
   bool is_connected_to_bluetooth_device_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
+  bool is_connected_to_hid_device_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+  bool is_connected_to_serial_port_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
   bool is_capturing_video_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_capturing_audio_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_being_mirrored_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
@@ -283,21 +321,34 @@ PageLiveStateDecorator::PageLiveStateDecorator() = default;
 PageLiveStateDecorator::~PageLiveStateDecorator() = default;
 
 // static
-void PageLiveStateDecorator::OnIsConnectedToUSBDeviceChanged(
+void PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
     content::WebContents* contents,
-    bool is_connected_to_usb_device) {
-  SetPropertyForWebContentsPageNode(
-      contents, &PageLiveStateDataImpl::set_is_connected_to_usb_device,
-      is_connected_to_usb_device);
-}
+    content::WebContentsObserver::DeviceConnectionType connection_type,
+    bool used) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-// static
-void PageLiveStateDecorator::OnIsConnectedToBluetoothDeviceChanged(
-    content::WebContents* contents,
-    bool is_connected_to_bluetooth_device) {
-  SetPropertyForWebContentsPageNode(
-      contents, &PageLiveStateDataImpl::set_is_connected_to_bluetooth_device,
-      is_connected_to_bluetooth_device);
+  switch (connection_type) {
+    case content::WebContentsObserver::DeviceConnectionType::kUSB:
+      SetPropertyForWebContentsPageNode(
+          contents, &PageLiveStateDataImpl::set_is_connected_to_usb_device,
+          used);
+      break;
+    case content::WebContentsObserver::DeviceConnectionType::kBluetooth:
+      SetPropertyForWebContentsPageNode(
+          contents,
+          &PageLiveStateDataImpl::set_is_connected_to_bluetooth_device, used);
+      break;
+    case content::WebContentsObserver::DeviceConnectionType::kHID:
+      SetPropertyForWebContentsPageNode(
+          contents, &PageLiveStateDataImpl::set_is_connected_to_hid_device,
+          used);
+      break;
+    case content::WebContentsObserver::DeviceConnectionType::kSerial:
+      SetPropertyForWebContentsPageNode(
+          contents, &PageLiveStateDataImpl::set_is_connected_to_serial_port,
+          used);
+      break;
+  }
 }
 
 // static
@@ -412,6 +463,8 @@ base::Value::Dict PageLiveStateDecorator::DescribePageNodeData(
   base::Value::Dict ret;
   ret.Set("IsConnectedToUSBDevice", data->IsConnectedToUSBDevice());
   ret.Set("IsConnectedToBluetoothDevice", data->IsConnectedToBluetoothDevice());
+  ret.Set("IsConnectedToHidDevice", data->IsConnectedToHidDevice());
+  ret.Set("IsConnectedToSerialPort", data->IsConnectedToSerialPort());
   ret.Set("IsCapturingVideo", data->IsCapturingVideo());
   ret.Set("IsCapturingAudio", data->IsCapturingAudio());
   ret.Set("IsBeingMirrored", data->IsBeingMirrored());

@@ -37,6 +37,9 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDataSaverDetailFeature,
     &kIPHDataSaverMilestonePromoFeature,
     &kIPHDataSaverPreviewFeature,
+    &kIPHDefaultBrowserPromoMagicStackFeature,
+    &kIPHDefaultBrowserPromoMessagesFeature,
+    &kIPHDefaultBrowserPromoSettingCardFeature,
     &kIPHDownloadHomeFeature,
     &kIPHDownloadIndicatorFeature,
     &kIPHDownloadPageFeature,
@@ -84,7 +87,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupsTapToSeeAnotherTabFeature,
     &kIPHTabGroupCreationDialogSyncTextFeature,
     &kIPHTabGroupSyncOnStripFeature,
-    &kIPHTabGroupsYourTabsAreTogetherFeature,
     &kIPHTabGroupsDragAndDropFeature,
     &kIPHTabGroupsRemoteGroupFeature,
     &kIPHTabGroupsSurfaceFeature,
@@ -160,6 +162,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSContextualPanelSampleModelFeature,
     &kIPHiOSContextualPanelPriceInsightsFeature,
     &kIPHHomeCustomizationMenuFeature,
+    &kIPHiOSLensOverlayEntrypointTipFeature,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -205,7 +208,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHReadingListInSidePanelFeature,
     &kIPHReadingModeSidePanelFeature,
     &kIPHShoppingCollectionFeature,
-    &kIPHSidePanelGenericMenuFeature,
     &kIPHSidePanelGenericPinnableFeature,
     &kIPHSidePanelLensOverlayPinnableFeature,
     &kIPHSidePanelLensOverlayPinnableFollowupFeature,

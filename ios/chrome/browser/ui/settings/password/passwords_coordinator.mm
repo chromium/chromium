@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 
+#import "base/debug/dump_without_crashing.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -229,7 +230,11 @@ using password_manager::WarningType;
 #pragma mark - PasswordsSettingsCommands
 
 - (void)showPasswordCheckup {
-  DCHECK(!self.passwordCheckupCoordinator);
+  if (self.passwordCheckupCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
@@ -245,7 +250,11 @@ using password_manager::WarningType;
 
 - (void)showDetailedViewForCredential:
     (const password_manager::CredentialUIEntry&)credential {
-  DCHECK(!self.passwordDetailsCoordinator);
+  if (self.passwordDetailsCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
@@ -261,9 +270,11 @@ using password_manager::WarningType;
 
 - (void)showDetailedViewForAffiliatedGroup:
     (const password_manager::AffiliatedGroup&)affiliatedGroup {
-  // Not an invariant due to possible race conditions. DCHECKing for debugging
-  // purposes. See crbug.com/40067451.
-  DCHECK(!self.passwordDetailsCoordinator);
+  if (self.passwordDetailsCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
@@ -277,8 +288,11 @@ using password_manager::WarningType;
 }
 
 - (void)showAddPasswordSheet {
-  // Not an invariant. DCHECKing for debugging purposes. See crbug.com/40067451.
-  DCHECK(!self.addPasswordCoordinator);
+  if (self.addPasswordCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.addPasswordCoordinator = [[AddPasswordCoordinator alloc]
@@ -331,7 +345,11 @@ using password_manager::WarningType;
 }
 
 - (void)showPasswordSettingsSubmenu {
-  DCHECK(!self.passwordSettingsCoordinator);
+  if (self.passwordSettingsCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
@@ -347,9 +365,11 @@ using password_manager::WarningType;
 }
 
 - (void)showPasswordManagerWidgetPromoInstructions {
-  // Not an invariant due to possible race conditions. DCHECKing for debugging
-  // purposes. See crbug.com/40067451.
-  DCHECK(!self.widgetPromoInstructionsCoordinator);
+  if (self.widgetPromoInstructionsCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 

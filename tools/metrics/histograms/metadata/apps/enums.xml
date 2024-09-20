@@ -317,6 +317,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Page info view"/>
   <int value="15" label="Privacy indicators notification settings button"/>
   <int value="16" label="Sub Apps install dialog"/>
+  <int value="17" label="Page specific site data dialog"/>
 </enum>
 
 <enum name="AppManagementUserAction">

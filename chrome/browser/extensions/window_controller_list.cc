@@ -66,7 +66,7 @@ WindowController* WindowControllerList::FindWindowForFunctionByIdWithFilter(
     const ExtensionFunction* function,
     int id,
     WindowController::TypeFilter filter) const {
-  for (auto iter = windows().begin(); iter != windows().end(); ++iter) {
+  for (auto iter = windows_.begin(); iter != windows_.end(); ++iter) {
     if ((*iter)->GetWindowId() == id) {
       if (windows_util::CanOperateOnWindow(function, *iter, filter))
         return *iter;
@@ -94,7 +94,7 @@ WindowController* WindowControllerList::CurrentWindowForFunctionWithFilter(
   WindowController* last_window = nullptr;
   WindowController* parent_window = nullptr;
 
-  for (const auto& controller : windows()) {
+  for (const auto& controller : windows_) {
     if (!windows_util::CanOperateOnWindow(function, controller, filter)) {
       continue;
     }

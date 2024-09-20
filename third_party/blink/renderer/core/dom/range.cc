@@ -609,6 +609,10 @@ DocumentFragment* Range::ProcessContents(ActionType action,
         right_contents, common_root, exception_state);
   }
 
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
   // delete all children of commonRoot between the start and end container
   Node* process_start = ChildOfCommonRootBeforeOffset(
       &original_start.Container(), original_start.Offset(), common_root);
@@ -622,13 +626,9 @@ DocumentFragment* Range::ProcessContents(ActionType action,
   // was partially selected.
   if (action == kExtractContents || action == kDeleteContents) {
     if (partial_start && common_root->contains(partial_start)) {
-      // FIXME: We should not continue if we have an earlier error.
-      exception_state.ClearException();
       setStart(partial_start->parentNode(), partial_start->NodeIndex() + 1,
                exception_state);
     } else if (partial_end && common_root->contains(partial_end)) {
-      // FIXME: We should not continue if we have an earlier error.
-      exception_state.ClearException();
       setStart(partial_end->parentNode(), partial_end->NodeIndex(),
                exception_state);
     }

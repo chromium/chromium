@@ -26,12 +26,12 @@ namespace {
 
 base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
                                                    ParsingContext& context) {
-  return GetMatchPatterns(name, context.page_language, context.pattern_source);
+  return GetMatchPatterns(name, context.page_language, context.pattern_file);
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(FieldType type,
                                                    ParsingContext& context) {
-  return GetMatchPatterns(type, context.page_language, context.pattern_source);
+  return GetMatchPatterns(type, context.page_language, context.pattern_file);
 }
 
 bool SetFieldAndAdvanceCursor(AutofillScanner* scanner,
@@ -847,7 +847,7 @@ AddressFieldParser::ParseNameAndLabelForDependentLocality(
 
   base::span<const MatchPatternRef> dependent_locality_patterns =
       GetMatchPatterns(ADDRESS_HOME_DEPENDENT_LOCALITY, context.page_language,
-                       context.pattern_source);
+                       context.pattern_file);
   return ParseNameAndLabelSeparately(
       context, scanner, dependent_locality_patterns, &dependent_locality_,
       "ADDRESS_HOME_DEPENDENT_LOCALITY");
@@ -1007,14 +1007,14 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreetsLines12(
   if (!between_streets_line_1_) {
     base::span<const MatchPatternRef> between_streets_patterns_line_1 =
         GetMatchPatterns("BETWEEN_STREETS_LINE_1", context.page_language,
-                         context.pattern_source);
+                         context.pattern_file);
     return ParseNameAndLabelSeparately(
         context, scanner, between_streets_patterns_line_1,
         &between_streets_line_1_, "BETWEEN_STREETS_LINE_1");
   } else if (!between_streets_line_2_) {
     base::span<const MatchPatternRef> between_streets_patterns_line_2 =
         GetMatchPatterns("BETWEEN_STREETS_LINE_2", context.page_language,
-                         context.pattern_source);
+                         context.pattern_file);
     return ParseNameAndLabelSeparately(
         context, scanner, between_streets_patterns_line_2,
         &between_streets_line_2_, "BETWEEN_STREETS_LINE_2");

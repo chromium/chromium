@@ -42,9 +42,9 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, RegisterAllToastIds) {
 }
 
 // Verifies that the ToastService and ToastController should exist for normal
-// browser windows. The ToastService and ToastController should be null for
-// non-normal browsers since toasts are not supported for those browser types.
-IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, ServiceExistForNormalBrowser) {
+// browser windows, and PWAs. The ToastService and ToastController should be
+// null for other browser types since toasts are not supported on them.
+IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, ServiceExistForBrowserTypes) {
   BrowserWindowFeatures* const normal_window_features =
       browser()->browser_window_features();
   EXPECT_TRUE(normal_window_features->toast_service());
@@ -58,6 +58,19 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, ServiceExistForNormalBrowser) {
 
   BrowserWindowFeatures* const app_window_features =
       CreateBrowserForApp("test_app_name", profile)->browser_window_features();
-  EXPECT_FALSE(app_window_features->toast_service());
-  EXPECT_FALSE(app_window_features->toast_controller());
+  EXPECT_TRUE(app_window_features->toast_service());
+  EXPECT_TRUE(app_window_features->toast_controller());
+
+  BrowserWindowFeatures* const pip_window_features =
+      Browser::Create(Browser::CreateParams::CreateForPictureInPicture(
+                          "test_app_name", false, profile, false))
+          ->browser_window_features();
+  EXPECT_FALSE(pip_window_features->toast_service());
+  EXPECT_FALSE(pip_window_features->toast_controller());
+
+  BrowserWindowFeatures* const devtools_window_features =
+      Browser::Create(Browser::CreateParams::CreateForDevTools(profile))
+          ->browser_window_features();
+  EXPECT_FALSE(devtools_window_features->toast_service());
+  EXPECT_FALSE(devtools_window_features->toast_controller());
 }

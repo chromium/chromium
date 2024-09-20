@@ -349,7 +349,8 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
 
   auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
       root->layer()->GetCompositor(), kDeskBarEnterPresentationHistogram, "",
-      kDeskBarEnterExitPresentationMaxLatency);
+      ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+          kDeskBarEnterExitPresentationMaxLatency));
   presentation_time_recorder->RequestNext();
 
   // It should not close all bars for the activation change when a new desk bar
@@ -461,7 +462,8 @@ void DeskBarController::CloseDeskBarInternal(BarWidgetAndView& desk_bar) {
   auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
       desk_bar.bar_view->root()->layer()->GetCompositor(),
       kDeskBarExitPresentationHistogram, "",
-      kDeskBarEnterExitPresentationMaxLatency);
+      ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+          kDeskBarEnterExitPresentationMaxLatency));
   presentation_time_recorder->RequestNext();
 
   desk_bar.bar_widget->Hide();

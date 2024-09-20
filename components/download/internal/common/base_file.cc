@@ -625,6 +625,7 @@ void BaseFile::AnnotateWithSourceInformation(
     const std::string& client_guid,
     const GURL& source_url,
     const GURL& referrer_url,
+    const std::optional<url::Origin>& request_initiator,
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
     OnAnnotationDoneCallback on_annotation_done_callback) {
   GURL authority_url = GetEffectiveAuthorityURL(source_url, referrer_url);
@@ -649,7 +650,7 @@ void BaseFile::AnnotateWithSourceInformation(
         authority_url, referrer_url));
 
     quarantine_service_->QuarantineFile(
-        full_path_, authority_url, referrer_url, client_guid,
+        full_path_, authority_url, referrer_url, request_initiator, client_guid,
         base::BindOnce(&BaseFile::OnFileQuarantined,
                        weak_factory_.GetWeakPtr()));
   }

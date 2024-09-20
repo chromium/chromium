@@ -4,14 +4,14 @@
 
 #include "ash/system/input_device_settings/device_image_downloader.h"
 
+#include <algorithm>
 #include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/system/input_device_settings/device_image.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "components/account_id/account_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -73,22 +73,16 @@ GURL DeviceImageDownloader::GetResourceUrlFromDeviceKey(
   CHECK(!device_key.empty());
 
   std::string formatted_key = GetDeviceKeyForMetadataRequest(device_key);
-  std::replace(formatted_key.begin(), formatted_key.end(), ':', '_');
+  std::ranges::replace(formatted_key, ':', '_');
 
   // Format strings for building image URLs based on destination.
   // Example URLs:
   // - Settings image: gstatic/chromeos/peripherals/0111_185a_icon.png
   // - Notification image: gstatic/chromeos/peripherals/0111_185a.png
-  const std::string kSettingsIconFormatStr = "%s%s_icon%s";
-  const std::string kNotificationFormatStr = "%s%s%s";
-
-  // Select the appropriate format string based on the image destination.
-  const std::string format_str =
-      destination == DeviceImageDestination::kSettings ? kSettingsIconFormatStr
-                                                       : kNotificationFormatStr;
-  const std::string url = base::StringPrintf(
-      format_str.c_str(), kGstaticBaseURL, formatted_key.c_str(), kFileFormat);
-  return GURL(url);
+  return GURL(base::StrCat(
+      {kGstaticBaseURL, formatted_key,
+       destination == DeviceImageDestination::kSettings ? "_icon" : "",
+       kFileFormat}));
 }
 
 void DeviceImageDownloader::DownloadImage(

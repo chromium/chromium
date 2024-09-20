@@ -133,7 +133,6 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         /*url_loader_network_observer=*/mojo::NullRemote(),
         /*devtools_observer=*/mojo::NullRemote(),
         /*accept_ch_frame_observer=*/mojo::NullRemote(),
-        net::CookieSettingOverrides(),
         /*attribution_request_helper=*/nullptr,
         /*shared_storage_writable=*/false);
   }

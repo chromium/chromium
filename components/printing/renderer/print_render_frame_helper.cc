@@ -2578,19 +2578,27 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
       return;
     }
 
-    is_loading_ = print_preview_context_.source_frame()->WillPrintSoon();
-    if (is_loading_) {
-      // Wait for DidStopLoading, for two reasons:
-      // * To give the document time to finish loading any pending resources
-      //   that are desired for printing.
-      // * Plugins may not know the correct `is_modifiable` value until they
-      //   are fully loaded, which occurs when DidStopLoading() is called.
-      //   Defer showing the preview until then.
-      on_stop_loading_closure_ =
-          base::BindOnce(&PrintRenderFrameHelper::RequestPrintPreview,
-                         weak_ptr_factory_.GetWeakPtr(), type, true);
-      SetupOnStopLoadingTimeout();
-      return;
+    if (type != PrintPreviewRequestType::kScripted) {
+      // Since currently we can not block the `window.print()` call and load
+      // the print only resources at the same time, no need to call
+      // `WillPrintSoon()`.
+      // This is a conscious tradeoff between rendering correctness and
+      // expected blocking behavior.
+
+      is_loading_ = print_preview_context_.source_frame()->WillPrintSoon();
+      if (is_loading_) {
+        // Wait for DidStopLoading, for two reasons:
+        // * To give the document time to finish loading any pending resources
+        //   that are desired for printing.
+        // * Plugins may not know the correct `is_modifiable` value until they
+        //   are fully loaded, which occurs when DidStopLoading() is called.
+        //   Defer showing the preview until then.
+        on_stop_loading_closure_ =
+            base::BindOnce(&PrintRenderFrameHelper::RequestPrintPreview,
+                           weak_ptr_factory_.GetWeakPtr(), type, true);
+        SetupOnStopLoadingTimeout();
+        return;
+      }
     }
   }
 

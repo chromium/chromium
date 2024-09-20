@@ -118,6 +118,15 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
       },
 
+      isTrackingProtectionUxEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+                     'is3pcdCookieSettingsRedesignEnabled') &&
+              loadTimeData.getBoolean('isTrackingProtectionUxEnabled');
+        },
+      },
+
       isIpProtectionAvailable_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isIpProtectionUxEnabled'),
@@ -139,6 +148,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private is3pcdRedesignEnabled_: boolean;
   private isIpProtectionAvailable_: boolean;
   private isFingerprintingProtectionAvailable_: boolean;
+  private isTrackingProtectionUxEnabled_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -151,7 +161,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       assert(toFocus);
       focusWithoutInk(toFocus);
     };
-    if (this.is3pcdRedesignEnabled_) {
+    if (this.isTrackingProtectionUxEnabled_) {
       this.focusConfig.set(
           `${routes.SITE_SETTINGS_ALL.path}_${routes.TRACKING_PROTECTION.path}`,
           selectSiteDataLinkRow);
@@ -163,7 +173,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   }
 
   override currentRouteChanged(route: Route) {
-    if (this.is3pcdRedesignEnabled_) {
+    if (this.isTrackingProtectionUxEnabled_) {
       if (route !== routes.TRACKING_PROTECTION) {
         this.$.toast.hide();
       }

@@ -72,6 +72,33 @@ chromium-metrics-reviews@google.com.
   <summary>iOS location permission state, recorded at startup.</summary>
 </histogram>
 
+<histogram name="Geolocation.LocationProviderManager.Mode"
+    enum="LocationProviderManagerMode" expires_after="2026-09-10">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the mode of the LocationProviderManager that acquires a valid
+    Geoposition.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationProviderManager.Source"
+    enum="LocationProviderManagerSource" expires_after="2026-09-10">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the location provider source of the LocationProviderManager that
+    acquires a valid Geoposition.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationProviderWinrt.Accuracy" enum="Hresult"
+    expires_after="2026-09-15">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>Records the accuracy value of a valid Geoposition.</summary>
+</histogram>
+
 <histogram name="Geolocation.LocationProviderWinrt.CreateGeoposition"
     enum="Hresult" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
@@ -112,6 +139,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.LocationProviderWinrt.PositionSource"
+    enum="WindowsDevicesGeolocationPositionSource" expires_after="2026-09-15">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value representing the position source for generating
+    a valid Geoposition.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.LocationProviderWinrt.RegisterCallbacks"
     enum="Hresult" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
@@ -142,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.Event"
-    enum="NetworkLocationRequestEvent" expires_after="2025-01-05">
+    enum="NetworkLocationRequestEvent" expires_after="2025-03-09">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -165,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.ResponseCode"
-    enum="HttpResponseCode" expires_after="2025-01-05">
+    enum="HttpResponseCode" expires_after="2025-03-09">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>

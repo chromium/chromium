@@ -11,10 +11,6 @@
 
 #pragma mark - Feature declarations
 
-// Feature flag to enable showing a live preview for Discover feed when opening
-// the feed context menu.
-BASE_DECLARE_FEATURE(kEnableDiscoverFeedPreview);
-
 // Feature flag to enable static resource serving for the Discover feed.
 // TODO(crbug.com/40246814): Remove this.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
@@ -66,10 +62,6 @@ extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
 // Parameter for the feed top sync promo's style.
 extern const char kDiscoverFeedTopSyncPromoStyle[];
 
-// Feature parameters for the feed header settings.
-extern const char kDisableStickyHeaderForFollowingFeed[];
-extern const char kOverrideFeedHeaderHeight[];
-
 // A parameter value for the feed's refresh threshold when the feed has already
 // been seen by the user.
 extern const char kFeedSettingRefreshThresholdInSeconds[];
@@ -89,9 +81,6 @@ extern const char kFeedSettingDiscoverReferrerParameter[];
 
 #pragma mark - Helpers
 
-// Whether the Discover feed content preview is shown in the context menu.
-bool IsDiscoverFeedPreviewEnabled();
-
 // Whether the NTP view hierarchy repair is enabled.
 bool IsNTPViewHierarchyRepairEnabled();
 
@@ -110,17 +99,6 @@ int FeedSyncPromoAutodismissCount();
 
 // Whether content suggestions are enabled for supervised users.
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);
-
-// YES if the Following feed header should not be sticky.
-bool IsStickyHeaderDisabledForFollowingFeed();
-
-// YES if a dot should appear to indicate that there is new content in the
-// Following feed.
-bool IsDotEnabledForNewFollowedContent();
-
-// Returns a custom height for the Following feed header if it is overridden
-// from the server, or returns the default value.
-int FollowingFeedHeaderHeight();
 
 // YES if discover feedback is going to be sent to the updated target.
 bool IsWebFeedFeedbackRerouteEnabled();

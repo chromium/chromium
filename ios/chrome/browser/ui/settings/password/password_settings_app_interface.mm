@@ -272,8 +272,8 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   [self mockModule].canAttempt = canAttempt;
 }
 
-+ (void)mockReauthenticationModuleShouldReturnSynchronously:(BOOL)returnSync {
-  [self mockModule].shouldReturnSynchronously = returnSync;
++ (void)mockReauthenticationModuleShouldSkipReAuth:(BOOL)returnSync {
+  [self mockModule].shouldSkipReAuth = returnSync;
 }
 
 + (void)mockReauthenticationModuleReturnMockedResult {

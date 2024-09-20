@@ -92,26 +92,34 @@ GroupDataStore::GroupDataStore(const base::FilePath& db_path,
 }
 
 GroupDataStore::~GroupDataStore() {
-  // Shutdown `proto_table_manager_` and delete it together with `db_` on DB
-  // sequence, then deletes KeyValueTable/KeyValueData on the main sequence.
+  // Shutdown `proto_table_manager_` and delete it together with `db_` and
+  // KeyValueTable on DB sequence, then deletes KeyValueData and runs
+  // `shutdown_callback_` on the main sequence.
   // This ensures that DB objects outlive any other task posted to DB sequence,
   // since their deletion is the very last posted task.
   db_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
           [](std::unique_ptr<sql::Database> db,
-             scoped_refptr<sqlite_proto::ProtoTableManager> table_manager) {
-            table_manager->WillShutdown();
+             scoped_refptr<sqlite_proto::ProtoTableManager> table_manager,
+             auto group_entity_table) { table_manager->WillShutdown(); },
+          std::move(db_), std::move(proto_table_manager_),
+          std::move(group_entity_table_)),
+      base::BindOnce(
+          [](auto group_entity_data, base::OnceClosure shutdown_callback) {
+            if (shutdown_callback) {
+              std::move(shutdown_callback).Run();
+            }
           },
-          std::move(db_), std::move(proto_table_manager_)),
-      base::DoNothingWithBoundArgs(std::move(group_entity_table_),
-                                   std::move(group_entity_data_)));
+          std::move(group_entity_data_), std::move(shutdown_callback_)));
 }
 
 void GroupDataStore::StoreGroupData(const VersionToken& version_token,
                                     const GroupData& group_data) {
   CHECK_EQ(db_init_status_, DBInitStatus::kSuccess);
 
+  // TODO(crbug.com/301390275): support batching StoreGroupData() (by setting
+  // `flush_delay`?).
   data_sharing_pb::GroupEntity entity;
   entity.mutable_metadata()->set_last_processed_version_token(
       version_token.value());
@@ -168,6 +176,11 @@ void GroupDataStore::OnDBReady(DBLoadedCallback db_loaded_callback,
                                DBInitStatus status) {
   db_init_status_ = status;
   std::move(db_loaded_callback).Run(status);
+}
+
+void GroupDataStore::SetShutdownCallbackForTesting(
+    base::OnceClosure shutdown_callback) {
+  shutdown_callback_ = std::move(shutdown_callback);
 }
 
 }  // namespace data_sharing

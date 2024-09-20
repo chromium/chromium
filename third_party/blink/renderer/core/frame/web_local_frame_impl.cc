@@ -884,7 +884,7 @@ gfx::Size WebLocalFrameImpl::DocumentSize() const {
 bool WebLocalFrameImpl::HasVisibleContent() const {
   auto* layout_object = GetFrame()->OwnerLayoutObject();
   if (layout_object &&
-      layout_object->StyleRef().Visibility() != EVisibility::kVisible) {
+      layout_object->StyleRef().UsedVisibility() != EVisibility::kVisible) {
     return false;
   }
 

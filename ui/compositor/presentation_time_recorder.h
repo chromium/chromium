@@ -25,6 +25,29 @@ namespace ui {
 class COMPOSITOR_EXPORT PresentationTimeRecorder {
  public:
   class PresentationTimeRecorderInternal;
+
+  struct COMPOSITOR_EXPORT BucketParams {
+    BucketParams();
+    BucketParams(base::TimeDelta min_latency,
+                 base::TimeDelta max_latency,
+                 int num_buckets);
+    BucketParams(const BucketParams&);
+    BucketParams& operator=(const BucketParams&);
+    ~BucketParams();
+
+    static BucketParams CreateWithMaximum(base::TimeDelta max_latency);
+
+    // Minimum expected latency. All samples less than this will go in underflow
+    // bucket.
+    base::TimeDelta min_latency = base::Milliseconds(1);
+    // Maximum expected latency. All samples greater than this will go in
+    // overflow bucket.
+    base::TimeDelta max_latency = base::Milliseconds(200);
+    // Number of buckets between `min_latency` and `max_latency` (uses default
+    // exponential bucketing).
+    int num_buckets = 50;
+  };
+
   class COMPOSITOR_EXPORT TestApi {
    public:
     explicit TestApi(PresentationTimeRecorder* recorder);
@@ -75,7 +98,8 @@ CreatePresentationTimeHistogramRecorder(
     ui::Compositor* compositor,
     const char* presentation_time_histogram_name,
     const char* max_latency_histogram_name = "",
-    base::TimeDelta maximum = base::Milliseconds(200),
+    PresentationTimeRecorder::BucketParams bucket_params =
+        PresentationTimeRecorder::BucketParams(),
     bool emit_trace_event = false);
 
 }  // namespace ui

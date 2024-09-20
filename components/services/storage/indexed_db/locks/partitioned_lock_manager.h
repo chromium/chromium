@@ -21,7 +21,7 @@
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // Used to receive and hold locks from a PartitionedLockManager. This struct
 // enables the PartitionedLock objects to always live in the destination of the
@@ -196,6 +196,6 @@ bool operator==(const PartitionedLockManager::PartitionedLockRequest& x,
 bool operator!=(const PartitionedLockManager::PartitionedLockRequest& x,
                 const PartitionedLockManager::PartitionedLockRequest& y);
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_H_

@@ -17,10 +17,6 @@
 #include "components/version_info/channel.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif
-
 namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -115,13 +111,7 @@ void AppMenuIconController::UpdateDelegate() {
 
 AppMenuIconController::TypeAndSeverity
 AppMenuIconController::GetTypeAndSeverity() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // In ash-chrome, the upgrade icon styling is used for upgrading the browser
-  // from ash-chrome to lacros-chrome.
-  // It can be done if Profile can be migrated into Lacros.
-  if (crosapi::browser_util::IsProfileMigrationAvailable())
-    return {IconType::UPGRADE_NOTIFICATION, Severity::LOW};
-#else
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (browser_defaults::kShowUpgradeMenuItem &&
       upgrade_detector_->notify_upgrade()) {
     UpgradeDetector::UpgradeNotificationAnnoyanceLevel level =
@@ -141,6 +131,7 @@ AppMenuIconController::GetTypeAndSeverity() const {
     return {IconType::GLOBAL_ERROR, Severity::MEDIUM};
   }
 #endif
+
 #if !BUILDFLAG(IS_CHROMEOS)
   if (DefaultBrowserPromptManager::GetInstance()->get_show_app_menu_prompt() &&
       !profile_->IsIncognitoProfile() && !profile_->IsGuestSession()) {

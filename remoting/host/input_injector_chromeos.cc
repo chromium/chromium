@@ -52,8 +52,7 @@ ui::EventFlags MouseButtonToUIFlags(MouseEvent::MouseButton button) {
     case MouseEvent::BUTTON_MIDDLE:
       return ui::EF_MIDDLE_MOUSE_BUTTON;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ui::EF_NONE;
+      NOTREACHED();
   }
 }
 

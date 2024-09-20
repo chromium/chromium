@@ -14,6 +14,29 @@ class TabModel;
 
 namespace plus_addresses {
 
+// Possible error types during the plus address creation flow.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.plus_addresses
+enum class PlusAddressCreationBottomSheetErrorType {
+  // A network request timed out during an attempt to reserve a plus address.
+  kReserveTimeout = 0,
+  // The user hit the plus address reserve quota limit.
+  kReserveQuota = 1,
+  // Some network error occurred during an attempt to reserve a plus address.
+  kReserveGeneric = 2,
+  // A network request to confirm a plus address timed out when the user
+  // attempted to create a plus address.
+  kCreateTimeout = 3,
+  // The user hit the plus address creation quota limit when they attempted to
+  // create a plus address.
+  kCreateQuota = 4,
+  // The user tried to create a new plus address for the domain, but some plus
+  // address already exists for an affiliated
+  kCreateAffiliation = 5,
+  // Some network error occurred during an attempt to create a plus address.
+  kCreateGeneric = 6,
+};
+
 class PlusAddressCreationController;
 
 // A class intended as a thin wrapper around a Java object, which calls out to
@@ -33,6 +56,9 @@ class PlusAddressCreationViewAndroid {
                 const std::string& primary_email_address,
                 bool refresh_supported,
                 bool has_accepted_notice);
+  void TryAgainToReservePlusAddress(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
   void OnRefreshClicked(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj);
   void OnConfirmRequested(JNIEnv* env,
@@ -45,7 +71,8 @@ class PlusAddressCreationViewAndroid {
   // plus address in the bottomsheet and enable the OK button.
   void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile);
   // Either shows an error message on the bottomsheet or closes the bottomsheet.
-  void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile);
+  void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile,
+                         const PlusProfile& reserved_plus_profile);
   // Hides the refresh icon in case no more plus address refreshes are available
   // to the user.
   void HideRefreshButton();

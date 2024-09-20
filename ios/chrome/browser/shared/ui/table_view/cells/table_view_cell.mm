@@ -25,6 +25,8 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
     _customSeparator = [[UIView alloc] init];
     _customSeparator.translatesAutoresizingMaskIntoConstraints = NO;
     _customSeparator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+    // Defaults to hidden until a custom separator is explicitly set.
+    _customSeparator.hidden = YES;
 
     [self addSubview:_customSeparator];
 

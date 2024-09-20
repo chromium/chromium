@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/http/http_stream_pool.h"
 #include "net/socket/stream_socket_handle.h"
@@ -19,7 +20,7 @@ class StreamSocket;
 // A StreamSocketHandle that is associated with an HttpStreamPool::Group.
 class NET_EXPORT_PRIVATE HttpStreamPoolHandle : public StreamSocketHandle {
  public:
-  HttpStreamPoolHandle(HttpStreamPool::Group* group,
+  HttpStreamPoolHandle(base::WeakPtr<HttpStreamPool::Group> group,
                        std::unique_ptr<StreamSocket> socket,
                        int64_t generation);
 
@@ -33,7 +34,7 @@ class NET_EXPORT_PRIVATE HttpStreamPoolHandle : public StreamSocketHandle {
   bool IsPoolStalled() const override;
 
  private:
-  const raw_ptr<HttpStreamPool::Group> group_;
+  base::WeakPtr<HttpStreamPool::Group> group_;
   const int64_t generation_;
 };
 

@@ -293,7 +293,7 @@ void NavigateEvent::React(ScriptState* script_state) {
     // we always go down the 1+ promises path.
     promise = ScriptPromiseUntyped::All(
         script_state, HeapVector<ScriptPromiseUntyped>(
-                          {ScriptPromiseUntyped::CastUndefined(script_state)}));
+                          {ToResolvedUndefinedPromise(script_state)}));
   }
 
   promise.Then(MakeGarbageCollected<ScriptFunction>(

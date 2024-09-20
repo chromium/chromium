@@ -45,18 +45,25 @@ class TestOSCryptAsync : public OSCryptAsync {
 
   static Encryptor GetTestEncryptorForTesting() {
     Encryptor::KeyRing keys;
-    std::vector<uint8_t> key_data(Encryptor::Key::kAES256GCMKeySize);
-    crypto::RandBytes(key_data);
-    Encryptor::Key key(key_data, mojom::Algorithm::kAES256GCM);
-    // The test key used here indicates it is compatible with OSCrypt Sync
-    // because otherwise tests that ask for instances with the
-    // kEncryptSyncCompat option would fall back to OSCrypt Sync, and this
-    // requires the OSCrypt mocker to be installed, which should not be needed
-    // in tests and code ported to OSCrypt Async.
+    keys.emplace(kDefaultTestKeyPrefix,
+                 Encryptor::Key(crypto::RandBytesAsVector(
+                                    Encryptor::Key::kAES256GCMKeySize),
+                                mojom::Algorithm::kAES256GCM));
+    Encryptor::Key key(
+        crypto::RandBytesAsVector(Encryptor::Key::kAES256GCMKeySize),
+        mojom::Algorithm::kAES256GCM);
+    // This test keyring has a second key that is OS Crypt Sync compatible.
+    // When a test requests an Encryptor that is OS Crypt Sync compatible, the
+    // k2 key will be picked, instead of the default k1 key. This allows
+    // testing of key upgrade scenarios.
     key.is_os_crypt_sync_compatible_ = true;
-    keys.emplace("_", std::move(key));
-    Encryptor encryptor(std::move(keys), "_");
+    keys.emplace(kOsCryptSyncCompatibleTestKeyPrefix, std::move(key));
+    Encryptor encryptor(std::move(keys), kDefaultTestKeyPrefix);
     return encryptor;
+  }
+
+  static Encryptor CloneEncryptorForTesting(Encryptor::Option option) {
+    return GetTestEncryptorForTesting().Clone(option);
   }
 
  private:
@@ -69,8 +76,8 @@ std::unique_ptr<OSCryptAsync> GetTestOSCryptAsyncForTesting(
   return std::make_unique<TestOSCryptAsync>(is_sync_for_unittests);
 }
 
-Encryptor GetTestEncryptorForTesting() {
-  return TestOSCryptAsync::GetTestEncryptorForTesting();
+Encryptor GetTestEncryptorForTesting(Encryptor::Option option) {
+  return TestOSCryptAsync::CloneEncryptorForTesting(option);
 }
 
 }  // namespace os_crypt_async

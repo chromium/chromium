@@ -256,8 +256,13 @@ public class OmniboxTestUtils {
                 });
     }
 
-    /** Waits for a non-empty list of omnibox suggestions is shown. */
+    /** Waits for a non-empty list of omnibox suggestions to be shown. */
     public void checkSuggestionsShown() {
+        checkSuggestionsShown(true);
+    }
+
+    /** Waits for a non-empty list of omnibox suggestions to be {@link shown}. */
+    public void checkSuggestionsShown(boolean shown) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     OmniboxSuggestionsDropdown suggestionsDropdown =
@@ -268,14 +273,25 @@ public class OmniboxTestUtils {
                             "suggestion list is null",
                             suggestionsDropdown,
                             Matchers.notNullValue());
-                    Criteria.checkThat(
-                            "suggestion list is not shown",
-                            suggestionsDropdown.getViewGroup().isShown(),
-                            Matchers.is(true));
-                    Criteria.checkThat(
-                            "suggestion list has no entries",
-                            suggestionsDropdown.getDropdownItemViewCountForTest(),
-                            Matchers.greaterThan(0));
+                    if (shown) {
+                        Criteria.checkThat(
+                                "suggestion list is not shown",
+                                suggestionsDropdown.getViewGroup().isShown(),
+                                Matchers.is(true));
+                        Criteria.checkThat(
+                                "suggestion list has no entries",
+                                suggestionsDropdown.getDropdownItemViewCountForTest(),
+                                Matchers.greaterThan(0));
+                    } else {
+                        Criteria.checkThat(
+                                "suggestion list is shown",
+                                suggestionsDropdown.getViewGroup().isShown(),
+                                Matchers.is(false));
+                        Criteria.checkThat(
+                                "suggestion list has entries",
+                                suggestionsDropdown.getDropdownItemViewCountForTest(),
+                                Matchers.equalTo(0));
+                    }
                 });
     }
 

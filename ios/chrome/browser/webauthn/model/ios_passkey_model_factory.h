@@ -18,8 +18,10 @@ class PasskeyModel;
 // Singleton that associates PasskeyModel to ChromeBrowserStates.
 class IOSPasskeyModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static webauthn::PasskeyModel* GetForBrowserState(
-      ChromeBrowserState* context);
+  // TODO(crbug.com/358301380): remove this method.
+  static webauthn::PasskeyModel* GetForBrowserState(ProfileIOS* profile);
+
+  static webauthn::PasskeyModel* GetForProfile(ProfileIOS* profile);
 
   static IOSPasskeyModelFactory* GetInstance();
 

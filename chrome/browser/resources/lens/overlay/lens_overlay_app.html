@@ -1,4 +1,10 @@
-<style>
+<style include="searchbox-shared-style">
+  :host {
+    --cr-searchbox-height: 48px;
+    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+    --cr-searchbox-min-width: 306px;
+  }
+
   .app-container {
     height: 100%;
     width: 100%;
@@ -6,6 +12,7 @@
 
   #backgroundScrim {
     background-color: rgba(0, 0 ,0, 0.3);
+    cursor: default;
     inset: 0;
     position: absolute;
   }
@@ -14,8 +21,14 @@
     display: flex;
     pointer-events: none;
     position: absolute;
+    z-index: 6; /* Keep aligned with cursor and context menu. */
   }
 
+  .button-container.button-container {
+    transition: opacity 150ms, visibility 150ms;
+  }
+
+  :host([should-fade-out-buttons]) .button-container,
   :host(:not([initial-flash-animation-has-ended])) .button-container {
     opacity: 0;
     visibility: hidden;
@@ -27,24 +40,30 @@
     inset-inline-end: 28px;
   }
 
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #optionsButtonContainer {
+    inset-block-start: 36px;
+  }
+
   :host([close-button-hidden]) #optionsButtonContainer {
-    inset-inline-end: 22px;
+    inset-inline-end: 24px;
   }
 
   #translateButtonContainer {
     inset-block-start: 28px;
-    inset-inline-end: 148px;
+    inset-inline-end: 135px;
   }
 
   :host([close-button-hidden]) #translateButtonContainer {
-    inset-inline-end: 82px;
+    inset-inline-end: 84px;
   }
 
   .action-button {
-    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-icon-size: 24px;
     --cr-icon-button-size: 36px;
     --cr-icon-button-fill-color: var(--color-overlay-icon);
     background-color: rgba(var(--color-scrim-rgb), 0.6);
+    margin-inline-end: 0;
+    margin-inline-start: 0;
     pointer-events: all;
   }
 
@@ -52,11 +71,12 @@
     --cr-icon-image: url("icon_clear.svg");
   }
 
-  :host([close-button-hidden]) #closeButton {
+  :host([close-button-hidden]) #closeButton,
+  :host([search-box-hidden]) #searchboxContainer {
     display: none;
   }
 
-  #copyToast {
+  #toast {
     justify-content: space-between;
   }
 
@@ -159,13 +179,23 @@
   initial-gradient {
     pointer-events: none;
   }
+
+  #searchboxContainer {
+    --color-searchbox-results-background: #ffffffff;
+    position: absolute;
+    inset-block-start: 36px;
+    inset-inline-end: 140px;
+  }
+
+  :host([dark-mode]) #searchboxContainer {
+    --color-searchbox-results-background: #3c3c3cff;
+  }
 </style>
 <div class="app-container"
     on-initial-flash-animation-end="onInitialFlashAnimationEnd"
     on-screenshot-rendered="onScreenshotRendered"
-    on-selection-overlay-clicked="handleSelectionOverlayClicked"
-    on-pointer-released="handlePointerReleased"
-    on-text-copied="showTextCopiedToast"
+    on-selection-started="handleSelectionStarted"
+    on-selection-finished="handleSelectionFinished"
     on-pointerenter="handlePointerEnter"
     on-pointerleave="handlePointerLeave"
     style="
@@ -181,9 +211,9 @@
     --color-surface-container-highest-dark: [[skColorToHex_(theme.surfaceContainerHighestDark)]];
     --color-selection-element: [[skColorToHex_(theme.selectionElement)]];
     --color-overlay-icon: white;
-    --color-overlay-button-label: black;">
-  <cr-toast id="copyToast" duration="4000">
-    <div>$i18n{copyToastMessage}</div>
+    --color-overlay-button-label: white;">
+  <cr-toast id="toast" duration="4000">
+    <div>[[toastMessage]]</div>
     <cr-button on-click="onHideToastClick">
       $i18n{dismiss}
     </cr-button>
@@ -193,10 +223,18 @@
       on-pointerenter="handlePointerEnterBackgroundScrim"
       on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
   <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
+      is-searchbox-focused="[[isSearchboxFocused]]"
       on-pointerenter="handlePointerEnterSelectionOverlay"
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
+  <template is="dom-if" if="[[isLensOverlayContextualSearchboxEnabled]]">
+    <div id="searchboxContainer">
+      <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
+          on-blur="handleSearchboxBlurred">
+      </cr-searchbox>
+    </div>
+  </template>
   <template is="dom-if" if="[[isTranslateButtonVisible]]">
     <div id="translateButtonContainer" class="button-container">
       <translate-button></translate-button>

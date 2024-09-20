@@ -9,6 +9,7 @@
 #include <iterator>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -35,6 +36,7 @@
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "sql/statement.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -146,7 +148,7 @@ DeserializeCommonAggregatableData(
 
 }  // namespace
 
-url::Origin DeserializeOrigin(const std::string& origin) {
+url::Origin DeserializeOrigin(std::string_view origin) {
   return url::Origin::Create(GURL(origin));
 }
 
@@ -549,6 +551,10 @@ DeserializeAttributionScopesData(sql::Statement& stmt, int col) {
     return base::unexpected(absl::monostate());
   }
   return scopes_data;
+}
+
+void DeduplicateSourceIds(std::vector<StoredSource::Id>& ids) {
+  ids = base::flat_set<StoredSource::Id>(std::move(ids)).extract();
 }
 
 }  // namespace content

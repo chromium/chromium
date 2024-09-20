@@ -14,20 +14,20 @@ TensorImplDml::TensorImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
     ContextImplDml* context,
-    mojom::BufferInfoPtr buffer_info)
-    : WebNNTensorImpl(std::move(receiver), context, std::move(buffer_info)),
+    mojom::TensorInfoPtr tensor_info)
+    : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)),
       buffer_(std::move(buffer)) {}
 
 TensorImplDml::~TensorImplDml() = default;
 
-void TensorImplDml::ReadBufferImpl(ReadBufferCallback callback) {
+void TensorImplDml::ReadTensorImpl(ReadTensorCallback callback) {
   static_cast<ContextImplDml*>(context_.get())
-      ->ReadBuffer(this, std::move(callback));
+      ->ReadTensor(this, std::move(callback));
 }
 
-void TensorImplDml::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
+void TensorImplDml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
   static_cast<ContextImplDml*>(context_.get())
-      ->WriteBuffer(this, std::move(src_buffer));
+      ->WriteTensor(this, std::move(src_buffer));
 }
 
 void TensorImplDml::SetLastSubmissionFenceValue(

@@ -39,7 +39,6 @@ below.
 * Code
   * Windows/Linux: `//third_party/webrtc/modules/desktop_capture`
   * Mac: `//content/browser/media/capture/desktop_capture_device_mac.cc`
-  * LaCrOS: `//content/browser/media/capture/desktop/desktop_capturer_lacros.cc`
 * Issues
   * `Internals>Media>ScreenCapture`
 * Docs

@@ -409,7 +409,10 @@ interface ThemeObserver {
   OnStaticColorChanged(skia.mojom.SkColor? color);
 
   // Notifies the JS side about the system geolocation permission change.
-  OnGeolocationPermissionForSystemServicesChanged(bool enabled);
+  // `is_user_modifiable` parameter propagates the
+  // `Preference::IsUserModifiable()` property of the system geolocation pref.
+  OnGeolocationPermissionForSystemServicesChanged(bool enabled,
+                                                  bool is_user_modifiable);
 
   // Notifies the JS side about the change in the daylight time.
   // This happens when the timezone setting is changed.
@@ -457,6 +460,10 @@ interface ThemeProvider {
   // Returns if the system geolocation permission is enabled for system
   // services.
   IsGeolocationEnabledForSystemServices() => (bool geolocation_enabled);
+
+  // Returns if the geolocation setting can be changed by the user.
+  // E.g. admins can force the value through a policy.
+  IsGeolocationUserModifiable() => (bool geolocation_is_user_modifiable);
 };
 
 // Contains information about the current user.
@@ -671,7 +678,8 @@ interface AmbientObserver {
   // Notifies the JS side about the system geolocation permission change.
   // TODO(b/319443587): Refactor out the Geolocation interfaces from Ambient*
   // and Theme* intefaces.
-  OnGeolocationPermissionForSystemServicesChanged(bool enabled);
+  OnGeolocationPermissionForSystemServicesChanged(bool enabled,
+                                                  bool is_user_modifiable);
 };
 
 // Provides APIs to expose Ambient mode settings.
@@ -725,6 +733,10 @@ interface AmbientProvider {
   // Returns if the system geolocation permission is enabled for system
   // services.
   IsGeolocationEnabledForSystemServices() => (bool geolocation_enabled);
+
+  // Returns if the geolocation setting can be changed by the user.
+  // E.g. admins can force the value through a policy.
+  IsGeolocationUserModifiable() => (bool geolocation_is_user_modifiable);
 
   // Sets the system geolocation permission to "Only allowed for system".
   EnableGeolocationForSystemServices();

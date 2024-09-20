@@ -34,6 +34,8 @@ static_library("ash") {
     "//chrome/browser:primitives",
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/signin",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -63,6 +65,8 @@ static_library("ash") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/signin",
     "//chrome/browser/ui/webui/ash/edu_coexistence",
   ]
 }

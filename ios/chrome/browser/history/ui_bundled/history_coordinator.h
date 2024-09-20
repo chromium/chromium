@@ -7,29 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/ios/block_types.h"
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/history/ui_bundled/base_history_coordinator.h"
+#import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
 
 enum class UrlLoadStrategy;
 
 @protocol HistoryCoordinatorDelegate;
-@protocol HistoryPresentationDelegate;
 
 // Coordinator that presents History.
-@interface HistoryCoordinator : ChromeCoordinator
+@interface HistoryCoordinator : BaseHistoryCoordinator
 
-// Opaque instructions on how to open urls.
-@property(nonatomic) UrlLoadStrategy loadStrategy;
 // Optional: If provided, search terms to filter the displayed history items.
 @property(nonatomic, copy) NSString* searchTerms;
-// Delegate used to make the Tab UI visible.
-@property(nonatomic, weak) id<HistoryPresentationDelegate> presentationDelegate;
-
-// The delegate handling coordinator dismissal.
-@property(nonatomic, weak) id<HistoryCoordinatorDelegate> delegate;
-
-// Dismisses this Coordinator then calls `completionHandler`.
-- (void)dismissWithCompletion:(ProceduralBlock)completionHandler;
 
 @end
 

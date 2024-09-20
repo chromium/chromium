@@ -347,7 +347,7 @@ ScriptPromise<IDLUndefined> HIDDevice::sendReport(ScriptState* script_state,
   }
 
   Vector<uint8_t> vector;
-  vector.Append(data.Bytes(), static_cast<wtf_size_t>(data.ByteLength()));
+  vector.AppendSpan(data.ByteSpan());
 
   device_requests_.insert(resolver);
   connection_->Write(
@@ -382,7 +382,7 @@ ScriptPromise<IDLUndefined> HIDDevice::sendFeatureReport(
   }
 
   Vector<uint8_t> vector;
-  vector.Append(data.Bytes(), static_cast<wtf_size_t>(data.ByteLength()));
+  vector.AppendSpan(data.ByteSpan());
 
   device_requests_.insert(resolver);
   connection_->SendFeatureReport(

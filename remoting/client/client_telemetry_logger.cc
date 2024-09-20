@@ -166,8 +166,7 @@ ChromotingEvent::SessionState ClientTelemetryLogger::TranslateState(
     case protocol::ConnectionToHost::State::CLOSED:
       return ChromotingEvent::SessionState::CLOSED;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ChromotingEvent::SessionState::UNKNOWN;
+      NOTREACHED();
   }
 }
 
@@ -202,8 +201,7 @@ ChromotingEvent::ConnectionError ClientTelemetryLogger::TranslateError(
     case ErrorCode::UNKNOWN_ERROR:
       return ChromotingEvent::ConnectionError::UNKNOWN_ERROR;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ChromotingEvent::ConnectionError::UNEXPECTED;
+      NOTREACHED();
   }
 }
 
@@ -218,8 +216,7 @@ ChromotingEvent::ConnectionType ClientTelemetryLogger::TranslateConnectionType(
     case protocol::TransportRoute::RELAY:
       return ChromotingEvent::ConnectionType::RELAY;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ChromotingEvent::ConnectionType::DIRECT;
+      NOTREACHED();
   }
 }
 

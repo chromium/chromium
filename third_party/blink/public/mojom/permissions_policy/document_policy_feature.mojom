@@ -40,6 +40,9 @@ enum DocumentPolicyFeature {
   // Controls whether or not to include javascript stack traces in crash reports
   // from the Reporting API.
   kIncludeJSCallStacksInCrashReports = 14,
+  // Hints if the document is not expecting linked resources.
+  // https://github.com/explainers-by-googlers/expect-no-linked-resources
+  kExpectNoLinkedResources = 15,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
-#include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/controls/native/native_view_host_wrapper.h"
@@ -17,7 +16,7 @@
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace views {
 
@@ -40,7 +39,6 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii) override;
-  bool SetCustomMask(std::unique_ptr<ui::LayerOwner> mask) override;
   void SetHitTestTopInset(int top_inset) override;
   int GetHitTestTopInset() const override;
   void InstallClip(int x, int y, int w, int h) override;
@@ -65,10 +63,6 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   // Overridden from aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowDestroyed(aura::Window* window) override;
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
 
   void CreateClippingWindow();
 
@@ -83,12 +77,6 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   // Sets or updates the |corner_radii_| on the native view's layer.
   void ApplyRoundedCorners();
 
-  // Sets or updates the mask layer on the native view's layer.
-  void InstallMask();
-
-  // Unsets the mask layer on the native view's layer.
-  void UninstallMask();
-
   // Updates the top insets of |clipping_window_|.
   void UpdateInsets();
 
@@ -102,9 +90,6 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   // host_->GetWidget().
   std::unique_ptr<aura::Window> clipping_window_;
   std::unique_ptr<gfx::Rect> clip_rect_;
-
-  // This mask exists for the sake of SetCornerRadius().
-  std::unique_ptr<ui::LayerOwner> mask_;
 
   // Holds the corner_radii to be applied.
   gfx::RoundedCornersF corner_radii_;

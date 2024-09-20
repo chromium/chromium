@@ -65,6 +65,7 @@ enum Sandbox {
   kSpeechRecognition,
 
   // Like kUtility but allows loading of the optimization guide library.
+  [EnableIf=is_linux_or_mac]
   kVideoEffects,
 
   // Like kUtility but allows loading of screen AI library.

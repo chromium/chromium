@@ -37,17 +37,23 @@ def run(command, error_message=None, exit_on_error=True):
     Helper function to run a shell command.
     """
     try:
-        subprocess.run(command, shell=True, check=True)
-    except subprocess.CalledProcessError:
-        if error_message:
-            print(error_message)
-        else:
-            print(f"Failed to run command: {command}")
-        if exit_on_error:
-            exit(1)
-        return False
-    return True
+        output = subprocess.run(command,
+                                shell=True,
+                                capture_output=True,
+                                check=True,
+                                text=True)
+        print(output.stdout)
+        print(output.stderr)
 
+    except subprocess.CalledProcessError as e:
+        print(error_message if error_message else "Failed to run command.")
+        print(e.stdout)
+        print(e.stderr)
+        if exit_on_error:
+            raise e
+        return False
+
+    return True
 
 def getSpreadsheet():
     """
@@ -93,17 +99,16 @@ def appendRow(spreadsheet, values):
         print(err)
 
 
+today = datetime.now().strftime("%Y/%m/%d")
+scratch_dir = os.path.expanduser("~/scratch")
+spreadsheet = getSpreadsheet()
+
 print("Running evaluate_patches.py...")
 
 # Fetch the latest changes from the main branch.
-run("git checkout main")
 run("git fetch origin")
+run("git checkout main", exit_on_error=False)  # Might be already on main.
 run("git reset --hard origin/main")
-today = datetime.now().strftime("%Y/%m/%d")
-
-scratch_dir = os.path.expanduser("~/scratch")
-
-spreadsheet = getSpreadsheet()
 
 # Setup a build directory to evaluate the patches. This is common to all the
 # patches to avoid recompiling the entire project for each patch.
@@ -114,7 +119,8 @@ with open("out/linux/args.gn", "w") as f:
 
 # Produce a full rewrite, and store individual patches below ~/scratch/patch_*
 run("./tools/clang/spanify/rewrite-multiple-platforms.sh", exit_on_error=False)
-run("git reset --hard HEAD")  # Restore source code.
+
+run("git reset --hard origin/main")  # Restore source code.
 run("gclient sync -fD", exit_on_error=False)  # Restore compiler.
 
 patches = [

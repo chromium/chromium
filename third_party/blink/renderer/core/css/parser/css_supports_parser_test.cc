@@ -23,7 +23,16 @@ class CSSSupportsParserTest : public testing::Test {
   }
 
   Vector<CSSParserToken, 32> Tokenize(const String& string) {
-    return CSSTokenizer(string).TokenizeToEOF();
+    CSSTokenizer tokenizer(string);
+    Vector<CSSParserToken, 32> tokens;
+    while (true) {
+      const CSSParserToken token = tokenizer.TokenizeSingle();
+      if (token.GetType() == kEOFToken) {
+        return tokens;
+      } else {
+        tokens.push_back(token);
+      }
+    }
   }
 
   Result StaticConsumeSupportsCondition(String string) {

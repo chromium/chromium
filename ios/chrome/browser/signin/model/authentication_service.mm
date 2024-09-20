@@ -22,6 +22,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
+#import "components/sync/service/account_pref_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
@@ -231,6 +232,21 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
       }
     }
   }
+}
+
+bool AuthenticationService::IsAccountSwitchInProgress() {
+  return accountSwitchInProgress_;
+}
+
+base::ScopedClosureRunner
+AuthenticationService::DeclareAccountSwitchInProgress() {
+  CHECK(!accountSwitchInProgress_);
+  accountSwitchInProgress_ = true;
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](AuthenticationService* service) {
+        service->accountSwitchInProgress_ = false;
+      },
+      this));
 }
 
 void AuthenticationService::SetReauthPromptForSignInAndSync() {
@@ -723,6 +739,9 @@ void AuthenticationService::ClearAccountSettingsPrefsOfRemovedAccounts() {
     available_gaia_ids.push_back(gaia_id_hash);
   }
   sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
+      available_gaia_ids);
+  syncer::KeepAccountKeyedPrefValuesOnlyForUsers(
+      pref_service_, prefs::kSigninHasAcceptedManagementDialog,
       available_gaia_ids);
 }
 

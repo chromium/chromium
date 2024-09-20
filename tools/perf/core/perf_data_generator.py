@@ -54,6 +54,9 @@ from telemetry import decorators
 #           # Arguments to pass to the test suite as a list of strings.
 #           'extra_args': ['--arg1', '--arg2', ...],
 #
+#           # Arguments to be removed from the test suite (as a list of strings).
+#           'remove_args': ['--arg1', '--arg2', ...],
+#
 #           # Name of the isolate to run as a string.
 #           'isolate': 'isolate_name',
 #
@@ -565,6 +568,8 @@ BUILDERS = {
         'tests': [{
             'isolate':
             'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'extra_args': ['--benchmark-max-runs=3'],
+            'remove_args': ['--ignore-benchmark-exit-code'],
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -1014,6 +1019,8 @@ BUILDERS = {
             'mac_model': 'Mac14,7',
             'os': 'Mac',
             'pool': 'chrome.tests.perf',
+            'synthetic_product_name':
+                'Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z',
         },
     },
     'linux-perf': {
@@ -1668,6 +1675,9 @@ def generate_performance_test(tester_config, test, builder_name):
     assert shards
   # Append any additional args specific to an isolate
   test_args += test.get('extra_args', [])
+  test_args = [
+      arg for arg in test_args if arg not in test.get('remove_args', [])
+  ]
 
   result = {
       'args': test_args,

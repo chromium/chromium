@@ -60,7 +60,7 @@ criteria = [{{#each criteria}}{{#if @first}}{{else}}, {{/if}}"{{this}}"{{/each}}
 
 [[exemptions.cxx]]
 version = "1.0.128"
-criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
@@ -163,4 +163,20 @@ Exemption updated to 2.0.72 when updating the crate in July 2024.
 Exemption updated to 2.0.74 when updating the crate in August 2024.
 Exemption updated to 2.0.76 when updating the crate in August 2024.
 Exemption updated to 2.0.77 when updating the crate in September 2024.
+"""
+
+[[exemptions.zerocopy]]
+version = "0.7.35"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
+
+https://crbug.com/366411886
+"""
+
+[[exemptions.zerocopy-derive]]
+version = "0.7.35"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
 """

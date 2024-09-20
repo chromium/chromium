@@ -29,6 +29,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_text_utils.h"
+#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_update_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -407,6 +408,11 @@ void ReadAnythingAppModel::AddTree(
     const ui::AXTreeID& tree_id,
     std::unique_ptr<ui::AXSerializableTree> tree) {
   DCHECK(!ContainsTree(tree_id));
+
+  for (auto& observer : observers_) {
+    observer.OnTreeAdded(tree.get());
+  }
+
   std::unique_ptr<ui::AXTreeManager> manager =
       std::make_unique<ui::AXTreeManager>(std::move(tree));
   std::unique_ptr<ReadAnythingAppModel::AXTreeInfo> tree_info =
@@ -415,7 +421,16 @@ void ReadAnythingAppModel::AddTree(
 }
 
 void ReadAnythingAppModel::EraseTree(const ui::AXTreeID& tree_id) {
-  tree_infos_.erase(tree_id);
+  auto it = tree_infos_.find(tree_id);
+  if (it == tree_infos_.end()) {
+    return;
+  }
+  ui::AXTree* ax_tree = it->second->manager->ax_tree();
+  for (auto& observer : observers_) {
+    observer.OnTreeRemoved(ax_tree);
+  }
+
+  tree_infos_.erase(it);
 
   // Ensure any pending updates associated with the erased tree are removed.
   pending_updates_map_.erase(tree_id);
@@ -1058,4 +1073,12 @@ std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() {
     }
   }
   return font_choices_;
+}
+
+void ReadAnythingAppModel::AddObserver(ModelObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ReadAnythingAppModel::RemoveObserver(ModelObserver* observer) {
+  observers_.RemoveObserver(observer);
 }

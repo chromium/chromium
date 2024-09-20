@@ -62,6 +62,17 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     background_thread_task_runner_for_testing_ = background_thread_task_runner;
   }
 
+  // Sets a callback that will be invoked on each completion of OnEncoded().
+  // The client can then check whether encoding has succeeded by check
+  // CanvasHibernationHandler::IsEncoded().
+  void SetOnEncodedCallbackForTesting(
+      base::RepeatingClosure on_encoded_callback) {
+    on_encoded_callback_for_testing_ = std::move(on_encoded_callback);
+  }
+  void SetBeforeCompressionDelayForTesting(base::TimeDelta delay) {
+    before_compression_delay_ = delay;
+  }
+
   enum class CompressionAlgorithm { kZlib, kZstd };
 
  private:
@@ -113,6 +124,8 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
       main_thread_task_runner_for_testing_;
   scoped_refptr<base::SingleThreadTaskRunner>
       background_thread_task_runner_for_testing_;
+  base::RepeatingClosure on_encoded_callback_for_testing_;
+  base::TimeDelta before_compression_delay_ = kBeforeCompressionDelay;
   int width_;
   int height_;
   int bytes_per_pixel_;

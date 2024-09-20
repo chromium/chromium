@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_UI_LENS_PROMO_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_UI_LENS_PROMO_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
+#import "ios/chrome/browser/tips_notifications/ui/tips_promo_view_controller.h"
 
 // The view controller for a Lens Promo that tells the user how to use Lens.
-@interface LensPromoViewController : PromoStyleViewController
+@interface LensPromoViewController : TipsPromoViewController
 
 @end
 

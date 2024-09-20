@@ -5,16 +5,11 @@
 package org.chromium.chrome.browser.educational_tip;
 
 import android.content.Context;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the educational tip module. */
@@ -22,22 +17,10 @@ public class EducationalTipModuleCoordinator implements ModuleProvider {
     private final EducationalTipModuleMediator mMediator;
 
     public EducationalTipModuleCoordinator(
-            @NonNull Context context,
             @NonNull ModuleDelegate moduleDelegate,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull Runnable showTabSwitcherRunnable,
-            @NonNull Supplier<ViewGroup> parentViewSupplier) {
+            @NonNull EducationTipModuleActionDelegate actionDelegate) {
         PropertyModel model = new PropertyModel(EducationalTipModuleProperties.ALL_KEYS);
-        mMediator =
-                new EducationalTipModuleMediator(
-                        context,
-                        model,
-                        moduleDelegate,
-                        bottomSheetController,
-                        modalDialogManagerSupplier,
-                        showTabSwitcherRunnable,
-                        parentViewSupplier);
+        mMediator = new EducationalTipModuleMediator(model, moduleDelegate, actionDelegate);
     }
 
     // ModuleProvider implementation.

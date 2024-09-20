@@ -17,8 +17,8 @@ UnitConversionServiceFactory* UnitConversionServiceFactory::GetInstance() {
 }
 
 // static
-UnitConversionService* UnitConversionServiceFactory::GetForBrowserState(
-    ChromeBrowserState* const state) {
+UnitConversionService* UnitConversionServiceFactory::GetForProfile(
+    ProfileIOS* const state) {
   return static_cast<UnitConversionService*>(
       GetInstance()->GetServiceForBrowserState(state, true));
 }

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -79,6 +80,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final HomeSurfaceTracker mHomeSurfaceTracker;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     private NativePageFactory mNativePageFactory;
 
@@ -107,7 +109,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
-            @NonNull OneshotSupplier<ModuleRegistry> moduleRegistrySupplier) {
+            @NonNull OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -133,6 +136,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 
     @Override
@@ -199,7 +203,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mHomeSurfaceTracker,
                             mTabContentManagerSupplier,
                             mTabStripHeightSupplier,
-                            mModuleRegistrySupplier);
+                            mModuleRegistrySupplier,
+                            mEdgeToEdgeControllerSupplier);
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab, pdfInfo);
     }

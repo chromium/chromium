@@ -151,7 +151,9 @@ class TestingProfile : public Profile {
    public:
     Builder();
     Builder(const Builder&) = delete;
+    Builder(Builder&&);
     Builder& operator=(const Builder&) = delete;
+    Builder& operator=(Builder&&);
     ~Builder();
 
     // Sets a Delegate to be called back during profile init. Caller maintains
@@ -252,6 +254,8 @@ class TestingProfile : public Profile {
                                       const OTRProfileID& otr_profile_id);
 
     TestingProfile* BuildIncognito(TestingProfile* original_profile);
+
+    const base::FilePath& GetPath() const { return path_; }
 
    private:
     // If true, Build() has already been called.

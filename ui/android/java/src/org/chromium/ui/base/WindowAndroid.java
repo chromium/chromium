@@ -663,6 +663,15 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         mModalDialogManagerForTesting = modalDialogManager;
     }
 
+    @CalledByNative
+    private long getNativeModalDialogManagerBridge() {
+        ModalDialogManager manager = getModalDialogManager();
+        if (manager == null) {
+            return 0;
+        }
+        return manager.getOrCreateNativeBridge();
+    }
+
     /**
      * @return Whether this instance is destroyed.
      */

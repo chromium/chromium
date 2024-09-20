@@ -33,6 +33,12 @@ extern NSString* const kCustomizationToggleMostVisitedIdentifier;
 extern NSString* const kCustomizationToggleMagicStackIdentifier;
 extern NSString* const kCustomizationToggleDiscoverIdentifier;
 
+// The identifiers for the Magic Stack page toggle cells.
+extern NSString* const kCustomizationToggleSetUpListIdentifier;
+extern NSString* const kCustomizationToggleSafetyCheckIdentifier;
+extern NSString* const kCustomizationToggleTabResumptionIdentifier;
+extern NSString* const kCustomizationToggleParcelTrackingIdentifier;
+
 // The identifiers for the navigable portions of the main page toggle cells.
 extern NSString* const kCustomizationToggleMostVisitedNavigableIdentifier;
 extern NSString* const kCustomizationToggleMagicStackNavigableIdentifier;

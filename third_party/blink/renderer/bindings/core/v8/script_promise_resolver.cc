@@ -155,10 +155,10 @@ void ScriptPromiseResolverBase::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextDestroyed());
   DCHECK(!GetExecutionContext()->IsContextPaused());
 
-  probe::WillHandlePromise(GetExecutionContext(), script_state_,
-                           state_ == kResolving,
-                           exception_context_.GetClassName(),
-                           exception_context_.GetPropertyName(), script_url_);
+  probe::WillHandlePromise(
+      GetExecutionContext(), script_state_, state_ == kResolving,
+      exception_context_.GetClassName(),
+      exception_context_.GetPropertyNameVariant(), script_url_);
 
   v8::MicrotasksScope microtasks_scope(
       script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),

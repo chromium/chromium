@@ -7,13 +7,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_client.h"
 #include "ash/picker/picker_clipboard_history_provider.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/picker_shortcuts.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_math_search.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_client.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/feature_list.h"
 
 namespace ash {
@@ -21,11 +21,11 @@ namespace {
 
 constexpr int kMaxRecentFiles = 10;
 constexpr int kMaxRecentLinks = 10;
+constexpr base::TimeDelta kMaxLocalFileSuggestionRecencyDelta = base::Days(30);
+constexpr base::TimeDelta kMaxLocalFileCategoryRecencyDelta = base::Days(3652);
 }
 
-PickerSuggestionsController::PickerSuggestionsController(PickerClient* client)
-    : client_(client) {}
-
+PickerSuggestionsController::PickerSuggestionsController() = default;
 PickerSuggestionsController::~PickerSuggestionsController() = default;
 
 std::vector<PickerSearchResult> GetMostRecentResults(
@@ -37,7 +37,8 @@ std::vector<PickerSearchResult> GetMostRecentResults(
   return results;
 }
 
-void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
+void PickerSuggestionsController::GetSuggestions(PickerClient& client,
+                                                 const PickerModel& model,
                                                  SuggestionsCallback callback) {
   if (model.GetMode() == PickerModeType::kUnfocused) {
     std::vector<PickerSearchResult> new_window_results;
@@ -60,7 +61,7 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
 
   if (base::Contains(model.GetAvailableCategories(),
                      PickerCategory::kEditorRewrite)) {
-    client_->GetSuggestedEditorResults(callback);
+    client.GetSuggestedEditorResults(callback);
   }
 
   if (model.GetMode() == PickerModeType::kHasSelection) {
@@ -81,28 +82,34 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
     // asking for 1 result.
     // TODO: b/357740941: Request only one Drive file once directory filtering
     // is implemented inside DriveFS.
+    // TODO: b/366237507 - Request only one Link result once HistoryService
+    // supports filtering.
     switch (category) {
       case PickerCategory::kLinks:
-        client_->GetSuggestedLinkResults(
-            /*max_results=*/1,
+        client.GetSuggestedLinkResults(
+            /*max_results=*/base::FeatureList::IsEnabled(
+                ash::features::kPickerFilterLinks)
+                ? 10
+                : 1,
             base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
       case PickerCategory::kLocalFiles: {
         const size_t max_results =
             base::FeatureList::IsEnabled(ash::features::kPickerGrid) ? 3 : 1;
-        client_->GetRecentLocalFileResults(
-            max_results, base::BindRepeating(&GetMostRecentResults, max_results)
-                             .Then(callback));
+        client.GetRecentLocalFileResults(
+            max_results, kMaxLocalFileSuggestionRecencyDelta,
+            base::BindRepeating(&GetMostRecentResults, max_results)
+                .Then(callback));
         break;
       }
       case PickerCategory::kDriveFiles:
-        client_->GetRecentDriveFileResults(
+        client.GetRecentDriveFileResults(
             /*max_results=*/5,
             base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
       default:
         GetSuggestionsForCategory(
-            category,
+            client, category,
             base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
     }
@@ -110,6 +117,7 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
 }
 
 void PickerSuggestionsController::GetSuggestionsForCategory(
+    PickerClient& client,
     PickerCategory category,
     SuggestionsCallback callback) {
   switch (category) {
@@ -117,16 +125,27 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
     case PickerCategory::kEditorRewrite:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
-      client_->GetSuggestedLinkResults(kMaxRecentLinks, std::move(callback));
+      // TODO: b/366237507 - Request only kMaxRecentLinks results once
+      // HistoryService supports filtering.
+      client.GetSuggestedLinkResults(
+          base::FeatureList::IsEnabled(ash::features::kPickerFilterLinks)
+              ? kMaxRecentLinks * 3
+              : kMaxRecentLinks,
+          std::move(callback));
       return;
     case PickerCategory::kEmojisGifs:
     case PickerCategory::kEmojis:
       NOTREACHED_NORETURN();
     case PickerCategory::kDriveFiles:
-      client_->GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
+      client.GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
       return;
     case PickerCategory::kLocalFiles:
-      client_->GetRecentLocalFileResults(kMaxRecentFiles, std::move(callback));
+      client.GetRecentLocalFileResults(
+          kMaxRecentFiles,
+          base::FeatureList::IsEnabled(ash::features::kPickerRecentFiles)
+              ? kMaxLocalFileCategoryRecencyDelta
+              : kMaxLocalFileSuggestionRecencyDelta,
+          std::move(callback));
       return;
     case PickerCategory::kDatesTimes:
       std::move(callback).Run(PickerSuggestedDateResults());

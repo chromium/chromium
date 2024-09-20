@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "media/base/format_utils.h"
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -170,26 +169,11 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     return nullptr;
   }
 
-  // Checks for Intel Media Compression.
-  const bool is_intel_media_compressed_buffer =
-      IsIntelMediaCompressedModifier(pixmap->GetBufferFormatModifier());
-  const bool is_intel_media_compression_enabled =
-#if BUILDFLAG(IS_CHROMEOS)
-      base::FeatureList::IsEnabled(features::kEnableIntelMediaCompression);
-#elif BUILDFLAG(IS_LINUX)
-      false;
-#endif
-  CHECK(!is_intel_media_compressed_buffer ||
-        is_intel_media_compression_enabled);
-
   // Checks that the number of planes matches the expectation for the buffer
   // format.
   const size_t num_planes = pixmap->GetNumberOfPlanes();
-  constexpr size_t kMediaCompressionExpectedNumberOfPlanes = 4u;
   const size_t expected_number_of_planes =
-      is_intel_media_compressed_buffer
-          ? kMediaCompressionExpectedNumberOfPlanes
-          : NumberOfPlanesForLinearBufferFormat(buffer_format);
+      NumberOfPlanesForLinearBufferFormat(buffer_format);
   if (num_planes != expected_number_of_planes) {
     DLOGF(ERROR) << "Invalid number of planes=" << num_planes
                  << ", expected number of planes=" << expected_number_of_planes;
@@ -353,7 +337,6 @@ VideoFrame::StorageType NativePixmapFrameResource::storage_type() const {
 }
 
 int NativePixmapFrameResource::row_bytes(size_t plane) const {
-  CHECK(!IsIntelMediaCompressedModifier(pixmap_->GetBufferFormatModifier()));
   return VideoFrame::RowBytes(plane, format(), coded_size().width());
 }
 

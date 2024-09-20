@@ -27,7 +27,6 @@ class CSSFontPaletteInterpolationTypeTest : public PageTestBase {
  protected:
   std::unique_ptr<CSSFontPaletteInterpolationType>
   CreateFontPaletteInterpolationType() {
-    ScopedFontPaletteAnimationForTest scoped_feature(true);
     const CSSProperty& css_property =
         CSSProperty::Get(CSSPropertyID::kFontPalette);
     PropertyHandle property = PropertyHandle(css_property);

@@ -49,6 +49,7 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
                     HardwareDisplayPlane* hw_plane,
                     const DrmOverlayPlane& overlay,
                     uint32_t crtc_id,
+                    std::optional<gfx::Point> crtc_offset,
                     const gfx::Rect& src_rect) override;
   bool IsCompatible(HardwareDisplayPlane* plane,
                     const DrmOverlayPlane& overlay,

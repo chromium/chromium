@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -115,6 +116,15 @@ class ContentPasswordManagerDriver final
   // Notify the renderer that the user wants to trigger password generation.
   void GeneratePassword(autofill::mojom::PasswordGenerationAgent::
                             TriggeredGeneratePasswordCallback callback);
+
+  // Returns true if the field is any of the following cases:
+  // 1) The field has type="password".
+  // 2) The field was type="password" field at some point of time.
+  // 3) The field has a variation of the word "password" in name/id attributes.
+  // 4) The server predicts the field as new password field.
+  bool IsPasswordFieldForPasswordManager(
+      autofill::FieldRendererId field_renderer_id,
+      const content::ContextMenuParams& params);
 
   content::RenderFrameHost* render_frame_host() const {
     return render_frame_host_;

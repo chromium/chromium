@@ -1,6 +1,7 @@
 <html>
 
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Web app scope_a test page for link capturing tests</title>
   <script src="../launch_detector.js"></script>
   <script>
@@ -30,24 +31,60 @@
       }, delay);
     }
 
+    function getModifierString(event) {
+      let ctrl = event.ctrlKey;
+      let shift = event.shiftKey;
+      let meta = event.metaKey;
+      let left = event.button == 0;
+      let middle = event.button == 1;
+
+      if ((ctrl && left) || (meta && left)) {
+        middle = true;
+        left = false;
+        ctrl = false;
+        meta = false;
+      }
+
+      let modifier = 'click=';
+      if (ctrl) modifier += 'Ctrl ';
+      if (meta) modifier += 'Meta ';
+      if (shift) modifier += 'Shift ';
+      if (left) modifier += 'Left ';
+      if (middle) modifier += 'Middle ';
+      return modifier;
+    }
+
     window.addEventListener("load", async () => {
       navigator.serviceWorker.register("sw.js");
       serviceWorkerRegistration = await navigator.serviceWorker.ready;
       console.assert(serviceWorkerRegistration);
 
-      var links = document.querySelectorAll('.linkB, .linkX');
+      var links = document.querySelectorAll('.linkA, .linkB, .linkX');
       for (let link of links) {
-        let destination = link.classList.contains('linkB')
-            ? bDestinationUrl : xDestinationUrl;
-        link.setAttribute('href', destination);
+        link.addEventListener("click", (event) => {
+          // Pass the ID as a query param, so we can show it on the destination
+          // page.
+          let param = '?' + link.id + '&' + getModifierString(event);
+          let destination = link.classList.contains('linkA') ? aDestinationUrl :
+          link.classList.contains('linkB') ? bDestinationUrl : xDestinationUrl;
+          destination += param;
+          link.setAttribute('href', destination);
+          console.log('link ' + link.id + ' clicked, dest ' + destination);
+        });
       }
       var buttons = document.querySelectorAll('.btnA, .btnB, .btnX');
       for (let button of buttons) {
-        button.addEventListener("click", () => {
+        button.addEventListener("click", (event) => {
+          // Pass the ID as a query param, so we can show it on the destination
+          // page.
+          let param = '?' + button.id + '&' + getModifierString(event);
+
           let target = button.getAttribute("data-target");
           let rel = button.getAttribute("data-rel");
           let url = button.classList.contains('btnA') ? aDestinationUrl :
           button.classList.contains('btnB') ? bDestinationUrl : xDestinationUrl;
+          url += param;
+          console.log('button ' + button.id + ' clicked, dest ' + url);
           if (rel) {
             window.open(url, target, rel);
           } else {
@@ -67,7 +104,7 @@
 <h1>Start page scope A</h1>
 
 <table>
-<tr><td><h2>Same scope (A)</h2></td><td><h2>Scope B</h2></td><td><h2>Scope X</h2></td></tr>
+<tr><td width="250px"><h2>Same scope (A)</h2></td><td width="250px"><h2>Scope B</h2></td><td width="250px"><h2>Scope X</h2></td></tr>
 <tr>
 <td>
 <!-- Links to same scope-->

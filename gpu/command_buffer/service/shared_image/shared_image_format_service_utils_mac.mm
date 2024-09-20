@@ -139,8 +139,7 @@ skgpu::graphite::TextureInfo GraphiteMetalTextureInfo(
   mtl_texture_info.fSampleCount = 1;
   mtl_texture_info.fFormat = mtl_pixel_format;
   mtl_texture_info.fUsage = MTLTextureUsageShaderRead;
-  if (format.is_single_plane() && !format.IsLegacyMultiplanar() &&
-      !is_yuv_plane) {
+  if (format.is_single_plane() && !is_yuv_plane) {
     mtl_texture_info.fUsage |= MTLTextureUsageRenderTarget;
   }
 #if BUILDFLAG(IS_IOS)

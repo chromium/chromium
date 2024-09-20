@@ -15,11 +15,13 @@
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "net/base/proxy_server.h"
+#include "net/net_buildflags.h"
 #include "url/gurl.h"
 
 namespace {
@@ -382,7 +384,15 @@ bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(
                    << "specify their URLs. Falling back to direct connection.";
         return true;
       }
-      proxy_config.proxy_rules().ParseFromString(proxy_server);
+
+      bool allow_bracketed_proxy_chains = false;
+
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+      allow_bracketed_proxy_chains = true;
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+
+      proxy_config.proxy_rules().ParseFromString(proxy_server,
+                                                 allow_bracketed_proxy_chains);
 
       std::string proxy_bypass;
       if (proxy_dict.GetBypassList(&proxy_bypass)) {

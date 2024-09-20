@@ -149,6 +149,8 @@
   }
 
   .query-history.wallpaper-collections-heading {
+    cursor: pointer;
+    font-weight: 600;
     height: auto;
     margin: 6px 10px;
     overflow: hidden;
@@ -225,16 +227,21 @@
       <h2 id="historyTitle">
         [[i18n('seaPenFreeformPreviousPrompts')]]
         <iron-icon
+          role="tooltip"
           id="historyTooltip"
           title="[[i18n('seaPenFreeformPreviousPromptsTooltip')]]"
           icon="sea-pen:info">
       </iron-icon>
       </h2>
       <template is="dom-repeat" items="[[textQueryHistory_]]">
-        <h2 id="queryHistoryHeading[[index]]"
-            class="wallpaper-collections-heading query-history">
+        <h3 id="queryHistoryHeading[[index]]"
+            class="wallpaper-collections-heading query-history"
+            on-click="onHistoryPromptClicked_"
+            on-keypress="onHistoryPromptClicked_"
+            role="button"
+            tabindex="0">
           [[item.query]]
-        </h2>
+        </h3>
         <iron-list id="historyGrid[[index]]"
             items="[[item.thumbnails]]"
             grid

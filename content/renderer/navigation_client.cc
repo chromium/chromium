@@ -23,6 +23,14 @@ namespace content {
 NavigationClient::NavigationClient(RenderFrameImpl* render_frame)
     : render_frame_(render_frame) {}
 
+NavigationClient::NavigationClient(
+    RenderFrameImpl* render_frame,
+    blink::mojom::BeginNavigationParamsPtr begin_params,
+    blink::mojom::CommonNavigationParamsPtr common_params)
+    : render_frame_(render_frame),
+      begin_params_(std::move(begin_params)),
+      common_params_(std::move(common_params)) {}
+
 NavigationClient::~NavigationClient() {}
 
 void NavigationClient::CommitNavigation(
@@ -130,12 +138,26 @@ void NavigationClient::SetUpRendererInitiatedNavigation(
 
 void NavigationClient::ResetWithoutCancelling() {
   navigation_client_receiver_.ResetWithReason(
-      mojom::NavigationClient::kResetForSwap, "");
+      base::to_underlying(
+          mojom::NavigationClientDisconnectReason::kResetForSwap),
+      "");
+}
+
+void NavigationClient::ResetForNewNavigation(bool is_duplicate_navigation) {
+  navigation_client_receiver_.ResetWithReason(
+      base::to_underlying(is_duplicate_navigation
+                              ? mojom::NavigationClientDisconnectReason::
+                                    kResetForDuplicateNavigation
+                              : mojom::NavigationClientDisconnectReason::
+                                    kResetForNewNavigation),
+      "");
 }
 
 void NavigationClient::ResetForAbort() {
   navigation_client_receiver_.ResetWithReason(
-      mojom::NavigationClient::kResetForAbort, "");
+      base::to_underlying(
+          mojom::NavigationClientDisconnectReason::kResetForAbort),
+      "");
 }
 
 void NavigationClient::NotifyNavigationCancellationWindowEnded() {

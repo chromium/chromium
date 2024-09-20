@@ -39,7 +39,7 @@ AccountConsistencyBrowserAgent::~AccountConsistencyBrowserAgent() {}
 void AccountConsistencyBrowserAgent::InstallDependency(
     web::WebState* web_state) {
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+          ios::AccountConsistencyServiceFactory::GetForProfile(
               browser_->GetBrowserState())) {
     accountConsistencyService->SetWebStateHandler(web_state, this);
   }
@@ -48,7 +48,7 @@ void AccountConsistencyBrowserAgent::InstallDependency(
 void AccountConsistencyBrowserAgent::UninstallDependency(
     web::WebState* web_state) {
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+          ios::AccountConsistencyServiceFactory::GetForProfile(
               browser_->GetBrowserState())) {
     accountConsistencyService->RemoveWebStateHandler(web_state);
   }

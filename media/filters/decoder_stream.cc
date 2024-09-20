@@ -106,7 +106,11 @@ DecoderStream<StreamType>::DecoderStream(
       stream_(nullptr),
       cdm_context_(nullptr),
       decoder_produced_a_frame_(false),
-      decoder_selector_(task_runner_, std::move(create_decoders_cb), media_log),
+      decoder_selector_(
+          task_runner_,
+          std::move(create_decoders_cb),
+          media_log,
+          base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)),
       decoding_eos_(false),
       preparing_output_(false),
       pending_decode_requests_(0),
@@ -247,6 +251,11 @@ void DecoderStream<StreamType>::Reset(base::OnceClosure closure) {
     return;
   }
 
+  // Finalize any in progress decoder selection. We'll rerun selection during
+  // a subsequent Initialize(), so this just ensures we don't try to
+  // Initialize() the same decoder type multiple times.
+  decoder_selector_.FinalizeDecoderSelection();
+
   // |decrypting_demuxer_stream_| will fire all of its read requests when
   // it resets. |reset_cb_| will be fired in OnDecoderReset(), after the
   // decrypting demuxer stream finishes its reset.
@@ -285,6 +294,17 @@ int DecoderStream<StreamType>::GetMaxDecodeRequests() const {
   return state_ != State::kStateReinitializingDecoder
              ? decoder_->GetMaxDecodeRequests()
              : 0;
+}
+
+// A false return value indicates that the decoder is not a platform decoder, or
+// it is still unknown (e.g. during initialization).
+template <DemuxerStream::Type StreamType>
+bool DecoderStream<StreamType>::IsPlatformDecoder() const {
+  // The decoder is owned by |decoder_selector_| during reinitialization, so
+  // during that time we return false to indicate decoder type unknown.
+  return state_ != State::kStateReinitializingDecoder
+             ? decoder_->IsPlatformDecoder()
+             : false;
 }
 
 template <>
@@ -545,13 +565,6 @@ void DecoderStream<StreamType>::DecodeInternal(
 }
 
 template <DemuxerStream::Type StreamType>
-void DecoderStream<StreamType>::FlushDecoder() {
-  // Send the EOS directly to the decoder, bypassing a potential add to
-  // |pending_buffers_|.
-  DecodeInternal(DecoderBuffer::CreateEOSBuffer());
-}
-
-template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::OnDecodeDone(
     int buffer_size,
     bool end_of_stream,
@@ -734,7 +747,9 @@ void DecoderStream<StreamType>::ReadFromDemuxerStream() {
                            this);
   pending_demuxer_read_ = true;
   uint32_t buffer_read_count = 1;
-  if (base::FeatureList::IsEnabled(kVideoDecodeBatching)) {
+  // Do not batch with software video decoder.
+  if (IsPlatformDecoder() &&
+      base::FeatureList::IsEnabled(kVideoDecodeBatching)) {
     buffer_read_count = GetMaxDecodeRequests() - pending_decode_requests_;
   }
   {
@@ -876,7 +891,8 @@ void DecoderStream<StreamType>::OnBuffersReady(
       }
       // Reinitialization will continue after Reset() is done.
     } else {
-      FlushDecoder();
+      // Flush the decoder with an EOS buffer including the upcoming config.
+      DecodeInternal(DecoderBuffer::CreateEOSBuffer(config));
     }
     return;
   }
@@ -926,7 +942,12 @@ void DecoderStream<StreamType>::ReinitializeDecoder() {
   DCHECK_EQ(pending_decode_requests_, 0);
 
   state_ = State::kStateReinitializingDecoder;
+
+  // Note: Some VideoDecoder implementations (e.g., MediaCodecVideoDecoder) are
+  // relying on the fact that the existing VideoDecoder instance is given first
+  // dibs to handle any configuration changes. Take care when changing this.
   decoder_selector_.PrependDecoder(std::move(decoder_));
+
   BeginDecoderSelection();
 }
 

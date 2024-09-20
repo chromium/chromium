@@ -55,6 +55,10 @@ BASE_DECLARE_FEATURE(kLensOverlay);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayTranslateButton);
 
+// Enables the Lens overlay searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -324,19 +328,31 @@ COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayClusterInfoLifetimeSeconds();
 
 // Returns whether to include the search context with text-only Lens Overlay
-// requests.
+// requests. This is sent in the video params urlparam.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseSearchContextForTextOnlyLensOverlayRequests();
+extern bool UseVideoContextForTextOnlyLensOverlayRequests();
 
 // Returns whether to include the search context with text-only Lens Overlay
-// requests.
+// requests. This is sent in the video params urlparam.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseSearchContextForMultimodalLensOverlayRequests();
+extern bool UseVideoContextForMultimodalLensOverlayRequests();
 
 // Returns whether to include PDFs from the underlying page in the request to be
 // used as page context.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UsePdfsAsContext();
+
+// Returns whether to include the inner text from the underlying page in the
+// request to be used as page context. This is for webpages and sends text
+// equivalent to document.body.innerText.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseInnerTextAsContext();
+
+// Returns whether to include the inner html from the underlying page in the
+// request to be used as page context. Does nothing if UseInnerTextAsContext is
+// enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseInnerHtmlAsContext();
 
 // Returns the margin in pixels to add to the top and bottom of word bounding
 // boxes.
@@ -515,6 +531,23 @@ extern int GetLensOverlayFindBarStringsVariant();
 // of the screenshot of the page.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayTranslateButtonEnabled();
+
+// Whether to show the copy as image context menu option.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayCopyAsImageEnabled();
+
+// Whether to show the save as image context menu option.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlaySaveAsImageEnabled();
+
+// Time to wait for Lens text response before displaying the selected region
+// context menu, in milliseconds.
+COMPONENT_EXPORT(LENS_FEATURES)
+int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
+
+// Whether to show the contextual searchbox in the Lens Overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayContextualSearchboxEnabled();
 
 }  // namespace lens::features
 

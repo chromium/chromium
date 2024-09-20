@@ -180,8 +180,7 @@ const FontData* CSSFontSelector::GetFontData(
     }
   }
 
-  if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled() &&
-      request_palette && request_palette->IsInterpolablePalette()) {
+  if (request_palette && request_palette->IsInterpolablePalette()) {
     scoped_refptr<const FontPalette> computed_interpolable_palette =
         ResolveInterpolableFontPalette(request_palette,
                                        document.GetStyleEngine(), family_name);

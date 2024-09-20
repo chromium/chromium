@@ -82,7 +82,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
 #include "ui/gfx/ca_layer_result.h"
 
 namespace gfx {
@@ -244,7 +244,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   cc::EventListenerProperties EventListenerProperties(
       cc::EventListenerClass) const final;
   mojom::blink::DisplayMode DisplayMode() const override;
-  ui::WindowShowState WindowShowState() const override;
+  ui::mojom::blink::WindowShowState WindowShowState() const override;
   bool Resizable() const override;
   const WebVector<gfx::Rect>& ViewportSegments() const override;
   void SetDelegatedInkMetadata(
@@ -485,7 +485,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetDisplayMode(mojom::blink::DisplayMode);
 
   // Sets the window show state.
-  void SetWindowShowState(ui::WindowShowState);
+  void SetWindowShowState(ui::mojom::blink::WindowShowState);
 
   void SetResizable(bool);
 
@@ -772,7 +772,6 @@ class CORE_EXPORT WebFrameWidgetImpl
       cc::ActiveFrameSequenceTrackers trackers) override;
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
       override;
-  std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() override;
   void BeginUpdateLayers() override;
   void EndUpdateLayers() override;
   void DidCommitAndDrawCompositorFrame() override;
@@ -1086,7 +1085,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   Member<WebLocalFrameImpl> local_root_;
 
   mojom::blink::DisplayMode display_mode_;
-  ui::WindowShowState window_show_state_;
+  ui::mojom::blink::WindowShowState window_show_state_;
   bool resizable_;
 
   WebVector<gfx::Rect> viewport_segments_;

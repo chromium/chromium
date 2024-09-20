@@ -27,6 +27,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/components/webui:url_constants",
     "//ios/web/public",
     "//ios/web/public/navigation",

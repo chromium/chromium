@@ -49,6 +49,12 @@ compile_ts("util_scripts") {
   sources = [ "resources/utils.ts" ]
 }
 
+compile_ts("error_reporting") {
+  sources = [ "resources/error_reporting.ts" ]
+
+  deps = [ ":util_scripts" ]
+}
+
 # `compile_ts` and `optimize_js` targets are defined separately here instead of
 # combined using `optimize_ts` because it allows `gcrweb` target's
 # compiled TypeScript to be used as a dependency by other TypeScript targets.

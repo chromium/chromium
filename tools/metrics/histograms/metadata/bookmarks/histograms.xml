@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.AverageNodeSize" units="Bytes"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bookmarks.BookmarkBar.NavigationOrActivationToFirstContentfulPaint"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bookmarks.BookmarkBar.NavigationOrActivationToLargestContentfulPaint"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarkBar.Shown" enum="BooleanShown"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>amelies@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarksBar.DragDropType"
-    enum="BookmarkBarDragDropType" expires_after="2025-01-05">
+    enum="BookmarkBarDragDropType" expires_after="2025-03-09">
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.EditLocation" enum="BookmarkLaunchLocation"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>dfried@chromium.org</owner>
   <owner>mickeyburks@chromium.org</owner>
   <summary>
@@ -261,7 +261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>ianwen@chromium.org</owner>
   <summary>How users add a new bookmark.</summary>
 </histogram>
@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.OpenBookmarkManager.PerProfileType"
-    enum="BrowserProfileType" expires_after="2025-01-05">
+    enum="BrowserProfileType" expires_after="2025-03-09">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.RemovedLocation" enum="BookmarkLaunchLocation"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>dfried@chromium.org</owner>
   <owner>mickeyburks@chromium.org</owner>
   <summary>
@@ -471,6 +471,31 @@ chromium-metrics-reviews@google.com.
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>Records the source when a bookmark is removed.</summary>
+</histogram>
+
+<histogram name="Bookmarks.ReorderDropTarget{ParentNode}"
+    enum="BookmarkReorderDropTarget" expires_after="2025-01-05">
+  <owner>msalama@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records where a bookmark is dropped: on bookmark bar, bookmark menu or a UI
+    that uses the bookmark manager API. Recorded everytime a bookmark is
+    reordered by drag and drop. Reordered in this context means that a bookmark
+    changed its index within the same parent node. {ParentNode}
+  </summary>
+  <token key="ParentNode">
+    <variant name="" summary="Recorded for all bookmarks."/>
+    <variant name=".InBookmarkBarNode"
+        summary="Recorded only for bookmarks that are children of the
+                 Bookmarks Bar node."/>
+    <variant name=".InMobileBookmarkNode"
+        summary="Recorded only for bookmarks that are children of the Mobile
+                 Bookmarks node."/>
+    <variant name=".InOtherBookmarkNode"
+        summary="Recorded only for bookmarks that are children of the Other
+                 Bookmarks node."/>
+  </token>
 </histogram>
 
 <histogram name="Bookmarks.StarEntryPoint.ClickedAction"

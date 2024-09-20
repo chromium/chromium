@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -29,11 +30,13 @@ namespace autofill {
 // and an [Save] button. (Non-material UI's include a [No Thanks] button).
 class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
                                  public views::TextfieldController {
+  METADATA_HEADER(SaveCardOfferBubbleViews, SaveCardBubbleViews)
  public:
   // Bubble will be anchored to |anchor_view|.
   SaveCardOfferBubbleViews(views::View* anchor_view,
                            content::WebContents* web_contents,
                            SaveCardBubbleController* controller);
+  ~SaveCardOfferBubbleViews() override;
 
   SaveCardOfferBubbleViews(const SaveCardOfferBubbleViews&) = delete;
   SaveCardOfferBubbleViews& operator=(const SaveCardOfferBubbleViews&) = delete;
@@ -49,8 +52,6 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
                        const std::u16string& new_contents) override;
 
  private:
-  ~SaveCardOfferBubbleViews() override;
-
   std::unique_ptr<views::View> CreateMainContentView() override;
   std::unique_ptr<views::View> CreateRequestExpirationDateView();
   std::unique_ptr<views::View> CreateUploadExplanationView();

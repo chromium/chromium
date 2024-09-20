@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_GROWTH_CAMPAIGNS_MANAGER_SESSION_H_
 #define CHROME_BROWSER_ASH_GROWTH_CAMPAIGNS_MANAGER_SESSION_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -43,15 +45,13 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
 
   void PrimaryPageChanged(const content::WebContents* web_contents);
 
-  void MaybeTriggerCampaignsOnEvent(const std::string& event);
+  void MaybeTriggerCampaignsOnEvent(std::string_view event);
 
   aura::Window* GetOpenedWindow() { return opened_window_; }
 
   void SetProfileForTesting(Profile* profile);
 
  private:
-  Profile* GetProfile();
-  bool IsEligible();
   void SetupWindowObserver();
   void OnOwnershipDetermined(bool is_user_owner);
   void OnLoadCampaignsCompleted();
@@ -82,8 +82,6 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
-
-  raw_ptr<Profile, DanglingUntriaged> profile_for_testing_ = nullptr;
 
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>

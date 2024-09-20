@@ -20,9 +20,7 @@
 
 class ScreenshotDelegateTest : public PlatformTest {
  protected:
-  ScreenshotDelegateTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-  }
+  ScreenshotDelegateTest() { profile_ = TestProfileIOS::Builder().Build(); }
   ~ScreenshotDelegateTest() override {}
 
   void SetUp() override {
@@ -37,7 +35,7 @@ class ScreenshotDelegateTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   StubBrowserProvider* browser_interface_;
   StubBrowserProviderInterface* browser_provider_interface_;
   ScreenshotDelegate* screenshot_delegate_;
@@ -49,7 +47,7 @@ class ScreenshotDelegateTest : public PlatformTest {
 TEST_F(ScreenshotDelegateTest, ScreenshotService) {
   // Expected: Empty NSData.
   auto web_state = std::make_unique<web::FakeWebState>();
-  TestBrowser browser(browser_state_.get());
+  TestBrowser browser(profile_.get());
 
   CRWWebViewScrollViewProxy* scroll_view_proxy =
       [[CRWWebViewScrollViewProxy alloc] init];
@@ -127,7 +125,7 @@ TEST_F(ScreenshotDelegateTest, NilBrowser) {
 // WebSatate screenshotService will return nil.
 TEST_F(ScreenshotDelegateTest, NilWebState) {
   // Expected: nil NSData.
-  TestBrowser browser(browser_state_.get());
+  TestBrowser browser(profile_.get());
 
   // Add the empty Browser to StubBrowserProvider.
   browser_interface_.browser = &browser;

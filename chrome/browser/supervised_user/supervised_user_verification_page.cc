@@ -40,7 +40,9 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     ukm::SourceId source_id,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
-        controller_client)
+        controller_client,
+    bool is_main_frame,
+    bool has_second_custodian)
     : security_interstitials::SecurityInterstitialPage(
           web_contents,
           request_url,
@@ -49,7 +51,9 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
       request_url_(request_url),
       verification_purpose_(verification_purpose),
       child_account_service_(child_account_service),
-      source_id_(source_id) {
+      source_id_(source_id),
+      is_main_frame_(is_main_frame),
+      has_second_custodian_(has_second_custodian) {
   if (child_account_service_) {
     // Reloads the interstitial to continue navigation once the supervised user
     // is authenticated.
@@ -87,23 +91,39 @@ void SupervisedUserVerificationPage::PopulateInterstitialStrings(
       load_time_data.Set(
           "tabTitle",
           l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_VERIFY_PAGE_TAB_TITLE));
-      load_time_data.Set("heading",
-                         l10n_util::GetStringUTF16(
-                             IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_HEADING));
+      load_time_data.Set(
+          "heading",
+          is_main_frame_
+              ? l10n_util::GetStringUTF16(
+                    IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_HEADING)
+              : l10n_util::GetStringUTF16(
+                    IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_YOUTUBE_HEADING));
       load_time_data.Set(
           "primaryParagraph",
           l10n_util::GetStringUTF16(
               IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_PARAGRAPH));
       break;
-    case VerificationPurpose::BLOCKED_SITE:
+    case VerificationPurpose::DEFAULT_BLOCKED_SITE:
+    case VerificationPurpose::SAFE_SITES_BLOCKED_SITE:
+    case VerificationPurpose::MANUAL_BLOCKED_SITE:
       load_time_data.Set(
           "tabTitle", l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
-      load_time_data.Set("heading", l10n_util::GetStringUTF16(
-                                        IDS_CHILD_BLOCK_INTERSTITIAL_HEADER));
+      load_time_data.Set(
+          "heading",
+          is_main_frame_
+              ? l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER)
+              : l10n_util::GetStringUTF16(
+                    IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_BLOCKED_SITE_HEADING));
       load_time_data.Set(
           "primaryParagraph",
           l10n_util::GetStringUTF16(
               IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN));
+      load_time_data.Set("show_blocked_site_message", true);
+      load_time_data.Set(
+          "blockedSiteMessageHeader",
+          l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
+      load_time_data.Set("blockedSiteMessageReason",
+                         l10n_util::GetStringUTF8(GetBlockMessageReasonId()));
       break;
     default:
       NOTREACHED_NORETURN();
@@ -131,15 +151,26 @@ void SupervisedUserVerificationPage::PopulateStringsForSharedHTML(
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");
 
-  load_time_data.Set("type", "SUPERVISED_USER_VERIFY");
+  if (is_main_frame_) {
+    load_time_data.Set("type", "SUPERVISED_USER_VERIFY");
+  } else {
+    load_time_data.Set("type", "SUPERVISED_USER_VERIFY_SUBFRAME");
+  }
 }
 
 void SupervisedUserVerificationPage::RecordReauthStatusMetrics(Status status) {
+  if (!is_main_frame_) {
+    // Do not record metrics for subframe interstitials.
+    return;
+  }
+
   switch (verification_purpose_) {
     case VerificationPurpose::REAUTH_REQUIRED_SITE:
       RecordYouTubeReauthStatusUkm(status);
       break;
-    case VerificationPurpose::BLOCKED_SITE:
+    case VerificationPurpose::DEFAULT_BLOCKED_SITE:
+    case VerificationPurpose::SAFE_SITES_BLOCKED_SITE:
+    case VerificationPurpose::MANUAL_BLOCKED_SITE:
       RecordBlockedUrlReauthStatusUma(status);
       break;
     default:
@@ -171,7 +202,7 @@ void SupervisedUserVerificationPage::RecordYouTubeReauthStatusUkm(
 
 void SupervisedUserVerificationPage::RecordBlockedUrlReauthStatusUma(
     Status status) {
-  CHECK_EQ(verification_purpose_, VerificationPurpose::BLOCKED_SITE);
+  CHECK_NE(verification_purpose_, VerificationPurpose::REAUTH_REQUIRED_SITE);
 
   auto state =
       FamilyLinkUserReauthenticationInterstitialState::kInterstitialShown;
@@ -191,6 +222,23 @@ void SupervisedUserVerificationPage::RecordBlockedUrlReauthStatusUma(
   }
   base::UmaHistogramEnumeration(
       kBlockedSiteVerifyItsYouInterstitialStateHistogramName, state);
+}
+
+int SupervisedUserVerificationPage::GetBlockMessageReasonId() {
+  switch (verification_purpose_) {
+    case VerificationPurpose::DEFAULT_BLOCKED_SITE:
+      return has_second_custodian_
+                 ? IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT
+                 : IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT;
+    case VerificationPurpose::SAFE_SITES_BLOCKED_SITE:
+      return IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES;
+    case VerificationPurpose::MANUAL_BLOCKED_SITE:
+      return has_second_custodian_
+                 ? IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT
+                 : IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 void SupervisedUserVerificationPage::CommandReceived(

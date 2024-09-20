@@ -59,6 +59,12 @@ public interface Player {
          */
         Promise<Playback> previewVoice(PlaybackVoice voice);
 
+        /**
+         * Restores playback to the UI. If playback is stopped due to background playback, the UI
+         * for the original playback will still be shown so it can be seamless restored on play.
+         */
+        void restorePlayback();
+
         /** Navigate to the tab associated with the current playback */
         void navigateToPlayingTab();
 
@@ -170,4 +176,10 @@ public interface Player {
      * @param boolean isScreenLocked
      */
     default void onScreenStatusChanged(boolean isScreenLocked) {}
+
+    /**
+     * Sets the player restorable property. This is used to indicate whether there is a restorable
+     * playback that has been stopped due to background playback.
+     */
+    default void setPlayerRestorable(boolean isPlayerRestorable) {}
 }

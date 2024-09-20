@@ -34,8 +34,15 @@ EcdsaP256SHA256Signature::~EcdsaP256SHA256Signature() = default;
 
 EcdsaP256SHA256Signature::EcdsaP256SHA256Signature(
     const EcdsaP256SHA256Signature&) = default;
+
+EcdsaP256SHA256Signature::EcdsaP256SHA256Signature(EcdsaP256SHA256Signature&&) =
+    default;
+
 EcdsaP256SHA256Signature& EcdsaP256SHA256Signature::operator=(
     const EcdsaP256SHA256Signature&) = default;
+
+EcdsaP256SHA256Signature& EcdsaP256SHA256Signature::operator=(
+    EcdsaP256SHA256Signature&&) = default;
 
 EcdsaP256SHA256Signature::EcdsaP256SHA256Signature(
     mojo::DefaultConstruct::Tag) {}

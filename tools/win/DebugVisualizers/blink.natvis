@@ -121,10 +121,10 @@
       <Item Name="Ptr">ptr_</Item>
     </Expand>
   </Type>
-  <Type Name="blink::LayoutUnit">
-    <DisplayString>{(float)value_ / 64}</DisplayString>
+  <Type Name="blink::FixedPoint&lt;*&gt;">
+    <DisplayString>{(float)value_ / kFixedPointDenominator}</DisplayString>
     <Expand>
-      <Item Name="FloatVal">(float)value_ / 64</Item>
+      <Item Name="FloatVal">(float)value_ / kFixedPointDenominator</Item>
       <Item Name="RawVal">value_</Item>
     </Expand>
   </Type>

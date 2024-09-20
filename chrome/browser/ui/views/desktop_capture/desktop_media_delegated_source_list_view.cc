@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace {
@@ -55,7 +56,7 @@ DesktopMediaDelegatedSourceListView::DesktopMediaDelegatedSourceListView(
     base::WeakPtr<DesktopMediaListController> controller,
     const std::u16string& accessible_name,
     DesktopMediaList::Type type)
-    : controller_(controller), accessible_name_(accessible_name) {
+    : controller_(controller) {
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(0),
@@ -73,6 +74,9 @@ DesktopMediaDelegatedSourceListView::DesktopMediaDelegatedSourceListView(
                           controller->GetWeakPtr())));
   button_->SetText(GetButtonText(type));
   button_->SetStyle(ui::ButtonStyle::kProminent);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetName(accessible_name);
 }
 
 DesktopMediaDelegatedSourceListView::~DesktopMediaDelegatedSourceListView() =
@@ -131,9 +135,3 @@ void DesktopMediaDelegatedSourceListView::OnSourcePreviewChanged(size_t index) {
 }
 
 void DesktopMediaDelegatedSourceListView::OnDelegatedSourceListSelection() {}
-
-void DesktopMediaDelegatedSourceListView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGroup;
-  node_data->SetNameChecked(accessible_name_);
-}

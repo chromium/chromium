@@ -51,6 +51,7 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
       : FacilitatedPaymentsController(web_contents) {}
   ~MockFacilitatedPaymentsController() override = default;
 
+  MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
   MOCK_METHOD(
       bool,
       Show,
@@ -158,4 +159,12 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, DismissPrompt) {
   EXPECT_CALL(controller(), Dismiss);
 
   base_client().DismissPrompt();
+}
+
+// Test the client forwards call to check the device screen orientation to the
+// controller.
+TEST_F(ChromeFacilitatedPaymentsClientTest, IsInLandscapeMode) {
+  EXPECT_CALL(controller(), IsInLandscapeMode);
+
+  base_client().IsInLandscapeMode();
 }

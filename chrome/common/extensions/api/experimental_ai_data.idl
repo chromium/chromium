@@ -1,0 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Experimental API to handle data collection in the browser process for
+// AI features.
+[implemented_in="chrome/browser/extensions/api/experimental_ai_data/experimental_ai_data_api.h"]
+namespace experimentalAiData {
+  callback DataCallback = void(ArrayBuffer data);
+
+  interface Functions {
+    static void getAiData(long domNodeId,
+                          DOMString frameId,
+                          DOMString userInput,
+                          long tabId,
+                          DataCallback callback);
+  };
+};

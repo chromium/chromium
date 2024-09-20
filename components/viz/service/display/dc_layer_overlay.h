@@ -36,6 +36,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // for unit tests.
   explicit DCLayerOverlayProcessor(
       int allowed_yuv_overlay_count,
+      bool disable_video_overlay_if_moving,
       bool skip_initialization_for_testing = false);
 
   DCLayerOverlayProcessor(const DCLayerOverlayProcessor&) = delete;
@@ -84,7 +85,8 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // DirectCompositionOverlayCapsObserver implementation.
   void OnOverlayCapsChanged() override;
   // base::PowerStateObserver implementation.
-  void OnPowerStateChange(bool on_battery_power) override;
+  void OnBatteryPowerStatusChange(
+      PowerStateObserver::BatteryPowerStatus battery_power_status) override;
 
   void UpdateHasHwOverlaySupport();
   void UpdateSystemHDRStatus();
@@ -108,6 +110,9 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   }
   void set_is_on_battery_power_for_testing(bool value) {
     is_on_battery_power_ = value;
+  }
+  void set_disable_video_overlay_if_moving_for_testing(bool value) {
+    disable_video_overlay_if_moving_ = value;
   }
   bool force_overlay_for_auto_hdr() {
     return system_hdr_enabled_on_any_display_ &&
@@ -368,6 +373,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   std::vector<gfx::Rect> previous_frame_overlay_candidate_rects_;
   int frames_since_last_overlay_candidate_rects_change_ = 0;
   bool no_undamaged_overlay_promotion_;
+  bool disable_video_overlay_if_moving_;
 
   THREAD_CHECKER(thread_checker_);
 };

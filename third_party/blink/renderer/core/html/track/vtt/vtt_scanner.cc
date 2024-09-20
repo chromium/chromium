@@ -53,34 +53,22 @@ bool VTTScanner::Scan(StringView str) {
   if (Remaining() < characters.size()) {
     return false;
   }
-  if (Is8Bit()) {
-    auto [to_match, rest] = buf<LChar>().split_at(characters.size());
+  return Invoke([&characters](auto& buf) {
+    auto [to_match, rest] = buf.split_at(characters.size());
     if (to_match != characters) {
       return false;
     }
-    buf<LChar>() = rest;
-  } else {
-    auto [to_match, rest] = buf<UChar>().split_at(characters.size());
-    if (to_match != characters) {
-      return false;
-    }
-    buf<UChar>() = rest;
-  }
-  return true;
+    buf = rest;
+    return true;
+  });
 }
 
 String VTTScanner::ExtractString(size_t length) {
-  String s;
-  if (Is8Bit()) {
-    auto [string_data, rest] = buf<LChar>().split_at(length);
-    s = String(string_data);
-    buf<LChar>() = rest;
-  } else {
-    auto [string_data, rest] = buf<UChar>().split_at(length);
-    s = String(string_data);
-    buf<UChar>() = rest;
-  }
-  return s;
+  return Invoke([length](auto& buf) {
+    auto [string_data, rest] = buf.split_at(length);
+    buf = rest;
+    return String(string_data);
+  });
 }
 
 String VTTScanner::RestOfInputAsString() {
@@ -94,19 +82,13 @@ size_t VTTScanner::ScanDigits(unsigned& number) {
     return 0;
   }
   bool valid_number;
-  if (Is8Bit()) {
-    auto [number_data, rest] = buf<LChar>().split_at(num_digits);
-    number = CharactersToUInt(number_data.data(), num_digits,
-                              WTF::NumberParsingOptions(), &valid_number);
+  number = Invoke([num_digits, &valid_number](auto& buf) {
+    auto [number_data, rest] = buf.split_at(num_digits);
     // Consume the digits.
-    buf<LChar>() = rest;
-  } else {
-    auto [number_data, rest] = buf<UChar>().split_at(num_digits);
-    number = CharactersToUInt(number_data.data(), num_digits,
-                              WTF::NumberParsingOptions(), &valid_number);
-    // Consume the digits.
-    buf<UChar>() = rest;
-  }
+    buf = rest;
+    return CharactersToUInt(number_data, WTF::NumberParsingOptions(),
+                            &valid_number);
+  });
 
   // Since we know that scanDigits only scanned valid (ASCII) digits (and
   // hence that's what got passed to charactersToUInt()), the remaining
@@ -138,13 +120,11 @@ bool VTTScanner::ScanDouble(double& number) {
   }
 
   bool valid_number;
-  if (Is8Bit()) {
-    number = CharactersToDouble(buf<LChar>(start_state).data(),
-                                length_of_double, &valid_number);
-  } else {
-    number = CharactersToDouble(buf<UChar>(start_state).data(),
-                                length_of_double, &valid_number);
-  }
+  number = Invoke(
+      [length_of_double, &valid_number](auto& buf) {
+        return CharactersToDouble(buf.first(length_of_double), &valid_number);
+      },
+      start_state);
 
   if (number == std::numeric_limits<double>::infinity())
     return false;

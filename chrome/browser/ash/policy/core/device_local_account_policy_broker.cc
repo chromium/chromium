@@ -31,7 +31,7 @@
 #include "chrome/browser/ash/policy/invalidation/affiliated_cloud_policy_invalidator.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
+#include "chrome/browser/chromeos/extensions/external_loader/device_local_account_external_policy_loader.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/extensions/policy_handlers.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
@@ -150,8 +150,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
     const scoped_refptr<base::SequencedTaskRunner>& resource_cache_task_runner,
     std::variant<AffiliatedInvalidationServiceProvider*,
                  invalidation::InvalidationListener*>
-        invalidation_service_provider_or_listener,
-    bool skip_first_policy_fetch)
+        invalidation_service_provider_or_listener)
     : invalidation_service_provider_or_listener_(
           invalidation::PointerVariantToRawPointer(
               invalidation_service_provider_or_listener)),
@@ -186,7 +185,6 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
   schema_registry_.RegisterComponent(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()), GetChromeSchema());
   schema_registry_.SetAllDomainsReady();
-  core_.SetSkipFirstPolicyFetch(skip_first_policy_fetch);
 }
 
 DeviceLocalAccountPolicyBroker::~DeviceLocalAccountPolicyBroker() {

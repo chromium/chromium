@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/orca_resources.h"
 #include "chrome/grit/orca_resources_map.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
@@ -82,9 +83,12 @@ void MakoBubbleCoordinator::LoadEditorUI(
                                            GetSystemLocale());
   url = net::AppendOrReplaceQueryParameter(url, kOrcaFeedbackEnabledParamKey,
                                            feedback_enabled ? "true" : "false");
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
   url = net::AppendOrReplaceQueryParameter(
       url, kOrcaMagicBoostParamKey,
-      chromeos::features::IsMagicBoostEnabled() ? "true" : "false");
+      magic_boost_state && magic_boost_state->IsMagicBoostAvailable()
+          ? "true"
+          : "false");
 
   if (base::FeatureList::IsEnabled(ash::features::kOrcaResizingSupport)) {
     url = net::AppendOrReplaceQueryParameter(url, kOrcaResizingEnabledParamKey,

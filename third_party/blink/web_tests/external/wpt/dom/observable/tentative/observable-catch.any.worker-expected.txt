@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] catch(): should handle returning an async iterable
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'catch' on 'Observable': Cannot convert value to an Observable. Input value must be an Observable, async iterable, iterable, or Promise."
-Harness: the test ran to completion.
-

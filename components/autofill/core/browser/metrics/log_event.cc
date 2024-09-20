@@ -77,8 +77,9 @@ bool AreCollapsible(const TypingFieldLogEvent& event1,
 bool AreCollapsible(const HeuristicPredictionFieldLogEvent& event1,
                     const HeuristicPredictionFieldLogEvent& event2) {
   return event1.field_type == event2.field_type &&
-         event1.pattern_source == event2.pattern_source &&
-         event1.is_active_pattern_source == event2.is_active_pattern_source &&
+         event1.heuristic_source == event2.heuristic_source &&
+         event1.is_active_heuristic_source ==
+             event2.is_active_heuristic_source &&
          event1.rank_in_field_signature_group ==
              event2.rank_in_field_signature_group;
 }

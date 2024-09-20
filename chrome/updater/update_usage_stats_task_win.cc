@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
+#include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
@@ -44,7 +45,7 @@ bool AppUsageStatsAllowed(UpdaterScope scope, const std::wstring& app_id) {
 bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
                                UpdaterScope scope) {
   for (auto app_id : app_ids) {
-    if (base::EqualsCaseInsensitiveASCII(app_id, kUpdaterAppId)) {
+    if (IsUpdaterOrCompanionApp(app_id)) {
       continue;
     }
 

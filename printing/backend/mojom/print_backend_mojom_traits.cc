@@ -181,8 +181,7 @@ EnumTraits<printing::mojom::AdvancedCapabilityType,
     case ::printing::AdvancedCapability::Type::kString:
       return printing::mojom::AdvancedCapabilityType::kString;
   }
-  NOTREACHED_IN_MIGRATION();
-  return printing::mojom::AdvancedCapabilityType::kString;
+  NOTREACHED();
 }
 
 // static
@@ -204,8 +203,7 @@ bool EnumTraits<printing::mojom::AdvancedCapabilityType,
       *output = ::printing::AdvancedCapability::Type::kString;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

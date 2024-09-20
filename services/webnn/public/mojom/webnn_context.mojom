@@ -10,20 +10,20 @@ import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph_builder.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
-// Represents a successful call to `WebNNContext::CreateBuffer()`.
-struct CreateBufferSuccess {
-  pending_associated_remote<WebNNTensor> buffer_remote;
-  // buffer_handle is a generated token used as a handle to identify the buffer
+// Represents a successful call to `WebNNContext::CreateTensor()`.
+struct CreateTensorSuccess {
+  pending_associated_remote<WebNNTensor> tensor_remote;
+  // tensor_handle is a generated token used as a handle to identify the tensor
   // from the renderer. The token is only valid for the lifetime
-  // of the buffer and is used by context operations in the service using the
-  // buffer corresponding to this handle.
-  blink.mojom.WebNNTensorToken buffer_handle;
+  // of the tensor and is used by context operations in the service using the
+  // tensor corresponding to this handle.
+  blink.mojom.WebNNTensorToken tensor_handle;
 };
 
-// Represents the return value of `WebNNContext::CreateBuffer()`. Let it be
-// `success` if the buffer was successfully created and `error` otherwise.
-union CreateBufferResult {
-  CreateBufferSuccess success;
+// Represents the return value of `WebNNContext::CreateTensor()`. Let it be
+// `success` if the tensor was successfully created and `error` otherwise.
+union CreateTensorResult {
+  CreateTensorSuccess success;
   Error error;
 };
 
@@ -36,7 +36,7 @@ interface WebNNContext {
   CreateGraphBuilder(pending_associated_receiver<WebNNGraphBuilder> receiver);
 
   // Called by the renderer process to create `WebNNTensor` message pipe for
-  // creating platform specific buffers, the WebNN buffer will be validated and
+  // creating platform specific tensors, the WebNN tensor will be validated and
   // created. This method guarantees memory allocation on the device.
-  CreateBuffer(BufferInfo buffer_info) => (CreateBufferResult result);
+  CreateTensor(TensorInfo tensor_info) => (CreateTensorResult result);
 };

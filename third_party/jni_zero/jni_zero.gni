@@ -39,6 +39,15 @@ if (target_os == "android") {
   jni_headers_dir = "$root_gen_dir/jni_headers"
 }
 
+_cronet_renaming_extra_args = [
+  # keep in sync with //components/cronet/android/BUILD.gn renaming_rules
+  "--package-prefix",
+  "internal",
+
+  "--package-prefix-filter",
+  "org.jni_zero",
+]
+
 _jni_zero_dir = "//third_party/jni_zero"
 
 template("jni_sources_list") {
@@ -76,6 +85,7 @@ template("_invoke_jni_zero") {
                             "codegen/placeholder_gen_jni_java.py",
                             "codegen/placeholder_java_type.py",
                             "codegen/proxy_impl_java.py",
+                            "codegen/register_natives.py",
                             "common.py",
                             "java_lang_classes.py",
                             "java_types.py",
@@ -260,6 +270,11 @@ template("generate_jni_registration") {
     if (defined(invoker.module_name)) {
       args += [ "--module-name=${invoker.module_name}" ]
     }
+
+    # Cronet needs to rename jni_zero classes
+    if (defined(is_cronet_build) && is_cronet_build) {
+      args += _cronet_renaming_extra_args
+    }
   }
 }
 
@@ -366,6 +381,11 @@ template("generate_jni_impl") {
         }
         if (defined(invoker.namespace)) {
           args += [ "--namespace=${invoker.namespace}" ]
+        }
+
+        # Cronet needs to rename jni_zero classes
+        if (defined(is_cronet_build) && is_cronet_build) {
+          args += _cronet_renaming_extra_args
         }
       } else {
         if (is_robolectric) {

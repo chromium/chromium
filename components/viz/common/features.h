@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "components/viz/common/delegated_ink_prediction_configuration.h"
 #include "components/viz/common/viz_common_export.h"
 
 // See the following for guidance on adding new viz feature flags:
@@ -53,6 +52,8 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderPassDrawnRect);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDrmBlackFullscreenOptimization);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseFrameIntervalDecider);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kTemporalSkipOverlaysWithRootCopyOutputRequests);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseMultipleOverlays);
 VIZ_COMMON_EXPORT extern const char kMaxOverlaysParam[];
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVideoDetectorIgnoreNonVideos);
@@ -150,8 +151,7 @@ VIZ_COMMON_EXPORT bool ShouldUseDCompSurfacesForDelegatedInk();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
 VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
-VIZ_COMMON_EXPORT std::optional<int> ShouldDrawPredictedInkPoints();
-VIZ_COMMON_EXPORT std::string InkPredictor();
+VIZ_COMMON_EXPORT bool ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT bool UseWebViewNewInvalidateHeuristic();
 VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
 VIZ_COMMON_EXPORT int MaxOverlaysConsidered();

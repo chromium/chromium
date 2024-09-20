@@ -90,11 +90,62 @@ struct TooltipView: View {
   }
 }
 
+/// A view modifier that conditionally applies different gestures based on the iOS version for the graph.
+struct GraphGesture: ViewModifier {
+  let geometry: GeometryProxy
+  let proxy: ChartProxy
+  let updateSelectionData: (CGPoint, GeometryProxy, ChartProxy) -> Void
+  let updateTooltipPosition: (GeometryProxy, ChartProxy) -> Void
+  let recordGraphInteraction: () -> Void
+
+  func body(content: Content) -> some View {
+    // The minimum distance amount here allows scrolling to take precedence over
+    // dragging when the user is scrolling vertically.
+    // There are 3 gestures interacting here: dragging on the graph, scrolling
+    // the panel, and dragging to expand the panel. The solution uses 2
+    // different methods to handle the graph drag's interaction with each of
+    // the other two gestures. First, vs scrolling the panel, using a
+    // DragGesture with a minimum distance allows the scrolling to supercede
+    // the drag if the user moves their finger vertically, but still allows the
+    // drag to go off if the user moves their finger horizontally. The scroll
+    // view looks like it requires the user to move their finger some short
+    // distance vertically before scrolling begins. So if the user moves
+    // vertically, the scroll gesture activates before the minimum distance is
+    // hit. But if the user moves horiztonally, the graph's minimum distance
+    // is hit first, activating that one.
+    //
+    // For the interaction with the gesture to expand the sheet,
+    // UIGestureRecognizerDelegate methods are used elsewhere to add a
+    // hierarchical relationship. This makes sure that the expansion gesture
+    // doesn't activate until after the graph drag gesture fails. It doesn't
+    // matter whether the graph gesture actually fails or not because the sheet
+    // expand gesture should never activate when dragging on the graph.
+    let gesture = DragGesture(minimumDistance: 15, coordinateSpace: .local)
+      .onChanged { value in
+        updateSelectionData(value.location, geometry, proxy)
+        updateTooltipPosition(geometry, proxy)
+      }
+      .onEnded { _ in
+        recordGraphInteraction()
+      }
+    #if swift(>=6.0)
+      if #available(iOS 18, *) {
+        content.gesture(gesture, name: kPanelContentGestureRecognizerName)
+      } else {
+        content.gesture(gesture)
+      }
+    #else
+      content.gesture(gesture)
+    #endif
+  }
+}
+
 /// Represents a view displaying a historical graph.
 struct HistoryGraph: View {
   /// The price history data consisting of dates and corresponding prices.
   let history: [Date: NSNumber]
   let currency: String
+  let graphAccessibilityLabel: String
 
   /// Graph gradient color.
   static let graphGradientColor = "graph_gradient_color"
@@ -119,6 +170,9 @@ struct HistoryGraph: View {
 
   /// The width of the entire chart.
   @State private var chartWidth: CGFloat?
+
+  /// Indicates whether the graph has been interacted with for the current session.
+  @State private var hasGraphInteracted: Bool = false
 
   /// Color scheme environment value .
   @Environment(\.colorScheme) var colorScheme
@@ -154,6 +208,7 @@ struct HistoryGraph: View {
           yEnd: .value("Price", price.doubleValue)
         )
         .foregroundStyle(linearGradient)
+        .accessibilityHidden(true)
 
         // Displaying the line mark on the graph.
         LineMark(
@@ -169,6 +224,8 @@ struct HistoryGraph: View {
           x: .value("Date", selectedDate)
         )
         .lineStyle(StrokeStyle(lineWidth: 1, dash: [3]))
+        .accessibilityHidden(true)
+
         PointMark(
           x: .value("Date", selectedDate),
           y: .value("Price", selectedPrice.doubleValue)
@@ -183,6 +240,7 @@ struct HistoryGraph: View {
             )
         }
         .foregroundStyle(Color(uiColor: Self.blue600))
+        .accessibilityHidden(true)
       }
     }
     .chartBackground { chartProxy in
@@ -226,24 +284,18 @@ struct HistoryGraph: View {
               updateSelectionData(location: location, geometry: geometry, chart: proxy)
               updateTooltipPosition(geometry: geometry, chart: proxy)
             case .ended:
+              recordGraphInteraction()
               break
             }
           })
-          .gesture(
-            /// To avoid conflicts between vertical scrolling and horizontal dragging
-            /// to display the tooltip, a long press is necessary. Once a long press
-            /// is detected, the system starts listening for a drag event, which we
-            /// interpret as the user's intent to horizontally drag the tooltip on the graph.
-            /// The heuristic for the long press was chosen after manual testing.
-            LongPressGesture(minimumDuration: 0.07)
-              .sequenced(before: DragGesture())
-              .onChanged { value in
-                if case .second(_, let drag) = value, let drag = drag {
-                  updateSelectionData(location: drag.location, geometry: geometry, chart: proxy)
-                  updateTooltipPosition(geometry: geometry, chart: proxy)
-                }
-              }
-          )
+          .modifier(
+            GraphGesture(
+              geometry: geometry,
+              proxy: proxy,
+              updateSelectionData: updateSelectionData,
+              updateTooltipPosition: updateTooltipPosition,
+              recordGraphInteraction: recordGraphInteraction
+            ))
       }
     }
     .overlay(
@@ -260,8 +312,10 @@ struct HistoryGraph: View {
           )
         }
       }
+      .accessibilityHidden(true)
     )
     .edgesIgnoringSafeArea(.all)
+    .accessibilityLabel(graphAccessibilityLabel)
   }
 
   /// Updates the selected data when the given `location` is selected inside the given
@@ -271,6 +325,14 @@ struct HistoryGraph: View {
     let currentX = location.x - startX
     if let index: Date = chart.value(atX: currentX) {
       selectedDate = closestDate(to: index, in: history)
+    }
+  }
+
+  // Records user interactions with the history graph.
+  private func recordGraphInteraction() {
+    if !hasGraphInteracted {
+      hasGraphInteracted = true
+      UserMetricsUtils.recordAction("Commerce.PriceInsights.HistoryGraphInteraction")
     }
   }
 

@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/buildflags.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
@@ -214,10 +215,7 @@ class PLATFORM_EXPORT CanvasResource
   gpu::webgpu::WebGPUInterface* WebGPUInterface() const;
   gfx::ColorSpace GetColorSpace() const;
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-  ContextProviderWrapper() const {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  ContextProviderWrapper() const = 0;
 
   // Prepares GPU TransferableResource from the resource's ClientSharedImage.
   // Invoked if the resource is accelerated and UsesClientSharedImage() returns
@@ -285,6 +283,10 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const final;
   bool SupportsAcceleratedCompositing() const final { return false; }
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
+      const override {
+    return nullptr;
+  }
   bool PrepareUnacceleratedTransferableResource(
       viz::TransferableResource* out_resource) final;
   gfx::Size Size() const final;
@@ -321,7 +323,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       cc::PaintFlags::FilterQuality,
       bool is_origin_top_left,
       bool is_accelerated,
-      uint32_t shared_image_usage_flags);
+      gpu::SharedImageUsageSet shared_image_usage_flags);
   ~CanvasResourceSharedImage() override;
 
   bool IsRecycleable() const final { return true; }
@@ -406,7 +408,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
                             cc::PaintFlags::FilterQuality,
                             bool is_origin_top_left,
                             bool is_accelerated,
-                            uint32_t shared_image_usage_flags);
+                            gpu::SharedImageUsageSet shared_image_usage_flags);
 
   OwningThreadData& owning_thread_data() {
     DCHECK(!is_cross_thread());

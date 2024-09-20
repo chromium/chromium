@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {PageRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, TabSearchApiProxy, UserFeedback} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {PageCallbackRouter, TabOrganizationModelStrategy} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {PageCallbackRouter, TabOrganizationFeature, TabOrganizationModelStrategy} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestTabSearchApiProxy extends TestBrowserProxy implements
@@ -20,9 +20,11 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'declutterTabs',
       'acceptTabOrganization',
       'rejectTabOrganization',
+      'renameTabOrganization',
       'excludeFromStaleTabs',
       'getProfileData',
       'getStaleTabs',
+      'getTabOrganizationFeature',
       'getTabOrganizationSession',
       'getTabOrganizationModelStrategy',
       'openRecentlyClosedEntry',
@@ -33,6 +35,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'switchToTab',
       'saveRecentlyClosedExpandedPref',
       'setTabIndex',
+      'setOrganizationFeature',
       'startTabGroupTutorial',
       'triggerFeedback',
       'triggerSignIn',
@@ -58,13 +61,19 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   }
 
   acceptTabOrganization(
-      sessionId: number, organizationId: number, name: string, tabs: Tab[]) {
+      sessionId: number, organizationId: number, tabs: Tab[]) {
     this.methodCalled(
-        'acceptTabOrganization', [sessionId, organizationId, name, tabs]);
+        'acceptTabOrganization', [sessionId, organizationId, tabs]);
   }
 
   rejectTabOrganization(sessionId: number, organizationId: number) {
     this.methodCalled('rejectTabOrganization', [sessionId, organizationId]);
+  }
+
+  renameTabOrganization(
+      sessionId: number, organizationId: number, name: string) {
+    this.methodCalled(
+        'renameTabOrganization', [sessionId, organizationId, name]);
   }
 
   excludeFromStaleTabs(tabId: number) {
@@ -79,6 +88,11 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   getStaleTabs() {
     this.methodCalled('getStaleTabs');
     return Promise.resolve({tabs: this.staleTabs_});
+  }
+
+  getTabOrganizationFeature() {
+    this.methodCalled('getTabOrganizationFeature');
+    return Promise.resolve({feature: TabOrganizationFeature.kSelector});
   }
 
   getTabOrganizationSession() {
@@ -126,6 +140,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   setTabIndex(index: number) {
     this.methodCalled('setTabIndex', [index]);
+  }
+
+  setOrganizationFeature(feature: TabOrganizationFeature) {
+    this.methodCalled('setOrganizationFeature', [feature]);
   }
 
   startTabGroupTutorial() {

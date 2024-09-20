@@ -107,6 +107,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -1486,6 +1487,13 @@ bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents) {
       browser->bookmark_bar_state());
 #if !BUILDFLAG(IS_ANDROID)
   if (toast_features::IsEnabled(toast_features::kReadingListToast)) {
+    // Don't show the reading list toast if the side panel is visible.
+    std::optional<SidePanelEntry::Id> id =
+        browser->GetFeatures().side_panel_ui()->GetCurrentEntryId();
+    if (id.has_value() && id.value() == SidePanelEntryId::kReadingList) {
+      return true;
+    }
+
     ToastController* const toast_controller =
         browser->GetFeatures().toast_controller();
     if (toast_controller) {
@@ -1863,7 +1871,8 @@ void FindInPage(Browser* browser, bool find_next, bool forward_direction) {
 
 void ShowTabSearch(Browser* browser) {
   const int tab_search_tab_index = 0;
-  browser->window()->CreateTabSearchBubble(tab_search_tab_index);
+  browser->window()->CreateTabSearchBubble(
+      tab_search_tab_index, tab_search::mojom::TabOrganizationFeature::kNone);
 }
 
 void CloseTabSearch(Browser* browser) {
@@ -2118,9 +2127,19 @@ bool IsDebuggerAttachedToCurrentTab(Browser* browser) {
                   : false;
 }
 
-void CopyURL(content::WebContents* web_contents) {
+void CopyURL(Browser* browser, content::WebContents* web_contents) {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
   scw.WriteText(base::UTF8ToUTF16(web_contents->GetVisibleURL().spec()));
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
+    ToastController* const toast_controller =
+        browser->GetFeatures().toast_controller();
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
+    }
+  }
+#endif
 }
 
 bool CanCopyUrl(const Browser* browser) {

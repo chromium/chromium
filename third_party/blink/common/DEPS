@@ -10,6 +10,7 @@ include_rules = [
     "+build",
     "+crypto/sha2.h",
     "+cc/mojom/browser_controls_params.mojom.h",
+    "+gpu/command_buffer/common/shared_image_usage.h",
     "+net",
     "+media",
     "+mojo",

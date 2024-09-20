@@ -92,7 +92,7 @@ bool ActiveSessionFingerprintClientImpl::IsFingerprintAvailable(
     case AuthRequest::Reason::kSettings:
       return false;
     case AuthRequest::Reason::kPasswordManager: {
-      if (ash::features::IsBiometricsInPasswordManagerEnabled()){
+      if (ash::features::IsBiometricsInPasswordManagerEnabled()) {
         const base::Value::List& factors =
             pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
         if (base::Contains(factors, base::Value(kFactorsOptionAll)) ||

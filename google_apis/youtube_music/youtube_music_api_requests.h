@@ -31,7 +31,9 @@ class GetMusicSectionRequest : public UrlFetchRequestBase {
       base::expected<std::unique_ptr<TopLevelMusicRecommendations>,
                      ApiErrorCode>)>;
 
-  GetMusicSectionRequest(RequestSender* sender, Callback callback);
+  GetMusicSectionRequest(RequestSender* sender,
+                         const std::string& device_info,
+                         Callback callback);
   GetMusicSectionRequest(const GetMusicSectionRequest&) = delete;
   GetMusicSectionRequest& operator=(const GetMusicSectionRequest&) = delete;
   ~GetMusicSectionRequest() override;
@@ -42,6 +44,7 @@ class GetMusicSectionRequest : public UrlFetchRequestBase {
   ApiErrorCode MapReasonToError(ApiErrorCode code,
                                 const std::string& reason) override;
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
+  std::vector<std::string> GetExtraRequestHeaders() const override;
   void ProcessURLFetchResults(
       const network::mojom::URLResponseHead* response_head,
       const base::FilePath response_file,
@@ -56,6 +59,7 @@ class GetMusicSectionRequest : public UrlFetchRequestBase {
       std::unique_ptr<TopLevelMusicRecommendations> recommendations);
 
   Callback callback_;
+  const std::string device_info_;
 
   base::WeakPtrFactory<GetMusicSectionRequest> weak_ptr_factory_{this};
 };
@@ -69,6 +73,7 @@ class GetPlaylistRequest : public UrlFetchRequestBase {
       base::expected<std::unique_ptr<Playlist>, ApiErrorCode>)>;
 
   GetPlaylistRequest(RequestSender* sender,
+                     const std::string& device_info,
                      const std::string& playlist_name,
                      Callback callback);
   GetPlaylistRequest(const GetPlaylistRequest&) = delete;
@@ -81,6 +86,7 @@ class GetPlaylistRequest : public UrlFetchRequestBase {
   ApiErrorCode MapReasonToError(ApiErrorCode code,
                                 const std::string& reason) override;
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
+  std::vector<std::string> GetExtraRequestHeaders() const override;
   void ProcessURLFetchResults(
       const network::mojom::URLResponseHead* response_head,
       const base::FilePath response_file,
@@ -91,6 +97,8 @@ class GetPlaylistRequest : public UrlFetchRequestBase {
   static std::unique_ptr<Playlist> Parse(const std::string& json);
 
   void OnDataParsed(std::unique_ptr<Playlist> playlist);
+
+  const std::string device_info_;
 
   // Playlist name. Unique identifier of a playlist.
   std::string playlist_name_;
@@ -103,7 +111,7 @@ class GetPlaylistRequest : public UrlFetchRequestBase {
 // Request that prepares the playback queue for the API server. For API usage,
 // please check below:
 //   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/queues/preparePlayback
-class PlaybackQueuePrepareRequest : public UrlFetchRequestBase {
+class PlaybackQueuePrepareRequest : public SignedRequest {
  public:
   using Callback = base::OnceCallback<void(
       base::expected<std::unique_ptr<Queue>, ApiErrorCode>)>;
@@ -122,7 +130,6 @@ class PlaybackQueuePrepareRequest : public UrlFetchRequestBase {
   ApiErrorCode MapReasonToError(ApiErrorCode code,
                                 const std::string& reason) override;
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
-  HttpRequestMethod GetRequestType() const override;
   bool GetContentData(std::string* upload_content_type,
                       std::string* upload_content) override;
   void ProcessURLFetchResults(
@@ -146,12 +153,13 @@ class PlaybackQueuePrepareRequest : public UrlFetchRequestBase {
 // Request to play the next in the playback queue for the API server. For API
 // usage, please check below:
 //   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/queues/next
-class PlaybackQueueNextRequest : public UrlFetchRequestBase {
+class PlaybackQueueNextRequest : public SignedRequest {
  public:
   using Callback = base::OnceCallback<void(
       base::expected<std::unique_ptr<QueueContainer>, ApiErrorCode>)>;
 
   PlaybackQueueNextRequest(RequestSender* sender,
+                           const PlaybackQueueNextRequestPayload& payload,
                            Callback callback,
                            const std::string& playback_queue_name);
   PlaybackQueueNextRequest(const PlaybackQueueNextRequest&) = delete;
@@ -171,7 +179,8 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
   ApiErrorCode MapReasonToError(ApiErrorCode code,
                                 const std::string& reason) override;
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
-  HttpRequestMethod GetRequestType() const override;
+  bool GetContentData(std::string* upload_content_type,
+                      std::string* upload_content) override;
   void ProcessURLFetchResults(
       const network::mojom::URLResponseHead* response_head,
       const base::FilePath response_file,
@@ -182,6 +191,8 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
   static std::unique_ptr<QueueContainer> Parse(const std::string& json);
 
   void OnDataParsed(std::unique_ptr<QueueContainer> queue_container);
+
+  const PlaybackQueueNextRequestPayload payload_;
 
   // Playlist queue name. Unique identifier of a queue.
   std::string playback_queue_name_;
@@ -194,7 +205,7 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
 // Request to report the playback to the API server. For API usage, please check
 // below:
 //   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/reports/playback
-class ReportPlaybackRequest : public UrlFetchRequestBase {
+class ReportPlaybackRequest : public SignedRequest {
  public:
   using Callback = base::OnceCallback<void(
       base::expected<std::unique_ptr<ReportPlaybackResult>, ApiErrorCode>)>;
@@ -212,7 +223,6 @@ class ReportPlaybackRequest : public UrlFetchRequestBase {
   ApiErrorCode MapReasonToError(ApiErrorCode code,
                                 const std::string& reason) override;
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
-  HttpRequestMethod GetRequestType() const override;
   bool GetContentData(std::string* upload_content_type,
                       std::string* upload_content) override;
   void ProcessURLFetchResults(

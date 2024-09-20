@@ -108,8 +108,7 @@ void BufferedFileWriter::SetState(BufferedFileWriter::State state) {
   switch (state) {
     case kNotStarted:
       // This is the initial state, but should never be reached again.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case kWorking:
       DCHECK(state_ == kNotStarted || state_ == kWaiting);
       break;

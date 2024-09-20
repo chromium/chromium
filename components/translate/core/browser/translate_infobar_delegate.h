@@ -125,15 +125,9 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
     return step_ == translate::TRANSLATE_STEP_TRANSLATE_ERROR;
   }
 
-  void OnErrorShown(TranslateErrors error_type);
-
   // Return true if the translation was triggered by a menu entry instead of
   // via an infobar/bubble or preference.
   bool triggered_from_menu() const { return triggered_from_menu_; }
-  // Languages supporting translate.
-  virtual void GetLanguagesNames(std::vector<std::u16string>* languages) const;
-  virtual void GetLanguagesCodes(
-      std::vector<std::string>* languages_codes) const;
 
   virtual void Translate();
   virtual void RevertTranslation();
@@ -147,26 +141,9 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   virtual bool IsTranslatableLanguageByPrefs() const;
   virtual void ToggleTranslatableLanguageByPrefs();
   virtual bool IsSiteOnNeverPromptList() const;
-  virtual bool ShouldNeverTranslateLanguage() const;
   virtual void ToggleNeverPromptSite();
   virtual bool ShouldAlwaysTranslate() const;
   virtual void ToggleAlwaysTranslate();
-
-  // Methods called by the extra-buttons that can appear on the "before
-  // translate" infobar (when the user has accepted/declined the translation
-  // several times).
-  void AlwaysTranslatePageLanguage();
-  void NeverTranslatePageLanguage();
-
-  int GetTranslationAcceptedCount();
-  int GetTranslationDeniedCount();
-
-  void ResetTranslationAcceptedCount();
-  void ResetTranslationDeniedCount();
-
-  // Translatable content languages.
-  virtual void GetContentLanguagesCodes(
-      std::vector<std::string>* content_languages_codes) const;
 
   // Returns whether "Always Translate Language" should automatically trigger.
   // If true, this method has the side effect of mutating some prefs.
@@ -175,39 +152,10 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   // If true, this method has the side effect of mutating some prefs.
   bool ShouldAutoNeverTranslate();
 
-  // The following methods are called by the infobar that displays the status
-  // while translating and also the one displaying the error message.
-  std::u16string GetMessageInfoBarButtonText();
-  void MessageInfoBarButtonPressed();
-  bool ShouldShowMessageInfoBarButton();
-
-  // Returns true if the infobar should offer a (platform-specific) shortcut to
-  // allow the user to always/never translate the language, when we think the
-  // user wants that functionality.
-  bool ShouldShowAlwaysTranslateShortcut();
-  bool ShouldShowNeverTranslateShortcut();
-
 #if BUILDFLAG(IS_IOS)
   // Shows the Infobar offering to never translate the language or the site.
   void ShowNeverTranslateInfobar();
 #endif
-
-  // Adds the strings that should be displayed in the after translate infobar to
-  // |strings|. If |autodetermined_source_language| is false, the text in that
-  // infobar is:
-  // "The page has been translated from <lang1> to <lang2>."
-  // Otherwise:
-  // "The page has been translated to <lang1>."
-  // Because <lang1>, or <lang1> and <lang2> are displayed in menu buttons, the
-  // text is split in 2 or 3 chunks. |swap_languages| is set to true if
-  // |autodetermined_source_language| is false, and <lang1> and <lang2>
-  // should be inverted (some languages express the sentense as "The page has
-  // been translate to <lang2> from <lang1>."). It is ignored if
-  // |autodetermined_source_language| is true.
-  static void GetAfterTranslateStrings(std::vector<std::u16string>* strings,
-                                       bool* swap_languages,
-                                       bool autodetermined_source_language);
-
   // Gets the TranslateDriver associated with this object.
   // May return NULL if the driver has been destroyed.
   TranslateDriver* GetTranslateDriver();

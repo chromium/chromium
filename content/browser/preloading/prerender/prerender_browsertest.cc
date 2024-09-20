@@ -341,8 +341,6 @@ class PrerenderBrowserTest : public ContentBrowserTest,
             &PrerenderBrowserTest::web_contents, base::Unretained(this)));
     feature_list_.InitWithFeatures(
         {blink::features::kPrerender2MainFrameNavigation,
-         // To enable Content-Security-Policy navigate-to support.
-         ::features::kExperimentalContentSecurityPolicyFeatures,
          ::features::kSuppressesPrerenderingOnSlowNetwork},
         {});
   }
@@ -1264,7 +1262,7 @@ void NoVarySearchPrerenderBrowserTest::TestNoVarySearchHeaderFailure(
 // Test that a No-Vary-Search header is malformed.
 IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
                        MalformedNoVarySearchHeader) {
-  TestNoVarySearchHeaderFailure("No-Vary-Search: malformed=(\"a\")",
+  TestNoVarySearchHeaderFailure("No-Vary-Search: malformed(\"a\")",
                                 FinishedReason::kNoVarySearchHeaderParseFailed);
 }
 
@@ -9833,8 +9831,7 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderEagernessBrowserTest() {
     feature_list_.InitWithFeatures(
-        {{blink::features::kAnchorElementInteraction},
-         {blink::features::kSpeculationRulesPointerDownHeuristics},
+        {{blink::features::kSpeculationRulesPointerDownHeuristics},
          {blink::features::kSpeculationRulesPointerHoverHeuristics}},
         {});
   }
@@ -12125,41 +12122,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, MixedContent) {
   }
 
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kMixedContent);
-}
-
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderBlockedByCspNavigateTo) {
-  const GURL initial_url = GetUrl("/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
-
-  // Add a Content-Security-Policy meta tag that restricts prerendering
-  // navigation URLs.
-  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
-    const meta = document.createElement('meta');
-    meta.httpEquiv = "Content-Security-Policy";
-    meta.content = "navigate-to https://a.test:*/empty.html";
-    document.getElementsByTagName('head')[0].appendChild(meta);
-  )"));
-
-  const char* console_pattern =
-      "Refused to navigate to 'https://a.test:*/title1.html' because it "
-      "violates the following Content Security Policy directive: \"navigate-to "
-      "https://a.test:*/empty.html\".\n";
-
-  // Prerender a URL that will be blocked by the navigate-to. As navigation
-  // fails, AddPrerender() doesn't finish. We need to wait its failure by
-  // monitoring a console error for the navigation blocking.
-  WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern(console_pattern);
-  const GURL disallowed_url = GetUrl("/title1.html");
-  AddPrerenderAsync(disallowed_url);
-  ASSERT_TRUE(console_observer.Wait());
-
-  EXPECT_FALSE(
-      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
-          disallowed_url));
-  ASSERT_EQ(1u, console_observer.messages().size());
-  // Just in case, no server access should be observed.
-  EXPECT_EQ(GetRequestCount(disallowed_url), 0);
 }
 
 // Check that the Content-Security-Policy set via HTTP header applies after the

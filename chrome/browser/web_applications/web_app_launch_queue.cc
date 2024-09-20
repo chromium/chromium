@@ -72,7 +72,7 @@ class EntriesBuilder {
     content::FileSystemAccessEntryFactory::PathType path_type =
         MaybeRemapPath(&entry_path);
     entries_.push_back(entry_factory_->CreateFileEntryFromPath(
-        context_, path_type, entry_path,
+        context_, path_type, entry_path, base::FilePath(),
         content::FileSystemAccessEntryFactory::UserAction::kSave));
   }
 
@@ -81,7 +81,7 @@ class EntriesBuilder {
     content::FileSystemAccessEntryFactory::PathType path_type =
         MaybeRemapPath(&entry_path);
     entries_.push_back(entry_factory_->CreateDirectoryEntryFromPath(
-        context_, path_type, entry_path,
+        context_, path_type, entry_path, base::FilePath(),
         content::FileSystemAccessEntryFactory::UserAction::kOpen));
   }
 

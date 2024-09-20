@@ -249,6 +249,12 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_CACHING_ON_JAVA_SCRIPT_CHANGES,
                 "When enabled, Autofill will reset the autofill state of fields modified by JS"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_FIX_VALUE_SEMANTICS,
+                "Fixes the overloaded meaning of FormFieldData::value"),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_FIX_INITIAL_VALUE_OF_SELECT,
+                "Sets the AutofillField's initial value for select elements"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_GIVE_PRECEDENCE_TO_EMAIL_OVER_USERNAME,
                 "When enabled, Autofill will give precedence to heuristics results that predict an"
                         + " email field over server predictions for a username field"),
@@ -258,9 +264,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
                 "Enables Autofill to detect if form controls are removed from the DOM"),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_DONT_PRESERVE_AUTOFILL_STATE,
-                "Retrieves is_autofilled state from blink instead of the cache"),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
                 "Enables Autofill to retrieve the page language for form parsing."),
@@ -305,6 +308,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_PL_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Poland."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_GREEK_REGEXES,
+                "When enabled, Greek regexes are used for parsing in branded builds."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_EMAIL_HEURISTIC_ONLY_ADDRESS_FORMS,
                 "When enabled, Autofill supports forms consisting of only email fields."),
         Flag.baseFeature(
@@ -313,9 +319,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_CONSIDER_PHONE_NUMBER_SEPARATORS_VALID_LABELS,
                 "Makes label inference accept strings made up of  '(', ')', and '-' as labels."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_CONTENT_EDITABLE_CHANGE_EVENTS,
-                "When enabled, autofill responds to content editable change events."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_CACHE_FOR_REGEX_MATCHING,
                 "When enabled, autofill uses an extra cache for matching regular expressions "
@@ -332,10 +335,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_UKM_EXPERIMENTAL_FIELDS,
                 "Enables UKM collection for experimental fields"),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_UPLOAD_VOTES_FOR_FIELDS_WITH_EMAIL,
-                "When enabled, autofill will issues votes for EMAIL_ADDRESS field types on fields"
-                        + " where the content matches a valid email format."),
         Flag.baseFeature(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
@@ -768,11 +767,13 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8MemoryReducer"),
         Flag.baseFeature("V8MinorMS"),
         Flag.baseFeature("V8ScavengerHigherCapacity"),
+        Flag.baseFeature("V8SeparateGCPhases"),
         Flag.baseFeature("V8SingleThreadedGCInBackground"),
         Flag.baseFeature("V8SingleThreadedGCInBackgroundNoIncrementalMarking"),
         Flag.baseFeature("V8SingleThreadedGCInBackgroundParallelPause"),
         Flag.baseFeature("V8UpdateLimitAfterLoading"),
         Flag.baseFeature("V8IncrementalMarkingStartUserVisible"),
+        Flag.baseFeature("V8ExternalMemoryAccountedInGlobalLimit"),
         Flag.baseFeature("WebAssemblyMoreAggressiveCodeCaching"),
         Flag.baseFeature("WebAssemblyTurboshaft"),
         Flag.baseFeature("WebAssemblyTurboshaftInstructionSelection"),
@@ -875,13 +876,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.BACK_FORWARD_CACHE_SEND_NOT_RESTORED_REASONS,
                 "Expose NotRestoredReasons via PerformanceNavigationTiming API."),
-        Flag.baseFeature(
-                BlinkFeatures.EVENT_TIMING_FALLBACK_TO_MODAL_DIALOG_START,
-                "Enable reporting the modal dialog start time as an alternative end time for"
-                        + " duration measurement in performance event timing."),
-        Flag.baseFeature(
-                BlinkFeatures.EVENT_TIMING_KEYPRESS_AND_COMPOSITION_INTERACTION_ID,
-                "Exposes Event Timing keyboard InteractionId of composition and keypress events."),
         Flag.baseFeature("SkipUnnecessaryThreadHopsForParseHeaders"),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_FPS_COMPONENT,
@@ -909,9 +903,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.ALLOW_JAVA_SCRIPT_TO_RESET_AUTOFILL_STATE,
                 "When enabled, Autofill will reset the autofill state of fields modified by JS"),
         Flag.baseFeature("StandardCompliantNonSpecialSchemeURLParsing"),
-        Flag.baseFeature(
-                BlinkFeatures.BLINK_SCHEDULER_PRIORITIZE_NAVIGATION_IP_CS,
-                "If enabled, main frame navigation IPCs have higher priority on visible pages"),
         Flag.baseFeature(
                 BlinkFeatures.BLINK_SCHEDULER_DISCRETE_INPUT_MATCHES_RESPONSIVENESS_METRICS,
                 "If enabled, the scheduler filters discrete input based on responsivness metrics"
@@ -1050,6 +1041,22 @@ public final class ProductionSupportedFlagList {
                 "SqlWALModeOnWebDatabase",
                 "Enables Write-Ahead Logging (WAL) mode for the SQLite database used by the"
                         + " Chromium components that WebView relies on"),
+        Flag.baseFeature("ServiceWorkerAvoidMainThreadForInitialization"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_DIGITAL_ASSET_LINKS_LOAD_INCLUDES,
+                "Enable loading include statements when checking digital asset links."),
+        Flag.baseFeature("PrefetchNewWaitLoop"),
+        Flag.baseFeature("DirectCompositorThreadIpc"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_WEBAUTHN,
+                "Enable WebAuthn setWebAuthenticationSupport / getWebAuthenticationSupport APIs."),
+        Flag.baseFeature(
+                CcFeatures.THROTTLE_FRAME_RATE_ON_MANY_DID_NOT_PRODUCE_FRAME,
+                "Reduce frame rate when pixels aren't updated for many frames"),
+        Flag.baseFeature(
+                "MojoMessageAlwaysUseLatestVersion",
+                "Performance experiment to always use the latest (largest) message version."),
+
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

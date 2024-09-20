@@ -162,6 +162,8 @@ void ThemeServiceFactory::RegisterProfilePrefs(
                                 BUILDFLAG(IS_CHROMEOS));
   registry->RegisterBooleanPref(prefs::kSyncingThemePrefsMigratedToNonSyncing,
                                 false);
+  registry->RegisterBooleanPref(prefs::kShouldReadIncomingSyncingThemePrefs,
+                                true);
 }
 
 bool ThemeServiceFactory::ServiceIsCreatedWithBrowserContext() const {

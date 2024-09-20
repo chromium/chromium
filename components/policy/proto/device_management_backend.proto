@@ -4384,6 +4384,11 @@ enum CertProvSignatureAlgorithm {
   // with PKCS#1 v1.5 padding. If no other key size was specified in the
   // RequiredClientCertificateFor{User,Device} policy, 2048 bits is assumed.
   SIGNATURE_ALGORITHM_RSA_PKCS1_V1_5_NO_HASH = 1;
+
+  // The PKCS#1 digest info is built by the server-side and sent to the
+  // client unhashed. The client is responsible for signing and hashing.
+  // Uses the P-256 curve.
+  SIGNATURE_ALGORITHM_ECDSA_SHA256 = 2;
 }
 
 // The client should import an issued certificate.

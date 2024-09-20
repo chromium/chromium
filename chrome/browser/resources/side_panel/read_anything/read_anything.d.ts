@@ -202,10 +202,6 @@ declare namespace chrome {
     // via the webui language menu.
     function onLanguagePrefChange(lang: string, enabled: boolean): void;
 
-    // Called when the highlight granularity is changed via the webui toolbar.
-    function turnedHighlightOn(): void;
-    function turnedHighlightOff(): void;
-
     // Returns the actual spacing value to use based on the given lineSpacing
     // category.
     function getLineSpacingValue(lineSpacing: number): number;
@@ -387,14 +383,17 @@ declare namespace chrome {
     // Returns a list of node ids and ranges (start and length) associated with
     // the index within the given text segment. The intended use is for
     // highlighting the ranges. Note that a highlight can span over multiple
-    // nodes in certain cases.
+    // nodes in certain cases. If the `phrases` argument is `true`, the text
+    // ranges for the containing phrase are returned, otherwise the text ranges
+    // for the word are returned.
     //
     // For example, for a segment of text composed of two nodes:
     // Node 1: "Hello, this is a "
     // Node 2: "segment of text."
     // An index of "20" will return the node id associated with node 2, a start
     // index of 0, and a length of 8 (covering the word "segment ").
-    function getHighlightForCurrentSegmentIndex(index: number):
+    function getHighlightForCurrentSegmentIndex(
+        index: number, phrases: boolean):
         Array<{nodeId: number, start: number, length: number}>;
   }
 }

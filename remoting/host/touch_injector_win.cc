@@ -213,8 +213,7 @@ void TouchInjectorWin::InjectTouchEvent(const TouchEvent& event) {
       CancelTouchPoints(event);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

@@ -157,16 +157,11 @@ class ArcBridgeHostImpl
       override;
   void OnProcessInstanceReady(
       mojo::PendingRemote<mojom::ProcessInstance> process_remote) override;
-  void OnPropertyInstanceReady(
-      mojo::PendingRemote<mojom::PropertyInstance> property_remote) override;
   void OnScreenCaptureInstanceReady(
       mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote)
       override;
   void OnSharesheetInstanceReady(mojo::PendingRemote<mojom::SharesheetInstance>
                                      sharesheet_remote) override;
-  void OnStorageManagerInstanceReady(
-      mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote)
-      override;
   void OnSystemStateInstanceReady(
       mojo::PendingRemote<mojom::SystemStateInstance> system_state_remote)
       override;

@@ -30,6 +30,7 @@ include_rules = [
   "+chrome/browser/crash_upload_list",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/settings/pages/storage",
   "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app.h",

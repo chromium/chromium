@@ -97,6 +97,7 @@ public class TextSuggestionMenuTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1156419")
     public void testDeleteWordMarkedWithSpellingMarker()
             throws InterruptedException, Throwable, TimeoutException {
         WebContents webContents = mRule.getWebContents();
@@ -242,6 +243,7 @@ public class TextSuggestionMenuTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1156419")
     public void testApplyMisspellingSuggestion()
             throws InterruptedException, Throwable, TimeoutException {
         WebContents webContents = mRule.getWebContents();

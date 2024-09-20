@@ -77,6 +77,11 @@ const char* SignalStrategyErrorToString(SignalStrategy::Error error) {
   return "";
 }
 
+// Stub used for Me2MeHostAuthenticatorFactory::CheckAccessPermissionCallback.
+bool CheckAccessPermission(std::string_view user_email) {
+  return true;
+}
+
 }  // namespace
 
 FtlSignalingPlayground::FtlSignalingPlayground() = default;
@@ -162,8 +167,7 @@ void FtlSignalingPlayground::AcceptIncoming(base::OnceClosure on_done) {
       std::make_unique<protocol::HostAuthenticationConfig>(cert, key_pair);
   auth_config->AddSharedSecretAuth(pin_hash);
   auto factory = std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(
-      host_owner,
-      /* domain_list */ std::vector<std::string>(), std::move(auth_config));
+      base::BindRepeating(&CheckAccessPermission), std::move(auth_config));
   session_manager_->set_authenticator_factory(std::move(factory));
   HOST_LOG << "Waiting for incoming session...";
   session_manager_->AcceptIncoming(base::BindRepeating(

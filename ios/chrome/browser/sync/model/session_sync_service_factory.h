@@ -21,9 +21,11 @@ class SessionSyncService;
 // ChromeBrowserState.
 class SessionSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static sync_sessions::SessionSyncService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 
+  static sync_sessions::SessionSyncService* GetForProfile(ProfileIOS* profile);
   static SessionSyncServiceFactory* GetInstance();
 
   SessionSyncServiceFactory(const SessionSyncServiceFactory&) = delete;

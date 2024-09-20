@@ -37,6 +37,7 @@
 /chromeos_login_manager
 /chromeos_text_input
 /cld_2/src
+/cronet_android_mainline_clang/linux-amd64
 /cros
 /custom_tabs_client/src
 /cygwin
@@ -59,14 +60,16 @@
 /google-truth/src/
 /googlefonts_testdata/data
 /guava/lib/
+/ink/src/
+/ink_stroke_modeler/src/
 /instrumented_libs/
 /javalang/src/
 /javax_inject/lib/
 /jdk/current/
 /jdk/extras/java_8
 /jdk11/current
-/js_code_coverage/.*
 /js_code_coverage/*.tar.gz
+/js_code_coverage/.*
 /js_code_coverage/node_modules/
 /jsr-305/src
 /kotlinc/current
@@ -83,9 +86,8 @@
 /llvm-allocated-type
 /llvm-bootstrap
 /llvm-bootstrap-install
-/llvm-build/
 /llvm-build-tools
-/cronet_android_mainline_clang/linux-amd64
+/llvm-build/
 /mesa/src
 /microsoft_dxheaders/src
 /mingw-w64
@@ -119,8 +121,8 @@
 /qemu-linux-x64
 /qemu-mac-x64
 /rust-src
-/rust-toolchain/
 /rust-toolchain-intermediate
+/rust-toolchain/
 /scan-build/src
 /scons-2.0.1
 /screen-ai

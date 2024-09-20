@@ -1,5 +1,13 @@
 This is a testharness.js-based test.
 [FAIL] Property ruby-position has initial value alternate
   assert_equals: expected "alternate" but got "over"
+[FAIL] Property ruby-merge has initial value separate
+  assert_true: ruby-merge doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property ruby-merge inherits
+  assert_true: ruby-merge doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property ruby-overhang has initial value auto
+  assert_true: ruby-overhang doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property ruby-overhang inherits
+  assert_true: ruby-overhang doesn't seem to be supported in the computed style expected true got false
 Harness: the test ran to completion.
 

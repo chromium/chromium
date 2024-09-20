@@ -169,18 +169,12 @@ bool ChromePageInfoUiDelegate::ShouldShowSiteSettings(int* link_text_id,
 
 // TODO(crbug.com/40776829): Reconcile with LastTabStandingTracker.
 bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
-  const extensions::WindowControllerList::ControllerList& windows =
-      extensions::WindowControllerList::GetInstance()->windows();
   int count = 0;
   auto site_origin = site_url_.DeprecatedGetOriginAsURL();
-  for (extensions::WindowController* window : windows) {
-    const Browser* const browser = window->GetBrowser();
-    if (!browser)
-      continue;
-    const TabStripModel* const tabs = browser->tab_strip_model();
-    DCHECK(tabs);
-    for (int i = 0; i < tabs->count(); ++i) {
-      content::WebContents* const web_contents = tabs->GetWebContentsAt(i);
+  for (extensions::WindowController* window :
+       *extensions::WindowControllerList::GetInstance()) {
+    for (int i = 0; i < window->GetTabCount(); ++i) {
+      content::WebContents* const web_contents = window->GetWebContentsAt(i);
       if (web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL() ==
           site_origin) {
         count++;

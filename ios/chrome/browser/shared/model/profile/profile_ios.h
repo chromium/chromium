@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/net/model/net_types.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #include "ios/web/public/browser_state.h"
 #include "net/url_request/url_request_job_factory.h"
 
@@ -97,23 +98,45 @@ class ChromeBrowserState : public web::BrowserState {
 
   // Returns the original "recording" ChromeBrowserState. This method returns
   // `this` if the ChromeBrowserState is not incognito.
+  // TODO(crbug.com/358299863): Remove this function once fully migrated.
   virtual ChromeBrowserState* GetOriginalChromeBrowserState() = 0;
+
+  // Returns the original "recording" Profile. This method returns `this` if the
+  // Profile is not incognito.
+  virtual ProfileIOS* GetOriginalProfile() = 0;
 
   // Returns true if the ChromeBrowserState is off-the-record or if the
   // associated off-the-record browser state has been created.
   // Calling this method does not create the off-the-record browser state if it
   // does not already exist.
+  // TODO(crbug.com/358299863): Remove this function once fully migrated.
   virtual bool HasOffTheRecordChromeBrowserState() const = 0;
+
+  // Returns true if the Profile is off-the-record or if the associated
+  // off-the-record browser state has been created. Calling this method does not
+  // create the off-the-record profile if it does not already exist.
+  virtual bool HasOffTheRecordProfile() const = 0;
 
   // Returns the incognito version of this ChromeBrowserState. The returned
   // ChromeBrowserState instance is owned by this ChromeBrowserState instance.
   // WARNING: This will create the OffTheRecord ChromeBrowserState if it
   // doesn't already exist.
+  // TODO(crbug.com/358299863): Remove this function once fully migrated.
   virtual ChromeBrowserState* GetOffTheRecordChromeBrowserState() = 0;
+
+  // Returns the incognito version of this Profile. The returned Profile
+  // instance is owned by this Profile instance. WARNING: This will create the
+  // OffTheRecord Profile if it doesn't already exist.
+  virtual ProfileIOS* GetOffTheRecordProfile() = 0;
 
   // Destroys the OffTheRecord ChromeBrowserState that is associated with this
   // ChromeBrowserState, if one exists.
+  // TODO(crbug.com/358299863): Remove this function once fully migrated.
   virtual void DestroyOffTheRecordChromeBrowserState() = 0;
+
+  // Destroys the OffTheRecord Profile that is associated with this Profile, if
+  // one exists.
+  virtual void DestroyOffTheRecordProfile() = 0;
 
   // Retrieves a pointer to the BrowserStatePolicyConnector that manages policy
   // for this BrowserState. May return nullptr if policy is disabled.

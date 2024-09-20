@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
@@ -19,12 +20,12 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -59,9 +60,9 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                                 personalDataManager,
                                 metaData.artUrl,
                                 metaData.iconId,
-                                AutofillUiUtils.CardIconSize.LARGE,
+                                ImageSize.LARGE,
                                 /* showCustomIcon= */ true);
-       mMediator.initialize(
+        mMediator.initialize(
                 context, delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
         setUpModelChangeProcessors(
                 mTouchToFillPaymentMethodModel,
@@ -120,6 +121,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 FOOTER,
                 TouchToFillPaymentMethodViewBinder::createFooterItemView,
                 TouchToFillPaymentMethodViewBinder::bindFooterView);
+        adapter.registerType(
+                TERMS_LABEL,
+                TouchToFillPaymentMethodViewBinder::createTermsLabelView,
+                TouchToFillPaymentMethodViewBinder::bindTermsLabelView);
         view.setSheetItemListAdapter(adapter);
     }
 

@@ -207,11 +207,16 @@ bool ShouldReportDevToolsIssueForStatus(
              net::CookieInclusionStatus::
                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
          status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT) ||
+         status.exemption_reason() ==
+             net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata ||
+         status.exemption_reason() ==
+             net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;
 }
 // LINT.ThenChange(//content/browser/renderer_host/cookie_utils.cc:should_report_legacy_tech_report)
 
 // LINT.IfChange(should_report_legacy_tech_report)
+// TODO(b/324847874): Add cookie exemptions to LTR
 bool ShouldReportLegacyTechIssueForStatus(
     const net::CookieInclusionStatus& status) {
   return status.HasExclusionReason(

@@ -1251,7 +1251,7 @@ struct HistoryAddPageArgs {
   //       RedirectList(), ui::PAGE_TRANSITION_LINK,
   //       false, SOURCE_BROWSED, false, true,
   //       std::nullopt, std::nullopt, std::nullopt, std::nullopt,
-  //       std::nullopt, std::nullopt)
+  //       std::nullopt, std::nullopt, false)
   HistoryAddPageArgs();
   HistoryAddPageArgs(const GURL& url,
                      base::Time time,
@@ -1271,7 +1271,8 @@ struct HistoryAddPageArgs {
                      std::optional<int64_t> bookmark_id = std::nullopt,
                      std::optional<std::string> app_id = std::nullopt,
                      std::optional<VisitContextAnnotations::OnVisitFields>
-                         context_annotations = std::nullopt);
+                         context_annotations = std::nullopt,
+                     bool is_ephemeral = false);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
   ~HistoryAddPageArgs();
 
@@ -1299,6 +1300,7 @@ struct HistoryAddPageArgs {
   std::optional<int64_t> bookmark_id;
   std::optional<std::string> app_id;
   std::optional<VisitContextAnnotations::OnVisitFields> context_annotations;
+  bool is_ephemeral;
 };
 
 }  // namespace history

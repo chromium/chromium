@@ -51,13 +51,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerFuchsia
   AccessibilityBridgeFuchsia* GetAccessibilityBridge() const;
 
   // Test-only method to set the return value of GetAccessibilityBridge().
-  void SetAccessibilityBridgeForTest(
+  static void SetAccessibilityBridgeForTest(
       AccessibilityBridgeFuchsia* accessibility_bridge_for_test);
 
  private:
-  // Accessibility bridge instance to use for tests, if set.
-  AccessibilityBridgeFuchsia* accessibility_bridge_for_test_ = nullptr;
-
   // Node to hold this object fuchsia inspect data.
   inspect::Node inspect_node_;
 

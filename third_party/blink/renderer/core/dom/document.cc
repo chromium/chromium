@@ -398,8 +398,6 @@ namespace blink {
 
 namespace {
 
-constexpr char kTextHtml[] = "text/html";
-
 class IntrinsicSizeResizeObserverDelegate : public ResizeObserver::Delegate {
  public:
   void OnResize(const HeapVector<Member<ResizeObserverEntry>>& entries) final;
@@ -1566,10 +1564,7 @@ bool Document::IsLoadCompleted() const {
 }
 
 AtomicString Document::EncodingName() const {
-  // TextEncoding::name() returns a char*, no need to allocate a new
-  // String for it each time.
-  // FIXME: We should fix TextEncoding to speak AtomicString anyway.
-  return AtomicString(Encoding().GetName());
+  return Encoding().GetName();
 }
 
 void Document::SetContentLanguage(const AtomicString& language) {
@@ -1617,8 +1612,7 @@ void Document::SetContent(const String& content) {
 
 using AllowState = blink::Document::DeclarativeShadowRootAllowState;
 void Document::SetContentFromDOMParser(const String& content) {
-  if (RuntimeEnabledFeatures::DOMParserUsesHTMLFastPathParserEnabled() &&
-      contentType() == "text/html" && IsA<HTMLDocument>(this)) {
+  if (contentType() == "text/html" && IsA<HTMLDocument>(this)) {
     auto* body = MakeGarbageCollected<HTMLBodyElement>(*this);
     HTMLFragmentParsingBehaviorSet parser_behavior(
         {HTMLFragmentParsingBehavior::kStripInitialWhitespaceForBody});
@@ -1665,12 +1659,12 @@ String Document::SuggestedMIMEType() const {
       return "application/xhtml+xml";
     if (IsSVGDocument())
       return "image/svg+xml";
-    return "application/xml";
+    return keywords::kApplicationXml;
   }
   if (xmlStandalone())
     return "text/xml";
   if (IsA<HTMLDocument>(this))
-    return kTextHtml;
+    return keywords::kTextHtml;
 
   if (DocumentLoader* document_loader = Loader())
     return document_loader->MimeType();
@@ -1692,7 +1686,7 @@ AtomicString Document::contentType() const {
   if (!mime_type.empty())
     return AtomicString(mime_type);
 
-  return AtomicString("application/xml");
+  return keywords::kApplicationXml;
 }
 
 Range* Document::caretRangeFromPoint(int x, int y) {
@@ -3646,8 +3640,7 @@ DocumentParser* Document::OpenForNavigation(
     parser->SetDecoder(
         BuildTextResourceDecoder(GetFrame(), Url(), mime_type, encoding));
   }
-  if (AnchorElementInteractionTracker::IsFeatureEnabled() &&
-      !GetFrame()->IsProvisional()) {
+  if (!GetFrame()->IsProvisional()) {
     anchor_element_interaction_tracker_ =
         MakeGarbageCollected<AnchorElementInteractionTracker>(*this);
   }
@@ -4464,8 +4457,9 @@ void Document::write(v8::Isolate* isolate,
   StringBuilder builder;
   for (const String& string : text)
     builder.Append(string);
-  String string = TrustedTypesCheckForHTML(
-      builder.ReleaseString(), GetExecutionContext(), exception_state);
+  String string =
+      TrustedTypesCheckForHTML(builder.ReleaseString(), GetExecutionContext(),
+                               "Document", "write", exception_state);
   if (exception_state.HadException())
     return;
 
@@ -4478,8 +4472,9 @@ void Document::writeln(v8::Isolate* isolate,
   StringBuilder builder;
   for (const String& string : text)
     builder.Append(string);
-  String string = TrustedTypesCheckForHTML(
-      builder.ReleaseString(), GetExecutionContext(), exception_state);
+  String string =
+      TrustedTypesCheckForHTML(builder.ReleaseString(), GetExecutionContext(),
+                               "Document", "writeln", exception_state);
   if (exception_state.HadException())
     return;
 
@@ -6336,24 +6331,6 @@ void Document::setDomain(const String& raw_domain,
     return;
   }
 
-  // TODO(crbug.com/1259920): Remove this check once the Origin-Agent-Cluster
-  // default behaviour change has been default-enabled.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kOriginAgentClusterDefaultWarning) &&
-      Loader()) {
-    const AtomicString& origin_agent_cluster_header =
-        Loader()->GetResponse().HttpHeaderField(
-            http_names::kOriginAgentCluster);
-    if (origin_agent_cluster_header != "?0" &&
-        origin_agent_cluster_header != "?1") {
-      DCHECK(!dom_window_->GetAgent()->IsOriginKeyed());
-      Deprecation::CountDeprecation(
-          GetExecutionContext(),
-          WebFeature::kDocumentDomainSettingWithoutOriginAgentClusterHeader);
-      // No return; warning only.
-    }
-  }
-
   if (GetFrame()) {
     // This code should never fire for fenced frames because it should be
     // blocked by permission policy.
@@ -6946,10 +6923,8 @@ void Document::SetEncodingData(const DocumentEncodingData& new_data) {
       title_element_->textContent().ContainsOnlyLatin1OrEmpty()) {
     std::string original_bytes = title_element_->textContent().Latin1();
     std::unique_ptr<TextCodec> codec = NewTextCodec(new_data.Encoding());
-    String correctly_decoded_title =
-        codec->Decode(original_bytes.c_str(),
-                      static_cast<wtf_size_t>(original_bytes.length()),
-                      WTF::FlushBehavior::kDataEOF);
+    String correctly_decoded_title = codec->Decode(
+        base::as_byte_span(original_bytes), WTF::FlushBehavior::kDataEOF);
     title_element_->setTextContent(correctly_decoded_title);
   }
 
@@ -9348,13 +9323,13 @@ void Document::ScheduleSelectionchangeEvent() {
 Document* Document::parseHTMLUnsafe(ExecutionContext* context,
                                     const String& html) {
   Document* doc = DocumentInit::Create()
-                      .WithTypeFrom(kTextHtml)
+                      .WithTypeFrom(keywords::kTextHtml)
                       .WithExecutionContext(context)
                       .WithAgent(*context->GetAgent())
                       .CreateDocument();
   doc->setAllowDeclarativeShadowRoots(true);
   doc->SetContent(html);
-  doc->SetMimeType(AtomicString(kTextHtml));
+  doc->SetMimeType(keywords::kTextHtml);
   return doc;
 }
 

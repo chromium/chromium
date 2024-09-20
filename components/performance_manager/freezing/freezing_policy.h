@@ -79,8 +79,6 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void AddFreezeVote(PageNode* page_node);
   void RemoveFreezeVote(PageNode* page_node);
 
-  static constexpr base::TimeDelta kAudioProtectionTime = base::Minutes(1);
-
  private:
   // State of a browsing instance.
   struct BrowsingInstanceState {
@@ -130,6 +128,7 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void OnIsAudibleChanged(const PageNode* page_node) override;
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override;
   void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override;
+  void OnPageUsesWebRTCChanged(const PageNode* page_node) override;
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
 
@@ -142,6 +141,8 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override;
   void OnIsConnectedToBluetoothDeviceChanged(
       const PageNode* page_node) override;
+  void OnIsConnectedToHidDeviceChanged(const PageNode* page_node) override;
+  void OnIsConnectedToSerialPortChanged(const PageNode* page_node) override;
   void OnIsCapturingVideoChanged(const PageNode* page_node) override;
   void OnIsCapturingAudioChanged(const PageNode* page_node) override;
   void OnIsBeingMirroredChanged(const PageNode* page_node) override;

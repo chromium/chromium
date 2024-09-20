@@ -13,10 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_network_state_observer.h"
 #include "chrome/browser/ash/app_mode/metrics/low_disk_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
-#include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
+#include "chrome/browser/profiles/profile.h"
 
 class PrefRegistrySimple;
 
@@ -55,7 +56,9 @@ class KioskSystemSession {
     return device_weekly_scheduled_suspend_controller_.get();
   }
 
-  kiosk_vision::KioskVision& kiosk_vision() { return kiosk_vision_; }
+  KioskNetworkStateObserver& network_state_observer_for_testing() {
+    return network_state_observer_;
+  }
 
  private:
   class LacrosWatcher;
@@ -93,8 +96,8 @@ class KioskSystemSession {
   // Tracks low disk notifications.
   LowDiskMetricsService low_disk_metrics_service_;
 
-  // Implements the Kiosk Vision ML feature.
-  kiosk_vision::KioskVision kiosk_vision_;
+  // Observes network state and changes an active network scope..
+  KioskNetworkStateObserver network_state_observer_;
 };
 
 }  // namespace ash

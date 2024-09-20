@@ -100,7 +100,7 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
 
   // The GraphImplDml should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
-  graph_builder_remote->CreateGraph(builder.CloneGraphInfo(),
+  graph_builder_remote->CreateGraph(builder.TakeGraphInfo(),
                                     create_graph_future.GetCallback());
   mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
   EXPECT_TRUE(create_graph_result->is_graph_remote());

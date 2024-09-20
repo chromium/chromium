@@ -38,13 +38,14 @@ enum ManualFallbackItemType : NSInteger {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.PresentedOptions.CreditCards",
                            cards.count);
 
+  self.noRegularDataItemsToShowHeaderItem = nil;
   if (!cards.count && IsKeyboardAccessoryUpgradeEnabled()) {
     TableViewTextHeaderFooterItem* textHeaderFooterItem =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:manual_fill::ManualFallbackItemType::kNoCardsMessage];
     textHeaderFooterItem.text =
         l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PAYMENT_METHODS);
-    self.noDataItemsToShowHeaderItem = textHeaderFooterItem;
+    self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
   }
 
   [self presentDataItems:(NSArray<TableViewItem*>*)cards];

@@ -807,6 +807,7 @@ bool FakeDrmDevice::SetCursor(uint32_t crtc_id,
 }
 
 bool FakeDrmDevice::MoveCursor(uint32_t crtc_id, const gfx::Point& point) {
+  crtc_cursor_location_map_[crtc_id] = point;
   return true;
 }
 

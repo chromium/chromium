@@ -546,9 +546,11 @@ class CampaignsManagerTest : public testing::Test {
           )",
                                         runtime_targeting.c_str());
     LoadComponentAndVerifyLoadComplete(
-        base::StringPrintf(has_group_id ? kValidCampaignsFileWithGroupIdTemplate
-                                        : kValidCampaignsFileTemplate,
-                           targeting.c_str()));
+        has_group_id
+            ? base::StringPrintf(kValidCampaignsFileWithGroupIdTemplate,
+                                 targeting.c_str())
+            : base::StringPrintf(kValidCampaignsFileTemplate,
+                                 targeting.c_str()));
   }
 
   void LoadComponentWithMultiTargetings(const std::string& targetings) {
@@ -1046,7 +1048,6 @@ TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
   EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
       .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
           std::nullopt));
-  EXPECT_FALSE(CampaignsLogger::Get()->HasLogForTesting());
 
   campaigns_manager_->LoadCampaigns(base::DoNothing());
   observer.Wait();
@@ -1058,13 +1059,56 @@ TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
   ASSERT_TRUE(observer.load_completed());
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
-  EXPECT_TRUE(CampaignsLogger::Get()->HasLogForTesting());
 
   histogram_tester.ExpectBucketCount(
       kCampaignsManagerErrorHistogramName,
       CampaignsManagerError::kCampaignsComponentLoadFail,
       /*count=*/1);
   histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
+}
+
+TEST_F(CampaignsManagerTest, LoadCampaignsFailedWithGrowthInternalsEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kGrowthInternals);
+
+  TestCampaignsManagerObserver observer;
+  campaigns_manager_->AddObserver(&observer);
+
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+  EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
+      .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
+          std::nullopt));
+
+  EXPECT_FALSE(CampaignsLogger::Get()->HasLogForTesting());
+
+  campaigns_manager_->LoadCampaigns(base::DoNothing());
+  observer.Wait();
+  ASSERT_TRUE(observer.load_completed());
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  EXPECT_TRUE(CampaignsLogger::Get()->HasLogForTesting());
+}
+
+TEST_F(CampaignsManagerTest, LoadCampaignsFailedWithoutGrowthInternalsEnabled) {
+  scoped_feature_list_.InitAndDisableFeature(ash::features::kGrowthInternals);
+
+  TestCampaignsManagerObserver observer;
+  campaigns_manager_->AddObserver(&observer);
+
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+  EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
+      .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
+          std::nullopt));
+
+  EXPECT_FALSE(CampaignsLogger::Get()->HasLogForTesting());
+
+  campaigns_manager_->LoadCampaigns(base::DoNothing());
+  observer.Wait();
+  ASSERT_TRUE(observer.load_completed());
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  EXPECT_FALSE(CampaignsLogger::Get()->HasLogForTesting());
 }
 
 TEST_F(CampaignsManagerTest, LoadCampaignsNoFile) {
@@ -2021,7 +2065,20 @@ TEST_F(CampaignsManagerTest, GetCampaignTriggersOrRelationship) {
 
 TEST_F(CampaignsManagerTest, GetCampaignTriggersWithEvent) {
   growth::Trigger trigger(growth::TriggerType::kEvent);
-  trigger.event = "event_1";
+  trigger.events = {"event_1"};
+  campaigns_manager_->SetTrigger(std::move(trigger));
+
+  LoadComponentWithTriggerTargeting(R"([
+    {"triggerType": 2, "triggerEvents": ["event_0", "event_1"]}
+  ])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTriggersWithEvents) {
+  growth::Trigger trigger(growth::TriggerType::kEvent);
+  trigger.events = {"event_2", "event_1"};
   campaigns_manager_->SetTrigger(std::move(trigger));
 
   LoadComponentWithTriggerTargeting(R"([
@@ -2306,7 +2363,7 @@ TEST_F(CampaignsManagerTest, RegisterSyntheticFieldTrialWithTriggerEventName) {
   constexpr char kCampaignEventName[] = "GmailOpened";
 
   growth::Trigger trigger(growth::TriggerType::kEvent);
-  trigger.event = kCampaignEventName;
+  trigger.events = {kCampaignEventName, "AnotherEvent"};
   campaigns_manager_->SetTrigger(std::move(trigger));
   campaigns_manager_->SetOpenedApp(kGmailAppIdWeb);
 
@@ -2342,7 +2399,7 @@ TEST_F(CampaignsManagerTest,
   constexpr char kCampaignEventName[] = "GmailOpened";
 
   growth::Trigger trigger(growth::TriggerType::kEvent);
-  trigger.event = kCampaignEventName;
+  trigger.events = {kCampaignEventName};
   campaigns_manager_->SetTrigger(std::move(trigger));
   campaigns_manager_->SetOpenedApp(kGmailAppIdWeb);
 

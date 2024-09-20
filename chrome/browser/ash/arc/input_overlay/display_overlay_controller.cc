@@ -940,58 +940,6 @@ void DisplayOverlayController::HideActionHighlightWidgetForAction(
   }
 }
 
-void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds() {
-  // There is no `button_options_widget_` in view mode.
-  if (!button_options_widget_) {
-    return;
-  }
-
-  if (auto* menu = GetButtonOptionsMenu()) {
-    menu->UpdateWidget();
-  }
-}
-
-void DisplayOverlayController::UpdateInputMappingWidgetBounds() {
-  // There is no `input_mapping_widget_` if there is no active action or gio is
-  // disabled.
-  if (!input_mapping_widget_) {
-    return;
-  }
-
-  UpdateWidgetBoundsInRootWindow(input_mapping_widget_.get(),
-                                 touch_injector_->content_bounds());
-  StackInputMappingAtBottomForViewMode();
-}
-
-void DisplayOverlayController::UpdateEditingListWidgetBounds() {
-  // There is no `editing_list_widget_` in view mode.
-  if (!editing_list_widget_) {
-    return;
-  }
-
-  if (auto* editing_list = GetEditingList()) {
-    editing_list->UpdateWidget();
-  }
-}
-
-void DisplayOverlayController::UpdateTargetWidgetBounds() {
-  if (!target_widget_) {
-    return;
-  }
-
-  if (auto* target_view = GetTargetView()) {
-    target_view->UpdateWidgetBounds();
-  }
-}
-
-ActionViewListItem* DisplayOverlayController::GetEditingListItemForAction(
-    Action* action) {
-  if (auto* editing_list = GetEditingList()) {
-    return editing_list->GetListItemForAction(action);
-  }
-  return nullptr;
-}
-
 void DisplayOverlayController::UpdateWidgetBoundsInRootWindow(
     views::Widget* widget,
     const gfx::Rect& bounds_in_root_window) {
@@ -1000,6 +948,14 @@ void DisplayOverlayController::UpdateWidgetBoundsInRootWindow(
   auto bounds_in_screen = bounds_in_root_window;
   bounds_in_screen.Offset(root_bounds.OffsetFromOrigin());
   widget->SetBounds(bounds_in_screen);
+}
+
+ActionViewListItem* DisplayOverlayController::GetEditingListItemForAction(
+    Action* action) {
+  if (auto* editing_list = GetEditingList()) {
+    return editing_list->GetListItemForAction(action);
+  }
+  return nullptr;
 }
 
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
@@ -1471,6 +1427,50 @@ DeleteEditShortcut* DisplayOverlayController::GetDeleteEditShortcut() const {
                        ->AsBubbleDialogDelegate()
                        ->GetContentsView())
              : nullptr;
+}
+
+void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds() {
+  // There is no `button_options_widget_` in view mode.
+  if (!button_options_widget_) {
+    return;
+  }
+
+  if (auto* menu = GetButtonOptionsMenu()) {
+    menu->UpdateWidget();
+  }
+}
+
+void DisplayOverlayController::UpdateInputMappingWidgetBounds() {
+  // There is no `input_mapping_widget_` if there is no active action or gio is
+  // disabled.
+  if (!input_mapping_widget_) {
+    return;
+  }
+
+  UpdateWidgetBoundsInRootWindow(input_mapping_widget_.get(),
+                                 touch_injector_->content_bounds());
+  StackInputMappingAtBottomForViewMode();
+}
+
+void DisplayOverlayController::UpdateEditingListWidgetBounds() {
+  // There is no `editing_list_widget_` in view mode.
+  if (!editing_list_widget_) {
+    return;
+  }
+
+  if (auto* editing_list = GetEditingList()) {
+    editing_list->UpdateWidget();
+  }
+}
+
+void DisplayOverlayController::UpdateTargetWidgetBounds() {
+  if (!target_widget_) {
+    return;
+  }
+
+  if (auto* target_view = GetTargetView()) {
+    target_view->UpdateWidgetBounds();
+  }
 }
 
 void DisplayOverlayController::UpdateEventRewriteCapability() {

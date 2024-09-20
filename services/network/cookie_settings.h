@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/optional_ref.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -160,6 +161,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
                           ContentSettingsType::COOKIES, /*info=*/nullptr);
     return (setting == CONTENT_SETTING_ALLOW);
   }
+
+  // Returns true if Storage Access Headers are enabled in the given context.
+  bool IsStorageAccessHeadersEnabled(
+      const GURL& url,
+      base::optional_ref<const url::Origin> top_frame_origin) const;
 
  private:
   // content_settings::CookieSettingsBase:

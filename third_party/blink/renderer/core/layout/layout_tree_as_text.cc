@@ -449,8 +449,10 @@ static void Write(WTF::TextStream& ts,
 
   WriteIndent(ts, indent);
 
-  if (layer.GetLayoutObject().StyleRef().Visibility() == EVisibility::kHidden)
+  if (layer.GetLayoutObject().StyleRef().UsedVisibility() ==
+      EVisibility::kHidden) {
     ts << "hidden ";
+  }
 
   ts << "layer ";
 

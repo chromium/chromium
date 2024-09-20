@@ -119,4 +119,9 @@ public class TestDataSharingService implements DataSharingService {
     public DataSharingUIDelegate getUIDelegate() {
         return null;
     }
+
+    @Override
+    public ServiceStatus getServiceStatus() {
+        return null;
+    }
 }

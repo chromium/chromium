@@ -79,7 +79,7 @@ void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
   }
 
   BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-      web_state_->GetBrowserState())
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState()))
       ->AddEvent(event);
 }
 

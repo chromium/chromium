@@ -24,6 +24,7 @@
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "base/types/is_instantiation.h"
+#include "base/types/pass_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -33,6 +34,9 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/state_observer.h"
+
+class ChromeOSTestLauncherDelegate;
+class InteractiveUITestSuite;
 
 namespace ui::test {
 
@@ -144,6 +148,16 @@ class InteractiveTestPrivate {
     aborted_callback_for_testing_ = std::move(aborted_callback_for_testing);
   }
 
+  // The following are the classes allowed to set the "allow interactive test
+  // verbs" flag.
+  template <typename T>
+    requires std::same_as<T, ui::test::InteractiveTestTest> ||
+             std::same_as<T, ChromeOSTestLauncherDelegate> ||
+             std::same_as<T, InteractiveUITestSuite>
+  static void set_interactive_test_verbs_allowed(base::PassKey<T>) {
+    allow_interactive_test_verbs_ = true;
+  }
+
  private:
   friend class ui::test::InteractiveTestTest;
   friend class ui::test::InteractiveTestApi;
@@ -186,6 +200,10 @@ class InteractiveTestPrivate {
 
   // Overrides the default test failure behavior to test the API itself.
   InteractionSequence::AbortedCallback aborted_callback_for_testing_;
+
+  // Whether interactive test verbs are allowed. See
+  // `InteractiveTestApi::RequireInteractiveTest()` for more info.
+  static bool allow_interactive_test_verbs_;
 };
 
 // Specifies an element either by ID or by name.

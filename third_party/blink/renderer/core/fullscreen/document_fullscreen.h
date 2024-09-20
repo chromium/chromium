@@ -43,6 +43,9 @@ class CORE_EXPORT DocumentFullscreen {
  public:
   static bool fullscreenEnabled(Document&);
   static Element* fullscreenElement(Document&);
+  static bool fullscreen(Document& document) {
+    return !!fullscreenElement(document);
+  }
   static ScriptPromise<IDLUndefined> exitFullscreen(ScriptState*,
                                                     Document&,
                                                     ExceptionState&);

@@ -233,25 +233,25 @@ base::expected<gfx::PointF, String> ResolveFloatOrVec2f(
     const String property_name,
     const Dictionary& dict,
     ExceptionState& exception_state) {
-  // First try to get stdDeviation as a float.
-  std::optional<float> single_float =
-      dict.Get<IDLFloat>(property_name, exception_state);
-  if (!exception_state.HadException() && single_float.has_value()) {
-    return gfx::PointF(*single_float, *single_float);
-  } else {
-    // Clear the exception if it exists in order to try again as a vector.
-    exception_state.ClearException();
-
-    std::optional<Vector<float>> two_floats =
-        dict.Get<IDLSequence<IDLFloat>>(property_name, exception_state);
-    if (exception_state.HadException() || !two_floats.has_value() ||
-        two_floats->size() != 2) {
-      return base::unexpected(String::Format(
-          "\"%s\" must either be a number or an array of two numbers",
-          property_name.Ascii().c_str()));
+  {
+    v8::TryCatch try_catch(dict.GetIsolate());
+    // First try to get stdDeviation as a float.
+    std::optional<float> single_float = dict.Get<IDLFloat>(
+        property_name, PassThroughException(dict.GetIsolate()));
+    if (!try_catch.HasCaught() && single_float.has_value()) {
+      return gfx::PointF(*single_float, *single_float);
     }
-    return gfx::PointF(two_floats->at(0), two_floats->at(1));
   }
+  // Try again as a vector.
+  std::optional<Vector<float>> two_floats =
+      dict.Get<IDLSequence<IDLFloat>>(property_name, exception_state);
+  if (exception_state.HadException() || !two_floats.has_value() ||
+      two_floats->size() != 2) {
+    return base::unexpected(String::Format(
+        "\"%s\" must either be a number or an array of two numbers",
+        property_name.Ascii().c_str()));
+  }
+  return gfx::PointF(two_floats->at(0), two_floats->at(1));
 }
 
 BlurFilterOperation* ResolveBlur(const Dictionary& blur_dict,

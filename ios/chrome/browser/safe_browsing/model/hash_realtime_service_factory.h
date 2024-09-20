@@ -16,16 +16,15 @@ namespace safe_browsing {
 class HashRealTimeService;
 }
 
-
-// Singleton that owns HashRealTimeService objects, one for each active
-// BrowserState. It returns nullptr for incognito BrowserStates.
+// Singleton that owns HashRealTimeService objects, one for each active profile.
+// It returns nullptr for incognito profiles.
 class HashRealTimeServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the instance of HashRealTimeService associated with this browser
-  // state, creating one if none exists.
+  // TODO(crbug.com/358301380): remove this method.
   static safe_browsing::HashRealTimeService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 
+  static safe_browsing::HashRealTimeService* GetForProfile(ProfileIOS* profile);
   // Returns the singleton instance of HashRealTimeServiceFactory.
   static HashRealTimeServiceFactory* GetInstance();
 

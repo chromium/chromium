@@ -169,6 +169,25 @@ TEST_F(AutocompleteScoringModelHandlerTest,
   *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
       optimization_guide::proto::
           SCORING_SIGNAL_TYPE_MATCHES_TITLE_OR_HOST_OR_SHORTCUT_TEXT);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_NUM_INPUT_TERMS_MATCHED_BY_BOOKMARK_TITLE);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::SCORING_SIGNAL_TYPE_SITE_ENGAGEMENT);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::SCORING_SIGNAL_TYPE_SEARCH_SUGGEST_RELEVANCE);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_SEARCH_SUGGEST_ENTITY);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_VERBATIM);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_NAVSUGGEST);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_SEARCH_SUGGEST_TAIL);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_ANSWER_SUGGEST);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_CALCULATOR_SUGGEST);
 
   // Scoring signals.
   ScoringSignals scoring_signals;
@@ -176,10 +195,19 @@ TEST_F(AutocompleteScoringModelHandlerTest,
   scoring_signals.set_elapsed_time_last_visit_secs(32767);
   scoring_signals.set_elapsed_time_last_shortcut_visit_sec(-200);
   scoring_signals.set_typed_count(150);
+  scoring_signals.set_num_input_terms_matched_by_bookmark_title(10);
+  scoring_signals.set_site_engagement(50);
+  scoring_signals.set_search_suggest_relevance(1234);
+  scoring_signals.set_is_search_suggest_entity(true);
+  scoring_signals.set_is_verbatim(false);
+  scoring_signals.set_is_navsuggest(false);
+  scoring_signals.set_is_search_suggest_tail(false);
+  scoring_signals.set_is_answer_suggest(false);
+  scoring_signals.set_is_calculator_suggest(false);
 
   auto input_signals = model_handler_->ExtractInputFromScoringSignals(
       scoring_signals, model_metadata);
-  ASSERT_EQ(input_signals.size(), 6u);
+  ASSERT_EQ(input_signals.size(), 15u);
   EXPECT_THAT(input_signals[0], 0.2);  // Normalized signal.
   EXPECT_THAT(input_signals[1], 15);
   EXPECT_NEAR(input_signals[2], 0.3792, 0.0001);
@@ -197,6 +225,16 @@ TEST_F(AutocompleteScoringModelHandlerTest,
   input_signals = model_handler_->ExtractInputFromScoringSignals(
       scoring_signals, model_metadata);
   EXPECT_THAT(input_signals[5], 1);
+
+  EXPECT_THAT(input_signals[6], 10);
+  EXPECT_THAT(input_signals[7], 50);
+  EXPECT_THAT(input_signals[8], 1234);
+  EXPECT_THAT(input_signals[9], 1);
+  EXPECT_THAT(input_signals[10], 0);
+  EXPECT_THAT(input_signals[11], 0);
+  EXPECT_THAT(input_signals[12], 0);
+  EXPECT_THAT(input_signals[13], 0);
+  EXPECT_THAT(input_signals[14], 0);
 }
 
 TEST_F(AutocompleteScoringModelHandlerTest, GetBatchModelInputTest) {

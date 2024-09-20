@@ -13,15 +13,11 @@ PRESUBMIT_VERSION = '2.0.0'
 # chromium repository. PRESUBMIT.py is executed from chromium.
 _PARTITION_ALLOC_BASE_PATH = 'base/allocator/partition_allocator/src/'
 
+# Pattern matching C/C++ source files, for use in allowlist args.
+_SOURCE_FILE_PATTERN = r'.*\.(h|hpp|c|cc|cpp)$'
 
-# Filter for C/C++ files.
-def c_cpp_files(file):
-    return file.LocalPath().endswith(('.h', '.hpp', '.c', '.cc', '.cpp'))
-
-# Filter for GN files.
-def gn_files(file):
-    return file.LocalPath().endswith(('.gn', '.gni'))
-
+# Similar pattern, matching GN files.
+_BUILD_FILE_PATTERN = r'.*\.(gn|gni)$'
 
 # This is adapted from Chromium's PRESUBMIT.py. The differences are:
 # - Base path: It is relative to the partition_alloc's source directory instead
@@ -112,8 +108,13 @@ def CheckNoExternalImportInGn(input_api, output_api):
     # Match and capture <path> from import("<path>").
     import_re = input_api.re.compile(r'^ *import\("([^"]+)"\)')
 
+    sources = lambda affected_file: input_api.FilterSourceFile(
+        affected_file,
+        files_to_skip=[],
+        files_to_check=[_BUILD_FILE_PATTERN])
+
     errors = []
-    for f in input_api.AffectedSourceFiles(gn_files):
+    for f in input_api.AffectedSourceFiles(sources):
         for line_number, line in f.ChangedContents():
             match = import_re.search(line)
             if not match:
@@ -158,8 +159,13 @@ def CheckCpp17CompatibleHeaders(input_api, output_api):
         "stdfloat",
     ]
 
+    sources = lambda affected_file: input_api.FilterSourceFile(
+        affected_file,
+        files_to_skip=[],
+        files_to_check=[_SOURCE_FILE_PATTERN])
+
     errors = []
-    for f in input_api.AffectedSourceFiles(c_cpp_files):
+    for f in input_api.AffectedSourceFiles(sources):
         # for line_number, line in f.ChangedContents():
         for line_number, line in enumerate(f.NewContents()):
             for header in CPP_20_HEADERS:
@@ -187,11 +193,22 @@ def CheckCpp17CompatibleKeywords(input_api, output_api):
         "co_return",
         "co_yield",
         "requires",
+        "std::hardware_",
+        "std::is_constant_evaluated",
+        "std::bit_cast",
+        "std::midpoint",
+        "std::to_array",
     ]
     # Note: C++23 doesn't introduce new keywords.
 
+    sources = lambda affected_file: input_api.FilterSourceFile(
+        affected_file,
+        # compiler_specific.h may use these keywords in guarded macros.
+        files_to_skip=[r'.*partition_alloc_base/compiler_specific\.h'],
+        files_to_check=[_SOURCE_FILE_PATTERN])
+
     errors = []
-    for f in input_api.AffectedSourceFiles(c_cpp_files):
+    for f in input_api.AffectedSourceFiles(sources):
         for line_number, line in f.ChangedContents():
             for keyword in CPP_20_KEYWORDS:
                 if not keyword in line:

@@ -145,9 +145,9 @@ base::RepeatingClosure UpdateEngine::InvokeOperation(
           is_update_check_only);
   CHECK(!update_context->session_id.empty());
 
-  const auto result = update_contexts_.insert(
+  const auto [unused, inserted] = update_contexts_.insert(
       std::make_pair(update_context->session_id, update_context));
-  CHECK(result.second);
+  CHECK(inserted);
 
   // Calls out to get the corresponding CrxComponent data for the components.
   std::move(crx_data_callback)
@@ -214,8 +214,7 @@ void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
     update_context->components[id]->Handle(base::DoNothing());
   }
 
-  update_context->update_checker =
-      update_checker_factory_.Run(config_, config_->GetPersistedData());
+  update_context->update_checker = update_checker_factory_.Run(config_);
 
   update_context->update_checker->CheckForUpdates(
       update_context, config_->ExtraRequestParams(),
@@ -275,8 +274,8 @@ void UpdateEngine::UpdateCheckResultsAvailable(
     auto& component = update_context->components.at(id);
     const auto& it = id_to_result.find(id);
     if (it != id_to_result.end()) {
-      const auto result = it->second;
-      const auto pair = [](const std::string& status) {
+      const auto& result = it->second;
+      const auto& [category, protocol_error] = [](const std::string& status) {
         // First, handle app status literals which can be folded down as an
         // updatecheck status
         if (status == "error-unknownApplication") {
@@ -315,8 +314,8 @@ void UpdateEngine::UpdateCheckResultsAvailable(
         // the literals above, then this must be a success an not a parse error.
         return std::make_pair(ErrorCategory::kNone, ProtocolError::NONE);
       }(result.status);
-      component->SetUpdateCheckResult(result, pair.first,
-                                      static_cast<int>(pair.second));
+      component->SetUpdateCheckResult(result, category,
+                                      static_cast<int>(protocol_error));
     } else {
       component->SetUpdateCheckResult(
           std::nullopt, ErrorCategory::kUpdateCheck,
@@ -407,11 +406,10 @@ void UpdateEngine::HandleComponentComplete(
     update_context->next_update_delay = component->GetUpdateDuration();
     queue.pop();
     if (!component->events().empty()) {
-      ping_manager_->SendPing(
-          *component, *config_->GetPersistedData(),
-          base::BindOnce([](base::OnceClosure callback, int,
-                            const std::string&) { std::move(callback).Run(); },
-                         std::move(callback)));
+      CHECK(component->crx_component());
+      ping_manager_->SendPing(component->session_id(),
+                              *component->crx_component(),
+                              component->GetEvents(), std::move(callback));
       return;
     }
   }
@@ -478,9 +476,9 @@ void UpdateEngine::SendPing(const CrxComponent& crx_component,
       config_->GetPersistedData(), /*is_update_check_only=*/false);
   CHECK(!update_context->session_id.empty());
 
-  const auto result = update_contexts_.insert(
+  const auto [unused, inserted] = update_contexts_.insert(
       std::make_pair(update_context->session_id, update_context));
-  CHECK(result.second);
+  CHECK(inserted);
 
   CHECK(update_context);
   CHECK_EQ(1u, update_context->ids.size());

@@ -59,6 +59,8 @@ NSString* const kSafetyCheckNotificationsInactivityThreshold =
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
+NSString* const kTabResumptionDecorationOverride =
+    @"TabResumptionDecorationOverride";
 
 }  // namespace
 
@@ -303,6 +305,15 @@ std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications() {
   }
 
   return threshold;
+}
+
+NSString* GetTabResumptionDecorationOverride() {
+  NSString* override_value = [[NSUserDefaults standardUserDefaults]
+      stringForKey:kTabResumptionDecorationOverride];
+  if ([override_value length]) {
+    return override_value;
+  }
+  return nil;
 }
 
 }  // namespace experimental_flags

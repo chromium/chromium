@@ -12,13 +12,14 @@
 class ContentNotificationService;
 
 // Singleton that owns ContentNotificationService and associates with
-// ChromeBrowserState.
+// profiles.
 class ContentNotificationServiceFactory final
     : public BrowserStateKeyedServiceFactory {
  public:
-  static ContentNotificationService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static ContentNotificationService* GetForBrowserState(ProfileIOS* profile);
 
+  static ContentNotificationService* GetForProfile(ProfileIOS* profile);
   static ContentNotificationServiceFactory* GetInstance();
 
  private:

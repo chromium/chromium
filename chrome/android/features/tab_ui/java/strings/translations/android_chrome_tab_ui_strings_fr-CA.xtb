@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">note</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> onglet ajouté, <ph name="ANY_CHANGED" /> modifiés}one{<ph name="MANY_ADDED" /> onglet ajouté, <ph name="ANY_CHANGED" /> modifiés}other{<ph name="MANY_ADDED" /> onglets ajoutés, <ph name="ANY_CHANGED" /> modifiés}}</translation>
 <translation id="3291470810748040983">Vous recevrez une alerte si un meilleur prix est détecté dans un onglet ouvert</translation>
-<translation id="3322827343001922122">Ouvrir le menu Action du groupe d'onglets <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper?</translation>
 <translation id="3547352561153509682">Cela supprimera le groupe de tous les appareils connectés à <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Masquer la boîte de dialogue des onglets inactifs</translation>
@@ -80,7 +79,6 @@
 <translation id="4460014764210899310">Dégrouper</translation>
 <translation id="4590027107044272416">Vous pouvez désormais ouvrir un nouvel onglet ici</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Fermer 1 onglet inactif?}one{Fermer <ph name="TAB_COUNT_MANY" /> onglet inactif?}other{Fermer <ph name="TAB_COUNT_MANY" /> onglets inactifs?}}</translation>
-<translation id="4648718555153979859">Vos onglets sont regroupés ici</translation>
 <translation id="4686942373615810936">Créé à l'instant</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Fermer après 1 jour}one{Fermer après <ph name="DAY_COUNT_MANY" /> jour}other{Fermer après <ph name="DAY_COUNT_MANY" /> jours}}</translation>
 <translation id="4777866634702576038">Supprimer le groupe d'onglets?</translation>
@@ -136,6 +134,7 @@
 <translation id="6694634756612002311">Gérer le partage</translation>
 <translation id="6744956528665271406">Modifier la couleur du groupe</translation>
 <translation id="6856809498882026482">Quitter le mode de sélection multiple</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Partager un onglet}one{Partager un onglet}other{Partager des onglets}}</translation>
 <translation id="7129458170538955174">Les renseignements à propos de ce magasin sont ouverts à mi-hauteur</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Fermer le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Fermer le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Fermer le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
@@ -171,6 +170,7 @@
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8338427544764842461">Vos groupes d'onglets sont enregistrés ici et sont mis à jour sur tous les appareils sur lesquels vous êtes connecté à votre compte</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="8398929769197326728">Nouveau dossier - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Paramètres</translation>

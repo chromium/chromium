@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_CALL_STACKS_CHILD_CALL_STACK_PROFILE_COLLECTOR_H_
 #define COMPONENTS_METRICS_CALL_STACKS_CHILD_CALL_STACK_PROFILE_COLLECTOR_H_
 
-#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
@@ -75,10 +74,9 @@ class ChildCallStackProfileCollector {
   // for storage, pending availability of the parent mojo interface.
   struct ProfileState {
     ProfileState();
-    // |profile| can be very large and must be passed with std::move.
     ProfileState(base::TimeTicks start_timestamp,
                  mojom::ProfileType profile_type,
-                 std::string&& profile);
+                 mojom::SampledProfilePtr profile);
 
     ProfileState(const ProfileState&) = delete;
     ProfileState& operator=(const ProfileState&) = delete;
@@ -93,7 +91,7 @@ class ChildCallStackProfileCollector {
     mojom::ProfileType profile_type;
 
     // The serialized sampled profile.
-    std::string profile;
+    mojom::SampledProfilePtr profile;
   };
 
   // This object may be accessed on any thread, including the profiler

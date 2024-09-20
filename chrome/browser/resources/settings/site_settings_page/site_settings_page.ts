@@ -8,7 +8,7 @@
  * security site settings.
  */
 
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -224,12 +224,12 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsJavascriptBlocked',
     },
     {
-      route: routes.SITE_SETTINGS_JAVASCRIPT_JIT,
-      id: Id.JAVASCRIPT_JIT,
-      label: 'siteSettingsJavascriptJit',
+      route: routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
+      id: Id.JAVASCRIPT_OPTIMIZER,
+      label: 'siteSettingsJavascriptOptimizer',
       icon: 'privacy:v8',
-      enabledLabel: 'siteSettingsJavascriptJitAllowed',
-      disabledLabel: 'siteSettingsJavascriptJitBlocked',
+      enabledLabel: 'siteSettingsJavascriptOptimizerAllowed',
+      disabledLabel: 'siteSettingsJavascriptOptimizerBlocked',
     },
     {
       route: routes.SITE_SETTINGS_KEYBOARD_LOCK,
@@ -369,6 +369,16 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy:database',
     },
     {
+      route: routes.SITE_SETTINGS_SMART_CARD_READERS,
+      id: Id.SMART_CARD_READERS,
+      label: 'siteSettingsSmartCardReaders',
+      icon: 'privacy:smart-card-reader',
+      enabledLabel: 'siteSettingsSmartCardReadersAllowed',
+      disabledLabel: 'siteSettingsSmartCardReadersBlocked',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableSmartCardReadersContentSetting'),
+    },
+    {
       route: routes.SITE_SETTINGS_SOUND,
       id: Id.SOUND,
       label: 'siteSettingsSound',
@@ -399,6 +409,15 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy:cardboard',
       enabledLabel: 'siteSettingsVrAllowed',
       disabledLabel: 'siteSettingsVrBlocked',
+    },
+    {
+      route: routes.SITE_SETTINGS_WEB_APP_INSTALLATION,
+      id: Id.WEB_APP_INSTALLATION,
+      label: 'siteSettingsWebAppInstallation',
+      icon: 'settings:install-desktop',
+      enabledLabel: 'siteSettingsWebAppInstallationAsk',
+      disabledLabel: 'siteSettingsWebAppInstallationBlock',
+      shouldShow: () => loadTimeData.getBoolean('enableWebAppInstallation'),
     },
     {
       route: routes.SITE_SETTINGS_WEB_PRINTING,
@@ -526,7 +545,8 @@ export class SettingsSiteSettingsPageElement extends
               Id.CAPTURED_SURFACE_CONTROL,
               Id.KEYBOARD_LOCK,
               Id.POINTER_LOCK,
-
+              Id.SMART_CARD_READERS,
+              Id.WEB_APP_INSTALLATION,
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,
@@ -545,7 +565,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.ANTI_ABUSE,
               Id.SITE_DATA,
               Id.PERFORMANCE,
-              Id.JAVASCRIPT_JIT,
+              Id.JAVASCRIPT_OPTIMIZER,
               Id.AUTOMATIC_FULLSCREEN,
               Id.OFFER_WRITING_HELP,
             ]),

@@ -119,7 +119,7 @@ class OnConsentStateUpdateClosureRunner
                                     base::OnceClosure on_declined_closure)
       : on_approved_closure_(std::move(on_approved_closure)),
         on_declined_closure_(std::move(on_declined_closure)) {
-    CHECK(chromeos::features::IsMagicBoostEnabled());
+    CHECK(chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
     magic_boost_state_observation_.Observe(chromeos::MagicBoostState::Get());
   }
 
@@ -228,7 +228,7 @@ std::unique_ptr<manta::MahiProvider> CreateProvider() {
 // 1. The magic boost feature is disabled; OR
 // 2. The Mahi feature has been approved before.
 bool IsMahiApproved() {
-  return !chromeos::features::IsMagicBoostEnabled() ||
+  return !chromeos::MagicBoostState::Get()->IsMagicBoostAvailable() ||
          chromeos::MagicBoostState::Get()->hmr_consent_status() ==
              chromeos::HMRConsentStatus::kApproved;
 }
@@ -509,9 +509,8 @@ void MahiManagerImpl::OpenMahiPanel(int64_t display_id,
 }
 
 bool MahiManagerImpl::IsEnabled() {
-  return chromeos::features::IsMahiEnabled() &&
-         chromeos::MagicBoostState::Get()->hmr_enabled().value_or(false) &&
-         CanUseMahiService();
+  return mahi_availability::IsMahiAvailable() &&
+         chromeos::MagicBoostState::Get()->hmr_enabled().value_or(false);
 }
 
 void MahiManagerImpl::SetMediaAppPDFFocused() {
@@ -649,7 +648,7 @@ void MahiManagerImpl::MaybeObserveHistoryService() {
 
 void MahiManagerImpl::InterrputRequestHandlingWithDisclaimerView(
     crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) {
-  CHECK(chromeos::features::IsMagicBoostEnabled());
+  CHECK(chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
 
   // Cache the display id before moving `context_menu_request`.
   const int64_t display_id = context_menu_request->display_id;

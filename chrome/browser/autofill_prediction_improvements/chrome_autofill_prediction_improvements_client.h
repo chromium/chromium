@@ -7,6 +7,7 @@
 
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -39,6 +40,11 @@ class ChromeAutofillPredictionImprovementsClient
   autofill_prediction_improvements::AutofillPredictionImprovementsFillingEngine*
   GetFillingEngine() override;
   const GURL& GetLastCommittedURL() override;
+  user_annotations::UserAnnotationsService* GetUserAnnotationsService()
+      override;
+  bool IsAutofillPredictionImprovementsEnabledPref() const override;
+  void TryToOpenFeedbackPage(const std::string& feedback_id) override;
+  void OpenPredictionImprovementsSettings() override;
 
  protected:
   explicit ChromeAutofillPredictionImprovementsClient(
@@ -47,6 +53,12 @@ class ChromeAutofillPredictionImprovementsClient
  private:
   friend class content::WebContentsUserData<
       ChromeAutofillPredictionImprovementsClient>;
+
+  const raw_ref<const PrefService> prefs_;
+
+  // Returns whether the optimization guide suggests that Autofill prediction
+  // improvements should currently be allowed to report feedback.
+  bool CanShowFeedbackPage();
 
   std::unique_ptr<autofill_prediction_improvements::
                       AutofillPredictionImprovementsFillingEngine>

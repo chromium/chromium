@@ -14,6 +14,7 @@ import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.activeInRecyclerView;
 
@@ -37,6 +38,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -45,6 +47,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -57,8 +60,12 @@ import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncFeatureMap;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiDisableIf;
+
+import java.util.Set;
 
 /** Tests for the personalized signin promo on the Bookmarks page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -70,7 +77,8 @@ import org.chromium.ui.test.util.UiDisableIf;
     // account storage is disabled above, otherwise tests run into assertion failures. Long term,
     // these tests probably need to be fixed for the bookmarks account storage case rather than
     // force-disable the feature.
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
 })
 public class BookmarkPersonalizedSigninPromoTest {
     private static final String CONTINUED_HISTOGRAM_NAME =
@@ -98,10 +106,11 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Mock private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
 
+    @Mock private SyncService mSyncService;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
     }
 
@@ -116,6 +125,8 @@ public class BookmarkPersonalizedSigninPromoTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1406333")
     public void testSigninButtonDefaultAccount() {
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
+
         var continuedHistogram =
                 HistogramWatcher.newSingleRecordWatcher(CONTINUED_HISTOGRAM_NAME, 1);
         final CoreAccountInfo accountInfo =
@@ -141,6 +152,8 @@ public class BookmarkPersonalizedSigninPromoTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug.com/362215887
     public void testSigninButtonNotDefaultAccount() {
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
+
         var continuedHistogram =
                 HistogramWatcher.newSingleRecordWatcher(CONTINUED_HISTOGRAM_NAME, 1);
         final CoreAccountInfo accountInfo =
@@ -163,6 +176,8 @@ public class BookmarkPersonalizedSigninPromoTest {
     @MediumTest
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug.com/362215887
     public void testSigninButtonNewAccount() {
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
+
         var continuedHistogram =
                 HistogramWatcher.newSingleRecordWatcher(CONTINUED_HISTOGRAM_NAME, 1);
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
@@ -177,6 +192,90 @@ public class BookmarkPersonalizedSigninPromoTest {
                         any(Activity.class), eq(SigninAccessPoint.BOOKMARK_MANAGER));
     }
 
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
+    })
+    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    public void shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);
+
+        showBookmarkManagerAndCheckSigninPromoIsHidden();
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
+    })
+    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    public void shouldShowBookmarksSigninPromoIfBookmarksIsNotManagedByPolicy() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
+
+        showBookmarkManagerAndCheckSigninPromoIsDisplayed(/* checkHistogram= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
+    })
+    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    public void shouldHideBookmarksSigninPromoIfDataTypesSyncing() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(Set.of(UserSelectableType.BOOKMARKS, UserSelectableType.READING_LIST));
+
+        showBookmarkManagerAndCheckSigninPromoIsHidden();
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
+    })
+    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    public void shouldShowBookmarksSigninPromoIfBookmarkNotSyncing() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.READING_LIST));
+
+        showBookmarkManagerAndCheckSigninPromoIsDisplayed(/* checkHistogram= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
+    })
+    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    public void shouldShowBookmarksSigninPromoIfReadingListNotSyncing() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
+
+        showBookmarkManagerAndCheckSigninPromoIsDisplayed(/* checkHistogram= */ false);
+    }
+
     // Get the activity that hosts the bookmark UI - on phones, this is a BookmarkActivity, on
     // tablets this is a native page.
     private Activity getBookmarkHostActivity() {
@@ -188,9 +287,17 @@ public class BookmarkPersonalizedSigninPromoTest {
     }
 
     private void showBookmarkManagerAndCheckSigninPromoIsDisplayed() {
+        showBookmarkManagerAndCheckSigninPromoIsDisplayed(true);
+    }
+
+    // TODO(crbug.com/327387704): Once we implement the correct impression recording, always check
+    // histograms.
+    private void showBookmarkManagerAndCheckSigninPromoIsDisplayed(boolean checkHistogram) {
         var shownHistogram = HistogramWatcher.newSingleRecordWatcher(SHOWN_HISTOGRAM_NAME, 1);
         mBookmarkTestRule.showBookmarkManager(sActivityTestRule.getActivity());
-        shownHistogram.assertExpected();
+        if (checkHistogram) {
+            shownHistogram.assertExpected();
+        }
 
         // TODO(https://cbug.com/1383638): If this stops the flakes, consider removing
         // activeInRecyclerView.
@@ -204,5 +311,19 @@ public class BookmarkPersonalizedSigninPromoTest {
         // only what is currently valid, otherwise the match will be ambiguous.
         onView(allOf(withId(R.id.signin_promo_view_container), activeInRecyclerView()))
                 .check(matches(isDisplayed()));
+    }
+
+    private void showBookmarkManagerAndCheckSigninPromoIsHidden() {
+        mBookmarkTestRule.showBookmarkManager(sActivityTestRule.getActivity());
+
+        RecyclerView recyclerView =
+                getBookmarkHostActivity().findViewById(R.id.selectable_list_recycler_view);
+        Assert.assertNotNull(recyclerView);
+        RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
+
+        Assert.assertNull(
+                mBookmarkTestRule
+                        .getBookmarkActivity()
+                        .findViewById(R.id.signin_promo_view_container));
     }
 }

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+class PrefService;
 enum class LensEntrypoint;
 @protocol SingleSignOnService;
 @protocol SystemIdentity;
@@ -22,6 +23,9 @@ enum class LensEntrypoint;
 
 // The SingleSignOnService instance to use by LensProvider.
 @property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
+
+// PrefService used by Lens.
+@property(nonatomic, assign) PrefService* localState;
 
 // The entry point from which Lens was entered.
 @property(nonatomic, assign) LensEntrypoint entrypoint;

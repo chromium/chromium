@@ -317,11 +317,13 @@ void FileSystemChooser::MultiFilesSelected(
 
   for (const ui::SelectedFileInfo& file : files) {
     if (file.virtual_path.has_value()) {
-      result.push_back({PathType::kExternal, *file.virtual_path});
+      result.push_back({PathType::kExternal, *file.virtual_path,
+                        base::FilePath(file.display_name)});
     } else {
-      result.push_back({PathType::kLocal, file.local_path.empty()
-                                              ? file.file_path
-                                              : file.local_path});
+      result.push_back(
+          {PathType::kLocal,
+           file.local_path.empty() ? file.file_path : file.local_path,
+           base::FilePath(file.display_name)});
     }
   }
 

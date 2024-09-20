@@ -5,10 +5,10 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/icons_lit.html.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
-import {assert, assertInstanceof} from '//resources/js/assert.js';
+import {assertInstanceof} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -54,7 +54,8 @@ export interface TranslateButtonElement {
     targetLanguageButton: CrButtonElement,
     targetLanguagePickerContainer: DomRepeat,
     targetLanguagePickerMenu: HTMLDivElement,
-    translateButton: CrButtonElement,
+    translateDisableButton: CrButtonElement,
+    translateEnableButton: CrButtonElement,
   };
 }
 
@@ -154,8 +155,16 @@ export class TranslateButtonElement extends PolymerElement {
   private onTargetLanguageRetrieved(languageCode: string) {
     const defaultLanguage = this.translateLanguageList.find(
         language => language.code === languageCode);
-    assert(defaultLanguage);
-    this.targetLanguage = defaultLanguage;
+
+    // If the target language is set to one supported by Lens, then we set it
+    // and are done.
+    if (defaultLanguage) {
+      this.targetLanguage = defaultLanguage;
+      return;
+    }
+
+    // Otherwise, we default to the first language in the list.
+    this.targetLanguage = this.translateLanguageList[0];
   }
 
   private onAutoDetectMenuItemClick() {
@@ -211,7 +220,11 @@ export class TranslateButtonElement extends PolymerElement {
   private onTranslateButtonClick() {
     // Toggle translate mode on button click.
     this.isTranslateModeEnabled = !this.isTranslateModeEnabled;
-    this.maybeIssueTranslateRequest();
+    if (this.isTranslateModeEnabled) {
+      this.maybeIssueTranslateRequest();
+    } else {
+      this.browserProxy.handler.issueEndTranslateModeRequest();
+    }
     recordLensOverlayInteraction(
         INVOCATION_SOURCE,
         this.isTranslateModeEnabled ? UserAction.kTranslateButtonEnableAction :
@@ -240,7 +253,7 @@ export class TranslateButtonElement extends PolymerElement {
   }
 
   private maybeIssueTranslateRequest() {
-    if (this.isTranslateModeEnabled) {
+    if (this.isTranslateModeEnabled && this.targetLanguage) {
       this.browserProxy.handler.issueTranslateFullPageRequest(
           this.sourceLanguage ? this.sourceLanguage.code : 'auto',
           this.targetLanguage.code);
@@ -258,7 +271,11 @@ export class TranslateButtonElement extends PolymerElement {
     if (this.sourceLanguage) {
       return this.sourceLanguage.displayName;
     }
-    if (this.contentLanguage !== '') {
+    // There is a race condition where the DOM can render before the language
+    // browser proxy returns the language list. For this reason, we need to
+    // check if the translate language list is present before attempting to find
+    // the content language display name inside of it.
+    if (this.contentLanguage !== '' && this.translateLanguageList) {
       const detectedLanguage = this.translateLanguageList.find(
           language => language.code === this.contentLanguage);
       if (detectedLanguage !== undefined) {
@@ -268,8 +285,20 @@ export class TranslateButtonElement extends PolymerElement {
     return loadTimeData.getString('detectLanguage');
   }
 
+  private getTargetLanguageDisplayName(): string {
+    if (this.targetLanguage) {
+      return this.targetLanguage.displayName;
+    }
+
+    return '';
+  }
+
   private getContentLanguageDisplayName(): string {
-    if (this.contentLanguage !== '') {
+    // There is a race condition where the DOM can render before the language
+    // browser proxy returns the language list. For this reason, we need to
+    // check if the translate language list is present before attempting to find
+    // the content language display name inside of it.
+    if (this.contentLanguage !== '' && this.translateLanguageList) {
       const detectedLanguage = this.translateLanguageList.find(
           language => language.code === this.contentLanguage);
       if (detectedLanguage !== undefined) {

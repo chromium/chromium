@@ -44,7 +44,8 @@ HighResolutionTimerManager::HighResolutionTimerManager()
     DCHECK(power_monitor->IsInitialized());
     power_monitor->AddPowerSuspendObserver(this);
     const bool on_battery =
-        power_monitor->AddPowerStateObserverAndReturnOnBatteryState(this);
+        power_monitor->AddPowerStateObserverAndReturnBatteryPowerStatus(this) ==
+        PowerStateObserver::BatteryPowerStatus::kBatteryPower;
     UseHiResClock(!on_battery);
 
     // Start polling the high resolution timer usage.
@@ -63,9 +64,11 @@ HighResolutionTimerManager::~HighResolutionTimerManager() {
   }
 }
 
-void HighResolutionTimerManager::OnPowerStateChange(bool on_battery_power) {
+void HighResolutionTimerManager::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
   DCHECK(HighResolutionTimerAllowed());
-  UseHiResClock(!on_battery_power);
+  UseHiResClock(battery_power_status !=
+                PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 }
 
 void HighResolutionTimerManager::OnSuspend() {

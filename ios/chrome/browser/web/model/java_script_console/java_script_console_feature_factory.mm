@@ -7,14 +7,14 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature.h"
-#import "ios/web/public/browser_state.h"
 
 // static
-JavaScriptConsoleFeature* JavaScriptConsoleFeatureFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
+JavaScriptConsoleFeature* JavaScriptConsoleFeatureFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<JavaScriptConsoleFeature*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

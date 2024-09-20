@@ -1,0 +1,23 @@
+[package]
+name = "ppv-lite86"
+version = "0.2.20"
+authors = ["The CryptoCorrosion Contributors"]
+edition = "2021"
+license = "MIT/Apache-2.0"
+description = "Implementation of the crypto-simd API for x86"
+repository = "https://github.com/cryptocorrosion/cryptocorrosion"
+keywords = ["crypto", "simd", "x86"]
+categories = ["cryptography", "no-std"]
+rust-version = "1.61"
+
+[dependencies]
+zerocopy = { version = "0.7", features = ["simd", "derive"] }
+
+[badges]
+travis-ci = { repository = "cryptocorrosion/cryptocorrosion" }
+
+[features]
+default = ["std"]
+std = []
+simd = [] # deprecated
+no_simd = []

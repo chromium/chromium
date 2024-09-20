@@ -77,6 +77,33 @@ ReadAloudCurrentGranularity::GetSegmentsForRange(int start_index,
   return ret;
 }
 
+void ReadAloudCurrentGranularity::CalculatePhrases() {
+  if (text.size() == 0) {
+    phrase_boundaries.clear();
+    return;
+  }
+
+  // Add a phrase boundary every 3 words. TODO(crbug.com/330749762): replace
+  // with the correct phrase calculation.
+  std::size_t start = 0;
+  int count = 0;
+  do {
+    if (count % 3 == 0) {
+      phrase_boundaries.push_back(start);
+    }
+    int next_word = GetNextWord(text.substr(start));
+    if (next_word == 0) {
+      break;
+    }
+    start += next_word;
+    ++count;
+    if (start >= text.size()) {
+      break;
+    }
+  } while (start);
+  phrase_boundaries.push_back(text.size());
+}
+
 }  // namespace a11y
 
 namespace {

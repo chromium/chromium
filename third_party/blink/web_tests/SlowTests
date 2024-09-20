@@ -153,7 +153,6 @@ crbug.com/1229701 [ Mac12 ] http/tests/inspector-protocol/network/disable-cache-
 crbug.com/1229701 [ Release Win ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]
 crbug.com/1300409 http/tests/inspector-protocol/network/websocket/offline-no-send.js [ Slow ]
 crbug.com/1280873 http/tests/inspector-protocol/network/xhr-cors-preflight-redirect-failure.js [ Slow ]
-crbug.com/1280697 http/tests/inspector-protocol/network/block_cross_site_document_load.js [ Slow ]
 crbug.com/1280585 http/tests/inspector-protocol/network/xhr-post-replay-cors.js [ Slow ]
 crbug.com/1280537 http/tests/inspector-protocol/network/blocked-cookie-same-site-lax-browser-navigate.js [ Slow ]
 crbug.com/1280537 [ Linux ] http/tests/inspector-protocol/network/blocked-cookie-same-site-lax-js-navigate.js [ Slow ]

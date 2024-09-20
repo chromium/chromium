@@ -536,8 +536,8 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
   const BookmarkNodeData* drag_data = router->GetBookmarkNodeData();
   CHECK_NE(nullptr, drag_data) << "Somehow we're dropping null bookmark data";
   const bool copy = false;
-  chrome::DropBookmarks(
-      GetProfile(), *drag_data, drop_parent, drop_index, copy);
+  chrome::DropBookmarks(GetProfile(), *drag_data, drop_parent, drop_index, copy,
+                        chrome::BookmarkReorderDropTarget::kBookmarkManagerAPI);
 
   router->ClearBookmarkNodeData();
   return NoArguments();

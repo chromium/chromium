@@ -232,7 +232,7 @@ whether a certain subclass of `WebUIController` should be created for a given
 URL.
 
 A `WebUIConfig` holds information about the host and scheme (`chrome://` or
-`chrome-untrusted://`) that the controller serves.
+[`chrome-untrusted://`](chrome_untrusted.md)) that the controller serves.
 
 A `WebUIConfig` may contain logic to check if the WebUI is enabled for a given
 `BrowserContext` and url (e.g., if relevant feature flags are enabled/disabled,
@@ -1270,8 +1270,8 @@ TypeScript for a WebUI-based chrome:// page does one of the following:
 * Calls `console.error()`.
 
 Such errors will appear alongside other crashes in the
-`product_name=Chrome_ChromeOS`, `product_name=Chrome_Lacros`, or
-`product_name=Chrome_Linux` lists on [go/crash](http://go/crash).
+`product_name=Chrome_ChromeOS` or `product_name=Chrome_Linux` lists on
+[go/crash](http://go/crash).
 
 The signature of the error is the error message followed by the URL on which the
 error appeared. For example, if chrome://settings/lazy_load.js throws a
@@ -1316,8 +1316,7 @@ error, JavaScript errors are currently all classified as "WARNING" level when
 computing stability metrics.
 
 ### Known issues
-1. Error reporting is currently enabled only on ChromeOS (ash and Lacros) and
-   Linux.
+1. Error reporting is currently enabled only on ChromeOS and Linux.
 2. Errors are only reported for chrome:// URLs.
 3. Unhandled promise rejections do not have a good stack.
 4. The line numbers and column numbers in the stacks are for the minified

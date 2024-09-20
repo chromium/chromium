@@ -33,7 +33,6 @@ static_library("public") {
   deps = [
     "//base",
     "//chrome/browser/ash/borealis",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/guest_os/infra",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",

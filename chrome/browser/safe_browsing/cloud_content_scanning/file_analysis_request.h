@@ -30,7 +30,8 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
       bool delay_opening_file,
       BinaryUploadService::ContentAnalysisCallback callback,
       BinaryUploadService::Request::RequestStartCallback start_callback =
-          base::DoNothing());
+          base::DoNothing(),
+      bool is_obfuscated = false);
   FileAnalysisRequest(const FileAnalysisRequest&) = delete;
   FileAnalysisRequest& operator=(const FileAnalysisRequest&) = delete;
   ~FileAnalysisRequest() override;
@@ -83,6 +84,9 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
   // |delay_opening_file_| is false, a task to open the file is posted in the
   // GetRequestData call.
   bool delay_opening_file_;
+
+  // Whether the file contents have been obfuscated during the download process.
+  bool is_obfuscated_ = false;
 
   // Used to unpack and analyze archives in a sandbox.
   std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter>

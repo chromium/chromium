@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -104,6 +105,19 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   if (self) {
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
     _useNewBadgeForCustomizationMenu = useNewBadgeForCustomizationMenu;
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitHorizontalSizeClass.self,
+        UITraitPreferredContentSizeCategory.self, UITraitUserInterfaceStyle.self
+      ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -114,23 +128,16 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   return self.headerView.toolBarView;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (self.traitCollection.horizontalSizeClass !=
-          previousTraitCollection.horizontalSizeClass ||
-      previousTraitCollection.preferredContentSizeCategory !=
-          self.traitCollection.preferredContentSizeCategory) {
-    [self updateFakeboxDisplay];
+  if (@available(iOS 17, *)) {
+    return;
   }
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    if (base::FeatureList::IsEnabled(kOmniboxColorIcons)) {
-      [self.headerView
-          updateButtonsForUserInterfaceStyle:self.traitCollection
-                                                 .userInterfaceStyle];
-    }
-  }
+
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
               withTransitionCoordinator:
@@ -212,6 +219,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
                     safeAreaInsets:(UIEdgeInsets)safeAreaInsets
             animateScrollAnimation:(BOOL)animateScrollAnimation {
   if (self.isShowing) {
+    if (IsTabGroupIndicatorEnabled()) {
+      [self.headerView updateTabGroupIndicatorAvailabilityWithOffset:offset];
+    }
     CGFloat progress =
         self.logoIsShowing || !IsRegularXRegularSizeClass(self)
             ? [self.headerView searchFieldProgressForOffset:offset]
@@ -348,6 +358,10 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 - (void)hideBadgeOnCustomizationMenu {
   CHECK(IsHomeCustomizationEnabled());
   [self.headerView hideBadgeOnCustomizationMenu];
+}
+
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
+  self.headerView.tabGroupIndicatorView = view;
 }
 
 #pragma mark - Private
@@ -751,7 +765,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   [self updateVoiceSearchDisplay];
 }
 
-- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError {
+- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
+                                name:(NSString*)name
+                               email:(NSString*)email {
   CHECK(base::FeatureList::IsEnabled(kIdentityDiscAccountMenu));
 
   if (hasAccountError == _hasAccountError) {
@@ -764,6 +780,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   } else {
     [self.headerView removeIdentityDiscErrorBadge];
   }
+  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
 }
 
 #pragma mark - UserAccountImageUpdateDelegate
@@ -791,19 +808,8 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   DCHECK(email);
 
   self.identityDiscImage = image;
-  if (name) {
-    self.identityDiscAccessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
-        base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
-  } else {
-    self.identityDiscAccessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_IDENTITY_DISC_WITH_EMAIL, base::SysNSStringToUTF16(email));
-  }
-  // `self.identityDiscButton` should not be updated if the view has not been
-  // created yet.
-  if (self.identityDiscButton) {
-    [self updateIdentityDiscState];
-  }
+
+  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
 }
 
 #pragma mark UIPointerInteractionDelegate
@@ -845,6 +851,72 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 - (UIButton*)customizationMenuButton {
   return [self.headerView customizationMenuButton];
+}
+
+#pragma mark - Private
+
+- (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name
+                                               email:(NSString*)email {
+  NSString* accountButtonLabel;
+  if (!base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    if (name) {
+      accountButtonLabel = l10n_util::GetNSStringF(
+          IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
+          base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
+    } else {
+      accountButtonLabel = l10n_util::GetNSStringF(
+          IDS_IOS_IDENTITY_DISC_WITH_EMAIL, base::SysNSStringToUTF16(email));
+    }
+  } else {
+    if (name) {
+      accountButtonLabel =
+          _hasAccountError
+              ? l10n_util::GetNSStringF(
+                    IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
+                    base::SysNSStringToUTF16(name),
+                    base::SysNSStringToUTF16(email))
+              : l10n_util::GetNSStringF(
+                    IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
+                    base::SysNSStringToUTF16(name),
+                    base::SysNSStringToUTF16(email));
+    } else {
+      accountButtonLabel =
+          _hasAccountError
+              ? l10n_util::GetNSStringF(
+                    IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
+                    base::SysNSStringToUTF16(email))
+              : l10n_util::GetNSStringF(
+                    IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU,
+                    base::SysNSStringToUTF16(email));
+    }
+  }
+
+  self.identityDiscAccessibilityLabel = accountButtonLabel;
+
+  // `self.identityDiscButton` should not be updated if the view has not been
+  // created yet.
+  if (self.identityDiscButton) {
+    [self updateIdentityDiscState];
+  }
+}
+
+// Updates the fakebox or the header view when UITraits are modified on the
+// device.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (self.traitCollection.horizontalSizeClass !=
+          previousTraitCollection.horizontalSizeClass ||
+      previousTraitCollection.preferredContentSizeCategory !=
+          self.traitCollection.preferredContentSizeCategory) {
+    [self updateFakeboxDisplay];
+  }
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    if (base::FeatureList::IsEnabled(kOmniboxColorIcons)) {
+      [self.headerView
+          updateButtonsForUserInterfaceStyle:self.traitCollection
+                                                 .userInterfaceStyle];
+    }
+  }
 }
 
 @end

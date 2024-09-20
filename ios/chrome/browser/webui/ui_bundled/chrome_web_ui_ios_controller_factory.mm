@@ -69,10 +69,10 @@ template <>
 std::unique_ptr<WebUIIOSController> NewWebUIIOS<commerce::CommerceInternalsUI>(
     WebUIIOS* web_ui,
     const GURL& url) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
   return std::make_unique<commerce::CommerceInternalsUI>(
       web_ui, commerce::kChromeUICommerceInternalsHost,
-      commerce::ShoppingServiceFactory::GetForBrowserState(browser_state));
+      commerce::ShoppingServiceFactory::GetForBrowserState(profile));
 }
 
 // Returns a function that can be used to create the right type of WebUIIOS for

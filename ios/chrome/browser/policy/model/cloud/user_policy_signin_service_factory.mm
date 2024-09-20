@@ -35,10 +35,16 @@ UserPolicySigninServiceFactory::UserPolicySigninServiceFactory()
 UserPolicySigninServiceFactory::~UserPolicySigninServiceFactory() {}
 
 // static
-UserPolicySigninService* UserPolicySigninServiceFactory::GetForBrowserState(
-    web::BrowserState* context) {
+UserPolicySigninService* UserPolicySigninServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<UserPolicySigninService*>(
-      GetInstance()->GetServiceForBrowserState(context, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+UserPolicySigninService* UserPolicySigninServiceFactory::GetForBrowserState(
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static

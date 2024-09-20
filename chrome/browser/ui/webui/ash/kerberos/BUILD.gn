@@ -30,7 +30,7 @@ static_library("kerberos") {
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/kerberos:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//content/public/browser",
     "//net",
     "//ui/aura",

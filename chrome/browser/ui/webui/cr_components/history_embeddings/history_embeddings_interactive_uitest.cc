@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsInteractiveTest, FeedbackDialog) {
   // Load the History page and click on the thumbs down icon to verify that
   // the feedback dialog appears.
   const DeepQuery kThumbsDownElement = {"history-app", "cr-history-embeddings",
-                                        "#feedbackButtons", "#thumbsDown"};
+                                        "cr-feedback-buttons", "#thumbsDown"};
   RunTestSequence(
       InstrumentTab(kHistoryTabId),
       NavigateWebContents(kHistoryTabId,

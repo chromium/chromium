@@ -106,17 +106,22 @@ public class TabGroupListCoordinator {
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         }
-        @Nullable DataSharingService dataSharingService = null;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
-            dataSharingService = DataSharingServiceFactory.getForProfile(profile);
-        }
+
+        @Nullable
+        DataSharingService dataSharingService =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                        ? DataSharingServiceFactory.getForProfile(profile)
+                        : null;
+
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         ActionConfirmationManager actionConfirmationManager =
                 new ActionConfirmationManager(profile, context, filter, modalDialogManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
+
         mTabGroupListMediator =
                 new TabGroupListMediator(
+                        context,
                         modelList,
                         propertyModel,
                         filter,
@@ -128,8 +133,7 @@ public class TabGroupListCoordinator {
                         tabGroupUiActionHandler,
                         actionConfirmationManager,
                         syncService,
-                        modalDialogManager,
-                        context.getResources());
+                        modalDialogManager);
     }
 
     @VisibleForTesting

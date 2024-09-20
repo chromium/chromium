@@ -35,13 +35,15 @@ class MODULES_EXPORT MLConstantOperand final : public MLOperand {
 
   base::span<const uint8_t> Bytes() const;
 
+  void ReleaseBytes();
+
  private:
   // Bytes associated with a constant operand. See
   // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-constant.
   //
-  // TODO(crbug.com/349428379): Consider eagerly transferring this data across
-  // mojo, rather than wastefully holding onto this copy indefinitely.
-  const base::HeapArray<uint8_t> constant_bytes_;
+  // Once these bytes have been copied to the respective graph, they should be
+  // released via `ReleaseBytes()` to avoid keeping this copy unnecessarily.
+  base::HeapArray<uint8_t> constant_bytes_;
 };
 
 }  // namespace blink

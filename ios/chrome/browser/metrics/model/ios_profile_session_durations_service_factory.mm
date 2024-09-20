@@ -18,9 +18,15 @@
 // static
 IOSProfileSessionDurationsService*
 IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+IOSProfileSessionDurationsService*
+IOSProfileSessionDurationsServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<IOSProfileSessionDurationsService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

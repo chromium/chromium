@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -190,10 +191,20 @@ EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(
           blink::features::kPartitionVisitedLinkDatabase) ||
       base::FeatureList::IsEnabled(
           blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
-  // In a partitioned :visited model, we don't want to display :visited-ness
-  // inside Fenced Frames or any frame which has a Fenced Frame in its
-  // FrameTree.
+
   if (are_partitioned_visited_links_enabled) {
+    // In a partitioned :visited model, we don't want to display :visited-ness
+    // inside credentialless iframes.
+    if (GetDocument()
+            .GetExecutionContext()
+            ->GetPolicyContainer()
+            ->GetPolicies()
+            .is_credentialless) {
+      return EInsideLink::kNotInsideLink;
+    }
+    // In a partitioned :visited model, we don't want to display :visited-ness
+    // inside Fenced Frames or any frame which has a Fenced Frame in its
+    // FrameTree.
     if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
       UMA_HISTOGRAM_BOOLEAN("Blink.History.VisitedLinks.InFencedFrameTree",
                             true);

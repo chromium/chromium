@@ -247,6 +247,7 @@ class TestDesktopWidgetDelegate : public WidgetDelegate {
   bool OnCloseRequested(Widget::ClosedReason close_reason) override;
 
  private:
+  std::unique_ptr<Widget> owned_widget_;
   raw_ptr<Widget> widget_;
   raw_ptr<View> contents_view_ = nullptr;
   int window_closing_count_ = 0;

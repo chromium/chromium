@@ -18,12 +18,20 @@ export class WebCamFaceLandmarker {
   private imageCapture_: ImageCapture|undefined;
   private onFaceLandmarkerResult_:
       (resultWithLatency: FaceLandmarkerResultWithLatency) => void;
+  private onTrackEndedHandler_: () => void;
+  declare private readyForTesting_: Promise<void>;
+  private setReadyForTesting_?: () => void;
 
   constructor(
       onFaceLandmarkerResult:
           (resultWithLatency: FaceLandmarkerResultWithLatency) => void) {
     this.onFaceLandmarkerResult_ = onFaceLandmarkerResult;
+    this.onTrackEndedHandler_ = () => this.onTrackEnded_();
     this.intervalID_ = null;
+
+    this.readyForTesting_ = new Promise(resolve => {
+      this.setReadyForTesting_ = resolve;
+    });
   }
 
   /**
@@ -76,6 +84,9 @@ export class WebCamFaceLandmarker {
         numFaces: 1,
       };
       this.faceLandmarker_!.setOptions(options);
+      if (this.setReadyForTesting_) {
+        this.setReadyForTesting_();
+      }
       proceed!();
     });
 
@@ -95,6 +106,17 @@ export class WebCamFaceLandmarker {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     const tracks = stream.getVideoTracks();
     this.imageCapture_ = new ImageCapture(tracks[0]);
+    this.imageCapture_.track.addEventListener(
+        'ended', this.onTrackEndedHandler_);
+  }
+
+  private onTrackEnded_(): void {
+    if (this.imageCapture_) {
+      // Tell MediaStreamTrack that we are no longer using this ended track.
+      this.imageCapture_.track.stop();
+    }
+    this.imageCapture_ = undefined;
+    this.connectToWebCam_();
   }
 
   private startDetectingFaceLandmarks_(): void {
@@ -123,6 +145,20 @@ export class WebCamFaceLandmarker {
     const latency = performance.now() - startTime;
     // Use a callback to send the result to the main FaceGaze object.
     this.onFaceLandmarkerResult_({result, latency});
+  }
+
+  stop(): void {
+    if (this.imageCapture_) {
+      this.imageCapture_.track.removeEventListener(
+          'ended', this.onTrackEndedHandler_);
+      this.imageCapture_.track.stop();
+      this.imageCapture_ = undefined;
+    }
+    this.faceLandmarker_ = null;
+    if (this.intervalID_ !== null) {
+      clearInterval(this.intervalID_);
+      this.intervalID_ = null;
+    }
   }
 }
 

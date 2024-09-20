@@ -18,8 +18,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedControllerCocoa
  public:
   explicit ImmersiveModeTabbedControllerCocoa(
       NativeWidgetMacNSWindow* browser_window,
-      NativeWidgetMacNSWindow* overlay_window,
-      NativeWidgetMacNSWindow* tab_window);
+      NativeWidgetMacOverlayNSWindow* overlay_window,
+      NativeWidgetMacOverlayNSWindow* tab_window);
   ImmersiveModeTabbedControllerCocoa(
       const ImmersiveModeTabbedControllerCocoa&) = delete;
   ImmersiveModeTabbedControllerCocoa& operator=(
@@ -53,7 +53,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedControllerCocoa
   // parented to overlay window regardless of the current parent.
   void OrderTabWindowZOrderOnTop();
 
-  NSWindow* __weak tab_window_;
+  NativeWidgetMacOverlayNSWindow* __weak tab_window_;
   BridgedContentView* __weak tab_content_view_;
   NSTitlebarAccessoryViewController* __strong tab_titlebar_view_controller_;
 };

@@ -4,9 +4,11 @@
 
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/feature_list.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -43,7 +46,8 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     PasswordManagerClient* client,
     PasswordReuseDetectionManagerClient*
         password_reuse_detection_manager_client,
-    ShowMigrationWarningCallback show_migration_warning_callback)
+    ShowMigrationWarningCallback show_migration_warning_callback,
+    std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge)
     : view_(std::move(view)),
       web_contents_(web_contents),
       profile_store_(profile_store),
@@ -56,6 +60,7 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
           password_reuse_detection_manager_client),
       show_migration_warning_callback_(
           std::move(show_migration_warning_callback)),
+      access_loss_warning_bridge_(std::move(access_loss_warning_bridge)),
       plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
           web_contents_->GetBrowserContext())) {}
 
@@ -73,6 +78,8 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       focused_field_type_(focused_field_type),
       show_migration_warning_callback_(
           base::BindRepeating(&local_password_migration::ShowWarning)),
+      access_loss_warning_bridge_(
+          std::make_unique<PasswordAccessLossWarningBridgeImpl>()),
       plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
           web_contents_->GetBrowserContext())) {
   CHECK(web_contents_);
@@ -174,6 +181,8 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
             kAllPasswords);
   }
 
+  TryToShowAccessLossWarningSheet();
+
   // Consumes the dismissal callback to destroy the native controller and java
   // controller after the user selects a credential.
   OnDismiss();
@@ -204,6 +213,7 @@ void AllPasswordsBottomSheetController::OnReauthCompleted(
 
   if (auth_succeeded) {
     FillPassword(password);
+    TryToShowAccessLossWarningSheet();
   }
 
   // Consumes the dismissal callback to destroy the native controller and java
@@ -232,4 +242,20 @@ void AllPasswordsBottomSheetController::OnResultFromAllStoresReceived(
               std::back_inserter(results[0]));
   }
   view_->Show(std::move(results[0]), focused_field_type_);
+}
+
+void AllPasswordsBottomSheetController::TryToShowAccessLossWarningSheet() {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
+    return;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
+                     profile->GetPrefs(), /*called_at_startup=*/false)) {
+    access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
+        profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(), profile,
+        /*called_at_startup=*/false);
+  }
 }

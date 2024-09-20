@@ -18,6 +18,11 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -41,6 +46,33 @@ base::FilePath GetDownloadsPath(Profile* profile) {
 
 aura::Window* GetRootWindow(const views::View* view) {
   return view->GetWidget()->GetNativeWindow()->GetRootWindow();
+}
+
+// Creates the app launch params for `app_type` for testing.
+apps::AppLaunchParams GetAppLaunchParams(Profile* profile,
+                                         ash::SystemWebAppType app_type) {
+  std::optional<webapps::AppId> app_id =
+      ash::GetAppIdForSystemWebApp(profile, app_type);
+  if (!app_id) {
+    NOTREACHED() << "To launch system web apps, you should first call "
+                    "ash::SystemWebAppManager::InstallSystemAppsForTesting in "
+                    "your test.";
+  }
+  return apps::AppLaunchParams(
+      *app_id, apps::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+}
+
+webapps::AppId CreateSystemWebAppImpl(Profile* profile,
+                                      apps::AppLaunchParams params) {
+  const webapps::AppId app_id = params.app_id;
+  base::RunLoop launch_wait;
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
+      std::move(params),
+      base::BindLambdaForTesting(
+          [&](apps::LaunchResult&& result) { launch_wait.Quit(); }));
+  launch_wait.Run();
+  return app_id;
 }
 
 }  // namespace
@@ -83,18 +115,70 @@ void InstallSystemAppsForTesting(Profile* profile) {
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 }
 
-void CreateSystemWebApp(Profile* profile, ash::SystemWebAppType app_type) {
-  webapps::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
-  apps::AppLaunchParams params(
-      app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+webapps::AppId CreateSystemWebApp(Profile* profile,
+                                  ash::SystemWebAppType app_type,
+                                  std::optional<int32_t> window_id) {
+  apps::AppLaunchParams params = GetAppLaunchParams(profile, app_type);
+  if (window_id) {
+    params.restore_id = *window_id;
+  }
+  return CreateSystemWebAppImpl(profile, std::move(params));
+}
 
-  base::RunLoop launch_wait;
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
-      std::move(params),
-      base::BindLambdaForTesting(
-          [&](apps::LaunchResult&& result) { launch_wait.Quit(); }));
-  launch_wait.Run();
+webapps::AppId CreateOsUrlHandlerSystemWebApp(Profile* profile,
+                                              int32_t window_id,
+                                              const GURL& override_url) {
+  apps::AppLaunchParams params =
+      GetAppLaunchParams(profile, ash::SystemWebAppType::OS_URL_HANDLER);
+  params.restore_id = window_id;
+  params.override_url = override_url;
+  return CreateSystemWebAppImpl(profile, std::move(params));
+}
+
+Browser* CreateBrowser(Profile* profile,
+                       const std::vector<GURL>& urls,
+                       std::optional<size_t> active_url_index) {
+  Browser::CreateParams params(Browser::TYPE_NORMAL, profile,
+                               /*user_gesture=*/false);
+  Browser* browser = Browser::Create(params);
+  // Create a new tab and make sure the urls have loaded.
+  for (size_t i = 0; i < urls.size(); i++) {
+    content::TestNavigationObserver navigation_observer(urls[i]);
+    navigation_observer.StartWatchingNewWebContents();
+    chrome::AddTabAt(
+        browser, urls[i], /*index=*/-1,
+        /*foreground=*/!active_url_index || active_url_index.value() == i);
+    navigation_observer.Wait();
+  }
+  return browser;
+}
+
+Browser* CreateAndShowBrowser(Profile* profile,
+                              const std::vector<GURL>& urls,
+                              std::optional<size_t> active_url_index) {
+  Browser* browser = CreateBrowser(profile, urls, active_url_index);
+  browser->window()->Show();
+  return browser;
+}
+
+Browser* InstallAndLaunchPWA(Profile* profile,
+                             const GURL& start_url,
+                             bool launch_in_browser,
+                             const std::u16string& app_title) {
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  web_app_info->scope = start_url.GetWithoutFilename();
+  if (!launch_in_browser) {
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
+  }
+  web_app_info->title = app_title;
+  const webapps::AppId app_id =
+      web_app::test::InstallWebApp(profile, std::move(web_app_info));
+
+  return launch_in_browser
+             ? web_app::LaunchBrowserForWebAppInTab(profile, app_id)
+             : web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 }
 
 }  // namespace ash::test

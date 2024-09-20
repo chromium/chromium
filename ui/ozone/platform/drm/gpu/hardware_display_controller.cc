@@ -147,14 +147,50 @@ void HardwareDisplayController::GetModesetPropsForCrtcs(
     drmModeModeInfo modeset_mode =
         use_current_crtc_mode ? controller->mode() : mode;
 
-    DrmOverlayPlaneList overlays = DrmOverlayPlane::Clone(modeset_planes);
+    if (ShouldDisableNonprimaryTileController(*controller, modeset_mode,
+                                              use_current_crtc_mode)) {
+      if (controller->is_enabled()) {
+        CrtcCommitRequest request = CrtcCommitRequest::DisableCrtcRequest(
+            controller->crtc(), controller->connector());
+        commit_request->push_back(std::move(request));
+      }
 
+      continue;
+    }
+
+    DrmOverlayPlaneList overlays = DrmOverlayPlane::Clone(modeset_planes);
     CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
         controller->crtc(), controller->connector(), modeset_mode, origin_,
         &owned_hardware_planes_, std::move(overlays),
         enable_vrr.value_or(controller->vrr_enabled()));
     commit_request->push_back(std::move(request));
   }
+}
+
+bool HardwareDisplayController::ShouldDisableNonprimaryTileController(
+    const CrtcController& controller,
+    const drmModeModeInfo& mode,
+    const bool use_current_crtc_mode) const {
+  const bool is_nonprimary_tile =
+      IsTiled() &&
+      // The |controller| is a non-primary tile.
+      controller.tile_property()->location != tile_property_->location;
+  if (!is_nonprimary_tile) {
+    return false;
+  }
+
+  // For tiled displays, all non-primary tiles should be disabled if the
+  // requested mode is not a tile mode.
+  bool should_disable = !IsTileMode(ModeSize(mode), *tile_property_);
+
+  // Handles disconnect - the primary tile mode is not the same as the
+  // current mode of the nonprimary |controller|.
+  const bool is_same_mode_as_primary_controller =
+      SameMode(crtc_controllers_[0]->mode(), controller.mode());
+  should_disable = should_disable || (use_current_crtc_mode &&
+                                      !is_same_mode_as_primary_controller);
+
+  return should_disable;
 }
 
 void HardwareDisplayController::GetDisableProps(CommitRequest* commit_request) {
@@ -284,6 +320,10 @@ HardwareDisplayController::ScheduleOrTestPageFlip(
   GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
 
   for (const auto& controller : crtc_controllers_) {
+    if (!controller->is_enabled()) {
+      continue;
+    }
+
     if (!controller->AssignOverlayPlanes(
             &owned_hardware_planes_, pending_planes, /*is_modesetting=*/false))
       return PageFlipResult::kFailedPlaneAssignment;
@@ -468,8 +508,11 @@ bool HardwareDisplayController::IsTiled() const {
 
 gfx::Size HardwareDisplayController::GetModeSize() const {
   // If there are multiple CRTCs they should all have the same size.
-  return gfx::Size(crtc_controllers_[0]->mode().hdisplay,
-                   crtc_controllers_[0]->mode().vdisplay);
+  const gfx::Size mode_size = ModeSize(crtc_controllers_[0]->mode());
+  if (tile_property_.has_value() && mode_size == tile_property_->tile_size) {
+    return GetTotalTileDisplaySize(*tile_property_);
+  }
+  return mode_size;
 }
 
 float HardwareDisplayController::GetRefreshRate() const {

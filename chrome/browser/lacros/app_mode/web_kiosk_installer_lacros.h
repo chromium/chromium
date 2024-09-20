@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_LACROS_APP_MODE_WEB_KIOSK_INSTALLER_LACROS_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
+#include "base/memory/raw_ref.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"

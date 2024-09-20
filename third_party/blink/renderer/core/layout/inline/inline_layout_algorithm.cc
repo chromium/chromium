@@ -345,31 +345,10 @@ InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info,
   const ConstraintSpace& space = GetConstraintSpace();
   LineClampData line_clamp_data = space.GetLineClampData();
   if (line_clamp_data.IsLineClampContext()) {
-    LayoutUnit line_end_offset;
-
-    if (line_clamp_data.state == LineClampData::kClampByBfcOffset) {
-      LayoutUnit line_start_offset =
-          container_builder_.LineBoxBfcBlockOffset().value_or(
-              space.GetBfcOffset().block_offset);
-
-      // Take ruby annotations into account for measuring the line's block size.
-      // For the purposes of line-clamp, we only count the extent of the
-      // annotation overflow that makes the line's leading grow, not the one
-      // that is covered by the end padding that would follow if we clamp here.
-      LayoutUnit annotation_overflow =
-          container_builder_.AnnotationOverflow().ClampNegativeToZero();
-      LayoutUnit total_block_size = line_info->ComputeTotalBlockSize(
-          line_box_height.ClampNegativeToZero(), annotation_overflow);
-      line_end_offset =
-          line_start_offset + total_block_size -
-          std::min(annotation_overflow, space.LineClampEndPadding());
-    }
-
-    if (!line_info->IsBlockInInline() &&
-        line_clamp_data.IsAtClampPoint(line_end_offset)) {
+    if (!line_info->IsBlockInInline() && line_clamp_data.IsAtClampPoint()) {
       return LineClampState::kEllipsize;
     }
-    if (line_clamp_data.ShouldHideForPaint(line_end_offset)) {
+    if (line_clamp_data.ShouldHideForPaint()) {
       return LineClampState::kHide;
     }
   } else if (!line_info->IsBlockInInline() && line_info->HasOverflow() &&
@@ -728,7 +707,7 @@ void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
   end_margin_strut_ = result.EndMarginStrut();
   container_builder_.SetExclusionSpace(result.GetExclusionSpace());
   container_builder_.SetAdjoiningObjectTypes(result.GetAdjoiningObjectTypes());
-  lines_until_clamp_ = result.LinesUntilClamp();
+  state_until_clamp_ = result.StateUntilClamp();
   if (box_fragment.MayHaveDescendantAboveBlockStart()) [[unlikely]] {
     container_builder_.SetMayHaveDescendantAboveBlockStart(true);
   }
@@ -1010,7 +989,9 @@ bool InlineLayoutAlgorithm::AddAnyClearanceAfterLine(
   DCHECK(item_result.item);
   const InlineItem& item = *item_result.item;
   const LayoutObject* layout_object = item.GetLayoutObject();
-  LayoutUnit content_size = container_builder_.LineHeight();
+  const LayoutUnit content_size =
+      container_builder_.LineHeight() -
+      container_builder_.TrimBlockEndBy().value_or(LayoutUnit());
 
   // layout_object may be null in certain cases, e.g. if it's a kBidiControl.
   if (layout_object && layout_object->IsBR()) {
@@ -1052,7 +1033,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
   end_margin_strut_ = constraint_space.GetMarginStrut();
   container_builder_.SetAdjoiningObjectTypes(
       constraint_space.GetAdjoiningObjectTypes());
-  lines_until_clamp_ = constraint_space.GetLineClampData().LinesUntilClamp();
+  state_until_clamp_ = constraint_space.GetLineClampData().StateUntilClamp();
 
   // In order to get the correct list of layout opportunities, we need to
   // position any "leading" floats within the exclusion space first.
@@ -1381,8 +1362,18 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       // https://drafts.csswg.org/css2/box.html#collapsing-margins
       if (!line_info.IsBlockInInline()) {
         end_margin_strut_ = MarginStrut();
-        if (lines_until_clamp_)
-          *lines_until_clamp_ = *lines_until_clamp_ - 1;
+
+        if (state_until_clamp_) {
+          if (constraint_space.GetLineClampData().state ==
+              LineClampData::kClampByLines) {
+            --state_until_clamp_->lines;
+          } else {
+            DCHECK_EQ(constraint_space.GetLineClampData().state,
+                      LineClampData::kMeasureLinesUntilBfcOffset);
+            ++state_until_clamp_->lines;
+            state_until_clamp_->remaining_blocks = 0;
+          }
+        }
       }
 
       // As we aren't an empty inline we should have correctly placed all
@@ -1395,7 +1386,9 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
 
   CHECK(is_line_created);
   container_builder_.SetEndMarginStrut(end_margin_strut_);
-  container_builder_.SetLinesUntilClamp(lines_until_clamp_);
+  if (state_until_clamp_) {
+    container_builder_.SetStateUntilClamp(state_until_clamp_);
+  }
 
   DCHECK(items_builder);
   container_builder_.PropagateChildrenData(*line_container);
@@ -1475,8 +1468,7 @@ PositionedFloat InlineLayoutAlgorithm::PositionFloat(
   // before clamp, we now that if the line's BFC offset is equal or greater than
   // the clamp BFC offset in the final relayout, the line will be hidden.
   bool is_hidden_for_paint =
-      GetConstraintSpace().GetLineClampData().ShouldHideForPaint(
-          origin_bfc_block_offset, /*is_float*/ true);
+      GetConstraintSpace().GetLineClampData().ShouldHideForPaint();
   UnpositionedFloat unpositioned_float(
       BlockNode(To<LayoutBox>(floating_object)),
       /* break_token */ nullptr, space.AvailableSize(),

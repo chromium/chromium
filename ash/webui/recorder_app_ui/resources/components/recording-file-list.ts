@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cros_components/card/card.js';
-import 'chrome://resources/cros_components/menu/menu_item.js';
 import 'chrome://resources/mwc/@material/web/divider/divider.js';
 import 'chrome://resources/mwc/@material/web/icon/icon.js';
 import 'chrome://resources/mwc/@material/web/iconbutton/icon-button.js';
@@ -13,14 +12,15 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './cra/cra-image.js';
 import './cra/cra-menu.js';
+import './cra/cra-menu-item.js';
 import './recording-file-list-item.js';
 import './recording-search-box.js';
 
 import {
+  classMap,
   createRef,
   css,
   html,
-  live,
   PropertyDeclarations,
   ref,
   repeat,
@@ -35,7 +35,11 @@ import {
   RecordingMetadataMap,
 } from '../core/recording_data_manager.js';
 import {RecordingSortType, settings} from '../core/state/settings.js';
-import {assertExhaustive, assertExists} from '../core/utils/assert.js';
+import {
+  assertExhaustive,
+  assertExists,
+  assertInstanceof,
+} from '../core/utils/assert.js';
 import {
   getMonthLabel,
   getToday,
@@ -177,6 +181,25 @@ export class RecordingFileList extends ReactiveLitElement {
     return Object.keys(this.recordingMetadataMap).length;
   }
 
+  /**
+   * Try to focus onto the "more options" button of the recording.
+   *
+   * Does nothing if the specific recording doesn't exist.
+   */
+  focusOnOptionOfRecordingId(recordingId: string|null): void {
+    if (recordingId === null) {
+      return;
+    }
+    const item =
+      this.shadowRoot?.querySelector(
+        `recording-file-list-item[data-recording-id="${recordingId}"]`,
+      ) ??
+      null;
+    if (item !== null) {
+      assertInstanceof(item, RecordingFileListItem).focusOnOption();
+    }
+  }
+
   private onSortingTypeClick(newSortType: RecordingSortType) {
     settings.mutate((d) => {
       d.recordingSortType = newSortType;
@@ -199,22 +222,24 @@ export class RecordingFileList extends ReactiveLitElement {
       @opened=${onMenuOpen}
       @closed=${onMenuClose}
     >
-      <cros-menu-item
+      <cra-menu-item
         headline=${i18n.recordingListSortByDateOption}
         ?checked=${settings.value.recordingSortType === RecordingSortType.DATE}
+        data-role="menuitemradio"
         @cros-menu-item-triggered=${() => {
       this.onSortingTypeClick(RecordingSortType.DATE);
     }}
       >
-      </cros-menu-item>
-      <cros-menu-item
+      </cra-menu-item>
+      <cra-menu-item
         headline=${i18n.recordingListSortByNameOption}
         ?checked=${settings.value.recordingSortType === RecordingSortType.NAME}
+        data-role="menuitemradio"
         @cros-menu-item-triggered=${() => {
       this.onSortingTypeClick(RecordingSortType.NAME);
     }}
       >
-      </cros-menu-item>
+      </cra-menu-item>
     </cra-menu>`;
   }
 
@@ -227,6 +252,9 @@ export class RecordingFileList extends ReactiveLitElement {
       this.searchQuery.value = ev.detail;
     };
 
+    const classes = {
+      selected: this.sortMenuOpened.value,
+    };
     return html`<div id="header">
         <span>${i18n.recordingListHeader}</span>
         <recording-search-box
@@ -237,13 +265,12 @@ export class RecordingFileList extends ReactiveLitElement {
         </recording-search-box>
         <cra-icon-button
           id="sort-recording-button"
-          buttonstyle="toggle"
+          buttonstyle="filled"
+          class="with-toggle-style ${classMap(classes)}"
           @click=${this.toggleSortMenu}
-          .selected=${live(this.sortMenuOpened.value)}
           aria-label=${i18n.recordingListSortButtonTooltip}
         >
           <cra-icon slot="icon" name="sort_by"></cra-icon>
-          <cra-icon slot="selectedIcon" name="sort_by"></cra-icon>
         </cra-icon-button>
       </div>
       ${this.renderSortMenu()}`;
@@ -399,6 +426,7 @@ export class RecordingFileList extends ReactiveLitElement {
             })();
             return html`
               <recording-file-list-item
+                data-recording-id=${recording.id}
                 .recording=${recording}
                 .searchHighlight=${searchHighlight}
                 .playing=${playing}

@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">ನೀವು <ph name="RECENCY" /> ಹಿಂದೆ ಭೇಟಿ ನೀಡಿದ್ದೀರಿ</translation>
 <translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
 <translation id="5048398596102334565">ಚಲನಾ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿ ನೀಡಿ (ಶಿಫಾರಸು ಮಾಡಿರುವುದು)</translation>
+<translation id="5048841907079026162">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5050380848339752099">ಈ ಸೈಟ್, ಅಜ್ಞಾತ ಮೋಡ್‌ಗೆ ಸಂಬಂಧಿಸದ ಆ್ಯಪ್ ಜೊತೆಗೆ ಮಾಹಿತಿಯನ್ನು ಹಂಚಿಕೊಳ್ಳಲಿದೆ.</translation>
 <translation id="5063480226653192405">ಬಳಕೆ</translation>
 <translation id="5091013926750941408">ಮೊಬೈಲ್ ಸೈಟ್</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">JavaScript ರನ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="534295439873310000">NFC ಸಾಧನಗಳು</translation>
 <translation id="5344522958567249764">ಜಾಹೀರಾತು ಗೌಪ್ಯತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="5373874281522292782">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5389626883706033615">ನಿಮ್ಮ ಕುರಿತು ಅವುಗಳು ಸೇವ್ ಮಾಡಿರುವ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ನಿಮ್ಮನ್ನು ಕೇಳದಂತೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ಹೆಚ್ಚು)}one{(+ # ಹೆಚ್ಚು)}other{(+ # ಹೆಚ್ಚು)}}</translation>
 <translation id="5403592356182871684">ಹೆಸರುಗಳು</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">ಯಾವಾಗಲೂ</translation>
 <translation id="757524316907819857">ಸಂರಕ್ಷಿತ ವಿಷಯವನ್ನು ಪ್ಲೇ ಮಾಡದಂತೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="7594634374516752650">ಬ್ಲೂಟೂತ್ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="7617547684249261169">ನಿಮ್ಮ ಡೇಟಾದ ಒಂದಷ್ಟು ಭಾಗ ಅಥವಾ ಎಲ್ಲಾ ಇತಿಹಾಸ, ಕುಕೀಗಳು, ಸೈಟ್ ಡೇಟಾ ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ನೀವು ಅಳಿಸಬಹುದು</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7667547420449112975">ದಿ ವಂಡರ್ಫುಲ್ ವಿಜಾರ್ಡ್ ಆಫ್ ಓಝ್</translation>

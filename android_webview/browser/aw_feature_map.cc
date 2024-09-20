@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "components/embedder_support/android/metrics/features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/sensitive_content/features.h"
 #include "components/viz/common/features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -52,6 +53,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
     &features::kWebViewHyperlinkContextMenu,
     &base::features::kPostGetMyMemoryStateToBackground,
+    &sensitive_content::features::kSensitiveContent,
+    &features::kWebViewWebauthn,
 };
 
 // static

@@ -119,7 +119,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructInputString_ForInputContext) {
                                               /*want_input_context=*/true);
 
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "hello this is input context");
+  EXPECT_EQ(result->ToString(), "hello this is input context");
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, ConstructInputString_ForExecution) {
@@ -139,7 +139,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructInputString_ForExecution) {
                                               /*want_input_context=*/false);
 
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "hello this is execution");
+  EXPECT_EQ(result->ToString(), "hello this is execution");
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_NoOutputConfig) {
@@ -177,7 +177,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_DefaultSimple) {
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_JSON) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   proto::OnDeviceModelExecutionFeatureConfig config;
   auto* oc = config.mutable_output_config();

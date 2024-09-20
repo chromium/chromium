@@ -40,6 +40,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/dino.symbolset/dino.cr.svg",
     "Assets.xcassets/ellipsis_square_fill.symbolset/Contents.json",
     "Assets.xcassets/ellipsis_square_fill.symbolset/ellipsis.square.fill.cr.svg",
+    "Assets.xcassets/enterprise.symbolset/Contents.json",
+    "Assets.xcassets/enterprise.symbolset/enterprise.cr.svg",
     "Assets.xcassets/familylink.symbolset/Contents.json",
     "Assets.xcassets/familylink.symbolset/familylink.cr.svg",
     "Assets.xcassets/folder_badge_arrow_forward.symbolset/Contents.json",

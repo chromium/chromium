@@ -23,6 +23,8 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -356,6 +358,15 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
             base::Unretained(this)));
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2Write)) {
+    server_cert_database_ = base::SequenceBound<net::ServerCertificateDatabase>(
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+        profile->GetPath());
+  }
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 }
 
 ProfileNetworkContextService::~ProfileNetworkContextService() = default;
@@ -1273,6 +1284,16 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // TODO(crbug.com/40928765): check to see if IsManaged() ensures the pref
   // isn't set in user profiles, or if that does something else. If that's true,
   // add an isManaged() check here.
+  // TODO(crbug.com/40928765): add async calls to get the User Certs from
+  // server_cert_database_ and then feed it to the CertVerifiers
+  // through the cert_verifier_updater
+  // (storage_partition->GetCertVerifierServiceUpdater()).
+  // verifications need to wait for for these certs to get to the cert verifier.
+  //
+  // Will have to think about if separate mojom call should be used or if the
+  // currently existing one should be repurposed.
+  // Will also have to consider any caching/reuse to reduce amount of DB reads
+  // necessary.
   cert_verifier_creation_params->initial_additional_certificates =
       GetCertificatePolicy(GetPartitionPath(relative_partition_path));
 

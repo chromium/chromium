@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_
 
 #include "components/prefs/pref_service.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
@@ -400,6 +401,51 @@ class AutofillPrivateGetUserAnnotationsEntriesFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+ private:
+  void OnEntriesRetrieved(user_annotations::UserAnnotationsEntries results);
+};
+
+class AutofillPrivateDeleteUserAnnotationsEntryFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateDeleteUserAnnotationsEntryFunction() = default;
+  AutofillPrivateDeleteUserAnnotationsEntryFunction(
+      const AutofillPrivateDeleteUserAnnotationsEntryFunction&) = delete;
+  AutofillPrivateDeleteUserAnnotationsEntryFunction& operator=(
+      const AutofillPrivateDeleteUserAnnotationsEntryFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.deleteUserAnnotationsEntry",
+                             AUTOFILLPRIVATE_DELETEUSERANNOTATIONSENTRY)
+
+ protected:
+  ~AutofillPrivateDeleteUserAnnotationsEntryFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void OnEntryDeleted();
+};
+
+class AutofillPrivateDeleteAllUserAnnotationsEntriesFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateDeleteAllUserAnnotationsEntriesFunction() = default;
+  AutofillPrivateDeleteAllUserAnnotationsEntriesFunction(
+      const AutofillPrivateDeleteAllUserAnnotationsEntriesFunction&) = delete;
+  AutofillPrivateDeleteAllUserAnnotationsEntriesFunction& operator=(
+      const AutofillPrivateDeleteAllUserAnnotationsEntriesFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.deleteAllUserAnnotationsEntries",
+                             AUTOFILLPRIVATE_DELETEALLUSERANNOTATIONSENTRIES)
+
+ protected:
+  ~AutofillPrivateDeleteAllUserAnnotationsEntriesFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void OnAllEntriesDeleted();
 };
 
 }  // namespace extensions

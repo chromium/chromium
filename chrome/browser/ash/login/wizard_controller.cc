@@ -55,6 +55,7 @@
 #include "chrome/browser/ash/login/quickstart_controller.h"
 // Make sure to include new screen to all relevant metric enums.
 // LINT.IfChange(UsageMetrics)
+#include "chrome/browser/ash/login/screens/account_selection_screen.h"
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
@@ -132,7 +133,6 @@
 // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
@@ -152,7 +152,9 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
+#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
@@ -318,6 +320,7 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
     TouchpadScrollScreenView::kScreenId,
     CategoriesSelectionScreenView::kScreenId,
     PerksDiscoveryScreenView::kScreenId,
+    SplitModifierKeyboardInfoScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
@@ -1010,6 +1013,13 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnFactorSetupSuccessScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  if (features::IsOobeAddUserDuringEnrollmentEnabled()) {
+    append(std::make_unique<AccountSelectionScreen>(
+        oobe_ui->GetView<AccountSelectionScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnAccountSelectionScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
   return result;
 }
 
@@ -1106,7 +1116,7 @@ void WizardController::ShowEnrollmentScreen() {
   GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordEnrollingUserType();
   prescribed_enrollment_config_ =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
-  StartEnrollmentScreen(/*force_interactive=*/false);
+  StartEnrollmentScreen();
 }
 
 void WizardController::ShowDemoModePreferencesScreen() {
@@ -1338,6 +1348,10 @@ void WizardController::ShowCryptohomeRecoveryScreen(
     std::unique_ptr<UserContext> user_context) {
   wizard_context_->user_context = std::move(user_context);
   SetCurrentScreen(GetScreen(CryptohomeRecoveryScreenView::kScreenId));
+}
+
+void WizardController::ShowAccountSelectionScreen() {
+  SetCurrentScreen(GetScreen(AccountSelectionScreenView::kScreenId));
 }
 
 void WizardController::OnUserCreationScreenExit(
@@ -1958,6 +1972,17 @@ void WizardController::OnDisplaySizeScreenExit(
     case DisplaySizeScreen::Result::kNotApplicable:
     case DisplaySizeScreen::Result::kNext:
       ShowThemeSelectionScreen();
+  }
+}
+
+void WizardController::OnAccountSelectionScreenExit(
+    AccountSelectionScreen::Result result) {
+  OnScreenExit(AccountSelectionScreenView::kScreenId,
+               AccountSelectionScreen::GetResultString(result));
+  switch (result) {
+    case AccountSelectionScreen::Result::kNotApplicable:
+    case AccountSelectionScreen::Result::kGaiaFallback:
+      AdvanceToScreen(GaiaView::kScreenId);
   }
 }
 
@@ -2810,7 +2835,7 @@ void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
             << wizard_context_->enrollment_triggered_early
             << ", prescribed_enrollment_config_.should_enroll()="
             << prescribed_enrollment_config_.should_enroll();
-    StartEnrollmentScreen(wizard_context_->enrollment_triggered_early);
+    StartEnrollmentScreen();
   } else {
     PerformOOBECompletedActions(
         OobeMetricsHelper::CompletedPreLoginOobeFlowType::kRegular);
@@ -3416,9 +3441,8 @@ bool WizardController::SetOnTimeZoneResolvedForTesting(
   return true;
 }
 
-void WizardController::StartEnrollmentScreen(bool force_interactive) {
-  VLOG(1) << "Showing enrollment screen."
-          << " Forcing interactive enrollment: " << force_interactive << ".";
+void WizardController::StartEnrollmentScreen() {
+  VLOG(1) << "Showing enrollment screen.";
 
   // Determine the effective enrollment configuration. If there is a valid
   // prescribed configuration, use that. If not, figure out which variant of
@@ -3426,8 +3450,7 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
   // If OOBE Configuration exits, it might also affect enrollment
   // configuration.
   policy::EnrollmentConfig effective_config = prescribed_enrollment_config_;
-  if (!effective_config.should_enroll() ||
-      (force_interactive && !effective_config.should_enroll_interactively())) {
+  if (!effective_config.should_enroll()) {
     effective_config.mode =
         prescribed_enrollment_config_.management_domain.empty()
             ? policy::EnrollmentConfig::MODE_MANUAL

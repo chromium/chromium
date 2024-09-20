@@ -31,10 +31,9 @@ import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomShee
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_TEXT;
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_TITLE;
 
+import android.app.Activity;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.res.Resources;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -48,11 +47,11 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -64,6 +63,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfoCallback;
@@ -87,7 +87,6 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Context mMockContext;
     @Mock private Tab mMockTab;
     @Mock private Profile mMockProfile;
     @Mock private TabModelSelector mMockTabModelSelector;
@@ -132,24 +131,13 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     private PriceInsightsBottomSheetMediator mPriceInsightsMediator;
     private PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);
+    private Activity mActivity;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
-        doReturn(mMockResources).when(mMockContext).getResources();
-        doReturn(PRICE_TRACKING_DISABLED_BUTTON_TEXT)
-                .when(mMockResources)
-                .getString(eq(R.string.price_insights_content_price_tracking_disabled_button_text));
-        doReturn(PRICE_TRACKING_ENABLED_BUTTON_TEXT)
-                .when(mMockResources)
-                .getString(eq(R.string.price_insights_content_price_tracking_enabled_button_text));
-        doReturn(PRICE_HISTORY_SINGLE_CATALOGS_TITLE)
-                .when(mMockResources)
-                .getString(eq(R.string.price_history_title));
-        doReturn(PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE)
-                .when(mMockResources)
-                .getString(eq(R.string.price_history_multiple_catalogs_title));
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         doReturn(mMockProfile).when(mMockTab).getProfile();
         doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
@@ -161,16 +149,9 @@ public class PriceInsightsBottomSheetMediatorTest {
                 .when(mMockPriceInsightsDelegate)
                 .getPriceTrackingStateSupplier(mMockTab);
 
-        doReturn(LayoutInflater.from(ContextUtils.getApplicationContext()))
-                .when(mMockContext)
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        doReturn(mMockNotificationManager)
-                .when(mMockContext)
-                .getSystemService(Context.NOTIFICATION_SERVICE);
-
         mPriceInsightsMediator =
                 new PriceInsightsBottomSheetMediator(
-                        mMockContext,
+                        mActivity,
                         mMockTab,
                         mMockTabModelSelector,
                         mMockShoppingService,
@@ -197,10 +178,10 @@ public class PriceInsightsBottomSheetMediatorTest {
                 PRICE_TRACKING_DISABLED_BUTTON_TEXT,
                 mPropertyModel.get(PRICE_TRACKING_BUTTON_TEXT));
         assertEquals(
-                R.color.price_insights_sheet_price_tracking_ineligible_button_foreground_color,
+                mActivity.getColor(R.color.price_tracking_ineligible_button_foreground_color),
                 mPropertyModel.get(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR));
         assertEquals(
-                R.color.price_insights_sheet_price_tracking_ineligible_button_bg_color,
+                mActivity.getColor(R.color.price_tracking_ineligible_button_background_color),
                 mPropertyModel.get(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR));
         assertNull(mPropertyModel.get(PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER));
     }
@@ -382,25 +363,21 @@ public class PriceInsightsBottomSheetMediatorTest {
                 isTracking
                         ? R.drawable.price_insights_sheet_price_tracking_button_enabled
                         : R.drawable.price_insights_sheet_price_tracking_button_disabled;
-        int buttonForegroundColorResId =
+        int buttonForegroundColor =
                 isTracking
-                        ? R.color
-                                .price_insights_sheet_price_tracking_enabled_button_foreground_color
-                        : R.color
-                                .price_insights_sheet_price_tracking_disabled_button_foreground_color;
-        int buttonBackgroundColorResId =
+                        ? SemanticColorUtils.getDefaultControlColorActive(mActivity)
+                        : SemanticColorUtils.getDefaultIconColorOnAccent1Container(mActivity);
+        int buttonBackgroundColor =
                 isTracking
-                        ? R.color.price_insights_sheet_price_tracking_enabled_button_bg_color
-                        : R.color.price_insights_sheet_price_tracking_disabled_button_bg_color;
+                        ? SemanticColorUtils.getDefaultBgColor(mActivity)
+                        : SemanticColorUtils.getColorPrimaryContainer(mActivity);
 
         assertTrue(mPropertyModel.get(PRICE_TRACKING_BUTTON_ENABLED));
         assertEquals(buttonText, mPropertyModel.get(PRICE_TRACKING_BUTTON_TEXT));
         assertEquals(buttonIconResId, mPropertyModel.get(PRICE_TRACKING_BUTTON_ICON));
         assertEquals(
-                buttonForegroundColorResId,
-                mPropertyModel.get(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR));
+                buttonForegroundColor, mPropertyModel.get(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR));
         assertEquals(
-                buttonBackgroundColorResId,
-                mPropertyModel.get(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR));
+                buttonBackgroundColor, mPropertyModel.get(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR));
     }
 }

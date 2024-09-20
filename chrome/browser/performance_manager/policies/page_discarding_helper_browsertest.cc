@@ -143,10 +143,11 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
           ASSERT_TRUE(helper);
           helper->ImmediatelyDiscardMultiplePages(
               {page_node.get()}, discard_reason,
-              base::BindLambdaForTesting([&](bool success) {
-                EXPECT_EQ(success, expected_result);
-                run_loop.Quit();
-              }));
+              base::BindLambdaForTesting(
+                  [&](std::optional<base::TimeTicks> first_discarded_at) {
+                    EXPECT_EQ(first_discarded_at.has_value(), expected_result);
+                    run_loop.Quit();
+                  }));
         }));
     run_loop.Run();
 

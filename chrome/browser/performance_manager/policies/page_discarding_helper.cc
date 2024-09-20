@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -120,7 +121,7 @@ PageDiscardingHelper::PageDiscardingHelper()
 PageDiscardingHelper::~PageDiscardingHelper() = default;
 
 void PageDiscardingHelper::DiscardAPage(
-    base::OnceCallback<void(bool)> post_discard_cb,
+    DiscardCallback post_discard_cb,
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background) {
   DiscardMultiplePages(std::nullopt, false, std::move(post_discard_cb),
@@ -130,7 +131,7 @@ void PageDiscardingHelper::DiscardAPage(
 void PageDiscardingHelper::DiscardMultiplePages(
     std::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
-    base::OnceCallback<void(bool)> post_discard_cb,
+    DiscardCallback post_discard_cb,
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -144,7 +145,7 @@ void PageDiscardingHelper::DiscardMultiplePages(
 
   // Ensures running post_discard_cb on early return.
   absl::Cleanup run_post_discard_cb_on_return = [&post_discard_cb] {
-    std::move(post_discard_cb).Run(false);
+    std::move(post_discard_cb).Run(std::nullopt);
   };
 
   std::vector<PageNodeSortProxy> candidates;
@@ -239,7 +240,7 @@ void PageDiscardingHelper::DiscardMultiplePages(
 void PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
     const std::vector<const PageNode*>& page_nodes,
     DiscardReason discard_reason,
-    base::OnceCallback<void(bool)> post_discard_cb) {
+    DiscardCallback post_discard_cb) {
   std::vector<const PageNode*> eligible_nodes;
   for (const PageNode* node : page_nodes) {
     // Pass 0 TimeDelta to bypass the minimum time in background check.
@@ -251,14 +252,18 @@ void PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
   }
 
   if (eligible_nodes.empty()) {
-    std::move(post_discard_cb).Run(false);
+    std::move(post_discard_cb).Run(std::nullopt);
   } else {
     page_discarder_->DiscardPageNodes(
         std::move(eligible_nodes), discard_reason,
         base::BindOnce(
-            [](base::OnceCallback<void(bool)> callback,
+            [](DiscardCallback callback,
                const std::vector<PageDiscarder::DiscardEvent>& discard_events) {
-              std::move(callback).Run(discard_events.size() > 0);
+              std::optional<base::TimeTicks> first_discarded_at = std::nullopt;
+              if (discard_events.size() > 0) {
+                first_discarded_at = discard_events[0].discard_time;
+              }
+              std::move(callback).Run(first_discarded_at);
             },
             std::move(post_discard_cb)));
   }
@@ -376,9 +381,11 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
   // Only discard http(s) pages and internal pages to make sure that we don't
   // discard extensions or other PageNode that don't correspond to a tab.
   const GURL& main_frame_url = page_node->GetMainFrameUrl();
-  bool is_web_page_or_internal_page =
-      main_frame_url.SchemeIsHTTPOrHTTPS() || main_frame_url.SchemeIs("chrome");
-  if (!is_web_page_or_internal_page) {
+  bool is_web_page_or_internal_or_data_page =
+      main_frame_url.SchemeIsHTTPOrHTTPS() ||
+      main_frame_url.SchemeIs("chrome") ||
+      main_frame_url.SchemeIs(url::kDataScheme);
+  if (!is_web_page_or_internal_or_data_page) {
     return CanDiscardResult::kProtected;
   }
 
@@ -522,7 +529,7 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
 void PageDiscardingHelper::PostDiscardAttemptCallback(
     std::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
-    base::OnceCallback<void(bool)> post_discard_cb,
+    DiscardCallback post_discard_cb,
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background,
     const std::vector<PageDiscarder::DiscardEvent>& discard_events) {
@@ -536,6 +543,9 @@ void PageDiscardingHelper::PostDiscardAttemptCallback(
     return;
   }
 
+  std::optional<base::TimeTicks> first_discarded_at =
+      discard_events[0].discard_time;
+
   for (const auto& discard_event : discard_events) {
     unnecessary_discard_monitor_.OnDiscard(
         discard_event.estimated_memory_freed_kb, discard_event.discard_time);
@@ -543,7 +553,7 @@ void PageDiscardingHelper::PostDiscardAttemptCallback(
 
   unnecessary_discard_monitor_.OnReclaimTargetEnd();
 
-  std::move(post_discard_cb).Run(true);
+  std::move(post_discard_cb).Run(first_discarded_at);
 }
 
 }  // namespace policies

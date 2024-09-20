@@ -60,8 +60,6 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     if (arg.starts_with(kExcludeFieldsArgPrefix)) {
       options_.exclude_fields_file =
           arg.substr(strlen(kExcludeFieldsArgPrefix)).str();
-    } else if (arg == "check-allow-auto-typedefs-better-nested") {
-      // This flag to be removed once clang rolls.
     } else if (arg == "check-base-classes") {
       // TODO(rsleevi): Remove this once http://crbug.com/123295 is fixed.
       options_.check_base_classes = true;

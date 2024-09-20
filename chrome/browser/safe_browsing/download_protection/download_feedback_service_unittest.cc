@@ -118,18 +118,6 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
   }
 };
 
-bool WillStorePings(DownloadCheckResult result,
-                    bool upload_requested,
-                    int64_t size) {
-  download::MockDownloadItem item;
-  EXPECT_CALL(item, GetReceivedBytes()).WillRepeatedly(Return(size));
-
-  EXPECT_FALSE(DownloadFeedbackService::IsEnabledForDownload(item));
-  DownloadFeedbackService::MaybeStorePingsForDownload(result, upload_requested,
-                                                      &item, "a", "b");
-  return DownloadFeedbackService::IsEnabledForDownload(item);
-}
-
 }  // namespace
 
 class DownloadFeedbackServiceTest : public testing::Test {
@@ -170,96 +158,7 @@ class DownloadFeedbackServiceTest : public testing::Test {
   FakeDownloadProtectionService fake_download_service_;
 };
 
-TEST_F(DownloadFeedbackServiceTest, MaybeStorePingsForDownload) {
-  const int64_t ok_size = DownloadFeedback::kMaxUploadSize;
-  const int64_t bad_size = DownloadFeedback::kMaxUploadSize + 1;
-
-  std::vector<bool> upload_requests = {false, true};
-  for (bool upload_requested : upload_requests) {
-    // SAFE will never upload
-    EXPECT_FALSE(
-        WillStorePings(DownloadCheckResult::SAFE, upload_requested, ok_size));
-    EXPECT_FALSE(WillStorePings(DownloadCheckResult::ALLOWLISTED_BY_POLICY,
-                                upload_requested, ok_size));
-    // Others will upload if requested.
-    EXPECT_EQ(upload_requested, WillStorePings(DownloadCheckResult::UNKNOWN,
-                                               upload_requested, ok_size));
-    EXPECT_EQ(upload_requested, WillStorePings(DownloadCheckResult::DANGEROUS,
-                                               upload_requested, ok_size));
-    EXPECT_EQ(upload_requested, WillStorePings(DownloadCheckResult::UNCOMMON,
-                                               upload_requested, ok_size));
-    EXPECT_EQ(upload_requested,
-              WillStorePings(DownloadCheckResult::DANGEROUS_HOST,
-                             upload_requested, ok_size));
-    EXPECT_EQ(upload_requested,
-              WillStorePings(DownloadCheckResult::POTENTIALLY_UNWANTED,
-                             upload_requested, ok_size));
-    EXPECT_EQ(upload_requested,
-              WillStorePings(DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE,
-                             upload_requested, ok_size));
-
-    // Bad sizes never upload
-    EXPECT_FALSE(
-        WillStorePings(DownloadCheckResult::SAFE, upload_requested, bad_size));
-    EXPECT_FALSE(WillStorePings(DownloadCheckResult::UNKNOWN, upload_requested,
-                                bad_size));
-    EXPECT_FALSE(WillStorePings(DownloadCheckResult::DANGEROUS,
-                                upload_requested, bad_size));
-    EXPECT_FALSE(WillStorePings(DownloadCheckResult::UNCOMMON, upload_requested,
-                                bad_size));
-    EXPECT_FALSE(WillStorePings(DownloadCheckResult::DANGEROUS_HOST,
-                                upload_requested, bad_size));
-    EXPECT_FALSE(WillStorePings(DownloadCheckResult::POTENTIALLY_UNWANTED,
-                                upload_requested, bad_size));
-    EXPECT_FALSE(
-        WillStorePings(DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE,
-                       upload_requested, bad_size));
-  }
-}
-
-TEST_F(DownloadFeedbackServiceTest, SingleFeedbackCompleteAndDiscardDownload) {
-  const base::FilePath file_path(CreateTestFile(0));
-  const std::string ping_request = "ping";
-  const std::string ping_response = "resp";
-
-  download::DownloadItem::AcquireFileCallback download_discarded_callback;
-
-  download::MockDownloadItem item;
-  EXPECT_CALL(item, GetDangerType())
-      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT));
-  EXPECT_CALL(item, GetReceivedBytes()).WillRepeatedly(Return(1000));
-  EXPECT_CALL(item,
-              StealDangerousDownload(true /*delete_file_after_feedback*/, _))
-      .WillOnce([&download_discarded_callback](
-                    bool _, download::DownloadItem::AcquireFileCallback arg) {
-        download_discarded_callback = std::move(arg);
-      });
-
-  DownloadFeedbackService service(&fake_download_service_,
-                                  file_task_runner_.get());
-  service.MaybeStorePingsForDownload(DownloadCheckResult::UNCOMMON,
-                                     true /* upload_requested */, &item,
-                                     ping_request, ping_response);
-  ASSERT_TRUE(DownloadFeedbackService::IsEnabledForDownload(item));
-  service.BeginFeedbackForDownload(&profile_, &item, DownloadCommands::DISCARD);
-  ASSERT_FALSE(download_discarded_callback.is_null());
-  EXPECT_EQ(0U, num_feedbacks());
-
-  std::move(download_discarded_callback).Run(file_path);
-  ASSERT_EQ(1U, num_feedbacks());
-  ASSERT_TRUE(feedback(0));
-  EXPECT_TRUE(feedback(0)->start_called());
-  EXPECT_EQ(ping_request, feedback(0)->GetPingRequestForTesting());
-  EXPECT_EQ(ping_response, feedback(0)->GetPingResponseForTesting());
-
-  feedback(0)->finish_callback().Run();
-  EXPECT_FALSE(feedback(0));
-
-  content::RunAllTasksUntilIdle();
-  EXPECT_TRUE(base::PathExists(file_path));
-}
-
-TEST_F(DownloadFeedbackServiceTest, SingleFeedbackCompleteAndKeepDownload) {
+TEST_F(DownloadFeedbackServiceTest, SingleFeedbackComplete) {
   const base::FilePath file_path(CreateTestFile(0));
   const std::string ping_request = "ping";
   const std::string ping_response = "resp";
@@ -271,20 +170,16 @@ TEST_F(DownloadFeedbackServiceTest, SingleFeedbackCompleteAndKeepDownload) {
   EXPECT_CALL(item, GetDangerType())
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT));
   EXPECT_CALL(item, GetReceivedBytes()).WillRepeatedly(Return(1000));
-  EXPECT_CALL(item,
-              StealDangerousDownload(false /*delete_file_after_feedback*/, _))
+  EXPECT_CALL(item, CopyDownload(_))
       .WillOnce([&download_discarded_callback](
-                    bool _, download::DownloadItem::AcquireFileCallback arg) {
+                    download::DownloadItem::AcquireFileCallback arg) {
         download_discarded_callback = std::move(arg);
       });
 
   DownloadFeedbackService service(&fake_download_service_,
                                   file_task_runner_.get());
-  service.MaybeStorePingsForDownload(DownloadCheckResult::UNCOMMON,
-                                     true /* upload_requested */, &item,
-                                     ping_request, ping_response);
-  ASSERT_TRUE(DownloadFeedbackService::IsEnabledForDownload(item));
-  service.BeginFeedbackForDownload(&profile_, &item, DownloadCommands::KEEP);
+  service.BeginFeedbackForDownload(&profile_, &item, ping_request,
+                                   ping_response);
   ASSERT_FALSE(download_discarded_callback.is_null());
   EXPECT_EQ(0U, num_feedbacks());
 
@@ -317,15 +212,11 @@ TEST_F(DownloadFeedbackServiceTest, MultiplePendingFeedbackComplete) {
         .WillRepeatedly(
             Return(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT));
     EXPECT_CALL(item[i], GetReceivedBytes()).WillRepeatedly(Return(1000));
-    EXPECT_CALL(item[i], StealDangerousDownload(true, _))
-        .WillOnce([&download_discarded_callback, i](
-                      bool _, download::DownloadItem::AcquireFileCallback arg) {
+    EXPECT_CALL(item[i], CopyDownload(_))
+        .WillOnce([&download_discarded_callback,
+                   i](download::DownloadItem::AcquireFileCallback arg) {
           download_discarded_callback[i] = std::move(arg);
         });
-    DownloadFeedbackService::MaybeStorePingsForDownload(
-        DownloadCheckResult::UNCOMMON, true /* upload_requested */, &item[i],
-        ping_request, ping_response);
-    ASSERT_TRUE(DownloadFeedbackService::IsEnabledForDownload(item[i]));
   }
 
   {
@@ -333,8 +224,8 @@ TEST_F(DownloadFeedbackServiceTest, MultiplePendingFeedbackComplete) {
                                     file_task_runner_.get());
     for (size_t i = 0; i < kNumDownloads; ++i) {
       SCOPED_TRACE(i);
-      service.BeginFeedbackForDownload(&profile_, &item[i],
-                                       DownloadCommands::DISCARD);
+      service.BeginFeedbackForDownload(&profile_, &item[i], ping_request,
+                                       ping_response);
       ASSERT_FALSE(download_discarded_callback[i].is_null());
     }
     EXPECT_EQ(0U, num_feedbacks());
@@ -391,15 +282,11 @@ TEST_F(DownloadFeedbackServiceTest, DISABLED_MultiFeedbackWithIncomplete) {
         .WillRepeatedly(
             Return(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT));
     EXPECT_CALL(item[i], GetReceivedBytes()).WillRepeatedly(Return(1000));
-    EXPECT_CALL(item[i], StealDangerousDownload(true, _))
-        .WillOnce([&download_discarded_callback, i](
-                      bool _, download::DownloadItem::AcquireFileCallback arg) {
+    EXPECT_CALL(item[i], CopyDownload(_))
+        .WillOnce([&download_discarded_callback,
+                   i](download::DownloadItem::AcquireFileCallback arg) {
           download_discarded_callback[i] = std::move(arg);
         });
-    DownloadFeedbackService::MaybeStorePingsForDownload(
-        DownloadCheckResult::UNCOMMON, true /* upload_requested */, &item[i],
-        ping_request, ping_response);
-    ASSERT_TRUE(DownloadFeedbackService::IsEnabledForDownload(item[i]));
   }
 
   {
@@ -407,8 +294,8 @@ TEST_F(DownloadFeedbackServiceTest, DISABLED_MultiFeedbackWithIncomplete) {
                                     file_task_runner_.get());
     for (size_t i = 0; i < kNumDownloads; ++i) {
       SCOPED_TRACE(i);
-      service.BeginFeedbackForDownload(&profile_, &item[i],
-                                       DownloadCommands::DISCARD);
+      service.BeginFeedbackForDownload(&profile_, &item[i], ping_request,
+                                       ping_response);
       ASSERT_FALSE(download_discarded_callback[i].is_null());
     }
     EXPECT_EQ(0U, num_feedbacks());

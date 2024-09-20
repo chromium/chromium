@@ -17,24 +17,92 @@ class ExceptionState;
 class ExecutionContext;
 
 // This class provides a wrapper for iterating over any ES object that
-// implements the iterable and iterator protocols. Namely:
-// * The object or an object in its prototype chain has an @@iterator property
-//   that is a function that returns an iterator object.
-// * The iterator object has a next() method that returns an object with at
-//   least two properties:
-//   1. done: A boolean indicating whether iteration should stop. Can be
+// implements either the async iterable and async iterator protocols, or the
+// iterable and iterator protocols. Namely:
+// * The object or an object in its prototype chain has an @@asyncIterator or
+//   @@iterator property that is a function that returns an Iterator Record [1].
+// * The Iterator Record has a next() method that returns either:
+//   1. Async iterable case: An object (which should be a Promise, although that
+//      isn't enforced [2])
+//   2. Sync iterable case: An object with at least two properties:
+//      a. done: A boolean indicating whether iteration should stop. Can be
 //      omitted when false.
-//   2. value: Any object. Can be omitted when |done| is true.
+//      b. value: Any object. Can be omitted when `done` is true.
+//
+// This class resembles ECMAScript's `GetIterator(obj, kind)` [3] abstract
+// operation, whose `kind` argument is either ASYNC or SYNC, directing the
+// operation as to which iterator type to try and obtain from the ES object.
 //
 // In general, this class should be preferred over using the
 // GetEsIteratorMethod() and GetEsIteratorWithMethod() functions directly.
 //
-// Usage:
+// [1]: https://tc39.es/ecma262/#sec-iterator-records
+// [2]: https://tc39.es/ecma262/#table-async-iterator-required
+// [3]: https://tc39.es/ecma262/#sec-getiterator
+//
+//
+// Async iterable usage:
+//   class SubscriptionManager {
+//    public:
+//     SubscriptionManager(v8::Local<v8::Object> obj) {
+//       ExceptionState exception_state = ...;
+//       iterator_ = ScriptIterator::FromIterable(
+//           script_state->GetIsolate(), obj, exception_state,
+//           ScriptIterator::Kind::kAsync);
+//
+//       if (exception_state.HadException()) {
+//         return;
+//       }
+//
+//       // When `iterator_.IsNull()` is true but no exception is on the stack,
+//       // then `obj` is not async iterable.
+//       if (iterator_.IsNull()) {
+//         DCHECK(!exception_state.HadException());
+//         return;
+//       }
+//
+//       GetNextValue();
+//     }
+//
+//     // Run repeatedly after every async value resolves, to fetch the next
+//     // one.
+//     void GetNextValue() {
+//       DCHECK(!iterator_.IsNull());
+//       ExceptionState exception_state = ...;
+//       ExecutionContext* execution_context = ...;
+//
+//       iterator_.Next(execution_context, exception_state);
+//
+//       if (exception_state.HadException()) {
+//         v8::Local<v8::Value> v8_exception = exception_state.GetException();
+//         exception_state.ClearException();
+//
+//         next_promise_ =
+//             ScriptPromise<IDLAny>::Reject(script_state, v8_exception);
+//       } else {
+//         next_promise_ = ToResolvedPromise<IDLAny>(
+//             script_state, iterator_.GetValue().ToLocalChecked());
+//       }
+//
+//       // `on_fulfilled` fulfills to an Iterator Result, and calls
+//       // `GetNextValue()` again if the result is not done.
+//       ScriptFunction* on_fulfilled = ...;
+//       ScriptFunction* on_rejected = ...;
+//       next_promise_.Then(on_fulfilled, on_rejected);
+//     }
+//
+//    private:
+//     ScriptIterator iterator_;
+//     ScriptPromiseUntyped next_promise_;
+//   };
+//
+// Sync iterable usage:
 //   v8::Local<v8::Object> es_object = ...;
 //   auto script_iterator = ScriptIterator::FromIterable(
-//       isolate, es_object, exception_state);
-//   if (exception_state.HadException())
+//       isolate, es_object, exception_state, ScriptIterable::Kind::kSync);
+//   if (exception_state.HadException()) {
 //     return;
+//   }
 //   if (!script_iterator.IsNull()) {
 //     while (script_iterator.Next(execution_context, exception_state)) {
 //       // When `Next()` puts an exception on the stack, it always returns
@@ -54,6 +122,14 @@ class CORE_EXPORT ScriptIterator {
   DISALLOW_NEW();
 
  public:
+  enum class Kind {
+    // `kNull` is not a real kind per se; it is just the default for
+    // `ScriptIterator`s whose `IsNull()` returns true.
+    kNull = 0,
+    kSync = 1,
+    kAsync = 2,
+  };
+
   // Creates a ScriptIterator out of an ES object that implements the iterable
   // and iterator protocols.
   // Both the return value and the ExceptionState should be checked:
@@ -65,7 +141,14 @@ class CORE_EXPORT ScriptIterator {
   //   property.
   static ScriptIterator FromIterable(v8::Isolate* isolate,
                                      v8::Local<v8::Object> iterable,
-                                     ExceptionState& exception_state);
+                                     ExceptionState& exception_state,
+                                     ScriptIterator::Kind kind);
+
+  // Returns a `ScriptIterator` whose `IsNull()` is true. This is only needed
+  // when storing a bare `ScriptIterator` in a class, which is useful in the
+  // async iterator case, when you need to reference `this` asynchronously after
+  // its creation, to get subsequent values as they are emitted.
+  ScriptIterator() = default;
 
   ScriptIterator(ScriptIterator&&) noexcept = default;
   ScriptIterator& operator=(ScriptIterator&&) noexcept = default;
@@ -77,8 +160,7 @@ class CORE_EXPORT ScriptIterator {
 
   // Returns true if the iterator is still not done.
   bool Next(ExecutionContext* execution_context,
-            ExceptionState& exception_state,
-            v8::Local<v8::Value> value = v8::Local<v8::Value>());
+            ExceptionState& exception_state);
 
   v8::MaybeLocal<v8::Value> GetValue() {
     return value_.Get(ScriptState::ForCurrentRealm(isolate_));
@@ -96,9 +178,8 @@ class CORE_EXPORT ScriptIterator {
   // object with two properties, "done" and "value".
   ScriptIterator(v8::Isolate*,
                  v8::Local<v8::Object> iterator,
-                 v8::Local<v8::Value> next_method);
-
-  ScriptIterator() = default;
+                 v8::Local<v8::Value> next_method,
+                 Kind kind);
 
   v8::Isolate* isolate_ = nullptr;
   WorldSafeV8Reference<v8::Object> iterator_;
@@ -107,6 +188,7 @@ class CORE_EXPORT ScriptIterator {
   v8::Local<v8::String> value_key_;
   bool done_ = true;
   WorldSafeV8Reference<v8::Value> value_;
+  Kind kind_;
 };
 
 }  // namespace blink

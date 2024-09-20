@@ -317,6 +317,14 @@
     These charges could be one-time or recurring and may not be obvious. <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>Show anyway<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
 
+  <!-- WebView Restricted Content interstitials -->
+  <message name="IDS_SUPERVISED_USER_URL_BLOCKED_MESSAGE" desc="Message in error page to inform the user that the content is blocked">
+    This content is blocked.
+  </message>
+  <message name="IDS_SUPERVISED_USER_LEARN_MORE" desc="Clickable link in the error page to guide the user to learn why the content was blocked">
+    Learn more
+  </message>
+
   <message name="IDS_CONNECTION_HELP_SHOW_MORE" desc="The button label to expand sections for the chrome://connection-help site. Paired with IDS_CONNECTION_HELP_SHOW_LESS">
     Show More
   </message>

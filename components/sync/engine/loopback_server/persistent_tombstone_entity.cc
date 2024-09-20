@@ -71,8 +71,9 @@ string PersistentTombstoneEntity::GetParentId() const {
 void PersistentTombstoneEntity::SerializeAsProto(
     sync_pb::SyncEntity* proto) const {
   LoopbackServerEntity::SerializeBaseProtoFields(proto);
-  if (!client_tag_hash_.empty())
+  if (!client_tag_hash_.empty()) {
     proto->set_client_tag_hash(client_tag_hash_);
+  }
 }
 
 bool PersistentTombstoneEntity::IsDeleted() const {

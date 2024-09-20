@@ -532,6 +532,8 @@ experimental domain Audits
       WarnDomainNonASCII
       WarnThirdPartyPhaseout
       WarnCrossSiteRedirectDowngradeChangesInclusion
+      WarnDeprecationTrialMetadata
+      WarnThirdPartyCookieHeuristic
 
   type CookieOperation extends string
     enum
@@ -2679,6 +2681,7 @@ domain DOM
       after
       marker
       backdrop
+      column
       selection
       search-text
       target-text
@@ -4220,7 +4223,6 @@ domain Emulation
       gyroscope
       linear-acceleration
       magnetometer
-      proximity
       relative-orientation
 
   experimental type SensorMetadata extends object
@@ -7923,8 +7925,8 @@ experimental domain Overlay
       # True for showing hit-test borders
       boolean show
 
-  # Request that backend shows an overlay with web vital metrics.
-  command setShowWebVitals
+  # Deprecated, no longer has any effect.
+  deprecated command setShowWebVitals
     parameters
       boolean show
 
@@ -8088,6 +8090,7 @@ domain Page
       deferred-fetch
       digital-credentials-get
       direct-sockets
+      direct-sockets-private
       display-capture
       document-domain
       encrypted-media

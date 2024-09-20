@@ -176,6 +176,11 @@ IN_PROC_BROWSER_TEST_F(SettingsAiPageTest,
           "runMochaSuite('ExperimentalAdvancedPageRefreshDisabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, TabOrganizationSubpage) {
+  RunTest("settings/ai_subpage_test.js",
+          "runMochaSuite('TabOrganizationSubpage')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledIndicator) {
   RunTest("settings/extension_controlled_indicator_test.js", "mocha.run()");
 }
@@ -195,12 +200,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, FileSystemSettingsListEntries) {
 IN_PROC_BROWSER_TEST_F(SettingsTest, FileSystemSettingsListEntryItems) {
   RunTest("settings/file_system_site_entry_item_test.js", "mocha.run()");
 }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(SettingsTest, GetMostChromePage) {
-  RunTest("settings/get_most_chrome_page_test.js", "mocha.run()");
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, HelpPage) {
   RunTest("settings/help_page_test.js", "mocha.run()");

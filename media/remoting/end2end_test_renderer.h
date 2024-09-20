@@ -14,7 +14,7 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer.h"
 #include "media/remoting/stream_provider.h"
-#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+#include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
 
 namespace media {
 

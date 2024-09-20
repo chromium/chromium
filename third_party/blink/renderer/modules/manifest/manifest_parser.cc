@@ -297,6 +297,7 @@ bool ManifestParser::Parse() {
   }
 
   manifest_->manifest_url = manifest_url_;
+  manifest_->dir = ParseDir(root_object.get());
   manifest_->name = ParseName(root_object.get());
   manifest_->short_name = ParseShortName(root_object.get());
   manifest_->description = ParseDescription(root_object.get());
@@ -593,6 +594,25 @@ Enum ManifestParser::ParseFirstValidEnum(const JSONObject* object,
   }
 
   return invalid_value;
+}
+
+mojom::blink::Manifest::TextDirection ManifestParser::ParseDir(
+    const JSONObject* object) {
+  using TextDirection = mojom::blink::Manifest::TextDirection;
+
+  std::optional<String> dir = ParseString(object, "dir", Trim(true));
+  if (!dir.has_value()) {
+    return TextDirection::kAuto;
+  }
+
+  std::optional<TextDirection> textDirection =
+      TextDirectionFromString(dir->Utf8());
+  if (!textDirection.has_value()) {
+    AddErrorInfo("unknown 'dir' value ignored.");
+    return TextDirection::kAuto;
+  }
+
+  return *textDirection;
 }
 
 String ManifestParser::ParseName(const JSONObject* object) {

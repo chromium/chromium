@@ -19,6 +19,7 @@
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/public/cpp/video_effects_service_host.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom-forward.h"
 #include "services/video_effects/test/fake_video_effects_service.h"
@@ -167,7 +168,8 @@ TEST_F(
   mojo::Remote<video_effects::mojom::VideoEffectsService> service;
   video_effects::FakeVideoEffectsService fake_effects_service(
       service.BindNewPipeAndPassReceiver());
-  auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
+  auto service_reset =
+      video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager1;
   service_->BindVideoEffectsManager(
@@ -224,7 +226,8 @@ TEST_F(MediaEffectsServiceTest, BindVideoEffectsProcessor) {
   mojo::Remote<video_effects::mojom::VideoEffectsService> service;
   video_effects::FakeVideoEffectsService fake_effects_service(
       service.BindNewPipeAndPassReceiver());
-  auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
+  auto service_reset =
+      video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
   auto effects_processor_future =
       fake_effects_service.GetEffectsProcessorCreationFuture();
@@ -252,7 +255,8 @@ TEST_F(
   mojo::Remote<video_effects::mojom::VideoEffectsService> service;
   video_effects::FakeVideoEffectsService fake_effects_service(
       service.BindNewPipeAndPassReceiver());
-  auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
+  auto service_reset =
+      video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager;
   service_->BindVideoEffectsManager(
@@ -321,7 +325,8 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
   mojo::Remote<video_effects::mojom::VideoEffectsService> service;
   video_effects::FakeVideoEffectsService fake_effects_service(
       service.BindNewPipeAndPassReceiver());
-  auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
+  auto service_reset =
+      video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
   // Setting the model file path for the first time propagates the model file to
   // Video Effects Service: Prepare model file:

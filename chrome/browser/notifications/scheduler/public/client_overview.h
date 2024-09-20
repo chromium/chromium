@@ -18,7 +18,11 @@ struct ClientOverview {
   ClientOverview(ImpressionDetail impression_detail,
                  size_t num_scheduled_notifications);
   ClientOverview(const ClientOverview& other);
+  ClientOverview(ClientOverview&& other);
+  ClientOverview& operator=(const ClientOverview& other);
+  ClientOverview& operator=(ClientOverview&& other);
   ~ClientOverview();
+
   bool operator==(const ClientOverview& other) const;
 
   // Details of impression.

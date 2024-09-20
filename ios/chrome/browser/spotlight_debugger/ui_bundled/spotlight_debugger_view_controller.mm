@@ -54,7 +54,7 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
 @end
 
 @implementation SpotlightDebuggerViewController {
-  // PrefService per a browser state.
+  // PrefService per a profile.
   PrefService* _prefService;
 }
 

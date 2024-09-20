@@ -9,6 +9,7 @@
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -22,6 +23,7 @@
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/model/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -62,26 +64,28 @@ class AuthenticationFlowTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.SetPrefService(CreatePrefService());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     identity1_ = [FakeSystemIdentity fakeIdentity1];
     fake_system_identity_manager()->AddIdentity(identity1_);
     identity2_ = [FakeSystemIdentity fakeIdentity2];
     fake_system_identity_manager()->AddIdentity(identity2_);
-    managed_identity_ = [FakeSystemIdentity fakeManagedIdentity];
-    fake_system_identity_manager()->AddIdentity(managed_identity_);
+    managed_identity1_ = [FakeSystemIdentity fakeManagedIdentity];
+    fake_system_identity_manager()->AddIdentity(managed_identity1_);
+    managed_identity2_ = [FakeSystemIdentity identityWithEmail:@"bar@foo.com"];
+    fake_system_identity_manager()->AddIdentity(managed_identity2_);
 
+    run_loop_ = std::make_unique<base::RunLoop>();
     sign_in_completion_ = ^(BOOL success) {
-      run_loop_.Quit();
+      run_loop_->Quit();
       signin_result_ =
           success ? signin::Tribool::kTrue : signin::Tribool::kFalse;
     };
@@ -122,7 +126,7 @@ class AuthenticationFlowTest : public PlatformTest {
   // Checks if the AuthenticationFlow operation has completed, and whether it
   // was successful.
   void CheckSignInCompletion(bool expected_signed_in) {
-    run_loop_.Run();
+    run_loop_->Run();
 
     const signin::Tribool expected_signin_result =
         expected_signed_in ? signin::Tribool::kTrue : signin::Tribool::kFalse;
@@ -137,7 +141,81 @@ class AuthenticationFlowTest : public PlatformTest {
     [[performer_ expect] signInIdentity:identity
                           atAccessPoint:accessPoint
                        withHostedDomain:hosted_domain
-                         toBrowserState:browser_state_.get()];
+                              toProfile:profile_.get()];
+  }
+
+  // Signs in successfully as `identity`, and checks that all the intermediary
+  // steps run.
+  void SignIn(id<SystemIdentity> identity,
+              signin_metrics::AccessPoint access_point) {
+    // Get the hosted domain from the email.
+    NSString* user_email = identity.userEmail;
+    NSArray* matches =
+        [[NSRegularExpression regularExpressionWithPattern:@"^\\w+@([a-z.]+)$"
+                                                   options:0
+                                                     error:nil]
+            matchesInString:user_email
+                    options:0
+                      range:NSMakeRange(0, user_email.length)];
+    ASSERT_EQ(1u, matches.count);
+    NSString* domain =
+        [user_email substringWithRange:[matches[0] rangeAtIndex:1]];
+    NSString* hosted_domain =
+        [domain isEqualToString:@"gmail.com"] ? nil : domain;
+
+    signin_result_ = signin::Tribool::kUnknown;
+    // Can't use a RunLoop multiple times, create a new one.
+    run_loop_ = std::make_unique<base::RunLoop>();
+
+    CreateAuthenticationFlow(PostSignInActionSet({PostSignInAction::kNone}),
+                             identity, access_point);
+
+    [[[performer_ expect] andDo:^(NSInvocation*) {
+      [authentication_flow_ didFetchManagedStatus:hosted_domain];
+    }] fetchManagedStatus:profile_.get() forIdentity:identity];
+
+    if (hosted_domain.length) {
+      [[[performer_ stub] andDo:^(NSInvocation*) {
+        managed_confirmation_dialog_shown_count_++;
+        [authentication_flow_ didAcceptManagedConfirmation];
+      }] showManagedConfirmationForHostedDomain:hosted_domain
+                                 viewController:view_controller_
+                                        browser:browser_.get()];
+
+      [[[performer_ expect] andDo:^(NSInvocation*) {
+        [authentication_flow_
+            didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                       clientID:kFakeClientID
+                             userAffiliationIDs:@[ kFakeUserAffiliationID ]];
+      }] registerUserPolicy:profile_.get() forIdentity:identity];
+
+      [[[performer_ expect] andDo:^(NSInvocation*) {
+        [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
+      }] fetchUserPolicy:profile_.get()
+                 withDmToken:kFakeDMToken
+                    clientID:kFakeClientID
+          userAffiliationIDs:@[ kFakeUserAffiliationID ]
+                    identity:identity];
+    }
+
+    SetSigninSuccessExpectations(identity, access_point, hosted_domain);
+
+    [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+    // completion block should not be called synchronously.
+    EXPECT_EQ(signin::Tribool::kUnknown, signin_result_);
+
+    CheckSignInCompletion(/*expected_signed_in=*/true);
+  }
+
+  void SignOut() {
+    AuthenticationService* authentication_service =
+        AuthenticationServiceFactory::GetForBrowserState(profile_.get());
+    // Can't use a RunLoop multiple times, create a new one.
+    run_loop_ = std::make_unique<base::RunLoop>();
+    authentication_service->SignOut(
+        signin_metrics::ProfileSignout::kChangeAccountInAccountMenu, false,
+        base::CallbackToBlock(run_loop_->QuitClosure()));
+    run_loop_->Run();
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {
@@ -148,19 +226,23 @@ class AuthenticationFlowTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   AuthenticationFlow* authentication_flow_ = nullptr;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   id<SystemIdentity> identity1_ = nil;
   id<SystemIdentity> identity2_ = nil;
-  id<SystemIdentity> managed_identity_ = nil;
+  id<SystemIdentity> managed_identity1_ = nil;
+  id<SystemIdentity> managed_identity2_ = nil;
   OCMockObject* performer_ = nil;
   signin_ui::CompletionCallback sign_in_completion_;
   UIViewController* view_controller_;
   // Used to verify histogram logging.
   base::HistogramTester histogram_tester_;
 
+  // Number of times the management confirmation dialog has been displayed.
+  int managed_confirmation_dialog_shown_count_ = 0;
+
   // Used to wait for sign-in workflow to complete.
-  base::RunLoop run_loop_;
+  std::unique_ptr<base::RunLoop> run_loop_;
   signin::Tribool signin_result_ = signin::Tribool::kUnknown;
 };
 
@@ -172,22 +254,8 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
   scoped_feature_list.InitAndEnableFeature(
       policy::kUserPolicyForSigninOrSyncConsentLevel);
 
-  CreateAuthenticationFlow(
-      PostSignInActionSet({PostSignInAction::kNone}), identity1_,
-      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
+  SignIn(identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didFetchManagedStatus:nil];
-  }] fetchManagedStatus:browser_state_.get() forIdentity:identity1_];
-
-  SetSigninSuccessExpectations(
-      identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE, nil);
-
-  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
-  // completion block should not be called synchronously.
-  EXPECT_EQ(signin::Tribool::kUnknown, signin_result_);
-
-  CheckSignInCompletion(/*expected_signed_in=*/true);
   histogram_tester_.ExpectUniqueSample("Signin.AccountType.SigninConsent",
                                        SigninAccountType::kRegular, 1);
 }
@@ -201,8 +269,7 @@ TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
   NSError* error = [NSError errorWithDomain:@"foo" code:0 userInfo:nil];
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFailFetchManagedStatus:error];
-  }] fetchManagedStatus:browser_state_.get()
-             forIdentity:identity1_];
+  }] fetchManagedStatus:profile_.get() forIdentity:identity1_];
 
   [[[performer_ expect] andDo:^(NSInvocation* invocation) {
     __unsafe_unretained ProceduralBlock completionBlock;
@@ -228,43 +295,11 @@ TEST_F(AuthenticationFlowTest,
   base::test::ScopedFeatureList scoped_feature_list(
       policy::kUserPolicyForSigninAndNoSyncConsentLevel);
 
-  CreateAuthenticationFlow(
-      PostSignInActionSet({PostSignInAction::kNone}), managed_identity_,
-      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
-
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didFetchManagedStatus:@"foo.com"];
-  }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didAcceptManagedConfirmation];
-  }] showManagedConfirmationForHostedDomain:@"foo.com"
-                             viewController:view_controller_
-                                    browser:browser_.get()];
-
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_
-        didRegisterForUserPolicyWithDMToken:kFakeDMToken
-                                   clientID:kFakeClientID
-                         userAffiliationIDs:@[ kFakeUserAffiliationID ]];
-  }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
-
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
-  }] fetchUserPolicy:browser_state_.get()
-             withDmToken:kFakeDMToken
-                clientID:kFakeClientID
-      userAffiliationIDs:@[ kFakeUserAffiliationID ]
-                identity:managed_identity_];
-
-  SetSigninSuccessExpectations(
-      managed_identity_,
-      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
-
-  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
-
-  CheckSignInCompletion(/*expected_signed_in=*/true);
+  SignIn(managed_identity1_,
+         signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
   histogram_tester_.ExpectUniqueSample("Signin.AccountType.SigninConsent",
                                        SigninAccountType::kManaged, 1);
+  EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 }
 
 // Tests that the management confirmation dialog is not shown and the user
@@ -287,42 +322,45 @@ TEST_F(AuthenticationFlowTest,
           base::Value("hello"), nullptr);
   enterprise_policy_helper.GetPolicyProvider()->UpdateChromePolicy(map);
 
-  CreateAuthenticationFlow(
-      PostSignInActionSet({PostSignInAction::kNone}), managed_identity_,
-      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
-
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didFetchManagedStatus:@"foo.com"];
-  }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
-
-  // Make sure that the is no attempt to show the dialg.
-  [[performer_ reject] showManagedConfirmationForHostedDomain:@"foo.com"
-                                               viewController:view_controller_
-                                                      browser:browser_.get()];
-
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
-                                                     clientID:kFakeClientID
-                                           userAffiliationIDs:@[ kFakeUserAffiliationID ]];
-  }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
-
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
-  }] fetchUserPolicy:browser_state_.get()
-         withDmToken:kFakeDMToken
-            clientID:kFakeClientID
-  userAffiliationIDs:@[ kFakeUserAffiliationID ]
-            identity:managed_identity_];
-
-  SetSigninSuccessExpectations(
-      managed_identity_,
-      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
-
-  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
-
-  CheckSignInCompletion(/*expected_signed_in=*/true);
+  SignIn(managed_identity1_,
+         signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
   histogram_tester_.ExpectUniqueSample("Signin.AccountType.SigninConsent",
                                        SigninAccountType::kManaged, 1);
+  EXPECT_EQ(0, managed_confirmation_dialog_shown_count_);
+}
+
+// Tests that the managed confirmation dialog is only show once per account,
+// when signing in from the Account Menu.
+TEST_F(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
+  // Enable user policy and sign-in promos.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {policy::kUserPolicyForSigninAndNoSyncConsentLevel,
+       kIdentityDiscAccountMenu},
+      {});
+
+  // First signin, show the dialog.
+  SignIn(managed_identity1_,
+         signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
+  EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
+
+  // Second signin from the account menu, don't show the dialog.
+  SignOut();
+  SignIn(managed_identity1_,
+         signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
+  EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
+
+  // Signin from a different UI surface, show the dialog again.
+  SignOut();
+  SignIn(managed_identity1_,
+         signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
+  EXPECT_EQ(2, managed_confirmation_dialog_shown_count_);
+
+  // Signin with a different account, show the dialog again.
+  SignOut();
+  SignIn(managed_identity2_,
+         signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
+  EXPECT_EQ(3, managed_confirmation_dialog_shown_count_);
 }
 
 }  // namespace

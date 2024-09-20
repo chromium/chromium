@@ -78,7 +78,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   TextResourceDecoderForFuzzing decoder(fuzzed_data);
   std::string bytes = fuzzed_data.ConsumeRemainingBytes();
-  String decoded_bytes = decoder.Decode(bytes.data(), bytes.length());
+  String decoded_bytes = decoder.Decode(bytes);
   scanner->AppendToEnd(decoded_bytes);
   std::unique_ptr<PendingPreloadData> preload_data =
       scanner->Scan(document_url);

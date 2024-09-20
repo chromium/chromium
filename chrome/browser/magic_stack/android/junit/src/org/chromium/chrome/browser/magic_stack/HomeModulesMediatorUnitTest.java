@@ -731,7 +731,7 @@ public class HomeModulesMediatorUnitTest {
         scoreLoggedTime = SystemClock.elapsedRealtime() - 10;
         mHomeModulesConfigManager.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
         mHomeModulesConfigManager.setFreshnessCountForTesting(moduleType, expectedScore);
-        int[] scores = new int[] {-1, expectedScore, -1, -1, -1};
+        int[] scores = new int[] {-1, expectedScore, -1, -1};
         inputContext = mMediator.createInputContext();
         verifyInputContext(inputContext, scores);
 
@@ -751,28 +751,74 @@ public class HomeModulesMediatorUnitTest {
         filteredEnabledModuleSet.add(ModuleType.SINGLE_TAB);
         filteredEnabledModuleSet.add(ModuleType.PRICE_CHANGE);
         filteredEnabledModuleSet.add(ModuleType.TAB_RESUMPTION);
+        filteredEnabledModuleSet.add(ModuleType.SAFETY_HUB);
+        filteredEnabledModuleSet.add(ModuleType.EDUCATIONAL_TIP);
 
         // Verifies the orders of modules match the heuristic logic when all modules are present.
         List<Integer> expectedModuleList =
-                List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB, ModuleType.TAB_RESUMPTION);
+                List.of(
+                        ModuleType.PRICE_CHANGE,
+                        ModuleType.SINGLE_TAB,
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.TAB_RESUMPTION,
+                        ModuleType.SAFETY_HUB);
         assertEquals(expectedModuleList, mMediator.getFixedModuleList(filteredEnabledModuleSet));
 
         // Verifies that Price change module is always placed as the first module.
         filteredEnabledModuleSet.remove(ModuleType.SINGLE_TAB);
-        expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
+        expectedModuleList =
+                List.of(
+                        ModuleType.PRICE_CHANGE,
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.TAB_RESUMPTION,
+                        ModuleType.SAFETY_HUB);
         assertEquals(expectedModuleList, mMediator.getFixedModuleList(filteredEnabledModuleSet));
 
-        // Verifies that single tab module is placed before the tab resumption module.
+        // Verifies that single tab module is placed before the educational tip module and tab
+        // resumption module.
         filteredEnabledModuleSet.add(ModuleType.SINGLE_TAB);
         filteredEnabledModuleSet.remove(ModuleType.PRICE_CHANGE);
-        expectedModuleList = List.of(ModuleType.SINGLE_TAB, ModuleType.TAB_RESUMPTION);
+        expectedModuleList =
+                List.of(
+                        ModuleType.SINGLE_TAB,
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.TAB_RESUMPTION,
+                        ModuleType.SAFETY_HUB);
         assertEquals(expectedModuleList, mMediator.getFixedModuleList(filteredEnabledModuleSet));
 
-        // Verifies that the tab resumption module becomes the first module when the first two
-        // modules
+        // Verifies that the safety hub module becomes the first module when the first two modules
         // are disabled.
         filteredEnabledModuleSet.remove(ModuleType.SINGLE_TAB);
-        expectedModuleList = List.of(ModuleType.TAB_RESUMPTION);
+        expectedModuleList =
+                List.of(
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.TAB_RESUMPTION,
+                        ModuleType.SAFETY_HUB);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList(filteredEnabledModuleSet));
+
+        // Verifies that the educational tip module becomes the last module when the tab resumption
+        // module is disabled.
+        filteredEnabledModuleSet.add(ModuleType.SINGLE_TAB);
+        filteredEnabledModuleSet.add(ModuleType.PRICE_CHANGE);
+        filteredEnabledModuleSet.remove(ModuleType.TAB_RESUMPTION);
+        expectedModuleList =
+                List.of(
+                        ModuleType.PRICE_CHANGE,
+                        ModuleType.SINGLE_TAB,
+                        ModuleType.SAFETY_HUB,
+                        ModuleType.EDUCATIONAL_TIP);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList(filteredEnabledModuleSet));
+
+        // Verifies that the tab resumption module stays as the last module when the educational tip
+        // module is disabled.
+        filteredEnabledModuleSet.add(ModuleType.TAB_RESUMPTION);
+        filteredEnabledModuleSet.remove(ModuleType.EDUCATIONAL_TIP);
+        expectedModuleList =
+                List.of(
+                        ModuleType.PRICE_CHANGE,
+                        ModuleType.SINGLE_TAB,
+                        ModuleType.TAB_RESUMPTION,
+                        ModuleType.SAFETY_HUB);
         assertEquals(expectedModuleList, mMediator.getFixedModuleList(filteredEnabledModuleSet));
     }
 
@@ -821,11 +867,16 @@ public class HomeModulesMediatorUnitTest {
         filteredEnabledModuleSet.add(ModuleType.SINGLE_TAB);
         filteredEnabledModuleSet.add(ModuleType.PRICE_CHANGE);
         filteredEnabledModuleSet.add(ModuleType.TAB_RESUMPTION);
+        filteredEnabledModuleSet.add(ModuleType.EDUCATIONAL_TIP);
 
         // Verifies that result of #filterEnabledModuleList() is used if the segmentation
         // service returns a valid result.
         List<Integer> expectedModuleList =
-                List.of(ModuleType.TAB_RESUMPTION, ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE);
+                List.of(
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.TAB_RESUMPTION,
+                        ModuleType.SINGLE_TAB,
+                        ModuleType.PRICE_CHANGE);
         assertEquals(
                 expectedModuleList,
                 mMediator.filterEnabledModuleList(
@@ -838,7 +889,8 @@ public class HomeModulesMediatorUnitTest {
         // Verifies that the disabled module will be removed from the result of the segmentation
         // service.
         filteredEnabledModuleSet.remove(ModuleType.TAB_RESUMPTION);
-        expectedModuleList = List.of(ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE);
+        expectedModuleList =
+                List.of(ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE, ModuleType.EDUCATIONAL_TIP);
         assertEquals(
                 expectedModuleList,
                 mMediator.filterEnabledModuleList(
@@ -860,20 +912,31 @@ public class HomeModulesMediatorUnitTest {
     }
 
     private void verifyInputContext(InputContext inputContext, int[] scores) {
-        assertEquals(ModuleType.NUM_ENTRIES, inputContext.getSizeForTesting());
+        assertEquals(ModuleType.NUM_ENTRIES - 1, inputContext.getSizeForTesting());
+
+        int j = 0;
         for (int i = 0; i < ModuleType.NUM_ENTRIES; i++) {
+            if (i == ModuleType.EDUCATIONAL_TIP) {
+                continue;
+            }
+
             assertEquals(
-                    scores[i],
+                    scores[j],
                     inputContext.getEntryForTesting(
                                     HomeModulesMetricsUtils.getFreshnessInputContextString(i))
                             .floatValue,
                     0.01);
+            j = j + 1;
         }
     }
 
     private void verifyEmptyInputContext(InputContext inputContext) {
-        assertEquals(ModuleType.NUM_ENTRIES, inputContext.getSizeForTesting());
+        assertEquals(ModuleType.NUM_ENTRIES - 1, inputContext.getSizeForTesting());
         for (int i = 0; i < ModuleType.NUM_ENTRIES; i++) {
+            if (i == ModuleType.EDUCATIONAL_TIP) {
+                continue;
+            }
+
             assertEquals(
                     INVALID_FRESHNESS_SCORE,
                     inputContext.getEntryForTesting(

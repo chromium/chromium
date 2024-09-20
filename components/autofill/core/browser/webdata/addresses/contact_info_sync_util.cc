@@ -21,6 +21,33 @@ namespace {
 
 using sync_pb::ContactInfoSpecifics;
 
+ContactInfoSpecifics::AddressType RecordTypeToAddressType(
+    AutofillProfile::RecordType record_type) {
+  switch (record_type) {
+    case AutofillProfile::RecordType::kLocalOrSyncable:
+      // Local profiles are not synced through CONTACT_INFO.
+      NOTREACHED();
+    case AutofillProfile::RecordType::kAccount:
+      return ContactInfoSpecifics::REGULAR;
+    case AutofillProfile::RecordType::kAccountHome:
+      return ContactInfoSpecifics::HOME;
+    case AutofillProfile::RecordType::kAccountWork:
+      return ContactInfoSpecifics::WORK;
+  }
+}
+
+AutofillProfile::RecordType AddressTypeToRecordType(
+    ContactInfoSpecifics::AddressType record_type) {
+  switch (record_type) {
+    case ContactInfoSpecifics::REGULAR:
+      return AutofillProfile::RecordType::kAccount;
+    case ContactInfoSpecifics::HOME:
+      return AutofillProfile::RecordType::kAccountHome;
+    case ContactInfoSpecifics::WORK:
+      return AutofillProfile::RecordType::kAccountWork;
+  }
+}
+
 // Converts the verification status representation used in AutofillProfile to
 // the one used in ContactInfoSpecifics.
 ContactInfoSpecifics::VerificationStatus
@@ -179,6 +206,7 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   sync_pb::ContactInfoSpecifics specifics = base_contact_info_specifics;
 
   specifics.set_guid(profile.guid());
+  specifics.set_address_type(RecordTypeToAddressType(profile.record_type()));
   specifics.set_use_count(profile.use_count());
   specifics.set_use_date_unix_epoch_seconds(
       (profile.use_date() - base::Time::UnixEpoch()).InSeconds());
@@ -305,7 +333,7 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
       CountryNames::GetInstance()->GetCountryCode(country_name_or_code);
 
   AutofillProfile profile(specifics.guid(),
-                          AutofillProfile::RecordType::kAccount,
+                          AddressTypeToRecordType(specifics.address_type()),
                           AddressCountryCode(country_code));
 
   profile.set_use_count(specifics.use_count());
@@ -396,6 +424,7 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
       sync_pb::ContactInfoSpecifics(contact_info_specifics);
 
   trimmed_specifics.clear_guid();
+  trimmed_specifics.clear_address_type();
   trimmed_specifics.clear_use_count();
   trimmed_specifics.clear_use_date_unix_epoch_seconds();
   if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {

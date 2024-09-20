@@ -41,6 +41,10 @@
 
 #pragma mark - ChromeLensOverlay
 
+- (BOOL)isPanningSelectionUI {
+  return NO;
+}
+
 - (void)setQueryText:(NSString*)text clearSelection:(BOOL)clearSelection {
   _currentQueryText = text;
   [self sendNewResult];

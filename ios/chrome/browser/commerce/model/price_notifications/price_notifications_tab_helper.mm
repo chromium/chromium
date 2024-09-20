@@ -52,7 +52,7 @@ PriceNotificationsTabHelper::PriceNotificationsTabHelper(
     web::WebState* web_state) {
   web_state_observation_.Observe(web_state);
   shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
-      web_state->GetBrowserState());
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
 }
 
 PriceNotificationsTabHelper::~PriceNotificationsTabHelper() = default;

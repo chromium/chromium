@@ -4,6 +4,8 @@
 
 #include "components/segmentation_platform/internal/database/ukm_database_backend.h"
 
+#include <vector>
+
 #include "base/check_is_test.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -343,10 +345,24 @@ void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {
       metrics_table_.DeleteEventsBeforeTimestamp(time);
   url_table_.RemoveUrls(deleted_urls);
   url_table_.DeleteUrlsBeforeTimestamp(time);
-  uma_metrics_table_.DeleteEventsBeforeTimestamp(time);
 
   // Force commit so that we don't store URLs longer than needed.
   RestartTransaction();
+}
+
+void UkmDatabaseBackend::CleanupItems(const std::string& profile_id,
+                                      std::vector<CleanupItem> cleanup_items) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (status_ != Status::INIT_SUCCESS) {
+    return;
+  }
+
+  // This needs to support clean up for UKM data.
+  // Only `cleanup_items` with uma types should be sent to uma table.
+  std::erase_if(cleanup_items,
+                [](const CleanupItem& item) { return !item.IsUma(); });
+  uma_metrics_table_.CleanupItems(profile_id, cleanup_items);
+  TrackChangesInTransaction(cleanup_items.size());
 }
 
 void UkmDatabaseBackend::CommitTransactionForTesting() {

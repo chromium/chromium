@@ -118,6 +118,7 @@ chromium-metrics-reviews@google.com.
              on Mac OS"/>
   <int value="3" label="From a sub apps install dialog"/>
   <int value="4" label="From the settings button on a notification"/>
+  <int value="5" label="From the page specific site data dialog"/>
 </enum>
 
 <enum name="DefaultOfflineClosingReason">

@@ -64,8 +64,7 @@ const char* GetCorporaString(FilesListCorpora corpora) {
     case FilesListCorpora::ALL_TEAM_DRIVES:
       return kCorporaAllTeamDrives;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kCorporaDefault;
+  NOTREACHED();
 }
 
 }  // namespace

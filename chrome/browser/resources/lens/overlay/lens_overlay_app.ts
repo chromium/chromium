@@ -6,11 +6,14 @@ import './cursor_tooltip.js';
 import './initial_gradient.js';
 import './selection_overlay.js';
 import './translate_button.js';
+import '/lens/shared/searchbox_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_components/searchbox/searchbox.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {skColorToHexColor} from '//resources/js/color_utils.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -36,16 +39,18 @@ export interface LensOverlayAppElement {
   $: {
     backgroundScrim: HTMLElement,
     closeButton: CrIconButtonElement,
-    copyToast: CrToastElement,
     cursorTooltip: CursorTooltipElement,
     initialGradient: InitialGradientElement,
     moreOptionsButton: CrIconButtonElement,
     moreOptionsMenu: HTMLElement,
     selectionOverlay: SelectionOverlayElement,
+    toast: CrToastElement,
   };
 }
 
-export class LensOverlayAppElement extends PolymerElement {
+const LensOverlayAppElementBase = I18nMixin(PolymerElement);
+
+export class LensOverlayAppElement extends LensOverlayAppElementBase {
   static get is() {
     return 'lens-overlay-app';
   }
@@ -68,6 +73,10 @@ export class LensOverlayAppElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
+      searchBoxHidden: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       isClosing: {
         type: Boolean,
         reflectToAttribute: true,
@@ -81,10 +90,29 @@ export class LensOverlayAppElement extends PolymerElement {
         value: loadTimeData.getBoolean('enableOverlayTranslateButton'),
         readOnly: true,
       },
+      shouldFadeOutButtons: {
+        type: Boolean,
+        computed: 'computeShouldFadeOutButtons(isTranslateModeActive, ' +
+            'isTextLayerHighlightingText, isPointerDown)',
+        reflectToAttribute: true,
+      },
+      isLensOverlayContextualSearchboxEnabled: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableOverlayContextualSearchbox'),
+        reflectToAttribute: true,
+        readOnly: true,
+      },
       theme: {
         type: Object,
         value: getFallbackTheme,
       },
+      darkMode: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('darkMode'),
+        reflectToAttribute: true,
+      },
+      toastMessage: String,
+      isSearchboxFocused: Boolean,
     };
   }
 
@@ -94,12 +122,28 @@ export class LensOverlayAppElement extends PolymerElement {
   private initialFlashAnimationHasEnded: boolean = false;
   // Whether the close button should be hidden.
   private closeButtonHidden: boolean = false;
+  // Whether the search box should be hidden.
+  private searchBoxHidden: boolean = false;
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
   // Whether more options menu should be shown.
   private moreOptionsMenuVisible: boolean = false;
+  // Whether the translate mode on the lens overlay has been activated. Updated
+  // in response to events dispatched from the translate button.
+  private isTranslateModeActive: boolean = false;
+  // Whether the text layer is highlighting text. Updated in response to events
+  // dispatched from the text layer.
+  private isTextLayerHighlightingText: boolean = false;
+  // Whether the user is pressing down on the selection overlay. Updated in
+  // response to events dispatched from the selection overlay.
+  private isPointerDown: boolean = false;
+  // Whether the button containers should be faded out.
+  private shouldFadeOutButtons: boolean = false;
   // The overlay theme.
   private theme: OverlayTheme;
+  private toastMessage: string = '';
+  // Whether the user is current focused into the searchbox.
+  private isSearchboxFocused: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -136,6 +180,20 @@ export class LensOverlayAppElement extends PolymerElement {
         document, 'set-cursor-tooltip', (e: CustomEvent<CursorTooltipData>) => {
           this.$.cursorTooltip.setTooltip(e.detail.tooltipType);
         });
+    this.eventTracker_.add(
+        document, 'translate-mode-state-changed', (e: CustomEvent) => {
+          this.isTranslateModeActive = e.detail.translateModeEnabled;
+        });
+    this.eventTracker_.add(
+        document, 'text-selection-state-changed', (e: CustomEvent) => {
+          this.isTextLayerHighlightingText = e.detail.highlightingText;
+        });
+    this.eventTracker_.add(document, 'text-copied', () => {
+      this.showToast(this.i18n('copyToastMessage'));
+    });
+    this.eventTracker_.add(document, 'copied-as-image', () => {
+      this.showToast(this.i18n('copyAsImageToastMessage'));
+    });
   }
 
   override disconnectedCallback() {
@@ -175,6 +233,14 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private handlePointerLeaveSelectionOverlay() {
     this.$.cursorTooltip.hideTooltip();
+  }
+
+  private handleSearchboxFocused() {
+    this.isSearchboxFocused = true;
+  }
+
+  private handleSearchboxBlurred() {
+    this.isSearchboxFocused = false;
   }
 
   private onBackgroundScrimClicked() {
@@ -239,13 +305,18 @@ export class LensOverlayAppElement extends PolymerElement {
     this.theme = theme;
   }
 
-  private handleSelectionOverlayClicked() {
+  // The user started making a selection on the selection overlay.
+  private handleSelectionStarted() {
     this.$.cursorTooltip.setPauseTooltipChanges(true);
+    this.isPointerDown = true;
+    this.searchBoxHidden = true;
   }
 
-  private handlePointerReleased() {
+  // The user finished making their selection on the selection overlay.
+  private handleSelectionFinished() {
     this.$.initialGradient.triggerHideScrimAnimation();
     this.$.cursorTooltip.setPauseTooltipChanges(false);
+    this.isPointerDown = false;
   }
 
   private onScreenshotRendered() {
@@ -257,21 +328,28 @@ export class LensOverlayAppElement extends PolymerElement {
     this.$.initialGradient.setScrimVisible();
   }
 
-  private async showTextCopiedToast() {
-    if (this.$.copyToast.open) {
+  private computeShouldFadeOutButtons(): boolean {
+    return !this.isTranslateModeActive &&
+        (this.isTextLayerHighlightingText || this.isPointerDown);
+  }
+
+  private async showToast(message: string) {
+    if (this.$.toast.open) {
       // If toast already open, wait after hiding so that animation is
       // smoother.
-      await this.$.copyToast.hide();
+      await this.$.toast.hide();
       setTimeout(() => {
-        this.$.copyToast.show();
+        this.toastMessage = message;
+        this.$.toast.show();
       }, 100);
     } else {
-      this.$.copyToast.show();
+      this.toastMessage = message;
+      this.$.toast.show();
     }
   }
 
   private onHideToastClick() {
-    this.$.copyToast.hide();
+    this.$.toast.hide();
   }
 
 

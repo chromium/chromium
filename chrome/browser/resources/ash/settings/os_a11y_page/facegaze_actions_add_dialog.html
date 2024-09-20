@@ -85,6 +85,19 @@
     justify-content: space-between;
   }
 
+  #customKeyboardLabel {
+    text-align: center;
+  }
+
+  #customKeyboardContainer {
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  #shortcutInputContainer {
+    margin: 20px;
+  }
+
   #sliderContainer {
     margin-top: 20px;
     display: flex;
@@ -144,6 +157,40 @@
           disabled="[[disableActionNextButton_]]">
         $i18n{next}
       </cr-button>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showCustomKeyboard_]]" on-dom-change="onShortcutInputDomChange" restamp>
+    <div slot="title">$i18n{faceGazeActionsDialogKeyCombinationTitle}</div>
+    <div slot="body">
+      <div id="customKeyboardContainer">
+        <div id="customKeyboardLabel">$i18n{faceGazeActionsDialogKeyCombinationLabel}</div>
+        <div id="shortcutInputContainer">
+          <shortcut-input id="shortcutInput"
+              shortcut-input-provider="[[getShortcutInputProvider()]]"
+              ignore-blur>
+          </shortcut-input>
+        </div>
+      </div>
+    </div>
+    <div slot="button-container" class="justify-space-between">
+      <div id="leftBtnGroup">
+        <cr-button
+            id="faceGazeCustomKeyboardPreviousButton"
+            class="button" on-click="onPreviousButtonClick_">
+          $i18n{faceGazePrevious}
+        </cr-button>
+      </div>
+      <div id="rightBtnGroup">
+        <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button id="faceGazeCustomKeyboardNextButton"
+            class="next-button" on-click="onNextButtonClick_"
+            disabled="[[disableCustomKeyboardNextButton_]]">
+          $i18n{next}
+        </cr-button>
+      </div>
     </div>
   </template>
 

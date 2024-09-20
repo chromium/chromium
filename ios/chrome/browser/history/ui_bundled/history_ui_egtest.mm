@@ -10,16 +10,17 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -34,10 +35,11 @@
 #import "net/test/embedded_test_server/http_response.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::ClearBrowsingDataView;
+using chrome_test_util::DeleteButton;
 using chrome_test_util::HistoryEntry;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::OpenLinkInNewWindowButton;
-using chrome_test_util::DeleteButton;
 using chrome_test_util::WindowWithNumber;
 
 namespace {
@@ -100,6 +102,21 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
+// Asserts if the expected `count` was recorded for
+// Privacy.DeleteBrowsingData.Action.HistoryPageEntries.
+void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:count
+                       forBucket:static_cast<int>(
+                                     browsing_data::DeleteBrowsingDataAction::
+                                         kHistoryPageEntries)
+                    forHistogram:@"Privacy.DeleteBrowsingData.Action"],
+                @"Privacy.DeleteBrowsingData.Action histogram for the "
+                @"HistoryPageEntries bucket "
+                @"page entries did not have count %d.",
+                count);
+}
+
 }  // namespace
 
 // History UI tests.
@@ -122,7 +139,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
-  config.features_disabled.push_back(kIOSQuickDelete);
+  config.features_enabled.push_back(kIOSQuickDelete);
   return config;
 }
 
@@ -140,9 +157,17 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Some tests rely on a clean state for the "Clear Browsing Data" settings
   // screen.
   [ChromeEarlGrey resetBrowsingDataPrefs];
+
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDown {
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+
   NSError* error = nil;
   // Dismiss search bar by pressing cancel, if present. Passing error prevents
   // failure if the element is not found.
@@ -429,6 +454,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests deletion of history entries.
 - (void)testDeleteHistory {
+  // Assert that the DeleteBrowsingData histogram is empty at the beginning of
+  // the test.
+  ExpectDeleteBrowsingDataHistoryHistogram(0);
+
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -498,6 +527,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                           _URL3)),
               _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
+  // Assert that the DeleteBrowsingData histogram contains one bucket after one
+  // deletion was requested.
+  ExpectDeleteBrowsingDataHistoryHistogram(1);
+
   // Enter edit mode, select both remaining entries, and press delete.
   [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
       performAction:grey_tap()];
@@ -521,6 +554,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   [ChromeEarlGreyUI assertHistoryHasNoEntries];
+
+  // Assert that the DeleteBrowsingData histogram contains two bucket after the
+  // second deletion was requested.
+  ExpectDeleteBrowsingDataHistoryHistogram(2);
 }
 
 // Tests clear browsing history.
@@ -546,21 +583,15 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   // Check that the TableView is presented.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Swipe TableView down.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that the TableView has been dismissed.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_nil()];
 }
 
@@ -674,6 +705,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests the Delete context menu action for a History entry.
 - (void)testContextMenuDelete {
+  // Assert that the DeleteBrowsingData histogram is empty at the beginning of
+  // the test.
+  ExpectDeleteBrowsingDataHistoryHistogram(0);
+
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -724,6 +759,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                       FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL3)),
               _URL3.GetContent())] assertWithMatcher:grey_notNil()];
+
+  // Assert that the DeleteBrowsingData histogram contains one bucket after one
+  // deletion was requested.
+  ExpectDeleteBrowsingDataHistoryHistogram(1);
 }
 
 // Tests that the VC can be dismissed by swiping down.

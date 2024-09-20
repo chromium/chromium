@@ -14,6 +14,7 @@
 <translation id="113122355610423240">Chromium демейки серепчи катары колдонулат</translation>
 <translation id="1131805035311359397">Сырсөздөрүңүздүн бекем корголгонун, ошондой эле коопсуздукка байланыштуу көйгөйлөрдү текшерүү үчүн <ph name="BEGIN_LINK" />Chromium'га кириңиз<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium менюсун чыкылдатыңыз</translation>
+<translation id="1157985233335035034">Жакында колдонулган тилдер</translation>
 <translation id="1184145431117212167">Орнотулган жок, анткени Windows версияңыз колдоого алынбайт.</translation>
 <translation id="1185134272377778587">Chromium жөнүндө</translation>
 <translation id="1188705220418984327">Терезени бөлүшүү үчүн Тутумдун параметрлеринен Chromium'га экрандан видео жаздырып алууга уруксат бериңиз.</translation>
@@ -25,6 +26,7 @@
 <translation id="1315551408014407711">Жаңы Chromium профилин жөндөп алыңыз</translation>
 <translation id="1324107359134968521">Chromium 
 Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайдаланууга уруксат алышы керек. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1330562121671411446">Тил тандоо</translation>
 <translation id="1342274909142618978">Chromium'дан да (<ph name="URL" />) дайындарды өчүрүү</translation>
 <translation id="1414495520565016063">Chromium'га кирдиңиз!</translation>
 <translation id="1478370723027452770">Chrome for Testing боюнча жардам алуу</translation>
@@ -55,6 +57,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="18552579716432081">Серептөө дайындарын ушул түзмөктөн өчүрүп, ал эми Google аккаунтуңузда сактап калуу үчүн <ph name="BEGIN_LINK" />Chromium'дан чыгыңыз<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Кирип турган Google аккаунттарыңызды башкара аласыз. Google аккаунттарыңыз Chromium серепчисинде, Play Store'до, Gmail'де жана башка жерлерде колдонулат. Эгер кимдир бирөөнүн, мисалы, үй-бүлөлүк топтун мүчөсүнүн аккаунтун кошкуңуз келсе, жаңы адамды <ph name="DEVICE_TYPE" /> түзмөгүнө кошуп коюңуз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Сайттар кызыккан нерселериңиз тууралуу маалыматты Chromium'да сакташы мүмкүн. Мисалы, марафон үчүн бут кийим сатып алуу үчүн сайтка баш баксаңыз, ал сайт "марафондо чуркоону" кызыккан нерсеңиз катары аныктайт. Кийинчерээк, жарышууга катталуу үчүн башка бир сайтка баш баксаңыз, ал сайт кызыккан нерселериңиздин негизинде чуркоо үчүн бут кийимдин жарнамасын көрсөтүшү мүмкүн.</translation>
+<translation id="1880677175115548835">Текстти тандоо</translation>
 <translation id="1881322772814446296">Башкарылган аккаунт менен кирип, анын администраторунун милдетин Chromium профилиңизге өткөрүп берип жатасыз. Chromium дайын-даректериңизди, колдонмолоруңузду, кыстармаларыңызды, таржымалыңызды, сырсөздөрүңүздү жана башка параметрлерди <ph name="USER_NAME" /> менен биротоло байланыштырат. Бул дайындарды Google Каттоо эсептеринин жеке кеңсеси аркылуу жок кылсаңыз болот, бирок бул дайындарды башка аккаунтка байлай албайсыз. <ph name="LEARN_MORE" /></translation>
 <translation id="1906696617298807388">Дарек тилкесине же издөө кутучасына жазганыңызда, Chromium сизге ылайыктуу нерселерди сунуштоо максатында сурамды Google Drive'га жөнөтөт. Бул параметр Жашыруун режимде өчүк болот.</translation>
 <translation id="1911763535808217981">Ушуну өчүрүү менен Gmail сыяктуу Google сайттарына Chromium'суз кире аласыз</translation>
@@ -80,6 +83,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2190166659037789668">Жаңыртууну текшерүү катасы: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Аккаунтту Chromium'дан өчүрүү</translation>
 <translation id="2210682093923538346">Кооптуу сайт. Chromium билдирмелерди өчүрдү.</translation>
+<translation id="2236949375853147973">Менин аракеттерим</translation>
 <translation id="2240214816234246077">Акыркы убакта кирген жоксуз. Chromium <ph name="PERMISSION_1" /> жана <ph name="PERMISSION_2" /> өчүрдү</translation>
 <translation id="2241627712206172106">Компьютерди бөлүшсөңүз, жакындарыңыз өзүнчө серептеп, Chromium'ду өзүлөрү каалагандай орнотуп алышат.</translation>
 <translation id="2313870531055795960">Chromium'дагы кооптуу сайттардын тизмесиндеги URL даректерин текшерет. Эгер сайт сырсөзүңүздү уурдоого аракет кылса же кооптуу файлды жүктөп алсаңыз, Chromium URL даректерди, анын ичинде барактардагы мазмунду Коопсуз серептөөгө жөнөтүшү мүмкүн.</translation>
@@ -111,11 +115,14 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2711502716910134313">Chromium өтмөгү</translation>
 <translation id="2718390899429598676">Кошумча коопсуздук үчүн, Chromium дайын-даректериңизди шифрлейт.</translation>
 <translation id="2721354645805494590">Google аккаунтуңузду Chromium'дан өчүрүү үчүн чыгыңыз</translation>
+<translation id="2727713483500953825">Lens менен издөө үчүн сүрөттү/текстти тандаңыз</translation>
 <translation id="2738871930057338499">Интернетке туташуу мүмкүн болбой жатат. HTTP 403 Тыюу салынган. Прокси конфигурациясын текшериңиз.</translation>
+<translation id="2753623023919742414">Издөө үчүн чыкылдатыңыз</translation>
 <translation id="2770231113462710648">Демейки серепчини төмөнкүгө өзгөртүү:</translation>
 <translation id="2785438272836277133">Бул кеңейтүүдө кесепеттүү программа бар ал жана кооптуу. Сиз кирген сайттардагы дайын-даректериңизди, анын ичинде жеке маалыматыңызды мындан ары көрүп жана өзгөртпөшү үчүн аны Chromium'дан алып салыңыз.</translation>
 <translation id="2799223571221894425">Кайра ишке киргизүү</translation>
 <translation id="2837693172913560447">Ушуну менен <ph name="USER_EMAIL_ADDRESS" /> үчүн жаңы Chromium профили түзүлөт</translation>
+<translation id="2841525013647267359">Төмөнкү тилден которуу</translation>
 <translation id="2846251086934905009">Орнотуу катасы: Орнотуу аягына чыккан жок. Орнотуу токтотулду.</translation>
 <translation id="2847479871509788944">Chromium'дан чыгарып салуу…</translation>
 <translation id="2850691299438350830">Аккаунтуңузга киргенде Chromium'да жана башка Google колдонмолорунда коопсуздугуңузду коргоп турат</translation>
@@ -138,8 +145,10 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3101560983689755071">Жарнамалар көрүлгөн вебсайттарга жана төмөндө болжолдонгон кызыккан нерселериңизге жараша көрсөтүлөт. Купуялыгыңызды коргоо максатында, Chromium кызыккан нерселериңизди ай сайын автоматтык түрдө жок кылат. Кызыккан нерселериңиз өчүрүлмөйүнчө жаңыртыла берет.</translation>
 <translation id="3103660991484857065">Орноткуч архивди чыгара албай койду. Chromium'ду кайра жүктөп алыңыз.</translation>
 <translation id="3130323860337406239">Chromium микрофонуңузду колдонууда.</translation>
+<translation id="3137969841538672700">Издөө үчүн сүйрөңүз</translation>
 <translation id="3144188012276422546">Бул өтмөк кошумча ресурстарды колдонуп жатат. Иштин майнаптуулугун жакшыртуу үчүн Chromium'га аны жигерсиз кылууга уруксат бериңиз.</translation>
 <translation id="3155163173539279776">Chromium'ду кайра ишке киргизүү</translation>
+<translation id="3161522574479303604">Бардык тилдер</translation>
 <translation id="3179665906251668410">Шилтемени Chromium'дун жашы&amp;руун терезесинде ачуу</translation>
 <translation id="3185330573522821672">Жаңы Chromium профилиңизди жекелештириңиз</translation>
 <translation id="3190315855212034486">Ой! Chromium кыйрады. Кайра ишке киргизилсинби?</translation>
@@ -148,6 +157,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 — Chromium'дун JavaScript жана WebAssembly каражаты. Ал сайттын ишин жакшыртуу үчүн колдонулат</translation>
+<translation id="3269209112443570745">Жаңы функция! Экрандагы нерсени оңой издөө</translation>
 <translation id="3283186697780795848"><ph name="PRODUCT_VERSION" /> Chromium версиясы орнотулду</translation>
 <translation id="3286538390144397061">Азыр өчүрүп күйгүзүү</translation>
 <translation id="328888136576916638">Google API ачкычтары жок болуп жатат. Chromium'дун айрым функциялары өчүрүлөт.</translation>
@@ -198,6 +208,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3975724895399328945">&amp;Google Chrome for Testing жөнүндө</translation>
 <translation id="3997429360543082038">ChromiumOS жөнүндө</translation>
 <translation id="4019629340646866719">ChromiumOS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
+<translation id="4022972681110646219">Экрандагы нерсени которуу</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Учурдагы жөндөөлөр<ph name="END_LINK" /> жөнүндө кабар берип, Chromium'ду өркүндөтүүгө кол кабыш кылыңыз</translation>
 <translation id="4050175100176540509">Эң акыркы версияда коопсуздукту бекемдөө каражаттары менен жаңы мүмкүнчүлүктөр камтылган.</translation>
 <translation id="4055805654398742145">С&amp;ырсөздөрдү башкаргыч</translation>
@@ -207,7 +218,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4148957013307229264">Орнотулууда…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Тармакка кирүү – Chromium</translation>
 <translation id="421369550622382712">Chromium үчүн укмуш колдонмолор, оюндар, кеңейтүүлөр жана темаларды таап алыңыз.</translation>
-<translation id="4216212958613226427">Chromium UI ушул тилде иштейт</translation>
 <translation id="4222932583846282852">Жокко чыгарылууда…</translation>
 <translation id="4224210481850767180">Орнотуу жокко чыгарылды.</translation>
 <translation id="4230135487732243613">Chromium дайын-даректериңиз бул аккаунтка байлансынбы?</translation>
@@ -227,6 +237,8 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4434353761996769206">Орнотуу катасы: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium'ду <ph name="MANAGER" /> тескейт</translation>
 <translation id="4447409407328223819">Chrome for Testing жөнүндө</translation>
+<translation id="4453144231461812959">Lens менен каалаган сүрөттү же текстти издеңиз</translation>
+<translation id="4470974262661801543">Chromium'дагы маалыматты колдонуп жана Google аккаунтуңузга сактоо үчүн сыр сүйлөмүңүздү киргизиңиз</translation>
 <translation id="4493028449971051158">Ишке киргизүү катасы: орноткучту администратор катары иштетиңиз.</translation>
 <translation id="4501471624619070934">Бул өлкөдөн кирүү мүмкүнчүлүгү чектелгендиктен, орнотулбай калды.</translation>
 <translation id="4510853178268397146">Бул кеңейтүү маалыматты кантип чогултуу жана колдонуу сыяктуу купуялыкты камсыз кылуу ыкмаларын жарыялаган эмес. Chromium аны өчүрүүнү сунуштайт.</translation>
@@ -259,6 +271,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4814736265800133385">Chromium'ду аккаунтсуз колдонуу</translation>
 <translation id="4888717733111232871">mDNS трафигине уруксат берүү үчүн Chromium'дун кирүү эрежеси.</translation>
 <translation id="4893347770495441059">&amp;Chromium'ду жаңыртуу үчүн кайра иштетиңиз</translation>
+<translation id="4918844574251943176">Сүрөт көчүрүлдү</translation>
 <translation id="4942295735032723435">Chromium жаңыртууларын алып туруу үчүн macOS 11 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде macOS 10.15 версиясы колдонулууда.</translation>
 <translation id="4943838377383847465">Chromium фондук режимде.</translation>
 <translation id="494490797786467921">Chromium'га кирүү диалогун жабуу үчүн басыңыз</translation>
@@ -269,8 +282,10 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="5187123684706427865">Chromium аккаунтунун аныктыгын кайрадан текшерүү керек</translation>
 <translation id="5224391634244552924">Сакталган сырсөздөр жок. Сырсөздөрүңүздү сактаганда Chromium аларды текшере алат.</translation>
 <translation id="5231355151045086930">Chromium'дан чыгуу</translation>
+<translation id="5234764350956374838">Этибарга албоо</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ушул Chromium профилине мурунтан эле кирип турат. Ушуну менен <ph name="USER_EMAIL_ADDRESS" /> үчүн жаңы Chromium профили түзүлөт</translation>
 <translation id="5277894862589591112">Өзгөртүүлөрдү киргизүү үчүн Chromium'ду кайра иштетиңиз</translation>
+<translation id="5286907366254680517">Аныкталды</translation>
 <translation id="5294316920224716406">Жашыруун режимде серептеп жатканда, Chromium сиз кооптуу туташуу аркылуу сайтты жүктөөдөн мурун эскертет</translation>
 <translation id="5296845517486664001">Сыноолор күйүк болгондо жана Chromium сизди башаламан иретте активдүү сыноого кошуп койгон болсо, Жарнамалар көрүлгөн вебсайттарга жана төмөндө болжолдонгон кызыккан нерселериңизге жараша көрсөтүлөт. Купуялыгыңызды коргоо максатында Chromium кызыккан нерселериңизди ай сайын өчүрүп турат.</translation>
 <translation id="5310474266708705970">Chromium'га <ph name="USER_EMAIL" /> катары кирүү</translation>
@@ -294,6 +309,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="5527463683072221100">PDF файлдарын Chromium'да ачуу</translation>
 <translation id="5575418445468216473">Сырсөздөрүңүз жана Chromium'дагы башка маалымат Google аккаунтуңузга сакталып, бул түзмөктөн өчүрүлөт. Аларды кийин колдонуу үчүн Chromium'га кайрадан кириңиз.</translation>
 <translation id="5579324208890605088">Ишке киргизүү катасы: орноткучту администратор катары эмес, кадимки колдонуучу катары иштетиңиз.</translation>
+<translation id="5596627076506792578">Дагы параметрлер</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium'дун жаңы версиясы жеткиликтүү}=1{Chromium'дун жаңы версиясы жеткиликтүү}other{Chromium'дун жаңы версиясы # күндөн бери жеткиликтүү}}</translation>
 <translation id="5643865575100044307">Chromium'ду жапкан сайын түзмөгүңүздөгү сайттардын маалыматын өчүрүү</translation>
 <translation id="5653831366781983928">Chromium'ду азыр өчүрүп күйгүзүңүз</translation>
@@ -321,6 +337,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6058380562449900225">Маалыматыңызды коргоо үчүн Chromium'га сиз жакында кирбеген сайттардан уруксаттарды алып салууга макулдугуңузду бериңиз. Билдирмелер өчүрүлбөйт.</translation>
 <translation id="6063093106622310249">&amp;Chromiumда ачуу</translation>
+<translation id="6069027071882229820">Сүрөт катары көчүрүү</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium'га кошулду</translation>
 <translation id="6072463441809498330">Chromium'ду ылдамдатуу</translation>
 <translation id="608006075545470555">Ушул серепчиге жумуш профилин кошуу</translation>
@@ -333,6 +350,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="6134968993075716475">Коопсуз серептөө өчүк. Chromium аны күйгүзүүнү сунуштайт.</translation>
 <translation id="6145820983052037069">Chromium профилдерин бул жерден которо аласыз</translation>
 <translation id="615103374448673771">Cookie файлдарына уруксат берсеңиз, Chromium аларды алдын ала жүктөө үчүн колдонушу мүмкүн</translation>
+<translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6174920971222007286">Бул файл кооптуу болушу мүмкүн<ph name="LINE_BREAK" />Эгер сырсөздү көрсөтсөңүз, Chromium бул жүктөлүп алынган файды текшере алат. Файл тууралуу маалымат Google Коопсуз серептөө кызматына жөнөтүлөт, бирок файлдын мазмуну жана сырсөз түзмөгүңүздө калат.</translation>
 <translation id="6182736845697986886">Орнотулган жок, анткени жаңыртуу серверинде ички ката кетти.</translation>
 <translation id="6183079672144801177">Chromium'га <ph name="TARGET_DEVICE_NAME" /> түзмөгүңүздөн кирип турганыңызды текшерип, кайра аракет кылыңыз.</translation>
@@ -377,6 +395,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="656935081669708576">Башка Chromium профилинен сырсөздөрдү көрүү үчүн которулсаңыз болот</translation>
 <translation id="6570579332384693436">Орфографиялык каталарды оңдоо максатында, Chromium сиз талааларда терген текстти Google'га жөнөтөт</translation>
 <translation id="6598877126913850652">Chromium'дун эскертмелеринин параметрлерине өтүү</translation>
+<translation id="6600016381025017075">Бул барактан каалаган нерсени издеңиз</translation>
 <translation id="6613594504749178791">Өзгөртүүлөрүңүз Chromium кийинки жолу кайра ишке киргизилгенде күчүнө кирет.</translation>
 <translation id="665732753414869868">Chromium'га айланаңыздын 3D картасын түзүү үчүн камераны колдонууга уруксат бериңиз</translation>
 <translation id="6663852025006259149">Сайттар ойдогудай иштеши мүмкүн, бирок Chromium'дун бардык терезелерин жапканыңыздан кийин алар сизди эстеп калбайт</translation>
@@ -395,13 +414,16 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="674245979920622322">Акыркы убакта кирген жоксуз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="COUNT" /> уруксатты өчүрдү</translation>
 <translation id="67706546131546258">Chromium бул файлды текшерүүнү сунуштайт. Ал кооптуу болушу мүмкүн.</translation>
 <translation id="6779406956731413166">ChromiumOS тутуму кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен, иштейт.</translation>
+<translation id="6831043979455480757">Которуу</translation>
 <translation id="6847869444787758381">Chromium сырсөздөрүңүздү башка бирөөлөр билип алса сизге кабарлайт</translation>
 <translation id="684888714667046800">Интернетке туташуу мүмкүн болбой жатат. Эгер тармактык коргоону колдонсоңуз, <ph name="PRODUCT_EXE_NAME" /> уруксат берилгендердин тизмесинде болушу керек.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium "<ph name="EXTENSION_NAME" />" кеңейтүүсүндө кесепеттүү программанын болгонун аныктады</translation>
+<translation id="6896758677409633944">Көчүрүү</translation>
 <translation id="6929417474050522668">Сыноолор күйүк болгондо, Жарнамаларды талдоо аркылуу сиз баш баккан сайттар Chromium'дан маалымат алып, жарнамаларынын майнаптуулугун талдай алышат. Жарнамаларды талдоо сайттарга мүмкүн болушунча аз маалымат өткөрүү менен башка сайттарга көз салууну чектейт.</translation>
 <translation id="6940431691900807093">Кийинчерээк сиз баш баккан сайттар Chromium'дан кызыккан нерселериңиз тууралуу маалымат алып, ылайыктуу жарнамаларды көрсөтө алат. Chromium 3 кызыккан нерсеңизди бөлүшө алат.</translation>
 <translation id="6964305034639999644">Шилтемени Chromium'дун жашы&amp;руун терезесинде ачуу</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Начар сырсөздөрдү билип алуу оңой. Chromium'га <ph name="BEGIN_LINK" />сиз үчүн татаал сырсөздөрдү түзүп, эстеп калууга<ph name="END_LINK" /> уруксат бериңиз.</translation>
 <translation id="6985329841647292029">ChromiumOS шарттары</translation>
 <translation id="6990124437352146030">Бул сайтта иштөө үчүн Chromium микрофонуңузду колдонушу керек</translation>
@@ -433,6 +455,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="7384121030444253939">Бул кеңейтүү колдоого алынбай калган. Chromium аны өчүрүүнү сунуштайт.</translation>
 <translation id="7398989605938454041">Chromium профилдери менен Chromium'дагы маалыматты өзүнчө сактай аласыз. Бул жумуш менен эс алууну бири-бири менен аралаштырбоого жардам берет.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Иштеп чыгуучулар үчүн</translation>
+<translation id="7450541714075000668">Текст көчүрүлдү</translation>
 <translation id="7451052299415159299">Бул сайтта иштөө үчүн Chromium камераңызды колдонушу керек</translation>
 <translation id="7458892263350425044">Микрофонду колдонуу үчүн Chromium'га <ph name="BEGIN_LINK" />системанын параметрлеринен<ph name="END_LINK" /> кирүүгө уруксат бериңиз</translation>
 <translation id="7461356015007898716">Chromium жаңыртууларын алып туруу үчүн Windows 10 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде Windows 7 версиясы колдонулууда.</translation>
@@ -447,6 +470,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="761356813943268536">Chromium сиздин камера менен микрофонуңузду пайдаланууда.</translation>
 <translation id="7617377681829253106">Chromium жаңы эле жакшыртылды</translation>
 <translation id="7649070708921625228">Жардам</translation>
+<translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7682213815243802460">Бул функциялар тууралуу кеңири маалымат алуу үчүн Chromium'дун параметрлерине өтүңүз.</translation>
 <translation id="7686590090926151193">Chromium сиздин демейки серепчиңиз эмес</translation>
 <translation id="7689606757190482937">Chromium'ду бардык түзмөктөрүңүздө шайкештирип, жекелештиресиз</translation>
@@ -467,11 +491,14 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="7937630085815544518">Chromium'га <ph name="USER_EMAIL_ADDRESS" /> катары кирдиңиз. Ушул аккаунт менен кайра кириңиз.</translation>
 <translation id="7975919845073681630">Бул Chromium'дун кошумча орнотулушу болгондуктан, аны демейки серепчиңиз катары тандай албайсыз.</translation>
 <translation id="7997934263947464652">Белгисиз булактардан алынган кеңейтүүлөр, колдонмолор жана темалар түзмөгүңүзгө зыян келтириши мүмкүн. Chromium аларды <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> сайтынан гана орнотууну сунуштайт</translation>
+<translation id="8010081455002666927">Авто аныктоо</translation>
 <translation id="8013436988911883588">Chromium'га уруксат берилгенден кийин вебсайттар уруксат сурай алышат.</translation>
 <translation id="80471789339884597">Орнотуп алганыңыз үчүн рахмат. <ph name="BUNDLE_NAME" /> топтомун колдонуп баштоодон мурда бардык серепчилерди өчүрүп күйгүзүңүз.</translation>
+<translation id="80790299200510644">Сүрөт издөө</translation>
 <translation id="8086881907087796310">Компьютериңиз аппараттык камсыздоого коюлган минималдуу талаптарга жооп бербегендиктер, орнотулбай калды.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium'га бул сайтта жайгашкан жерди колдонууга уруксат бериңиз</translation>
+<translation id="8118331347066725040">Lens менен издөө үчүн пикир билдирүү</translation>
 <translation id="8133124826068723441">Сиздин домениңизде шайкештештирүү мүмкүнчүлүгү жок болгондуктан, ChromiumOS дайын-даректериңизди шайкештештире алган жок.</translation>
 <translation id="813913629614996137">Баштапкы маанини берүүдө...</translation>
 <translation id="8166782796394721554">Chromium'дун JavaScript жана WebAssembly каражаттарында кошумча коргоону күйгүзүү</translation>
@@ -484,10 +511,12 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8286943863733751221">Кооптуу сайттар жана жүктөп алуулар жөнүндө <ph name="BEGIN_LINK" />Chromium эскертет<ph name="END_LINK" /></translation>
 <translation id="8313851650939857356">Ишке киргизүү катасы: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> колдонулбаса, уюмуңуз Chromium'ду жаап коёт.</translation>
+<translation id="8321888067342493336">Сүрөт катары сактоо</translation>
 <translation id="8330519371938183845">Chromium'ду бардык түзмөктөрүңүздө шайкештирип, жекелештирүү үчүн аккаунтуңузга кириңиз</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> мурда Chromium'ду пайдаланчу</translation>
 <translation id="8357820681460164151">Chromium серепчисиндеги файлдарды бардык түзмөктөрүңүздө колдонуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз</translation>
 <translation id="8360718212975266891">Chromium жаңыртууларын алып туруу үчүн Windows 10 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде Windows 8 версиясы колдонулууда.</translation>
+<translation id="8362914115861174987">Кайсы тилге:</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Баардык укуктар корголгон.</translation>
 <translation id="8372327902843331129">Бардык түзмөктөрүңүздө сырсөздөрдү жана башка нерселерди алуу үчүн Chromium'га кириңиз. Киргенден кийин бул сырсөз Google аккаунтуңузда сакталат.</translation>
 <translation id="837460953767177950">Андан кийин Chromium'ду өчүрүп күйгүзүшүңүз керек болот.</translation>
@@ -533,16 +562,19 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="9078733879136747090">Chromium автоматтык түрдө жабылды</translation>
 <translation id="9089354809943900324">Chromium эскирип калган.</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 1 сааттан кийин кайра иштетилет}other{Chromium # сааттан кийин кайра иштетилет}}</translation>
+<translation id="9106236359747881194">Издөө үчүн текстти тандаңыз</translation>
 <translation id="9106612006984859720">Chromium жаңыртууларын алып туруу үчүн Windows 10 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде Windows 8.1 версиясы колдонулууда.</translation>
 <translation id="91086099826398415">Шилтемени жаңы Chromium &amp;өтмөгүндө ачуу</translation>
 <translation id="911206726377975832">Серептөө дайын-даректериңизди өчүрөсүзбү?</translation>
 <translation id="9144490074902256427">Сыноо учурунда сайттар жарнамаларды көрсөтүү үчүн колдонгон темаларды көрүп, өчүрө аласыз. Chromium сизди кызыктырган темаларды акыркы көргөн вебсайттарыңыздын негизинде божомолдойт.</translation>
+<translation id="9148058034647219655">Чыгуу</translation>
 <translation id="9158494823179993217">Тутумуңуздун администратору Chromium'ду <ph name="TARGET_URL_HOSTNAME" /> шилтемесин кошумча серепчиде ачылгыдай кылып конфигурациялады.</translation>
 <translation id="9185526690718004400">&amp;Chromium'ду жаңыртуу үчүн кайра иштетиңиз</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Chromium'ду каалагандай ыңгайлаштырып алыңыз</translation>
 <translation id="93478295209880648">Chromium туура эмес иштеши мүмкүн, себеби ал Windows XP же Windows Vista'да мындан ары колдоого алынбайт.</translation>
 <translation id="942598560705308788">Chromium башкарган тастыктамалар</translation>
+<translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="965162752251293939">Chromium'ду ким колдонуп жатат?</translation>
 <translation id="967427899662692980">Chromium'дун эң күчтүү коопсуздук системасын орнотуп алыңыз</translation>
 <translation id="983803489796659991">Орнотулган жок, анткени жаңыртуу серверинде колдонмонун хеш маалыматы жок.</translation>

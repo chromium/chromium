@@ -54,6 +54,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Create new plus address suggested"/>
   <int value="2" label="Existing plus address suggestion chosen"/>
   <int value="3" label="Create new plus address suggestion chosen"/>
+  <int value="4"
+      label="Create new plus address inline suggested (Desktop only)"/>
+  <int value="5"
+      label="Create new plus address inline suggestion chosen (Desktop only)"/>
+  <int value="6"
+      label="Refresh plus address clicked in inline suggestion (Desktop only)"/>
+  <int value="7"
+      label="Inline loading state shown while reserving a plus address
+             (Desktop only)"/>
+  <int value="8"
+      label="Inline error state shown after failing to reserve a plus address
+             (Desktop only)"/>
 </enum>
 
 </enums>

@@ -4,7 +4,19 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CANCEL_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ERROR_STATE_INFO;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LOADING_INDICATOR_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.SHOW_ONBOARDING_NOTICE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
+
+import android.content.Context;
 
 import androidx.annotation.Nullable;
 
@@ -36,18 +48,18 @@ import org.chromium.url.GURL;
  */
 /*package*/ class PlusAddressCreationMediator extends EmptyBottomSheetObserver
         implements PlusAddressCreationDelegate, TabModelObserver, LayoutStateObserver {
-    private final PropertyModel mModel;
-    private final PlusAddressCreationBottomSheetContent mBottomSheetContent;
+    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final LayoutStateProvider mLayoutStateProvider;
     private final TabModelSelector mTabModelSelector;
     private final TabModel mTabModel;
     private final PlusAddressCreationViewBridge mBridge;
+    private PropertyModel mModel;
 
     /**
      * Creates the mediator.
      *
-     * @param bottomSheetContent The bottom sheet content to be shown.
+     * @param context Current application context.
      * @param bottomSheetController The controller to use for showing or hiding the content.
      * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
      *     to be hidden after a change of layout (e.g. to the tab switcher).
@@ -57,25 +69,26 @@ import org.chromium.url.GURL;
      * @param bridge The bridge to signal UI flow events (onConfirmed, onCanceled, etc.) to.
      */
     PlusAddressCreationMediator(
-            PropertyModel model,
-            PlusAddressCreationBottomSheetContent bottomSheetContent,
+            Context context,
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
             TabModelSelector tabModelSelector,
             PlusAddressCreationViewBridge bridge) {
-        mModel = model;
-        mBottomSheetContent = bottomSheetContent;
+        mContext = context;
         mBottomSheetController = bottomSheetController;
         mLayoutStateProvider = layoutStateProvider;
         mTabModel = tabModel;
         mTabModelSelector = tabModelSelector;
         mBridge = bridge;
 
-        mBottomSheetContent.setDelegate(this);
         mBottomSheetController.addObserver(this);
         mLayoutStateProvider.addObserver(this);
         mTabModel.addObserver(this);
+    }
+
+    void setModel(PropertyModel model) {
+        mModel = model;
     }
 
     /** Requests to show the bottom sheet content. */
@@ -84,15 +97,27 @@ import org.chromium.url.GURL;
     }
 
     void updateProposedPlusAddress(String plusAddress) {
-        mBottomSheetContent.setProposedPlusAddress(plusAddress);
+        mModel.set(PROPOSED_PLUS_ADDRESS, plusAddress);
+        mModel.set(REFRESH_ICON_ENABLED, true);
+        mModel.set(CONFIRM_BUTTON_ENABLED, true);
     }
 
     void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
-        mBottomSheetContent.showError(errorStateInfo);
+        if (errorStateInfo == null) {
+            mModel.set(CONFIRM_BUTTON_ENABLED, false);
+            mModel.set(CONFIRM_BUTTON_VISIBLE, true);
+            if (mModel.get(SHOW_ONBOARDING_NOTICE)) {
+                mModel.set(CANCEL_BUTTON_VISIBLE, true);
+            }
+            mModel.set(LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE, true);
+            mModel.set(LOADING_INDICATOR_VISIBLE, false);
+            return;
+        }
+        mModel.set(ERROR_STATE_INFO, errorStateInfo);
     }
 
     void hideRefreshButton() {
-        mBottomSheetContent.hideRefreshButton();
+        mModel.set(REFRESH_ICON_VISIBLE, false);
     }
 
     /** Hide the bottom sheet (if showing) and clean up observers. */
@@ -106,16 +131,39 @@ import org.chromium.url.GURL;
     // PlusAddressCreationDelegate implementation:
     @Override
     public void onRefreshClicked() {
+        mModel.set(
+                PROPOSED_PLUS_ADDRESS,
+                mContext.getString(
+                        R.string.plus_address_model_refresh_temporary_label_content_android));
+        mModel.set(REFRESH_ICON_ENABLED, false);
+        mModel.set(CONFIRM_BUTTON_ENABLED, false);
         mBridge.onRefreshClicked();
     }
 
     @Override
     public void onConfirmRequested() {
+        mModel.set(REFRESH_ICON_ENABLED, false);
+        mModel.set(CONFIRM_BUTTON_ENABLED, false);
+        mModel.set(CONFIRM_BUTTON_VISIBLE, false);
+        mModel.set(CANCEL_BUTTON_VISIBLE, false);
+        mModel.set(LOADING_INDICATOR_VISIBLE, true);
         mBridge.onConfirmRequested();
     }
 
     @Override
+    public void onTryAgain() {
+        boolean wasPlusAddressReserved = mModel.get(ERROR_STATE_INFO).wasPlusAddressReserved();
+        mModel.set(ERROR_STATE_INFO, null);
+        if (wasPlusAddressReserved) {
+            onConfirmRequested();
+        } else {
+            mBridge.tryAgainToReservePlusAddress();
+        }
+    }
+
+    @Override
     public void onCanceled() {
+        mModel.set(VISIBLE, false);
         mBridge.onCanceled();
     }
 

@@ -6,7 +6,7 @@ import functools
 import platform
 import subprocess
 
-from pkg_resources import packaging
+import packaging
 
 
 def check_chrome_version(downloaded_chrome: str) -> packaging.version.Version:

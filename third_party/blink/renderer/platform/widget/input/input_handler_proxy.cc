@@ -46,7 +46,6 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/latency/latency_info.h"
 
-using perfetto::protos::pbzero::ChromeLatencyInfo;
 using perfetto::protos::pbzero::TrackEvent;
 
 using ScrollThread = cc::InputHandler::ScrollThread;
@@ -276,10 +275,12 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
   int64_t trace_id = event->latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [trace_id](perfetto::EventContext ctx) {
-                ChromeLatencyInfo* info =
-                    ctx.event()->set_chrome_latency_info();
+                auto* info =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                        ->set_chrome_latency_info();
                 info->set_trace_id(trace_id);
-                info->set_step(ChromeLatencyInfo::STEP_HANDLE_INPUT_EVENT_IMPL);
+                info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::
+                                   Step::STEP_HANDLE_INPUT_EVENT_IMPL);
                 tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
                                        trace_id);
               });
@@ -570,10 +571,12 @@ void InputHandlerProxy::GenerateAndDispatchSytheticScrollPrediction(
   int64_t trace_id = event_with_callback->latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [trace_id](perfetto::EventContext ctx) {
-                ChromeLatencyInfo* info =
-                    ctx.event()->set_chrome_latency_info();
+                auto* info =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                        ->set_chrome_latency_info();
                 info->set_trace_id(trace_id);
-                info->set_step(ChromeLatencyInfo::STEP_HANDLE_INPUT_EVENT_IMPL);
+                info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::
+                                   Step::STEP_HANDLE_INPUT_EVENT_IMPL);
                 tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
                                        trace_id);
               });

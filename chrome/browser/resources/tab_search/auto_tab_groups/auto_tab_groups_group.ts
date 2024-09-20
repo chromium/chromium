@@ -55,6 +55,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
       lastFocusedIndex_: {type: Number},
       showInput_: {type: Boolean},
       tabDatas_: {type: Array},
+      changedName_: {type: Boolean},
     };
   }
 
@@ -68,6 +69,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
   private lastFocusedIndex_: number = 0;
   protected showInput_: boolean = false;
   protected tabDatas_: TabData[] = [];
+  private changedName_: boolean = false;
 
   static override get styles() {
     return getCss();
@@ -157,8 +159,18 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
   }
 
   protected onInputBlur_() {
-    if (this.multiTabOrganization) {
+    if (this.multiTabOrganization && !!this.getInput_()) {
       this.showInput_ = false;
+    }
+    this.maybeRenameGroup_();
+  }
+
+  protected maybeRenameGroup_() {
+    if (this.changedName_) {
+      this.fire(
+          'name-change',
+          {organizationId: this.organizationId, name: this.name});
+      this.changedName_ = false;
     }
   }
 
@@ -260,14 +272,16 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
       composed: true,
       detail: {
         organizationId: this.organizationId,
-        name: this.name,
         tabs: this.tabs,
       },
     }));
   }
 
   protected onNameChanged_(e: CustomEvent<{value: string}>) {
-    this.name = e.detail.value;
+    if (this.name !== e.detail.value) {
+      this.name = e.detail.value;
+      this.changedName_ = true;
+    }
   }
 }
 

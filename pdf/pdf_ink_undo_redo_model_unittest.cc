@@ -329,8 +329,14 @@ TEST(PdfInkUndoRedoModelTest, DrawDrawUndoEraseUndo) {
               ElementsAreArray({5}));
 }
 
-// TODO(crbug.com/335521182): Figure out why this times out on bots and enable.
-TEST(PdfInkUndoRedoModelTest, DISABLED_Stress) {
+// TODO(crbug.com/335521182): Re-enable the test for debug builds with a smaller
+// `kCycles` count.
+#if defined(NDEBUG)
+#define MAYBE_Stress Stress
+#else
+#define MAYBE_Stress DISABLED_Stress
+#endif
+TEST(PdfInkUndoRedoModelTest, MAYBE_Stress) {
   constexpr size_t kCycles = 10000;
   PdfInkUndoRedoModel undo_redo;
   size_t id = 0;
@@ -340,7 +346,6 @@ TEST(PdfInkUndoRedoModelTest, DISABLED_Stress) {
   }
 
   ASSERT_EQ(2 * kCycles, id);
-  ASSERT_TRUE(undo_redo.StartErase());
   for (size_t i = 0; i < kCycles; ++i) {
     std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
     ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));

@@ -13,6 +13,7 @@ include_rules = [
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/ukm",
   "+components/url_pattern_index/proto",
+  "+components/site_engagement/content",
   "+content/public/browser",
   "+content/public/common",
   "+content/public/renderer",

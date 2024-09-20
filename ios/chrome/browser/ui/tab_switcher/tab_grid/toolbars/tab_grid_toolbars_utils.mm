@@ -8,6 +8,14 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
+UIView* CreateTabGridScrolledToEdgeBackground() {
+  UIView* scrolledToEdgeBackground = [[UIView alloc] init];
+  scrolledToEdgeBackground.backgroundColor =
+      [UIColor colorNamed:kGridBackgroundColor];
+
+  return scrolledToEdgeBackground;
+}
+
 UIView* CreateTabGridOverContentBackground() {
   UIBlurEffect* effect = [UIBlurEffect
       effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialLight];

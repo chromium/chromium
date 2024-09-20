@@ -286,6 +286,28 @@ public class PdfUtils {
         }
     }
 
+    static void recordPdfLoad() {
+        RecordHistogram.recordBooleanHistogram("Android.Pdf.DocumentLoad", true);
+    }
+
+    static void recordPdfLoadResult(boolean isLoadSuccess) {
+        RecordHistogram.recordBooleanHistogram("Android.Pdf.DocumentLoadResult", isLoadSuccess);
+    }
+
+    static void recordPdfLoadTime(long duration) {
+        RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime", duration);
+    }
+
+    static void recordFindInPage(int findInPageCounts) {
+        RecordHistogram.recordExactLinearHistogram(
+                "Android.Pdf.FindInPageCounts", findInPageCounts, /* max= */ 9);
+    }
+
+    static void recordHasFilepathWithoutFragmentOnDestroy(boolean hasFilepath) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Pdf.HasFilepathWithoutFragmentOnDestroy", hasFilepath);
+    }
+
     private static void recordIsPdfDownloadUrlEncoded(boolean encodeResult) {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlEncoded", encodeResult);
     }

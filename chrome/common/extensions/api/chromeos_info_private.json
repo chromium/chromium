@@ -7,7 +7,7 @@
     "namespace": "chromeosInfoPrivate",
     "description": "none",
     "compiler_options": {
-      "implemented_in": "chrome/browser/chromeos/extensions/info_private_api.h"
+      "implemented_in": "chrome/browser/chromeos/extensions/info_private/info_private_api.h"
     },
     "types": [
       {

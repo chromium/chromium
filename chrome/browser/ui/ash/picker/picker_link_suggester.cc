@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/ash/picker/picker_link_suggester.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/barrier_callback.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +22,24 @@
 namespace {
 
 constexpr int kRecentDayRange = 7;
+
+// Returns true if the given link is likely to be personalized to the user,
+// which makes it unlikely that the URL works as intended when shared.
+bool IsLinkLikelyPersonalized(const GURL& url) {
+  // TODO: b/366237507 - Add more domains.
+  static constexpr std::pair<std::string_view, std::string_view> kBlocklist[] =
+      {
+          {"mail.google.com", "/chat/"},
+          {"mail.google.com", "/mail/"},
+      };
+
+  for (const auto& [domain, path_prefix] : kBlocklist) {
+    if (url.DomainIs(domain) && base::StartsWith(url.path(), path_prefix)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 }  // namespace
 
@@ -48,10 +68,15 @@ void PickerLinkSuggester::GetSuggestedLinks(size_t max_links,
 void PickerLinkSuggester::OnGetBrowsingHistory(SuggestedLinksCallback callback,
                                                history::QueryResults results) {
   std::vector<history::URLResult> filtered_results;
-  base::ranges::copy_if(results, std::back_inserter(filtered_results),
-                        [](const history::URLResult result) {
-                          return result.url().SchemeIsHTTPOrHTTPS();
-                        });
+  base::ranges::copy_if(
+      results, std::back_inserter(filtered_results),
+      [](const history::URLResult result) {
+        if (base::FeatureList::IsEnabled(ash::features::kPickerFilterLinks) &&
+            IsLinkLikelyPersonalized(result.url())) {
+          return false;
+        }
+        return result.url().SchemeIsHTTPOrHTTPS();
+      });
 
   if (favicon_service_) {
     favicon_query_trackers_ =

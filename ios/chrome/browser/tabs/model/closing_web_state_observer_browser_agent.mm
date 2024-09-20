@@ -27,7 +27,7 @@ BROWSER_USER_DATA_KEY_IMPL(ClosingWebStateObserverBrowserAgent)
 ClosingWebStateObserverBrowserAgent::ClosingWebStateObserverBrowserAgent(
     Browser* browser)
     : browser_(browser) {
-  DCHECK(!browser_->GetBrowserState()->IsOffTheRecord());
+  DCHECK(!browser_->GetProfile()->IsOffTheRecord());
   browser_->AddObserver(this);
   browser_->GetWebStateList()->AddObserver(this);
 }
@@ -53,8 +53,8 @@ void ClosingWebStateObserverBrowserAgent::RecordHistoryForWebStateAtIndex(
   // the data from storage (it should exists otherwise the WebState could not
   // transition to the realized state).
   if (!web_state->IsRealized()) {
-    ChromeBrowserState* browser_state = browser_->GetBrowserState();
-    SessionRestorationServiceFactory::GetForBrowserState(browser_state)
+    ProfileIOS* profile = browser_->GetProfile();
+    SessionRestorationServiceFactory::GetForProfile(profile)
         ->LoadWebStateStorage(
             browser_, web_state,
             base::BindOnce(
@@ -63,8 +63,7 @@ void ClosingWebStateObserverBrowserAgent::RecordHistoryForWebStateAtIndex(
     return;
   }
 
-  IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-      browser_->GetBrowserState())
+  IOSChromeTabRestoreServiceFactory::GetForProfile(browser_->GetProfile())
       ->CreateHistoricalTab(
           sessions::IOSWebStateLiveTab::GetForWebState(web_state), index);
 }
@@ -74,8 +73,7 @@ void ClosingWebStateObserverBrowserAgent::RecordHistoryFromStorage(
     web::proto::WebStateStorage storage) {
   DCHECK(browser_);
   sessions::RestoreIOSLiveTab live_tab(storage.navigation());
-  IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-      browser_->GetBrowserState())
+  IOSChromeTabRestoreServiceFactory::GetForProfile(browser_->GetProfile())
       ->CreateHistoricalTab(&live_tab, index);
 }
 
@@ -102,9 +100,11 @@ void ClosingWebStateObserverBrowserAgent::WebStateListWillChange(
   }
 
   web::WebState* detached_web_state = detach_change.detached_web_state();
-  RecordHistoryForWebStateAtIndex(detached_web_state,
-                                  detach_change.detached_from_index());
-  if (detach_change.is_user_action()) {
+  if (!detach_change.is_tabs_cleanup()) {
+    RecordHistoryForWebStateAtIndex(detached_web_state,
+                                    detach_change.detached_from_index());
+  }
+  if (detach_change.is_user_action() || detach_change.is_tabs_cleanup()) {
     SnapshotTabHelper::FromWebState(detached_web_state)->RemoveSnapshot();
   }
 }

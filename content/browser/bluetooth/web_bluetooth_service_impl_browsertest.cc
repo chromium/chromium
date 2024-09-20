@@ -208,6 +208,7 @@ class TestBluetoothDelegate : public BluetoothDelegate {
                                 const device::BluetoothUUID& service) override {
     return false;
   }
+  bool MayUseBluetooth(RenderFrameHost* rfh) override { return true; }
   bool IsAllowedToAccessAtLeastOneService(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) override {

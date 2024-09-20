@@ -58,7 +58,11 @@ if (is_android) {
   import("//third_party/icu/config.gni")
 }
 
-if (is_chromeos_ash) {
+# b/365489014: CrOS' chrome.sections_embedded target breaks on component builds;
+# there's no clear value of supporting it there, so disable it.
+_cros_generate_embed_section_target = is_chromeos_ash && !is_component_build
+
+if (_cros_generate_embed_section_target) {
   import("//build/chromeos/embed_sections.gni")
 }
 
@@ -487,8 +491,7 @@ if (is_win) {
   chrome_framework_name = chrome_product_full_name + " Framework"
   chrome_framework_version = chrome_version_full
 
-  verify_dynamic_libraries = !is_component_build && !is_asan && !is_ubsan &&
-                             !is_ubsan_vptr && !is_ubsan_security
+  verify_dynamic_libraries = !is_component_build && !is_asan && !is_ubsan_any
   if (host_os == "mac") {
     objdump_path = mac_bin_path
   } else {
@@ -1485,8 +1488,8 @@ group("dependencies") {
   if (is_chromeos_ash) {
     public_deps += [
       "//ash/constants",
-      "//chrome/browser/ash",
       "//chrome/browser/ash/boot_times_recorder",
+      "//chrome/browser/ash/dbus",
       "//chrome/browser/ash/schedqos",
       "//chromeos",
       "//chromeos/ash/components/memory",
@@ -1859,7 +1862,7 @@ if (is_linux || is_chromeos) {
   }
 }
 
-if (is_chromeos_ash) {
+if (_cros_generate_embed_section_target) {
   embed_sections("section_embedded_chrome_binary") {
     binary_input = "$root_out_dir/chrome"
     sections_embedded_binary_output = "$root_out_dir/chrome.sections_embedded"

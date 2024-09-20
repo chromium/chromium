@@ -1,0 +1,115 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  /* Light mode is the default, media queries handle dark mode switching. */
+  --foreground-color-light-mode: #444746;
+  --foreground-color-dark-mode: #C4C7C5;
+  --foreground-color: var(--foreground-color-light-mode);
+  --background-color-light-mode: #E1E3E1;
+  --background-color-dark-mode: #444746;
+  --background-color: var(--background-color-light-mode);
+  --icon-size-large: 48px;
+  --icon-size-small: 24px;
+  --link-text-color-light-mode: #0B57D0;
+  --link-text-color-dark-mode: #7CACF8;
+  --link-text-color: var(--link-text-color-light-mode);
+
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+}
+
+#wrapper {
+  width: 100vw;
+  height: 100vh;
+  padding: 16px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+}
+
+#content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  fill: var(--foreground-color);
+}
+
+#icon-large {
+  display: block;
+  width: var(--icon-size-large);
+  height: var(--icon-size-large);
+}
+
+#icon-small {
+  display: none;
+  width: var(--icon-size-small);
+  height: var(--icon-size-small);
+}
+
+#message {
+  font: 14px/20px Google Sans, Roboto, Arial, sans-serif;
+  text-align: center;
+  color: var(--foreground-color);
+}
+
+#learn-more-link {
+  font: 14px/20px Google Sans, Roboto, Arial, sans-serif;
+  text-align: center;
+  color: var(--link-text-color);
+}
+/* Media queries for resizing */
+/* Note: while same as for Safe Browsing Quiet Interstitial */
+/* ems are converted to px so that the same unit measure */
+/* is used for everything */
+/* Default size has large icon and visible text set up */
+
+/* Medium size, small icon, no text */
+@media (max-width: 280px) and (max-height: 168px),
+(max-width: 168px) and (max-height: 280px),
+(max-width: 75px),
+(max-height: 75px) {
+  #icon-large {
+    display: none;
+  }
+
+  #icon-small {
+    display: block;
+  }
+
+  #message {
+    display: none;
+  }
+
+  #learn-more-link {
+    display: none;
+  }
+
+  #wrapper {
+    padding: 0;
+  }
+}
+
+/* Smallest size, no icon, no text */
+@media (max-width: 30px),
+(max-height: 30px) {
+
+  #icon-large,
+  #icon-small {
+    display: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --foreground-color: var(--foreground-color-dark-mode);
+    --background-color: var(--background-color-dark-mode);
+    --link-text-color: var(--link-text-color-dark-mode);
+  }
+}

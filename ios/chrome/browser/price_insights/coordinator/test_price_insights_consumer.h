@@ -20,11 +20,13 @@
 
 // Indicates whether the mediator unsuccessfully tracked the product url and
 // presents an error alert.
-@property(nonatomic, assign) BOOL didPresentStartPriceTrackingErrorAlertForItem;
+@property(nonatomic, assign)
+    BOOL didPresentStartPriceTrackingErrorSnackbarForItem;
 
 // Indicates whether the mediator unsuccessfully untracked the product url and
 // presents an error alert.
-@property(nonatomic, assign) BOOL didPresentStopPriceTrackingErrorAlertForItem;
+@property(nonatomic, assign)
+    BOOL didPresentStopPriceTrackingErrorSnackbarForItem;
 
 // Indicates whether the mediator successfully showed the notification prompt.
 @property(nonatomic, assign)

@@ -9,13 +9,16 @@ import UIKit
 // A provider to provide the SwiftUI PriceHistory to Objective C. This is
 // necessary because Objective C can't see SwiftUI types.
 @objcMembers class PriceHistoryProvider: NSObject {
-  public static func makeViewController(withHistory history: [Date: NSNumber], currency: String)
+  public static func makeViewController(
+    withHistory history: [Date: NSNumber], currency: String, graphAccessibilityLabel: String
+  )
     -> UIViewController
   {
     return UIHostingController(
       rootView: HistoryGraph(
         history: history,
-        currency: currency
+        currency: currency,
+        graphAccessibilityLabel: graphAccessibilityLabel
       ))
   }
 }

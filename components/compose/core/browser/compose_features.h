@@ -65,9 +65,6 @@ BASE_DECLARE_FEATURE(kComposeTextSelection);
 // Enables client-side timeout of a Compose request.
 BASE_DECLARE_FEATURE(kComposeRequestLatencyTimeout);
 
-// Enables enhanced compose dialog UI.
-BASE_DECLARE_FEATURE(kComposeUiRefinement);
-
 // Default nudge allow/deny decision for unspecified hint.
 BASE_DECLARE_FEATURE(kEnableNudgeForUnspecifiedHint);
 
@@ -82,6 +79,9 @@ BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeClose);
 
 // Enables or disables the Happiness Tracking System for nudge dismissal.
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose);
+
+// Enables on-device execution, if available.
+BASE_DECLARE_FEATURE(kComposeAllowOnDeviceExecution);
 
 }  // namespace compose::features
 

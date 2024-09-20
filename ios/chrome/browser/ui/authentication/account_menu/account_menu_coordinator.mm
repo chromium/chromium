@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -39,9 +40,9 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
@@ -52,8 +53,6 @@
 
 @interface AccountMenuCoordinator () <
     AccountMenuMediatorDelegate,
-    AccountMenuViewControllerPresentationDelegate,
-    SignoutActionSheetCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
 
@@ -83,6 +82,9 @@
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
   ChromeAccountManagerService* _accountManagerService;
+
+  // Block the UI when the identity removal or switch is in progress.
+  std::unique_ptr<ScopedUIBlocker> _UIBlocker;
 }
 
 - (void)dealloc {
@@ -104,8 +106,7 @@
                                            ApplicationCommands);
 
   _viewController = [[AccountMenuViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
-  _viewController.delegate = self;
+      initWithStyle:UITableViewStyleInsetGrouped];
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -156,7 +157,6 @@
   _navigationController.delegate = nil;
   _navigationController = nil;
   _viewController.dataSource = nil;
-  _viewController.delegate = nil;
   _viewController.mutator = nil;
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
@@ -175,13 +175,15 @@
   [super stop];
 }
 
-#pragma mark - AccountMenuViewControllerPresentationDelegate
+#pragma mark - UIAdaptivePresentationControllerDelegate
 
-- (void)viewControllerWantsToBeClosed:
-    (AccountMenuViewController*)viewController {
-  CHECK_EQ(_viewController, viewController);
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
   [self.delegate acountMenuCoordinatorShouldStop:self];
+  _navigationController = nil;
 }
+
+#pragma mark - AccountMenuMediatorDelegate
 
 - (void)didTapManageYourGoogleAccount {
   __weak __typeof(self) weakSelf = self;
@@ -211,10 +213,6 @@
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
                      callback:(void (^)(BOOL))callback {
-  if (_mediator.signOutFlowInProgress ||
-      _mediator.addAccountOperationInProgress) {
-    return;
-  }
   if (!_authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     // This could happen in very rare cases, if the account somehow got removed
@@ -228,7 +226,6 @@
                             view:_viewController.view
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutInAccountMenu];
-  _signoutActionSheetCoordinator.delegate = self;
   __weak __typeof(self) weakSelf = self;
   _signoutActionSheetCoordinator.completion = ^(BOOL success) {
     [weakSelf stopSignoutActionSheetCoordinator];
@@ -242,20 +239,7 @@
   [_signoutActionSheetCoordinator start];
 }
 
-- (void)didTapAddAccount {
-  if (_mediator.signOutFlowInProgress ||
-      _mediator.addAccountOperationInProgress) {
-    return;
-  }
-  _mediator.addAccountOperationInProgress = YES;
-  __weak __typeof(self) weakSelf = self;
-  ShowSigninCommandCompletionCallback callback =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
-        __typeof(self) strongSelf = weakSelf;
-        if (strongSelf) {
-          strongSelf->_mediator.addAccountOperationInProgress = NO;
-        }
-      };
+- (void)didTapAddAccount:(ShowSigninCommandCompletionCallback)callback {
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kAddAccount
                identity:nil
@@ -267,93 +251,38 @@
                baseViewController:_navigationController];
 }
 
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  [self.delegate acountMenuCoordinatorShouldStop:self];
-  _navigationController = nil;
-}
-
-#pragma mark - SignoutActionSheetCoordinatorDelegate
-
-- (void)signoutActionSheetCoordinatorPreventUserInteraction:
-    (SignoutActionSheetCoordinator*)coordinator {
-  _mediator.signOutFlowInProgress = YES;
-}
-
-- (void)signoutActionSheetCoordinatorAllowUserInteraction:
-    (SignoutActionSheetCoordinator*)coordinator {
-  _mediator.signOutFlowInProgress = NO;
-}
-
-#pragma mark - AccountMenuMediatorDelegate
-
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator {
   CHECK_EQ(mediator, _mediator);
   [self.delegate acountMenuCoordinatorShouldStop:self];
 }
 
-- (void)triggerSignoutWithTargetRect:(CGRect)targetRect
-                          completion:(void (^)(BOOL success))completion {
-  CHECK(!_mediator.signOutFlowInProgress &&
-        !_mediator.addAccountOperationInProgress);
+- (void)triggerAccountSwitchWithTargetRect:(CGRect)targetRect
+                               newIdentity:(id<SystemIdentity>)newIdentity
+           viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
+                          signInCompletion:(ShowSigninCommandCompletionCallback)
+                                               signInCompletion {
   CHECK(
       _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin),
       base::NotFatalUntil::M130)
       << "There must be a signed-in account to view the menu and be able to "
          "switch accounts.";
 
-  _signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
-      initWithBaseViewController:_navigationController
-                         browser:self.browser
-                            rect:targetRect
-                            view:_viewController.view
-                      withSource:signin_metrics::ProfileSignout::
-                                     kChangeAccountInAccountMenu];
-  _signoutActionSheetCoordinator.delegate = self;
-  _signoutActionSheetCoordinator.accountSwitch = YES;
-
-  __weak __typeof(self) weakSelf = self;
-  _signoutActionSheetCoordinator.completion = ^(BOOL signoutSuccess) {
-    [weakSelf stopSignoutActionSheetCoordinator];
-    completion(signoutSuccess);
-  };
-  [_signoutActionSheetCoordinator start];
+  [_applicationHandler
+      switchAccountWithBaseViewController:_navigationController
+                              newIdentity:newIdentity
+                                     rect:targetRect
+                           rectAnchorView:_viewController.view
+          viewWillBeDismissedAfterSignout:viewWillBeDismissedAfterSignout
+                         signInCompletion:signInCompletion];
 }
 
-- (void)triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
-                             completion:
-                                 (void (^)(id<SystemIdentity> systemIdentity))
-                                     completion {
-  AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
-               initWithBrowser:self.browser
-                      identity:identity
-                   accessPoint:signin_metrics::AccessPoint::
-                                   ACCESS_POINT_ACCOUNT_MENU
-             postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
-      presentingViewController:_navigationController];
-
-  [authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    completion(identity);
-  }];
+- (void)blockScene {
+  SceneState* sceneState = self.browser->GetSceneState();
+  _UIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
 }
 
-- (void)triggerAccountSwitchSnackbarWithIdentity:
-    (id<SystemIdentity>)systemIdentity {
-  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-      systemIdentity, IdentityAvatarSize::Regular);
-  ManagementState managementState = GetManagementState(
-      _identityManager, _authenticationService, _prefService);
-  MDCSnackbarMessage* snackbarTitle = [[IdentitySnackbarMessage alloc]
-      initWithName:systemIdentity.userGivenName
-             email:systemIdentity.userEmail
-            avatar:avatar
-           managed:managementState.is_profile_managed()];
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbarCommandsHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
+- (void)unblockScene {
+  _UIBlocker.reset();
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler

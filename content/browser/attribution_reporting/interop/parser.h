@@ -99,10 +99,6 @@ struct AttributionInteropConfig {
   AttributionConfig attribution_config;
   double max_event_level_epsilon = 0;
   uint32_t max_trigger_state_cardinality = 0;
-  double max_navigation_info_gain = 0;
-  double max_event_info_gain = 0;
-  double max_scopes_navigation_info_gain = 0;
-  double max_scopes_event_info_gain = 0;
   bool needs_cross_app_web = false;
   bool needs_aggregatable_debug = false;
   bool needs_source_destination_limit = false;

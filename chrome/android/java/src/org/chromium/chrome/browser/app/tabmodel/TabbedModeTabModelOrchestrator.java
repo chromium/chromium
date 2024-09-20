@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -37,6 +38,7 @@ import org.chromium.ui.widget.Toast;
 public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private final boolean mTabMergingEnabled;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final CipherFactory mCipherFactory;
 
     // This class is driven by TabbedModeTabModelOrchestrator to prevent duplicate glue code in
     //  ChromeTabbedActivity.
@@ -50,11 +52,15 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      * @param tabMergingEnabled Whether we are on the platform where tab merging is enabled.
      * @param activityLifecycleDispatcher Used to determine if the current activity context is still
      *     valid when running deferred tasks.
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      */
     public TabbedModeTabModelOrchestrator(
-            boolean tabMergingEnabled, ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            boolean tabMergingEnabled,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            CipherFactory cipherFactory) {
         mTabMergingEnabled = tabMergingEnabled;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mCipherFactory = cipherFactory;
     }
 
     /**
@@ -122,7 +128,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         tabCreatorManager,
-                        TabWindowManagerSingleton.getInstance());
+                        TabWindowManagerSingleton.getInstance(),
+                        mCipherFactory);
 
         wireSelectorAndStore();
         markTabModelsInitialized();
@@ -202,7 +209,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         TabCreator regularTabCreator = mTabCreatorManager.getTabCreator(/* incognito= */ false);
         mArchivedTabModelOrchestrator = ArchivedTabModelOrchestrator.getForProfile(profile);
         mArchivedTabModelOrchestrator.maybeCreateAndInitTabModels(
-                tabContentManager, regularTabCreator);
+                tabContentManager, regularTabCreator, mCipherFactory);
         mArchivedTabModelOrchestrator.initializeHistoricalTabModelObserver(
                 () -> getTabModelSelector().getModel(/* incognito= */ false));
 

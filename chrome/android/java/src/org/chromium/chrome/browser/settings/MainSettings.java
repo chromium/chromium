@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordExportLauncher;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
@@ -103,7 +104,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_AUTOFILL_SECTION = "autofill_section";
-    public static final String PREF_PRIVACY_SECTION = "privacy_section";
     public static final String PREF_PRIVACY = "privacy";
     public static final String PREF_SAFETY_CHECK = "safety_check";
     public static final String PREF_NOTIFICATIONS = "notifications";
@@ -114,6 +114,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_AUTOFILL_PAYMENTS = "autofill_payment_methods";
     public static final String PREF_PLUS_ADDRESSES = "plus_addresses";
     public static final String PREF_SAFETY_HUB = "safety_hub";
+    public static final String PREF_ADDRESS_BAR = "address_bar";
 
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
 
@@ -350,6 +351,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
             removePreferenceIfPresent(PREF_TABS);
         }
 
+        if (ChromeFeatureList.sAndroidBottomToolbar.isEnabled()) {
+            addPreferenceIfAbsent(PREF_ADDRESS_BAR);
+        } else {
+            removePreferenceIfPresent(PREF_ADDRESS_BAR);
+        }
+
         Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
         setOnOffSummary(homepagePref, HomepageManager.getInstance().isHomepageEnabled());
 
@@ -478,7 +485,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 && ChromeFeatureList.isEnabled(
                         AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
             addPreferenceIfAbsent(PREF_AUTOFILL_SECTION);
-            addPreferenceIfAbsent(PREF_PRIVACY_SECTION);
             addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
             Preference preference = findPreference(PREF_AUTOFILL_OPTIONS);
             preference.setFragment(null);
@@ -494,7 +500,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     });
         } else {
             removePreferenceIfPresent(PREF_AUTOFILL_SECTION);
-            removePreferenceIfPresent(PREF_PRIVACY_SECTION);
             removePreferenceIfPresent(PREF_AUTOFILL_OPTIONS);
         }
         findPreference(PREF_AUTOFILL_PAYMENTS)
@@ -528,13 +533,13 @@ public class MainSettings extends ChromeBaseSettingsFragment
             boolean startPasswordsExportFlow =
                     getArguments() != null
                             && getArguments()
-                                    .containsKey(PasswordManagerHelper.START_PASSWORDS_EXPORT)
+                                    .containsKey(PasswordExportLauncher.START_PASSWORDS_EXPORT)
                             && getArguments()
-                                    .getBoolean(PasswordManagerHelper.START_PASSWORDS_EXPORT);
+                                    .getBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT);
             if (startPasswordsExportFlow) {
                 PasswordManagerHelper.getForProfile(getProfile())
                         .launchExportFlow(getContext(), mModalDialogManagerSupplier);
-                getArguments().putBoolean(PasswordManagerHelper.START_PASSWORDS_EXPORT, false);
+                getArguments().putBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT, false);
             }
         }
     }

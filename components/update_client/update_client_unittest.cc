@@ -75,8 +75,7 @@ class MockUpdateCheckerFactory {
  public:
   typename MockUpdateChecker::Factory GetFactory() {
     return base::BindLambdaForTesting(
-        [&](scoped_refptr<Configurator>,
-            PersistedData*) -> std::unique_ptr<UpdateChecker> {
+        [&](scoped_refptr<Configurator>) -> std::unique_ptr<UpdateChecker> {
           return std::make_unique<MockUpdateChecker>(++num_calls_);
         });
   }
@@ -190,9 +189,10 @@ class MockPingManagerImpl : public PingManager {
   MockPingManagerImpl(const MockPingManagerImpl&) = delete;
   MockPingManagerImpl& operator=(const MockPingManagerImpl&) = delete;
 
-  void SendPing(const Component& component,
-                const PersistedData& metadata,
-                Callback callback) override;
+  void SendPing(const std::string& session_id,
+                const CrxComponent& component,
+                std::vector<base::Value::Dict> events,
+                base::OnceClosure callback) override;
 
   const std::vector<PingData>& ping_data() const;
 
@@ -211,24 +211,53 @@ MockPingManagerImpl::MockPingManagerImpl(scoped_refptr<Configurator> config)
 
 MockPingManagerImpl::~MockPingManagerImpl() = default;
 
-void MockPingManagerImpl::SendPing(const Component& component,
-                                   const PersistedData& metadata,
-                                   Callback callback) {
+void MockPingManagerImpl::SendPing(const std::string& session_id,
+                                   const CrxComponent& component,
+                                   std::vector<base::Value::Dict> events,
+                                   base::OnceClosure callback) {
   PingData ping_data;
-  ping_data.id = component.id_;
-  ping_data.previous_version = component.previous_version_;
-  ping_data.next_version = component.next_version_;
-  ping_data.error_category = component.error_category_;
-  ping_data.error_code = component.error_code_;
-  ping_data.extra_code1 = component.extra_code1_;
-  ping_data.diff_error_category = component.diff_error_category_;
-  ping_data.diff_error_code = component.diff_error_code_;
-  ping_data.diff_update_failed = component.diff_update_failed();
+  ping_data.id = component.app_id;
+  for (const base::Value::Dict& event : events) {
+    int event_type = event.FindInt("eventtype").value_or(0);
+    if (event_type != 2 && event_type != 3 && event_type != 4) {
+      // Skip non-terminal events.
+      continue;
+    }
+    const std::string* previous_version = event.FindString("previousversion");
+    if (previous_version) {
+      ping_data.previous_version = base::Version(*previous_version);
+    }
+    const std::string* next_version = event.FindString("nextversion");
+    if (next_version) {
+      ping_data.next_version = base::Version(*next_version);
+    }
+    std::optional<int> error_category = event.FindInt("errorcat");
+    if (error_category) {
+      ping_data.error_category = static_cast<ErrorCategory>(*error_category);
+    }
+    std::optional<int> error_code = event.FindInt("errorcode");
+    if (error_code) {
+      ping_data.error_code = *error_code;
+    }
+    std::optional<int> extra_code1 = event.FindInt("extracode1");
+    if (extra_code1) {
+      ping_data.extra_code1 = *extra_code1;
+    }
+    std::optional<int> diff_error_category = event.FindInt("differrorcat");
+    if (diff_error_category) {
+      ping_data.diff_error_category =
+          static_cast<ErrorCategory>(*diff_error_category);
+      ping_data.diff_update_failed = *diff_error_category != 0;
+    }
+    std::optional<int> diff_error_code = event.FindInt("differrorcode");
+    if (diff_error_code) {
+      ping_data.diff_error_code = *diff_error_code;
+    }
+  }
   ping_data_.push_back(ping_data);
+  events_ = std::move(events);
 
-  events_ = component.GetEvents();
-
-  std::move(callback).Run(0, "");
+  std::move(callback).Run();
 }
 
 const std::vector<MockPingManagerImpl::PingData>&
@@ -1940,8 +1969,8 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
    public:
     MOCK_METHOD1(OnUpdateError, void(int error));
     MOCK_METHOD1(DoInstall, void(const base::FilePath& unpack_path));
-    MOCK_METHOD2(GetInstalledFile,
-                 bool(const std::string& file, base::FilePath* installed_file));
+    MOCK_METHOD1(GetInstalledFile,
+                 std::optional<base::FilePath>(const std::string& file));
     MOCK_METHOD0(Uninstall, bool());
 
     void Install(const base::FilePath& unpack_path,
@@ -1988,7 +2017,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
 
       EXPECT_CALL(*installer, OnUpdateError(_)).Times(0);
       EXPECT_CALL(*installer, DoInstall(_)).Times(1);
-      EXPECT_CALL(*installer, GetInstalledFile(_, _)).Times(0);
+      EXPECT_CALL(*installer, GetInstalledFile(_)).Times(0);
       EXPECT_CALL(*installer, Uninstall()).Times(0);
 
       CrxComponent crx;
@@ -6164,6 +6193,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
       CrxComponent crx;
       crx.name = "test_jebg";
       crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;

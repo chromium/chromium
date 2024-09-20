@@ -152,41 +152,6 @@ void RenderFrameTracker::FrameDeleted(
   render_frame_hosts_.erase(frame_tree_node_id);
 }
 
-class InnerWebContentsAttachedWaiter : public content::WebContentsObserver {
- public:
-  explicit InnerWebContentsAttachedWaiter(content::WebContents* contents)
-      : content::WebContentsObserver(contents) {}
-  InnerWebContentsAttachedWaiter(const InnerWebContentsAttachedWaiter&) =
-      delete;
-  InnerWebContentsAttachedWaiter& operator=(
-      const InnerWebContentsAttachedWaiter&) = delete;
-  ~InnerWebContentsAttachedWaiter() override = default;
-
-  // content::WebContentsObserver:
-  void InnerWebContentsAttached(content::WebContents* inner_web_contents,
-                                content::RenderFrameHost* render_frame_host,
-                                bool is_full_page) override;
-
-  void WaitForInnerWebContentsAttached();
-
- private:
-  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-};
-
-void InnerWebContentsAttachedWaiter::InnerWebContentsAttached(
-    content::WebContents* inner_web_contents,
-    content::RenderFrameHost* render_frame_host,
-    bool is_full_page) {
-  run_loop_.Quit();
-}
-
-void InnerWebContentsAttachedWaiter::WaitForInnerWebContentsAttached() {
-  if (web_contents()->GetInnerWebContents().size() > 0u) {
-    return;
-  }
-  run_loop_.Run();
-}
-
 // Helper class to wait for a particular navigation in a particular render
 // frame in tests.
 class NavigationFinishedWaiter : public content::WebContentsObserver {
@@ -1246,7 +1211,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
   const std::vector<content::FrameTreeNodeId> blocked_frames =
       GetBlockedFrames();
   ASSERT_EQ(blocked_frames.size(), 1u);
-  const int blocked_frame = blocked_frames[0];
+  const content::FrameTreeNodeId blocked_frame = blocked_frames[0];
   EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));
   EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frame));
   CheckPreferredApprovalButton(blocked_frame);
@@ -1295,7 +1260,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
   const std::vector<content::FrameTreeNodeId> blocked_frames =
       GetBlockedFrames();
   ASSERT_EQ(blocked_frames.size(), 1u);
-  const int blocked_frame = blocked_frames[0];
+  const content::FrameTreeNodeId blocked_frame = blocked_frames[0];
   EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame));
   EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));
   EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frame));
@@ -1342,7 +1307,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
   const std::vector<content::FrameTreeNodeId> blocked_frames =
       GetBlockedFrames();
   ASSERT_EQ(blocked_frames.size(), 1u);
-  const int blocked_frame = blocked_frames[0];
+  const content::FrameTreeNodeId blocked_frame = blocked_frames[0];
   EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));
   EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frame));
 

@@ -51,10 +51,8 @@ static_library("osauth") {
     "//chrome/browser/ash/auth",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/quick_unlock",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash/login",
-    "//chrome/browser/ui/webui/ash/login/osauth",
+    "//chrome/browser/ui/ash/login",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus/session_manager",
@@ -69,8 +67,7 @@ static_library("osauth") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/login",
-    "//chrome/browser/ash/login/ui",
-    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/ash/login",
   ]
 }
 
@@ -97,10 +94,10 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/login/osauth",
     "//chrome/test:test_support_ui",

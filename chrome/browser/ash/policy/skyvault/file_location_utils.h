@@ -11,6 +11,10 @@
 
 namespace policy::local_user_files {
 
+// Returns a virtual path for files that should be uploaded to OneDrive, like
+// screenshots. The path is used only in case if policy enforcement.
+base::FilePath GetODFSVirtualPath();
+
 // Returns true if `str` is a valid location string with optional placeholders.
 bool IsValidLocationString(const std::string& str);
 

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_FOCUS_MODE_SOUNDS_FOCUS_MODE_YOUTUBE_MUSIC_DELEGATE_H_
 
 #include <array>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -18,6 +19,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "google_apis/common/api_error_codes.h"
 #include "url/gurl.h"
 
@@ -50,7 +52,7 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   void SetNoPremiumCallback(base::RepeatingClosure callback);
 
   // Reports music playback.
-  bool ReportPlayback(const youtube_music::PlaybackData& playback_data);
+  void ReportPlayback(const youtube_music::PlaybackData& playback_data);
 
   // Reserves a playlist for the returned playlists.
   void ReservePlaylistForGetPlaylists(const std::string& playlist_id);
@@ -117,23 +119,18 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
     ReportPlaybackRequestState();
     ~ReportPlaybackRequestState();
 
-    // Checks if it can report the playback for `url`.
-    bool CanReportPlaybackForUrl(const GURL& url);
-
-    // URL to `PlaybackState` map. It contains all playback data for the
-    // requests.
-    base::flat_map<GURL, youtube_music::PlaybackState> url_to_playback_state;
-
-    // URL to playback reporting token map. It contains all tokens for the
-    // requests.
-    base::flat_map<GURL, std::string> url_to_token;
+    youtube_music::PlaybackState playback_state;
+    std::optional<youtube_music::PlaybackData> staged_playback_data;
+    std::string token;
+    FocusModeRetryState retry_state;
   };
 
   // Triggers request to query for specific playlist for the given bucket.
   void GetPlaylistInternal(const GetPlaylistsRequestState::PlaylistType type);
 
   // Called when get playlists request is done.
-  void OnGetPlaylistDone(const GetPlaylistsRequestState::PlaylistType type,
+  void OnGetPlaylistDone(const base::Time start_time,
+                         const GetPlaylistsRequestState::PlaylistType type,
                          google_apis::ApiErrorCode http_error_code,
                          std::optional<youtube_music::Playlist> playlist);
 
@@ -142,6 +139,7 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
 
   // Called when get music section request is done.
   void OnGetMusicSectionDone(
+      const base::Time start_time,
       google_apis::ApiErrorCode http_error_code,
       std::optional<const std::vector<youtube_music::Playlist>> playlists);
 
@@ -155,12 +153,17 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
 
   // Called when switching to next track is done.
   void OnNextTrackDone(
+      const base::Time start_time,
+      const bool prepare,
       const std::string& playlist_id,
       google_apis::ApiErrorCode http_error_code,
       std::optional<const youtube_music::PlaybackContext> playback_context);
 
+  void ReportPlaybackInternal(const GURL& url);
+
   // Called when report playback request is done.
   void OnReportPlaybackDone(
+      const base::Time start_time,
       const GURL& url,
       google_apis::ApiErrorCode http_error_code,
       std::optional<const std::string> new_playback_reporting_token);
@@ -171,8 +174,9 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   // Next track request state for `GetPlaylists`.
   GetNextTrackRequestState next_track_state_;
 
-  // Report playback request state for `ReportPlayback`.
-  ReportPlaybackRequestState report_playback_state_;
+  // Report playback request state per track for `ReportPlayback`.
+  base::flat_map<GURL, std::unique_ptr<ReportPlaybackRequestState>>
+      report_playback_states_;
 
   // Callback to run when the request fails with HTTP 403.
   base::RepeatingClosure no_premium_callback_;

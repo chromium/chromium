@@ -66,7 +66,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -170,7 +169,7 @@ public class SigninAndHistorySyncIntegrationTest {
     @MediumTest
     public void testWithExistingAccount_signIn_historySyncSupressed() {
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
-        mSigninTestRule.addAccountAndWaitForSeeding(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
@@ -382,11 +381,8 @@ public class SigninAndHistorySyncIntegrationTest {
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
-    // Enabling SEED_ACCOUNTS_REVAMP to avoid failure due to the deprecated seed account flow. See
-    // https://crbug.com/336371182.
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testWithExistingAccount_signInWithAddedAccount_requiredHistoryOptIn() {
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         mSigninTestRule.setResultForNextAddAccountFlow(
@@ -495,11 +491,8 @@ public class SigninAndHistorySyncIntegrationTest {
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
-    // Enabling SEED_ACCOUNTS_REVAMP to avoid failure due to the deprecated seed account flow. See
-    // https://crbug.com/336371182.
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testWithNoAccount_bottomSheetSignin_requiredHistorySync() {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
@@ -529,11 +522,8 @@ public class SigninAndHistorySyncIntegrationTest {
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
-    // Enabling SEED_ACCOUNTS_REVAMP to avoid failure due to the deprecated seed account flow. See
-    // https://crbug.com/336371182.
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testWithNoAccount_instantSignin_requiredHistorySync() {
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

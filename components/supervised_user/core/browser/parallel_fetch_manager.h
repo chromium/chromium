@@ -22,15 +22,14 @@ namespace supervised_user {
 template <typename Request, typename Response>
 class ParallelFetchManager {
  private:
-  // Deferred fetcher is required because it should be started after it is
-  // stored internally.
   using Fetcher = ProtoFetcher<Response>;
   using KeyType = base::IDMap<std::unique_ptr<Fetcher>>::KeyType;
 
  public:
-  // Provides fresh instances of a deferred fetcher for each fetch.
-  using FetcherFactory =
-      base::RepeatingCallback<std::unique_ptr<Fetcher>(const Request&)>;
+  // Provides fresh instances of a started fetcher for each fetch.
+  using FetcherFactory = base::RepeatingCallback<std::unique_ptr<Fetcher>(
+      const Request&,
+      typename Fetcher::Callback callback)>;
 
   ParallelFetchManager() = delete;
   explicit ParallelFetchManager(FetcherFactory fetcher_factory)
@@ -44,21 +43,21 @@ class ParallelFetchManager {
   // cleaned up after finish or when this manager is destroyed.
   void Fetch(const Request& request, Fetcher::Callback callback) {
     CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
-    KeyType key = requests_in_flight_.Add(MakeFetcher(request));
-    requests_in_flight_.Lookup(key)->Start(
+
+    KeyType key = ++id_;
+    typename Fetcher::Callback callback_with_cleanup =
         std::move(callback).Then(base::BindOnce(
-            &ParallelFetchManager::Remove, weak_factory_.GetWeakPtr(), key)));
+            &ParallelFetchManager::Remove, weak_factory_.GetWeakPtr(), key));
+    requests_in_flight_.AddWithID(
+        fetcher_factory_.Run(request, std::move(callback_with_cleanup)), key);
   }
 
  private:
   // Remove fetcher under key from requests_in_flight_.
   void Remove(KeyType key) { requests_in_flight_.Remove(key); }
 
-  std::unique_ptr<Fetcher> MakeFetcher(const Request& request) const {
-    return fetcher_factory_.Run(request);
-  }
-
   base::IDMap<std::unique_ptr<Fetcher>, KeyType> requests_in_flight_;
+  KeyType id_{0};
   FetcherFactory fetcher_factory_;
   base::WeakPtrFactory<ParallelFetchManager<Request, Response>> weak_factory_{
       this};

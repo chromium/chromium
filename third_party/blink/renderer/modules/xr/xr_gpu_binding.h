@@ -57,6 +57,8 @@ class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
   void Trace(Visitor*) const override;
 
  private:
+  bool CanCreateLayer(ExceptionState& exception_state);
+
   Member<GPUDevice> device_;
 };
 

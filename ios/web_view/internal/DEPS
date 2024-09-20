@@ -23,6 +23,7 @@ include_rules = [
   "+components/metrics/demographics",
   "+components/metrics/library_support",
   "+components/net_log",
+  "+components/omnibox/browser",
   "+components/os_crypt/async/browser",
   "+components/password_manager/core",
   "+components/password_manager/ios",

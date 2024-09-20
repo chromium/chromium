@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "pdf/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
@@ -195,6 +196,11 @@ class PDFiumEngineClient {
   // viewers.
   // See https://crbug.com/312882 for an example.
   virtual bool IsValidLink(const std::string& url) = 0;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Returns true if the client is in annotation mode.
+  virtual bool IsInAnnotationMode() const = 0;
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 };
 
 }  // namespace chrome_pdf

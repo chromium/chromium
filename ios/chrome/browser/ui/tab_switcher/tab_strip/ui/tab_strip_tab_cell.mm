@@ -86,7 +86,7 @@ UIImage* DefaultFavicon() {
   UIView* _leadingSelectedBorderBackgroundView;
   UIView* _trailingSelectedBorderBackgroundView;
 
-  // Wether the decoration layers have been updated.
+  // Whether the decoration layers have been updated.
   BOOL _decorationLayersUpdated;
 
   // Circular spinner that shows the loading state of the tab.

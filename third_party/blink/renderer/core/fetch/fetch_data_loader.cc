@@ -311,9 +311,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
 
     StringUTF8Adaptor multipart_boundary_utf8(multipart_boundary_);
     Vector<char> multipart_boundary_vector;
-    multipart_boundary_vector.Append(
-        multipart_boundary_utf8.data(),
-        multipart_boundary_utf8.size());
+    multipart_boundary_vector.AppendSpan(base::span(multipart_boundary_utf8));
 
     client_ = client;
     form_data_ = MakeGarbageCollected<FormData>();
@@ -389,7 +387,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
   }
 
   void PartDataInMultipartReceived(base::span<const char> bytes) override {
-    if (!current_entry_.AppendBytes(bytes.data(), bytes.size())) {
+    if (!current_entry_.AppendBytes(bytes)) {
       multipart_parser_->Cancel();
     }
   }
@@ -427,11 +425,11 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
       return true;
     }
 
-    bool AppendBytes(const char* bytes, size_t size) {
+    bool AppendBytes(base::span<const char> chars) {
       if (blob_data_)
-        blob_data_->AppendBytes(base::as_bytes(base::span(bytes, size)));
+        blob_data_->AppendBytes(base::as_bytes(chars));
       if (string_builder_) {
-        string_builder_->Append(string_decoder_->Decode(bytes, size));
+        string_builder_->Append(string_decoder_->Decode(chars));
         if (string_decoder_->SawError())
           return false;
       }
@@ -501,7 +499,7 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
         return;
       if (result == BytesConsumer::Result::kOk) {
         if (available > 0)
-          builder_.Append(decoder_->Decode(buffer, available));
+          builder_.Append(decoder_->Decode(base::span(buffer, available)));
         result = consumer_->EndRead(available);
       }
       switch (result) {

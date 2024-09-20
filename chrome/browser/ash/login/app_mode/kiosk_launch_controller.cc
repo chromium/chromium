@@ -46,19 +46,17 @@
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
-#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
-#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -427,33 +425,6 @@ bool KioskLaunchController::HandleAccelerator(LoginAcceleratorAction action) {
 }
 
 void KioskLaunchController::StartAppLaunch(Profile& profile) {
-  // Call `ClearMigrationStep()` once per signin so that the check for migration
-  // is run exactly once per signin. Check the comment for `kMigrationStep` in
-  // browser_data_migrator.h for details.
-  BrowserDataMigratorImpl::ClearMigrationStep(g_browser_process->local_state());
-
-  const user_manager::User& user =
-      CHECK_DEREF(ProfileHelper::Get()->GetUserByProfile(&profile));
-
-  if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
-          user.GetAccountId(), user.username_hash(),
-          ash::standalone_browser::migrator_util::PolicyInitState::
-              kAfterInit)) {
-    LOG(WARNING) << "Restarting chrome to run profile migration.";
-    OnLaunchFailed(KioskAppLaunchError::Error::kLacrosDataMigrationStarted);
-    return;
-  }
-
-  if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
-          user.GetAccountId(), user.username_hash(),
-          ash::standalone_browser::migrator_util::PolicyInitState::
-              kAfterInit)) {
-    LOG(WARNING) << "Restarting chrome to run backward profile migration.";
-    OnLaunchFailed(
-        KioskAppLaunchError::Error::kLacrosBackwardDataMigrationStarted);
-    return;
-  }
-
   // This is needed to trigger input method extensions being loaded.
   profile.InitChromeOSPreferences();
 

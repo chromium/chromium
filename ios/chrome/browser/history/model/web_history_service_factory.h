@@ -17,11 +17,13 @@ class WebHistoryService;
 
 namespace ios {
 // Singleton that owns all WebHistoryServices and associates them with
-// ChromeBrowserState.
+// profiles.
 class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static history::WebHistoryService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static history::WebHistoryService* GetForBrowserState(ProfileIOS* profile);
+
+  static history::WebHistoryService* GetForProfile(ProfileIOS* profile);
   static WebHistoryServiceFactory* GetInstance();
 
   WebHistoryServiceFactory(const WebHistoryServiceFactory&) = delete;

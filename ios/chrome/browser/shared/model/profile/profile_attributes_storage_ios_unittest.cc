@@ -168,6 +168,9 @@ TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
               [](const TestAccount& account, ProfileAttributesIOS attr) {
                 attr.SetLastActiveTime(account.last_active_time);
                 attr.SetAuthenticationInfo(account.gaia, account.email);
+                ProfileAttributesIOS::GaiaIdSet gaia_ids;
+                gaia_ids.insert(std::string(account.gaia));
+                attr.SetAttachedGaiaIds(gaia_ids);
                 return attr;
               },
               account));
@@ -185,6 +188,10 @@ TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
     EXPECT_EQ(attr.GetUserName(), account.email);
     EXPECT_EQ(attr.IsAuthenticated(), account.authenticated);
     EXPECT_EQ(attr.GetLastActiveTime(), account.last_active_time);
+    ProfileAttributesIOS::GaiaIdSet gaia_ids;
+    gaia_ids.insert(std::string(account.gaia));
+    attr.SetAttachedGaiaIds(gaia_ids);
+    EXPECT_EQ(attr.GetAttachedGaiaIds(), gaia_ids);
   }
 }
 
@@ -202,5 +209,6 @@ TEST_F(ProfileAttributesStorageIOSTest, GetAttributesForProfileWithName) {
     EXPECT_EQ(attr.GetGaiaId(), "");
     EXPECT_EQ(attr.GetUserName(), "");
     EXPECT_EQ(attr.IsAuthenticated(), false);
+    EXPECT_EQ(attr.GetAttachedGaiaIds().size(), 0ul);
   }
 }

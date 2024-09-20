@@ -79,22 +79,6 @@ const size_t kMaxTextLength = 10000;
 // character to belong to more scripts.
 const size_t kMaxScripts = 32;
 
-// Font fallback mechanism used to Shape runs (see ShapeRuns(...)).
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ShapeRunFallback {
-  FAILED = 0,
-  NO_FALLBACK = 1,
-  FALLBACK = 2,
-  FALLBACKS = 3,
-  kMaxValue = FALLBACKS
-};
-
-// Log the fallback font mechanism used for shaping to UMA (see ShapeRuns(...)).
-void RecordShapeRunsFallback(ShapeRunFallback fallback) {
-  UMA_HISTOGRAM_ENUMERATION("RenderTextHarfBuzz.ShapeRunsFallback", fallback);
-}
-
 // Returns whether the codepoint has the 'extended pictographic' property.
 bool IsExtendedPictographicCodepoint(UChar32 codepoint) {
   return u_hasBinaryProperty(codepoint, UCHAR_EXTENDED_PICTOGRAPHIC);
@@ -1918,8 +1902,9 @@ SelectionModel RenderTextHarfBuzz::LastSelectionModelInsideRun(
   return SelectionModel(position, CURSOR_FORWARD);
 }
 
-void RenderTextHarfBuzz::BuildResolvedTypefaceBreakList(
+bool RenderTextHarfBuzz::BuildResolvedTypefaceBreakList(
     internal::TextRunList* run_list) {
+  bool modified_breaklist = false;
   const Font& primary_font = font_list().GetPrimaryFont();
   for (auto& run : run_list->runs()) {
     if (run->CountMissingGlyphs() > 0) {
@@ -1955,13 +1940,16 @@ void RenderTextHarfBuzz::BuildResolvedTypefaceBreakList(
             const SkTypefaceID fallback_font_id = fallback_font.platform_font()
                                                       ->GetNativeSkTypeface()
                                                       ->uniqueID();
-            layout_resolved_typefaces().ApplyValue(fallback_font_id,
-                                                   display_range);
+            if (layout_resolved_typefaces().ApplyValue(fallback_font_id,
+                                                       display_range)) {
+              modified_breaklist = true;
+            }
           }
         }
       }
     }
   }
+  return modified_breaklist;
 }
 
 void RenderTextHarfBuzz::ItemizeAndShapeText(const std::u16string& text,
@@ -1972,17 +1960,20 @@ void RenderTextHarfBuzz::ItemizeAndShapeText(const std::u16string& text,
 
   // If we didn't successfully shape every run, break runs based on the resolved
   // typeface. This will ensure that missing glyphs are isolated to their own
-  // runs, maximizing fallback opportunities. If this is a display run list, do
-  // not invalidate the text layout, as that has already been established in the
-  // prior step.
+  // runs, maximizing fallback opportunities.
   if (!successfully_shaped_runs && !ignore_missing_glyph_breaks_for_test_) {
-    BuildResolvedTypefaceBreakList(run_list);
-    ItemizeAndShapeTextImpl(&commonized_run_map, text, run_list);
+    if (BuildResolvedTypefaceBreakList(run_list)) {
+      ItemizeAndShapeTextImpl(&commonized_run_map, text, run_list);
+    }
 
     // Resolved typefaces are no longer used and can be cleared.
     layout_resolved_typefaces().Reset();
     resolved_typefaces().Reset();
   }
+
+  // Now that potentially two passes to ItemizeAndShapeTextImpl have occurred,
+  // we can record the final type of fallback.
+  EmitShapeRunsFallback();
 
   run_list->InitIndexMap();
   run_list->ComputePrecedingRunWidths();
@@ -2141,7 +2132,7 @@ bool RenderTextHarfBuzz::ShapeRuns(
   }
   runs.swap(need_shaping_runs);
   if (runs.empty()) {
-    RecordShapeRunsFallback(ShapeRunFallback::NO_FALLBACK);
+    RecordShapeRunsFallback(internal::ShapeRunFallback::NO_FALLBACK);
     return true;
   }
 
@@ -2162,7 +2153,7 @@ bool RenderTextHarfBuzz::ShapeRuns(
       fallback_font_candidates.push_back(font);
     }
     if (runs.empty()) {
-      RecordShapeRunsFallback(ShapeRunFallback::NO_FALLBACK);
+      RecordShapeRunsFallback(internal::ShapeRunFallback::NO_FALLBACK);
       return true;
     }
   }
@@ -2211,7 +2202,7 @@ bool RenderTextHarfBuzz::ShapeRuns(
   }
   runs.swap(remaining_unshaped_runs);
   if (runs.empty()) {
-    RecordShapeRunsFallback(ShapeRunFallback::FALLBACK);
+    RecordShapeRunsFallback(internal::ShapeRunFallback::FALLBACK);
     return true;
   }
 
@@ -2291,7 +2282,7 @@ bool RenderTextHarfBuzz::ShapeRuns(
                              TRACE_EVENT_SCOPE_THREAD, "font_name",
                              TRACE_STR_COPY(font_name.c_str()),
                              "primary_font_name", primary_font.GetFontName());
-        RecordShapeRunsFallback(ShapeRunFallback::FALLBACKS);
+        RecordShapeRunsFallback(internal::ShapeRunFallback::FALLBACKS);
         // Resolving fallback fonts using the registry keys on windows will be
         // deprecated and removed (see: http://crbug.com/995789). The crashes
         // reported here should be fixed before deprecating the code.
@@ -2321,7 +2312,7 @@ bool RenderTextHarfBuzz::ShapeRuns(
     }
   }
 
-  RecordShapeRunsFallback(ShapeRunFallback::FAILED);
+  RecordShapeRunsFallback(internal::ShapeRunFallback::FAILED);
   return false;
 }
 
@@ -2433,6 +2424,18 @@ bool RenderTextHarfBuzz::IsValidDisplayRange(Range display_range) {
     case ELIDE_MIDDLE:
     case ELIDE_EMAIL:
       return !text_elided();
+  }
+}
+
+void RenderTextHarfBuzz::RecordShapeRunsFallback(
+    internal::ShapeRunFallback fallback) {
+  last_shape_run_metric_.emplace(fallback);
+}
+
+void RenderTextHarfBuzz::EmitShapeRunsFallback() {
+  if (last_shape_run_metric_.has_value()) {
+    UMA_HISTOGRAM_ENUMERATION("RenderTextHarfBuzz.ShapeRunsFallback",
+                              last_shape_run_metric_.value());
   }
 }
 

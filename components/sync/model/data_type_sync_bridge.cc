@@ -101,7 +101,8 @@ DataTypeLocalChangeProcessor* DataTypeSyncBridge::change_processor() {
   return change_processor_.get();
 }
 
-const DataTypeLocalChangeProcessor* DataTypeSyncBridge::change_processor() const {
+const DataTypeLocalChangeProcessor* DataTypeSyncBridge::change_processor()
+    const {
   return change_processor_.get();
 }
 

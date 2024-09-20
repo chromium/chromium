@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/mp4/avc.h"
 
 #include <memory>
@@ -290,12 +295,8 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
 
           case H264NALU::kFiller:
           case H264NALU::kUnspecified:
-            if (!(order_state >= kAfterFirstVCL &&
-                  order_state < kEOStreamAllowed)) {
-              DVLOG(1) << "Unexpected NALU type " << nalu.nal_unit_type
-                       << " in order_state " << order_state;
-              return result;
-            }
+            // These syntax elements are to simply be ignored according to H264
+            // Annex B 7.4.2.7
             break;
 
           default:

@@ -97,6 +97,7 @@ source_set("browser_tests") {
     "//chrome/browser/shortcuts",
     "//chrome/browser/themes",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/window_sizer",
     "//chrome/browser/web_applications:prevent_close_test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/app_service:test_support",

@@ -33,6 +33,8 @@
 #include "components/download/public/common/download_file_impl.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/mock_input_stream.h"
+#include "components/services/quarantine/public/mojom/quarantine.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,11 +46,13 @@
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
+using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
+using ::testing::WithArg;
 
 namespace download {
 namespace {
@@ -139,6 +143,18 @@ class TestDownloadFileImpl : public DownloadFileImpl {
 #endif
 };
 
+class MockQuarantine : public quarantine::mojom::Quarantine {
+ public:
+  MOCK_METHOD(void,
+              QuarantineFile,
+              (const base::FilePath& full_path,
+               const GURL& source_url,
+               const GURL& referrer_url,
+               const std::optional<url::Origin>& request_initiator,
+               const std::string& client_guid,
+               quarantine::mojom::Quarantine::QuarantineFileCallback callback));
+};
+
 }  // namespace
 
 class DownloadFileTest : public testing::Test {
@@ -164,7 +180,8 @@ class DownloadFileTest : public testing::Test {
         additional_streams_(std::vector<raw_ptr<StrictMock<MockInputStream>>>{
             nullptr, nullptr}),
         bytes_(-1),
-        bytes_per_sec_(-1) {}
+        bytes_per_sec_(-1),
+        quarantine_remote_(&quarantine_) {}
 
   ~DownloadFileTest() override {}
 
@@ -187,6 +204,12 @@ class DownloadFileTest : public testing::Test {
     EXPECT_CALL(*(observer_.get()), DestinationUpdate(_, _, _))
         .Times(AnyNumber())
         .WillRepeatedly(Invoke(this, &DownloadFileTest::SetUpdateDownloadInfo));
+    ON_CALL(quarantine_, QuarantineFile(_, _, _, _, _, _))
+        .WillByDefault(WithArg<5>(
+            [](quarantine::mojom::Quarantine::QuarantineFileCallback callback) {
+              std::move(callback).Run(
+                  quarantine::mojom::QuarantineFileResult::OK);
+            }));
     bool result = download_dir_.CreateUniqueTempDir();
     CHECK(result);
   }
@@ -425,9 +448,19 @@ class DownloadFileTest : public testing::Test {
         break;
 
       case RENAME_AND_ANNOTATE:
+        // We cannot rebind a mojo::Remote without resetting it. The
+        // real implementation binds a new Remote on every call to
+        // RenameAndAnnotate, but it's simpler to reuse
+        // `quarantine_remote_` in tests.
+        quarantine_remote_.reset();
         download_file_->RenameAndAnnotate(
-            full_path, "12345678-ABCD-1234-DCBA-123456789ABC", GURL(), GURL(),
-            mojo::NullRemote(), std::move(completion_callback));
+            full_path, "12345678-ABCD-1234-DCBA-123456789ABC",
+            GURL("https://source.example.com/"),
+            GURL("https://referrer.example.com/"),
+            /*request_initiator=*/
+            url::Origin::Create(GURL("https://initiator.example.com/")),
+            quarantine_remote_.BindNewPipeAndPassRemote(),
+            std::move(completion_callback));
         break;
     }
   }
@@ -526,6 +559,8 @@ class DownloadFileTest : public testing::Test {
   // Keep track of what data should be saved to the disk file.
   std::string expected_data_;
 
+  MockQuarantine quarantine_;
+
  private:
   void SetRenameResult(base::OnceClosure closure,
                        DownloadInterruptReason* reason_p,
@@ -538,6 +573,8 @@ class DownloadFileTest : public testing::Test {
       *result_path_p = result_path;
     std::move(closure).Run();
   }
+
+  mojo::Receiver<quarantine::mojom::Quarantine> quarantine_remote_;
 
   base::test::TaskEnvironment task_environment_;
 };
@@ -1271,6 +1308,33 @@ TEST_F(DownloadFileTest, SecondStreamReadsOffsetWrittenByFirst) {
 
   download_file_->Cancel();
   DestroyDownloadFile(0, false);
+}
+
+TEST_F(DownloadFileTest, PropagatesUrlAndInitiatorToQuarantine) {
+  ASSERT_TRUE(CreateDownloadFile(true));
+  base::FilePath initial_path(download_file_->FullPath());
+  base::FilePath path_1(initial_path.InsertBeforeExtensionASCII("_1"));
+
+  EXPECT_CALL(
+      quarantine_,
+      QuarantineFile(
+          _, GURL("https://source.example.com/"),
+          GURL("https://referrer.example.com"),
+          Eq(url::Origin::Create(GURL("https://initiator.example.com/"))), _,
+          _))
+      .WillOnce(WithArg<5>(
+          [](quarantine::mojom::Quarantine::QuarantineFileCallback callback) {
+            std::move(callback).Run(
+                quarantine::mojom::QuarantineFileResult::OK);
+          }));
+  base::FilePath new_path;
+  EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
+            RenameAndAnnotate(path_1, &new_path));
+  EXPECT_EQ(path_1.value(), new_path.value());
+
+  FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kEmptyHash);
+  base::RunLoop().RunUntilIdle();
+  DestroyDownloadFile(0);
 }
 
 }  // namespace download

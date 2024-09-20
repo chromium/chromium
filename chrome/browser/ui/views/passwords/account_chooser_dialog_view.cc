@@ -83,7 +83,7 @@ void AccountChooserDialogView::ControllerGone() {
 }
 
 std::u16string AccountChooserDialogView::GetWindowTitle() const {
-  return controller_->GetAccoutChooserTitle();
+  return controller_->GetAccountChooserTitle();
 }
 
 bool AccountChooserDialogView::ShouldShowCloseButton() const {

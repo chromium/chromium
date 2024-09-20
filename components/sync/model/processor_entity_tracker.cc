@@ -40,8 +40,9 @@ ProcessorEntityTracker::~ProcessorEntityTracker() = default;
 
 bool ProcessorEntityTracker::AllStorageKeysPopulated() const {
   for (const auto& [client_tag_hash, entity] : entities_) {
-    if (entity->storage_key().empty())
+    if (entity->storage_key().empty()) {
       return false;
+    }
   }
   if (entities_.size() != storage_key_to_tag_hash_.size()) {
     return false;
@@ -224,8 +225,9 @@ ProcessorEntityTracker::GetEntitiesWithLocalChanges(size_t max_entries) {
   for (const auto& [client_tag_hash, entity] : entities_) {
     if (entity->RequiresCommitRequest() && !entity->RequiresCommitData()) {
       entities.push_back(entity.get());
-      if (entities.size() >= max_entries)
+      if (entities.size() >= max_entries) {
         break;
+      }
     }
   }
   return entities;

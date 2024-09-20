@@ -1,0 +1,19 @@
+<!-- Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+<style>
+    #logsLabel {
+        margin-bottom: 0px;
+    }
+    #refreshButton {
+        margin-bottom: 16px;
+    }
+</style>
+<h2>Growth Framework Internals</h2>
+<div id="logs">
+    <h4 id="logsLabel">Logs:</h4>
+    <button id="refreshButton" on-click="onClickRefreshButton_">Load/Refresh</button>
+    <template is="dom-repeat" items="[[logs_]]" as="log">
+        <div>[[log]]</div>
+    </template>
+</div>

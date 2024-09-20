@@ -2458,10 +2458,9 @@ TEST_F(AttributionResolverTest, AggregatableDedupKeysFiltering) {
   const auto origin = *SuitableOrigin::Deserialize("https://r.test");
 
   std::vector<attribution_reporting::AggregatableTriggerData>
-      aggregatable_trigger_data{
-          *attribution_reporting::AggregatableTriggerData::Create(
-              absl::MakeUint128(/*high=*/1, /*low=*/0),
-              /*source_keys=*/{"0"}, FilterPair())};
+      aggregatable_trigger_data{attribution_reporting::AggregatableTriggerData(
+          absl::MakeUint128(/*high=*/1, /*low=*/0),
+          /*source_keys=*/{"0"}, FilterPair())};
 
   auto aggregatable_values = {*AggregatableValues::Create(
       {{"0", *AggregatableValuesValue::Create(1, kDefaultFilteringId)}},
@@ -3452,7 +3451,7 @@ TEST_F(AttributionResolverTest, TopLevelTriggerFiltering) {
 
   std::vector<attribution_reporting::AggregatableTriggerData>
       aggregatable_trigger_data = {
-          *attribution_reporting::AggregatableTriggerData::Create(
+          attribution_reporting::AggregatableTriggerData(
               absl::MakeUint128(/*high=*/1, /*low=*/0),
               /*source_keys=*/{"0"}, FilterPair())};
 
@@ -5173,6 +5172,102 @@ TEST_F(AttributionResolverTest, RemoveOutdatedScopes) {
           SourceEventIdIs(4u),
           AttributionScopesDataIs(AttributionScopesSetIs(
               attribution_reporting::AttributionScopesSet({"1", "2"}))))));
+}
+
+TEST_F(AttributionResolverTest, RemoveOutdatedScopes_RetainTop) {
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(1)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1"}),
+                  /*attribution_scope_limit=*/5u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(2)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"2", "3"}),
+                  /*attribution_scope_limit=*/5u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(3)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"4", "5"}),
+                  /*attribution_scope_limit=*/5u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  // 5 scopes are already stored; This source's 3 scopes should be retained.
+  // Therefore, we expect `SelectScopes()` to find the top 2 scopes to retain
+  // instead of the bottom 3 scopes to remove.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(4)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"6", "7", "8"}),
+                  /*attribution_scope_limit=*/5u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              UnorderedElementsAre(SourceEventIdIs(3u), SourceEventIdIs(4u)));
+}
+
+TEST_F(AttributionResolverTest, RemoveOutdatedScopes_RemoveBottom) {
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(1)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1"}),
+                  /*attribution_scope_limit=*/5u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(2)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"2", "3"}),
+                  /*attribution_scope_limit=*/5u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(3)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"4", "5"}),
+                  /*attribution_scope_limit=*/5u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  // 5 scopes are already stored; This source's 2 scopes should be retained.
+  // Therefore, we expect `SelectScopes()` to find the bottom 2 scopes to remove
+  // instead of the top 3 scopes to retain.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(4)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"6", "7"}),
+                  /*attribution_scope_limit=*/5u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              UnorderedElementsAre(SourceEventIdIs(3u), SourceEventIdIs(4u)));
 }
 
 TEST_F(AttributionResolverTest, TriggerAttributesOnMatchingScope) {

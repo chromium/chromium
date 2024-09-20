@@ -858,11 +858,10 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
 
   ShutdownManager();
 
-  // Fast-forward past the reporting window and past report expiry.
-  task_environment_.FastForwardBy(kFirstReportingWindow);
-  task_environment_.FastForwardBy(base::Days(100));
+  // Fast-forward past source expiry.
+  task_environment_.FastForwardBy(kImpressionExpiry + base::Microseconds(1));
 
-  // Simulate startup and ensure the report is sent before being expired.
+  // Simulate startup and ensure the report is sent.
   // Advance by the max offline report delay, per
   // `AttributionResolverDelegate::GetOfflineReportDelayConfig()`.
   CreateManager();
@@ -2057,66 +2056,6 @@ TEST_F(AttributionManagerImplTest, ReportRetriesTillSuccessHistogram) {
 
   histograms.ExpectUniqueSample(
       "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure", 1, 1);
-}
-
-TEST_F(AttributionManagerImplTest, ReportRetryDelayFeatureParams) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kAttributionReportDeliveryRetryDelays,
-        {
-            {"first_retry_delay", "1m"},
-            {"second_retry_delay", "2m"},
-        }}},
-      {});
-  base::HistogramTester histograms;
-
-  bool was_report_sent = false;
-
-  Checkpoint checkpoint;
-  {
-    InSequence seq;
-
-    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
-        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
-
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
-        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
-
-    EXPECT_CALL(checkpoint, Call(2));
-    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
-        .WillOnce([&](AttributionReport report, bool is_debug_report,
-                      ReportSentCallback callback) {
-          std::move(callback).Run(std::move(report),
-                                  SendResult::Sent(SentResult::kSent,
-                                                   /*status=*/0));
-          was_report_sent = true;
-        });
-  }
-
-  attribution_manager_->HandleSource(
-      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
-  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
-
-  task_environment_.FastForwardBy(kFirstReportingWindow);
-
-  checkpoint.Call(1);
-
-  // First report delay.
-  task_environment_.FastForwardBy(base::Minutes(1));
-
-  checkpoint.Call(2);
-
-  // Second report delay.
-  task_environment_.FastForwardBy(base::Minutes(2));
-
-  ASSERT_TRUE(was_report_sent);
-
-  // kSuccess = 0.
-  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
-
-  histograms.ExpectUniqueSample(
-      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure", 2, 1);
 }
 
 TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
@@ -3494,6 +3433,10 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
   histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.NumEventsQueuedOnAttestationsLoaded", 1, 1);
+  histograms.ExpectTotalCount(
+      "Conversions.NumOsEventsQueuedOnAttestationsLoaded", 0);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -3525,6 +3468,52 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
   histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
+}
+
+TEST_F(AttributionManagerImplTest, OsRegistrationDelayedByAttestationsLoading) {
+  ShutdownManager();
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client, AddPrivacySandboxAttestationsObserver)
+      .WillOnce(Return(false));
+  EXPECT_CALL(browser_client,
+              IsAttributionReportingOperationAllowed(
+                  _,
+                  AnyOf(AttributionReportingOperation::kOsSource,
+                        AttributionReportingOperation::
+                            kOsSourceTransitionalDebugReporting),
+                  _, _, _, _, _))
+      .WillRepeatedly(Return(true));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  base::HistogramTester histograms;
+
+  CreateManager();
+
+  Checkpoint checkpoint;
+
+  {
+    InSequence seq;
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*os_level_manager_, Register);
+  }
+
+  attribution_manager_->HandleOsRegistration(OsRegistration(
+      {OsRegistrationItem(/*url=*/GURL("https://r.test"),
+                          /*debug_reporting=*/false)},
+      /*top_level_origin=*/url::Origin::Create(GURL("https://s.test")),
+      AttributionInputEvent(),
+      /*is_within_fenced_frame=*/false, kFrameId, kRegistrar));
+
+  checkpoint.Call(1);
+
+  NotifyAttestationsLoaded();
+
+  histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.NumOsEventsQueuedOnAttestationsLoaded", 1, 1);
+  histograms.ExpectTotalCount("Conversions.NumEventsQueuedOnAttestationsLoaded",
+                              0);
 }
 
 TEST_F(AttributionManagerImplTest,

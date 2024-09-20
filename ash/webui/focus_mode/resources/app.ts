@@ -28,11 +28,13 @@ const reportConfig: PlaybackReportingConfig = {
 interface PlaybackStatus {
   state: string;
   position: number;
-  initial: boolean;
+  loadTime: Date;
 }
 let playbackStatus: PlaybackStatus|null = null;
 
 let currentTrack: TrackDefinition|null = null;
+
+let clientTimeLastReport: Date;
 
 // Valid playback state string values.
 const validStates = ['playing', 'paused', 'ended', 'switchedtonext'];
@@ -66,14 +68,7 @@ function getDuration(
   ];
 }
 
-function shouldReportInitialPlayback(newPlaybackStatus: PlaybackStatus):
-    boolean {
-  const [start, end] = getDuration(playbackStatus, newPlaybackStatus);
-  return newPlaybackStatus.initial && start == end;
-}
-
-function shouldReportSubsequentPlayback(newPlaybackStatus: PlaybackStatus):
-    boolean {
+function shouldReportPlayback(newPlaybackStatus: PlaybackStatus): boolean {
   const [start, end] = getDuration(playbackStatus, newPlaybackStatus);
   const interval = end <= reportConfig.intervalThreshold ?
       reportConfig.intervalShort :
@@ -82,7 +77,7 @@ function shouldReportSubsequentPlayback(newPlaybackStatus: PlaybackStatus):
   // The condition for minimal interval needs to be a little more permissive by
   // 1s in case the previous timer fires at 30.01s and the current timer fires
   // at 39.98s.
-  return !newPlaybackStatus.initial && start < end &&
+  return start < end &&
       (end - start + 1 >= interval || newPlaybackStatus.state == 'ended' ||
        newPlaybackStatus.state == 'switchedtonext');
 }
@@ -93,19 +88,31 @@ function onReceiveNewPlaybackStatus(newPlaybackStatus: PlaybackStatus) {
     return;
   }
 
-  const reportInitial = shouldReportInitialPlayback(newPlaybackStatus);
-  const reportSubsequent = shouldReportSubsequentPlayback(newPlaybackStatus);
-  if (reportInitial || reportSubsequent) {
+  const clientCurrentTime: Date = new Date();
+  const playbackStartOffset: number = Math.floor(
+      (clientCurrentTime.getTime() - newPlaybackStatus.loadTime.getTime()) /
+      1000);
+  const initial = (playbackStatus == null);
+
+  if (shouldReportPlayback(newPlaybackStatus)) {
     const [start, end] = getDuration(playbackStatus, newPlaybackStatus);
     getProvider().reportPlayback({
       state: getPlaybackState(newPlaybackStatus.state),
       title: currentTrack.title,
       url: currentTrack.mediaUrl,
-      mediaStart: reportInitial ? null : start,
-      mediaEnd: reportInitial ? null : end,
-      initialPlayback: newPlaybackStatus.initial,
+      clientCurrentTime: {msec: clientCurrentTime.getTime()},
+      playbackStartOffset: playbackStartOffset,
+      mediaTimeCurrent: newPlaybackStatus.position,
+      mediaStart: start,
+      mediaEnd: end,
+      clientStartTime: {
+        msec: (initial ? newPlaybackStatus.loadTime : clientTimeLastReport)
+                  .getTime(),
+      },
+      initialPlayback: initial,
     });
     playbackStatus = newPlaybackStatus;
+    clientTimeLastReport = clientCurrentTime;
   }
 
   // Track playback is complete. Reset `currentTrack` to null until the new
@@ -128,7 +135,11 @@ function isPlaybackStatus(data: any): boolean {
   return (
       isEventData(data) && data.cmd == 'replyplaybackstatus' &&
       typeof data.state == 'string' && typeof data.position == 'number' &&
-      typeof data.initial == 'boolean');
+      typeof data.loadTime == 'object' && data.loadTime instanceof Date);
+}
+
+function isMediaErrorEventData(data: any): boolean {
+  return isEventData(data) && data.cmd == 'mediaErrorEvent';
 }
 
 function getProvider(): TrackProviderInterface {
@@ -142,6 +153,7 @@ function getProvider(): TrackProviderInterface {
 function postPlayRequest(track: TrackDefinition) {
   if (!track.mediaUrl.url) {
     // If there is no valid URL, then there's no point in continuing.
+    getProvider().reportPlayerError();
     return;
   }
 
@@ -238,8 +250,10 @@ globalThis.addEventListener('message', async (event: MessageEvent) => {
       onReceiveNewPlaybackStatus({
         state: data.state,
         position: data.position,
-        initial: data.initial,
+        loadTime: data.loadTime,
       });
+    } else if (isMediaErrorEventData(data)) {
+      getProvider().reportPlayerError();
     }
   }
 });

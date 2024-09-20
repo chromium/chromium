@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "base/profiler/stack_sampling_profiler.h"
-
+namespace sampling_profiler {
 class ThreadProfiler;
+}
 
 // A wrapper class that installs unwinder prerequisites and begins profiling
 // stack samples upon construction, and ensures correct shutdown behavior on
@@ -32,7 +32,7 @@ class MainThreadStackSamplingProfiler {
  private:
   // A profiler that periodically samples stack traces. Used to understand
   // thread and process startup behavior.
-  std::unique_ptr<ThreadProfiler> sampling_profiler_;
+  std::unique_ptr<sampling_profiler::ThreadProfiler> sampling_profiler_;
 };
 
-#endif  //  CHROME_COMMON_PROFILER_MAIN_THREAD_STACK_SAMPLING_PROFILER_H_
+#endif  // CHROME_COMMON_PROFILER_MAIN_THREAD_STACK_SAMPLING_PROFILER_H_

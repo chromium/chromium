@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupColorFaviconProvider.FAVICON_BACKGROUND_DEFAULT_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupColorFaviconProvider.FAVICON_BACKGROUND_SELECTED_ALPHA;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,14 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -56,16 +59,14 @@ class TabStripViewBinder {
                                     view.getContext().getTheme())
                             : null);
 
-            String title = model.get(TabProperties.TITLE);
             if (model.get(TabProperties.IS_SELECTED)) {
                 button.setOnClickListener(
                         v -> {
-                            model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
-                                    .run(v, model.get(TabProperties.TAB_ID));
+                            TabActionButtonData data =
+                                    model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+                            assert data.type != TabActionButtonData.TabActionButtonType.OVERFLOW;
+                            data.tabActionListener.run(v, model.get(TabProperties.TAB_ID));
                         });
-                button.setContentDescription(
-                        view.getContext()
-                                .getString(R.string.accessibility_tabstrip_btn_close_tab, title));
                 button.getBackground().setAlpha(FAVICON_BACKGROUND_SELECTED_ALPHA);
             } else {
                 button.setOnClickListener(
@@ -73,10 +74,9 @@ class TabStripViewBinder {
                             model.get(TabProperties.TAB_CLICK_LISTENER)
                                     .run(v, model.get(TabProperties.TAB_ID));
                         });
-                button.setContentDescription(
-                        view.getContext().getString(R.string.accessibility_tabstrip_tab, title));
                 button.getBackground().setAlpha(FAVICON_BACKGROUND_DEFAULT_ALPHA);
             }
+            setContentDescription(view, model);
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
             model.set(TabProperties.FAVICON_FETCHED, false);
             TabListFaviconProvider.TabFaviconFetcher fetcher =
@@ -104,6 +104,7 @@ class TabStripViewBinder {
             } else {
                 notificationView.setVisibility(View.GONE);
             }
+            setContentDescription(view, model);
         }
     }
 
@@ -132,5 +133,25 @@ class TabStripViewBinder {
             button.getBackground().setAlpha(FAVICON_BACKGROUND_SELECTED_ALPHA);
         }
         button.setImageDrawable(faviconDrawable);
+    }
+
+    private static void setContentDescription(
+            ViewLookupCachingFrameLayout view, PropertyModel model) {
+        Context context = view.getContext();
+        ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
+        String title = model.get(TabProperties.TITLE);
+        @StringRes int contentDescRes;
+
+        if (model.get(TabProperties.IS_SELECTED)) {
+            contentDescRes = R.string.accessibility_tabstrip_btn_close_tab;
+        } else {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                    && model.get(TabProperties.HAS_NOTIFICATION_BUBBLE)) {
+                contentDescRes = R.string.accessibility_tabstrip_tab_notification;
+            } else {
+                contentDescRes = R.string.accessibility_tabstrip_tab;
+            }
+        }
+        button.setContentDescription(context.getString(contentDescRes, title));
     }
 }

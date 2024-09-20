@@ -123,7 +123,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         url,
                         /* isSameDocument */ false,
                         /* isReload */ false,
-                        /* isHistory */ false,
+                        /* isHistory */ false, /* isBack */
+                        false, /* isRestore */
+                        false,
                         /* isErrorPage */ false,
                         /* isPageInitiated */ false,
                         /* committed */ true,
@@ -139,7 +141,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         url2,
                         /* isSameDocument */ true,
                         /* isReload */ false,
-                        /* isHistory */ false,
+                        /* isHistory */ false, /* isBack */
+                        false, /* isRestore */
+                        false,
                         /* isErrorPage */ false,
                         /* isPageInitiated */ false,
                         /* committed */ true,
@@ -157,7 +161,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         url2,
                         /* isSameDocument */ false,
                         /* isReload */ true,
-                        /* isHistory */ false,
+                        /* isHistory */ false, /* isBack */
+                        false, /* isRestore */
+                        false,
                         /* isErrorPage */ false,
                         /* isPageInitiated */ true,
                         /* committed */ true,
@@ -175,7 +181,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         url,
                         /* isSameDocument */ true,
                         /* isReload */ false,
-                        /* isHistory */ true,
+                        /* isHistory */ true, /* isBack */
+                        true, /* isRestore */
+                        false,
                         /* isErrorPage */ false,
                         /* isPageInitiated */ true,
                         /* committed */ true,
@@ -196,7 +204,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 mTestServer.getURL(RESOURCE_PATH + "/404.html"),
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isPageInitiated */ true);
         Assert.assertEquals(page3ReplyProxy, data.mReplyProxy);
 
@@ -215,7 +225,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 mAwContents.getUrl().getSpec(),
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ true,
                 /* isPageInitiated */ true,
                 /* committed */ true,
@@ -257,7 +269,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                             url204,
                             /* isSameDocument */ false,
                             /* isReload */ false,
-                            /* isHistory */ false,
+                            /* isHistory */ false, /* isBack */
+                            false, /* isRestore */
+                            false,
                             /* isErrorPage */ false,
                             /* isPageInitiated */ false,
                             /* committed */ false,
@@ -295,7 +309,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 pageWithIframeURL,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -315,7 +331,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 url2,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -360,7 +378,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 multipleRedirectsURL,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isPageInitiated */ false);
 
         data = mListener.waitForOnPostMessage();
@@ -372,7 +392,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 redirectingURL,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isPageInitiated */ false);
 
         data = mListener.waitForOnPostMessage();
@@ -384,7 +406,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 redirectTargetURL,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isPageInitiated */ false);
 
         // Since this navigation creates a new Page, the previous Page gets
@@ -402,7 +426,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 redirectTargetURL,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -433,7 +459,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 "about:blank",
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -448,7 +476,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 "about:blank#foo",
                 /* isSameDocument */ true,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ true,
                 /* committed */ true,
@@ -510,7 +540,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 url,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ true,
+                /* isHistory */ true, /* isBack */
+                false, /* isRestore */
+                true,
                 /* isPageInitiated */ false);
 
         data = newListener.waitForOnPostMessage();
@@ -524,7 +556,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 url,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ true,
+                /* isHistory */ true, /* isBack */
+                false, /* isRestore */
+                true,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -565,7 +599,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 "data:text/html;charset=utf-8;base64,",
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -602,7 +638,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 url,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -624,7 +662,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 url2,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ true,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -690,7 +730,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                     url3,
                     /* isSameDocument */ false,
                     /* isReload */ false,
-                    /* isHistory */ false,
+                    /* isHistory */ false, /* isBack */
+                    false, /* isRestore */
+                    false,
                     /* isPageInitiated */ true);
 
             data = mListener.waitForOnPostMessage();
@@ -700,7 +742,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                     url2,
                     /* isSameDocument */ false,
                     /* isReload */ false,
-                    /* isHistory */ false,
+                    /* isHistory */ false, /* isBack */
+                    false, /* isRestore */
+                    false,
                     /* isErrorPage */ false,
                     /* isPageInitiated */ true,
                     /* committed */ false,
@@ -735,7 +779,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 url2,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -755,7 +801,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         url,
                         /* isSameDocument */ false,
                         /* isReload */ false,
-                        /* isHistory */ true,
+                        /* isHistory */ true, /* isBack */
+                        true, /* isRestore */
+                        false,
                         /* isErrorPage */ false,
                         /* isPageInitiated */ false,
                         /* committed */ true,
@@ -786,7 +834,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 url2,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -805,7 +855,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         url,
                         /* isSameDocument */ false,
                         /* isReload */ false,
-                        /* isHistory */ true,
+                        /* isHistory */ true, /* isBack */
+                        true, /* isRestore */
+                        false,
                         /* isErrorPage */ false,
                         /* isPageInitiated */ false,
                         /* committed */ true,
@@ -840,7 +892,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 url2,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -860,7 +914,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         url,
                         /* isSameDocument */ false,
                         /* isReload */ false,
-                        /* isHistory */ true,
+                        /* isHistory */ true, /* isBack */
+                        true, /* isRestore */
+                        false,
                         /* isErrorPage */ false,
                         /* isPageInitiated */ false,
                         /* committed */ true,
@@ -894,7 +950,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 url2,
                 /* isSameDocument */ false,
                 /* isReload */ false,
-                /* isHistory */ false,
+                /* isHistory */ false, /* isBack */
+                false, /* isRestore */
+                false,
                 /* isErrorPage */ false,
                 /* isPageInitiated */ false,
                 /* committed */ true,
@@ -925,7 +983,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         url,
                         /* isSameDocument */ false,
                         /* isReload */ false,
-                        /* isHistory */ true,
+                        /* isHistory */ true, /* isBack */
+                        true, /* isRestore */
+                        false,
                         /* isErrorPage */ false,
                         /* isPageInitiated */ false,
                         /* committed */ true,
@@ -982,6 +1042,8 @@ public class NavigationListenerTest extends AwParameterizedTest {
             boolean isSameDocument,
             boolean isReload,
             boolean isHistory,
+            boolean isBack,
+            boolean isRestore,
             boolean isPageInitiated)
             throws Throwable {
         var dataObj = new JSONObject(data.getAsString());
@@ -990,6 +1052,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
         Assert.assertEquals(isSameDocument, dataObj.getBoolean("isSameDocument"));
         Assert.assertEquals(isReload, dataObj.getBoolean("isReload"));
         Assert.assertEquals(isHistory, dataObj.getBoolean("isHistory"));
+        Assert.assertEquals(isBack, dataObj.getBoolean("isBack"));
+        Assert.assertEquals(false, dataObj.getBoolean("isForward"));
+        Assert.assertEquals(isRestore, dataObj.getBoolean("isRestore"));
         Assert.assertEquals(isPageInitiated, dataObj.getBoolean("isPageInitiated"));
     }
 
@@ -999,6 +1064,8 @@ public class NavigationListenerTest extends AwParameterizedTest {
             boolean isSameDocument,
             boolean isReload,
             boolean isHistory,
+            boolean isBack,
+            boolean isRestore,
             boolean isErrorPage,
             boolean isPageInitiated,
             boolean committed,
@@ -1011,6 +1078,8 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 isSameDocument,
                 isReload,
                 isHistory,
+                isBack,
+                isRestore,
                 isPageInitiated);
         var dataObj = new JSONObject(data.getAsString());
         Assert.assertEquals(isErrorPage, dataObj.getBoolean("isErrorPage"));
@@ -1023,6 +1092,8 @@ public class NavigationListenerTest extends AwParameterizedTest {
             boolean isSameDocument,
             boolean isReload,
             boolean isHistory,
+            boolean isBack,
+            boolean isRestore,
             boolean isErrorPage,
             boolean isPageInitiated,
             boolean committed,
@@ -1039,6 +1110,8 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 isSameDocument,
                 isReload,
                 isHistory,
+                isBack,
+                isRestore,
                 isPageInitiated);
 
         String navigationId = new JSONObject(data.getAsString()).getString("id");
@@ -1058,6 +1131,8 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 isSameDocument,
                 isReload,
                 isHistory,
+                isBack,
+                isRestore,
                 isErrorPage,
                 isPageInitiated,
                 committed,
@@ -1115,7 +1190,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         url,
                         /* isSameDocument */ false,
                         /* isReload */ false,
-                        /* isHistory */ false,
+                        /* isHistory */ false, /* isBack */
+                        false, /* isRestore */
+                        false,
                         /* isErrorPage */ false,
                         /* isPageInitiated */ false,
                         /* committed */ true,

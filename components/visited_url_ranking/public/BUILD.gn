@@ -30,8 +30,10 @@ source_set("public") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/segmentation_platform/public",
+    "//components/strings",
     "//components/sync_device_info",
     "//components/url_deduplication",
+    "//ui/base",
     "//url",
   ]
 }

@@ -23,7 +23,7 @@ include_rules = [
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/policy/off_hours",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/ash/tpm_firmware_update.h",
+  "+chrome/browser/ash/tpm",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/net",
   "+chrome/browser/profiles",

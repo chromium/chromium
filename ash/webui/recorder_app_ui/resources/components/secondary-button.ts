@@ -4,46 +4,32 @@
 
 import './cra/cra-icon-button.js';
 
-import {
-  css,
-  html,
-  LitElement,
-  PropertyDeclarations,
-} from 'chrome://resources/mwc/lit/index.js';
+import {css} from 'chrome://resources/mwc/lit/index.js';
 
-import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {CraIconButton} from './cra/cra-icon-button.js';
 
-export class SecondaryButton extends ReactiveLitElement {
-  static override shadowRootOptions = {
-    ...LitElement.shadowRootOptions,
-    delegatesFocus: true,
-  };
+export class SecondaryButton extends CraIconButton {
+  static override styles = [
+    CraIconButton.styles,
+    css`
+      :host {
+        --cra-icon-button-container-height: 56px;
+        --cra-icon-button-container-width: 72px;
+        --cros-icon-button-color-override: var(--cros-sys-secondary);
+        --cros-icon-button-icon-size: 24px;
 
-  static override styles = css`
-    cra-icon-button {
-      --cra-icon-button-container-height: 56px;
-      --cra-icon-button-container-width: 72px;
-      --cros-icon-button-color-override: var(--cros-sys-secondary);
-      --cros-icon-button-icon-size: 24px;
-
-      @container style(--small-viewport: 1) {
-        --cra-icon-button-container-height: 40px;
-        --cra-icon-button-container-width: 40px;
-        --cros-icon-button-icon-size: 20px;
+        @container style(--small-viewport: 1) {
+          --cra-icon-button-container-height: 40px;
+          --cra-icon-button-container-width: 40px;
+          --cros-icon-button-icon-size: 20px;
+        }
       }
-    }
-  `;
+    `,
+  ];
 
-  static override properties: PropertyDeclarations = {
-    ariaLabel: {type: String, reflect: true, attribute: 'aria-label'},
-  };
-
-  override ariaLabel: string|null = null;
-
-  override render(): RenderResult {
-    return html`<cra-icon-button shape="circle" .ariaLabel=${this.ariaLabel}>
-      <slot slot="icon" name="icon"></slot>
-    </cra-icon-button>`;
+  constructor() {
+    super();
+    this.shape = 'circle';
   }
 }
 

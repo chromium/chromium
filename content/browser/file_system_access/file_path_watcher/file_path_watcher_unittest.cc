@@ -1321,10 +1321,6 @@ TEST_F(FilePathWatcherTest, MoveOverwritingFile) {
 
   // Move the directory into place, s.t. the watched file appears.
   base::Move(from_path, to_path);
-#if BUILDFLAG(IS_WIN)
-  // Windows reports a file being overwritten as a delete.
-  event_expecter.AddExpectedEventForPath(temp_dir_.GetPath());
-#endif
 
   // The move event.
   event_expecter.AddExpectedEventForPath(temp_dir_.GetPath());
@@ -3279,12 +3275,8 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteDirectoryRecursively) {
                         HasModifiedPath(parent)),
          testing::AllOf(HasPath(report_modified_path() ? child : parent),
                         IsDirectory(), HasModifiedPath(child)),
-         // TODO(crbug.com/40263766): inotify incorrectly reports this
-         // deletion on the path of just "grandchild" rather than on
-         // "/absolute/path/blah/blah/parent/child/grandchild".
-         testing::AllOf(
-             HasPath(report_modified_path() ? grandchild.BaseName() : parent),
-             IsFile(), HasModifiedPath(grandchild.BaseName()))});
+         testing::AllOf(HasPath(report_modified_path() ? grandchild : parent),
+                        IsFile(), HasModifiedPath(grandchild))});
   } else {
     // Do not expect changes to `grandchild` when watching `parent`
     // non-recursively.

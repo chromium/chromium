@@ -84,6 +84,13 @@
       document_policy_name: "include-js-call-stacks-in-crash-reports",
       value_type: "Bool",
       default_value: "false",
+    },
+    {
+      name: "ExpectNoLinkedResources",
+      document_policy_name: "expect-no-linked-resources",
+      value_type: "Bool",
+      default_value: "false",
+      depends_on: ["DocumentPolicyExpectNoLinkedResources"]
     }
   ],
 }

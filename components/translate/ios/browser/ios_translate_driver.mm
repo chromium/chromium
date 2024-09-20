@@ -10,15 +10,15 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/language_detection/core/browser/language_detection_model_service.h"
+#include "components/language_detection/ios/browser/language_detection_model_loader_service_ios.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/browser/translate_model_service.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
-#include "components/translate/ios/browser/language_detection_model_service.h"
 #import "components/translate/ios/browser/translate_controller.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/public/annotations/annotations_text_manager.h"
@@ -50,7 +50,8 @@ const base::TimeDelta kTimeoutDelay = base::Seconds(8);
 
 IOSTranslateDriver::IOSTranslateDriver(
     web::WebState* web_state,
-    LanguageDetectionModelService* language_detection_model_service)
+    language_detection::LanguageDetectionModelLoaderServiceIOS*
+        language_detection_model_service)
     : web_state_(web_state),
       language_detection_model_service_(language_detection_model_service),
       page_seq_no_(0),

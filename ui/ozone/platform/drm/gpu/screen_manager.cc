@@ -609,7 +609,13 @@ bool ScreenManager::Modeset(
       std::vector<uint64_t> modifiers =
           controller->GetSupportedModifiers(fourcc_format, /*is_modeset=*/true);
 
-      gfx::Rect bounds = gfx::Rect(params.origin, ModeSize(*params.mode));
+      gfx::Size mode_size = ModeSize(*params.mode);
+      std::optional<TileProperty> tile_property = (*it)->GetTileProperty();
+      if (tile_property.has_value() && IsTileMode(mode_size, *tile_property)) {
+        mode_size = GetTotalTileDisplaySize(*tile_property);
+      }
+
+      gfx::Rect bounds = gfx::Rect(params.origin, mode_size);
       DrmOverlayPlaneList modeset_planes =
           GetModesetPlanes(controller, bounds, modifiers,
                            can_modeset_with_overlays, /*is_testing=*/false);

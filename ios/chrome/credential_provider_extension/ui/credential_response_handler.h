@@ -7,6 +7,10 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
+@protocol Credential;
+
+typedef void (^FetchKeyCompletionBlock)(NSData* security_domain_secret);
+
 // A handler to allow children to communicate selected credentials back to the
 // parent. This is essentially a wrapper for
 // `ASCredentialProviderExtensionContext` to force all calls through the parent.
@@ -16,6 +20,11 @@
 
 - (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
     API_AVAILABLE(ios(17.0));
+
+- (void)userSelectedPasskey:(id<Credential>)passkey
+             clientDataHash:(NSData*)clientDataHash
+         allowedCredentials:(NSArray<NSData*>*)allowedCredentials
+                 allowRetry:(BOOL)allowRetry;
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode;
 

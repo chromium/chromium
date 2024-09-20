@@ -69,6 +69,7 @@ source_set("permissions") {
     ":permissions_proto",
     "//chrome/browser:browser_process",
     "//chrome/browser/favicon",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profiles",
@@ -244,6 +245,7 @@ if (!is_android) {
     deps = [
       ":permissions",
       "//chrome/browser/media/webrtc",
+      "//chrome/browser/optimization_guide",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/permissions/system",
       "//chrome/browser/ui:browser_element_identifiers",

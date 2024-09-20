@@ -18,9 +18,15 @@ DeviceAuthenticatorProxyFactory::GetInstance() {
 
 // static
 DeviceAuthenticatorProxy* DeviceAuthenticatorProxyFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+DeviceAuthenticatorProxy* DeviceAuthenticatorProxyFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<DeviceAuthenticatorProxy*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 DeviceAuthenticatorProxyFactory::DeviceAuthenticatorProxyFactory()

@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Del
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
@@ -94,7 +93,6 @@ class AddressEditorMediator {
     private final PropertyModel mCountryField;
     private final PropertyModel mPhoneField;
     private final PropertyModel mEmailField;
-    private final @Nullable PropertyModel mNicknameField;
 
     private List<AutofillAddressUiComponent> mVisibleEditorFields;
     @Nullable private String mCustomDoneButtonText;
@@ -187,18 +185,6 @@ class AddressEditorMediator {
                         .with(VALIDATOR, getEmailValidator())
                         .with(VALUE, mProfileToEdit.getInfo(FieldType.EMAIL_ADDRESS))
                         .build();
-
-        // TODO(crbug.com/40267973): Use localized string.
-        mNicknameField =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT)
-                        ? new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                .with(TEXT_FIELD_TYPE, FieldType.UNKNOWN_TYPE)
-                                .with(LABEL, "Label")
-                                .with(IS_REQUIRED, false)
-                                .build()
-                        : null;
 
         assert mCountryField.get(VALUE) != null;
         mPhoneFormatter.setCountryCode(mCountryField.get(VALUE));
@@ -338,16 +324,13 @@ class AddressEditorMediator {
                             || component.id == FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY;
             editorFields.add(new FieldItem(TEXT_INPUT, field, isFullLine));
         }
-        // Phone number (and email/nickname if applicable) are the last fields of the address.
+        // Phone number (and email if applicable) are the last fields of the address.
         if (mPhoneField != null) {
             mPhoneField.set(VALIDATOR, getPhoneValidator(countryCode));
             editorFields.add(new FieldItem(TEXT_INPUT, mPhoneField, /* isFullLine= */ true));
         }
         if (mEmailField != null) {
             editorFields.add(new FieldItem(TEXT_INPUT, mEmailField, /* isFullLine= */ true));
-        }
-        if (mNicknameField != null) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mNicknameField, /* isFullLine= */ true));
         }
 
         return editorFields;

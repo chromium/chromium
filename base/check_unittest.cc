@@ -151,6 +151,7 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
     logging::SetLogMessageHandler(nullptr);                                    \
   } while (0)
 
+#if defined(OFFICIAL_BUILD)
 #if DCHECK_IS_ON()
 #define EXPECT_DUMP_WILL_BE_CHECK EXPECT_DCHECK
 #else
@@ -162,6 +163,9 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
                                    statement, expected_string "\n");        \
   } while (0)
 #endif  // DCHECK_IS_ON()
+#else
+#define EXPECT_DUMP_WILL_BE_CHECK EXPECT_CHECK
+#endif  // defined(OFFICIAL_BUILD)
 
 TEST(CheckDeathTest, Basics) {
   EXPECT_CHECK("Check failed: false. ", CHECK(false));
@@ -250,6 +254,23 @@ TEST(CheckDeathTest, CheckOpStrings) {
   EXPECT_DCHECK("Check failed: sv == csv (1 vs. 2)", DCHECK_EQ(sv, csv));
   EXPECT_DCHECK("Check failed: csv == s (2 vs. 3)", DCHECK_EQ(csv, s));
   EXPECT_DCHECK("Check failed: sv == s (1 vs. 3)", DCHECK_EQ(sv, s));
+}
+
+TEST(CheckDeathTest, CheckOpPointers) {
+  uint8_t arr[] = {3, 2, 1, 0};
+  uint8_t* arr_start = &arr[0];
+  // Print pointers and not the binary data in `arr`.
+#if BUILDFLAG(IS_WIN)
+  EXPECT_CHECK(
+      "=~Check failed: arr_start != arr_start \\([0-9A-F]+ vs. "
+      "[0-9A-F]+\\)",
+      CHECK_NE(arr_start, arr_start));
+#else
+  EXPECT_CHECK(
+      "=~Check failed: arr_start != arr_start \\(0x[0-9a-f]+ vs. "
+      "0x[0-9a-f]+\\)",
+      CHECK_NE(arr_start, arr_start));
+#endif
 }
 
 TEST(CheckTest, CheckStreamsAreLazy) {

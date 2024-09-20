@@ -182,7 +182,6 @@ void InitializeDBus() {
   InitializeDBusClient<LorgnetteManagerClient>(bus);
   InitializeDBusClient<chromeos::MachineLearningClient>(bus);
   InitializeDBusClient<MediaAnalyticsClient>(bus);
-  InitializeDBusClient<chromeos::MissiveClient>(bus);
   InitializeDBusClient<OobeConfigurationClient>(bus);
   InitializeDBusClient<OsInstallClient>(bus);
   InitializeDBusClient<PatchPanelClient>(bus);
@@ -229,6 +228,11 @@ void InitializeFeatureListDependentDBus() {
   using chromeos::InitializeDBusClient;
 
   dbus::Bus* bus = DBusThreadManager::Get()->GetSystemBus();
+
+  // MissiveClient depends on APIKey which needs to be accessed after the
+  // feature list is initialized.
+  InitializeDBusClient<chromeos::MissiveClient>(bus);
+
   if (floss::features::IsFlossEnabled()) {
     InitializeDBusClient<floss::FlossDBusManager>(bus);
     if (bus) {

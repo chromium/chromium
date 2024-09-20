@@ -161,7 +161,7 @@ TEST_F(AutofillRendererTest, IgnoreNonUserGestureTextFieldChanges) {
   GetMainFrame()->AutofillClient()->TextFieldDidChange(full_name);
 
   EXPECT_CALL(autofill_driver(), TextFieldDidChange);
-  SimulateUserInputChangeForElement(&full_name, "Alice");
+  SimulateUserInputChangeForElement(full_name, "Alice");
 }
 
 }  // namespace

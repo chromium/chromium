@@ -99,14 +99,14 @@ using SecondDelegateInstaller =
 class TabHelperDelegateInstallerTest : public PlatformTest {
  protected:
   TabHelperDelegateInstallerTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
+      : profile_(TestProfileIOS::Builder().Build()),
         browser_(std::make_unique<TestBrowser>(
-            browser_state_.get(),
+            profile_.get(),
             std::make_unique<FakeTabHelperWebStateListDelegate>())) {}
   ~TabHelperDelegateInstallerTest() override {}
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   Delegate delegate_;
   SecondDelegate second_delegate_;

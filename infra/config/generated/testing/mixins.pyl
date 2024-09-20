@@ -357,6 +357,28 @@
       },
     },
   },
+  'chromium_nexus_5x_oreo': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'OPR4.170623.020',
+        'device_os_flavor': 'google',
+        'device_type': 'bullhead',
+        'os': 'Android',
+        'pool': 'chromium.tests',
+      },
+    },
+  },
+  'chromium_pixel_2_pie': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'PQ3A.190801.002',
+        'device_os_flavor': 'google',
+        'device_type': 'walleye',
+        'os': 'Android',
+        'pool': 'chromium.tests',
+      },
+    },
+  },
   'ci_only': {
     'ci_only': True,
   },
@@ -1099,14 +1121,6 @@
       ],
     },
   },
-  'oreo_fleet': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'OPR4.170623.020',
-        'device_os_flavor': 'google',
-      },
-    },
-  },
   'out_dir_arg': {
     'args': [
       '--out-dir',
@@ -1140,14 +1154,6 @@
       ],
     },
   },
-  'pie_fleet': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'PQ3A.190801.002',
-        'device_os_flavor': 'google',
-      },
-    },
-  },
   'puppet_production': {
     'swarming': {
       'dimensions': {
@@ -1161,14 +1167,14 @@
       'failed_only',
     ],
   },
-  'shards-10': {
-    'shards': 10,
-  },
   'shards-20': {
     'shards': 20,
   },
   'shards-30': {
     'shards': 30,
+  },
+  'shards-50': {
+    'shards': 50,
   },
   'shiba': {
     'swarming': {
@@ -1485,12 +1491,12 @@
   'xcode_16_beta': {
     'args': [
       '--xcode-build-version',
-      '16a5230g',
+      '16a242d',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_16a5230g',
+          'name': 'xcode_ios_16a242d',
           'path': 'Xcode.app',
         },
       ],
@@ -1499,12 +1505,12 @@
   'xcode_16_main': {
     'args': [
       '--xcode-build-version',
-      '16a5230g',
+      '16a242',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_16a5230g',
+          'name': 'xcode_ios_16a242',
           'path': 'Xcode.app',
         },
       ],

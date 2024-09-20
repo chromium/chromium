@@ -263,7 +263,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
                                   base::BindOnce(&UploadSaveCardCallback));
   }
 
-  void ShowLocalBubble(CreditCard* card = nullptr,
+  void ShowLocalBubble(const CreditCard* card = nullptr,
                        SaveCreditCardOptions options =
                            SaveCreditCardOptions().with_show_prompt()) {
     controller()->OfferLocalSave(

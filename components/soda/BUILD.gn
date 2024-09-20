@@ -63,6 +63,8 @@ source_set("constants") {
     "//base",
     "//components/component_updater:component_updater_paths",
     "//components/crx_file",
+    "//components/language/core/browser",
+    "//components/prefs:prefs",
     "//components/strings/",
     "//media",
     "//ui/base",

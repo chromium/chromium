@@ -503,9 +503,9 @@ void MstSolver<Index, Score>::ContractCycle(Index node) {
   for (const auto &node_and_arc : cycle_) {
     // Set the |score_offset| to the cost of breaking the cycle by replacing the
     // arc currently directed into the |cycle_node|.
-    const Index cycle_node = node_and_arc.first;
+    const Index current_cycle_node = node_and_arc.first;
     const Score score_offset = -node_and_arc.second->score;
-    MergeInboundArcs(cycle_node, score_offset, contracted_node);
+    MergeInboundArcs(current_cycle_node, score_offset, contracted_node);
   }
 }
 
@@ -586,7 +586,6 @@ tensorflow::Status MstSolver<Index, Score>::ExpansionPhase(
       argmax[target] = arc.source - 1;
     }
   }
-  DCHECK_GE(num_roots, 1);
 
   // Even when |forest_| is false, |num_roots| can still be more than 1.  While
   // the root score penalty discourages structures with multiple root arcs, it
@@ -595,7 +594,7 @@ tensorflow::Status MstSolver<Index, Score>::ExpansionPhase(
   // produce an all-root structure in spite of the root score penalty.  As this
   // example illustrates, however, |num_roots| will be more than 1 if and only
   // if the original digraph is infeasible for trees.
-  if (!forest_ && num_roots != 1) {
+  if (num_roots < 1 || (!forest_ && num_roots != 1)) {
     return tensorflow::errors::FailedPrecondition("Infeasible digraph");
   }
 

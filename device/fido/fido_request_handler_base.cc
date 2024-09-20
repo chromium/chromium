@@ -545,7 +545,7 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
     transport_availability_info_
         .win_native_ui_shows_resident_credential_notice =
         static_cast<WinWebAuthnApiAuthenticator*>(authenticator)
-            ->ShowsPrivacyNotice();
+            ->ShowsResidentCredentialNotice();
   }
 #endif  // BUILDFLAG(IS_WIN)
 }

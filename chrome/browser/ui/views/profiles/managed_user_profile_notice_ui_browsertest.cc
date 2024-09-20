@@ -212,6 +212,8 @@ class ManagedUserNoticeUIDialogPixelTest
  public:
   ManagedUserNoticeUIDialogPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
+    feature_list_.InitAndDisableFeature(
+        features::kEnterpriseUpdatedProfileCreationScreen);
   }
 
   ~ManagedUserNoticeUIDialogPixelTest() override = default;
@@ -247,6 +249,9 @@ class ManagedUserNoticeUIDialogPixelTest
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ManagedUserNoticeUIDialogPixelTest,

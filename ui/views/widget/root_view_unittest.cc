@@ -943,9 +943,10 @@ TEST_F(RootViewTest, AnnounceTextAsTest) {
   EXPECT_EQ(kPoliteText,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
   hidden_polite_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  std::string val;
-  ASSERT_TRUE(node_data.GetStringAttribute(
-      ax::mojom::StringAttribute::kContainerLiveStatus, &val));
+  ASSERT_TRUE(node_data.HasStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus));
+  const std::string& val = node_data.GetStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus);
   ASSERT_EQ("polite", val);
 
 #if BUILDFLAG(IS_CHROMEOS)

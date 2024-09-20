@@ -8,10 +8,10 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -84,14 +84,18 @@ bool WaitForTabsPopupsApps(Browser* browser,
   const base::TimeDelta kWaitTime = base::Seconds(10);
   base::TimeTicks end_time = base::TimeTicks::Now() + kWaitTime;
   while (base::TimeTicks::Now() < end_time) {
-    if (chrome::GetBrowserCount(browser->profile()) == num_browsers &&
-        browser->tab_strip_model()->count() == num_tabs)
+    if (extensions::browsertest_util::GetWindowControllerCountInProfile(
+            browser->profile()) == num_browsers &&
+        browser->tab_strip_model()->count() == num_tabs) {
       break;
+    }
 
     content::RunAllTasksUntilIdle();
   }
 
-  EXPECT_EQ(num_browsers, chrome::GetBrowserCount(browser->profile()));
+  EXPECT_EQ(num_browsers,
+            extensions::browsertest_util::GetWindowControllerCountInProfile(
+                browser->profile()));
   EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
 
   int num_popups_seen = 0;
@@ -110,7 +114,9 @@ bool WaitForTabsPopupsApps(Browser* browser,
   EXPECT_EQ(num_popups, num_popups_seen);
   EXPECT_EQ(num_app_popups, num_app_popups_seen);
 
-  return ((num_browsers == chrome::GetBrowserCount(browser->profile())) &&
+  return ((num_browsers ==
+           extensions::browsertest_util::GetWindowControllerCountInProfile(
+               browser->profile())) &&
           (num_tabs == browser->tab_strip_model()->count()) &&
           (num_popups == num_popups_seen) &&
           (num_app_popups == num_app_popups_seen));
@@ -355,10 +361,10 @@ namespace {
 
 aura::Window* GetCurrentWindow() {
   extensions::WindowController* controller = nullptr;
-  for (extensions::WindowController* iter :
-       extensions::WindowControllerList::GetInstance()->windows()) {
-    if (iter->window()->IsActive()) {
-      controller = iter;
+  for (extensions::WindowController* window :
+       *extensions::WindowControllerList::GetInstance()) {
+    if (window->window()->IsActive()) {
+      controller = window;
       break;
     }
   }
@@ -479,8 +485,7 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
   // Make sure no new windows get created (so only the one created by default
   // exists) since the call to chrome.windows.create fails on the javascript
   // side.
-  EXPECT_EQ(1u,
-            extensions::WindowControllerList::GetInstance()->windows().size());
+  EXPECT_EQ(1u, extensions::WindowControllerList::GetInstance()->size());
 }
 
 // Disabled on Lacros due to flaky. crbug.com/1254453

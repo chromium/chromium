@@ -59,6 +59,9 @@ by a child template that "extends" this file.
               <meta-data
                   android:name="STARTUP_FEATURE_SET_DIRECTORY_BASE_PATH"
                   android:value="true"/>
+              <meta-data
+                  android:name="STARTUP_FEATURE_CONFIGURE_PARTITIONED_COOKIES"
+                  android:value="true"/>
             </service>
             <!-- WebView Developer UI Activities. If you change these Activities, please update
                  android_webview/test/shell/AndroidManifest.xml as well. -->

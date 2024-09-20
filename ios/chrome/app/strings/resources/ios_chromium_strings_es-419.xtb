@@ -1,20 +1,29 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1000436330784933699">Puedes abrir Lens aquí.</translation>
+<translation id="1042296835509784301">Abre el Administrador de contraseñas en Chromium.</translation>
 <translation id="1047130070405668746">Selecciona Chromium.</translation>
 <translation id="1091252999271033193">Esto significa que Chromium solicitará el sitio móvil cada vez.</translation>
 <translation id="1115463765356382667">Completa estas acciones sugeridas para aprovechar Chromium al máximo.</translation>
+<translation id="1140315115515116765">Usa Chromium de forma predeterminada para obtener información sobre precios fácilmente</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Para guardar imágenes, presiona en la Configuración a fin de permitir que Chromium agregue tus fotos</translation>
+<translation id="1260702988262336471">Abre el menú de Chromium</translation>
 <translation id="12739128458173458">Para enviar esta pestaña a otro dispositivo, accede a Chromium en ambos dispositivos.</translation>
 <translation id="1361748954329991663">Chromium no está actualizado. Si no hay actualizaciones disponibles en <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que tu dispositivo no sea compatible con nuevas versiones de Chromium.</translation>
 <translation id="1423007117030725713">Realiza una búsqueda en una nueva pestaña de Chromium.</translation>
 <translation id="1431818719585918472">Permite que Chromium bloquee tus pestañas de incógnito.</translation>
 <translation id="146407871188825689">Usa Chromium en iPad de forma predeterminada</translation>
+<translation id="1471084500615228555">Borrar los datos de navegación en Chromium</translation>
 <translation id="1472013873724362412">Tu cuenta no funciona en Chromium. Comunícate con tu administrador de dominio o utiliza una cuenta común de Google para acceder.</translation>
+<translation id="1501302548410882220">Usa Chromium en todas partes</translation>
 <translation id="1503199973012840174">Chromium está desactualizado. Actualízalo para protegerte.</translation>
+<translation id="1515748263297244785">Usa Chromium para iPad de forma predeterminada</translation>
 <translation id="1531155317299575425">Muestra mensajes para acceder a Chromium.</translation>
+<translation id="1553657876656159572">Un feed personalizado creado para ti. Incluye noticias, deportes y el clima.</translation>
 <translation id="1561849081734670621">Para inhabilitar el Modo de bloqueo en Chromium, desactívalo en tu iPhone.</translation>
+<translation id="1569258826720962327">Usa acciones de Chromium en iOS</translation>
 <translation id="159029779861043703">Chromium protege tus datos sensibles con Face ID.</translation>
 <translation id="1591119736686995611">Abre la cuadrícula de pestañas de Chromium.</translation>
 <translation id="16001233025397167">La Verificación de seguridad te protege de violaciones de la seguridad de los datos, sitios web inseguros y mucho más. Recibe alertas sobre cualquier problema de privacidad o seguridad que Chromium detecte.</translation>
@@ -32,8 +41,10 @@
 <translation id="2006345422933397527">Chromium no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
 <translation id="2042889939382983733">Ver tu historial de Chromium</translation>
 <translation id="2052320862053429062">Chromium revisa tus contraseñas de forma periódica para comprobar si aparecen en listas que se hayan publicado en línea. Durante esta acción, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
+<translation id="2059365270911640413">Termina de configurar Chromium</translation>
 <translation id="2147210759439165826">Mantente al tanto del contenido y las sugerencias útiles de Chromium.</translation>
 <translation id="2168108852149185974">Algunos complementos causan fallos en Chromium. Desinstala los siguientes elementos:</translation>
+<translation id="2168593389981132306">Mejora Chromium</translation>
 <translation id="2178608107313874732">Chromium no puede usar tu cámara ahora</translation>
 <translation id="2195025571279539885">¿Quieres que Google Chrome te ofrezca traducir las páginas de este sitio que estén en <ph name="LANGUAGE_NAME" /> la próxima vez?</translation>
 <translation id="22313767259766852">Actualmente, esta dirección se guarda en Chromium. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
@@ -43,11 +54,16 @@
 <translation id="2326738825692478496">Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google.
 
 Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
+<translation id="2337722506862731008">Compartir Chromium</translation>
+<translation id="2340423701577464731">Agregar el elemento de la lista de lectura a Chromium</translation>
 <translation id="2374627437126809292">Chromium usa Google Maps para brindarte instrucciones sobre cómo llegar, así como información local sobre las direcciones detectadas.</translation>
 <translation id="2386292341327187942">En el cuadro Widgets de la Búsqueda, ingresa "Chromium".</translation>
 <translation id="2426113998523353159">Tu organización requiere que accedas para usar Chromium.</translation>
 <translation id="2450140762465183767">Ahora puedes usar Chromium cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
+<translation id="2459183986985456602">Abre mi pestaña más reciente en Chromium.</translation>
+<translation id="2476409803017965813">Puedes actualizar tus selecciones en cualquier momento en la configuración de Chromium.</translation>
 <translation id="2478931088402984578">Selecciona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2512597191798760956">Mantén presionado el ícono de Chromium y haz clic en "Edita la pantalla de inicio"</translation>
 <translation id="2517624234762908348">Sincronizar tus datos de Chromium</translation>
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
 <translation id="2607609479243848905">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
@@ -59,14 +75,18 @@ Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</t
 <translation id="28276745681323897">Puedes <ph name="BEGIN_LINK" />administrar qué datos de Chromium se guardan<ph name="END_LINK" /> en tu Cuenta de Google.
 
 Si quieres ver más parámetros de configuración que usan datos para mejorar tu experiencia en Chromium, ve a los <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
+<translation id="2832168932648876507">Realiza búsquedas con la voz en Chromium.</translation>
 <translation id="2843571538056574338">Usa Autocompletar en Chromium</translation>
 <translation id="2918709798697875261">Tu organización requiere que no accedas a tu cuenta en Chromium.</translation>
+<translation id="2930158679684712936">Sugerencias para Chromium</translation>
 <translation id="2942241131342758843">Usa Chromium como tu navegador predeterminado para abrir vínculos, realizar búsquedas desde widgets y autocompletar contraseñas en otras apps</translation>
 <translation id="2977470724722393594">Chromium está actualizado.</translation>
 <translation id="3044857325852340337">Se borraron los datos en Chromium</translation>
+<translation id="3054480780637153380">Abre la configuración de Chromium en iOS, presiona "App del navegador predeterminado" y selecciona Chromium.</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium puede ayudarte a realizar el seguimiento de este paquete en la página Nueva pestaña.}other{Chromium puede ayudarte a realizar el seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="3102849287235003384">Para salir de tu Cuenta de Google en todos los sitios web, debes <ph name="BEGIN_LINK" />salir de Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">¿Quieres establecer Chromium como navegador predeterminado?</translation>
+<translation id="3242612358525156339">En la configuración de tu dispositivo, abre "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" y selecciona "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Se muestra 1 ventana de Chromium}other{Se muestran {count} ventanas de Chromium}}</translation>
 <translation id="3344973607274501920">Chromium no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
 <translation id="3366305173356742781">Datos de Chromium en tu cuenta</translation>
@@ -76,10 +96,15 @@ Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, se b
 <translation id="3472200483164753384">No es compatible en Chromium Canary</translation>
 <translation id="347967311580159871">Si quieres ver más parámetros de configuración que usan datos para mejorar tu experiencia en Chromium, ve a los <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">No se compartió tu contraseña. Revisa la conexión a Internet y asegúrate de que accediste a Chromium. Luego, vuelve a intentarlo.</translation>
+<translation id="3529798650269984835">Activa la opción "Bloquear las pestañas de incógnito cuando cierras Chromium".</translation>
 <translation id="3567399274263440288">Para aprovechar Chromium al maximo, accede al navegador con tu Cuenta de Google.</translation>
+<translation id="3581385059720151202">Buscar elementos visuales en Chromium</translation>
+<translation id="3594315078412605236">Administrar las formas de pago en Chromium</translation>
+<translation id="3634039384458740619">Abrir la configuración de Chromium</translation>
 <translation id="3639997914391704523">Chromium puede revisar las contraseñas cuando accedes con tu Cuenta de Google.</translation>
 <translation id="372658070733623520">Para usar y guardar datos de Chromium en tu Cuenta de Google, verifica tu identidad.</translation>
 <translation id="3728124580182886854">Vincula Chromium y otros servicios de Google para la personalización y otros fines</translation>
+<translation id="377649297473651452">Vista expandida de Autocompletar de Chromium</translation>
 <translation id="3780779443901618967">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chromium.</translation>
 <translation id="3805899903892079518">Chromium no tiene acceso a tus fotos o videos. Habilita el acceso en Configuración de iOS &gt; Privacidad &gt; Fotos.</translation>
 <translation id="3827545470516145620">Recibes protección de seguridad estándar en este dispositivo</translation>
@@ -89,6 +114,8 @@ Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, se b
 <translation id="3983291422281996849">Establece Chromium como tu navegador predeterminado para obtener información y seguimientos de los precios de los productos que deseas comprar.</translation>
 <translation id="4005283307739974863">Abre y ejecuta la Verificación de seguridad en Chromium.</translation>
 <translation id="4043291146360695975">Las contraseñas se guardan en el Administrador de contraseñas solo en este dispositivo.</translation>
+<translation id="4066426933127344530">Usa Chromium de forma predeterminada</translation>
+<translation id="4087314024407094071">Abre la configuración en Chromium.</translation>
 <translation id="4099085513035183040">No es compatible en la versión beta de Chromium</translation>
 <translation id="4106512142782407609">Accediste como <ph name="EMAIL" />.
 
@@ -97,22 +124,27 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 <translation id="4195557071150719219">Ver las pestañas recientes de Chromium</translation>
 <translation id="420541179527342563">Para inhabilitar el Modo de bloqueo en Chromium, desactívalo en tu iPad.</translation>
 <translation id="4272892696084633551">Ayudar a mejorar las funciones y el rendimiento de Chromium</translation>
+<translation id="4302397443352897529">Configuración de Chromium</translation>
 <translation id="4408912345039114853">Ejecutar la Verificación de seguridad en Chromium</translation>
 <translation id="4432744876818348753">Para aprovechar Chromium al máximo, accede a tu cuenta.</translation>
 <translation id="4445228361214254027">Tu organización desactivó la función para usar y guardar datos de Chromium en tu Cuenta de Google. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
 <translation id="4498832288620833153">Agrega las URLs ingresadas a tu Lista de lectura en Chromium.</translation>
 <translation id="452436063477828504">Asegúrate de que siempre puedas usar los datos de Chromium en tu Cuenta de Google</translation>
+<translation id="4527452566931097835">¿Quieres establecer Chromium como navegador predeterminado?</translation>
 <translation id="4555020257205549924">Si activas esta función, Chromium te preguntará si deseas usar Google Traductor para traducir páginas en otros idiomas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">La encriptación con la frase de contraseña no incluye formas de pago ni direcciones.
 
 Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
+<translation id="4578500311756617174">Sugerencia para Chromium: Usa Chromium de forma predeterminada</translation>
 <translation id="458786853569524949">Ahora puedes usar Chromium cada vez que presionas vínculos que aparecen en correos electrónicos, documentos u otras apps.</translation>
 <translation id="4633738821577273991">También obtén la Navegación segura mejorada para este perfil de Chromium</translation>
 <translation id="4654936625574199632">Para ayudarnos a mejorar la app, Chromium envía datos de uso y fallas a Google. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activar el escáner de Chromium</translation>
+<translation id="4685611756167369067">Abrir una pestaña de incógnito en Chromium</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> administra tu cuenta, por lo que se borrarán los datos de Chromium almacenados en este dispositivo.</translation>
 <translation id="4790638144988730920">Sigue usando los datos de Chromium en tu Cuenta de Google.</translation>
 <translation id="4828317641996116749">Chromium no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
+<translation id="4856138222358683580">Acciones de Chromium</translation>
 <translation id="4904452304169763785">Alertas sobre cualquier problema de privacidad o seguridad que Chromium detecte.</translation>
 <translation id="4962295957157529683">Completa las tareas que tenías en curso en otra ventana abierta de Chromium.</translation>
 <translation id="4985291216379576555">Sin conexión, Chromium no puede buscar actualizaciones.</translation>
@@ -122,20 +154,29 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="5044871537677053278">Chromium detecta direcciones y usa Google Maps para brindarte información local, además de instrucciones sobre cómo llegar.</translation>
 <translation id="5048795749726991615">Para obtener fácilmente tus contraseñas guardadas en otras apps, usa la opción para autocompletarlas con Chromium</translation>
 <translation id="5053429694249468757">Borrando datos de Chromium…</translation>
+<translation id="5071749685031362629">Chromium para iOS</translation>
 <translation id="5124429847818367226">Ahora puedes usar Chromium cada vez que navegas o presionas vínculos que aparecen en mensajes, documentos y otras apps.</translation>
 <translation id="5131565040785979529">Tu organización, <ph name="DOMAIN" />, administra la cuenta con la que accediste y la forma en que se usa Chromium.</translation>
 <translation id="5224391634244552924">No hay contraseñas guardadas. Chromium puede revisar las contraseñas cuando las guardas.</translation>
+<translation id="5259423875997548710">Busca elementos visuales en Chromium.</translation>
 <translation id="5308226104666789935">Chromium no puede buscar actualizaciones.</translation>
 <translation id="5311557153294205270">Agrega las URLs ingresadas a tus favoritos en Chromium.</translation>
 <translation id="538767207339317086">Permitir el acceso a Chromium</translation>
+<translation id="5389058611415066188">Aprovecha la seguridad de Chromium</translation>
+<translation id="5415273218238091735">Sugerencia para Chromium</translation>
 <translation id="5427571867875391349">Establecer Chromium como navegador predeterminado</translation>
 <translation id="5434562575369834882">Abrir en Chromium en modo Incógnito</translation>
 <translation id="5453478652154926037">Chromium no puede revisar las contraseñas.</translation>
+<translation id="5479292367402350143">Para establecer Chromium como navegador predeterminado:
+1. Abre Configuración.
+2. Presiona App del navegador predeterminado.
+3. Selecciona Chromium.</translation>
 <translation id="5521125884468363740">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta y activa la sincronización</translation>
 <translation id="5522297504975449419">Algunas funciones de Chromium ya no estarán disponibles.</translation>
 <translation id="5534584691915394889">Se usará para crear eventos en el Calendario de Apple desde Chromium y Google Lens.</translation>
 <translation id="5571094606370987472">Abre las pestañas recientes de Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
+<translation id="5664395081284292058">Abrir mi pestaña más reciente en Chromium</translation>
 <translation id="5688047395118852662">En esta tarjeta, se muestran sugerencias para aprovechar Chromium al máximo.</translation>
 <translation id="5700709190537129682">Chromium no puede revisar las contraseñas</translation>
 <translation id="584550191241316896">Accediste a Chromium</translation>
@@ -148,6 +189,7 @@ Aspectos que debes tener en cuenta:
     Si Chromium falla, los detalles sobre lo ocurrido pueden incluir información personal.
 
   • Si sincronizas el historial con tu Cuenta de Google, las métricas también pueden incluir información sobre las URLs que visitas.<ph name="END_INDENT" /></translation>
+<translation id="5932787118589620366">Borra los datos de navegación en Chromium.</translation>
 <translation id="593808800391107017">Recibe alertas sobre cualquier problema de privacidad o seguridad que Chromium detecte automáticamente.</translation>
 <translation id="5945387852661427312">Estás accediendo con una cuenta que administra <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chromium. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chromium, los datos se borrarán de este dispositivo, pero quedarán almacenados en tu cuenta de Google.</translation>
 <translation id="5951593919357934226">Aprovecha Chromium al máximo.</translation>
@@ -155,6 +197,7 @@ Aspectos que debes tener en cuenta:
 <translation id="6104024151682120539">Abrir en Chromium</translation>
 <translation id="61109258320235597">Para usar y guardar datos de Chromium en tu Cuenta de Google, ingresa tu frase de contraseña.</translation>
 <translation id="6132149203299792222">Accede con tu Cuenta de Google para sincronizar tus contraseñas, favoritos y más.</translation>
+<translation id="6148377327556085395">Agregar favoritos a Chromium</translation>
 <translation id="6154098560469640583">Usa Chromium cada vez que presiones vínculos en mensajes, documentos y otras apps.</translation>
 <translation id="6170619162539716595">Permite que Chromium use Google Maps para brindarte instrucciones sobre cómo llegar y datos locales sobre las direcciones detectadas.</translation>
 <translation id="6197255575340902638">Si ocultas "<ph name="MODULE_NAME" />", Chromium ya no realizará un seguimiento automático de tus paquetes futuros y borrará todos los datos de seguimiento de paquetes anteriores.</translation>
@@ -165,10 +208,17 @@ Aspectos que debes tener en cuenta:
 <translation id="6337530241089703714">Decidir si quieres borrar o conservar los datos de Chromium que tienes almacenados en este dispositivo</translation>
 <translation id="6424492062988593837">¡Chromium mejoró! Hay una nueva versión disponible.</translation>
 <translation id="6433172051771630690">Sugerencias para aprovechar Chromium al máximo.</translation>
+<translation id="65045991564554105">Ver los favoritos de Chromium</translation>
+<translation id="6538713818758208754">Abre la página de configuración de formas de pago en Chromium.</translation>
+<translation id="6540186279384079894">Abrir una pestaña nueva en Chromium</translation>
 <translation id="6563921047760808519">Más información sobre <ph name="BEGIN_LINK" />cómo Chromium mantiene la privacidad de tus datos<ph name="END_LINK" /></translation>
+<translation id="6574750762636192517">Administrar contraseñas en Chromium</translation>
+<translation id="6590232959690355435">Abre la página del historial de Chromium.</translation>
+<translation id="6674470628873622334">Abre una nueva pestaña de incógnito en Chromium.</translation>
 <translation id="6752854822223394465">Tu organización está configurando Chromium…</translation>
 <translation id="6794054469102824109">Abre el juego del dinosaurio de Chromium.</translation>
 <translation id="6820823224820483452">Chromium no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
+<translation id="6852419005633611413">Accede a Chromium más rápido desde el Dock de la pantalla de inicio</translation>
 <translation id="6852799557929001644">Accede a tus contraseñas de Chromium y más en otras apps de este dispositivo.</translation>
 <translation id="6887138405044152640">Para enviar esta pestaña a otro dispositivo, accede a Chromium allí.</translation>
 <translation id="6911341667534646387">Sigue usando los datos de Chromium en tu Cuenta de Google</translation>
@@ -176,12 +226,14 @@ Aspectos que debes tener en cuenta:
 <translation id="7018284295775193585">No se puede actualizar Chromium</translation>
 <translation id="7055269218854630176">Tu organización, <ph name="DOMAIN" />, administra la cuenta a la que estás accediendo y la forma en que se puede usar Chromium. El administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="7099326575020694068">Chromium no puede usar tu cámara en el modo de vista dividida</translation>
+<translation id="7129379408282555630">Aprovecha el poder de Chromium Shopping</translation>
 <translation id="7165402419892018581">Elige Chromium para Autocompletar</translation>
 <translation id="7175400662502680481">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. El Administrador de contraseñas te recomienda cambiarla ahora.</translation>
 <translation id="7185731475720473450">No se encriptarán formas de pago ni direcciones. No se sincronizará el historial de navegación de Chromium.
 
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Las notificaciones de Chromium están desactivadas en la configuración del dispositivo por el momento.</translation>
+<translation id="7219205286115692265">Accede a Chromium más rápido desde el Dock de la pantalla de inicio de tu iPad.</translation>
 <translation id="7222001353246886083">Buscar ${searchphrase} en Chromium</translation>
 <translation id="7228180817326917122">Sugerencia para Chromium: Elige la posición de la barra de direcciones</translation>
 <translation id="725427773388857052">Chromium puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
@@ -191,21 +243,31 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7357211569052832586">Los datos seleccionados se quitaron de Chromium y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en history.google.com.</translation>
 <translation id="7395825497086981028">La contraseña se guardará en el Administrador de contraseñas de <ph name="EMAIL" />.</translation>
 <translation id="7531461704633548377">De Chromium</translation>
+<translation id="7554983317097061001">Sugerencia para Chromium: Mueve Chromium al Dock</translation>
+<translation id="7576863740961052505">Administrar la configuración de Chromium</translation>
 <translation id="7674213385180944843">Abre Configuración &gt; Privacidad &gt; Cámara &gt; Chromium y activa la cámara.</translation>
 <translation id="7733418656985455268">Sugerencia de Chromium: Busca con Lens</translation>
 <translation id="7747820849741499258">Buscar en Chromium</translation>
+<translation id="7762622637388462191">Bloquea tus pestañas de incógnito cuando abandonas Chromium o cambias de app.</translation>
 <translation id="7763454117143368771">Usa Chromium como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
+<translation id="7784950022329154821">Bloquear las pestañas de incógnito cuando cierras Chrome</translation>
 <translation id="78025249032851484">Chromium está desactualizado.</translation>
 <translation id="7859018312476869945">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
+<translation id="7859432380288435856">Chrome detectará los números de seguimiento del paquete en los sitios que visites y te mostrará actualizaciones de tus paquetes en la página Nueva pestaña. Tus datos se compartirán con Google para proporcionar esta función y mejorar Shopping para todo el mundo.</translation>
 <translation id="7890287942691234100">Usar el escáner de Chromium</translation>
 <translation id="7905064834449738336">Cuando usas una contraseña, Chromium te advierte si se publicó en línea. Si lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="7928628054454574139">Abre Chromium cada vez que presiones vínculos en otras apps</translation>
 <translation id="7934404985878918282">Ver la Lista de lectura de Chromium</translation>
+<translation id="7951793218148208717">Abre una pestaña nueva en Chromium.</translation>
 <translation id="7980860476903281594">Chromium comparte tu ubicación con los sitios en donde lo permites.</translation>
 <translation id="7994322153108931467">Para obtener sugerencias útiles de Chromium, activa las notificaciones en la configuración de iOS.</translation>
+<translation id="7997159823054171568">Establecer Chromium como navegador predeterminado</translation>
 <translation id="800195749539500647">Aprovecha Chromium al máximo</translation>
+<translation id="800380310260616129">Descarga Chromium aquí.</translation>
 <translation id="8013573822802650211">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta en todos los dispositivos</translation>
+<translation id="8014091604604659473">Saliste de Chromium</translation>
 <translation id="8104697640054703121">Obtener la seguridad más potente de Chromium contra sitios peligrosos</translation>
+<translation id="8119542592987737574">Accede a Chromium más rápido desde el Dock de la pantalla de inicio de tu iPhone.</translation>
 <translation id="8164086860209325020">Ve a la configuración de Chromium</translation>
 <translation id="8197822717502700527">Ahora puedes aprovechar Chromium al máximo en tu dispositivo.</translation>
 <translation id="8240981428553046115">Chromium no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
@@ -216,6 +278,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chromium durante {THRESHOLD} minuto. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}other{Esto sucede cuando no usas Chromium durante {THRESHOLD} minutos. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}}</translation>
 <translation id="858114650497379505">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas en otras apps de tu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>
+<translation id="8602103377623855616">Página de Chromium</translation>
 <translation id="865600487977764604">Te protege en Chromium y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8685813584220679697">Accede a este sitio y a Chromium.</translation>
@@ -223,13 +286,17 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="8754966941001340678">Chromium recomienda una protección mejorada</translation>
 <translation id="8759037115129007407">El miembro de tu familia no puede recibir contraseñas en este momento. Pídele que actualice Chromium y sincronice sus contraseñas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Esta cuenta y todos los datos sin guardar se quitarán de Chromium.</translation>
+<translation id="8805148242934787134">Establecer Chromium como navegador predeterminado</translation>
 <translation id="8826789549860004832">Continúa configurando tu navegador para aprovechar Chromium al máximo.</translation>
 <translation id="88376265765385899">Abre los favoritos de Chromium.</translation>
 <translation id="8860548555286245440">Abrir URLs en Chromium en modo Incógnito</translation>
 <translation id="8866191443434488382">Chromium detectará los números de seguimiento en los sitios que visites y te mostrará actualizaciones de paquetes en la página Nueva pestaña. El número de seguimiento del paquete y el nombre del sitio web se enviarán a Chromium para proporcionar esta función y mejorar las funciones de compras para todos los usuarios. Puedes actualizar esta opción en cualquier momento en la <ph name="BEGIN_LINK" />configuración de seguimiento de paquetes<ph name="END_LINK" />.</translation>
+<translation id="8880024619507699923">Tu organización requiere que accedas para usar Chromium. <ph name="BEGIN_LINK" />Obtén más información<ph name="END_LINK" /></translation>
+<translation id="8900052431807804054">Obtén la seguridad más sólida de Chromium</translation>
 <translation id="894437814105052438">Si sales de la cuenta, Chromium no sincronizará ningún dato nuevo con tu Cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chromium durante {THRESHOLD} minuto.}other{Esto sucede cuando no usas Chromium durante {THRESHOLD} minutos.}}</translation>
 <translation id="8963279154877372067">Permite las notificaciones de Chromium para recibir alertas de descuento</translation>
+<translation id="8975812008711371178">Realizar búsquedas con la voz en Chromium</translation>
 <translation id="900560297598578021">Accediste como <ph name="EMAIL" />.
 
 Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingrésala para usar y guardar datos de Chromium en tu Cuenta de Google.</translation>

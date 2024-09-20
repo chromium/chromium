@@ -87,12 +87,12 @@ targets.variant(
 )
 
 targets.variant(
-    name = "IPHONE_7_15_4_1",
-    identifier = "iPhone 7 15.4.1",
+    name = "IPHONE_15_PRO_18_0",
+    identifier = "iPhone 15 Pro 18.0",
     swarming = targets.swarming(
         dimensions = {
-            "os": "iOS-15.4.1",
-            "device": "iPhone9,1",
+            "os": "iOS-18.0",
+            "device": "iPhone16,1",
         },
     ),
 )

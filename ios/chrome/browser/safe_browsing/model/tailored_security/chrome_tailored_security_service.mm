@@ -17,13 +17,13 @@
 namespace safe_browsing {
 
 ChromeTailoredSecurityService::ChromeTailoredSecurityService(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service)
     : TailoredSecurityService(identity_manager,
                               sync_service,
-                              browser_state->GetPrefs()),
-      browser_state_(browser_state) {
+                              profile->GetPrefs()),
+      profile_(profile) {
   base::WeakPtr<ChromeTailoredSecurityService> weak_ptr =
       weak_ptr_factory_.GetWeakPtr();
   application_backgrounding_observer_ = [[NSNotificationCenter defaultCenter]
@@ -61,7 +61,7 @@ ChromeTailoredSecurityService::~ChromeTailoredSecurityService() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeTailoredSecurityService::GetURLLoaderFactory() {
-  return browser_state_->GetSharedURLLoaderFactory();
+  return profile_->GetSharedURLLoaderFactory();
 }
 
 void ChromeTailoredSecurityService::AppDidEnterBackground() {

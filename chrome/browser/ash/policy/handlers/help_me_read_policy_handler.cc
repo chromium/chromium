@@ -31,14 +31,17 @@ void HelpMeReadPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     case 0:
       prefs->SetBoolean(ash::prefs::kHmrEnabled, true);
       prefs->SetBoolean(ash::prefs::kHmrFeedbackAllowed, true);
+      prefs->SetBoolean(ash::prefs::kMagicBoostEnabled, true);
       break;
     case 1:
       prefs->SetBoolean(ash::prefs::kHmrEnabled, true);
       prefs->SetBoolean(ash::prefs::kHmrFeedbackAllowed, false);
+      prefs->SetBoolean(ash::prefs::kMagicBoostEnabled, true);
       break;
     case 2:
       prefs->SetBoolean(ash::prefs::kHmrEnabled, false);
       prefs->SetBoolean(ash::prefs::kHmrFeedbackAllowed, false);
+      prefs->SetBoolean(ash::prefs::kMagicBoostEnabled, true);
       break;
     default:
       break;

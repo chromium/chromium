@@ -62,9 +62,9 @@ enum class ManagePasswordsReferrer {
   // Deprecated as part of APC removal.
   // kAutomatedPasswordChangeSuccessLink = 14,
 
-  // On Mac and Win after enabling Biometric authentication before filling
-  // a confirmation dialog is shown with an instructions on how to control the
-  // feature from settings.
+  // On Mac, Win and ChromeOS after enabling Biometric authentication before
+  // filling a confirmation dialog is shown with an instructions on how to
+  // control the feature from settings.
   kBiometricAuthenticationBeforeFillingDialog = 15,
 
   // The Password Manager item was clicked in the Chrome menu.

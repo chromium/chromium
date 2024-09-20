@@ -28,7 +28,11 @@ static_library("dlp") {
     "files_policy_string_util.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_list",
+    "//chromeos/ash/experiences/screenshot_area",
+  ]
 
   deps = [
     "//ash",
@@ -119,7 +123,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/ash/policy/dlp/test:test_support",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/browser/chromeos/policy/dlp/dialogs:test_support",
@@ -132,6 +135,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/experiences/screenshot_area",
     "//chromeos/dbus/dlp",
     "//chromeos/dbus/dlp:dlp_proto",
     "//chromeos/ui/base",
@@ -188,7 +192,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/dlp/test:test_support",
     "//chrome/browser/ash/policy/login:test_support",
     "//chrome/browser/ash/system_web_apps",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/browser/chromeos/policy/dlp/dialogs:test_support",
@@ -207,6 +210,7 @@ source_set("browser_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/experiences/screenshot_area",
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
     "//components/exo",

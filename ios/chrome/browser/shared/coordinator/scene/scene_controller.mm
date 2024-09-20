@@ -17,6 +17,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -146,6 +147,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_scene_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/ui/authentication/signin/account_switch/account_switch_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
@@ -1006,24 +1008,13 @@ void OnListFamilyMembersResponse(
 - (void)startUpChromeUI {
   DCHECK(!self.browserViewWrangler);
   DCHECK(_sceneURLLoadingService.get());
-  DCHECK(self.sceneState.appState.mainProfile.browserState);
+  DCHECK(self.sceneState.profileState.profile);
 
   SceneState* sceneState = self.sceneState;
-
-  // TODO(crbug.com/353683683): do not use appState but instead use
-  // only profileState which should be set in SceneState initializer.
-  ChromeBrowserState* browserState =
-      self.sceneState.appState.mainProfile.browserState;
-
-  GetApplicationContext()
-      ->GetProfileManager()
-      ->GetProfileAttributesStorage()
-      ->SetProfileNameForSceneID(
-          base::SysNSStringToUTF8(sceneState.sceneSessionID),
-          browserState->GetProfileName());
+  ProfileIOS* profile = sceneState.profileState.profile;
 
   self.browserViewWrangler =
-      [[BrowserViewWrangler alloc] initWithBrowserState:browserState
+      [[BrowserViewWrangler alloc] initWithBrowserState:profile
                                              sceneState:sceneState
                                     applicationEndpoint:self
                                        settingsEndpoint:self];
@@ -1033,7 +1024,7 @@ void OnListFamilyMembersResponse(
   Browser* mainBrowser = self.browserViewWrangler.mainInterface.browser;
 
   PromosManager* promosManager =
-      PromosManagerFactory::GetForBrowserState(browserState);
+      PromosManagerFactory::GetForBrowserState(profile);
 
   DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
       [[DefaultBrowserPromoSceneAgent alloc] init];
@@ -1056,17 +1047,16 @@ void OnListFamilyMembersResponse(
                     applicationCommandsHandler:applicationCommandsHandler
                    policyChangeCommandsHandler:policyChangeCommandsHandler]];
 
-  PrefService* prefService = browserState->GetPrefs();
+  PrefService* prefService = profile->GetPrefs();
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForBrowserState(profile);
 
   policy::UserCloudPolicyManager* userPolicyManager =
-      browserState->GetUserCloudPolicyManager();
+      profile->GetUserCloudPolicyManager();
   if (IsUserPolicyNotificationNeeded(authService, prefService,
                                      userPolicyManager)) {
     policy::UserPolicySigninService* userPolicyService =
-        policy::UserPolicySigninServiceFactory::GetForBrowserState(
-            browserState);
+        policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
     [sceneState
         addAgent:[[UserPolicySceneAgent alloc]
                         initWithSceneUIProvider:self
@@ -1079,8 +1069,7 @@ void OnListFamilyMembersResponse(
   }
 
   enterprise_idle::IdleService* idleService =
-      enterprise_idle::IdleServiceFactory::GetForBrowserState(
-          mainBrowser->GetBrowserState());
+      enterprise_idle::IdleServiceFactory::GetForBrowserState(profile);
   id<SnackbarCommands> snackbarCommandsHandler =
       static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
 
@@ -1910,6 +1899,27 @@ using UserFeedbackDataCallback =
 }
 
 - (void)
+    switchAccountWithBaseViewController:(UIViewController*)baseViewController
+                            newIdentity:(id<SystemIdentity>)newIdentity
+                                   rect:(CGRect)rect
+                         rectAnchorView:(UIView*)rectAnchorView
+        viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
+                       signInCompletion:(ShowSigninCommandCompletionCallback)
+                                            signInCompletion {
+  UIViewController* mainViewController = viewWillBeDismissedAfterSignout
+                                             ? self.mainInterface.viewController
+                                             : baseViewController;
+  self.signinCoordinator = [[AccountSwitchCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:self.mainInterface.browser
+                     newIdentity:newIdentity
+              mainViewController:mainViewController
+                            rect:rect
+                  rectAnchorView:rectAnchorView];
+  [self startSigninCoordinatorWithCompletion:signInCompletion];
+}
+
+- (void)
     showTrustedVaultReauthForFetchKeysFromViewController:
         (UIViewController*)viewController
                                         securityDomainID:
@@ -2072,6 +2082,19 @@ using UserFeedbackDataCallback =
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
+}
+
+- (void)showPriceTrackingNotificationsSettings {
+  CHECK(!self.settingsNavigationController, base::NotFatalUntil::M134);
+  CHECK(!self.signinCoordinator, base::NotFatalUntil::M134);
+  Browser* browser = self.mainInterface.browser;
+  self.settingsNavigationController = [SettingsNavigationController
+      priceNotificationsControllerForBrowser:browser
+                                    delegate:self];
+  [self.currentInterface.viewController
+      presentViewController:self.settingsNavigationController
+                   animated:YES
+                 completion:nil];
 }
 
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity {
@@ -2277,14 +2300,12 @@ using UserFeedbackDataCallback =
 
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
-                              inEditMode:(BOOL)editMode
-                        showCancelButton:(BOOL)showCancelButton {
+                              inEditMode:(BOOL)editMode {
   UIViewController* baseViewController = self.currentInterface.viewController;
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showPasswordDetailsForCredential:credential
-                              inEditMode:editMode
-                        showCancelButton:showCancelButton];
+                              inEditMode:editMode];
     return;
   }
   Browser* browser = self.mainInterface.browser;
@@ -2292,8 +2313,7 @@ using UserFeedbackDataCallback =
       passwordDetailsControllerForBrowser:browser
                                  delegate:self
                                credential:credential
-                               inEditMode:editMode
-                         showCancelButton:showCancelButton];
+                               inEditMode:editMode];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
@@ -2317,13 +2337,13 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-- (void)showAddressDetails:(const autofill::AutofillProfile*)address
+- (void)showAddressDetails:(autofill::AutofillProfile)address
                 inEditMode:(BOOL)editMode
      offerMigrateToAccount:(BOOL)offerMigrateToAccount {
   UIViewController* baseViewController = self.currentInterface.viewController;
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
-           showAddressDetails:address
+           showAddressDetails:std::move(address)
                    inEditMode:editMode
         offerMigrateToAccount:offerMigrateToAccount];
     return;
@@ -2332,7 +2352,7 @@ using UserFeedbackDataCallback =
   self.settingsNavigationController = [SettingsNavigationController
       addressDetailsControllerForBrowser:browser
                                 delegate:self
-                                 address:address
+                                 address:std::move(address)
                               inEditMode:editMode
                    offerMigrateToAccount:offerMigrateToAccount];
   [baseViewController presentViewController:self.settingsNavigationController
@@ -2381,7 +2401,7 @@ using UserFeedbackDataCallback =
                  completion:nil];
 }
 
-- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard
+- (void)showCreditCardDetails:(autofill::CreditCard)creditCard
                    inEditMode:(BOOL)editMode {
   UIViewController* baseViewController = self.currentInterface.viewController;
   if (self.settingsNavigationController) {
@@ -3916,7 +3936,7 @@ using UserFeedbackDataCallback =
   // If there are pending removal operations, the activation will be deferred
   // until the callback is received.
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserStateIfExists(
+      BrowsingDataRemoverFactory::GetForProfileIfExists(
           self.currentInterface.browserState);
   if (browsingDataRemover && browsingDataRemover->IsRemoving()) {
     return;
@@ -4088,7 +4108,7 @@ using UserFeedbackDataCallback =
   }
 
   // Record off-the-record metrics before detroying the BrowserState.
-  SessionMetrics::FromBrowserState(otrBrowserState)
+  SessionMetrics::FromProfile(otrBrowserState)
       ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
 
   // Destroy and recreate the off-the-record BrowserState.

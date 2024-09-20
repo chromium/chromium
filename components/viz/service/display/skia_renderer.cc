@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display/skia_renderer.h"
 
+#include <array>
 #include <limits>
 #include <optional>
 #include <string>
@@ -137,7 +133,7 @@ struct SkDrawRegion {
   SkDrawRegion() = default;
   explicit SkDrawRegion(const gfx::QuadF& draw_region);
 
-  SkPoint points[4];
+  std::array<SkPoint, 4> points;
 };
 
 SkDrawRegion::SkDrawRegion(const gfx::QuadF& draw_region) {
@@ -576,7 +572,7 @@ struct SkiaRenderer::DrawQuadParams {
 
   SkPath draw_region_in_path() const {
     if (draw_region) {
-      return SkPath::Polygon(draw_region->points,
+      return SkPath::Polygon(draw_region->points.data(),
                              std::size(draw_region->points),
                              /*isClosed=*/true);
     }
@@ -1661,8 +1657,8 @@ void SkiaRenderer::PrepareGradient(
     }
   }
 
-  SkScalar positions[gfx::LinearGradient::kMaxStepSize];
-  SkColor gradient_colors[gfx::LinearGradient::kMaxStepSize];
+  std::array<SkScalar, gfx::LinearGradient::kMaxStepSize> positions;
+  std::array<SkColor, gfx::LinearGradient::kMaxStepSize> gradient_colors;
 
   size_t i = 0;
   for (; i < gradient_mask->step_count(); ++i) {
@@ -1672,7 +1668,8 @@ void SkiaRenderer::PrepareGradient(
 
   SkPoint::Offset(start_end, /*count=*/2, rect.x(), rect.y());
   sk_sp<SkShader> gradient = SkGradientShader::MakeLinear(
-      start_end, gradient_colors, positions, /*count=*/i, SkTileMode::kClamp);
+      start_end, gradient_colors.data(), positions.data(), /*count=*/i,
+      SkTileMode::kClamp);
   current_canvas_->clipShader(std::move(gradient));
 }
 
@@ -2123,7 +2120,7 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
     // The draw region was determined by the RPDQ's geometry, so map the
     // quadrilateral to the bypass'ed quad's coordinate space so that BSP
     // splitting is still respected.
-    rpdq_to_bypass.mapPoints(params->draw_region->points,
+    rpdq_to_bypass.mapPoints(params->draw_region->points.data(),
                              std::size(params->draw_region->points));
   }
 
@@ -2426,7 +2423,7 @@ void SkiaRenderer::DrawColoredQuad(SkColor4f color,
   color.fA = floor(params->opacity * color.fA * 255.f) / 255.f;
 
   const SkPoint* draw_region =
-      params->draw_region ? params->draw_region->points : nullptr;
+      params->draw_region ? params->draw_region->points.data() : nullptr;
 
   current_canvas_->experimental_DrawEdgeAAQuad(
       gfx::RectFToSkRect(params->visible_rect), draw_region,
@@ -2478,7 +2475,7 @@ void SkiaRenderer::DrawSingleImage(const SkImage* image,
   // Use -1 for matrix index since the cdt is set on the canvas.
   SkCanvas::ImageSetEntry entry = MakeEntry(image, matrix_index, *params);
   const SkPoint* draw_region =
-      params->draw_region ? params->draw_region->points : nullptr;
+      params->draw_region ? params->draw_region->points.data() : nullptr;
   current_canvas_->experimental_DrawEdgeAAImageSet(
       &entry, 1, draw_region, bypass_transform, params->sampling, paint,
       constraint);

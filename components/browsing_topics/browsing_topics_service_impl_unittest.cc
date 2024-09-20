@@ -52,7 +52,6 @@ namespace {
 constexpr base::TimeDelta kOneTestDay = base::Seconds(1);
 constexpr base::TimeDelta kEpoch = 7 * kOneTestDay;
 constexpr base::TimeDelta kMaxEpochIntroductionDelay = 2 * kOneTestDay;
-
 constexpr base::TimeDelta kDatabaseFetchDelay = base::Milliseconds(1);
 constexpr base::TimeDelta kCalculatorDelay = base::Milliseconds(1);
 constexpr base::TimeDelta kFirstTimeoutRetryDelay = base::Milliseconds(10);
@@ -180,6 +179,8 @@ class BrowsingTopicsServiceImplTest
   BrowsingTopicsServiceImplTest()
       : content::RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // Configure a long epoch_retention_duration to prevent epochs from expiring
+    // during tests where expiration is irrelevant.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{blink::features::kBrowsingTopics, {}},
@@ -190,6 +191,7 @@ class BrowsingTopicsServiceImplTest
             base::StrCat(
                 {base::NumberToString(kFirstTimeoutRetryDelay.InMilliseconds()),
                  "ms"})},
+           {"epoch_retention_duration", "3650000d"},
            {"max_epoch_introduction_delay",
             base::StrCat(
                 {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
@@ -453,6 +455,57 @@ TEST_F(BrowsingTopicsServiceImplTest, WallTimeScheduling) {
   task_environment()->SuspendedFastForwardBy(kEpoch);
 
   EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 2u);
+}
+
+TEST_F(BrowsingTopicsServiceImplTest,
+       StartFromPreexistingState_ScheduleEpochsExpiration) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"epoch_retention_duration",
+          base::StrCat(
+              {base::NumberToString(28 * kOneTestDay.InSeconds()), "s"})}}}},
+      /*disabled_features=*/{});
+
+  base::Time start_time = base::Time::Now();
+
+  std::vector<EpochTopics> preexisting_epochs;
+  preexisting_epochs.push_back(
+      CreateTestEpochTopics({{Topic(1), {}},
+                             {Topic(2), {}},
+                             {Topic(3), {}},
+                             {Topic(4), {}},
+                             {Topic(5), {}}},
+                            start_time - 29 * kOneTestDay));
+
+  preexisting_epochs.push_back(
+      CreateTestEpochTopics({{Topic(1), {}},
+                             {Topic(2), {}},
+                             {Topic(3), {}},
+                             {Topic(4), {}},
+                             {Topic(5), {}}},
+                            start_time - 27 * kOneTestDay));
+
+  CreateBrowsingTopicsStateFile(
+      std::move(preexisting_epochs),
+      /*next_scheduled_calculation_time=*/start_time + 2 * kOneTestDay);
+
+  InitializeBrowsingTopicsService(/*mock_calculator_results=*/{});
+
+  // Finish file loading.
+  task_environment()->RunUntilIdle();
+
+  // Verify that the first epoch (29 days old) has expired, leaving only one
+  // epoch.
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 1u);
+  EXPECT_EQ(browsing_topics_state().epochs()[0].calculation_time(),
+            start_time - 27 * kOneTestDay);
+
+  // Fast-forward time by one day and verify the second epoch also expires.
+  task_environment()->FastForwardBy(kOneTestDay);
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 0u);
 }
 
 TEST_F(BrowsingTopicsServiceImplTest,
@@ -1461,6 +1514,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
           base::StrCat(
               {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
                "s"})},
+         {"epoch_retention_duration", "3650000d"},
          {"prioritized_topics_list", "1,57"}}}},
       /*disabled_features=*/{});
 
@@ -2692,6 +2746,7 @@ TEST_F(BrowsingTopicsServiceImplTest, BlockTopicWithFinch) {
           base::StrCat(
               {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
                "s"})},
+         {"epoch_retention_duration", "3650000d"},
          {"disabled_topics_list", "20,10,7"}}}},
       /*disabled_features=*/{});
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));

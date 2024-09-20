@@ -541,13 +541,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // returns.
   bool IsEeaChoiceCountry();
 
-#if BUILDFLAG(IS_ANDROID)
-  // Returns whether the version of the search engines settings screen showing
-  // additional search engine info should be shown.
-  // TODO(b/318824817): To be removed post-launch.
-  bool ShouldShowUpdatedSettings();
-#endif
-
   // Returns a SearchTermsData which can be used to call TemplateURL methods.
   const SearchTermsData& search_terms_data() const {
     return *search_terms_data_;

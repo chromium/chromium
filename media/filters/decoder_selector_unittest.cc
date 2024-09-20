@@ -94,7 +94,6 @@ const int kDecoder4 = 0x456;
 class AudioDecoderSelectorTestParam {
  public:
   static constexpr DemuxerStream::Type kStreamType = DemuxerStream::AUDIO;
-
   using StreamTraits = DecoderStreamTraits<DemuxerStream::AUDIO>;
   using MockDecoder = MockAudioDecoder;
   using Output = AudioBuffer;
@@ -110,45 +109,13 @@ class AudioDecoderSelectorTestParam {
                                           kSampleFormatPlanarF32);
   }
 
-  static const base::Feature& ForceHardwareDecodersFeature() {
-    return kForceHardwareAudioDecoders;
-  }
-
-  static media::DecoderPriority MockDecoderPriorityCB(
-      const media::AudioDecoderConfig& config,
-      const media::AudioDecoder& decoder) {
-    const auto above_cutoff =
-        config.samples_per_second() > TestAudioConfig::NormalSampleRateValue();
-    return above_cutoff == decoder.IsPlatformDecoder()
-               ? media::DecoderPriority::kNormal
-               : media::DecoderPriority::kDeprioritized;
-  }
-  static media::DecoderPriority NormalDecoderPriorityCB(
-      const media::AudioDecoderConfig& /*config*/,
-      const media::AudioDecoder& /*decoder*/) {
-    return media::DecoderPriority::kNormal;
-  }
-  static media::DecoderPriority SkipDecoderPriorityCB(
-      const media::AudioDecoderConfig& /*config*/,
-      const media::AudioDecoder& /*decoder*/) {
-    return media::DecoderPriority::kSkipped;
-  }
-
   static void UseNormalClearDecoderConfig(
       StrictMock<MockDemuxerStream>& stream) {
     stream.set_audio_decoder_config(TestAudioConfig::Normal());
   }
-  static void UseHighQualityClearDecoderConfig(
-      StrictMock<MockDemuxerStream>& stream) {
-    stream.set_audio_decoder_config(TestAudioConfig::HighSampleRate());
-  }
   static void UseNormalEncryptedDecoderConfig(
       StrictMock<MockDemuxerStream>& stream) {
     stream.set_audio_decoder_config(TestAudioConfig::NormalEncrypted());
-  }
-  static void UseHighQualityEncryptedDecoderConfig(
-      StrictMock<MockDemuxerStream>& stream) {
-    stream.set_audio_decoder_config(TestAudioConfig::HighSampleRateEncrypted());
   }
 
   // Decoder::Initialize() takes different parameters depending on the type.
@@ -186,49 +153,17 @@ class VideoDecoderSelectorTestParam {
   using DecryptingDecoder = DecryptingVideoDecoder;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  static const base::Feature& ForceHardwareDecodersFeature() {
-    return kForceHardwareVideoDecoders;
-  }
-
   static std::unique_ptr<StreamTraits> CreateStreamTraits(MediaLog* media_log) {
     return std::make_unique<StreamTraits>(media_log);
-  }
-
-  static media::DecoderPriority MockDecoderPriorityCB(
-      const media::VideoDecoderConfig& config,
-      const media::VideoDecoder& decoder) {
-    auto const above_cutoff = config.visible_rect().height() >
-                              TestVideoConfig::NormalCodedSize().height();
-    return decoder.IsPlatformDecoder() == above_cutoff
-               ? media::DecoderPriority::kNormal
-               : media::DecoderPriority::kDeprioritized;
-  }
-  static media::DecoderPriority NormalDecoderPriorityCB(
-      const media::VideoDecoderConfig& /*config*/,
-      const media::VideoDecoder& /*decoder*/) {
-    return media::DecoderPriority::kNormal;
-  }
-  static media::DecoderPriority SkipDecoderPriorityCB(
-      const media::VideoDecoderConfig& /*config*/,
-      const media::VideoDecoder& /*decoder*/) {
-    return media::DecoderPriority::kSkipped;
   }
 
   static void UseNormalClearDecoderConfig(
       StrictMock<MockDemuxerStream>& stream) {
     stream.set_video_decoder_config(TestVideoConfig::Normal());
   }
-  static void UseHighQualityClearDecoderConfig(
-      StrictMock<MockDemuxerStream>& stream) {
-    stream.set_video_decoder_config(TestVideoConfig::Large());
-  }
   static void UseNormalEncryptedDecoderConfig(
       StrictMock<MockDemuxerStream>& stream) {
     stream.set_video_decoder_config(TestVideoConfig::NormalEncrypted());
-  }
-  static void UseHighQualityEncryptedDecoderConfig(
-      StrictMock<MockDemuxerStream>& stream) {
-    stream.set_video_decoder_config(TestVideoConfig::LargeEncrypted());
   }
 
   static void ExpectInitialize(MockDecoder* decoder,
@@ -413,7 +348,7 @@ class DecoderSelectorTest : public ::testing::Test {
     decoder_selector_ = std::make_unique<Selector>(
         task_environment_.GetMainThreadTaskRunner(),
         base::BindRepeating(&Self::CreateDecoders, base::Unretained(this)),
-        &media_log_);
+        &media_log_, /*enable_priority_based_selection=*/true);
     decoder_selector_->Initialize(
         traits_.get(), &demuxer_stream_, cdm_context_.get(),
         base::BindRepeating(&Self::OnWaiting, base::Unretained(this)));
@@ -422,14 +357,8 @@ class DecoderSelectorTest : public ::testing::Test {
   void UseClearDecoderConfig() {
     TypeParam::UseNormalClearDecoderConfig(demuxer_stream_);
   }
-  void UseHighQualityClearDecoderConfig() {
-    TypeParam::UseHighQualityClearDecoderConfig(demuxer_stream_);
-  }
   void UseEncryptedDecoderConfig() {
     TypeParam::UseNormalEncryptedDecoderConfig(demuxer_stream_);
-  }
-  void UseHighQualityEncryptedDecoderConfig() {
-    TypeParam::UseHighQualityEncryptedDecoderConfig(demuxer_stream_);
   }
 
   void SelectNextDecoder() {
@@ -547,125 +476,8 @@ TYPED_TEST(DecoderSelectorTest, ClearStream_FinalizeDecoderSelection) {
   this->SelectNextDecoder();
 }
 
-// Tests that platform decoders are prioritized for
-// high-quality configs, retaining their relative order.
-TYPED_TEST(DecoderSelectorTest, ClearStream_PrioritizePlatformDecoders) {
-  this->AddMockPlatformDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder2, kAlwaysSucceed);
-  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
-
-  this->UseHighQualityClearDecoderConfig();
-  this->CreateDecoderSelector();
-  this->decoder_selector_->OverrideDecoderPriorityCBForTesting(
-      base::BindRepeating(TypeParam::MockDecoderPriorityCB));
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder2));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder4));
-  this->SelectNextDecoder();
-
-  EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
-// Tests that non-platform decoders are prioritized for
-// normal-quality configs, retaining their relative order.
-TYPED_TEST(DecoderSelectorTest, ClearStream_DeprioritizePlatformDecoders) {
-  this->AddMockPlatformDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder2, kAlwaysSucceed);
-  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
-
-  this->UseClearDecoderConfig();
-  this->CreateDecoderSelector();
-  this->decoder_selector_->OverrideDecoderPriorityCBForTesting(
-      base::BindRepeating(TypeParam::MockDecoderPriorityCB));
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder2));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder4));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3));
-  this->SelectNextDecoder();
-
-  EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
-// Tests that platform and non-platform decoders remain in the order they are
-// given for a priority callback returning 'kNormal'.
-TYPED_TEST(DecoderSelectorTest,
-           ClearStream_NormalPriorityCallbackRetainsGivenOrder) {
-  this->AddMockPlatformDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder2, kAlwaysSucceed);
-  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
-
-  this->UseClearDecoderConfig();
-  this->CreateDecoderSelector();
-  this->decoder_selector_->OverrideDecoderPriorityCBForTesting(
-      base::BindRepeating(TypeParam::NormalDecoderPriorityCB));
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder2));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder4));
-  this->SelectNextDecoder();
-
-  EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
-TYPED_TEST(DecoderSelectorTest, ClearStream_SkipAllDecoders) {
-  this->AddMockPlatformDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder2, kAlwaysSucceed);
-  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
-
-  this->UseClearDecoderConfig();
-  this->CreateDecoderSelector();
-  this->decoder_selector_->OverrideDecoderPriorityCBForTesting(
-      base::BindRepeating(TypeParam::SkipDecoderPriorityCB));
-
-  EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
-TYPED_TEST(DecoderSelectorTest, ClearStream_ForceHardwareDecoders) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(TypeParam::ForceHardwareDecodersFeature());
-
-  this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
-  this->AddMockDecoder(kDecoder2, kClearOnly);
-  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
-
-  this->UseClearDecoderConfig();
-  this->CreateDecoderSelector();
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
 // Tests the production predicate for `DecoderSelector<DemuxerStream::VIDEO>`
 TEST_F(VideoDecoderSelectorTest, ClearStream_PrioritizeSoftwareDecoders) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kResolutionBasedDecoderPriority);
-
   this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
@@ -691,9 +503,6 @@ TEST_F(VideoDecoderSelectorTest, ClearStream_PrioritizeSoftwareDecoders) {
 
 // Tests the production predicate for `DecoderSelector<DemuxerStream::VIDEO>`
 TEST_F(VideoDecoderSelectorTest, ClearStream_PrioritizePlatformDecoders) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kResolutionBasedDecoderPriority);
-
   this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
@@ -737,118 +546,6 @@ TYPED_TEST(DecoderSelectorTest,
   this->UseEncryptedDecoderConfig();
   this->CreateDecoderSelector();
 
-  EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
-// Tests that for an encrypted stream, platform decoders are prioritized for
-// high-quality configs, retaining their relative order.
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_PrioritizePlatformDecoders) {
-  this->AddMockPlatformDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder2, kAlwaysSucceed);
-  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
-
-  this->UseHighQualityEncryptedDecoderConfig();
-  this->CreateDecoderSelector();
-  this->decoder_selector_->OverrideDecoderPriorityCBForTesting(
-      base::BindRepeating(TypeParam::MockDecoderPriorityCB));
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder2));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder4));
-  this->SelectNextDecoder();
-
-  EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
-// Tests that for an encrypted stream, non-platform decoders are prioritized for
-// normal-quality configs, retaining their relative order.
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_DeprioritizePlatformDecoders) {
-  this->AddMockPlatformDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder2, kAlwaysSucceed);
-  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
-
-  this->UseEncryptedDecoderConfig();
-  this->CreateDecoderSelector();
-  this->decoder_selector_->OverrideDecoderPriorityCBForTesting(
-      base::BindRepeating(TypeParam::MockDecoderPriorityCB));
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder2));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder4));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3));
-  this->SelectNextDecoder();
-
-  EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
-// Tests that platform and non-platform decoders remain in the order they are
-// given for a priority callback returning 'kNormal'.
-TYPED_TEST(DecoderSelectorTest,
-           EncryptedStream_NormalPriorityCallbackRetainsGivenOrder) {
-  this->AddMockPlatformDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder2, kAlwaysSucceed);
-  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
-
-  this->UseEncryptedDecoderConfig();
-  this->CreateDecoderSelector();
-  this->decoder_selector_->OverrideDecoderPriorityCBForTesting(
-      base::BindRepeating(TypeParam::NormalDecoderPriorityCB));
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder2));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3));
-  this->SelectNextDecoder();
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder4));
-  this->SelectNextDecoder();
-
-  EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_SkipAllDecoders) {
-  this->AddMockPlatformDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder2, kAlwaysSucceed);
-  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
-
-  this->UseEncryptedDecoderConfig();
-  this->CreateDecoderSelector();
-  this->decoder_selector_->OverrideDecoderPriorityCBForTesting(
-      base::BindRepeating(TypeParam::SkipDecoderPriorityCB));
-
-  EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_ForceHardwareDecoders) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(TypeParam::ForceHardwareDecodersFeature());
-
-  this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
-  this->AddMockDecoder(kDecoder2, kClearOnly);
-  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
-  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
-
-  this->UseEncryptedDecoderConfig();
-  this->CreateDecoderSelector();
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3));
-  this->SelectNextDecoder();
   EXPECT_CALL(*this, NoDecoderSelected());
   this->SelectNextDecoder();
 }
@@ -1032,9 +729,6 @@ TYPED_TEST(DecoderSelectorTest, ClearToEncryptedStream_DecryptOnly) {
 
 // Tests the production predicate for `DecoderSelector<DemuxerStream::VIDEO>`
 TEST_F(VideoDecoderSelectorTest, EncryptedStream_PrioritizeSoftwareDecoders) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kResolutionBasedDecoderPriority);
-
   this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
@@ -1056,9 +750,6 @@ TEST_F(VideoDecoderSelectorTest, EncryptedStream_PrioritizeSoftwareDecoders) {
 
 // Tests the production predicate for `DecoderSelector<DemuxerStream::VIDEO>`
 TEST_F(VideoDecoderSelectorTest, EncryptedStream_PrioritizePlatformDecoders) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kResolutionBasedDecoderPriority);
-
   this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
@@ -1075,76 +766,6 @@ TEST_F(VideoDecoderSelectorTest, EncryptedStream_PrioritizePlatformDecoders) {
   EXPECT_CALL(*this, OnDecoderSelected(kDecoder4));
   this->SelectNextDecoder();
   EXPECT_CALL(*this, NoDecoderSelected());
-  this->SelectNextDecoder();
-}
-
-// Tests we always use resolution-based rules for RTC.
-TEST_F(VideoDecoderSelectorTest, RTC_UseResolutionRuleWithoutSwitch) {
-  // Turn off `kResolutionBasedDecoderPriority`, since rtc should override it.
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kResolutionBasedDecoderPriority);
-
-  // Add the non-platform decoder earlier, but expect the platform one.
-  this->AddMockDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockPlatformDecoder(kDecoder2, kAlwaysSucceed);
-
-  auto config = TestVideoConfig::Custom(gfx::Size(4096, 4096));
-  config.set_is_rtc(true);
-  this->demuxer_stream_.set_video_decoder_config(config);
-  this->CreateDecoderSelector();
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder2));
-  this->SelectNextDecoder();
-}
-
-// Non-platform decoders should be used for RTC unless enabled by a switch.
-TEST_F(VideoDecoderSelectorTest, RTC_SkipNonPlatformDecodersWithoutSwitch) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kExposeSwDecodersToWebRTC);
-
-  // Add a non-platform decoder, which it should not use.
-  this->AddMockDecoder(kDecoder1, kAlwaysSucceed);
-
-  auto config = TestVideoConfig::Custom(gfx::Size(100, 100));
-  config.set_is_rtc(true);
-  this->demuxer_stream_.set_video_decoder_config(config);
-  this->CreateDecoderSelector();
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1)).Times(0);
-  this->SelectNextDecoder();
-}
-
-// Platform decoders should be allowed for RTC without the sw switch.
-TEST_F(VideoDecoderSelectorTest, RTC_AllowPlatformDecodersWithoutSwitch) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kExposeSwDecodersToWebRTC);
-
-  // Add a platform decoder, which it should use.
-  this->AddMockPlatformDecoder(kDecoder1, kAlwaysSucceed);
-
-  auto config = TestVideoConfig::Custom(gfx::Size(100, 100));
-  config.set_is_rtc(true);
-  this->demuxer_stream_.set_video_decoder_config(config);
-  this->CreateDecoderSelector();
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
-  this->SelectNextDecoder();
-}
-
-// Non-platform decoders should be allowed for RTC if enabled by a switch.
-TEST_F(VideoDecoderSelectorTest, RTC_AllowNonPlatformDecodersWithSwitch) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kExposeSwDecodersToWebRTC);
-
-  // Add a non-platform decoder, which it should use.
-  this->AddMockDecoder(kDecoder1, kAlwaysSucceed);
-
-  auto config = TestVideoConfig::Custom(gfx::Size(100, 100));
-  config.set_is_rtc(true);
-  this->demuxer_stream_.set_video_decoder_config(config);
-  this->CreateDecoderSelector();
-
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
   this->SelectNextDecoder();
 }
 

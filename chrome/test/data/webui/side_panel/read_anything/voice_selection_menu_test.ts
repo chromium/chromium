@@ -20,8 +20,10 @@ function stringToHtmlTestId(s: string): string {
 suite('VoiceSelectionMenu', () => {
   let voiceSelectionMenu: VoiceSelectionMenuElement;
   let dots: HTMLElement;
-  let voice1 = createSpeechSynthesisVoice({name: 'test voice 1', lang: 'lang'});
-  let voice2 = createSpeechSynthesisVoice({name: 'test voice 2', lang: 'lang'});
+  let voice1 =
+      createSpeechSynthesisVoice({name: 'Google test voice 1', lang: 'lang'});
+  let voice2 =
+      createSpeechSynthesisVoice({name: 'Google test voice 2', lang: 'lang'});
 
   const voiceSelectionButtonSelector: string =
       '.dropdown-voice-selection-button:not(.language-menu-button)';
@@ -119,6 +121,44 @@ suite('VoiceSelectionMenu', () => {
     });
   });
 
+  // <if expr="not is_chromeos">
+  test('it renames non-Google voices per language', async () => {
+    const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
+    const googleVoice1 =
+        createSpeechSynthesisVoice({name: 'Google Gandalf', lang: 'en-US'});
+    const googleVoice2 =
+        createSpeechSynthesisVoice({name: 'Google Gimli', lang: 'pt-BR'});
+    const systemVoice1 =
+        createSpeechSynthesisVoice({name: 'Legolas', lang: 'en-US'});
+    const systemVoice2 =
+        createSpeechSynthesisVoice({name: 'Frodo', lang: 'pt-BR'});
+    const availableVoices = [
+      googleVoice1,
+      googleVoice2,
+      systemVoice1,
+      systemVoice2,
+    ];
+    setAvailableVoicesAndEnabledLangs(availableVoices, ['en-US', 'pt-BR']);
+    await microtasksFinished();
+
+    const groupTitles = menu.querySelectorAll<HTMLElement>('.lang-group-title');
+    assertEquals(2, groupTitles.length);
+    const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
+    assertEquals(4, voiceNames.length);
+
+    const englishVoice1 = groupTitles.item(0)!.nextElementSibling!;
+    const englishVoice2 = englishVoice1.nextElementSibling!;
+    const portugueseVoice1 = groupTitles.item(1)!.nextElementSibling!;
+    const portugueseVoice2 = portugueseVoice1.nextElementSibling!;
+    assertEquals(googleVoice1.name, englishVoice1.textContent!.trim());
+    assertEquals(
+        'System text-to-speech voice', englishVoice2.textContent!.trim());
+    assertEquals(googleVoice2.name, portugueseVoice1.textContent!.trim());
+    assertEquals(
+        'System text-to-speech voice', portugueseVoice2.textContent!.trim());
+  });
+  // </if>
+
   suite('with multiple available voices', () => {
     let selectedVoice: SpeechSynthesisVoice;
     let previewVoice: SpeechSynthesisVoice;
@@ -128,11 +168,13 @@ suite('VoiceSelectionMenu', () => {
       // tests to ensure the menu has been rendered.
       voiceSelectionMenu!.$.voiceSelectionMenu.get();
       selectedVoice =
-          createSpeechSynthesisVoice({name: 'selected', lang: 'en-US'});
+          createSpeechSynthesisVoice({name: 'Google selected', lang: 'en-US'});
       previewVoice =
-          createSpeechSynthesisVoice({name: 'preview', lang: 'en-US'});
-      voice1 = createSpeechSynthesisVoice({name: 'voice1', lang: 'en-US'});
-      voice2 = createSpeechSynthesisVoice({name: 'voice2', lang: 'it-IT'});
+          createSpeechSynthesisVoice({name: 'Google preview', lang: 'en-US'});
+      voice1 =
+          createSpeechSynthesisVoice({name: 'Google voice1', lang: 'en-US'});
+      voice2 =
+          createSpeechSynthesisVoice({name: 'Google voice2', lang: 'it-IT'});
       const availableVoices = [
         voice1,
         previewVoice,
@@ -168,10 +210,10 @@ suite('VoiceSelectionMenu', () => {
       const secondVoice = firstVoice.nextElementSibling!;
       const thirdVoice = secondVoice.nextElementSibling!;
       const italianVoice = groupTitles.item(1)!.nextElementSibling!;
-      assertEquals('voice1', firstVoice.textContent!.trim());
-      assertEquals('preview', secondVoice.textContent!.trim());
-      assertEquals('selected', thirdVoice.textContent!.trim());
-      assertEquals('voice2', italianVoice.textContent!.trim());
+      assertEquals(voice1.name, firstVoice.textContent!.trim());
+      assertEquals(previewVoice.name, secondVoice.textContent!.trim());
+      assertEquals(selectedVoice.name, thirdVoice.textContent!.trim());
+      assertEquals(voice2.name, italianVoice.textContent!.trim());
     });
 
     test(
@@ -187,7 +229,7 @@ suite('VoiceSelectionMenu', () => {
           assertEquals(1, groupTitles.length);
 
           const italianVoice = groupTitles.item(0)!.nextElementSibling!;
-          assertEquals('voice2', italianVoice.textContent!.trim());
+          assertEquals(voice2.name, italianVoice.textContent!.trim());
         });
 
     suite('with Natural voices also available', () => {
@@ -221,9 +263,11 @@ suite('VoiceSelectionMenu', () => {
             'Google US English 2 (Natural)',
             usEnglishDropdownItems.item(1).textContent!.trim());
         assertEquals(
-            'preview', usEnglishDropdownItems.item(2).textContent!.trim());
+            previewVoice.name,
+            usEnglishDropdownItems.item(2).textContent!.trim());
         assertEquals(
-            'selected', usEnglishDropdownItems.item(3).textContent!.trim());
+            selectedVoice.name,
+            usEnglishDropdownItems.item(3).textContent!.trim());
       });
     });
 
@@ -246,9 +290,9 @@ suite('VoiceSelectionMenu', () => {
         'when voices have duplicate names languages are grouped correctly',
         async () => {
           const availableVoices = [
-            createSpeechSynthesisVoice({name: 'English', lang: 'en-US'}),
-            createSpeechSynthesisVoice({name: 'English', lang: 'en-US'}),
-            createSpeechSynthesisVoice({name: 'English', lang: 'en-UK'}),
+            createSpeechSynthesisVoice({name: 'Google English', lang: 'en-US'}),
+            createSpeechSynthesisVoice({name: 'Google English', lang: 'en-US'}),
+            createSpeechSynthesisVoice({name: 'Google English', lang: 'en-UK'}),
           ];
           setAvailableVoicesAndEnabledLangs(availableVoices);
           await microtasksFinished();
@@ -262,9 +306,12 @@ suite('VoiceSelectionMenu', () => {
           assertEquals('en-us', groupTitles.item(0)!.textContent!.trim());
           assertEquals('en-uk', groupTitles.item(1)!.textContent!.trim());
           assertEquals(3, voiceNames.length);
-          assertEquals('English', voiceNames.item(0)!.textContent!.trim());
-          assertEquals('English', voiceNames.item(1)!.textContent!.trim());
-          assertEquals('English', voiceNames.item(2)!.textContent!.trim());
+          assertEquals(
+              'Google English', voiceNames.item(0)!.textContent!.trim());
+          assertEquals(
+              'Google English', voiceNames.item(1)!.textContent!.trim());
+          assertEquals(
+              'Google English', voiceNames.item(2)!.textContent!.trim());
         });
 
     test(

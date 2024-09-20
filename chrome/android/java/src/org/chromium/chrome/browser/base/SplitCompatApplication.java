@@ -135,7 +135,7 @@ public class SplitCompatApplication extends Application {
                 VersionConstants.PRODUCT_VERSION,
                 BuildConfig.VERSION_CODE,
                 BuildConfig.MIN_SDK_VERSION,
-                ProductConfig.IS_BUNDLE,
+                BuildConfig.IS_BUNDLE,
                 ContextUtils.getProcessName(),
                 isIsolatedProcess);
 
@@ -189,7 +189,6 @@ public class SplitCompatApplication extends Application {
         }
 
         maybeInitProcessType();
-        BundleUtils.setIsBundle(ProductConfig.IS_BUNDLE);
 
         if (isBrowserProcess) {
             performBrowserProcessPreloading(context);

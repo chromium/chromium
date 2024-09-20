@@ -87,6 +87,21 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<uint32_t, RandomizedResponseError> GetNumStates(
     const TriggerSpecs& specs);
 
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) PrivacyMathConfig {
+  // Controls the max number bits of information that can be associated with
+  // a single source.
+  double max_channel_capacity_navigation = 11.5;
+  double max_channel_capacity_scopes_navigation = 11.55;
+  double max_channel_capacity_event = 6.5;
+  double max_channel_capacity_scopes_event = 6.5;
+
+  double GetMaxChannelCapacity(mojom::SourceType) const;
+  double GetMaxChannelCapacityScopes(mojom::SourceType) const;
+
+  friend bool operator==(const PrivacyMathConfig&,
+                         const PrivacyMathConfig&) = default;
+};
+
 // Determines the randomized response flip probability for the given API
 // configuration, and performs randomized response on that output space.
 //
@@ -97,15 +112,10 @@ base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponse(const TriggerSpecs& specs,
                      double epsilon,
                      mojom::SourceType,
-                     const std::optional<AttributionScopesData>&);
+                     const std::optional<AttributionScopesData>&,
+                     const PrivacyMathConfig&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING) uint32_t MaxTriggerStateCardinality();
-
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-double GetMaxChannelCapacity(mojom::SourceType);
-
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-double GetMaxChannelCapacityScopes(mojom::SourceType);
 
 // Exposed for testing purposes.
 namespace internal {
@@ -117,7 +127,9 @@ namespace internal {
 // Note: large values of `n` and `k` may overflow, which will cause the returned
 // `CheckedNumeric` to be invalid.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::CheckedNumeric<uint32_t> BinomialCoefficient(int n, int k);
+base::CheckedNumeric<uint32_t> BinomialCoefficient(
+    base::StrictNumeric<uint32_t> n,
+    base::StrictNumeric<uint32_t> k);
 
 // Returns the k-combination associated with the number `combination_index`. In
 // other words, returns the combination of `k` integers uniquely indexed by
@@ -126,24 +138,25 @@ base::CheckedNumeric<uint32_t> BinomialCoefficient(int n, int k);
 //
 // The returned vector is guaranteed to have size `k`.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<int> GetKCombinationAtIndex(
+std::vector<uint32_t> GetKCombinationAtIndex(
     base::StrictNumeric<uint32_t> combination_index,
-    int k);
+    base::StrictNumeric<uint32_t> k);
 
 // Returns the number of possible sequences of "stars and bars" sequences
 // https://en.wikipedia.org/wiki/Stars_and_bars_(combinatorics),
 // which is equivalent to (num_stars + num_bars choose num_stars).
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::CheckedNumeric<uint32_t> GetNumberOfStarsAndBarsSequences(int num_stars,
-                                                                int num_bars);
+base::CheckedNumeric<uint32_t> GetNumberOfStarsAndBarsSequences(
+    base::StrictNumeric<uint32_t> num_stars,
+    base::StrictNumeric<uint32_t> num_bars);
 
 // Returns a vector of the indices of every star in the stars and bars sequence
 // indexed by `sequence_index`. The indexing technique uses the k-combination
 // utility documented above.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::vector<int>, absl::monostate> GetStarIndices(
-    int num_stars,
-    int num_bars,
+base::expected<std::vector<uint32_t>, absl::monostate> GetStarIndices(
+    base::StrictNumeric<uint32_t> num_stars,
+    base::StrictNumeric<uint32_t> num_bars,
     base::StrictNumeric<uint32_t> sequence_index);
 
 // From a vector with the index of every star in a stars and bars sequence,
@@ -151,7 +164,8 @@ base::expected<std::vector<int>, absl::monostate> GetStarIndices(
 // it. Assumes `star_indices` is in descending order. Output is also sorted
 // in descending order.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<int> GetBarsPrecedingEachStar(std::vector<int> star_indices);
+std::vector<uint32_t> GetBarsPrecedingEachStar(
+    std::vector<uint32_t> star_indices);
 
 // Computes the binary entropy function:
 // https://en.wikipedia.org/wiki/Binary_entropy_function
@@ -169,8 +183,8 @@ double ComputeChannelCapacity(base::StrictNumeric<uint32_t> num_states_strict,
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 double ComputeChannelCapacityScopes(
     base::StrictNumeric<uint32_t> num_states_strict,
-    uint32_t max_event_states,
-    uint32_t attribution_scope_limit);
+    base::StrictNumeric<uint32_t> max_event_states,
+    base::StrictNumeric<uint32_t> attribution_scope_limit);
 
 // Generates fake reports from the "stars and bars" sequence index of a
 // possible output of the API. This output is determined by the following
@@ -193,8 +207,7 @@ GetFakeReportsForSequenceIndex(
 //
 // Takes a `StateMap`, to optimize with the cache from previous calls that
 // pre-compute the number of states (`GetNumStatesRecursive()`).
-using ConfigForCache = uint32_t;
-using StateMap = std::map<ConfigForCache, base::CheckedNumeric<uint32_t>>;
+using StateMap = std::map<uint32_t, uint32_t>;
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
 GetFakeReportsForSequenceIndex(const TriggerSpecs& specs,
@@ -210,7 +223,8 @@ DoRandomizedResponseWithCache(
     double epsilon,
     StateMap& map,
     mojom::SourceType,
-    const std::optional<AttributionScopesData>& scopes_data);
+    const std::optional<AttributionScopesData>& scopes_data,
+    const PrivacyMathConfig&);
 
 }  // namespace internal
 
@@ -233,90 +247,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 
  private:
   uint32_t previous_;
-};
-
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-    ScopedMaxNavigationChannelCapacityForTesting {
- public:
-  explicit ScopedMaxNavigationChannelCapacityForTesting(double);
-
-  ~ScopedMaxNavigationChannelCapacityForTesting();
-
-  ScopedMaxNavigationChannelCapacityForTesting(
-      const ScopedMaxNavigationChannelCapacityForTesting&) = delete;
-  ScopedMaxNavigationChannelCapacityForTesting& operator=(
-      const ScopedMaxNavigationChannelCapacityForTesting&) = delete;
-
-  ScopedMaxNavigationChannelCapacityForTesting(
-      ScopedMaxNavigationChannelCapacityForTesting&&) = delete;
-  ScopedMaxNavigationChannelCapacityForTesting& operator=(
-      ScopedMaxNavigationChannelCapacityForTesting&&) = delete;
-
- private:
-  double previous_;
-};
-
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-    ScopedMaxEventChannelCapacityForTesting {
- public:
-  explicit ScopedMaxEventChannelCapacityForTesting(double);
-
-  ~ScopedMaxEventChannelCapacityForTesting();
-
-  ScopedMaxEventChannelCapacityForTesting(
-      const ScopedMaxEventChannelCapacityForTesting&) = delete;
-  ScopedMaxEventChannelCapacityForTesting& operator=(
-      const ScopedMaxEventChannelCapacityForTesting&) = delete;
-
-  ScopedMaxEventChannelCapacityForTesting(
-      ScopedMaxEventChannelCapacityForTesting&&) = delete;
-  ScopedMaxEventChannelCapacityForTesting& operator=(
-      ScopedMaxEventChannelCapacityForTesting&&) = delete;
-
- private:
-  double previous_;
-};
-
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-    ScopedMaxScopesNavigationChannelCapacityForTesting {
- public:
-  explicit ScopedMaxScopesNavigationChannelCapacityForTesting(double);
-
-  ~ScopedMaxScopesNavigationChannelCapacityForTesting();
-
-  ScopedMaxScopesNavigationChannelCapacityForTesting(
-      const ScopedMaxScopesNavigationChannelCapacityForTesting&) = delete;
-  ScopedMaxScopesNavigationChannelCapacityForTesting& operator=(
-      const ScopedMaxScopesNavigationChannelCapacityForTesting&) = delete;
-
-  ScopedMaxScopesNavigationChannelCapacityForTesting(
-      ScopedMaxScopesNavigationChannelCapacityForTesting&&) = delete;
-  ScopedMaxScopesNavigationChannelCapacityForTesting& operator=(
-      ScopedMaxScopesNavigationChannelCapacityForTesting&&) = delete;
-
- private:
-  double previous_;
-};
-
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-    ScopedMaxScopesEventChannelCapacityForTesting {
- public:
-  explicit ScopedMaxScopesEventChannelCapacityForTesting(double);
-
-  ~ScopedMaxScopesEventChannelCapacityForTesting();
-
-  ScopedMaxScopesEventChannelCapacityForTesting(
-      const ScopedMaxScopesEventChannelCapacityForTesting&) = delete;
-  ScopedMaxScopesEventChannelCapacityForTesting& operator=(
-      const ScopedMaxScopesEventChannelCapacityForTesting&) = delete;
-
-  ScopedMaxScopesEventChannelCapacityForTesting(
-      ScopedMaxScopesEventChannelCapacityForTesting&&) = delete;
-  ScopedMaxScopesEventChannelCapacityForTesting& operator=(
-      ScopedMaxScopesEventChannelCapacityForTesting&&) = delete;
-
- private:
-  double previous_;
 };
 
 }  // namespace attribution_reporting

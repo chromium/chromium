@@ -81,6 +81,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -1362,7 +1363,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // LifecycleStateImpl is not immediately determined. This boolean is reset
   // when this RenderFrameHost enters the back-forward-cache or the pending
   // deletion list.
-  void SetHasPendingLifecycleStateUpdate();
+  // `last_frame_type` is the type of the frame from which this RenderFrameHost
+  // was just unset. This is null when called recursively for the children.
+  void SetHasPendingLifecycleStateUpdate(
+      std::optional<FrameType> last_frame_type);
 
   enum class BeforeUnloadType {
     BROWSER_INITIATED_NAVIGATION,
@@ -2209,7 +2213,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   net::CookieSettingOverrides GetCookieSettingOverrides() override;
 
-  PolicyContainerHost* policy_container_host() {
+  PolicyContainerHost* policy_container_host() const {
     return policy_container_host_.get();
   }
 
@@ -2482,7 +2486,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
           remote_frame_interfaces,
       const blink::RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token) override;
-  void ForwardFencedFrameEventToEmbedder(
+  void ForwardFencedFrameEventAndUserActivationToEmbedder(
       const std::string& event_type) override;
   void OnViewTransitionOptInChanged(blink::mojom::ViewTransitionSameOriginOptIn
                                         view_transition_opt_in) override;
@@ -2880,7 +2884,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void HandleAXEventsForTests(const ui::AXTreeID& tree_id,
                               ui::AXUpdatesAndEvents updates_and_events) {
     HandleAXEvents(tree_id, std::move(updates_and_events),
-                   *accessibility_reset_token_);
+                   *accessibility_reset_token_, {});
   }
 
   // BucketContext:
@@ -3185,6 +3189,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   friend class WebContentsSplitCacheBrowserTest;
   friend class RenderFrameHostManagerUnloadBrowserTest;
   friend class NavigationBrowserTest;
+  friend class FrameHostInterceptorForPopins;
 
   FRIEND_TEST_ALL_PREFIXES(NavigatorTest, TwoNavigationsRacingCommit);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBeforeUnloadBrowserTest,
@@ -3452,13 +3457,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
 #endif
 
   friend class RenderAccessibilityHost;
-  void HandleAXEvents(const ui::AXTreeID& tree_id,
-                      ui::AXUpdatesAndEvents updates_and_events,
-                      uint32_t reset_token);
+  void HandleAXEvents(
+      const ui::AXTreeID& tree_id,
+      ui::AXUpdatesAndEvents updates_and_events,
+      uint32_t reset_token,
+      mojo::ReportBadMessageCallback report_bad_message_callback);
   void HandleAXLocationChanges(
       const ui::AXTreeID& tree_id,
       std::vector<blink::mojom::LocationChangesPtr> changes,
-      uint32_t reset_token);
+      uint32_t reset_token,
+      mojo::ReportBadMessageCallback report_bad_message_callback);
 
   // mojom::DomAutomationControllerHost:
   void DomOperationResponse(const std::string& json_string) override;
@@ -4185,6 +4193,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // increasing the priority of the renderer process anymore.
   void MaybeResetBoostRenderProcessForLoading();
 
+  // A discard optimization that attempts a shutdown of the associated render
+  // process. Shutdown may be reattempted if unsuccessful to give outstanding
+  // keep-alive requests a chance to resolve before timing out. `retries`
+  // tracks the number of shutdown reattempts.
+  void CleanupRenderProcessForDiscardIfPossible(int retries = 0);
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -4504,8 +4518,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<input::TimeoutMonitor> close_timeout_;
 
   // Returns whether the tab was previously discarded.
-  // This is passed to CommitNavigationParams in NavigationRequest or is set on
-  // the outermost main frame when its tree has been discarded.
+  // This is passed to CommitNavigationParams in NavigationRequest.
   bool was_discarded_ = false;
 
   // Indicates whether this RenderFrameHost is in the process of loading a
@@ -4629,6 +4642,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // we don't know what the old RenderFrameHost's next lifecycle state should
   // be.
   bool has_pending_lifecycle_state_update_ = false;
+  // When `has_pending_lifecycle_state_update_` is true and this RenderFrameHost
+  // is not a subframe, this is the type of frame from which this
+  // RenderFrameHost was just unset. This is used by `IsInPrimaryMainFrame` as
+  // it needs to know what the frame type was during this pending update window
+  // when we don't have an `owner_`.
+  // TODO(crbug.com/40168690): This can be removed alongside
+  // `has_pending_lifecycle_state_update_`.
+  std::optional<FrameType> last_main_frame_type_pending_lifecycle_update_;
 
   // Used for tracking the latest size of the RenderFrame.
   std::optional<gfx::Size> frame_size_;

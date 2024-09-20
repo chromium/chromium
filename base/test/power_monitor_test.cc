@@ -21,20 +21,16 @@ class PowerMonitorTestSource : public PowerMonitorSource {
   // Retrieve current states.
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState()
       const override;
-  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
-  bool IsOnBatteryPower() const override;
+  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const override;
 
   // Sends asynchronous notifications to registered observers.
   void Suspend();
   void Resume();
-  void SetOnBatteryPower(bool on_battery_power);
   void SetBatteryPowerStatus(
       PowerStateObserver::BatteryPowerStatus battery_power_status);
 
   // Sends asynchronous notifications to registered observers and ensures they
   // are executed (i.e. RunUntilIdle()).
-  void GeneratePowerStateEvent(bool on_battery_power);
-
   void GeneratePowerStateEvent(
       PowerStateObserver::BatteryPowerStatus battery_power_status);
   void GenerateSuspendEvent();
@@ -64,22 +60,10 @@ void PowerMonitorTestSource::Resume() {
   ProcessPowerEvent(RESUME_EVENT);
 }
 
-void PowerMonitorTestSource::SetOnBatteryPower(bool on_battery_power) {
-  SetBatteryPowerStatus(
-      on_battery_power
-          ? PowerStateObserver::BatteryPowerStatus::kBatteryPower
-          : PowerStateObserver::BatteryPowerStatus::kExternalPower);
-}
-
 void PowerMonitorTestSource::SetBatteryPowerStatus(
     PowerStateObserver::BatteryPowerStatus battery_power_status) {
   test_power_status_ = battery_power_status;
   ProcessPowerEvent(POWER_STATE_EVENT);
-}
-
-void PowerMonitorTestSource::GeneratePowerStateEvent(bool on_battery_power) {
-  SetOnBatteryPower(on_battery_power);
-  RunLoop().RunUntilIdle();
 }
 
 void PowerMonitorTestSource::GeneratePowerStateEvent(
@@ -101,11 +85,6 @@ void PowerMonitorTestSource::GenerateResumeEvent() {
 PowerStateObserver::BatteryPowerStatus
 PowerMonitorTestSource::GetBatteryPowerStatus() const {
   return test_power_status_;
-}
-
-bool PowerMonitorTestSource::IsOnBatteryPower() const {
-  return test_power_status_ ==
-         PowerStateObserver::BatteryPowerStatus::kBatteryPower;
 }
 
 void PowerMonitorTestSource::GenerateThermalThrottlingEvent(
@@ -137,10 +116,6 @@ ScopedPowerMonitorTestSource::GetCurrentThermalState() const {
   return power_monitor_test_source_->GetCurrentThermalState();
 }
 
-bool ScopedPowerMonitorTestSource::IsOnBatteryPower() const {
-  return power_monitor_test_source_->IsOnBatteryPower();
-}
-
 PowerStateObserver::BatteryPowerStatus
 ScopedPowerMonitorTestSource::GetBatteryPowerStatus() const {
   return power_monitor_test_source_->GetBatteryPowerStatus();
@@ -154,10 +129,6 @@ void ScopedPowerMonitorTestSource::Resume() {
   power_monitor_test_source_->Resume();
 }
 
-void ScopedPowerMonitorTestSource::SetOnBatteryPower(bool on_battery_power) {
-  power_monitor_test_source_->SetOnBatteryPower(on_battery_power);
-}
-
 void ScopedPowerMonitorTestSource::SetBatteryPowerStatus(
     PowerStateObserver::BatteryPowerStatus battery_power_status) {
   power_monitor_test_source_->SetBatteryPowerStatus(battery_power_status);
@@ -169,11 +140,6 @@ void ScopedPowerMonitorTestSource::GenerateSuspendEvent() {
 
 void ScopedPowerMonitorTestSource::GenerateResumeEvent() {
   power_monitor_test_source_->GenerateResumeEvent();
-}
-
-void ScopedPowerMonitorTestSource::GeneratePowerStateEvent(
-    bool on_battery_power) {
-  power_monitor_test_source_->GeneratePowerStateEvent(on_battery_power);
 }
 
 void ScopedPowerMonitorTestSource::GeneratePowerStateEvent(
@@ -197,12 +163,6 @@ void PowerMonitorTestObserver::OnBatteryPowerStatusChange(
     PowerStateObserver::BatteryPowerStatus battery_power_status) {
   last_power_status_ = battery_power_status;
   power_state_changes_++;
-}
-
-void PowerMonitorTestObserver::OnPowerStateChange(bool on_power) {
-  OnBatteryPowerStatusChange(
-      on_power ? PowerStateObserver::BatteryPowerStatus::kBatteryPower
-               : PowerStateObserver::BatteryPowerStatus::kExternalPower);
 }
 
 void PowerMonitorTestObserver::OnSuspend() {

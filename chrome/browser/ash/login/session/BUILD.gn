@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//rlz/buildflags/buildflags.gni")
 
 assert(is_chromeos_ash)
 
@@ -64,12 +65,10 @@ static_library("session") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/tpm",
     "//chrome/browser/ash/u2f",
     "//chrome/browser/google",
-    "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",
-    "//chrome/browser/ui/ash/media_client",
-    "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/shimless_rma_dialog",
     "//chrome/common",
     "//chrome/common:channel_info",
@@ -138,8 +137,11 @@ static_library("session") {
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/settings",
-    "//chrome/browser/ui/webui/ash/login",
   ]
+
+  if (enable_rlz) {
+    deps += [ "//components/rlz" ]
+  }
 }
 
 static_library("test_support") {
@@ -166,27 +168,32 @@ source_set("browser_tests") {
   sources = [ "chrome_session_manager_browsertest.cc" ]
 
   deps = [
-    ":session",
     "//ash",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/lock:test_support",
-    "//chrome/browser/ash/login/ui",
-    "//chrome/browser/google",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
-    "//chrome/common:non_code_constants",
     "//chrome/test:test_support_ui",
-    "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/system",
-    "//components/user_manager",
     "//content/test:test_support",
     "//google_apis:test_support",
     "//rlz/buildflags",
     "//testing/gtest",
     "//ui/base/clipboard",
   ]
+
+  if (enable_rlz) {
+    deps += [
+      ":session",
+      "//chrome/browser/google",
+      "//chrome/common:non_code_constants",
+      "//chromeos/ash/components/install_attributes:test_support",
+      "//components/user_manager",
+    ]
+  }
 }
 
 source_set("unit_tests") {

@@ -31,6 +31,7 @@ namespace media {
 class BitstreamBuffer;
 class MediaLog;
 class VideoFrame;
+class CommandBufferHelper;
 
 // Metadata for a dropped frame.
 // BitstreamBufferMetadata has this data if and only if the frame is
@@ -198,7 +199,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
         uint32_t max_framerate_denominator = 1u,
         SupportedRateControlMode rc_modes = kConstantMode,
         const std::vector<SVCScalabilityMode>& scalability_modes = {},
-        const std::vector<VideoPixelFormat>& gpu_suppoted_pixel_formats = {});
+        const std::vector<VideoPixelFormat>& gpu_suppoted_pixel_formats = {},
+        bool supports_shared_images = false);
     SupportedProfile(const SupportedProfile& other);
     SupportedProfile& operator=(const SupportedProfile& other) = default;
     ~SupportedProfile();
@@ -211,6 +213,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     std::vector<SVCScalabilityMode> scalability_modes;
     bool is_software_codec = false;
     std::vector<VideoPixelFormat> gpu_supported_pixel_formats;
+    bool supports_gpu_shared_images = false;
   };
   using SupportedProfiles = std::vector<SupportedProfile>;
   using FlushCallback = base::OnceCallback<void(bool)>;
@@ -490,6 +493,13 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // to the size provided during encoder configuration.
   // This method must be called after VEA has been initialized.
   virtual bool IsGpuFrameResizeSupported();
+
+  // Provides a callback to acquire a CommandBufferStub, which may be used
+  // to access shared images.
+  virtual void SetCommandBufferHelperCB(
+      base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+          get_command_buffer_helper_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
 
  protected:
   // Do not delete directly; use Destroy() or own it with a unique_ptr, which

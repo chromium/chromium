@@ -10,9 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Factory class used to create SurveyClient. */
@@ -20,24 +20,30 @@ public class SurveyClientFactory {
     private static SurveyClientFactory sInstance;
     private static boolean sHasInstanceForTesting;
 
-    private final ObservableSupplier<Boolean> mCrashUploadPermissionSupplier;
+    protected final ObservableSupplierImpl<Boolean> mCrashUploadPermissionSupplier;
 
-    protected SurveyClientFactory(ObservableSupplier<Boolean> crashUploadPermissionSupplier) {
-        mCrashUploadPermissionSupplier =
-                crashUploadPermissionSupplier != null
-                        ? crashUploadPermissionSupplier
-                        : new ObservableSupplierImpl<>();
+    protected SurveyClientFactory(PrivacyPreferencesManager privacyPreferencesManager) {
+        mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>(false);
+
+        if (privacyPreferencesManager != null) {
+            mCrashUploadPermissionSupplier.set(
+                    privacyPreferencesManager.isUsageAndCrashReportingPermitted());
+            privacyPreferencesManager
+                    .getUsageAndCrashReportingPermittedObservableSupplier()
+                    .addObserver(mCrashUploadPermissionSupplier::set);
+        }
     }
 
     /**
      * Initialize the survey factory instance.
-     * @param crashUploadPermissionSupplier Supplier for UMA upload permission.
+     *
+     * @param privacyPreferencesManager Supplier for UMA upload permission.
      */
-    public static void initialize(ObservableSupplier<Boolean> crashUploadPermissionSupplier) {
+    public static void initialize(PrivacyPreferencesManager privacyPreferencesManager) {
         if (sHasInstanceForTesting) return;
 
         assert sInstance == null : "Instance is already #initialized.";
-        sInstance = new SurveyClientFactory(crashUploadPermissionSupplier);
+        sInstance = new SurveyClientFactory(privacyPreferencesManager);
         SurveyMetadata.initializeInBackground();
         ResettersForTesting.register(() -> sInstance = null);
     }

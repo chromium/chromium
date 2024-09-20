@@ -546,6 +546,15 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
          selector:@selector(accessibilityElementFocusedNotification:)
              name:UIAccessibilityElementFocusedNotification
            object:nil];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitPreferredContentSizeCategory.self, UITraitVerticalSizeClass.self,
+      UITraitHorizontalSizeClass.self
+    ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateUIOnTraitChange)];
+  }
 }
 
 - (void)viewIsAppearing:(BOOL)animated {
@@ -575,22 +584,16 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  // Reset the title font to make sure that it is
-  // properly scaled.
-  UIFontTextStyle textStyle = GetTitleLabelFontTextStyle(self);
-  _titleLabel.font = GetFRETitleFont(textStyle);
-  // Update the SetAsDefault button once the layout changes take effect to have
-  // the right measurements to evaluate the scroll position.
-  __weak __typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf updateViewsBasedOnScrollPositionWithMorePillButtonAnimation:YES];
-  });
-  // Adjust the inset vertical scroller since floating container size might have
-  // be updated.
-  [self adjustInsetVerticalScroller];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  [self updateUIOnTraitChange];
 }
+#endif
 
 #pragma mark - Private
 
@@ -942,6 +945,24 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
   CGPoint contentOffset = _scrollView.contentOffset;
   contentOffset.y += distanceToScrollDown;
   _scrollView.contentOffset = contentOffset;
+}
+
+// Updates the title font and various scroll properties when the view
+// controller's UITraits change.
+- (void)updateUIOnTraitChange {
+  // Reset the title font to make sure that it is
+  // properly scaled.
+  UIFontTextStyle textStyle = GetTitleLabelFontTextStyle(self);
+  _titleLabel.font = GetFRETitleFont(textStyle);
+  // Update the SetAsDefault button once the layout changes take effect to have
+  // the right measurements to evaluate the scroll position.
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf updateViewsBasedOnScrollPositionWithMorePillButtonAnimation:YES];
+  });
+  // Adjust the inset vertical scroller since floating container size might have
+  // be updated.
+  [self adjustInsetVerticalScroller];
 }
 
 #pragma mark - UITextViewDelegate

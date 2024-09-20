@@ -2,6 +2,12 @@
 <pre id="output"></pre>
 <script src="../resources/feature-policy-features-listing.js"></script>
 <script>
+
+// This test verifies that in a normal (non-isolated) context, a set of
+// expected permissions policies appears. There is an isolated version of this
+// test at:
+// //third_party/blink/web_tests/wpt_internal/isolated-permissions-policy/
+
 if (window.testRunner) {
   testRunner.dumpAsText();
 }

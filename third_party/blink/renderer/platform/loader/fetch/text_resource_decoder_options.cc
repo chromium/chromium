@@ -19,12 +19,12 @@ TextResourceDecoderOptions::TextResourceDecoderOptions(
     : TextResourceDecoderOptions(kUseContentAndBOMBasedDetection,
                                  content_type,
                                  default_encoding,
-                                 nullptr,
+                                 AtomicString(),
                                  KURL()) {}
 
 TextResourceDecoderOptions TextResourceDecoderOptions::CreateUTF8Decode() {
   return TextResourceDecoderOptions(kAlwaysUseUTF8ForText, kPlainTextContent,
-                                    UTF8Encoding(), nullptr, NullURL());
+                                    UTF8Encoding(), AtomicString(), NullURL());
 }
 
 TextResourceDecoderOptions
@@ -48,7 +48,7 @@ TextResourceDecoderOptions::TextResourceDecoderOptions(
     EncodingDetectionOption encoding_detection_option,
     ContentType content_type,
     const WTF::TextEncoding& default_encoding,
-    const char* hint_encoding,
+    const AtomicString& hint_encoding,
     const KURL& hint_url)
     : encoding_detection_option_(encoding_detection_option),
       content_type_(content_type),

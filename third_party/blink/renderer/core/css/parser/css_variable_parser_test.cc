@@ -51,8 +51,12 @@ const char* invalid_variable_reference_value[] = {
 const char* valid_attr_values[] = {
     // clang-format off
     "attr(p)",
+    "attr(p,)",
     "attr(p string)",
     "attr(p color)",
+    "attr(p, color)",
+    "attr(p color,)",
+    "attr(p color, color)",
     "attr(p number)",
     "attr(p color, red)",
     // clang-format on
@@ -61,8 +65,7 @@ const char* valid_attr_values[] = {
 const char* invalid_attr_values[] = {
     // clang-format off
     "attr(p url)",
-    "attr(p, url)",
-    "attr(p url,)",
+    "attr(p !)",
     "attr(p color red)",
     // clang-format on
 };
@@ -80,7 +83,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ValidVariableReferenceTest, ConsumeUnparsedDeclaration) {
   SCOPED_TRACE(GetParam());
-  CSSParserTokenStream stream{String(GetParam())};
+  CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   bool important;
@@ -113,7 +116,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(InvalidVariableReferenceTest, ConsumeUnparsedDeclaration) {
   SCOPED_TRACE(GetParam());
-  CSSParserTokenStream stream{String(GetParam())};
+  CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   bool important;
@@ -165,7 +168,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(ValidAttrTest, ContainsValidAttr) {
   ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
   SCOPED_TRACE(GetParam());
-  CSSParserTokenStream stream{String(GetParam())};
+  CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   bool important;
@@ -187,7 +190,7 @@ TEST_P(InvalidAttrTest, ContainsValidAttr) {
   ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
 
   SCOPED_TRACE(GetParam());
-  CSSParserTokenStream stream{String(GetParam())};
+  CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   bool important;

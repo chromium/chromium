@@ -11,10 +11,10 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
-#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "net/base/net_errors.h"
@@ -64,14 +64,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           "cannot be disabled by policy."
       }
     )");
-
-std::string BuildGetAppsForFirstLoginRequestBody(const apps::DeviceInfo& info) {
-  apps::proto::AppPreloadListRequest request_proto;
-  *request_proto.mutable_device_context() = info.ToDeviceContext();
-  *request_proto.mutable_user_context() = info.ToUserContext();
-
-  return request_proto.SerializeAsString();
-}
 
 // Filters entries in LauncherConfig and ShelfConfig to ignore when the
 // specified feature is disabled.
@@ -181,14 +173,13 @@ void ConvertAppPreloadListResponseProto(
 
 }  // namespace
 
-void GetAppsForFirstLogin(const DeviceInfo& device_info,
-                          network::mojom::URLLoaderFactory& url_loader_factory,
-                          GetInitialAppsCallback callback) {
-  QueryAlmanacApi<proto::AppPreloadListResponse>(
-      url_loader_factory, kTrafficAnnotation,
-      BuildGetAppsForFirstLoginRequestBody(device_info),
-      kAppPreloadAlmanacEndpoint, kMaxResponseSizeInBytes,
-      kServerErrorHistogramName,
+void GetAppsForFirstLogin(Profile* profile, GetInitialAppsCallback callback) {
+  proto::AppPreloadListRequest request_proto;
+
+  QueryAlmanacApiWithContext<proto::AppPreloadListRequest,
+                             proto::AppPreloadListResponse>(
+      profile, kAppPreloadAlmanacEndpoint, request_proto, kTrafficAnnotation,
+      kMaxResponseSizeInBytes, kServerErrorHistogramName,
       base::BindOnce(&ConvertAppPreloadListResponseProto, std::move(callback)));
 }
 

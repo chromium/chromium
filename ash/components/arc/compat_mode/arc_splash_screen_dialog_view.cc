@@ -30,6 +30,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -132,10 +133,10 @@ class ArcSplashScreenDialogView::ArcSplashScreenWindowObserver
     if (key != aura::client::kShowStateKey)
       return;
 
-    ui::WindowShowState state =
+    ui::mojom::WindowShowState state =
         window->GetProperty(aura::client::kShowStateKey);
-    if (state == ui::SHOW_STATE_FULLSCREEN ||
-        state == ui::SHOW_STATE_MAXIMIZED) {
+    if (state == ui::mojom::WindowShowState::kFullscreen ||
+        state == ui::mojom::WindowShowState::kMaximized) {
       // Run the callback when window is fullscreen or maximized.
       on_close_callback_.Run();
     }

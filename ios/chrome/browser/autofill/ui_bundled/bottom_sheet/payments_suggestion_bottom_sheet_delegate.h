@@ -16,6 +16,12 @@
 // disabled.
 - (void)disableBottomSheetAndRefocus:(BOOL)refocus;
 
+// Called when the view did appear.
+- (void)paymentsBottomSheetViewDidAppear;
+
+// Called when the user did tap on the primary action button.
+- (void)didTapOnPrimaryButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_DELEGATE_H_

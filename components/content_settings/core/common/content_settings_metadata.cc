@@ -15,7 +15,14 @@
 namespace content_settings {
 
 RuleMetaData::RuleMetaData() = default;
+
 RuleMetaData::RuleMetaData(const RuleMetaData& other) = default;
+
+RuleMetaData::RuleMetaData(RuleMetaData&& other) = default;
+
+RuleMetaData& RuleMetaData::operator=(const RuleMetaData& other) = default;
+
+RuleMetaData& RuleMetaData::operator=(RuleMetaData&& other) = default;
 
 void RuleMetaData::SetFromConstraints(
     const ContentSettingConstraints& constraints) {
@@ -37,7 +44,6 @@ bool RuleMetaData::IsExpired(const base::Clock* clock) const {
   return !expiration().is_null() && expiration() <= clock->Now();
 }
 
-RuleMetaData& RuleMetaData::operator=(const RuleMetaData& other) = default;
 bool RuleMetaData::operator==(const RuleMetaData& other) const = default;
 
 // static

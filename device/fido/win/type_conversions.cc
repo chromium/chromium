@@ -152,7 +152,7 @@ ToAuthenticatorMakeCredentialResponse(
     ret.enterprise_attestation_returned = credential_attestation.bEpAtt;
     ret.is_resident_key = credential_attestation.bResidentKey;
     if (credential_attestation.bLargeBlobSupported) {
-      ret.large_blob_type = LargeBlobSupportType::kKey;
+      ret.large_blob_type = LargeBlobSupportType::kBespoke;
     }
   }
 

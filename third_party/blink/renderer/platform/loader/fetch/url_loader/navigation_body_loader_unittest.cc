@@ -40,8 +40,9 @@ namespace {
 using ::testing::ElementsAre;
 
 class UppercaseDecoder : public BodyTextDecoder {
-  String Decode(const char* data, size_t length) override {
-    return String(data, length).UpperASCII();
+  String Decode(base::span<const char> data) override {
+    return String(data.data(), base::checked_cast<wtf_size_t>(data.size()))
+        .UpperASCII();
   }
 
   String Flush() override { return String(); }

@@ -224,19 +224,6 @@ QuicTestPacketMaker::MakeCombinedRetransmissionPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeAckAndDataPacket(uint64_t packet_number,
-                                          quic::QuicStreamId stream_id,
-                                          uint64_t largest_received,
-                                          uint64_t smallest_received,
-                                          bool fin,
-                                          std::string_view data) {
-  return Packet(packet_number)
-      .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
-      .AddStreamFrame(stream_id, fin, data)
-      .Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeAckAndDatagramPacket(uint64_t packet_number,
                                               uint64_t largest_received,
                                               uint64_t smallest_received,

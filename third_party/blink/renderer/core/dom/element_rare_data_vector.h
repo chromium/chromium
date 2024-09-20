@@ -30,6 +30,7 @@ typedef HeapVector<Member<Attr>> AttrNodeList;
 class ElementIntersectionObserverData;
 class ContainerQueryEvaluator;
 class EditContext;
+class ScrollMarkerPseudoElement;
 class AnchorElementObserver;
 class InlineStylePropertyMap;
 class ElementInternals;
@@ -159,6 +160,10 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
       PseudoId,
       const AtomicString& document_transition_tag = g_null_atom) const;
   PseudoElementData::PseudoElementVector GetPseudoElements() const;
+  void AddColumnScrollMarker(ScrollMarkerPseudoElement&);
+  const PseudoElementData::ColumnScrollMarkersVector* GetColumnScrollMarkers()
+      const;
+  void ClearColumnScrollMarkers();
 
   CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(Element* owner_element);
 

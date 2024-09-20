@@ -154,7 +154,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   } else {
     config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
   }
-  if ([self isRunningTest:@selector(testOpenManageSyncSettingsFromNTP)]) {
+  if ([self isRunningTest:@selector(testOpenManageSyncSettingsFromNTP)] ||
+      [self isRunningTest:@selector
+            (FLAKY_testAccessiblityStringForSignedInUserWithoutName)]) {
     // Once kIdentityDiscAccountMenu is launched, the ADP will open the account
     // menu instead of settings view. It will be safe to remove this test at
     // that point. The new flow is covered in testViewAccountMenu. Note:

@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -503,43 +504,33 @@ PhysicalRect NodeRectInRootFrame(const Node* node) {
   return rect;
 }
 
-// This method calculates the exitPoint from the startingRect and the entryPoint
-// into the candidate rect.  The line between those 2 points is the closest
+// This method calculates the exit_point from the starting_rect and the
+// entry_point into the candidate rect, and returns a pair of the entry_point
+// and the exit_point.  The line between those 2 points is the closest
 // distance between the 2 rects.  Takes care of overlapping rects, defining
 // points so that the distance between them is zero where necessary.
-void EntryAndExitPointsForDirection(SpatialNavigationDirection direction,
-                                    const PhysicalRect& starting_rect,
-                                    const PhysicalRect& potential_rect,
-                                    LayoutPoint& exit_point,
-                                    LayoutPoint& entry_point) {
+std::pair<PhysicalOffset, PhysicalOffset> EntryAndExitPointsForDirection(
+    SpatialNavigationDirection direction,
+    const PhysicalRect& starting_rect,
+    const PhysicalRect& potential_rect) {
+  PhysicalOffset exit_point;
+  PhysicalOffset entry_point;
   switch (direction) {
     case SpatialNavigationDirection::kLeft:
-      exit_point.SetX(starting_rect.X());
-      if (potential_rect.Right() < starting_rect.X())
-        entry_point.SetX(potential_rect.Right());
-      else
-        entry_point.SetX(starting_rect.X());
+      exit_point.left = starting_rect.X();
+      entry_point.left = std::min(potential_rect.Right(), starting_rect.X());
       break;
     case SpatialNavigationDirection::kUp:
-      exit_point.SetY(starting_rect.Y());
-      if (potential_rect.Bottom() < starting_rect.Y())
-        entry_point.SetY(potential_rect.Bottom());
-      else
-        entry_point.SetY(starting_rect.Y());
+      exit_point.top = starting_rect.Y();
+      entry_point.top = std::min(potential_rect.Bottom(), starting_rect.Y());
       break;
     case SpatialNavigationDirection::kRight:
-      exit_point.SetX(starting_rect.Right());
-      if (potential_rect.X() > starting_rect.Right())
-        entry_point.SetX(potential_rect.X());
-      else
-        entry_point.SetX(starting_rect.Right());
+      exit_point.left = starting_rect.Right();
+      entry_point.left = std::max(potential_rect.X(), starting_rect.Right());
       break;
     case SpatialNavigationDirection::kDown:
-      exit_point.SetY(starting_rect.Bottom());
-      if (potential_rect.Y() > starting_rect.Bottom())
-        entry_point.SetY(potential_rect.Y());
-      else
-        entry_point.SetY(starting_rect.Bottom());
+      exit_point.top = starting_rect.Bottom();
+      entry_point.top = std::max(potential_rect.Y(), starting_rect.Bottom());
       break;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -549,44 +540,33 @@ void EntryAndExitPointsForDirection(SpatialNavigationDirection direction,
     case SpatialNavigationDirection::kLeft:
     case SpatialNavigationDirection::kRight:
       if (Below(starting_rect, potential_rect)) {
-        exit_point.SetY(starting_rect.Y());
-        if (potential_rect.Bottom() < starting_rect.Y())
-          entry_point.SetY(potential_rect.Bottom());
-        else
-          entry_point.SetY(starting_rect.Y());
+        exit_point.top = starting_rect.Y();
+        entry_point.top = std::min(potential_rect.Bottom(), starting_rect.Y());
       } else if (Below(potential_rect, starting_rect)) {
-        exit_point.SetY(starting_rect.Bottom());
-        if (potential_rect.Y() > starting_rect.Bottom())
-          entry_point.SetY(potential_rect.Y());
-        else
-          entry_point.SetY(starting_rect.Bottom());
+        exit_point.top = starting_rect.Bottom();
+        entry_point.top = std::max(potential_rect.Y(), starting_rect.Bottom());
       } else {
-        exit_point.SetY(max(starting_rect.Y(), potential_rect.Y()));
-        entry_point.SetY(exit_point.Y());
+        exit_point.top = std::max(starting_rect.Y(), potential_rect.Y());
+        entry_point.top = exit_point.top;
       }
       break;
     case SpatialNavigationDirection::kUp:
     case SpatialNavigationDirection::kDown:
       if (RightOf(starting_rect, potential_rect)) {
-        exit_point.SetX(starting_rect.X());
-        if (potential_rect.Right() < starting_rect.X())
-          entry_point.SetX(potential_rect.Right());
-        else
-          entry_point.SetX(starting_rect.X());
+        exit_point.left = starting_rect.X();
+        entry_point.left = std::min(potential_rect.Right(), starting_rect.X());
       } else if (RightOf(potential_rect, starting_rect)) {
-        exit_point.SetX(starting_rect.Right());
-        if (potential_rect.X() > starting_rect.Right())
-          entry_point.SetX(potential_rect.X());
-        else
-          entry_point.SetX(starting_rect.Right());
+        exit_point.left = starting_rect.Right();
+        entry_point.left = std::max(potential_rect.X(), starting_rect.Right());
       } else {
-        exit_point.SetX(max(starting_rect.X(), potential_rect.X()));
-        entry_point.SetX(exit_point.X());
+        exit_point.left = std::max(starting_rect.X(), potential_rect.X());
+        entry_point.left = exit_point.left;
       }
       break;
     default:
       NOTREACHED_IN_MIGRATION();
   }
+  return {entry_point, exit_point};
 }
 
 double ProjectedOverlap(SpatialNavigationDirection direction,
@@ -682,13 +662,11 @@ double ComputeDistanceDataForNode(SpatialNavigationDirection direction,
     // win against an "outsider".
   }
 
-  LayoutPoint exit_point;
-  LayoutPoint entry_point;
-  EntryAndExitPointsForDirection(direction, current_rect, node_rect, exit_point,
-                                 entry_point);
+  const auto [entry_point, exit_point] =
+      EntryAndExitPointsForDirection(direction, current_rect, node_rect);
 
-  LayoutUnit x_axis = (exit_point.X() - entry_point.X()).Abs();
-  LayoutUnit y_axis = (exit_point.Y() - entry_point.Y()).Abs();
+  LayoutUnit x_axis = (exit_point.left - entry_point.left).Abs();
+  LayoutUnit y_axis = (exit_point.top - entry_point.top).Abs();
   double euclidian_distance =
       sqrt((x_axis * x_axis + y_axis * y_axis).ToDouble());
   distance += euclidian_distance;

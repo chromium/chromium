@@ -19,7 +19,6 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_context_support.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,7 +74,6 @@ class ResourcePoolTest : public testing::Test {
     resource_pool_->ReleaseResource(std::move(resource));
   }
 
-  viz::TestSharedBitmapManager shared_bitmap_manager_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
   raw_ptr<MockContextSupport> context_support_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;

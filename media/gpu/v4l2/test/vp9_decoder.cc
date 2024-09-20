@@ -418,7 +418,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
                                                  std::vector<uint8_t>& v_plane,
                                                  gfx::Size& size,
                                                  BitDepth& bit_depth) {
-  Vp9FrameHeader frame_hdr{};
+  Vp9FrameHeader frame_hdr;
 
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
   switch (parser_res) {

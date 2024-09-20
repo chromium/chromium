@@ -12,13 +12,14 @@
 class CredentialProviderService;
 
 // Singleton that owns all CredentialProviderServices and associates them with
-// ChromeBrowserState.
+// profiles.
 class CredentialProviderServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static CredentialProviderService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static CredentialProviderService* GetForBrowserState(ProfileIOS* profile);
 
+  static CredentialProviderService* GetForProfile(ProfileIOS* profile);
   static CredentialProviderServiceFactory* GetInstance();
 
   CredentialProviderServiceFactory(const CredentialProviderServiceFactory&) =

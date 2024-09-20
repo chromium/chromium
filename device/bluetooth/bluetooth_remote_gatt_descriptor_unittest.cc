@@ -49,6 +49,22 @@ class BluetoothRemoteGattDescriptorTest :
     }
   }
 
+  void TearDown() override {
+    // Reset raw pointers before the teardown process destroys the objects they
+    // refer to.
+    device_ = nullptr;
+    service_ = nullptr;
+    characteristic_ = nullptr;
+    descriptor1_ = nullptr;
+    descriptor2_ = nullptr;
+
+#if BUILDFLAG(IS_WIN)
+    BluetoothTestWinrt::TearDown();
+#else
+    BluetoothTest::TearDown();
+#endif
+  }
+
   // Creates adapter_, device_, service_, characteristic_,
   // descriptor1_, & descriptor2_.
   void FakeDescriptorBoilerplate() {

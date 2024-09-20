@@ -187,8 +187,14 @@ using signin_metrics::PromoAction;
   if ([_viewController respondsToSelector:@selector(settingsWillBeDismissed)]) {
     [_viewController performSelector:@selector(settingsWillBeDismissed)];
   }
-  [_viewController.navigationController dismissViewControllerAnimated:YES
-                                                           completion:nil];
+  if (_closeSettingsOnAddAccount) {
+    [base::apple::ObjCCastStrict<SettingsNavigationController>(
+        _viewController.navigationController)
+        popViewControllerOrCloseSettingsAnimated:YES];
+  } else {
+    [_viewController.navigationController dismissViewControllerAnimated:YES
+                                                             completion:nil];
+  }
   [self stop];
 }
 
@@ -312,6 +318,14 @@ using signin_metrics::PromoAction;
 - (void)forgetIdentityDone {
   _UIBlocker.reset();
   [_viewController allowUserInteraction];
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (!AuthenticationServiceFactory::GetForProfile(profile)->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // If there is no signed-in account after identity removal, then the primary
+    // identity was removed, and there is no signed-in account at this stage.
+    [self closeSettings];
+    return;
+  }
 }
 
 - (void)forgetIdentityFailedWithError:(NSError*)error {

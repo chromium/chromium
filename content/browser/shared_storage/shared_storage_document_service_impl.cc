@@ -187,6 +187,14 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
     return;
   }
 
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    receiver_.ReportBadMessage(
+        "Attempted to call sharedStorage.get() in a fenced frame with feature "
+        "FencedFramesLocalUnpartitionedDataAccess disabled.");
+    return;
+  }
+
   if (render_frame_host().GetLastCommittedOrigin().opaque()) {
     receiver_.ReportBadMessage(
         "Attempted to call sharedStorage.get() from an opaque origin context.");

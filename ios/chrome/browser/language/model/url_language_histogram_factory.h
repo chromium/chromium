@@ -22,9 +22,12 @@ class PrefRegistrySyncable;
 
 class UrlLanguageHistogramFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static UrlLanguageHistogramFactory* GetInstance();
+  // TODO(crbug.com/358301380): remove this method.
   static language::UrlLanguageHistogram* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static language::UrlLanguageHistogram* GetForProfile(ProfileIOS* profile);
+  static UrlLanguageHistogramFactory* GetInstance();
 
   UrlLanguageHistogramFactory(const UrlLanguageHistogramFactory&) = delete;
   UrlLanguageHistogramFactory& operator=(const UrlLanguageHistogramFactory&) =

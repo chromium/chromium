@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -439,6 +440,23 @@
               PushNotificationClientId::kSafetyCheck, _gaiaID);
       [self.consumer reconfigureCellsForItems:@[ self.safetyCheckItem ]];
       break;
+  }
+  // If Send Tab has not previously been disabled, then whenever another
+  // notification type is enabled through the notification settings, Send Tab
+  // should also be enabled.
+  PushNotificationService* pushNotificationService =
+      GetApplicationContext()->GetPushNotificationService();
+  BOOL clientEnabled = [pushNotificationService->GetAccountContextManager()
+      isPushNotificationEnabledForClient:clientID
+                              forAccount:_gaiaID];
+  if (!_prefService->GetBoolean(
+          prefs::kSendTabNotificationsPreviouslyDisabled) &&
+      clientEnabled) {
+    pushNotificationService->SetPreference(base::SysUTF8ToNSString(_gaiaID),
+                                           PushNotificationClientId::kSendTab,
+                                           true);
+    // Refresh enabled status in DeviceInfo.
+    _deviceInfoSyncService->RefreshLocalDeviceInfo();
   }
 }
 

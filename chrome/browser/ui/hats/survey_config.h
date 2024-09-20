@@ -32,9 +32,6 @@ extern const char kHatsSurveyTriggerDownloadWarningBubbleIgnore[];
 extern const char kHatsSurveyTriggerDownloadWarningPageBypass[];
 extern const char kHatsSurveyTriggerDownloadWarningPageHeed[];
 extern const char kHatsSurveyTriggerDownloadWarningPageIgnore[];
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-extern const char kHatsSurveyTriggerGetMostChrome[];
-#endif
 extern const char kHatsSurveyTriggerM1AdPrivacyPage[];
 extern const char kHatsSurveyTriggerM1TopicsSubpage[];
 extern const char kHatsSurveyTriggerM1FledgeSubpage[];
@@ -47,6 +44,9 @@ extern const char kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut[];
 extern const char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[];
 extern const char kHatsSurveyTriggerPrivacyGuide[];
 extern const char kHatsSurveyTriggerRedWarning[];
+extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentControl[];
+extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentNotification[];
+extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction[];
 extern const char kHatsSurveyTriggerSettings[];
 extern const char kHatsSurveyTriggerSettingsPrivacy[];
 extern const char kHatsSurveyTriggerSettingsSecurity[];

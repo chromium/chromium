@@ -29,6 +29,11 @@ SessionRestorationWebStateListObserver::
   web_state_list_->RemoveObserver(this);
 }
 
+void SessionRestorationWebStateListObserver::AddExpectedWebState(
+    web::WebStateID expected_web_state_id) {
+  expected_web_states_.insert(expected_web_state_id);
+}
+
 void SessionRestorationWebStateListObserver::ClearDirty() {
   for (web::WebState* web_state : dirty_web_states_) {
     SessionRestorationWebStateObserver::FromWebState(web_state)->clear_dirty();
@@ -135,7 +140,7 @@ void SessionRestorationWebStateListObserver::DetachWebState(
   // If the detached WebState is still listed as recently inserted, then it
   // means it will still be considered up-for-adoption by another Browser.
   // In that case, remove the WebState from the list of inserted WebStates,
-  // otherwise, add it to the list of detached WebState.
+  // otherwise, add it to the list of detached WebState if unrealized.
   //
   // If the WebState is closed, always add it to the list of closed WebStates
   // (this allow deleting data when a WebState is moved between Browsers and
@@ -143,7 +148,7 @@ void SessionRestorationWebStateListObserver::DetachWebState(
   const web::WebStateID identifier = detached_web_state->GetUniqueIdentifier();
   if (base::Contains(inserted_web_states_, identifier)) {
     inserted_web_states_.erase(identifier);
-  } else if (!is_closing) {
+  } else if (!is_closing && !detached_web_state->IsRealized()) {
     detached_web_states_.insert(identifier);
   }
 
@@ -171,7 +176,14 @@ void SessionRestorationWebStateListObserver::AttachWebState(
   if (attached_web_state->IsRealized()) {
     MarkWebStateDirty(attached_web_state);
   } else {
-    inserted_web_states_.insert(attached_web_state->GetUniqueIdentifier());
+    const auto web_state_id = attached_web_state->GetUniqueIdentifier();
+    if (base::Contains(expected_web_states_, web_state_id)) {
+      expected_web_states_.erase(web_state_id);
+    } else if (base::Contains(detached_web_states_, web_state_id)) {
+      detached_web_states_.erase(web_state_id);
+    } else {
+      inserted_web_states_.insert(web_state_id);
+    }
   }
 }
 

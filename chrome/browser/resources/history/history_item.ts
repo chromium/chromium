@@ -6,10 +6,10 @@ import './searched_label.js';
 import './shared_style.css.js';
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/icon.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';

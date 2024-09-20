@@ -4,14 +4,16 @@
 
 #include "components/manta/sparky/sparky_context.h"
 
+#include "components/manta/proto/sparky.pb.h"
+
 namespace manta {
 
-SparkyContext::SparkyContext(const std::vector<DialogTurn>& dialog)
-    : dialog(dialog) {}
+SparkyContext::SparkyContext(const proto::Turn& latest_turn)
+    : latest_turn(latest_turn) {}
 
-SparkyContext::SparkyContext(const std::vector<DialogTurn>& dialog,
+SparkyContext::SparkyContext(const proto::Turn& latest_turn,
                              const std::string& page_content)
-    : dialog(dialog), page_content(page_content) {}
+    : latest_turn(latest_turn), page_content(page_content) {}
 
 SparkyContext::~SparkyContext() = default;
 

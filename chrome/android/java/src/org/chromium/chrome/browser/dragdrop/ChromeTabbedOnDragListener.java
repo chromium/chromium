@@ -10,6 +10,7 @@ import android.view.View.OnDragListener;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -94,6 +95,11 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                     return false;
                 }
 
+                // Record user action if a grouped tab is going to be re-parented.
+                if (isTabInGroupFromGlobalState(globalState)) {
+                    RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
+                }
+
                 // Reparent the dragged tab to the position immediately following the selected
                 // tab in the destination window.
                 Tab currentTab = mTabModelSelector.getCurrentTab();
@@ -117,6 +123,16 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
             return ((ChromeDropDataAndroid) globalState.getData()).tab;
         } else {
             return null;
+        }
+    }
+
+    private boolean isTabInGroupFromGlobalState(@NonNull DragDropGlobalState globalState) {
+        // We should only attempt to access this while we know there's an active drag.
+        assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
+        if (globalState.getData() instanceof ChromeDropDataAndroid) {
+            return ((ChromeDropDataAndroid) globalState.getData()).isTabInGroup;
+        } else {
+            return false;
         }
     }
 }

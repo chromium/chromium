@@ -20,6 +20,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
@@ -43,6 +44,8 @@
 namespace translate {
 
 namespace {
+
+constexpr int kDismissalDurationSeconds = 10;
 
 // Default implementation of the TranslateMessage::Bridge interface, which just
 // calls the appropriate Java methods in each case.
@@ -108,14 +111,6 @@ class BridgeImpl : public TranslateMessage::Bridge {
 
 BridgeImpl::~BridgeImpl() = default;
 
-// Returns the auto-dismiss timer duration in seconds for the translate message,
-// which defaults to 10s and can be overridden by a Feature param.
-int GetDismissalDurationSeconds() {
-  constexpr base::FeatureParam<int> kDismissalDuration(
-      &kTranslateMessageUI, "dismissal_duration_sec", 10);
-  return kDismissalDuration.Get();
-}
-
 base::android::ScopedJavaLocalRef<jstring> GetDefaultMessageDescription(
     JNIEnv* env,
     const std::u16string& source_language_display_name,
@@ -127,13 +122,6 @@ base::android::ScopedJavaLocalRef<jstring> GetDefaultMessageDescription(
 }
 
 }  // namespace
-
-// Features
-BASE_FEATURE(kTranslateMessageUI,
-             "TranslateMessageUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Params
-const char kTranslateMessageUISnackbarParam[] = "use_snackbar";
 
 TranslateMessage::Bridge::~Bridge() = default;
 
@@ -183,7 +171,7 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
 
   if (state_ == State::kDismissed) {
     if (!bridge_->CreateTranslateMessage(env, web_contents_, this,
-                                         GetDismissalDurationSeconds())) {
+                                         kDismissalDurationSeconds)) {
       // The |bridge_| failed to create the Java TranslateMessage, such as when
       // the activity is being destroyed, so there is no message to show.
       return;
@@ -536,13 +524,15 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
   return bridge_->ConstructMenuItemArray(
       env,
       base::android::ToJavaArrayOfStrings(env,
-                                          base::make_span(titles, item_count)),
+                                          base::span(titles).first(item_count)),
       base::android::ToJavaArrayOfStrings(
-          env, base::make_span(subtitles, item_count)),
-      base::android::ToJavaBooleanArray(env, has_checkmarks, item_count),
-      base::android::ToJavaIntArray(env, overflow_menu_item_ids, item_count),
+          env, base::span(subtitles).first(item_count)),
+      base::android::ToJavaBooleanArray(
+          env, base::span(has_checkmarks).first(item_count)),
+      base::android::ToJavaIntArray(
+          env, base::span(overflow_menu_item_ids).first(item_count)),
       base::android::ToJavaArrayOfStrings(
-          env, base::make_span(language_codes, item_count)));
+          env, base::span(language_codes).first(item_count)));
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>
@@ -728,7 +718,7 @@ TranslateMessage::ConstructLanguagePickerMenu(
       base::android::ToJavaArrayOfStrings(env, subtitles),
       /*has_checkmarks=*/
       base::android::ToJavaBooleanArray(
-          env, std::make_unique<bool[]>(titles.size()).get(), titles.size()),
+          env, base::HeapArray<bool>::WithSize(titles.size())),
       base::android::ToJavaIntArray(env, overflow_menu_item_ids),
       base::android::ToJavaArrayOfStrings(env, language_codes));
 }

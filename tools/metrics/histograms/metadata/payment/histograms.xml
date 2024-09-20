@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.CheckoutFunnel"
-    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2025-01-05">
+    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2025-03-09">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -195,6 +195,73 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of payment methods that an installed Android payment app declares
     to support. Recorded when a website creates a new PaymentRequest JS object.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.PaymentDetailsUpdateService.Bind"
+    enum="Boolean" expires_after="2025-03-03">
+  <owner>rouslan@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Recorded when an Android app binds to Chrome's service for updating payment
+    details, e.g., when an Android payment app supports the feature of dynamic
+    price updates based different shipping addresses.
+
+    All service connections are recorded, even if there are no ongoing payment
+    flows.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod"
+    enum="Boolean" expires_after="2025-03-03">
+  <owner>rouslan@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Recorded when an invoked Android payment app sends updated payment method
+    details to the merchant website that invoked the PaymentRequest API for this
+    app.
+
+    Only authorized service calls are recorded. If an app that is not being
+    invoked for payment invokes this service, the metric is not recorded.
+
+    The metric is recorded even if the invoked Android payment app sends an
+    invalid payment method data bundle.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingAddress"
+    enum="Boolean" expires_after="2025-03-03">
+  <owner>rouslan@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Recorded when an Android payment app sends updated shipping address to the
+    merchant website that invoked the PaymentRequest API for this app.
+
+    Only authorized service calls are recorded. If an app that is not being
+    invoked for payment invokes this service, the metric is not recorded.
+
+    The metric is recorded even if the invoked Android payment app sends an
+    invalid shipping address.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingOption"
+    enum="Boolean" expires_after="2025-03-03">
+  <owner>rouslan@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Recorded when an Android payment app sends updated shipping option (e.g.,
+    &quot;standard&quot; or &quot;express&quot;) to the merchant website that
+    invoked the PaymentRequest API for this app.
+
+    Only authorized service calls are recorded. If an app that is not being
+    invoked for payment invokes this service, the metric is not recorded.
+
+    The metric is recorded even if the invoked Android payment app sends an
+    invalid shipping option.
   </summary>
 </histogram>
 

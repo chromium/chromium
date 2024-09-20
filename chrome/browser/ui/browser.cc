@@ -242,6 +242,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/point.h"
@@ -264,7 +265,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/ash/url_handler/url_handler.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/session_manager/core/session_manager.h"
 #endif
@@ -1118,8 +1118,18 @@ const SessionID& Browser::GetSessionID() {
   return session_id_;
 }
 
+TabStripModel* Browser::GetTabStripModel() {
+  return tab_strip_model_.get();
+}
+
 bool Browser::IsTabStripVisible() {
   return window_ && window_->IsToolbarShowing();
+}
+
+bool Browser::ShouldHideUIForFullscreen() const {
+  // Windows and GTK remove the browser controls in fullscreen, but Mac and Ash
+  // keep the controls in a slide-down panel.
+  return window_ && window_->ShouldHideUIForFullscreen();
 }
 
 views::View* Browser::TopContainer() {
@@ -1789,13 +1799,6 @@ WebContents* Browser::OpenURLFromTab(
                                   std::move(navigation_handle_callback));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Try to intercept the request and open the URL with Lacros.
-  if (ash::TryOpenUrl(params.url, params.disposition)) {
-    return nullptr;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   NavigateParams nav_params(this, params.url, params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(params);
   nav_params.source_contents = source;
@@ -2246,7 +2249,7 @@ void Browser::RestoreFromWebAPI() {
   window_->Restore();
 }
 
-ui::WindowShowState Browser::GetWindowShowState() const {
+ui::mojom::WindowShowState Browser::GetWindowShowState() const {
   return window_->GetWindowShowState();
 }
 
@@ -2290,9 +2293,7 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
   if (window_->IsFullscreen())
     return blink::mojom::DisplayMode::kFullscreen;
 
-  if (is_type_picture_in_picture() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kCSSDisplayModePictureInPicture)) {
+  if (is_type_picture_in_picture()) {
     return blink::mojom::DisplayMode::kPictureInPicture;
   }
 
@@ -3408,12 +3409,6 @@ bool Browser::ShouldShowBookmarkBar() const {
   BookmarkTabHelper* bookmark_tab_helper =
       BookmarkTabHelper::FromWebContents(web_contents);
   return bookmark_tab_helper && bookmark_tab_helper->ShouldShowBookmarkBar();
-}
-
-bool Browser::ShouldHideUIForFullscreen() const {
-  // Windows and GTK remove the browser controls in fullscreen, but Mac and Ash
-  // keep the controls in a slide-down panel.
-  return window_ && window_->ShouldHideUIForFullscreen();
 }
 
 bool Browser::IsBrowserClosing() const {

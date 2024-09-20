@@ -22,7 +22,8 @@ enum class PaymentNotOfferedReason {
   kRiskDataEmpty = 1,
   kCodeValidatorFailed = 2,
   kInvalidCode = 3,
-  kMaxValue = kInvalidCode
+  kLandscapeScreenOrientation = 4,
+  kMaxValue = kLandscapeScreenOrientation
 };
 
 // Result of the transaction from the time payment was offered to the user.

@@ -94,8 +94,7 @@ void ResourceLoadObserverForWorker::DidReceiveResponse(
 void ResourceLoadObserverForWorker::DidReceiveData(
     uint64_t identifier,
     base::SpanOrSize<const char> chunk) {
-  probe::DidReceiveData(probe_, identifier, nullptr,
-                        chunk.ptr_or_null_if_no_data(), chunk.size());
+  probe::DidReceiveData(probe_, identifier, nullptr, chunk);
 }
 
 void ResourceLoadObserverForWorker::DidReceiveTransferSizeUpdate(

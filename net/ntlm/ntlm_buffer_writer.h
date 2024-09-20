@@ -57,7 +57,7 @@ class NET_EXPORT_PRIVATE NtlmBufferWriter {
   size_t GetCursor() const { return cursor_; }
   bool IsEndOfBuffer() const { return cursor_ >= GetLength(); }
   base::span<const uint8_t> GetBuffer() const { return buffer_; }
-  std::vector<uint8_t> Pass() const { return std::move(buffer_); }
+  std::vector<uint8_t> Pass() { return std::move(buffer_); }
 
   // Returns true if there are |len| more bytes between the current cursor
   // position and the end of the buffer.

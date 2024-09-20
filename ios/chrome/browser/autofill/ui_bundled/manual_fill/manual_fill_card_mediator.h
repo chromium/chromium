@@ -46,8 +46,10 @@ class PersonalDataManager;
 // Unavailable. Use `initWithCards:`.
 - (instancetype)init NS_UNAVAILABLE;
 
-// Finds the original autofill::CreditCard from given `GUID`.
-- (const autofill::CreditCard*)findCreditCardfromGUID:(NSString*)GUID;
+// Finds the original autofill::CreditCard from given `GUID`. Returns an
+// optional in case `GUID` can't be mapped to a card.
+- (std::optional<const autofill::CreditCard>)findCreditCardfromGUID:
+    (NSString*)GUID;
 
 // Disconnects the mediator.
 - (void)disconnect;

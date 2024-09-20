@@ -64,9 +64,11 @@ class ASH_EXPORT FocusModeSoundsController
     virtual void OnSelectedPlaylistChanged() = 0;
     // Called when the state of `selected_playlist_` has been changed.
     virtual void OnPlaylistStateChanged() {}
+    // Called when the media player encounters an error.
+    virtual void OnPlayerError() {}
   };
 
-  FocusModeSoundsController();
+  FocusModeSoundsController(const std::string& locale);
   FocusModeSoundsController(const FocusModeSoundsController&) = delete;
   FocusModeSoundsController& operator=(const FocusModeSoundsController&) =
       delete;
@@ -82,6 +84,9 @@ class ASH_EXPORT FocusModeSoundsController
   using GetNextTrackCallback = base::OnceCallback<void(
       const std::optional<FocusModeSoundsDelegate::Track>&)>;
   void GetNextTrack(GetNextTrackCallback callback);
+
+  // Called by `FocusModeTrackProvider::ReportPlayerError`.
+  void ReportPlayerError();
 
   const std::vector<std::unique_ptr<Playlist>>& soundscape_playlists() const {
     return soundscape_playlists_;
@@ -157,6 +162,11 @@ class ASH_EXPORT FocusModeSoundsController
   void ReportYouTubeMusicPlayback(
       const youtube_music::PlaybackData& playback_data);
 
+  bool ShouldDisplayYouTubeMusicOAuth() const;
+  void SavePrefForDisplayYouTubeMusicOAuth();
+  bool ShouldDisplayYouTubeMusicFreeTrial() const;
+  void SavePrefForDisplayYouTubeMusicFreeTrial();
+
   void set_soundscape_playlists_for_testing(
       std::vector<std::unique_ptr<Playlist>> soundscape_playlists) {
     soundscape_playlists_.swap(soundscape_playlists);
@@ -176,6 +186,9 @@ class ASH_EXPORT FocusModeSoundsController
   void set_simulate_playback_for_testing() {
     simulate_playback_for_testing_ = true;
   }
+
+  bool IsMinorUser();
+  void SetIsMinorUserForTesting(bool is_minor_user);
 
  private:
   bool IsPlaylistAllowed(
@@ -220,6 +233,9 @@ class ASH_EXPORT FocusModeSoundsController
       base::UnguessableToken::Null();
 
   bool simulate_playback_for_testing_ = false;
+
+  // Sets the value to true or false in browertest.
+  std::optional<bool> is_minor_user_for_testing_;
 
   base::ObserverList<Observer> observers_;
 

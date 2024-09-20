@@ -112,7 +112,9 @@ specific_include_rules = {
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view",
     "+components/url_formatter/android",
     "+components/navigation_interception/android/java/src/org/chromium/components/navigation_interception",
+    "+components/prefs/android/java/src/org/chromium/components/prefs/PrefService.java",
     "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
+    "+components/user_prefs/android/java/src/org/chromium/components/user_prefs/UserPrefs.java",
     "+components/version_info/android",
   ],
   'TabStateBrowserControlsVisibilityDelegate\.java': [

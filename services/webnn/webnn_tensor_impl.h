@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   explicit WebNNTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       WebNNContextImpl* context,
-      mojom::BufferInfoPtr buffer_info);
+      mojom::TensorInfoPtr tensor_info);
   ~WebNNTensorImpl() override;
 
   WebNNTensorImpl(const WebNNTensorImpl&) = delete;
@@ -44,30 +44,30 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   }
 
  protected:
-  // This method will be called by `ReadBuffer()` after the read info is
+  // This method will be called by `ReadTensor()` after the read info is
   // validated. A backend subclass should implement this method to read data
   // from a platform specific buffer.
-  virtual void ReadBufferImpl(
-      mojom::WebNNTensor::ReadBufferCallback callback) = 0;
+  virtual void ReadTensorImpl(
+      mojom::WebNNTensor::ReadTensorCallback callback) = 0;
 
-  // This method will be called by `WriteBuffer()` after the write info is
+  // This method will be called by `WriteTensor()` after the write info is
   // validated. A backend subclass should implement this method to write data
   // to a platform specific buffer.
-  virtual void WriteBufferImpl(mojo_base::BigBuffer src_buffer) = 0;
+  virtual void WriteTensorImpl(mojo_base::BigBuffer src_buffer) = 0;
 
   // WebNNContextImpl owns this object.
   const raw_ptr<WebNNContextImpl> context_;
 
  private:
   // mojom::WebNNTensor
-  void ReadBuffer(ReadBufferCallback callback) override;
-  void WriteBuffer(mojo_base::BigBuffer src_buffer) override;
+  void ReadTensor(ReadTensorCallback callback) override;
+  void WriteTensor(mojo_base::BigBuffer src_buffer) override;
 
   // `OnDisconnect` is called from two places.
-  //  - When the buffer is explicitly destroyed by the WebNN
+  //  - When the tensor is explicitly destroyed by the WebNN
   //  developer via the WebNN API.
-  //  - When the buffer is dropped by the WebNN developer where
-  //  the buffer gets implicitly destroyed upon garbage collection.
+  //  - When the tensor is dropped by the WebNN developer where
+  //  the tensor gets implicitly destroyed upon garbage collection.
   void OnDisconnect();
 
   const OperandDescriptor descriptor_;

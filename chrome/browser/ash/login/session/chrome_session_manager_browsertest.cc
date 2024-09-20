@@ -18,8 +18,8 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/user_adding_screen.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -33,9 +33,9 @@
 
 #if BUILDFLAG(ENABLE_RLZ)
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
-#include "chrome/browser/google/google_brand_chromeos.h"
+#include "chrome/browser/google/google_brand_chromeos.h"  // nogncheck
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"  // nogncheck
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(ENABLE_RLZ)
 

@@ -62,7 +62,19 @@ const base::TimeDelta TimeDelayForSafetyCheckAutorun();
 BASE_DECLARE_FEATURE(kOmahaServiceRefactor);
 
 // Safety Check Notifications experiment variations.
+
+// Name of the experiment that controls how Safety Check notifications
+// are presented to the user (e.g., `kVerbose`, `kSuccinct`).
 extern const char kSafetyCheckNotificationsExperimentType[];
+
+// Name of the parameter that controls when an impression is counted
+// for the Safety Check notifications opt-in button (e.g., `kOnlyWhenTopModule`,
+// `kAlways`).
+extern const char kSafetyCheckNotificationsImpressionTrigger[];
+
+// Name of the parameter that controls the maximum number of impressions
+// allowed for the Safety Check notifications opt-in button.
+extern const char kSafetyCheckNotificationsImpressionLimit[];
 
 // Defines param values for the Safety Check Notifications feature,
 // controlling how notifications are presented to the user.
@@ -72,6 +84,16 @@ enum class SafetyCheckNotificationsExperimentalArm {
   // Arm that displays only a single Safety Check notification at any given
   // time.
   kSuccinct = 1,
+};
+
+// Defines param values for the Safety Check Notifications feature,
+// controlling when an impression is counted for the notifications opt-in button
+// in the Safety Check (Magic Stack) module.
+enum class SafetyCheckNotificationsImpressionTrigger {
+  // Impression counted only when the Safety Check module is the top module.
+  kOnlyWhenTopModule = 0,
+  // Impression counted regardless of the Safety Check module's position.
+  kAlways = 1,
 };
 
 // Feature flag to enable Shared Highlighting (Link to Text).
@@ -314,9 +336,6 @@ extern const base::FeatureParam<int>
 // Flag to enable push notification settings menu item.
 BASE_DECLARE_FEATURE(kNotificationSettingsMenuItem);
 
-// Feature flag to enable the new layout of the NTP omnibox.
-BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
-
 // Feature param under kBottomOmniboxDefaultSetting to select the default
 // setting.
 extern const char kBottomOmniboxDefaultSettingParam[];
@@ -348,6 +367,16 @@ bool IsOmahaServiceRefactorEnabled();
 // Returns the experiment type for the Safety Check Notifications feature.
 SafetyCheckNotificationsExperimentalArm
 SafetyCheckNotificationsExperimentTypeEnabled();
+
+// Returns the impression trigger for the Safety Check (Magic Stack) module's
+// notification opt-in button.
+SafetyCheckNotificationsImpressionTrigger
+SafetyCheckNotificationsImpressionTriggerEnabled();
+
+// Returns the maximum number of impressions allowed for the Safety Check
+// notifications opt-in button, as specified by the
+// `kSafetyCheckNotificationsImpressionLimit` field trial parameter.
+int SafetyCheckNotificationsImpressionLimit();
 
 // Feature flag enabling Choose from Drive.
 BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
@@ -403,9 +432,6 @@ BASE_DECLARE_FEATURE(kIOSLargeFakebox);
 // Feature flag to enable a more stable fullscreen.
 BASE_DECLARE_FEATURE(kFullscreenImprovement);
 
-// Feature flag to enable Tab Groups in Grid.
-BASE_DECLARE_FEATURE(kTabGroupsInGrid);
-
 // Feature flag to enable Tab Groups on iPad.
 BASE_DECLARE_FEATURE(kTabGroupsIPad);
 
@@ -429,6 +455,12 @@ BASE_DECLARE_FEATURE(kTabGroupIndicator);
 
 // Whether the Tab Group Indicator feature is enabled.
 bool IsTabGroupIndicatorEnabled();
+
+// Feature flag to enable a new illustration in the sync opt-in promotion view.
+BASE_DECLARE_FEATURE(kNewSyncOptInIllustration);
+
+// Whether the kNewSyncOptInIllustration feature is enabled.
+bool IsNewSyncOptInIllustration();
 
 // Feature flag to disable Lens LVF features.
 BASE_DECLARE_FEATURE(kDisableLensCamera);
@@ -693,6 +725,16 @@ extern const char kIOSTipsNotificationsLessEngagedTriggerTimeParam[];
 // enabled. Bits are assigned based on the enum `TipsNotificationType`.
 extern const char kIOSTipsNotificationsEnabledParam[];
 
+// Feature param containing an integer that chooses from a few options for
+// the order that the notifications would be sent in.
+extern const char kIOSTipsNotificationsOrderParam[];
+
+// Feature param containing an integer that configures the
+// `TipsNotificationClient` to stop requesting notifications if the user
+// dismisses this number of notifications in a row. Setting this to zero will
+// disable this limit.
+extern const char kIOSTipsNotificationsDismissLimitParam[];
+
 // Helper for whether Tips Notifications are enabled.
 bool IsIOSTipsNotificationsEnabled();
 
@@ -787,5 +829,11 @@ extern const base::FeatureParam<base::TimeDelta>
 // feature flag is related to the effort to remove invocations of
 // 'traitCollectionDidChange' which was deprecated in iOS 17.
 BASE_DECLARE_FEATURE(kEnableTraitCollectionRegistration);
+
+// Feature flag to enable displaying blue dot on tools menu button on toolbar.
+BASE_DECLARE_FEATURE(kBlueDotOnToolsMenuButton);
+
+// Returns whether `kBlueDotOnToolsMenuButton` is enabled.
+bool IsBlueDotOnToolsMenuButtoneEnabled();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

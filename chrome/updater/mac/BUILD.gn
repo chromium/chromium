@@ -8,6 +8,8 @@ import("//build/config/mac/rules.gni")
 import("//build/config/python.gni")
 import("//build/symlink.gni")
 import("//build/util/process_version.gni")
+import("//chrome/enterprise_companion/branding.gni")
+import("//chrome/enterprise_companion/buildflags.gni")
 import("//chrome/updater/branding.gni")
 import("//chrome/updater/mac/signing/signing_sources.gni")
 import("//chrome/updater/zip.gni")
@@ -519,6 +521,12 @@ bundle_data("updater_bundle_helpers") {
   outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
   public_deps = [ ":launcher" ]
+
+  if (include_enterprise_companion_in_installer) {
+    sources += [ "$root_out_dir/$enterprise_companion_product_full_name.app" ]
+    public_deps +=
+        [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle" ]
+  }
 }
 
 bundle_data("updater_bundle_helpers_test") {

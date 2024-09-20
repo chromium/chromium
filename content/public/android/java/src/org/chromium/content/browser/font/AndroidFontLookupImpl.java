@@ -65,7 +65,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     private static final String GOOGLE_SANS_MEDIUM = "google sans medium";
     private static final String GOOGLE_SANS_BOLD = "google sans bold";
     private static final String NOTO_COLOR_EMOJI_COMPAT = "noto color emoji compat";
-    private static final String GOOGLE_SANS_FLEX = "google sans flex";
+    private static final String GOOGLE_SANS_FLEX = "google sans flex regular";
 
     private final Context mAppContext;
     private final FontsContractWrapper mFontsContract;
@@ -145,7 +145,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
 
         // Post synchronous font request to background worker thread.
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     final ReadOnlyFile result = fetchFontInBackground(fontUniqueName, core);
                     RecordHistogram.recordTimesHistogram(
@@ -163,7 +163,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
 
         // Post synchronous font request to background worker thread.
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     HashMap<String, ReadOnlyFile> result = new HashMap<>();
                     // Make a copy of mExpectedFonts because it may be modified.

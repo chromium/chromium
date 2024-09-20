@@ -215,6 +215,11 @@ public class EdgeToEdgeControllerImpl
     }
 
     @Override
+    public int getSystemBottomInsetPx() {
+        return mSystemInsets.bottom;
+    }
+
+    @Override
     public boolean isDrawingToEdge() {
         return mIsDrawingToEdge;
     }

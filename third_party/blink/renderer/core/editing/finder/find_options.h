@@ -76,6 +76,12 @@ class FindOptions {
     return *this;
   }
 
+  bool IsRubySupported() const { return ruby_supported_; }
+  constexpr FindOptions& SetRubySupported(bool flag) {
+    ruby_supported_ = flag;
+    return *this;
+  }
+
  private:
   bool case_insensitive_ : 1 = false;
   bool backwards_ : 1 = false;
@@ -83,6 +89,7 @@ class FindOptions {
   bool starting_in_selection_ : 1 = false;
   bool whole_word_ : 1 = false;
   bool find_api_call_ : 1 = false;
+  bool ruby_supported_ : 1 = false;
 };
 
 }  // namespace blink

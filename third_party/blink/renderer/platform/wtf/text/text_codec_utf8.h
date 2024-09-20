@@ -61,22 +61,16 @@ class TextCodecUTF8 : public TextCodec {
   // fit, while never writing partial code points. If EncodeIntoResult's
   // |bytes_written| member is less than |capacity|, the remaining
   // |capacity| - |bytes_written| bytes remain untouched.
-  EncodeIntoResult EncodeInto(const UChar*,
-                              wtf_size_t length,
-                              unsigned char* destination,
-                              size_t capacity) override;
-  EncodeIntoResult EncodeInto(const LChar*,
-                              wtf_size_t length,
-                              unsigned char* destination,
-                              size_t capacity) override;
+  EncodeIntoResult EncodeInto(base::span<const UChar>,
+                              base::span<uint8_t> destination) override;
+  EncodeIntoResult EncodeInto(base::span<const LChar>,
+                              base::span<uint8_t> destination) override;
 
   template <typename CharType>
   std::string EncodeCommon(const CharType* characters, wtf_size_t length);
   template <typename CharType>
-  EncodeIntoResult EncodeIntoCommon(const CharType* characters,
-                                    wtf_size_t length,
-                                    unsigned char* destination,
-                                    size_t capacity);
+  EncodeIntoResult EncodeIntoCommon(base::span<const CharType> characters,
+                                    base::span<uint8_t> destination);
 
   template <typename CharType>
   bool HandlePartialSequence(CharType*& destination,

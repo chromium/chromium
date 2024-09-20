@@ -60,6 +60,8 @@ build_webui("build") {
 
   icons_html_files = [ "images/icons.html" ]
 
+  html_to_wrapper_template = "detect"
+
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",

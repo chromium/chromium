@@ -170,7 +170,7 @@ OnDeviceLlmInternalsUI::OnDeviceLlmInternalsUI(web::WebUIIOS* web_ui,
     : web::WebUIIOSController(web_ui, host) {
   web_ui->AddMessageHandler(std::make_unique<OnDeviceLlmInternalsHandler>());
 
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateOnDeviceLlmInternalsUIHTMLSource());
 }
 

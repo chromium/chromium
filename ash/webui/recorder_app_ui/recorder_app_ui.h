@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "ash/webui/metrics/structured_metrics_service_wrapper.h"
 #include "ash/webui/recorder_app_ui/mojom/recorder_app.mojom.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
@@ -65,6 +66,8 @@ class RecorderAppUI
   void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
+  void BindInterface(
+      mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver);
 
   static constexpr std::string GetWebUIName() { return "RecorderApp"; }
 
@@ -150,6 +153,9 @@ class RecorderAppUI
       const std::vector<std::string>& consent_description_names,
       const std::string& consent_confirmation_name) override;
 
+  void CanCaptureSystemAudioWithLoopback(
+      CanCaptureSystemAudioWithLoopbackCallback callback) override;
+
   // speech::SodaInstaller::Observer
   void OnSodaInstalled(speech::LanguageCode language_code) override;
 
@@ -191,6 +197,9 @@ class RecorderAppUI
   bool in_quiet_mode_;
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+
+  std::unique_ptr<ash::StructuredMetricsServiceWrapper>
+      structured_metrics_service_wrapper_;
 
   DeviceIdMappingCallback device_id_mapping_callback_;
 

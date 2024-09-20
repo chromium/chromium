@@ -499,7 +499,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   _policyDeciderBridge.reset();
 
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+          ios::AccountConsistencyServiceFactory::GetForProfile(
               self.browserState)) {
     accountConsistencyService->RemoveWebStateHandler(webState.get());
   }
@@ -700,7 +700,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   _webState->SetWebUsageEnabled(true);
 
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+          ios::AccountConsistencyServiceFactory::GetForProfile(
               self.browserState)) {
     accountConsistencyService->SetWebStateHandler(
         _webState.get(), _manageAccountsDelegate.get());

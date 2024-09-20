@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_search_result.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"

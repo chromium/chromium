@@ -22,11 +22,13 @@ class SyncInvalidationsServiceFactory : public BrowserStateKeyedServiceFactory {
   SyncInvalidationsServiceFactory& operator=(
       const SyncInvalidationsServiceFactory&) = delete;
 
+  // TODO(crbug.com/358301380): remove this method.
+  static syncer::SyncInvalidationsService* GetForBrowserState(
+      ProfileIOS* profile);
+
   // Returned value may be nullptr in case if sync invalidations are disabled or
   // not supported.
-  static syncer::SyncInvalidationsService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
+  static syncer::SyncInvalidationsService* GetForProfile(ProfileIOS* profile);
   static SyncInvalidationsServiceFactory* GetInstance();
 
  private:

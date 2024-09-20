@@ -24,6 +24,9 @@ class GURL;
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
 
+// Plus address associated with this item.
+@property(nonatomic, readonly) NSString* plusAddress;
+
 // Inits a plus address with an `plusAddress`, a `contentInjector` and
 // `menuActions` for user selection. `cellIndexAccessibilityLabel` is the cell's
 // accessibility label and is used to indicate the index at which the plus

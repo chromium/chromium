@@ -111,6 +111,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoScrollMarker:
     case CSSSelector::kPseudoScrollNextButton:
     case CSSSelector::kPseudoScrollPrevButton:
+    case CSSSelector::kPseudoColumn:
     case CSSSelector::kPseudoWindowInactive:
     case CSSSelector::kPseudoSelection:
     case CSSSelector::kPseudoCornerPresent:
@@ -148,8 +149,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoOpen:
     case CSSSelector::kPseudoClosed:
     case CSSSelector::kPseudoDialogInTopLayer:
-    case CSSSelector::kPseudoSelectFallbackButton:
-    case CSSSelector::kPseudoSelectFallbackButtonText:
+    case CSSSelector::kPseudoSelectHasChildButton:
     case CSSSelector::kPseudoPicker:
     case CSSSelector::kPseudoPopoverInTopLayer:
     case CSSSelector::kPseudoPopoverOpen:

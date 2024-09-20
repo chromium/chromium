@@ -125,6 +125,17 @@ the generic promo launch. -->
   <int value="2" label="Disabled"/>
 </enum>
 
+<enum name="IOSAnnotationType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Date"/>
+  <int value="2" label="Address"/>
+  <int value="3" label="Phone"/>
+  <int value="4" label="Link"/>
+  <int value="5" label="Measurement"/>
+  <int value="6" label="ParcelTracking"/>
+  <int value="7" label="ParcelCarrier"/>
+</enum>
+
 <enum name="IOSBringAndroidTabsPromptActionType">
   <int value="0" label="Review tabs"/>
   <int value="1" label="Open tabs"/>
@@ -661,6 +672,17 @@ the generic promo launch. -->
   <int value="0" label="Manually disabled"/>
   <int value="1" label="No issues"/>
 </enum>
+
+<!-- LINT.IfChange(IOSSafetyCheckNotificationType) -->
+
+<enum name="IOSSafetyCheckNotificationType">
+  <int value="0" label="Update Chrome"/>
+  <int value="1" label="Passwords"/>
+  <int value="2" label="Safe Browsing"/>
+  <int value="3" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/safety_check_notifications/utils/constants.h:SafetyCheckNotificationType) -->
 
 <enum name="IOSSaveToDriveOutcomeType">
   <int value="0" label="Failure - WebState Hidden"/>

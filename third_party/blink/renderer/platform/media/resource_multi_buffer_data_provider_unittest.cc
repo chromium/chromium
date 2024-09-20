@@ -86,8 +86,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
 
   void Initialize(const char* url, int first_position) {
     gurl_ = GURL(url);
-    url_data_ = url_index_.GetByUrl(gurl_, UrlData::CORS_UNSPECIFIED,
-                                    UrlIndex::kNormal);
+    url_data_ =
+        url_index_.GetByUrl(gurl_, UrlData::CORS_UNSPECIFIED, UrlData::kNormal);
     url_data_->set_etag(kEtag);
     DCHECK(url_data_);
     url_data_->OnRedirect(

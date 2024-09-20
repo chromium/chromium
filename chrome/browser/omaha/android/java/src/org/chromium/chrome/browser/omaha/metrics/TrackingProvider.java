@@ -28,7 +28,7 @@ class TrackingProvider {
     public Promise<Tracking> get() {
         final Promise<Tracking> promise = new Promise<>();
 
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     Tracking state = null;
 
@@ -51,7 +51,7 @@ class TrackingProvider {
 
     /** Clears any persisted instance of {@link Tracking}. */
     public void clear() {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () ->
                         OmahaPrefUtils.getSharedPreferences()
                                 .edit()
@@ -61,10 +61,11 @@ class TrackingProvider {
 
     /**
      * Persists {@code state}, overwriting any currently persisted instance of {@link Tracking}.
+     *
      * @param state The new instance of {@link Tracking} to persist.
      */
     public void put(Tracking state) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     String serialized = Base64.encodeToString(state.toByteArray(), Base64.DEFAULT);
                     OmahaPrefUtils.getSharedPreferences()

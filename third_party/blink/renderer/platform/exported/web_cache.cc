@@ -45,12 +45,6 @@ static void ToResourceTypeStat(const MemoryCache::TypeStatistic& from,
   to.decoded_size = from.decoded_size;
 }
 
-void WebCache::SetCapacity(size_t capacity) {
-  MemoryCache* cache = MemoryCache::Get();
-  if (cache)
-    cache->SetCapacity(static_cast<unsigned>(capacity));
-}
-
 void WebCache::Clear() {
   MemoryCache* cache = MemoryCache::Get();
   if (cache)

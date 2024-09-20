@@ -33,6 +33,8 @@ Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice1* dml_device);
 // Returns the maximum feature level supported by the DML device.
 DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice1* dml_device);
 
+std::string_view DMLFeatureLevelToString(DML_FEATURE_LEVEL dml_feature_level);
+
 // Creates a transition barrier which is used to specify the resource is
 // transitioning from `before` to `after` states.
 D3D12_RESOURCE_BARRIER COMPONENT_EXPORT(WEBNN_SERVICE)
@@ -58,15 +60,15 @@ void COMPONENT_EXPORT(WEBNN_SERVICE) ReadbackBufferWithBarrier(
 
 // TODO(crbug.com/40278771): move buffer helpers into command recorder.
 void COMPONENT_EXPORT(WEBNN_SERVICE)
-    UploadBufferWithBarrier(CommandRecorder* command_recorder,
-                            TensorImplDml* dst_buffer,
+    UploadTensorWithBarrier(CommandRecorder* command_recorder,
+                            TensorImplDml* dst_tensor,
                             Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
                             size_t buffer_size);
 
 void COMPONENT_EXPORT(WEBNN_SERVICE)
-    ReadbackBufferWithBarrier(CommandRecorder* command_recorder,
+    ReadbackTensorWithBarrier(CommandRecorder* command_recorder,
                               Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
-                              TensorImplDml* src_buffer,
+                              TensorImplDml* src_tensor,
                               size_t buffer_size);
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,

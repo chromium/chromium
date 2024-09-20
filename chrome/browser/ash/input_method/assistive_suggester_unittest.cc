@@ -215,32 +215,6 @@ TEST_F(AssistiveSuggesterTest, EmojiSuggestion_BothPrefsEnabledFalse) {
 }
 
 TEST_F(AssistiveSuggesterTest,
-       EnhancedEmojiSuggestDisabledWhenStandardEmojiDisabledAndPrefsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistEmojiEnhanced},
-      /*disabled_features=*/{features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                   false);
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
-
-  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest,
-       EnhancedEmojiSuggestEnabledWhenStandardEmojiEnabledAndPrefsEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistEmojiEnhanced},
-      /*disabled_features=*/{features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                   true);
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
-
-  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest,
        MultiWordEnabledWhenFeatureFlagEnabledAndPrefEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -326,7 +300,6 @@ TEST_F(AssistiveSuggesterTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kClipboardHistoryLongpress},
       /*disabled_features=*/{features::kAssistMultiWord,
-                             features::kAssistEmojiEnhanced,
                              features::kDiacriticsOnPhysicalKeyboardLongpress});
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);
@@ -339,7 +312,6 @@ TEST_F(AssistiveSuggesterTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
           features::kClipboardHistoryLongpress, features::kAssistMultiWord,
-          features::kAssistEmojiEnhanced,
           features::kDiacriticsOnPhysicalKeyboardLongpress});
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);

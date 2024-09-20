@@ -98,7 +98,7 @@ void AppendReportingIdForSelectedReportingKeyKAnonKey(
     std::string& k_anon_key) {
   if (!reporting_id.has_value()) {
     base::StrAppend(&k_anon_key,
-                    {"\n", std::string_view("\00\00\00\00\00", 5)});
+                    {"\n", std::string_view("\x00\x00\x00\x00\x00", 5)});
     return;
   }
 
@@ -106,7 +106,7 @@ void AppendReportingIdForSelectedReportingKeyKAnonKey(
       base::U32ToBigEndian(reporting_id->size());
   base::StrAppend(
       &k_anon_key,
-      {"\n", std::string_view("\01", 1),
+      {"\n", std::string_view("\x01", 1),
        base::as_string_view(base::as_chars(base::make_span(size_in_bytes))),
        *reporting_id});
 }

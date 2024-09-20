@@ -223,10 +223,9 @@ std::unique_ptr<SavePageRequest> MakeSavePageRequest(
   const SavePageRequest::RequestState state =
       ToRequestState(statement.ColumnInt64(6));
   const GURL url(statement.ColumnString(7));
-  const ClientId client_id(statement.ColumnString(8),
-                           statement.ColumnString(9));
-  const GURL original_url(statement.ColumnString(10));
-  const std::string request_origin(statement.ColumnString(11));
+  ClientId client_id(statement.ColumnString(8), statement.ColumnString(9));
+  GURL original_url(statement.ColumnString(10));
+  std::string request_origin(statement.ColumnString(11));
 
   DVLOG(2) << "making save page request - id " << id << " url " << url
            << " client_id " << client_id.name_space << "-" << client_id.id

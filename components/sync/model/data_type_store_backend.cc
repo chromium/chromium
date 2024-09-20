@@ -97,8 +97,8 @@ DataTypeStoreBackend::~DataTypeStoreBackend() = default;
 
 std::optional<ModelError> DataTypeStoreBackend::Init(
     const base::FilePath& path,
-    const std::vector<std::pair<std::string, std::string>>&
-        prefixes_to_update) {
+    const base::flat_map<std::string, std::optional<std::string>>&
+        prefixes_to_update_or_delete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsInitialized());
   const std::string path_str = path.AsUTF8Unsafe();
@@ -107,8 +107,9 @@ std::optional<ModelError> DataTypeStoreBackend::Init(
   if (status.IsCorruption()) {
     DCHECK(db_ == nullptr);
     status = DestroyDatabase(path_str, env_.get());
-    if (status.ok())
+    if (status.ok()) {
       status = OpenDatabase(path_str, env_.get());
+    }
   }
   LogDbStatusByCallingSiteIfNeeded("Init", status);
   if (!status.ok()) {
@@ -131,8 +132,9 @@ std::optional<ModelError> DataTypeStoreBackend::Init(
 
   // Note: It's the caller's responsibility to ensure that the prefix migration
   // is only triggered once.
-  for (const auto& [from, to] : prefixes_to_update) {
-    std::optional<ModelError> error = UpdateDataPrefix(from, to);
+  for (const auto& [from, to] : prefixes_to_update_or_delete) {
+    std::optional<ModelError> error =
+        to.has_value() ? UpdateDataPrefix(from, *to) : RemoveDataPrefix(from);
     if (error) {
       return error;
     }
@@ -158,8 +160,9 @@ leveldb::Status DataTypeStoreBackend::OpenDatabase(const std::string& path,
   options.paranoid_checks = true;
   options.write_buffer_size = 512 * 1024;
 
-  if (env)
+  if (env) {
     options.env = env;
+  }
 
   std::unique_ptr<leveldb::DB> tmp_db;
   const leveldb::Status status = leveldb_env::OpenDB(options, path, &tmp_db);
@@ -174,8 +177,9 @@ leveldb::Status DataTypeStoreBackend::OpenDatabase(const std::string& path,
 leveldb::Status DataTypeStoreBackend::DestroyDatabase(const std::string& path,
                                                       leveldb::Env* env) {
   leveldb_env::Options options;
-  if (env)
+  if (env) {
     options.env = env;
+  }
   return leveldb::DestroyDB(path, options);
 }
 
@@ -219,8 +223,9 @@ std::optional<ModelError> DataTypeStoreBackend::ReadAllRecordsWithPrefix(
   const leveldb::Slice prefix_slice(prefix);
   for (iter->Seek(prefix_slice); iter->Valid(); iter->Next()) {
     leveldb::Slice key = iter->key();
-    if (!key.starts_with(prefix_slice))
+    if (!key.starts_with(prefix_slice)) {
       break;
+    }
     key.remove_prefix(prefix_slice.size());
     record_list->emplace_back(key.ToString(), iter->value().ToString());
   }
@@ -253,8 +258,9 @@ std::optional<ModelError> DataTypeStoreBackend::DeleteDataAndMetadataForPrefix(
   const leveldb::Slice prefix_slice(prefix);
   for (iter->Seek(prefix_slice); iter->Valid(); iter->Next()) {
     leveldb::Slice key = iter->key();
-    if (!key.starts_with(prefix_slice))
+    if (!key.starts_with(prefix_slice)) {
       break;
+    }
     write_batch.Delete(key);
   }
   leveldb::Status status = db_->Write(leveldb::WriteOptions(), &write_batch);
@@ -336,6 +342,25 @@ std::optional<ModelError> DataTypeStoreBackend::UpdateDataPrefix(
     // is now the prefix-less ID.
     write_batch->Delete(old_prefix + record.id);
     write_batch->Put(new_prefix + record.id, record.value);
+  }
+
+  return WriteModifications(std::move(write_batch));
+}
+
+std::optional<ModelError> DataTypeStoreBackend::RemoveDataPrefix(
+    const std::string& prefix) {
+  DataTypeStore::RecordList records;
+
+  if (std::optional<ModelError> error =
+          ReadAllRecordsWithPrefix(prefix, &records)) {
+    return error;
+  }
+
+  auto write_batch = std::make_unique<leveldb::WriteBatch>();
+  for (const DataTypeStore::Record& record : records) {
+    // Note that `ReadAllRecordsWithPrefix` strips the prefix, so `record.id`
+    // is now the prefix-less ID.
+    write_batch->Delete(base::StrCat({prefix, record.id}));
   }
 
   return WriteModifications(std::move(write_batch));

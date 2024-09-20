@@ -39,37 +39,32 @@ bool IsCredentialUnmutedCompromised(const CredentialUIEntry& credential) {
 }
 
 WarningType GetWarningOfHighestPriority(
-    const std::vector<CredentialUIEntry>& insecure_credentials) {
-  bool has_reused_passwords = false;
-  bool has_weak_passwords = false;
-  bool has_muted_warnings = false;
-
-  for (const auto& credential : insecure_credentials) {
-    if (credential.IsMuted()) {
-      has_muted_warnings = true;
-    } else if (IsCompromised(credential)) {
-      return WarningType::kCompromisedPasswordsWarning;
-    }
-
-    // A reused password warning is of higher priority than a weak password
-    // warning. So, if the credential is reused, there is no need to verify if
-    // it is also weak.
-    if (credential.IsReused()) {
-      has_reused_passwords = true;
-    } else if (credential.IsWeak()) {
-      has_weak_passwords = true;
-    }
+    InsecurePasswordCounts insecure_password_counts) {
+  if (insecure_password_counts.compromised_count > 0) {
+    return WarningType::kCompromisedPasswordsWarning;
   }
 
-  if (has_reused_passwords) {
+  if (insecure_password_counts.reused_count > 0) {
     return WarningType::kReusedPasswordsWarning;
-  } else if (has_weak_passwords) {
+  }
+
+  if (insecure_password_counts.weak_count > 0) {
     return WarningType::kWeakPasswordsWarning;
-  } else if (has_muted_warnings) {
+  }
+
+  if (insecure_password_counts.dismissed_count > 0) {
     return WarningType::kDismissedWarningsWarning;
   }
 
   return WarningType::kNoInsecurePasswordsWarning;
+}
+
+WarningType GetWarningOfHighestPriority(
+    const std::vector<CredentialUIEntry>& insecure_credentials) {
+  InsecurePasswordCounts insecure_password_counts =
+      CountInsecurePasswordsPerInsecureType(insecure_credentials);
+
+  return GetWarningOfHighestPriority(insecure_password_counts);
 }
 
 InsecurePasswordCounts CountInsecurePasswordsPerInsecureType(

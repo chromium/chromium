@@ -21,7 +21,7 @@ void FakeDataTypeProcessor::ConnectSync(std::unique_ptr<CommitQueue> worker) {}
 void FakeDataTypeProcessor::DisconnectSync() {}
 
 void FakeDataTypeProcessor::GetLocalChanges(size_t max_entries,
-                                             GetLocalChangesCallback callback) {
+                                            GetLocalChangesCallback callback) {
   std::move(callback).Run(CommitRequestDataList());
 }
 void FakeDataTypeProcessor::OnCommitCompleted(

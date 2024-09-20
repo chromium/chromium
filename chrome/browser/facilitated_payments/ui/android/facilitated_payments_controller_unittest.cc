@@ -31,6 +31,7 @@ class MockFacilitatedPaymentsBottomSheetBridge
 
   ~MockFacilitatedPaymentsBottomSheetBridge() override = default;
 
+  MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
   MOCK_METHOD(
       bool,
       RequestShowContent,
@@ -169,4 +170,12 @@ TEST_F(FacilitatedPaymentsControllerTest, Dismiss) {
   EXPECT_CALL(*mock_view_, Dismiss);
 
   controller_->Dismiss();
+}
+
+// Test controller forwards call to check the device screen orientation to the
+// view.
+TEST_F(FacilitatedPaymentsControllerTest, IsInLandscapeMode) {
+  EXPECT_CALL(*mock_view_, IsInLandscapeMode);
+
+  controller_->IsInLandscapeMode();
 }

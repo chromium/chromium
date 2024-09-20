@@ -120,7 +120,8 @@ std::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     }
   } else {
     extensions::MimeHandlerViewGuest* guest =
-        extensions::MimeHandlerViewGuest::FromWebContents(contents);
+        extensions::MimeHandlerViewGuest::FromNavigationHandle(
+            &navigation_handle);
     if (guest) {
       stream = guest->GetStreamWeakPtr();
     }

@@ -118,7 +118,7 @@ TEST(CSSSelectorParserTest, ValidANPlusB) {
     SCOPED_TRACE(test_case.input);
 
     std::pair<int, int> ab;
-    CSSParserTokenStream stream(StringView(test_case.input));
+    CSSParserTokenStream stream(test_case.input);
     bool passed = CSSSelectorParser::ConsumeANPlusB(stream, ab);
     EXPECT_TRUE(passed);
     EXPECT_EQ(test_case.a, ab.first);
@@ -269,7 +269,7 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
   HeapVector<CSSSelector> arena;
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.selector);
-    CSSParserTokenStream stream(StringView(test_case.selector));
+    CSSParserTokenStream stream(test_case.selector);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
         MakeGarbageCollected<CSSParserContext>(
@@ -399,7 +399,7 @@ TEST(CSSSelectorParserTest, SerializedUniversal) {
   HeapVector<CSSSelector> arena;
   for (auto** test_case : test_cases) {
     SCOPED_TRACE(test_case[0]);
-    CSSParserTokenStream stream(StringView{test_case[0]});
+    CSSParserTokenStream stream(test_case[0]);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
@@ -488,6 +488,46 @@ TEST(CSSSelectorParserTest, ScrollControlPseudos) {
   HeapVector<CSSSelector> arena;
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.selector);
+    CSSParserTokenStream stream(test_case.selector);
+    base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
+        stream,
+        MakeGarbageCollected<CSSParserContext>(
+            kHTMLStandardMode, SecureContextMode::kInsecureContext),
+        CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
+        /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
+    EXPECT_TRUE(!vector.empty());
+
+    CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
+    ASSERT_TRUE(list->HasOneSelector());
+
+    const CSSSelector* selector = list->First();
+    while (selector->NextSimpleSelector()) {
+      selector = selector->NextSimpleSelector();
+    }
+
+    EXPECT_EQ(selector->GetPseudoType(), test_case.type);
+  }
+}
+
+TEST(CSSSelectorParserTest, ColumnPseudo) {
+  test::TaskEnvironment task_environment;
+  struct TestCase {
+    const char* selector;
+    CSSSelector::PseudoType type;
+  };
+
+  TestCase test_cases[] = {
+      {".scroller::column", CSSSelector::kPseudoColumn},
+      {"#scroller::column", CSSSelector::kPseudoColumn},
+      {"div::column", CSSSelector::kPseudoColumn},
+      {"div::before::column", CSSSelector::kPseudoUnknown},
+      {"div::after::column", CSSSelector::kPseudoUnknown},
+  };
+
+  HeapVector<CSSSelector> arena;
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.selector);
     CSSParserTokenStream stream(StringView(test_case.selector));
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
@@ -496,6 +536,12 @@ TEST(CSSSelectorParserTest, ScrollControlPseudos) {
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
         /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
+
+    if (test_case.type == CSSSelector::kPseudoUnknown) {
+      EXPECT_TRUE(vector.empty());
+      return;
+    }
+
     EXPECT_TRUE(!vector.empty());
 
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
@@ -692,7 +738,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
   HeapVector<CSSSelector> arena;
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.input);
-    CSSParserTokenStream stream(StringView(test_case.input));
+    CSSParserTokenStream stream(test_case.input);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
@@ -721,7 +767,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
   HeapVector<CSSSelector> arena;
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.input);
-    CSSParserTokenStream stream(StringView(test_case.input));
+    CSSParserTokenStream stream(test_case.input);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
@@ -793,7 +839,7 @@ static bool IsCounted(const char* selector,
 
   DCHECK(!doc->IsUseCounted(feature));
 
-  CSSParserTokenStream stream(StringView{selector});
+  CSSParserTokenStream stream(selector);
   HeapVector<CSSSelector> arena;
   CSSSelectorParser::ParseSelector(stream, context, CSSNestingType::kNone,
                                    /*parent_rule_for_nesting=*/nullptr,
@@ -1002,7 +1048,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
   HeapVector<CSSSelector> arena;
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.input);
-    CSSParserTokenStream stream(StringView(test_case.input));
+    CSSParserTokenStream stream(test_case.input);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,

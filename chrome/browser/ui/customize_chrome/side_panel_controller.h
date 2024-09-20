@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_CUSTOMIZE_CHROME_SIDE_PANEL_CONTROLLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/task/delay_policy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
@@ -16,6 +17,12 @@ namespace customize_chrome {
 // CustomizeChrome SidePanel. Features should use this class and not
 // SidePanelControllerViews unless they need direct access to creating the View
 // component for the SidePanel.
+//
+// This class an abstract-base-class that serves no purpose other than to
+// satisfy a historical constraint (no referencing views from outside of views)
+// which has since been deleted.
+// TODO(https://crbug.com/365591184) Clean up this abstraction by deleting this
+// class altogether.
 class SidePanelController : public SidePanelEntryObserver {
  public:
   using StateChangedCallBack = base::RepeatingCallback<void(bool)>;

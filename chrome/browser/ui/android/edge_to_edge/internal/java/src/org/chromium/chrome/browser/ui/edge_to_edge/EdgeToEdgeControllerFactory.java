@@ -110,7 +110,24 @@ public class EdgeToEdgeControllerFactory {
      * @param view The view to be adjusted.
      */
     public static EdgeToEdgePadAdjuster createForView(View view) {
-        return new SimpleEdgeToEdgePadAdjuster(view);
+        return new SimpleEdgeToEdgePadAdjuster(
+                view, EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
+    }
+
+    /**
+     * Creates an adjuster for padding to the view to account for edge-to-edge, and observe the
+     * supplier if edge to edge is enabled.
+     *
+     * @param view The view to be adjusted.
+     * @param edgeToEdgeControllerSupplier Supplier to the {@link EdgeToEdgeController}.
+     */
+    public static EdgeToEdgePadAdjuster createForViewAndObserveSupplier(
+            View view,
+            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+        return new SimpleEdgeToEdgePadAdjuster(
+                view,
+                edgeToEdgeControllerSupplier,
+                EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
     }
 
     /**

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -22,13 +23,13 @@
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
-#include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -388,11 +389,38 @@ class EnrollmentScreenBaseTest : public testing::Test {
 
 class EnrollmentScreenManualFlowTest
     : public EnrollmentScreenBaseTest,
-      public ::testing::WithParamInterface<policy::EnrollmentConfig::Mode> {
+      public ::testing::WithParamInterface<
+          std::tuple<policy::EnrollmentConfig::Mode, bool>> {
+ public:
+  EnrollmentScreenManualFlowTest() {
+    if (ShouldEnableOobeAddUserDuringEnrollment()) {
+      feature_list_.InitAndEnableFeature(
+          features::kOobeAddUserDuringEnrollment);
+    }
+  }
+
+  static std::string ParamInfoToString(
+      const testing::TestParamInfo<EnrollmentScreenManualFlowTest::ParamType>&
+          info) {
+    const std::string feature_enabled = std::get<1>(info.param)
+                                            ? "WithAddUserAfterEnrollment"
+                                            : "WithoutAddUserAfterEnrollment";
+    const policy::EnrollmentConfig::Mode mode = std::get<0>(info.param);
+    return base::ToString(mode) + "_" + feature_enabled;
+  }
+
  protected:
+  policy::EnrollmentConfig::Mode GetParamEnrollmentMode() {
+    return std::get<0>(GetParam());
+  }
+
+  bool ShouldEnableOobeAddUserDuringEnrollment() {
+    return std::get<1>(GetParam());
+  }
+
   policy::EnrollmentConfig GetEnrollmentConfig() {
     policy::EnrollmentConfig config;
-    config.mode = GetParam();
+    config.mode = GetParamEnrollmentMode();
     config.auth_mechanism =
         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
     DCHECK(!config.is_mode_attestation())
@@ -400,6 +428,21 @@ class EnrollmentScreenManualFlowTest
 
     return config;
   }
+
+  // If the feature which adds a user from cached credentials is enabled,
+  // depending on the enrollment mode the tokens might be saved or not.
+  // Only in case of the manual enrollment the tokens will be saved to be reused
+  // later on, thus they should not be revoked.
+  void SetupClearAuthExpectationsOnSuccess() {
+    const policy::EnrollmentConfig::Mode enrollment_mode =
+        GetParamEnrollmentMode();
+    const bool expect_oauth2_tokens_revoked =
+        !(enrollment_mode == policy::EnrollmentConfig::MODE_MANUAL &&
+          features::IsOobeAddUserDuringEnrollmentEnabled());
+    ExpectClearAuth(expect_oauth2_tokens_revoked);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(EnrollmentScreenManualFlowTest, ShouldFinishEnrollmentScreen) {
@@ -411,7 +454,7 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldFinishEnrollmentScreen) {
   ExpectManualEnrollmentAndReportEnrolled();
   ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
   ExpectSuccessScreen();
-  ExpectClearAuth();
+  SetupClearAuthExpectationsOnSuccess();
 
   SetUpEnrollmentScreen(config);
   ShowEnrollmentScreen();
@@ -449,15 +492,15 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldRetryEnrollmentOnUserAction) {
     ExpectShowViewWithLogin();
     ExpectManualEnrollmentAndReportFailure();
     ExpectErrorScreen();
+    ExpectClearAuth();
 
     // Second view is shown after user retry.
     ExpectShowViewWithLogin();
     ExpectManualEnrollmentAndReportEnrolled();
     ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
     ExpectSuccessScreen();
+    SetupClearAuthExpectationsOnSuccess();
   }
-
-  ExpectClearAuth();
 
   SetUpEnrollmentScreen(config);
   ShowEnrollmentScreen();
@@ -474,14 +517,17 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldRetryEnrollmentOnUserAction) {
 INSTANTIATE_TEST_SUITE_P(
     ManualEnrollment,
     EnrollmentScreenManualFlowTest,
-    ::testing::Values(policy::EnrollmentConfig::MODE_MANUAL,
-                      policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT,
-                      policy::EnrollmentConfig::MODE_LOCAL_FORCED,
-                      policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED,
-                      policy::EnrollmentConfig::MODE_SERVER_FORCED,
-                      policy::EnrollmentConfig::MODE_SERVER_ADVERTISED,
-                      policy::EnrollmentConfig::MODE_RECOVERY,
-                      policy::EnrollmentConfig::MODE_INITIAL_SERVER_FORCED));
+    ::testing::Combine(
+        ::testing::Values(policy::EnrollmentConfig::MODE_MANUAL,
+                          policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT,
+                          policy::EnrollmentConfig::MODE_LOCAL_FORCED,
+                          policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED,
+                          policy::EnrollmentConfig::MODE_SERVER_FORCED,
+                          policy::EnrollmentConfig::MODE_SERVER_ADVERTISED,
+                          policy::EnrollmentConfig::MODE_RECOVERY,
+                          policy::EnrollmentConfig::MODE_INITIAL_SERVER_FORCED),
+        /*IsOobeAddUserDuringEnrollmentEnabled=*/::testing::Bool()),
+    EnrollmentScreenManualFlowTest::ParamInfoToString);
 
 // Signin artifacts and the refresh token can be optionally preserved in the
 // wizard context to be used later on, outside the EnrollmentScreen, in order to
@@ -519,6 +565,7 @@ TEST_F(EnrollmentAddUserTest,
   SetUpEnrollmentScreen(config);
   ShowEnrollmentScreen();
 
+  EXPECT_TRUE(wizard_context().add_user_from_cached_credentials);
   UserContext* user_context = wizard_context().user_context.get();
   EXPECT_TRUE(user_context);
   EXPECT_EQ(user_context->GetAccountId().GetUserEmail(), kTestUserEmail);
@@ -545,6 +592,7 @@ TEST_F(EnrollmentAddUserTest,
   SetUpEnrollmentScreen(config);
   ShowEnrollmentScreen();
 
+  EXPECT_FALSE(wizard_context().add_user_from_cached_credentials);
   UserContext* user_context = wizard_context().user_context.get();
   EXPECT_FALSE(user_context);
 }
@@ -565,6 +613,7 @@ TEST_F(EnrollmentAddUserTest,
 
   UserCancel();
 
+  EXPECT_FALSE(wizard_context().add_user_from_cached_credentials);
   UserContext* user_context = wizard_context().user_context.get();
   EXPECT_FALSE(user_context);
 }

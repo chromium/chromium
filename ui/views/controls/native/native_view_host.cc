@@ -4,7 +4,6 @@
 
 #include "ui/views/controls/native/native_view_host.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -72,11 +71,6 @@ gfx::NativeViewAccessible NativeViewHost::GetParentAccessible() {
 
 bool NativeViewHost::SetCornerRadii(const gfx::RoundedCornersF& corner_radii) {
   return native_wrapper_->SetCornerRadii(corner_radii);
-}
-
-bool NativeViewHost::SetCustomMask(std::unique_ptr<ui::LayerOwner> mask) {
-  DCHECK(native_wrapper_);
-  return native_wrapper_->SetCustomMask(std::move(mask));
 }
 
 void NativeViewHost::SetHitTestTopInset(int top_inset) {

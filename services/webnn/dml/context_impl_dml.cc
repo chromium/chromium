@@ -28,6 +28,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::dml {
@@ -36,9 +37,9 @@ using Microsoft::WRL::ComPtr;
 
 namespace {
 
-void HandleBufferCreationFailure(
+void HandleTensorCreationFailure(
     const std::string& error_message,
-    WebNNContextImpl::CreateBufferImplCallback callback) {
+    WebNNContextImpl::CreateTensorImplCallback callback) {
   std::move(callback).Run(base::unexpected(
       CreateError(mojom::Error::Code::kUnknownError, error_message)));
 }
@@ -72,10 +73,14 @@ ContextProperties ContextImplDml::GetProperties(
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt8, OperandDataType::kInt32, OperandDataType::kInt64};
 
+  static constexpr SupportedDataTypes kInts8To32{
+      OperandDataType::kInt8, OperandDataType::kUint8, OperandDataType::kInt32,
+      OperandDataType::kUint32};
+
   static constexpr SupportedDataTypes kUint8To32{OperandDataType::kUint8,
                                                  OperandDataType::kUint32};
 
-  static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
+  static constexpr SupportedDataTypes kGatherScatterIndicesSupportedDataTypes{
       OperandDataType::kInt32, OperandDataType::kUint32,
       OperandDataType::kInt64, OperandDataType::kUint64};
 
@@ -104,9 +109,12 @@ ContextProperties ContextImplDml::GetProperties(
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
 
-       // DequantizeLinear is not implemented.
-       /*dequantize_linear_input=*/{},
-       /*dequantize_linear_scale=*/{},
+       // CumulativeSum is not implemented.
+       /*cumulative_sum_input=*/{},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_dequantize_linear_operator_desc#tensor-support
+       /*dequantize_linear_input=*/kInts8To32,
+       /*dequantize_linear_scale=*/DataTypeConstraint::kFloat32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_add_operator_desc#tensor-support
        /*add_input=*/kFloat16To32Ints32,
@@ -203,11 +211,15 @@ ContextProperties ContextImplDml::GetProperties(
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc#tensor-support
        /*gather_input=*/kFloat16To32Ints8To32,
-       /*gather_indices=*/kGatherIndicesSupportedDataTypes,
+       /*gather_indices=*/kGatherScatterIndicesSupportedDataTypes,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_elements_operator_desc#tensor-support
        /*gather_elements_input=*/kFloat16To32Ints8To32,
-       /*gather_elements_indices=*/kGatherIndicesSupportedDataTypes,
+       /*gather_elements_indices=*/kGatherScatterIndicesSupportedDataTypes,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_nd_operator_desc#tensor-support
+       /*gather_nd_input=*/kFloat16To32Ints8To32,
+       /*gather_nd_indices=*/kGatherScatterIndicesSupportedDataTypes,
 
        // Gelu is emulated when the feature level is less than 5.1.
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
@@ -259,9 +271,9 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_parameterized_relu_operator_desc#tensor-support
        /*prelu_input=*/DataTypeConstraint::kFloat16To32,
 
-       // QuantizeLinear is not implemented.
-       /*quantize_linear_input=*/{},
-       /*quantize_linear_zero_point=*/{},
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_quantize_linear_operator_desc#tensor-support
+       /*quantize_linear_input=*/DataTypeConstraint::kFloat32,
+       /*quantize_linear_zero_point=*/DataTypeConstraint::kInts8,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_reduce_operator_desc#tensor-support-according-to-function
        /*reduce_l1_input=*/DataTypeConstraint::kFloat16To32,
@@ -283,6 +295,10 @@ ContextProperties ContextImplDml::GetProperties(
 
        // Reshape is emulated by identity.
        /*reshape_input=*/kFloat16To32Ints8To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_scatter_nd_operator_desc#tensor-support
+       /*scatter_nd_input=*/kFloat16To32Ints8To32,
+       /*scatter_nd_indices=*/kGatherScatterIndicesSupportedDataTypes,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_sigmoid_operator_desc#tensor-support
        /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
@@ -346,7 +362,9 @@ ContextProperties ContextImplDml::GetProperties(
     properties.data_type_limits.gather_input = SupportedDataTypes::All();
     properties.data_type_limits.gather_elements_input =
         SupportedDataTypes::All();
+    properties.data_type_limits.gather_nd_input = SupportedDataTypes::All();
     properties.data_type_limits.reshape_input = SupportedDataTypes::All();
+    properties.data_type_limits.scatter_nd_input = SupportedDataTypes::All();
     properties.data_type_limits.sign_input =
         DataTypeConstraint::kFloat16To32Int8To64;
     properties.data_type_limits.slice_input = SupportedDataTypes::All();
@@ -387,6 +405,10 @@ ContextProperties ContextImplDml::GetProperties(
 
   if (feature_level >= DML_FEATURE_LEVEL_6_0) {
     properties.data_type_limits.div_input = SupportedDataTypes::All();
+    properties.data_type_limits.dequantize_linear_scale =
+        DataTypeConstraint::kFloat16To32;
+    properties.data_type_limits.quantize_linear_input =
+        DataTypeConstraint::kFloat16To32;
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_6_2) {
@@ -423,31 +445,34 @@ base::WeakPtr<WebNNContextImpl> ContextImplDml::AsWeakPtr() {
 void ContextImplDml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   GraphImplDml::CreateAndBuild(
       adapter_, weak_factory_.GetWeakPtr(), std::move(graph_info),
-      std::move(compute_resource_info), std::move(callback),
+      std::move(compute_resource_info), std::move(constant_operands),
+      std::move(callback),
       gpu_feature_info_->IsWorkaroundEnabled(
           gpu::DML_EXECUTION_DISABLE_META_COMMANDS));
 }
 
-void ContextImplDml::CreateBufferImpl(
+void ContextImplDml::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    mojom::BufferInfoPtr buffer_info,
-    CreateBufferImplCallback callback) {
+    mojom::TensorInfoPtr tensor_info,
+    CreateTensorImplCallback callback) {
   // DML requires resources to be in multiple of 4 bytes.
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
   constexpr uint64_t kDMLBufferAlignment = 4ull;
   if (std::numeric_limits<uint64_t>::max() - kDMLBufferAlignment <
-      static_cast<uint64_t>(buffer_info->descriptor.PackedByteLength())) {
-    LOG(ERROR) << "[WebNN] Buffer is too large to create.";
-    HandleBufferCreationFailure("Failed to create buffer.",
+      static_cast<uint64_t>(tensor_info->descriptor.PackedByteLength())) {
+    LOG(ERROR) << "[WebNN] Tensor is too large to create.";
+    HandleTensorCreationFailure("Failed to create tensor.",
                                 std::move(callback));
     return;
   }
 
   const uint64_t aligned_buffer_byte_size = base::bits::AlignUp(
-      static_cast<uint64_t>(buffer_info->descriptor.PackedByteLength()),
+      static_cast<uint64_t>(tensor_info->descriptor.PackedByteLength()),
       kDMLBufferAlignment);
 
   HRESULT hr = S_OK;
@@ -458,14 +483,14 @@ void ContextImplDml::CreateBufferImpl(
   if (adapter_->IsUMA()) {
     // Create a buffer configured with memory properties based on
     // usage.
-    if (buffer_info->usage.Has(MLTensorUsageFlags::kWriteTo)) {
+    if (tensor_info->usage.Has(MLTensorUsageFlags::kWrite)) {
       // Upload buffer is used when the buffer mostly CPU writes but
       // could also CPU read. A upload buffer provides less bandwidth for CPU
       // reads in favor of GPU writes being optimal.
       hr = CreateCustomUploadBuffer(
           adapter_->d3d12_device(), aligned_buffer_byte_size,
           L"WebNN_Custom_Upload_Buffer_External", buffer);
-    } else if (buffer_info->usage.Has(MLTensorUsageFlags::kReadFrom)) {
+    } else if (tensor_info->usage.Has(MLTensorUsageFlags::kRead)) {
       // Readback buffer is used when the buffer only requires CPU reads.
       hr = CreateCustomReadbackBuffer(
           adapter_->d3d12_device(), aligned_buffer_byte_size,
@@ -485,7 +510,7 @@ void ContextImplDml::CreateBufferImpl(
   }
 
   if (FAILED(hr)) {
-    HandleBufferCreationFailure("Failed to create buffer.",
+    HandleTensorCreationFailure("Failed to create tensor.",
                                 std::move(callback));
     HandleContextLostOrCrash("Failed to create the external buffer.", hr);
     return;
@@ -496,20 +521,20 @@ void ContextImplDml::CreateBufferImpl(
   // Safe to use ContextImplDml* because this context owns the buffer
   // being connected and that context cannot destruct before the buffer.
   std::move(callback).Run(std::make_unique<TensorImplDml>(
-      std::move(receiver), std::move(buffer), this, std::move(buffer_info)));
+      std::move(receiver), std::move(buffer), this, std::move(tensor_info)));
 }
 
-void ContextImplDml::ReadBuffer(
-    TensorImplDml* src_buffer,
-    mojom::WebNNTensor::ReadBufferCallback callback) {
-  const size_t src_buffer_size = src_buffer->PackedByteLength();
+void ContextImplDml::ReadTensor(
+    TensorImplDml* src_tensor,
+    mojom::WebNNTensor::ReadTensorCallback callback) {
+  const size_t src_tensor_size = src_tensor->PackedByteLength();
 
   HRESULT hr = S_OK;
 
   // Map entire buffer to readback the output data.
   if (adapter_->IsUMA() && adapter_->command_queue()->GetCompletedValue() >=
-                               src_buffer->last_submission_fence_value()) {
-    ContextImplDml::OnReadbackComplete(src_buffer->buffer(), src_buffer_size,
+                               src_tensor->last_submission_fence_value()) {
+    ContextImplDml::OnReadbackComplete(src_tensor->buffer(), src_tensor_size,
                                        std::move(callback), hr);
     return;
   }
@@ -517,51 +542,51 @@ void ContextImplDml::ReadBuffer(
   // Copy the buffer into a staging buffer to readback the output data.
   ComPtr<ID3D12Resource> download_buffer;
   hr = CreateReadbackBuffer(adapter_->d3d12_device(),
-                            static_cast<uint64_t>(src_buffer_size),
+                            static_cast<uint64_t>(src_tensor_size),
                             L"WebNN_Readback_Buffer", download_buffer);
   if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    std::move(callback).Run(ToError<mojom::ReadTensorResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read tensor."));
     HandleContextLostOrCrash("Failed to create the download buffer.", hr);
     return;
   }
 
   hr = StartRecordingIfNecessary();
   if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    std::move(callback).Run(ToError<mojom::ReadTensorResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read tensor."));
     HandleRecordingError("Failed to start recording.", hr);
     return;
   }
 
-  command_recorder_->ReadbackBufferWithBarrier(download_buffer, src_buffer,
-                                               src_buffer_size);
+  command_recorder_->ReadbackTensorWithBarrier(download_buffer, src_tensor,
+                                               src_tensor_size);
 
   // Submit copy and schedule GPU wait.
   hr = command_recorder_->CloseAndExecute();
   if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    std::move(callback).Run(ToError<mojom::ReadTensorResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read tensor."));
     HandleRecordingError("Failed to close and execute the command list.", hr);
     return;
   }
 
   // The source and readback buffer is held alive during execution by the
-  // recorder by calling `ReadbackBufferWithBarrier()` then
+  // recorder by calling `ReadbackTensorWithBarrier()` then
   // CommandRecorder::CloseAndExecute().
   adapter_->command_queue()->WaitAsync(base::BindOnce(
       &ContextImplDml::OnReadbackComplete, weak_factory_.GetWeakPtr(),
-      std::move(download_buffer), src_buffer_size, std::move(callback)));
+      std::move(download_buffer), src_tensor_size, std::move(callback)));
 }
 
 void ContextImplDml::OnReadbackComplete(
     ComPtr<ID3D12Resource> download_buffer,
     size_t read_byte_size,
-    mojom::WebNNTensor::ReadBufferCallback callback,
+    mojom::WebNNTensor::ReadTensorCallback callback,
     HRESULT hr) {
   if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    std::move(callback).Run(ToError<mojom::ReadTensorResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read tensor."));
     HandleRecordingError("Failed to download the buffer.", hr);
     return;
   }
@@ -572,8 +597,8 @@ void ContextImplDml::OnReadbackComplete(
   void* mapped_download_data = nullptr;
   hr = download_buffer->Map(0, nullptr, &mapped_download_data);
   if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    std::move(callback).Run(ToError<mojom::ReadTensorResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read tensor."));
     HandleContextLostOrCrash("Failed to map the download buffer.", hr);
     return;
   }
@@ -584,18 +609,18 @@ void ContextImplDml::OnReadbackComplete(
   download_buffer->Unmap(0, nullptr);
 
   std::move(callback).Run(
-      mojom::ReadBufferResult::NewBuffer(std::move(dst_buffer)));
+      mojom::ReadTensorResult::NewBuffer(std::move(dst_buffer)));
 }
 
-void ContextImplDml::WriteBuffer(TensorImplDml* dst_buffer,
+void ContextImplDml::WriteTensor(TensorImplDml* dst_tensor,
                                  mojo_base::BigBuffer src_buffer) {
   HRESULT hr = S_OK;
-  ComPtr<ID3D12Resource> buffer_to_map = dst_buffer->buffer();
+  ComPtr<ID3D12Resource> buffer_to_map = dst_tensor->buffer();
 
   // Create a staging buffer to upload data into when the existing buffer
   // cannot be updated by the CPU.
   if (!adapter_->IsUMA() || adapter_->command_queue()->GetCompletedValue() <
-                                dst_buffer->last_submission_fence_value()) {
+                                dst_tensor->last_submission_fence_value()) {
     hr = CreateUploadBuffer(adapter_->d3d12_device(), src_buffer.size(),
                             L"WebNN_Upload_Buffer", buffer_to_map);
     if (FAILED(hr)) {
@@ -624,18 +649,18 @@ void ContextImplDml::WriteBuffer(TensorImplDml* dst_buffer,
   buffer_to_map->Unmap(0, nullptr);
 
   // Uploads are only required when the mapped buffer was a staging buffer.
-  if (dst_buffer->buffer() != buffer_to_map.Get()) {
+  if (dst_tensor->buffer() != buffer_to_map.Get()) {
     hr = StartRecordingIfNecessary();
     if (FAILED(hr)) {
       HandleRecordingError("Failed to start recording.", hr);
       return;
     }
 
-    command_recorder_->UploadBufferWithBarrier(
-        dst_buffer, std::move(buffer_to_map), src_buffer.size());
+    command_recorder_->UploadTensorWithBarrier(
+        dst_tensor, std::move(buffer_to_map), src_buffer.size());
 
     // TODO(crbug.com/40278771): consider not submitting after every write.
-    // CloseAndExecute() only needs to be called once, when the buffer is read
+    // CloseAndExecute() only needs to be called once, when the tensor is read
     // by another context operation (ex. input into dispatch). Submitting
     // immediately prevents memory usage from increasing; however, it also
     // incurs more overhead due to a near empty command-list getting executed

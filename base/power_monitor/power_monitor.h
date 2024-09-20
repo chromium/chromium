@@ -135,7 +135,8 @@ class BASE_EXPORT PowerMonitor {
 
   PowerStateObserver::BatteryPowerStatus battery_power_status_
       GUARDED_BY(battery_power_status_lock_) =
-          PowerStateObserver::BatteryPowerStatus::kExternalPower;
+          PowerStateObserver::BatteryPowerStatus::kUnknown;
+
   mutable Lock battery_power_status_lock_;
 
   PowerThermalObserver::DeviceThermalState power_thermal_state_

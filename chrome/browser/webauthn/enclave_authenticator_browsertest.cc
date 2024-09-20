@@ -45,6 +45,8 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -627,6 +629,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
     // AuthenticatorRequestDialogModel::Observer:
     void OnStepTransition() override {
+      all_steps_.push_back(model_->step());
+
       if (run_loop_ && (observe_next_step_ || step_ == model_->step())) {
         run_loop_->QuitWhenIdle();
       }
@@ -648,10 +652,15 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       run_loop_.reset();
     }
 
+    base::span<const AuthenticatorRequestDialogModel::Step> all_steps() const {
+      return all_steps_;
+    }
+
    private:
     raw_ptr<AuthenticatorRequestDialogModel> model_;
     AuthenticatorRequestDialogModel::Step step_ =
         AuthenticatorRequestDialogModel::Step::kNotStarted;
+    std::vector<AuthenticatorRequestDialogModel::Step> all_steps_;
     bool waiting_for_loading_enclave_timeout_ = false;
     bool observe_next_step_ = false;
     std::unique_ptr<base::RunLoop> run_loop_;
@@ -2143,6 +2152,68 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
 }
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       BiometricsInPWA) {
+  // When requesting biometrics in a PWA, Touch ID should never be used.
+
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  security_domain_service_->pretend_there_are_members();
+  AddTestPasskeyToModel();
+  EnableUVKeySupport();
+  SetBiometricsEnabled(true);
+
+  // Create a Browser of type `TYPE_APP`, like a PWA.
+  Browser* app_browser = Browser::Create(Browser::CreateParams::CreateForApp(
+      "appname", /*trusted_source=*/true, gfx::Rect(0, 0, 500, 500),
+      browser()->profile(),
+      /*user_gesture=*/true));
+  ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
+  app_browser->window()->Show();
+
+  ASSERT_TRUE(NavigateToURLWithDisposition(
+      app_browser, https_server_.GetURL("www.example.com", "/title1.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Trigger a get() call to initialize the enclave. UV will be satisfied by
+  // entering the PIN.
+
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  model_observer()->WaitForStep();
+
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->StoreKeys(kGaiaId,
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  // Do a get() call that uses biometrics. Check that Touch ID wasn't used.
+
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  EXPECT_FALSE(
+      base::Contains(model_observer()->all_steps(),
+                     AuthenticatorRequestDialogModel::Step::kGPMTouchID));
+}
+#endif
 
 class EnclaveAuthenticatorWithoutPinBrowserTest
     : public EnclaveAuthenticatorBrowserTest {

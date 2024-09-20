@@ -433,9 +433,7 @@ crbug.com/1494227 [ mac graphite-enabled intel ] Pixel_CSSFilterEffects [ Failur
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
-crbug.com/328649150 [ sonoma amd angle-opengl ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ Failure ]
 crbug.com/354152172 [ amd-0x67ef angle-opengl mac ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
-crbug.com/354152172 [ angle-opengl asan intel mac release ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
 crbug.com/354152172 [ angle-opengl intel mac no-asan ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
 
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
@@ -482,7 +480,8 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
-
+# Mac ASAN Devtools Serialization crashes
+crbug.com/338574390 [ mac intel-0x3e9b asan angle-metal passthrough ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

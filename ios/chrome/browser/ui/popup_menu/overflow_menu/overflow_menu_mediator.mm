@@ -12,6 +12,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -24,6 +25,7 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
+#import "components/search_engines/template_url_service.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync/service/sync_service.h"
@@ -48,6 +50,8 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -153,6 +157,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                     OverlayPresenterObserving,
                                     PrefObserverDelegate,
                                     ReadingListModelBridgeObserver,
+                                    SearchEngineObserving,
                                     WebStateListObserving> {
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
@@ -174,6 +179,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
+  // Search engine observer.
+  std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
 }
 
 // The current web state.
@@ -294,6 +301,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   self.localStatePrefs = nullptr;
 
   self.syncService = nullptr;
+  _searchEngineObserver.reset();
 }
 
 #pragma mark - Property getters/setters
@@ -462,6 +470,17 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 
   [self updateModel];
+}
+
+- (void)setTemplateURLService:(TemplateURLService*)templateURLService {
+  _templateURLService = templateURLService;
+  if (_templateURLService) {
+    _searchEngineObserver =
+        std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
+    [self searchEngineChanged];
+  } else {
+    _searchEngineObserver.reset();
+  }
 }
 
 #pragma mark - Model Creation
@@ -1325,6 +1344,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       IsIncognitoModeForced(self.browserStatePrefs);
   self.openIncognitoTabAction.enterpriseDisabled =
       IsIncognitoModeDisabled(self.browserStatePrefs);
+
+  if (IsLensOverlayAvailable()) {
+    self.lensOverlayAction.enabled =
+        search_engines::SupportsSearchImageWithLens(self.templateURLService);
+  }
 }
 
 // Updates the order of the items in each section or group.
@@ -1650,6 +1674,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self updateModel];
 }
 
+#pragma mark - SearchEngineObserving
+
+- (void)searchEngineChanged {
+  [self updateModel];
+}
+
+- (void)templateURLServiceShuttingDown:(TemplateURLService*)urlService {
+  _templateURLService = nullptr;
+}
+
 #pragma mark - FollowMenuUpdater
 
 - (void)updateFollowMenuItemWithWebPage:(WebPageURLs*)webPageURLs
@@ -1932,7 +1966,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::EditActions:
       return self.editActionsAction;
     case overflow_menu::ActionType::LensOverlay:
-      return self.lensOverlayAction;
+      return (self.isIncognito) ? nil : self.lensOverlayAction;
   }
 }
 
@@ -2022,6 +2056,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens the Clear Browsing Data screen.
 - (void)openClearBrowsingData {
   RecordAction(UserMetricsAction("MobileMenuClearBrowsingData"));
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      browsing_data::DeleteBrowsingDataDialogAction::
+          kMenuItemEntryPointSelected);
+
   [self dismissMenu];
   if (IsIosQuickDeleteEnabled()) {
     [self.quickDeleteHandler
@@ -2175,7 +2214,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self dismissMenu];
   [self.lensOverlayHandler
       createAndShowLensUI:YES
-               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu
+               completion:nil];
 }
 
 #pragma mark - Destinations Handlers
@@ -2262,6 +2302,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Dismisses the menu and opens settings.
 - (void)openSettings {
+  if (!IsBlueDotOnToolsMenuButtoneEnabled() &&
+      self.settingsDestination.badge == BadgeTypePromo &&
+      self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
+    [self.popupMenuHandler updateToolsMenuBlueDotVisibility];
+  }
   [self dismissMenu];
   profile_metrics::BrowserProfileType type =
       self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito

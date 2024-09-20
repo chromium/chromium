@@ -17,7 +17,7 @@ template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
 concept IsSupportedTokenType =
-    IsAnyOf<T, blink::WebNNTensorToken, blink::WebNNContextToken>;
+    IsAnyOf<T, blink::WebNNContextToken, blink::WebNNTensorToken>;
 }  // namespace internal
 
 template <typename WebNNTokenType>

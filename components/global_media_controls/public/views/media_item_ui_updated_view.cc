@@ -30,30 +30,30 @@ namespace {
 
 constexpr int kFixedWidth = 400;
 
-constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 16);
-constexpr gfx::Insets kInfoColumnInsets = gfx::Insets::TLBR(4, 0, 0, 0);
+constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 12);
+constexpr gfx::Insets kArtworkRowInsets = gfx::Insets::TLBR(0, 4, 0, 0);
+constexpr gfx::Insets kMetadataRowInsets = gfx::Insets::TLBR(0, 0, 0, 4);
 
 constexpr int kBackgroundCornerRadius = 8;
 constexpr int kArtworkCornerRadius = 8;
 constexpr int kFaviconCornerRadius = 2;
 
-constexpr int kBackgroundSeparator = 16;
+constexpr int kBackgroundSeparator = 12;
 constexpr int kArtworkRowSeparator = 16;
-constexpr int kMediaInfoSeparator = 8;
-constexpr int kSourceRowSeparator = 8;
+constexpr int kInfoColumnSeparator = 4;
+constexpr int kFaviconSourceSeparator = 4;
 constexpr int kMetadataRowSeparator = 16;
 constexpr int kMetadataColumnSeparator = 4;
-constexpr int kProgressRowSeparator = 4;
 
 constexpr int kPlayPauseButtonIconSize = 24;
-constexpr int kMediaActionButtonIconSize = 18;
+constexpr int kMediaActionButtonIconSize = 20;
 
 constexpr float kFocusRingHaloInset = -3.0f;
 
 constexpr gfx::Size kArtworkSize = gfx::Size(80, 80);
 constexpr gfx::Size kFaviconSize = gfx::Size(14, 14);
 constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
-constexpr gfx::Size kMediaActionButtonSize = gfx::Size(20, 20);
+constexpr gfx::Size kMediaActionButtonSize = gfx::Size(28, 28);
 
 // Buttons with the following media actions are in the progress row, on the two
 // sides of the progress view.
@@ -92,6 +92,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   // |artwork_row| holds everything above the |progress_row|, starting with the
   // media artwork along with some media information and media buttons.
   auto* artwork_row = AddChildView(std::make_unique<views::BoxLayoutView>());
+  artwork_row->SetInsideBorderInsets(kArtworkRowInsets);
   artwork_row->SetBetweenChildSpacing(kArtworkRowSeparator);
 
   artwork_view_ =
@@ -107,21 +108,26 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   auto* info_column =
       artwork_row->AddChildView(std::make_unique<views::BoxLayoutView>());
   info_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  info_column->SetInsideBorderInsets(kInfoColumnInsets);
-  info_column->SetBetweenChildSpacing(kMediaInfoSeparator);
+  info_column->SetBetweenChildSpacing(kInfoColumnSeparator);
   artwork_row->SetFlexForView(info_column, 1);
 
   // |source_row| inside |info_column| holds the media favicon view, media
   // source label, start casting button and picture-in-picture button.
   auto* source_row =
       info_column->AddChildView(std::make_unique<views::BoxLayoutView>());
-  source_row->SetBetweenChildSpacing(kSourceRowSeparator);
   source_row->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
+  // |favicon_source| inside |source_row| holds the media favicon view and the
+  // media source label to add a gap between them.
+  auto* favicon_source =
+      source_row->AddChildView(std::make_unique<views::BoxLayoutView>());
+  favicon_source->SetBetweenChildSpacing(kFaviconSourceSeparator);
+  source_row->SetFlexForView(favicon_source, 1);
+
   // Create the media favicon view and initialize it with the default icon.
   favicon_view_ =
-      source_row->AddChildView(std::make_unique<views::ImageView>());
+      favicon_source->AddChildView(std::make_unique<views::ImageView>());
   favicon_view_->SetPreferredSize(kFaviconSize);
   favicon_view_->SetClipPath(
       SkPath().addRoundRect(RectToSkRect(gfx::Rect(kFaviconSize)),
@@ -129,7 +135,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   UpdateWithFavicon(gfx::ImageSkia());
 
   // Create the media source label.
-  source_label_ = source_row->AddChildView(std::make_unique<views::Label>(
+  source_label_ = favicon_source->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_BODY_5));
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -137,7 +143,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   source_label_->SetElideBehavior(gfx::ELIDE_HEAD);
   source_label_->SetEnabledColorId(
       media_color_theme_.secondary_foreground_color_id);
-  source_row->SetFlexForView(source_label_, 1);
+  favicon_source->SetFlexForView(source_label_, 1);
 
   // Create the start casting button.
   start_casting_button_ = CreateMediaActionButton(
@@ -165,7 +171,11 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   // |play_pause_button_container|.
   auto* metadata_row =
       info_column->AddChildView(std::make_unique<views::BoxLayoutView>());
+  metadata_row->SetInsideBorderInsets(kMetadataRowInsets);
   metadata_row->SetBetweenChildSpacing(kMetadataRowSeparator);
+  metadata_row->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kEnd);
+
   auto* metadata_column =
       metadata_row->AddChildView(std::make_unique<views::BoxLayoutView>());
   metadata_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
@@ -205,13 +215,14 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   // |progress_row| holds some media action buttons, the progress view and the
   // progress timestamp views.
   auto* progress_row = AddChildView(std::make_unique<views::BoxLayoutView>());
-  progress_row->SetBetweenChildSpacing(kProgressRowSeparator);
 
   // Create the current timestamp label before the progress view.
   current_timestamp_label_ =
       progress_row->AddChildView(std::make_unique<views::Label>(
           std::u16string(), views::style::CONTEXT_LABEL,
-          views::style::STYLE_CAPTION_MEDIUM));
+          views::style::STYLE_BODY_5));
+  current_timestamp_label_->SetEnabledColorId(
+      media_color_theme_.secondary_foreground_color_id);
 
   // Create the previous track button.
   CreateMediaActionButton(
@@ -272,7 +283,9 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   duration_timestamp_label_ =
       progress_row->AddChildView(std::make_unique<views::Label>(
           std::u16string(), views::style::CONTEXT_LABEL,
-          views::style::STYLE_CAPTION_MEDIUM));
+          views::style::STYLE_BODY_5));
+  duration_timestamp_label_->SetEnabledColorId(
+      media_color_theme_.secondary_foreground_color_id);
 
   // Add the device selector view below the |progress_row| if there is one.
   UpdateDeviceSelectorView(std::move(device_selector_view));
@@ -284,8 +297,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
 
   // Set the timestamp labels to use fixed width so that they can replace the
   // media action buttons without changing the progress view's position.
-  int timestamp_label_width =
-      kMediaActionButtonSize.width() * 2 + kProgressRowSeparator;
+  int timestamp_label_width = kMediaActionButtonSize.width() * 2;
   current_timestamp_label_->SetMultiLine(true);
   current_timestamp_label_->SizeToFit(timestamp_label_width);
   duration_timestamp_label_->SetMultiLine(true);
@@ -294,13 +306,15 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   // Set the timestamp labels to be hidden initially.
   UpdateTimestampLabelsVisibility();
 
-  item_->SetView(this);
-
   GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
   UpdateAccessibleName();
   title_label_changed_callback_ = title_label_->AddTextChangedCallback(
       base::BindRepeating(&MediaItemUIUpdatedView::UpdateAccessibleName,
                           base::Unretained(this)));
+
+  // Always register for media callbacks in the end after all the components are
+  // initialized.
+  item_->SetView(this);
 }
 
 MediaItemUIUpdatedView::~MediaItemUIUpdatedView() {

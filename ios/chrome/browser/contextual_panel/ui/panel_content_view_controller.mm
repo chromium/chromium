@@ -58,6 +58,12 @@ const CGFloat kContentBottomMargin = 16;
 // Threshold for how long a view is onscreen to count as visible.
 const base::TimeDelta kVisibleTimeThreshold = base::Milliseconds(10);
 
+// The time range's expected min, max values and bucket count for custom
+// histograms.
+constexpr base::TimeDelta kVisibleTimeHistogramMin = base::Milliseconds(1);
+constexpr base::TimeDelta kVisibleTimeHistogramMax = base::Minutes(10);
+constexpr int kVisibleTimeHistogramBucketCount = 100;
+
 // Identifier for the one section in this collection view.
 NSString* const kSectionIdentifier = @"section1";
 
@@ -259,8 +265,10 @@ UIImage* CloseButtonImage(BOOL highlighted) {
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
 
-  base::UmaHistogramTimes("IOS.ContextualPanel.VisibleTime",
-                          base::Time::Now() - _appearanceTime);
+  base::UmaHistogramCustomTimes(
+      "IOS.ContextualPanel.VisibleTime", base::Time::Now() - _appearanceTime,
+      kVisibleTimeHistogramMin, kVisibleTimeHistogramMax,
+      kVisibleTimeHistogramBucketCount);
 
   // First alert all visible cells that they will disappear.
   for (NSIndexPath* indexPath in _collectionView.indexPathsForVisibleItems) {

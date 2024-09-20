@@ -63,6 +63,8 @@ export class TabSearchItemElement extends TabSearchItemBase {
       data: {type: Object},
       buttonRipples_: {type: Boolean},
       inSuggestedGroup: {type: Boolean},
+      hideUrl: {type: Boolean},
+      closeButtonIcon: {type: String},
 
       compact: {
         type: Boolean,
@@ -91,6 +93,8 @@ export class TabSearchItemElement extends TabSearchItemBase {
   protected buttonRipples_: boolean = loadTimeData.getBoolean('useRipples');
   inSuggestedGroup: boolean = false;
   compact: boolean = false;
+  hideUrl: boolean = false;
+  closeButtonIcon: string = 'tab-search:close';
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

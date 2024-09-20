@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/streams/tee_engine.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -154,7 +149,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
                                      exception_context);
 
       // 2. Let chunk1 and chunk2 be chunk.
-      v8::Local<v8::Value> chunk[2];
+      std::array<v8::Local<v8::Value>, 2> chunk;
       chunk[0] = value.Get(script_state->GetIsolate());
       chunk[1] = chunk[0];
 

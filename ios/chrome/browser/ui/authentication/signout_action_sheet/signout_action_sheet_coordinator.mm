@@ -552,8 +552,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   __weak __typeof(self) weakSelf = self;
   self.authenticationService->SignOut(_signout_source_metric, forceClearData, ^{
     // The snackbar should be displayed even if self has been deallocated.
-    [snackbarCommandsHandler showSnackbarMessage:snackbarMessage
-                                    bottomOffset:0];
+    [snackbarCommandsHandler
+        showSnackbarMessageOverBrowserToolbar:snackbarMessage];
     [weakSelf signOutDidFinish];
   });
   // Get UMA metrics on the usage of different options for signout available

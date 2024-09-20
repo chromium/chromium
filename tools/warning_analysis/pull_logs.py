@@ -85,11 +85,6 @@ def parse_args(args):
         help="Absolute path to a directory to store the downloaded logs. "
         "Will be created if it doesn't exist. "
         "Include a trailing slash.")
-    parser.add_argument(
-        "-d",
-        "--delete-logs",
-        action="store_true",
-        help="If passed, delete existing txt files from the log directory.")
     parser.add_argument("-s",
                         "--step",
                         type=str,
@@ -110,6 +105,21 @@ def parse_args(args):
         action="store_true",
         help="If passed, print additional logging information for moitoring "
         "or debugging purposes.")
+
+    handle_existing = parser.add_mutually_exclusive_group()
+    handle_existing.add_argument(
+        "-d",
+        "--delete-logs",
+        action="store_true",
+        help="If passed, delete existing txt files from the log directory. "
+        "Mutually exclusive with --resume.")
+    handle_existing.add_argument(
+        "-r",
+        "--resume",
+        action="store_true",
+        help="If passed, don't download logs that are already present in the"
+        "output directory. Useful if the previous download got interrupted. "
+        "Mutually exclusive with --delete-logs.")
 
     parsed_args = vars(parser.parse_args(args))
 
@@ -143,11 +153,11 @@ def identify_builds(cl_id, patchset):
 
     # Make sure we're only getting the most recent set of builds by grabbing the
     # cq_attempt_key tag from the first build returned.
-    # NOTE: this strategy assumes that builds are returned in reverse
+    # This strategy relies on the fact that that builds are returned in reverse
     # chronological order.
     most_recent_build = subprocess.run([bb, "ls", "-cl", cl_str, "-1", "-json"],
                                        check=True,
-                                       capture_output=True,
+                                       stdout=subprocess.PIPE,
                                        text=True)
 
     if (len(most_recent_build.stdout) == 0):
@@ -160,13 +170,13 @@ def identify_builds(cl_id, patchset):
             cq_attempt_key = tag["value"]
             break
 
-    # Grab the name and id of all builds in the most recent set
+    # Grab the info for all builds in the most recent set
     build_list = subprocess.run([
-        bb, "ls", "-cl", cl_str, "-json", "-A", "-t",
+        bb, "ls", "-cl", cl_str, "-json", "-fields", "input", "-t",
         "cq_attempt_key:" + cq_attempt_key
     ],
                                 check=True,
-                                capture_output=True,
+                                stdout=subprocess.PIPE,
                                 text=True)
     if (len(build_list.stdout) == 0):
         raise RuntimeError("Somehow couldn't find any builds the second time.")
@@ -222,7 +232,8 @@ def pull_and_filter_logs(parsed_args, target_builds):
     Note that this will create the output directory if it doesn't exist.
     """
     # Keep track of any builders which we unexpectedly failed to pull logs for.
-    failures = []
+    failures = []  # Completely failed (e.g. step didn't exist)
+    partial_logs = []  # Partial failure (e.g. builder died mid-compilation)
 
     log_dir = parsed_args["log_dir"]
     try:
@@ -237,33 +248,57 @@ def pull_and_filter_logs(parsed_args, target_builds):
             os.remove(f)
 
     for name, build_id in target_builds:
+        output_file = os.path.join(log_dir, name + ".txt")
+
+        if parsed_args["resume"] and os.path.isfile(output_file):
+            log("Log for {} already exists, skipping".format(name))
+            continue
+
         log("Pulling logs for " + name)
 
         pulled_result = try_pull_step(build_id, parsed_args["step"])
         if not pulled_result:
             log("  Failed to pull logs for " + name)
-            failures.append(name + "({})".format(build_id))
+            failures.append(name + " ({})".format(build_id) + "\n")
             continue
 
         output, first_line = pulled_result
 
-        output_file = name + ".txt"
-        with open(os.path.join(log_dir, output_file), "w") as file:
+        with open(output_file, "w") as file:
             write_line(parsed_args["filter"], file, first_line)
             for line in output.stdout:
+                # If the builder died mid-compilation, bb may stop returning
+                # data partway through, and just start printing an error message
+                # every 5 seconds instead.
+                if "No logs returned" in line:
+                    log("  Only pulled partial log for " + name)
+                    partial_logs.append(name + " ({})".format(build_id) + "\n")
+                    output.kill()
+                    write_line(
+                        lambda _: True, file,
+                        "Failed to pull entire log for {} ({})".format(
+                            name, build_id))
+                    break
                 write_line(parsed_args["filter"], file, line)
-    return failures
+    return failures, partial_logs
 
 
 def main(args):
     parsed_args = parse_args(args)
     builds = identify_builds(parsed_args["cl"], parsed_args["patchset"])
-    failures = pull_and_filter_logs(parsed_args, builds)
+    failures, partial_logs = pull_and_filter_logs(parsed_args, builds)
 
     if len(failures) > 0:
         sys.stderr.write(
             "Unexpectedly failed to pull logs for the following builders:\n")
         for failure in sorted(failures):
+            sys.stderr.write(failure)
+
+    if len(partial_logs) > 0:
+        sys.stderr.write(
+            "Only pulled partial logs for the following builders. You might "
+            "want to download them manually and/or re-run the builders:\n")
+        for failure in sorted(partial_logs):
             sys.stderr.write(failure)
 
 

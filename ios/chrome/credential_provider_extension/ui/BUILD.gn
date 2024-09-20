@@ -11,7 +11,6 @@ source_set("ui") {
     "credential_details_consumer.h",
     "credential_details_view_controller.h",
     "credential_details_view_controller.mm",
-    "credential_list_consumer.h",
     "credential_list_coordinator.h",
     "credential_list_coordinator.mm",
     "credential_list_global_header_view.h",
@@ -20,10 +19,8 @@ source_set("ui") {
     "credential_list_header_view.mm",
     "credential_list_mediator.h",
     "credential_list_mediator.mm",
-    "credential_list_ui_handler.h",
     "credential_list_view_controller.h",
     "credential_list_view_controller.mm",
-    "credential_response_handler.h",
     "empty_credentials_view_controller.h",
     "empty_credentials_view_controller.mm",
     "new_password_coordinator+Testing.h",
@@ -50,6 +47,9 @@ source_set("ui") {
     "ui_util.mm",
   ]
   deps = [
+    ":credential_list_consumer",
+    ":credential_list_ui_handler",
+    ":credential_response_handler",
     ":feature_flags",
     ":utils",
     "//base",
@@ -87,6 +87,20 @@ source_set("ui") {
   ]
 }
 
+source_set("credential_list_consumer") {
+  sources = [ "credential_list_consumer.h" ]
+  deps = [ "//ios/chrome/common/credential_provider:ui" ]
+}
+
+source_set("credential_list_ui_handler") {
+  sources = [ "credential_list_ui_handler.h" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("credential_response_handler") {
+  sources = [ "credential_response_handler.h" ]
+}
+
 source_set("feature_flags") {
   sources = [
     "feature_flags.h",
@@ -120,7 +134,7 @@ source_set("mock_credential_list_consumer") {
     "mock_credential_list_consumer.h",
     "mock_credential_list_consumer.mm",
   ]
-  deps = [ ":ui" ]
+  deps = [ ":credential_list_consumer" ]
 }
 
 source_set("mock_credential_list_ui_handler") {
@@ -129,7 +143,7 @@ source_set("mock_credential_list_ui_handler") {
     "mock_credential_list_ui_handler.h",
     "mock_credential_list_ui_handler.mm",
   ]
-  deps = [ ":ui" ]
+  deps = [ ":credential_list_ui_handler" ]
 }
 
 source_set("mock_credential_response_handler") {
@@ -138,7 +152,11 @@ source_set("mock_credential_response_handler") {
     "mock_credential_response_handler.h",
     "mock_credential_response_handler.mm",
   ]
-  deps = [ ":ui" ]
+  deps = [
+    ":credential_response_handler",
+    "//base",
+    "//ios/chrome/credential_provider_extension:passkey_util",
+  ]
 }
 
 source_set("unit_tests") {
@@ -151,6 +169,7 @@ source_set("unit_tests") {
     "new_password_mediator_unittest.mm",
   ]
   deps = [
+    ":credential_list_ui_handler",
     ":feature_flags",
     ":mock_credential_list_consumer",
     ":mock_credential_list_ui_handler",
@@ -161,7 +180,6 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
     "//ios/chrome/common/credential_provider:mock_credential_store",
-    "//ios/chrome/common/credential_provider:ui",
     "//ios/chrome/credential_provider_extension:password_util",
     "//ios/chrome/credential_provider_extension:reauthentication_handler",
     "//ios/chrome/test/app:test_support",

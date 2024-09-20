@@ -81,7 +81,7 @@ gfx::Rect VcBackgroundUISystemAppDelegate::GetDefaultBounds(
 bool VcBackgroundUISystemAppDelegate::IsAppEnabled() const {
   return ::ash::features::IsVcBackgroundReplaceEnabled() &&
          manta::features::IsMantaServiceEnabled() &&
-         personalization_app::IsEligibleForSeaPen(profile());
+         personalization_app::IsAllowedToInstallSeaPen(profile());
 }
 
 bool VcBackgroundUISystemAppDelegate::ShouldShowInLauncher() const {

@@ -14,8 +14,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/picker/picker_controller.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
-#include "ash/public/cpp/picker/picker_web_paste_target.h"
+#include "ash/picker/picker_search_result.h"
+#include "ash/picker/picker_web_paste_target.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
@@ -31,18 +31,15 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/files/drive_search_provider.h"
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
-#include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
 #include "chrome/browser/ash/app_list/search/types.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
-#include "chrome/browser/ui/ash/picker/picker_lacros_omnibox_search_provider.h"
 #include "chrome/browser/ui/ash/picker/picker_link_suggester.h"
 #include "chrome/browser/ui/ash/picker/picker_thumbnail_loader.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -64,24 +61,10 @@
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
-namespace ash {
-enum class AppListSearchResultType;
-}
-
 namespace {
 
 // TODO: b/345303965 - Finalize this string.
 constexpr std::u16string_view kAnnouncementViewName = u"Picker";
-
-bool IsSupportedLocalFileFormat(const base::FilePath& file_path) {
-  for (std::string_view extension :
-       {".jpg", ".jpeg", ".png", ".gif", ".webp"}) {
-    if (file_path.MatchesFinalExtension(extension)) {
-      return true;
-    }
-  }
-  return false;
-}
 
 std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalImages(
     std::vector<PickerFileSuggester::LocalFile> files) {
@@ -108,20 +91,16 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
 
 std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(
     Profile* profile) {
-  auto provider = std::make_unique<app_list::DriveSearchProvider>(
+  return std::make_unique<app_list::DriveSearchProvider>(
       profile, /*should_filter_shared_files=*/false,
       /*should_filter_directories=*/true);
-  if (base::FeatureList::IsEnabled(ash::features::kPickerCloud)) {
-    provider->SetQuerySource(
-        drivefs::mojom::QueryParameters::QuerySource::kCloudOnly);
-  }
-  return provider;
 }
 
 std::unique_ptr<app_list::SearchProvider> CreateFileSearchProvider(
     Profile* profile) {
   return std::make_unique<app_list::FileSearchProvider>(
-      profile, base::FileEnumerator::FileType::FILES);
+      profile, base::FileEnumerator::FileType::FILES,
+      std::vector<std::string>{".jpg", ".jpeg", ".png", ".gif", ".webp"});
 }
 
 std::vector<ash::PickerSearchResult> ConvertSearchResults(
@@ -158,11 +137,8 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
         break;
       }
       case ash::AppListSearchResultType::kFileSearch: {
-        // TODO: b/322926411 - Move this filtering to the search provider.
-        if (IsSupportedLocalFileFormat(result->filePath())) {
           picker_results.push_back(ash::PickerLocalFileResult(
               result->title(), result->filePath(), result->best_match()));
-        }
         break;
       }
       case ash::AppListSearchResultType::kDriveSearch:
@@ -226,12 +202,6 @@ std::vector<ash::PickerSearchResult> GetEditorResultsFromPanelContext(
   return results;
 }
 
-app_list::CategoriesList CreateRankerCategories() {
-  app_list::CategoriesList res({{.category = app_list::Category::kWeb},
-                                {.category = app_list::Category::kFiles}});
-  return res;
-}
-
 }  // namespace
 
 PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
@@ -257,8 +227,8 @@ void PickerClientImpl::StartCrosSearch(
     const std::u16string& query,
     std::optional<ash::PickerCategory> category,
     CrosSearchResultsCallback callback) {
-  ranker_categories_ = CreateRankerCategories();
-  ranker_manager_->Start(query, ranker_categories_);
+  ranker_manager_->Start(query, {{.category = app_list::Category::kWeb},
+                                 {.category = app_list::Category::kFiles}});
   if (!category.has_value()) {
     CHECK(search_engine_);
     search_engine_->StartSearch(
@@ -370,10 +340,12 @@ void PickerClientImpl::GetSuggestedEditorResults(
 }
 
 void PickerClientImpl::GetRecentLocalFileResults(size_t max_files,
+                                                 base::TimeDelta now_delta,
                                                  RecentFilesCallback callback) {
   file_suggester_->GetRecentLocalImages(
-      max_files, base::BindOnce(CreateSearchResultsForRecentLocalImages)
-                     .Then(std::move(callback)));
+      max_files, now_delta,
+      base::BindOnce(CreateSearchResultsForRecentLocalImages)
+          .Then(std::move(callback)));
 }
 
 void PickerClientImpl::GetRecentDriveFileResults(size_t max_files,
@@ -494,7 +466,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   thumbnail_loader_ = std::make_unique<PickerThumbnailLoader>(profile_);
 
   if (controller_ != nullptr) {
-    controller_->OnClientProfileSet();
+    controller_->OnClientPrefsSet(profile == nullptr ? nullptr
+                                                     : profile->GetPrefs());
   }
 }
 
@@ -502,16 +475,9 @@ std::unique_ptr<app_list::SearchProvider>
 PickerClientImpl::CreateOmniboxProvider(bool bookmarks,
                                         bool history,
                                         bool open_tabs) {
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    return std::make_unique<app_list::OmniboxLacrosProvider>(
-        profile_, &app_list_controller_delegate_,
-        PickerLacrosOmniboxSearchProvider::CreateControllerCallback(
-            bookmarks, history, open_tabs));
-  } else {
-    return std::make_unique<app_list::OmniboxProvider>(
-        profile_, &app_list_controller_delegate_,
-        crosapi::ProviderTypesPicker(bookmarks, history, open_tabs));
-  }
+  return std::make_unique<app_list::OmniboxProvider>(
+      profile_, &app_list_controller_delegate_,
+      crosapi::ProviderTypesPicker(bookmarks, history, open_tabs));
 }
 
 std::unique_ptr<app_list::SearchProvider>

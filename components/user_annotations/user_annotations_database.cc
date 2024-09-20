@@ -37,7 +37,11 @@ namespace {
       // The key of the entry.
       "key VARCHAR NOT NULL,"
       // An opaque encrypted blob of value.
-      "value BLOB NOT NULL);";
+      "value BLOB NOT NULL,"
+      // The time the entry was created.
+      "creation_time INTEGER NOT NULL,"
+      // The time the entry was last modified.
+      "last_modified_time INTEGER NOT NULL);";
 
   return db.Execute(kSqlCreateTablePassages);
 }
@@ -102,7 +106,8 @@ sql::InitStatus UserAnnotationsDatabase::InitInternal(
 }
 
 UserAnnotationsExecutionResult UserAnnotationsDatabase::UpdateEntries(
-    const UserAnnotationsEntries& entries) {
+    const UserAnnotationsEntries& upserted_entries,
+    const std::set<EntryID>& deleted_entry_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(&db_);
@@ -116,17 +121,48 @@ UserAnnotationsExecutionResult UserAnnotationsDatabase::UpdateEntries(
       return UserAnnotationsExecutionResult::kSqlError;
     }
   }
-  for (const auto& entry : entries) {
-    static constexpr char kSqlInsertEntries[] =
-        "INSERT OR REPLACE INTO entries(key, value) VALUES(?,?)";
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertEntries));
-    statement.BindString(0, entry.key());
+  auto now_time = base::Time::Now();
+  for (const auto& entry : upserted_entries) {
     auto encrypted_value = encryptor_.EncryptString(entry.value());
     if (!encrypted_value) {
       return UserAnnotationsExecutionResult::kCryptError;
     }
-    statement.BindBlob(1, *encrypted_value);
+    if (entry.entry_id() == 0) {
+      // New entry.
+      static constexpr char kSqlInsertEntry[] =
+          "INSERT INTO entries(key, value, creation_time, "
+          "last_modified_time) "
+          "VALUES(?,?,?,?)";
+      sql::Statement statement(
+          db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertEntry));
+      statement.BindString(0, entry.key());
+      statement.BindBlob(1, *encrypted_value);
+      statement.BindTime(2, now_time);
+      statement.BindTime(3, now_time);
+      if (!statement.Run()) {
+        return UserAnnotationsExecutionResult::kSqlError;
+      }
+    } else {
+      static constexpr char kSqlUpdateEntry[] =
+          "UPDATE entries SET key=?, value=?, last_modified_time=? WHERE "
+          "entry_id=?";
+      sql::Statement statement(
+          db_.GetCachedStatement(SQL_FROM_HERE, kSqlUpdateEntry));
+      statement.BindString(0, entry.key());
+      statement.BindBlob(1, *encrypted_value);
+      statement.BindTime(2, now_time);
+      statement.BindInt64(3, entry.entry_id());
+      if (!statement.Run()) {
+        return UserAnnotationsExecutionResult::kSqlError;
+      }
+    }
+  }
+  for (const auto& entry_id : deleted_entry_ids) {
+    static constexpr char kSqlDeleteEntries[] =
+        "DELETE FROM entries WHERE entry_id = ?";
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteEntries));
+    statement.BindInt64(0, entry_id);
     if (!statement.Run()) {
       return UserAnnotationsExecutionResult::kSqlError;
     }
@@ -174,6 +210,19 @@ bool UserAnnotationsDatabase::RemoveAllEntries() {
   sql::Statement delete_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, "DELETE FROM entries"));
   return delete_statement.Run();
+}
+
+void UserAnnotationsDatabase::RemoveAnnotationsInRange(
+    const base::Time& delete_begin,
+    const base::Time& delete_end) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Statement delete_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE,
+                             "DELETE FROM entries WHERE last_modified_time > ? "
+                             "AND last_modified_time < ?"));
+  delete_statement.BindTime(0, delete_begin);
+  delete_statement.BindTime(1, delete_end);
+  delete_statement.Run();
 }
 
 }  // namespace user_annotations

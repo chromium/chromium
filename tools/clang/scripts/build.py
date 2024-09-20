@@ -180,6 +180,23 @@ def CheckoutGitRepo(name, git_url, commit, dir):
   sys.exit(1)
 
 
+def GitCherryPick(git_repository, git_remote, commit):
+  print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
+  git_cmd = ['git', '-C', git_repository]
+  RunCommand(git_cmd + ['remote', 'add', 'github', git_remote], fail_hard=False)
+  RunCommand(git_cmd + ['fetch', '--recurse-submodules=no', 'github', commit])
+  is_ancestor = RunCommand(git_cmd +
+                           ['merge-base', '--is-ancestor', commit, 'HEAD'],
+                           fail_hard=False)
+  if is_ancestor:
+    print('Commit already an ancestor; skipping.')
+    return
+  RunCommand([
+      'git', '-C', git_repository, 'cherry-pick', '--keep-redundant-commits',
+      commit
+  ])
+
+
 def GetLatestLLVMCommit():
   """Get the latest commit hash in the LLVM monorepo."""
   main = json.loads(

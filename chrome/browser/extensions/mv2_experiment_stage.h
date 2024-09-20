@@ -19,6 +19,9 @@ enum class MV2ExperimentStage {
   // Unsupported Manifest V2 extensions will be disabled. The user is allowed
   // to re-enable them at any point.
   kDisableWithReEnable,
+  // Manifest V2 extensions are no longer supported. The user is not able to
+  // re-enable them.
+  kUnsupported,
 
   // TODO(https://crbug.com/337191307): Continue adding more experiment stages
   // here. For each new entry, update Mv2ExperimentStage in

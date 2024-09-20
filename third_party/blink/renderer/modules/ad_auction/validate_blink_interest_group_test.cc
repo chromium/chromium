@@ -288,7 +288,15 @@ TEST_F(ValidateBlinkInterestGroupTest,
 //
 // Ad URLs do not have to be same origin, so they're checked in a different
 // test.
+//
+// TODO(morlovich): Remove checking of trusted signals URLs from here once
+// the feature blink::features::kFledgePermitCrossOriginTrustedSignals is
+// removed.
 TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kFledgePermitCrossOriginTrustedSignals);
+
   // Strings when each field has a bad URL, copied from cc file.
   const char kBadBiddingUrlError[] =
       "biddingLogicURL must have the same origin as the InterestGroup owner "
@@ -408,16 +416,10 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
       /*expected_error=*/String::FromUTF8(kBadTrustedBiddingSignalsUrlError));
 }
 
-// If the feature enabling cross-origin trusted signals URL to be accepted
-// is on, they will be, but other checks still happen.
-// TODO(morlovich): Once this is on by default, this should be merged with the
-// above test.
+// By default, cross-origin trusted signals URL are accepted, but other checks
+// still happen.
 TEST_F(ValidateBlinkInterestGroupTest,
        CrossOriginTrustedBiddingSignalsUrlPermitted) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgePermitCrossOriginTrustedSignals);
-
   // Note that cross-origin checks here refer to the group's owner,
   // https://origin.test
   const struct {

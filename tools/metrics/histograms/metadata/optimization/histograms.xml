@@ -137,14 +137,6 @@ chromium-metrics-reviews@google.com.
   <variant name="AmountExtractionAllowlist"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling price/amount extraction."/>
-  <variant name="AmountExtractionAllowlistAffirm"
-      summary="This optimization helps determine if this merchant page is a
-               good candidate for buy now pay later provider Affirm to enable
-               price/amount extraction."/>
-  <variant name="AmountExtractionAllowlistZip"
-      summary="This optimization helps determine if this merchant page is a
-               good candidate for buy now pay later provider Zip to enable
-               price/amount extraction."/>
   <variant name="AutofillAblationSitesList1"
       summary="This optimization provides information for whether a page is
                eligible for autofill ablation."/>
@@ -171,6 +163,13 @@ chromium-metrics-reviews@google.com.
                of Autofill UKM metrics per origin based on origin popularity."/>
   <variant name="BloomFilterValidation"
       summary="Validates bloom filer allowlist/blocklist based hints"/>
+  <variant name="BuyNowPayLaterAllowlistAffirm"
+      summary="This optimization helps determine if this merchant page is a
+               good candidate for enabling buy now pay later flow with
+               Affirm."/>
+  <variant name="BuyNowPayLaterAllowlistZip"
+      summary="This optimization helps determine if this merchant page is a
+               good candidate for enabling buy now pay later flow with Zip."/>
   <variant name="CapitalOneCreditCardBenefitsBlocked"
       summary="This optimization provides information about whether a
                merchant url is eligible to display Capital One credit card
@@ -202,6 +201,9 @@ chromium-metrics-reviews@google.com.
   <variant name="FastHostHints"
       summary="Provides information about hosts that historically provide a
                fast and responsive user experience"/>
+  <variant name="FormsAnnotations"
+      summary="Provides information about whether a URL is eligible for
+               generating user annotations derived from forms."/>
   <variant name="HistoryClusters"
       summary="This optimization provides information for whether a page
                should be included in a history cluster."/>
@@ -250,6 +252,9 @@ chromium-metrics-reviews@google.com.
       summary="Returns price related data for shopping websites"/>
   <variant name="SalientImage"
       summary="Provides information about images for a URL."/>
+  <variant name="SavedTabGroup"
+      summary="Provides information about a URL can be synced across devices
+               for saved tab groups featuer."/>
   <variant name="SharedCreditCardDiningBenefits"
       summary="This optimization provides information about whether a
                merchant url is eligible for dining credit card benefits.
@@ -284,6 +289,9 @@ chromium-metrics-reviews@google.com.
   <variant name="ShoppingPageTypes"
       summary="This optimization provides information about shopping page
                types of this page."/>
+  <variant name="TextClassifierEntityDetection"
+      summary="Provides information about whether about whether a page is
+               eligible for text classifier entity detection - iOS only."/>
   <variant name="ThankCreatorEligible"
       summary="This optimization provides information for whether a page is
                eligible for the 'Thank Creator' feature."/>

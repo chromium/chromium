@@ -260,7 +260,7 @@ suite('voice and language utils', () => {
     if (chrome.readingMode.isChromeOsAsh) {
       assertDeepEquals([voice1], getFilteredVoiceList(possibleVoices));
     } else {
-      assertDeepEquals([voice1, voice2], getFilteredVoiceList(possibleVoices));
+      assertDeepEquals([voice2], getFilteredVoiceList(possibleVoices));
     }
   });
 
@@ -289,4 +289,46 @@ suite('voice and language utils', () => {
           [voice1, voice2, voice3], getFilteredVoiceList(possibleVoices));
     }
   });
+
+  test(
+      'getFilteredVoiceList returns only Google voices and one system voice',
+      () => {
+        const voice1 = createSpeechSynthesisVoice({
+          default: true,
+          name: 'Google Eitan',
+          localService: true,
+          lang: 'en-us',
+        });
+        const voice2 = createSpeechSynthesisVoice({
+          default: true,
+          name: 'Google Shari',
+          localService: true,
+          lang: 'cy',
+        });
+        const voice3 = createSpeechSynthesisVoice({
+          default: false,
+          name: 'Lauren',
+          localService: true,
+          lang: 'en-cb',
+        });
+        const voice4 = createSpeechSynthesisVoice({
+          default: true,
+          name: 'Kristi',
+          localService: true,
+          lang: 'en-cb',
+        });
+
+        const possibleVoices: SpeechSynthesisVoice[] =
+            [voice1, voice2, voice3, voice4];
+
+        if (chrome.readingMode.isChromeOsAsh) {
+          // Don't filter out any system voices on ChromeOS.
+          assertDeepEquals(
+              possibleVoices, getFilteredVoiceList(possibleVoices));
+        } else {
+          // Keep only the default system voice.
+          assertDeepEquals(
+              [voice1, voice2, voice4], getFilteredVoiceList(possibleVoices));
+        }
+      });
 });

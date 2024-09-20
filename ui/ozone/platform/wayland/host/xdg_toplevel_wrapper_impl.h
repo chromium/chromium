@@ -88,6 +88,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
  private:
+  friend class WaylandWindowDragController;
   // xdg_toplevel_listener callbacks:
   static void OnToplevelConfigure(void* data,
                                   xdg_toplevel* toplevel,

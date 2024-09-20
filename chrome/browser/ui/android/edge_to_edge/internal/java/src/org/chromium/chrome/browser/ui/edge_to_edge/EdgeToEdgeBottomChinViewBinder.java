@@ -3,6 +3,12 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.CAN_SHOW;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -36,28 +42,31 @@ class EdgeToEdgeBottomChinViewBinder {
     }
 
     static void bind(PropertyModel model, ViewHolder viewHolder, PropertyKey propertyKey) {
-        if (EdgeToEdgeBottomChinProperties.Y_OFFSET == propertyKey) {
-            viewHolder.mSceneLayer.setYOffset(model.get(EdgeToEdgeBottomChinProperties.Y_OFFSET));
-        } else if (EdgeToEdgeBottomChinProperties.HEIGHT == propertyKey) {
+        if (Y_OFFSET == propertyKey) {
+            viewHolder.mSceneLayer.setYOffset(model.get(Y_OFFSET));
+            updateVisibility(model, viewHolder);
+        } else if (HEIGHT == propertyKey) {
             ViewGroup.LayoutParams lp = viewHolder.mAndroidView.getLayoutParams();
-            lp.height = model.get(EdgeToEdgeBottomChinProperties.HEIGHT);
+            lp.height = model.get(HEIGHT);
             viewHolder.mAndroidView.setLayoutParams(lp);
-            viewHolder.mSceneLayer.setHeight(model.get(EdgeToEdgeBottomChinProperties.HEIGHT));
-        } else if (EdgeToEdgeBottomChinProperties.IS_VISIBLE == propertyKey) {
-            viewHolder.mAndroidView.setVisibility(
-                    model.get(EdgeToEdgeBottomChinProperties.IS_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
-            viewHolder.mSceneLayer.setIsVisible(
-                    model.get(EdgeToEdgeBottomChinProperties.IS_VISIBLE));
-        } else if (EdgeToEdgeBottomChinProperties.COLOR == propertyKey) {
-            viewHolder.mSceneLayer.setColor(model.get(EdgeToEdgeBottomChinProperties.COLOR));
-        } else if (EdgeToEdgeBottomChinProperties.DIVIDER_COLOR == propertyKey) {
-            viewHolder.mSceneLayer.setDividerColor(
-                    model.get(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR));
+            viewHolder.mSceneLayer.setHeight(model.get(HEIGHT));
+            updateVisibility(model, viewHolder);
+        } else if (CAN_SHOW == propertyKey) {
+            updateVisibility(model, viewHolder);
+        } else if (COLOR == propertyKey) {
+            viewHolder.mSceneLayer.setColor(model.get(COLOR));
+        } else if (DIVIDER_COLOR == propertyKey) {
+            viewHolder.mSceneLayer.setDividerColor(model.get(DIVIDER_COLOR));
         } else {
             assert false : "Unhandled property detected in EdgeToEdgeBottomChinViewBinder!";
         }
+    }
+
+    private static void updateVisibility(PropertyModel model, ViewHolder viewHolder) {
+        boolean visible = model.get(CAN_SHOW) && model.get(Y_OFFSET) < model.get(HEIGHT);
+
+        viewHolder.mAndroidView.setVisibility(visible ? View.VISIBLE : View.GONE);
+        viewHolder.mSceneLayer.setIsVisible(visible);
     }
 
     // TODO(crbug.com/345383907) Move #bind logic to the compositor MCP method

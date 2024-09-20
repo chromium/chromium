@@ -44,6 +44,15 @@ const base::FilePath::CharType kDatabaseName[] = FILE_PATH_LITERAL("Database");
 const base::FilePath::CharType kDiskCacheName[] =
     FILE_PATH_LITERAL("ScriptCache");
 
+std::optional<size_t> g_override_max_service_worker_scope_url_count_for_testing;
+
+size_t GetMaxServiceWorkerScopeUrlCountPerStorageKey() {
+  if (g_override_max_service_worker_scope_url_count_for_testing) {
+    return *g_override_max_service_worker_scope_url_count_for_testing;
+  }
+  return kMaxServiceWorkerScopeUrlCountPerStorageKey;
+}
+
 // Used for UMA. Append-only.
 enum class DeleteAndStartOverResult {
   kDeleteOk = 0,
@@ -107,17 +116,11 @@ void MaybePostTaskAndReply(scoped_refptr<base::SequencedTaskRunner> task_runner,
 
 }  // namespace
 
-// When this is enabled, The ServiceWorker's scope URLs are cached on the UI
-// thread, and stops calling FindRegistrationForClientUrl mojo function if
-// possible.
-BASE_FEATURE(kServiceWorkerScopeCache,
-             "ServiceWorkerScopeCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The scope URL count limit per the storage key. This must be set less than or
-// equal to 'kServiceWorkerScopeCacheHardLimitPerKey'.
-const base::FeatureParam<int> kServiceWorkerScopeCacheLimitPerKey{
-    &kServiceWorkerScopeCache, "ServiceWorkerScopeCacheLimitPerKey", 100};
+void OverrideMaxServiceWorkerScopeUrlCountForTesting(  // IN-TEST
+    std::optional<size_t> max_count) {
+  g_override_max_service_worker_scope_url_count_for_testing =
+      std::move(max_count);
+}
 
 ServiceWorkerStorage::InitialData::InitialData()
     : next_registration_id(blink::mojom::kInvalidServiceWorkerRegistrationId),
@@ -204,10 +207,7 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
 
   // Bypass database lookup when there is no stored registration.
   if (!base::Contains(registered_keys_, key)) {
-    std::optional<std::vector<GURL>> scopes;
-    if (base::FeatureList::IsEnabled(storage::kServiceWorkerScopeCache)) {
-      scopes = std::vector<GURL>();
-    }
+    std::optional<std::vector<GURL>> scopes = std::vector<GURL>();
     std::move(callback).Run(
         /*data=*/nullptr, /*resources=*/nullptr, /*scopes=*/scopes,
         ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -1837,16 +1837,16 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
   // Find one with a scope match.
   blink::ServiceWorkerLongestScopeMatcher matcher(client_url);
   int64_t match = blink::mojom::kInvalidServiceWorkerRegistrationId;
-  bool enable_scope_cache =
-      base::FeatureList::IsEnabled(kServiceWorkerScopeCache) &&
-      (registration_data_list.size() <=
-       static_cast<size_t>(kServiceWorkerScopeCacheLimitPerKey.Get()));
+  // If the count of scope exceeds the maximum limit, we don't want to return
+  // them to avoid returning too big data.
+  bool return_scopes = (registration_data_list.size() <=
+                        GetMaxServiceWorkerScopeUrlCountPerStorageKey());
   // `scopes` should contain all of the service worker's registration
   // scopes that are relevant to the `key` so that we can cache scope
   // URLs in the UI thread. The 'scopes' is valid only when the status
   // is `kOk` or `kErrorNotFound`.
   std::optional<std::vector<GURL>> scopes;
-  if (enable_scope_cache) {
+  if (return_scopes) {
     scopes = std::vector<GURL>();
     scopes->reserve(registration_data_list.size());
   }
@@ -1854,7 +1854,7 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
     if (matcher.MatchLongest(registration_data->scope)) {
       match = registration_data->registration_id;
     }
-    if (enable_scope_cache) {
+    if (return_scopes) {
       scopes->push_back(std::move(registration_data->scope));
     }
   }

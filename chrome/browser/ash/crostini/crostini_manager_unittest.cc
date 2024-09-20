@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -1997,6 +1998,72 @@ TEST_F(CrostiniManagerEnterpriseReportingTest,
           ->GetPrefs()
           ->GetString(crostini::prefs::kCrostiniLastLaunchTerminaKernelVersion)
           .empty());
+}
+
+TEST_F(CrostiniManagerTest, ExportDiskImageFailure) {
+  base::ScopedTempFile export_path;
+  EXPECT_TRUE(export_path.Create());
+  TestFuture<CrostiniResult> result_future;
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 0);
+
+  vm_tools::concierge::ExportDiskImageResponse failure_response;
+  failure_response.set_status(vm_tools::concierge::DISK_STATUS_FAILED);
+  fake_concierge_client_->set_export_disk_image_response(failure_response);
+
+  crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      export_path.path(), false,
+                                      result_future.GetCallback());
+
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED);
+}
+
+TEST_F(CrostiniManagerTest, ExportDiskImageNoSpaceFailure) {
+  base::ScopedTempFile export_path;
+  EXPECT_TRUE(export_path.Create());
+  TestFuture<CrostiniResult> result_future;
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 0);
+
+  vm_tools::concierge::DiskImageStatusResponse progress_signal;
+  progress_signal.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  progress_signal.set_progress(50);
+  vm_tools::concierge::DiskImageStatusResponse no_space_signal;
+  no_space_signal.set_status(vm_tools::concierge::DISK_STATUS_NOT_ENOUGH_SPACE);
+  std::vector<vm_tools::concierge::DiskImageStatusResponse> signals;
+  signals.emplace_back(progress_signal);
+  signals.emplace_back(no_space_signal);
+  fake_concierge_client_->set_disk_image_status_signals(signals);
+
+  crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      export_path.path(), false,
+                                      result_future.GetCallback());
+
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE);
+}
+
+TEST_F(CrostiniManagerTest, ExportDiskImageSuccess) {
+  base::ScopedTempFile export_path;
+  EXPECT_TRUE(export_path.Create());
+  TestFuture<CrostiniResult> result_future;
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 0);
+
+  vm_tools::concierge::DiskImageStatusResponse progress_signal;
+  progress_signal.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  progress_signal.set_progress(50);
+  vm_tools::concierge::DiskImageStatusResponse done_signal;
+  done_signal.set_status(vm_tools::concierge::DISK_STATUS_CREATED);
+  std::vector<vm_tools::concierge::DiskImageStatusResponse> signals;
+  signals.emplace_back(progress_signal);
+  signals.emplace_back(done_signal);
+  fake_concierge_client_->set_disk_image_status_signals(signals);
+
+  crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      export_path.path(), false,
+                                      result_future.GetCallback());
+
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
 }
 
 TEST_F(CrostiniManagerTest, ExportContainerSuccess) {

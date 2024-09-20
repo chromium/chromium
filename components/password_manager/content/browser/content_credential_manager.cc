@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 
 namespace password_manager {
 
@@ -20,7 +22,10 @@ ContentCredentialManager::~ContentCredentialManager() = default;
 
 void ContentCredentialManager::BindRequest(
     mojo::PendingReceiver<blink::mojom::CredentialManager> receiver) {
-  DCHECK(!receiver_.is_bound());
+  if (receiver_.is_bound()) {
+    mojo::ReportBadMessage("CredentialManager is already bound.");
+    return;
+  }
   receiver_.Bind(std::move(receiver));
 
   // The browser side will close the message pipe on DidFinishNavigation before
@@ -52,10 +57,14 @@ void ContentCredentialManager::PreventSilentAccess(
 }
 
 void ContentCredentialManager::Get(CredentialMediationRequirement mediation,
-                                   bool include_passwords,
+                                   int requested_credential_type_flags,
                                    const std::vector<GURL>& federations,
                                    GetCallback callback) {
-  impl_.Get(mediation, include_passwords, federations, std::move(callback));
+  bool has_passwords =
+      requested_credential_type_flags &
+      static_cast<int>(blink::mojom::CredentialTypeFlags::kPassword);
+  impl_.Get(mediation, has_passwords, requested_credential_type_flags,
+            federations, std::move(callback));
 }
 
 }  // namespace password_manager

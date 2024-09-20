@@ -12,6 +12,10 @@
 #import "base/feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
@@ -22,10 +26,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
@@ -34,6 +34,8 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
@@ -81,15 +83,9 @@ const CGFloat kAccountBadgeOffsetFromDiscCenter = 10.0;
 // The size of the account error badge that is on top the ADP.
 const CGFloat kErrorSymbolPointSize = 16.0;
 
-// The leading space / padding in the unscrolled fakebox.
-CGFloat HintLabelFakeboxLeadingSpace() {
-  return kHintLabelFakeboxLeadingSpace;
-}
-
-// The leading space / padding in the scrolled fakebox.
-CGFloat HintLabelOmniboxLeadingSpace() {
-  return kHintLabelOmniboxLeadingSpace;
-}
+// The offset from the center of the customization button for where to show the
+// new feature badge.
+const CGFloat kCustomizationNewBadgeOffset = 14.0;
 
 // The amount to inset the Fakebox from the rest of the modules on Home.
 CGFloat FakeboxHorizontalMargin(id<UITraitEnvironment> environment) {
@@ -117,6 +113,14 @@ UIColor* FakeboxBottomColor() {
 // that shows when the fakebox is scrolled up.
 UIColor* HeaderBackgroundColor(id<UITraitEnvironment> environment) {
   if (IsSplitToolbarMode(environment)) {
+    return [UIColor colorNamed:kBackgroundColor];
+  } else {
+    return [UIColor colorNamed:@"ntp_background_color"];
+  }
+}
+
+UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
+  if (style == UIUserInterfaceStyleDark) {
     return [UIColor colorNamed:kBackgroundColor];
   } else {
     return [UIColor colorNamed:@"ntp_background_color"];
@@ -182,17 +186,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     NSLayoutConstraint* fakeLocationBarHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelLeadingConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelTrailingConstraint;
-// In the new layout, the hint label should always be at least inside the fake
-// omnibox. When the fake omnibox is shrunk, the position from the leading side
-// of the search field should yield. This constraint is not defined for the old
-// layout.
-@property(nonatomic, strong)
-    NSLayoutConstraint* hintLabelLeadingMarginConstraint;
-// The end button should always be at least inside the fake omnibox.
-// When the fake omnibox is shrunk, the position from the trailing side of
-// the search field should yield.
-@property(nonatomic, strong)
-    NSLayoutConstraint* endButtonTrailingMarginConstraint;
 // Constraint for positioning the end button away from the fake box rounded
 // rectangle.
 @property(nonatomic, strong) NSLayoutConstraint* endButtonTrailingConstraint;
@@ -219,6 +212,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   UIImageView* _accountDiscParticleBadgeImageView;
   // The New Feature badge on the customization menu's entrypoint.
   UIView* _customizationNewFeatureBadge;
+
+  // Constraints to update the `toolbarView`'s postion according to the
+  // `tabGroupIndicatorView`'s visibility.
+  NSLayoutConstraint* _toolbarNoTabGroupIndicartorConstraint;
+  NSLayoutConstraint* _toolbarTabGroupIndicartorConstraint;
 }
 
 #pragma mark - Public
@@ -238,12 +236,15 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (void)addToolbarView:(UIView*)toolbarView {
   _toolBarView = toolbarView;
   [self addSubview:toolbarView];
+
+  _toolbarNoTabGroupIndicartorConstraint =
+      [toolbarView.topAnchor constraintEqualToAnchor:self.topAnchor];
   [NSLayoutConstraint activateConstraints:@[
     [toolbarView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
     [toolbarView.heightAnchor
         constraintEqualToConstant:content_suggestions::FakeToolbarHeight()],
     [toolbarView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [toolbarView.topAnchor constraintEqualToAnchor:self.topAnchor],
+    _toolbarNoTabGroupIndicartorConstraint,
   ]];
 }
 
@@ -266,9 +267,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [self.identityDiscView.trailingAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
                        constant:-ntp_home::kIdentityAvatarPadding],
-    [self.identityDiscView.topAnchor
-        constraintEqualToAnchor:self.toolBarView.topAnchor
-                       constant:ntp_home::kIdentityAvatarPadding],
+    [self.identityDiscView.centerYAnchor
+        constraintEqualToAnchor:self.toolBarView.centerYAnchor],
   ]];
 }
 
@@ -319,27 +319,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                                                 searchField);
   [self updateHintLabelFonts];
 
-  if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
-    // Enable the leading-edge-alignment hint label constraints.
-    self.hintLabelLeadingMarginConstraint = [self.searchHintLabel.leadingAnchor
-        constraintEqualToAnchor:[searchField leadingAnchor]];
-    self.hintLabelLeadingMarginConstraint.priority =
-        UILayoutPriorityDefaultHigh + 1;
-    self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:self.fakeLocationBar.leadingAnchor
-                                    constant:HintLabelFakeboxLeadingSpace()];
-    [self.hintLabelLeadingMarginConstraint setActive:YES];
-  } else {
-    // The old omnibox layout has the label centered horizontally in the
-    // fakebox.
-    self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:[searchField leadingAnchor]
-                                    constant:ntp_header::
-                                                 kCenteredHintLabelSidePadding];
-    [[self.searchHintLabel.centerXAnchor
-        constraintEqualToAnchor:self.fakeLocationBar.centerXAnchor]
-        setActive:YES];
-  }
+  self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
+      constraintEqualToAnchor:self.fakeLocationBar.leadingAnchor
+                     constant:kHintLabelFakeboxLeadingSpace];
   [NSLayoutConstraint activateConstraints:@[
     self.hintLabelLeadingConstraint,
     [self.searchHintLabel.heightAnchor
@@ -417,13 +399,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     ]];
   }
 
-  self.endButtonTrailingMarginConstraint = [endButton.trailingAnchor
-      constraintEqualToAnchor:[searchField trailingAnchor]];
-  self.endButtonTrailingMarginConstraint.priority =
-      UILayoutPriorityDefaultHigh + 1;
   self.endButtonTrailingConstraint = [endButton.trailingAnchor
-      constraintLessThanOrEqualToAnchor:self.fakeLocationBar.trailingAnchor
-                               constant:-[self endButtonFakeboxTrailingSpace]];
+      constraintEqualToAnchor:self.fakeLocationBar.trailingAnchor
+                     constant:-[self endButtonFakeboxTrailingSpace]];
 
   // The voice search button is always on the leading side, even if the Lens
   // button is visible.
@@ -434,7 +412,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [self.voiceSearchButton.centerYAnchor
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
     self.hintLabelTrailingConstraint,
-    self.endButtonTrailingMarginConstraint,
     self.endButtonTrailingConstraint,
   ]];
 }
@@ -510,6 +487,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 
   CGFloat percent = [self searchFieldProgressForOffset:offset];
+  if (IsTabGroupIndicatorEnabled()) {
+    [self updateTabGroupIndicatorAvailabilityWithOffset:offset];
+  }
 
   // Update the opacity of the header background color as the user scrolls so
   // that content does not appear beneath it. Since the NTP background might be
@@ -551,14 +531,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.fakeLocationBarTopConstraint.constant = 0;
 
     // Reset the view horizontal constraints.
-    if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
-      self.hintLabelLeadingMarginConstraint.constant =
-          HintLabelFakeboxLeadingSpace() + hintLabelScalingExtraOffset;
-    } else {
-      self.hintLabelLeadingConstraint.constant =
-          ntp_header::kCenteredHintLabelSidePadding;
-    }
-    self.endButtonTrailingMarginConstraint.constant = 0;
+    self.hintLabelLeadingConstraint.constant =
+        kHintLabelFakeboxLeadingSpace + hintLabelScalingExtraOffset;
 
     self.separator.alpha = 0;
 
@@ -572,8 +546,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Calculate the amount to grow the width and height of searchField so that
   // its frame covers the entire toolbar area.
   CGFloat maxWidth = self.bounds.size.width;
-  CGFloat maxXInset =
-      ui::AlignValueToUpperPixel((searchFieldNormalWidth - maxWidth) / 2);
   widthConstraint.constant =
       Interpolate(searchFieldNormalWidth, maxWidth, percent);
   CGFloat maxTopMarginDiff = fakeOmniboxHeight - locationBarHeight -
@@ -606,27 +578,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   // Adjust the position of the search field's subviews by adjusting their
   // constraint constant value.
-  CGFloat subviewsDiff = -maxXInset * percent;
-  self.endButtonTrailingMarginConstraint.constant = 0;
-  // The trailing space wanted is a linear scale between the two states of the
-  // fakebox: 1) when centered in the NTP and 2) when pinned to the top,
-  // emulating the the omnibox.
   self.endButtonTrailingConstraint.constant =
       -Interpolate([self endButtonFakeboxTrailingSpace],
                    kEndButtonOmniboxTrailingSpace, percent);
-
-  if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
-    // A similar positioning scheme is applied to the leading-edge-aligned
-    // hint label as the trailing-edge-aligned buttons.
-    self.hintLabelLeadingMarginConstraint.constant = 0;
-    self.hintLabelLeadingConstraint.constant =
-        hintLabelScalingExtraOffset +
-        Interpolate(HintLabelFakeboxLeadingSpace(),
-                    HintLabelOmniboxLeadingSpace(), percent);
-  } else {
-    self.hintLabelLeadingConstraint.constant =
-        subviewsDiff + ntp_header::kCenteredHintLabelSidePadding;
-  }
+  self.hintLabelLeadingConstraint.constant =
+      hintLabelScalingExtraOffset + Interpolate(kHintLabelFakeboxLeadingSpace,
+                                                kHintLabelOmniboxLeadingSpace,
+                                                percent);
 
   // Fade N badge treatment when scrolled.
   if (_useNewBadgeForLensButton && !_lensButtonWithNewBadgeTapped &&
@@ -676,7 +634,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _accountDiscParticleBadgeImageView.tintColor =
       [UIColor colorNamed:kRed500Color];
   _accountDiscParticleBadgeImageView.backgroundColor =
-      [UIColor colorNamed:@"ntp_background_color"];
+      AccountParticleDiscBadgeBackgroundColor(
+          self.traitCollection.userInterfaceStyle);
   _accountDiscParticleBadgeImageView.layer.cornerRadius =
       _accountDiscParticleBadgeImageView.frame.size.width / 2;
   _accountDiscParticleBadgeImageView.clipsToBounds = YES;
@@ -734,10 +693,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                                  ntp_home::kHeaderIconMargin)],
     [newBadgeView.centerXAnchor
         constraintEqualToAnchor:customizationMenuButton.centerXAnchor
-                       constant:14],
+                       constant:kCustomizationNewBadgeOffset],
     [newBadgeView.centerYAnchor
         constraintEqualToAnchor:customizationMenuButton.centerYAnchor
-                       constant:-14],
+                       constant:-kCustomizationNewBadgeOffset],
   ]];
 
   _customizationMenuButton = customizationMenuButton;
@@ -746,6 +705,31 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 - (void)hideBadgeOnCustomizationMenu {
   _customizationNewFeatureBadge.alpha = 0;
+}
+
+- (void)updateTabGroupIndicatorAvailabilityWithOffset:(CGFloat)offset {
+  CHECK(IsTabGroupIndicatorEnabled());
+
+  BOOL canShowTabStrip = IsRegularXRegularSizeClass(self);
+  BOOL isAvailable = !IsCompactHeight(self) && !canShowTabStrip;
+  _tabGroupIndicatorView.available = isAvailable;
+
+  // Make the view disappear when the indicator is scrolled out of the screen.
+  // The absolute value of the offset is used to make the view disappear when:
+  // - Scrolling down to reveal the Discover section.
+  // - Scrolling up to reveal the overscroll actions.
+  _tabGroupIndicatorView.alpha =
+      1 - fmax(0, (abs(offset) / kTabGroupIndicatorHeight));
+
+  _toolbarTabGroupIndicartorConstraint.constant =
+      kTabGroupIndicatorNTPToolbarMargin - fmax(offset, 0);
+  if (_tabGroupIndicatorView.hidden) {
+    _toolbarTabGroupIndicartorConstraint.active = NO;
+    _toolbarNoTabGroupIndicartorConstraint.active = YES;
+  } else {
+    _toolbarNoTabGroupIndicartorConstraint.active = NO;
+    _toolbarTabGroupIndicartorConstraint.active = YES;
+  }
 }
 
 #pragma mark - UITraitEnvironment
@@ -763,6 +747,12 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     // automatically update when dark/light mode is changed. It needs to be
     // manually updated here.
     [self setFakeboxBackgroundWithProgress:_lastAnimationPercent];
+
+    if (_accountDiscParticleBadgeImageView) {
+      _accountDiscParticleBadgeImageView.backgroundColor =
+          AccountParticleDiscBadgeBackgroundColor(
+              self.traitCollection.userInterfaceStyle);
+    }
   }
 }
 
@@ -785,6 +775,34 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     AddSameConstraints(_fakeLocationBar, _fakeLocationBarHighlightView);
   }
   return _fakeLocationBar;
+}
+
+#pragma mark - Setters
+
+// Sets tabgroupIndicatorView.
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
+  CHECK(IsTabGroupIndicatorEnabled());
+  _tabGroupIndicatorView = view;
+  _tabGroupIndicatorView.hidden = YES;
+  _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  _tabGroupIndicatorView.showSeparator = YES;
+  [self addSubview:_tabGroupIndicatorView];
+
+  _toolbarTabGroupIndicartorConstraint = [_toolBarView.topAnchor
+      constraintEqualToAnchor:_tabGroupIndicatorView.bottomAnchor
+                     constant:kTabGroupIndicatorNTPToolbarMargin];
+  [NSLayoutConstraint activateConstraints:@[
+    [self.tabGroupIndicatorView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor],
+    [self.tabGroupIndicatorView.trailingAnchor
+        constraintEqualToAnchor:self.trailingAnchor],
+    [self.tabGroupIndicatorView.topAnchor
+        constraintEqualToAnchor:self.topAnchor
+                       constant:kTabGroupIndicatorNTPTopMargin],
+    [_tabGroupIndicatorView.heightAnchor
+        constraintEqualToConstant:kTabGroupIndicatorHeight],
+  ]];
+  [self updateTabGroupIndicatorAvailabilityWithOffset:0];
 }
 
 #pragma mark - Private

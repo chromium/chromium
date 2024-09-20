@@ -36,7 +36,7 @@ class ASH_EXPORT FocusModeFeaturePodController
   void OnLabelPressed() override;
 
   // FocusModeController::Observer:
-  void OnFocusModeChanged(bool in_focus_session) override;
+  void OnFocusModeChanged(FocusModeSession::State session_state) override;
   void OnTimerTick(const FocusModeSession::Snapshot& session_snapshot) override;
   void OnInactiveSessionDurationChanged(
       const base::TimeDelta& session_duration) override;

@@ -268,6 +268,14 @@ bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {
   init_params.sSpatialLayers[0].sSliceArgument.uiSliceMode =
       SM_FIXEDSLCNUM_SLICE;
 
+  // Reuse SPS/PPS id if possible that will make the fragmented box in the
+  // MP4 blob to reference the `avcC` box, which contains the SPS/PPS of the
+  // first key frame.
+  // TODO: We might have to use CONSTANT_ID (or at least SPS_PPS_LISTING), but
+  // it isn't clear yet how it affects Encoder only operation
+  // (OpenH264VideoEncoder also uses SPS_LISTING).
+  init_params.eSpsPpsIdStrategy = SPS_LISTING;
+
   metrics_provider_->Initialize(
       codec_profile_.profile.value_or(media::H264PROFILE_BASELINE),
       configured_size_, /*is_hardware_encoder=*/false);

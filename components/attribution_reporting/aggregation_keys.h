@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_AGGREGATION_KEYS_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_AGGREGATION_KEYS_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 
@@ -42,6 +44,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregationKeys {
 
   friend bool operator==(const AggregationKeys&,
                          const AggregationKeys&) = default;
+
+  static constexpr size_t kMaxBytesPerAggregationKeyId = 25;
 
  private:
   explicit AggregationKeys(Keys keys);

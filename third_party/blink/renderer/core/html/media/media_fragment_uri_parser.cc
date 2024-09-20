@@ -23,35 +23,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/media/media_fragment_uri_parser.h"
+
+#include <string_view>
 
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-const unsigned kNptIdentiferLength = 4;  // "npt:"
+namespace {
 
-static String CollectDigits(const char* input,
-                            unsigned length,
-                            unsigned& position) {
+constexpr std::string_view kNptIdentifier = "npt:";
+
+}  // namespace
+
+static String CollectDigits(std::string_view input, size_t& position) {
   StringBuilder digits;
 
   // http://www.ietf.org/rfc/rfc2326.txt
   // DIGIT ; any positive number
-  while (position < length && IsASCIIDigit(input[position]))
+  while (position < input.size() && IsASCIIDigit(input[position])) {
     digits.Append(input[position++]);
+  }
   return digits.ToString();
 }
 
-static String CollectFraction(const char* input,
-                              unsigned length,
-                              unsigned& position) {
+static String CollectFraction(std::string_view input, size_t& position) {
   StringBuilder digits;
 
   // http://www.ietf.org/rfc/rfc2326.txt
@@ -60,8 +58,9 @@ static String CollectFraction(const char* input,
     return String();
 
   digits.Append(input[position++]);
-  while (position < length && IsASCIIDigit(input[position]))
+  while (position < input.size() && IsASCIIDigit(input[position])) {
     digits.Append(input[position++]);
+  }
   return digits.ToString();
 }
 
@@ -175,9 +174,7 @@ void MediaFragmentURIParser::ParseTimeFragment() {
 
     double start = std::numeric_limits<double>::quiet_NaN();
     double end = std::numeric_limits<double>::quiet_NaN();
-    if (ParseNPTFragment(fragment.second.data(),
-                         base::checked_cast<unsigned>(fragment.second.length()),
-                         start, end)) {
+    if (ParseNPTFragment(fragment.second, start, end)) {
       start_time_ = start;
       end_time_ = end;
       time_format_ = kNormalPlayTime;
@@ -194,17 +191,17 @@ void MediaFragmentURIParser::ParseTimeFragment() {
   fragments_.clear();
 }
 
-bool MediaFragmentURIParser::ParseNPTFragment(const char* time_string,
-                                              unsigned length,
+bool MediaFragmentURIParser::ParseNPTFragment(std::string_view time_string,
                                               double& start_time,
                                               double& end_time) {
-  unsigned offset = 0;
-  if (length >= kNptIdentiferLength && time_string[0] == 'n' &&
-      time_string[1] == 'p' && time_string[2] == 't' && time_string[3] == ':')
-    offset += kNptIdentiferLength;
+  size_t offset = 0;
+  if (time_string.starts_with(kNptIdentifier)) {
+    offset += kNptIdentifier.size();
+  }
 
-  if (offset == length)
+  if (offset == time_string.size()) {
     return false;
+  }
 
   // http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#naming-time
   // If a single number only is given, this corresponds to the begin time except
@@ -212,23 +209,28 @@ bool MediaFragmentURIParser::ParseNPTFragment(const char* time_string,
   if (time_string[offset] == ',') {
     start_time = 0;
   } else {
-    if (!ParseNPTTime(time_string, length, offset, start_time))
+    if (!ParseNPTTime(time_string, offset, start_time)) {
       return false;
+    }
   }
 
-  if (offset == length)
+  if (offset == time_string.size()) {
     return true;
+  }
 
   if (time_string[offset] != ',')
     return false;
-  if (++offset == length)
+  if (++offset == time_string.size()) {
     return false;
+  }
 
-  if (!ParseNPTTime(time_string, length, offset, end_time))
+  if (!ParseNPTTime(time_string, offset, end_time)) {
     return false;
+  }
 
-  if (offset != length)
+  if (offset != time_string.size()) {
     return false;
+  }
 
   if (start_time >= end_time)
     return false;
@@ -236,15 +238,15 @@ bool MediaFragmentURIParser::ParseNPTFragment(const char* time_string,
   return true;
 }
 
-bool MediaFragmentURIParser::ParseNPTTime(const char* time_string,
-                                          unsigned length,
-                                          unsigned& offset,
+bool MediaFragmentURIParser::ParseNPTTime(std::string_view time_string,
+                                          size_t& offset,
                                           double& time) {
   enum Mode { kMinutes, kHours };
   Mode mode = kMinutes;
 
-  if (offset >= length || !IsASCIIDigit(time_string[offset]))
+  if (offset >= time_string.size() || !IsASCIIDigit(time_string[offset])) {
     return false;
+  }
 
   // http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#npttimedef
   // Normal Play Time can either be specified as seconds, with an optional
@@ -265,18 +267,19 @@ bool MediaFragmentURIParser::ParseNPTTime(const char* time_string,
   // npt-mm        =   2DIGIT      ; 0-59
   // npt-ss        =   2DIGIT      ; 0-59
 
-  String digits1 = CollectDigits(time_string, length, offset);
+  String digits1 = CollectDigits(time_string, offset);
   int value1 = digits1.ToInt();
-  if (offset >= length || time_string[offset] == ',') {
+  if (offset >= time_string.size() || time_string[offset] == ',') {
     time = value1;
     return true;
   }
 
   double fraction = 0;
   if (time_string[offset] == '.') {
-    if (offset == length)
+    if (offset == time_string.size()) {
       return true;
-    String digits = CollectFraction(time_string, length, offset);
+    }
+    String digits = CollectFraction(time_string, offset);
     fraction = digits.ToDouble();
     time = value1 + fraction;
     return true;
@@ -287,17 +290,19 @@ bool MediaFragmentURIParser::ParseNPTTime(const char* time_string,
   }
 
   // Collect the next sequence of 0-9 after ':'
-  if (offset >= length || time_string[offset++] != ':')
+  if (offset >= time_string.size() || time_string[offset++] != ':') {
     return false;
-  if (offset >= length || !IsASCIIDigit(time_string[(offset)]))
+  }
+  if (offset >= time_string.size() || !IsASCIIDigit(time_string[(offset)])) {
     return false;
-  String digits2 = CollectDigits(time_string, length, offset);
+  }
+  String digits2 = CollectDigits(time_string, offset);
   int value2 = digits2.ToInt();
   if (digits2.length() != 2)
     return false;
 
   // Detect whether this timestamp includes hours.
-  if (offset < length && time_string[offset] == ':') {
+  if (offset < time_string.size() && time_string[offset] == ':') {
     mode = kHours;
   }
   if (mode == kMinutes) {
@@ -310,12 +315,15 @@ bool MediaFragmentURIParser::ParseNPTTime(const char* time_string,
   }
 
   int value3;
-  if (mode == kHours || (offset < length && time_string[offset] == ':')) {
-    if (offset >= length || time_string[offset++] != ':')
+  if (mode == kHours ||
+      (offset < time_string.size() && time_string[offset] == ':')) {
+    if (offset >= time_string.size() || time_string[offset++] != ':') {
       return false;
-    if (offset >= length || !IsASCIIDigit(time_string[offset]))
+    }
+    if (offset >= time_string.size() || !IsASCIIDigit(time_string[offset])) {
       return false;
-    String digits3 = CollectDigits(time_string, length, offset);
+    }
+    String digits3 = CollectDigits(time_string, offset);
     if (digits3.length() != 2)
       return false;
     value3 = digits3.ToInt();
@@ -328,8 +336,9 @@ bool MediaFragmentURIParser::ParseNPTTime(const char* time_string,
     value1 = 0;
   }
 
-  if (offset < length && time_string[offset] == '.')
-    fraction = CollectFraction(time_string, length, offset).ToDouble();
+  if (offset < time_string.size() && time_string[offset] == '.') {
+    fraction = CollectFraction(time_string, offset).ToDouble();
+  }
 
   const int kSecondsPerHour = 3600;
   const int kSecondsPerMinute = 60;

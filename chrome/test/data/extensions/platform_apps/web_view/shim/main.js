@@ -3812,6 +3812,83 @@ function testCannotRequestFonts() {
   document.body.appendChild(webview);
 }
 
+// Before this test runs, the browser-side test code has a tab paired to a
+// Serial port for the same origin used in the webview. We confirm that the
+// webview cannot access or request the port.
+function testSerialDisabled() {
+  const webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  webview.addEventListener('loadstop', async () => {
+    const getSerialPorts = async () => {
+      const ports = await navigator.serial.getPorts();
+      return ports;
+    };
+
+    const requestSerialPort = async () => {
+      const port = await navigator.serial.requestPort();
+      return port.getInfo;
+    };
+
+    try {
+      // Confirm that no port is available for WebView.
+      const result = await evalInWebView(webview, getSerialPorts, []);
+      embedder.test.assertEq(0, result.length);
+    } catch (_) {
+      embedder.test.fail();
+    }
+
+    try {
+      // Attempting to request a port should fail, expecting an exception.
+      await evalInWebView(webview, requestSerialPort, []);
+      // It's unexpected behavior for execution to end up here, so trigger a
+      // test failure.
+      embedder.test.fail();
+    } catch (_) {
+      // We expect an exception while requesting a port, so do nothing.
+    }
+
+    try {
+      // Confirm that there is still no port available.
+      const result = await evalInWebView(webview, getSerialPorts, []);
+      embedder.test.assertEq(0, result.length);
+    } catch (_) {
+      embedder.test.fail();
+    }
+
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
+// Before this test runs, the browser-side test code has a tab paired to a
+// Bluetooth device for the same origin used in the webview. We confirm that the
+// webview cannot request the device.
+function testBluetoothDisabled() {
+  const webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  webview.addEventListener('loadstop', async () => {
+    const getBluetoothDeviceName = async () => {
+      const device = await navigator.bluetooth.requestDevice({
+        filters: [{services: ['heart_rate']}]
+      });
+      return device.name;
+    };
+
+    try {
+      const name = await evalInWebView(webview, getBluetoothDeviceName, []);
+      // Expecting the bluetooth request to throw, therefore test would fail if
+      // it reaches here.
+      embedder.test.fail();
+    } catch (e) {
+    }
+
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -3958,6 +4035,8 @@ embedder.test.testList = {
   'testCannotRequestUsb': testCannotRequestUsb,
   'testCannotReuseUsbPairedInTab': testCannotReuseUsbPairedInTab,
   'testCannotRequestFonts': testCannotRequestFonts,
+  'testSerialDisabled': testSerialDisabled,
+  'testBluetoothDisabled': testBluetoothDisabled,
 };
 
 onload = function() {

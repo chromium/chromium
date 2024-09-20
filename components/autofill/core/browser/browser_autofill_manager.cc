@@ -66,7 +66,6 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
@@ -133,6 +132,7 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -346,6 +346,8 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsFeedback:
+    case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       NOTREACHED_IN_MIGRATION();
   }
   NOTREACHED_IN_MIGRATION();
@@ -577,6 +579,8 @@ FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsFeedback:
+    case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       NOTREACHED();
   }
   NOTREACHED();
@@ -886,7 +890,80 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
   CHECK(!client().IsOffTheRecord() || !submitted_form);
-  MaybeImportFromSubmittedForm(form, submitted_form.get());
+  // Try to import the `form` into user annotations via the
+  // `AutofillPredictionImprovementsDelegate`. `MaybeImportFromSubmittedForm()`
+  // will be called if the import was not successful.
+  if (AutofillPredictionImprovementsDelegate* delegate =
+          client().GetAutofillPredictionImprovementsDelegate();
+      delegate && submitted_form) {
+    // Only upload server statistics and UMA metrics if at least some local data
+    // is available to use as a baseline.
+    std::vector<const AutofillProfile*> profiles =
+        client().GetPersonalDataManager()->address_data_manager().GetProfiles(
+            AddressDataManager::ProfileOrder::kHighestFrecencyDesc);
+    std::vector<CreditCard*> credit_cards = client()
+                                                .GetPersonalDataManager()
+                                                ->payments_data_manager()
+                                                .GetCreditCards();
+    // Shrink the maximum size of the vectors for performance reasons.
+    profiles.resize(
+        std::min(profiles.size(), kMaxDataConsideredForPossibleTypes));
+    credit_cards.resize(
+        std::min(credit_cards.size(), kMaxDataConsideredForPossibleTypes));
+
+    // Copy the profile and credit card data, so that it can be accessed on a
+    // separate thread.
+    std::vector<AutofillProfile> copied_profiles;
+    copied_profiles.reserve(profiles.size());
+    for (const AutofillProfile* profile : profiles) {
+      copied_profiles.push_back(*profile);
+    }
+
+    std::vector<CreditCard> copied_credit_cards;
+    copied_credit_cards.reserve(credit_cards.size());
+    for (const CreditCard* card : credit_cards) {
+      copied_credit_cards.push_back(*card);
+    }
+
+    // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
+    // |form_structure| with the help of |AlternativeStateNameMap|.
+    // |AlternativeStateNameMap| can only be accessed on the main UI thread.
+    PreProcessStateMatchingTypes(copied_profiles, submitted_form.get());
+
+    DeterminePossibleFieldTypesForUpload(
+        std::move(copied_profiles), std::move(copied_credit_cards),
+        last_unlocked_credit_card_cvc_, app_locale_, submitted_form.get());
+
+    delegate->MaybeImportForm(
+        std::move(submitted_form),
+        base::BindOnce(
+            &BrowserAutofillManager::OnUserAnnotationsMaybeImportableFormFound,
+            weak_ptr_factory_.GetWeakPtr(), form, source,
+            form_submitted_timestamp));
+  } else {
+    // TODO(crbug.com/40100455): Refactor this:
+    // - It's impossible to know that OnUserAnnotationsMaybeImportableFormFound
+    //   calls MaybeImportFromSubmittedForm and OnFormSubmittedAfterImport.
+    //   These calls should not be repeated in different part of the code base.
+    // - If possible, OnFormSubmittedAfterImport should only be referenced in
+    //   OnFormSubmittedImpl and to build an opening and closing bracket around
+    //   some executed code.
+    // - OnUserAnnotationsMaybeImportableFormFound is a bad name because it
+    //   creates the assumption that it's called if and only if a
+    //   "MaybeImportableForm" was found.
+    MaybeImportFromSubmittedForm(
+        form, submitted_form.get(),
+        /*attempt_to_import_into_form_data_importer=*/true);
+    OnFormSubmittedAfterImport(form, std::move(submitted_form), source,
+                               form_submitted_timestamp);
+  }
+}
+
+void BrowserAutofillManager::OnFormSubmittedAfterImport(
+    const FormData& form,
+    std::unique_ptr<FormStructure> submitted_form,
+    SubmissionSource source,
+    base::TimeTicks form_submitted_timestamp) {
   if (!submitted_form) {
     return;
   }
@@ -1003,6 +1080,9 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   }
 
+  // TODO(crbug.com/368306576): Bound the size of `copied_profiles` and
+  // `copied_credit_cards` by `kMaxDataConsideredForPossibleTypes` and make
+  // the call to DeterminePossibleFieldTypesForUpload synchronous.
   vote_upload_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&DeterminePossibleFieldTypesForUpload,
@@ -1027,8 +1107,9 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
     return;
   }
 
-  // We get the FormStructure corresponding to |pending_form_data_|, used in the
-  // upload process. |pending_form_data_| is reset.
+  // We get the FormStructure corresponding to `pending_form_data_`, used in the
+  // upload process. As a result, `pending_form_data_`'s field values are the
+  // current values. `pending_form_data_` is reset.
   std::unique_ptr<FormStructure> upload_form =
       ValidateSubmittedForm(*pending_form_data_);
   pending_form_data_.reset();
@@ -1040,9 +1121,33 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
                               /*observed_submission=*/false);
 }
 
+void BrowserAutofillManager::OnUserAnnotationsMaybeImportableFormFound(
+    const FormData& form,
+    SubmissionSource source,
+    base::TimeTicks form_submitted_timestamp,
+    std::unique_ptr<FormStructure> submitted_form,
+    std::vector<optimization_guide::proto::UserAnnotationsEntry>
+        to_be_upserted_entries,
+    base::OnceCallback<void(bool prompt_was_accepted)>
+        prompt_acceptance_callback) {
+  const bool should_show_prediction_improvements_bubble =
+      !to_be_upserted_entries.empty();
+  if (should_show_prediction_improvements_bubble) {
+    client().ShowSaveAutofillPredictionImprovementsBubble(
+        std::move(to_be_upserted_entries),
+        std::move(prompt_acceptance_callback));
+  }
+  MaybeImportFromSubmittedForm(form, submitted_form.get(),
+                               /*attempt_to_import_into_form_data_importer=*/
+                               !should_show_prediction_improvements_bubble);
+  OnFormSubmittedAfterImport(form, std::move(submitted_form), source,
+                             form_submitted_timestamp);
+}
+
 void BrowserAutofillManager::MaybeImportFromSubmittedForm(
     const FormData& form,
-    const FormStructure* const form_structure) {
+    const FormStructure* const form_structure,
+    bool attempt_to_import_into_form_data_importer) {
   if (!form_structure) {
     // We always give Autocomplete a chance to save the data.
     // TODO(crbug.com/40276862): Verify frequency of plus address (or the other
@@ -1052,7 +1157,8 @@ void BrowserAutofillManager::MaybeImportFromSubmittedForm(
         form, nullptr, client().IsAutocompleteEnabled());
     return;
   }
-  if (form_structure->IsAutofillable()) {
+  if (attempt_to_import_into_form_data_importer &&
+      form_structure->IsAutofillable()) {
     // Update Personal Data with the form's submitted data.
     client().GetFormDataImporter()->ImportAndProcessFormData(
         *form_structure, IsAutofillProfileEnabled(),
@@ -1073,8 +1179,8 @@ void BrowserAutofillManager::MaybeImportFromSubmittedForm(
       fields_for_autocomplete.back().set_should_autocomplete(false);
     }
     if (plus_address_delegate &&
-        plus_address_delegate->IsPlusAddress(
-            base::UTF16ToUTF8(autofill_field->value()))) {
+        plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(
+            autofill_field->value(ValueSemantics::kCurrent)))) {
       // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
       // Note that the feature is experimental, and `plus_address_delegate`
       // will be null if the feature is not enabled (it's disabled by default).
@@ -1314,18 +1420,6 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     autofill_field->set_was_focused(true);
   }
 
-  if (trigger_source ==
-      AutofillSuggestionTriggerSource::kPredictionImprovements) {
-    if (AutofillPredictionImprovementsDelegate* delegate =
-            client().GetAutofillPredictionImprovementsDelegate()) {
-      delegate->ExtractImprovedPredictionsForFormFields(
-          form, field,
-          base::BindOnce(&BrowserAutofillManager::FillOrPreviewFormExperimental,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-    return;
-  }
-
   // Once the user triggers autofill from the context menu, this event is
   // recorded, because the IPH configuration limits how many times the IPH can
   // be shown.
@@ -1339,11 +1433,81 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
 
-  GenerateSuggestionsAndMaybeShowUI(
-      form, form_structure, field, autofill_field, trigger_source, context,
-      base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
-                     weak_ptr_factory_.GetWeakPtr(), form, field,
-                     trigger_source, context));
+  OnGenerateSuggestionsCallback callback = base::BindOnce(
+      &BrowserAutofillManager::OnGenerateSuggestionsComplete,
+      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
+
+  // Check via the `AutofillPredictionImprovementsDelegate` if there's data
+  // stored in user annotations.
+  // IMPORTANT NOTE: If there's no data stored in user annotations,
+  // `GenerateSuggestionsAndMaybeShowUI()` will be called and Autofill's regular
+  // flow will continue.
+  if (AutofillPredictionImprovementsDelegate* delegate =
+          client().GetAutofillPredictionImprovementsDelegate();
+      delegate && delegate->ShouldProvidePredictionImprovements(
+                      client().GetLastCommittedPrimaryMainFrameURL())) {
+    delegate->HasDataStored(base::BindOnce(
+        &BrowserAutofillManager::
+            GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI,
+        weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
+        base::OwnedRef(context), std::move(callback)));
+    return;
+  }
+
+  // IMPORTANT NOTE: DON'T ADD CODE HERE, but in
+  // `GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI()`
+  // instead.
+
+  // If user annotations wasn't checked for readiness above, synchronously move
+  // on with generating suggestions and maybe showing the UI.
+  GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI(
+      form, field, trigger_source, context, std::move(callback),
+      AutofillPredictionImprovementsDelegate::HasData(false));
+}
+
+void BrowserAutofillManager::
+    GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI(
+        const FormData& form,
+        const FormFieldData& field,
+        AutofillSuggestionTriggerSource trigger_source,
+        SuggestionsContext& context,
+        OnGenerateSuggestionsCallback callback,
+        AutofillPredictionImprovementsDelegate::HasData has_data) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  // We cannot early-return here because GetCachedFormAndField() yields
+  // nullptr even if there it finds a FormStructure but its `autofill_count()`
+  // is 0. In such cases, we still need to offer Autocomplete (if prediction
+  // improvements doesn't take precedence). Therefore, the code below, including
+  // called functions, must handle `form_structure == nullptr` and
+  // `autofill_field == nullptr`.
+  std::ignore =
+      GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  if (AutofillPredictionImprovementsDelegate* delegate =
+          client().GetAutofillPredictionImprovementsDelegate();
+      delegate && has_data) {
+    autofill_metrics::SuggestionRankingContext ranking_context;
+    // `GetAvailableAddressAndCreditCardSuggestions()` handles cases where
+    // `form_structure` and / or `autofill_field` are nullptr's.
+    std::vector<Suggestion> suggestions =
+        GetAvailableAddressAndCreditCardSuggestions(
+            form, form_structure, field, autofill_field, trigger_source,
+            context, ranking_context);
+    if (delegate->MaybeUpdateSuggestions(
+            suggestions, field,
+            /*should_add_trigger_suggestion=*/trigger_source ==
+                    AutofillSuggestionTriggerSource::kPredictionImprovements ||
+                trigger_source == AutofillSuggestionTriggerSource::
+                                      kFormControlElementClicked)) {
+      std::move(callback).Run(/*show_suggestions=*/true, suggestions,
+                              /*ranking_context=*/std::nullopt);
+      return;
+    }
+  }
+
+  GenerateSuggestionsAndMaybeShowUI(form, form_structure, field, autofill_field,
+                                    trigger_source, context,
+                                    std::move(callback));
 
   if (autofill_field && context.ablation_group != AblationGroup::kDefault) {
     autofill_field->AppendLogEventIfNotRepeated(AblationFieldLogEvent{
@@ -1422,11 +1586,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
   // these exist. Otherwise, plus address suggestions will be queried and shown
   // alongside single field form fill suggestions.
   const bool should_offer_plus_addresses_with_profiles =
-      field_is_relevant_for_plus_addresses &&
-      (!suggestions.empty() ||
-       !client()
-            .GetPlusAddressDelegate()
-            ->ShouldMixWithSingleFieldFormFillSuggestions());
+      field_is_relevant_for_plus_addresses && !suggestions.empty();
 
   // Try to show plus address suggestions. If the user specifically requested
   // plus addresses, disregard any other requirements (like having profile
@@ -1434,9 +1594,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
   // suggestions are mixed with profile suggestions if these exist.
   if (IsPlusAddressesManuallyTriggered(trigger_source) ||
       should_offer_plus_addresses_with_profiles) {
-    const AutofillClient::PasswordFormClassification
-        password_form_classification = client().ClassifyAsPasswordForm(
-            *this, form.global_id(), field.global_id());
+    const PasswordFormClassification password_form_classification =
+        client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                        field.global_id());
     const AutofillPlusAddressDelegate::SuggestionContext suggestions_context =
         IsPlusAddressesManuallyTriggered(trigger_source)
             ? AutofillPlusAddressDelegate::SuggestionContext::kManualFallback
@@ -1498,26 +1658,18 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
       ShouldOfferSingleFieldFormFill(field, autofill_field, trigger_source,
                                      context.suppress_reason);
 
-  // Whether or not to request plus address suggestions and mix them with single
-  // field form fill suggestions.
-  const bool should_offer_plus_addresses_with_sfff =
-      field_is_relevant_for_plus_addresses &&
-      client()
-          .GetPlusAddressDelegate()
-          ->ShouldMixWithSingleFieldFormFillSuggestions();
-
   const size_t barrier_calls =
       static_cast<size_t>(should_offer_single_field_form_fill) +
-      static_cast<size_t>(should_offer_plus_addresses_with_sfff);
+      static_cast<size_t>(field_is_relevant_for_plus_addresses);
   if (barrier_calls == 0) {
     std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
                             std::nullopt);
     return;
   }
 
-  const AutofillClient::PasswordFormClassification
-      password_form_classification = client().ClassifyAsPasswordForm(
-          *this, form.global_id(), field.global_id());
+  const PasswordFormClassification password_form_classification =
+      client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                      field.global_id());
   // The barrier callback bundles requests to generate suggestions for plus
   // addresses and single field form fill suggestions.
   auto barrier_callback = base::BarrierCallback<std::vector<Suggestion>>(
@@ -1529,7 +1681,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
           AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
           password_form_classification.type, form, field, std::move(callback)));
 
-  if (should_offer_plus_addresses_with_sfff) {
+  if (field_is_relevant_for_plus_addresses) {
     client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
         client().IsOffTheRecord(), password_form_classification, field,
@@ -1558,7 +1710,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
 void BrowserAutofillManager::
     OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
         AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-        AutofillClient::PasswordFormClassification::Type password_form_type,
+        PasswordFormClassification::Type password_form_type,
         const FormData& form,
         const FormFieldData& field,
         OnGenerateSuggestionsCallback callback,
@@ -1677,7 +1829,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
 
 void BrowserAutofillManager::OnGetPlusAddressSuggestions(
     AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-    AutofillClient::PasswordFormClassification::Type password_form_type,
+    PasswordFormClassification::Type password_form_type,
     const FormData& form,
     const FormFieldData& field,
     std::vector<Suggestion> address_suggestions,
@@ -2536,8 +2688,9 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
           safe_filled_autofill_fields);
       // The originally selected masked card is `metrics_->last_selected_card`.
       // So we must log `metrics_->last_selected_card` as opposed to
-      // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
-      // whether the user filled the form using a masked card suggestion.
+      // `absl::get<const CreditCard*>(profile_or_credit_card)` to correctly
+      // indicate whether the user filled the form using a masked card
+      // suggestion.
       metrics_->credit_card_form_event_logger.OnDidFillFormFillingSuggestion(
           metrics_->last_selected_card, form_structure, trigger_autofill_field,
           filled_fields, safe_fields, metrics_->signin_state_for_metrics,
@@ -2685,7 +2838,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   const FieldType trigger_field_type =
       trigger_autofill_field ? trigger_autofill_field->Type().GetStorableType()
                              : UNKNOWN_TYPE;
-
   // Given the current `trigger_field` and previous suggestions shown (if any),
   // compute what type of address suggestions granularity shall be currently
   // offered.
@@ -2699,7 +2851,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     if (trigger_field.is_autofilled() &&
         trigger_autofill_field->autofilled_type() ==
             trigger_autofill_field->Type().GetStorableType() &&
-        base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping)) {
+        IsAddressFieldSwappingEnabled()) {
       // If the user triggers suggestions on an autofilled field filled
       // traditionally with data matching its classification, field-by-field
       // filling suggestions should be shown so that the user could easily
@@ -2845,11 +2997,14 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   if (!IsInAutofillSuggestionsDisabledExperiment()) {
     if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE &&
         !four_digit_combinations_in_dom_.empty()) {
-      base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-          virtual_card_guid_to_last_four_map =
-              GetVirtualCreditCardsForStandaloneCvcField(
-                  trigger_field.origin());
-      if (!virtual_card_guid_to_last_four_map.empty()) {
+      if (base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+              virtual_card_guid_to_last_four_map =
+                  GetVirtualCreditCardsForStandaloneCvcField(
+                      client()
+                          .GetPersonalDataManager()
+                          ->payments_data_manager(),
+                      trigger_field.origin(), four_digit_combinations_in_dom_);
+          !virtual_card_guid_to_last_four_map.empty()) {
         suggestions = GetSuggestionsForVirtualCardStandaloneCvc(
             client(), trigger_field, summary.metadata_logging_context,
             virtual_card_guid_to_last_four_map);
@@ -2857,7 +3012,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       }
     } else {
       suggestions = GetSuggestionsForCreditCards(
-          client(), trigger_field, last_four_list_for_cvc_suggestion_filtering,
+          client(), trigger_field,
+          base::flat_set<std::u16string>(
+              std::move(last_four_list_for_cvc_suggestion_filtering)),
           trigger_field_type, trigger_source,
           ShouldShowScanCreditCard(form, trigger_field),
           ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
@@ -2871,46 +3028,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       is_virtual_card_standalone_cvc_field,
       std::move(summary.metadata_logging_context));
   return suggestions;
-}
-
-base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-BrowserAutofillManager::GetVirtualCreditCardsForStandaloneCvcField(
-    const url::Origin& origin) const {
-  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-      virtual_card_guid_to_last_four_map;
-  const PaymentsDataManager& data_manager =
-      client().GetPersonalDataManager()->payments_data_manager();
-
-  base::span<const VirtualCardUsageData> usage_data =
-      data_manager.GetVirtualCardUsageData();
-  for (const CreditCard* credit_card : data_manager.GetCreditCards()) {
-    // As we only provide virtual card suggestions for standalone CVC fields,
-    // check if the card is an enrolled virtual card.
-    if (credit_card->virtual_card_enrollment_state() !=
-        CreditCard::VirtualCardEnrollmentState::kEnrolled) {
-      continue;
-    }
-
-    auto matches_card_and_origin = [&](VirtualCardUsageData ud) {
-      return ud.instrument_id().value() == credit_card->instrument_id() &&
-             ud.merchant_origin() == origin;
-    };
-
-    // If `credit_card` has eligible usage data on `origin`, check if the last
-    // four digits of `credit_card`'s number occur in the DOM.
-    if (auto it = std::ranges::find_if(usage_data, matches_card_and_origin);
-        it != usage_data.end()) {
-      VirtualCardUsageData::VirtualCardLastFour virtual_card_last_four =
-          it->virtual_card_last_four();
-      if (base::Contains(four_digit_combinations_in_dom_,
-                         base::UTF16ToUTF8(virtual_card_last_four.value()))) {
-        // Card has usage data on webpage and last four is present in DOM.
-        virtual_card_guid_to_last_four_map[credit_card->guid()] =
-            virtual_card_last_four;
-      }
-    }
-  }
-  return virtual_card_guid_to_last_four_map;
 }
 
 // TODO(crbug.com/40219607) Eliminate and replace with a listener?
@@ -2961,7 +3078,8 @@ void BrowserAutofillManager::OnFormProcessed(
   }
   // Log the type of form that was parsed.
   DenseSet<FormType> form_types = form_structure.GetFormTypes();
-  bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
+  bool card_form = base::Contains(form_types, FormType::kCreditCardForm) ||
+                   base::Contains(form_types, FormType::kStandaloneCvcForm);
   bool address_form = base::Contains(form_types, FormType::kAddressForm);
   if (card_form) {
     metrics_->credit_card_form_event_logger.OnDidParseForm(form_structure);
@@ -2995,6 +3113,62 @@ void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
       interaction_timestamp < metrics_->initial_interaction_timestamp) {
     metrics_->initial_interaction_timestamp = interaction_timestamp;
   }
+}
+
+bool BrowserAutofillManager::EvaluateAblationStudy(
+    const std::vector<Suggestion>& address_and_credit_card_suggestions,
+    const AutofillField* autofill_field,
+    SuggestionsContext& context) {
+  if (context.filling_product != FillingProduct::kAddress &&
+      context.filling_product != FillingProduct::kCreditCard) {
+    // The ablation study only supports addresses and credit cards.
+    return false;
+  }
+
+  FormTypeForAblationStudy form_type =
+      context.filling_product == FillingProduct::kCreditCard
+          ? FormTypeForAblationStudy::kPayment
+          : FormTypeForAblationStudy::kAddress;
+  // If ablation_group is AblationGroup::kDefault or AblationGroup::kControl,
+  // no ablation happens in the following.
+  context.ablation_group = client().GetAblationStudy().GetAblationGroup(
+      client().GetLastCommittedPrimaryMainFrameURL(), form_type,
+      client().GetAutofillOptimizationGuide());
+  // Note that we don't set the ablation group if there are no suggestions.
+  // In that case we stick to kDefault.
+  context.conditional_ablation_group =
+      !address_and_credit_card_suggestions.empty() ? context.ablation_group
+                                                   : AblationGroup::kDefault;
+  context.day_in_ablation_window = GetDayInAblationWindow(AutofillClock::Now());
+
+  // In both cases (credit card and address forms), we inform the other event
+  // logger also about the ablation.
+  // This prevents for example that for an encountered address form we log a
+  // sample Autofill.Funnel.ParsedAsType.CreditCard = 0 (which would be
+  // recorded by the metrics_->credit_card_form_event_logger). For the
+  // complementary event logger, the conditional ablation status is logged as
+  // kDefault to not imply that data would be filled without ablation.
+  if (context.filling_product == FillingProduct::kCreditCard) {
+    metrics_->credit_card_form_event_logger.SetAblationStatus(
+        context.ablation_group, context.conditional_ablation_group);
+    metrics_->address_form_event_logger.SetAblationStatus(
+        context.ablation_group, AblationGroup::kDefault);
+  } else if (context.filling_product == FillingProduct::kAddress) {
+    metrics_->address_form_event_logger.SetAblationStatus(
+        context.ablation_group, context.conditional_ablation_group);
+    metrics_->credit_card_form_event_logger.SetAblationStatus(
+        context.ablation_group, AblationGroup::kDefault);
+  }
+
+  if (!address_and_credit_card_suggestions.empty() &&
+      context.ablation_group == AblationGroup::kAblation &&
+      !features::kAutofillAblationStudyIsDryRun.Get()) {
+    // Logic for disabling/ablating autofill.
+    context.suppress_reason = SuppressReason::kAblation;
+    return true;
+  }
+
+  return false;
 }
 
 std::vector<Suggestion>
@@ -3039,52 +3213,10 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
                                         autofill_field, trigger_source);
   }
 
-  // Ablation experiment
-  if (context.filling_product == FillingProduct::kAddress ||
-      context.filling_product == FillingProduct::kCreditCard) {
-    FormTypeForAblationStudy form_type =
-        context.filling_product == FillingProduct::kCreditCard
-            ? FormTypeForAblationStudy::kPayment
-            : FormTypeForAblationStudy::kAddress;
-    // If ablation_group is AblationGroup::kDefault or AblationGroup::kControl,
-    // no ablation happens in the following.
-    AblationGroup ablation_group = client().GetAblationStudy().GetAblationGroup(
-        client().GetLastCommittedPrimaryMainFrameURL(), form_type,
-        client().GetAutofillOptimizationGuide());
-    context.ablation_group = ablation_group;
-    // Note that we don't set the ablation group if there are no suggestions.
-    // In that case we stick to kDefault.
-    context.conditional_ablation_group =
-        !suggestions.empty() ? ablation_group : AblationGroup::kDefault;
-    context.day_in_ablation_window =
-        GetDayInAblationWindow(AutofillClock::Now());
-
-    // In both cases (credit card and address forms), we inform the other event
-    // logger also about the ablation.
-    // This prevents for example that for an encountered address form we log a
-    // sample Autofill.Funnel.ParsedAsType.CreditCard = 0 (which would be
-    // recorded by the metrics_->credit_card_form_event_logger). For the
-    // complementary event logger, the conditional ablation status is logged as
-    // kDefault to not imply that data would be filled without ablation.
-    if (context.filling_product == FillingProduct::kCreditCard) {
-      metrics_->credit_card_form_event_logger.SetAblationStatus(
-          context.ablation_group, context.conditional_ablation_group);
-      metrics_->address_form_event_logger.SetAblationStatus(
-          context.ablation_group, AblationGroup::kDefault);
-    } else if (context.filling_product == FillingProduct::kAddress) {
-      metrics_->address_form_event_logger.SetAblationStatus(
-          context.ablation_group, context.conditional_ablation_group);
-      metrics_->credit_card_form_event_logger.SetAblationStatus(
-          context.ablation_group, AblationGroup::kDefault);
-    }
-
-    if (!suggestions.empty() && ablation_group == AblationGroup::kAblation &&
-        !features::kAutofillAblationStudyIsDryRun.Get()) {
-      // Logic for disabling/ablating autofill.
-      context.suppress_reason = SuppressReason::kAblation;
-      return {};
-    }
+  if (EvaluateAblationStudy(suggestions, autofill_field, context)) {
+    return {};
   }
+
   if (suggestions.empty() ||
       context.filling_product != FillingProduct::kCreditCard) {
     return suggestions;
@@ -3150,7 +3282,8 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
       base::optional_ref<const SelectOption> selected_option =
           field->selected_option();
       const std::u16string& value =
-          selected_option ? selected_option->text : field->value();
+          selected_option ? selected_option->text
+                          : field->value(ValueSemantics::kCurrent);
       std::optional<AlternativeStateNameMap::CanonicalStateName>
           canonical_state_name_from_text =
               AlternativeStateNameMap::GetCanonicalStateName(

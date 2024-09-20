@@ -248,9 +248,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
                             true);
   web::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(^{
-        if ([self isContentNotificationAvailable] ||
-            base::FeatureList::IsEnabled(
-                send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+        if ([self provisionalNotificationTypesEnabled]) {
           // TODO(crbug.com/341906612) Remove use of
           // browserProviderInterfaceDoNotUse.
           Browser* browser =
@@ -378,10 +376,10 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // Register if it's a cold start or when bringing Chrome to foreground with
   // Content Push Notifications available.
   if (_startupInformation.isColdStart ||
-      [self isContentNotificationAvailable]) {
+      [self provisionalNotificationTypesEnabled]) {
     [PushNotificationUtil
-        registerDeviceWithAPNSWithContentNotificationsAvailable:
-            [self isContentNotificationAvailable]];
+        registerDeviceWithAPNSWithProvisionalNotificationsAvailable:
+            [self provisionalNotificationTypesEnabled]];
   }
 
   [_appState applicationWillEnterForeground:UIApplication.sharedApplication
@@ -458,9 +456,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   }
 }
 
-// `YES` if Content notification is enabled or registered. Called before
-// register device With APNS.
-- (BOOL)isContentNotificationAvailable {
+// `YES` if Content or Send Tab notifications are enabled or registered. Called
+// before register device With APNS.
+- (BOOL)provisionalNotificationTypesEnabled {
   // TODO(crbug.com/341903881) Do not use
   // mainController.browserProviderInterfaceDoNotUse.
   Browser* browser = _mainController.browserProviderInterfaceDoNotUse
@@ -475,7 +473,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   ChromeBrowserState* browserState = browser->GetBrowserState();
 
   return IsContentNotificationEnabled(browserState) ||
-         IsContentNotificationRegistered(browserState);
+         IsContentNotificationRegistered(browserState) ||
+         base::FeatureList::IsEnabled(
+             send_tab_to_self::kSendTabToSelfIOSPushNotifications);
 }
 
 @end

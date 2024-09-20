@@ -4,31 +4,34 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
-import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
@@ -40,16 +43,17 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionUnitT
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 /** Unit tests for {@link TabListEditorGroupAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabListEditorGroupActionUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private TabGroupModelFilter mGroupFilter;
     @Mock private ActionDelegate mDelegate;
@@ -60,7 +64,7 @@ public class TabListEditorGroupActionUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         mAction =
                 TabListEditorGroupAction.createAction(
                         RuntimeEnvironment.application,
@@ -70,55 +74,100 @@ public class TabListEditorGroupActionUnitTest {
                         IconPosition.START);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mGroupFilter.getTabModel()).thenReturn(mTabModel);
-    }
-
-    private void configure(boolean actionOnRelatedTabs) {
-        mAction.configure(() -> mGroupFilter, mSelectionDelegate, mDelegate, actionOnRelatedTabs);
+        mAction.configure(
+                () -> mGroupFilter,
+                mSelectionDelegate,
+                mDelegate,
+                /* editorSupportsActionOnRelatedTabs= */ true);
     }
 
     @Test
     @SmallTest
     public void testInherentActionProperties() {
-        Assert.assertEquals(
+        assertEquals(
                 R.id.tab_list_editor_group_menu_item,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.MENU_ITEM_ID));
-        Assert.assertEquals(
+        assertEquals(
                 R.plurals.tab_selection_editor_group_tabs,
-                mAction.getPropertyModel()
-                        .get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
-        Assert.assertEquals(
+                mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
+        assertEquals(
                 true,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_IS_PLURAL));
-        Assert.assertEquals(
+        assertEquals(
                 R.plurals.accessibility_tab_selection_editor_group_tabs,
                 mAction.getPropertyModel()
                         .get(TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)
                         .intValue());
-        Assert.assertNotNull(mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
+        assertNotNull(mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
     }
 
     @Test
     @SmallTest
-    public void testGroupActionDisabled_SingleTabGroupSupport() {
-        configure(false);
+    public void testGroupActionDisabled_NoTabs() {
         List<Integer> tabIds = new ArrayList<>();
         mAction.onSelectionStateChange(tabIds);
-        Assert.assertEquals(
-                false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
-        Assert.assertEquals(
-                0, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+        assertEquals(false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(0, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+    }
 
-        int tabId = 1;
-        Tab tab = mTabModel.addTab(tabId);
-        tabIds.add(tabId);
-        tab.setTabGroupId(new Token(1L, 2L));
-        when(mGroupFilter.isTabInTabGroup(tab)).thenReturn(true);
+    @Test
+    @SmallTest
+    public void testGroupActionDisabled_OneTabGroup() {
+        List<TabIdGroup> tabIdGroups = new ArrayList<>();
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {1},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ true));
+        TabListHolder holder =
+                TabListEditorActionUnitTestHelper.configureTabs(
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
 
-        mAction.onSelectionStateChange(tabIds);
-        Assert.assertEquals(
-                false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
-        Assert.assertEquals(
-                1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+        mAction.onSelectionStateChange(holder.getSelectedTabIds());
+        assertEquals(false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+    }
+
+    @Test
+    @SmallTest
+    public void testGroupActionDisabled_MultipleTabGroupsWithCollaborations() {
+        List<TabIdGroup> tabIdGroups = new ArrayList<>();
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {5},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ true));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {3},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ true));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {4},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        TabListHolder holder =
+                TabListEditorActionUnitTestHelper.configureTabs(
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
+
+        mAction.onSelectionStateChange(holder.getSelectedTabIds());
+        assertEquals(false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(3, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
     }
 
     @Test
@@ -128,33 +177,37 @@ public class TabListEditorGroupActionUnitTest {
         ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID
     })
     public void testSingleTabToGroup() {
-        configure(false);
-        List<Integer> tabIds = new ArrayList<>();
+        List<TabIdGroup> tabIdGroups = new ArrayList<>();
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {1},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        TabListHolder holder =
+                TabListEditorActionUnitTestHelper.configureTabs(
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
 
-        int tabId = 1;
-        Tab tab = mTabModel.addTab(tabId);
-        tabIds.add(tabId);
-        tab.setTabGroupId(null);
-        when(mGroupFilter.isTabInTabGroup(tab)).thenReturn(false);
-        Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
-        when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
+        mAction.onSelectionStateChange(holder.getSelectedTabIds());
+        assertEquals(true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
-        mAction.onSelectionStateChange(tabIds);
-        Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
-        Assert.assertEquals(
-                1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
-
-        Assert.assertTrue(mAction.perform());
+        Tab tab = mTabModel.getTabAt(0);
+        assertTrue(mAction.perform());
         verify(mGroupFilter).createSingleTabGroup(tab, true);
         verify(mTabGroupCreationDialogManager).showDialog(tab.getRootId(), mGroupFilter);
 
-        tab.setTabGroupId(new Token(1L, 2L));
         when(mGroupFilter.isTabInTabGroup(tab)).thenReturn(true);
-        Assert.assertTrue(mAction.perform());
+        assertTrue(mAction.perform());
         verify(mGroupFilter, atLeastOnce()).getTabModel();
         verify(mGroupFilter, atLeastOnce()).isTabInTabGroup(any());
-        verifyNoMoreInteractions(mGroupFilter);
+        // Ensure this isn't called again.
+        verify(mGroupFilter).createSingleTabGroup(tab, true);
     }
 
     @Test
@@ -164,55 +217,83 @@ public class TabListEditorGroupActionUnitTest {
         ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID
     })
     public void testGroupActionWithTabs_WillMergingCreateNewGroup() throws Exception {
-        configure(false);
-        List<Integer> tabIds = new ArrayList<>();
-        tabIds.add(5);
-        tabIds.add(3);
-        tabIds.add(7);
-        List<Tab> tabs = new ArrayList<>();
-        for (int id : tabIds) {
-            tabs.add(mTabModel.addTab(id));
-        }
-        Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
-        when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
+        List<TabIdGroup> tabIdGroups = new ArrayList<>();
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {5},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {3},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {7},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        TabListHolder holder =
+                TabListEditorActionUnitTestHelper.configureTabs(
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
 
-        List<Tab> tabsToMerge = new ArrayList<>();
-        tabsToMerge.addAll(tabs);
-        tabsToMerge.add(tabs.get(2));
-        when(mGroupFilter.willMergingCreateNewGroup(tabsToMerge)).thenReturn(true);
+        when(mGroupFilter.willMergingCreateNewGroup(any())).thenReturn(true);
 
-        mAction.onSelectionStateChange(tabIds);
-        Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
-        Assert.assertEquals(
-                3, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+        mAction.onSelectionStateChange(holder.getSelectedTabIds());
+        assertEquals(true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(3, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
-        Assert.assertTrue(mAction.perform());
-        verify(mGroupFilter).mergeListOfTabsToGroup(tabs, tabs.get(2), true);
-        verify(mTabGroupCreationDialogManager).showDialog(tabs.get(2).getRootId(), mGroupFilter);
+        List<Tab> selectedTabs = holder.getSelectedTabs();
+        Tab destinationTab = selectedTabs.get(2);
+        assertTrue(mAction.perform());
+        verify(mGroupFilter)
+                .mergeListOfTabsToGroup(selectedTabs.subList(0, 2), destinationTab, true);
+        verify(mTabGroupCreationDialogManager).showDialog(destinationTab.getRootId(), mGroupFilter);
         verify(mDelegate).hideByAction();
     }
 
     @Test
     @SmallTest
     public void testGroupActionWithTabs_MergedIndividualTabsToNewGroup() throws Exception {
-        configure(false);
-        List<Integer> tabIds = new ArrayList<>();
-        tabIds.add(5);
-        tabIds.add(3);
-        tabIds.add(7);
-        List<Tab> tabs = new ArrayList<>();
-        for (int id : tabIds) {
-            tabs.add(mTabModel.addTab(id));
-        }
-        Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
-        when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
+        List<TabIdGroup> tabIdGroups = new ArrayList<>();
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {5},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {3},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {7},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        TabListHolder holder =
+                TabListEditorActionUnitTestHelper.configureTabs(
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
 
-        mAction.onSelectionStateChange(tabIds);
-        Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
-        Assert.assertEquals(
-                3, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+        mAction.onSelectionStateChange(holder.getSelectedTabIds());
+        assertEquals(true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(3, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         final CallbackHelper helper = new CallbackHelper();
         ActionObserver observer =
@@ -224,50 +305,80 @@ public class TabListEditorGroupActionUnitTest {
                 };
         mAction.addActionObserver(observer);
 
-        Assert.assertTrue(mAction.perform());
-        verify(mGroupFilter).mergeListOfTabsToGroup(tabs, tabs.get(2), true);
+        List<Tab> selectedTabs = holder.getSelectedTabs();
+        Tab destinationTab = selectedTabs.get(2);
+        assertTrue(mAction.perform());
+        verify(mGroupFilter)
+                .mergeListOfTabsToGroup(selectedTabs.subList(0, 2), destinationTab, true);
         verify(mDelegate).hideByAction();
 
         helper.waitForOnly();
         mAction.removeActionObserver(observer);
 
-        Assert.assertTrue(mAction.perform());
-        verify(mGroupFilter, times(2)).mergeListOfTabsToGroup(tabs, tabs.get(2), true);
+        assertTrue(mAction.perform());
+        verify(mGroupFilter, times(2))
+                .mergeListOfTabsToGroup(selectedTabs.subList(0, 2), destinationTab, true);
         verify(mDelegate, times(2)).hideByAction();
-        Assert.assertEquals(1, helper.getCallCount());
+        assertEquals(1, helper.getCallCount());
     }
 
     @Test
     @SmallTest
     public void testGroupActionWithTabGroups_MergeIndividalTabsToExistingGroup() {
-        final boolean actionOnRelatedTabs = true;
-        configure(actionOnRelatedTabs);
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
-        tabIdGroups.add(new TabIdGroup(new int[] {5}, true));
-        tabIdGroups.add(new TabIdGroup(new int[] {3}, true));
-        tabIdGroups.add(new TabIdGroup(new int[] {4}, false));
-        tabIdGroups.add(new TabIdGroup(new int[] {8, 7}, true));
-        tabIdGroups.add(new TabIdGroup(new int[] {10, 11, 12}, false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {5},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {3},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {4},
+                        /* isGroup= */ false,
+                        /* selected= */ false,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {8, 7},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {10, 11, 12},
+                        /* isGroup= */ true,
+                        /* selected= */ false,
+                        /* isCollaboration= */ false));
         TabListHolder holder =
                 TabListEditorActionUnitTestHelper.configureTabs(
-                        mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, false);
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
 
-        Assert.assertEquals(3, holder.getSelectedTabs().size());
-        Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());
-        Assert.assertEquals(3, holder.getSelectedTabs().get(1).getId());
-        Assert.assertEquals(8, holder.getSelectedTabs().get(2).getId());
+        assertEquals(3, holder.getSelectedTabs().size());
+        assertEquals(5, holder.getSelectedTabs().get(0).getId());
+        assertEquals(3, holder.getSelectedTabs().get(1).getId());
+        assertEquals(8, holder.getSelectedTabs().get(2).getId());
         mAction.onSelectionStateChange(holder.getSelectedTabIds());
-        Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
-        Assert.assertEquals(
-                4, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+        assertEquals(true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(4, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
-        Assert.assertEquals(4, holder.getSelectedAndRelatedTabs().size());
-        Assert.assertEquals(5, holder.getSelectedAndRelatedTabs().get(0).getId());
-        Assert.assertEquals(3, holder.getSelectedAndRelatedTabs().get(1).getId());
-        Assert.assertEquals(8, holder.getSelectedAndRelatedTabs().get(2).getId());
-        Assert.assertEquals(7, holder.getSelectedAndRelatedTabs().get(3).getId());
-        Assert.assertTrue(mAction.perform());
+        assertEquals(4, holder.getSelectedAndRelatedTabs().size());
+        assertEquals(5, holder.getSelectedAndRelatedTabs().get(0).getId());
+        assertEquals(3, holder.getSelectedAndRelatedTabs().get(1).getId());
+        assertEquals(8, holder.getSelectedAndRelatedTabs().get(2).getId());
+        assertEquals(7, holder.getSelectedAndRelatedTabs().get(3).getId());
+        assertTrue(mAction.perform());
         List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
         // Remove selected destination tab and all related tabs from the expected tabs list
         List<Tab> destinationAndRelatedTabs =
@@ -281,34 +392,60 @@ public class TabListEditorGroupActionUnitTest {
     @Test
     @SmallTest
     public void testGroupActionWithTabGroups_MergeGroupToExistingGroup() {
-        final boolean actionOnRelatedTabs = true;
-        configure(actionOnRelatedTabs);
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
-        tabIdGroups.add(new TabIdGroup(new int[] {0}, false));
-        tabIdGroups.add(new TabIdGroup(new int[] {5, 3}, true));
-        tabIdGroups.add(new TabIdGroup(new int[] {4}, false));
-        tabIdGroups.add(new TabIdGroup(new int[] {8, 7, 6}, true));
-        tabIdGroups.add(new TabIdGroup(new int[] {10, 11, 12}, false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {0},
+                        /* isGroup= */ false,
+                        /* selected= */ false,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {5, 3},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {4},
+                        /* isGroup= */ false,
+                        /* selected= */ false,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {8, 7, 6},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {10, 11, 12},
+                        /* isGroup= */ true,
+                        /* selected= */ false,
+                        /* isCollaboration= */ false));
         TabListHolder holder =
                 TabListEditorActionUnitTestHelper.configureTabs(
-                        mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, false);
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
 
-        Assert.assertEquals(2, holder.getSelectedTabs().size());
-        Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());
-        Assert.assertEquals(8, holder.getSelectedTabs().get(1).getId());
+        assertEquals(2, holder.getSelectedTabs().size());
+        assertEquals(5, holder.getSelectedTabs().get(0).getId());
+        assertEquals(8, holder.getSelectedTabs().get(1).getId());
         mAction.onSelectionStateChange(holder.getSelectedTabIds());
-        Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
-        Assert.assertEquals(
-                5, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+        assertEquals(true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(5, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
-        Assert.assertEquals(5, holder.getSelectedAndRelatedTabs().size());
-        Assert.assertEquals(5, holder.getSelectedAndRelatedTabs().get(0).getId());
-        Assert.assertEquals(3, holder.getSelectedAndRelatedTabs().get(1).getId());
-        Assert.assertEquals(8, holder.getSelectedAndRelatedTabs().get(2).getId());
-        Assert.assertEquals(7, holder.getSelectedAndRelatedTabs().get(3).getId());
-        Assert.assertEquals(6, holder.getSelectedAndRelatedTabs().get(4).getId());
-        Assert.assertTrue(mAction.perform());
+        assertEquals(5, holder.getSelectedAndRelatedTabs().size());
+        assertEquals(5, holder.getSelectedAndRelatedTabs().get(0).getId());
+        assertEquals(3, holder.getSelectedAndRelatedTabs().get(1).getId());
+        assertEquals(8, holder.getSelectedAndRelatedTabs().get(2).getId());
+        assertEquals(7, holder.getSelectedAndRelatedTabs().get(3).getId());
+        assertEquals(6, holder.getSelectedAndRelatedTabs().get(4).getId());
+        assertTrue(mAction.perform());
         List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
         // Remove selected destination tab and all related tabs from the expected tabs list
         List<Tab> destinationAndRelatedTabs =
@@ -322,41 +459,72 @@ public class TabListEditorGroupActionUnitTest {
     @Test
     @SmallTest
     public void testGroupActionWithTabGroups_MergeTabsAndGroupsToExistingGroup() {
-        final boolean actionOnRelatedTabs = true;
-        configure(actionOnRelatedTabs);
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
-        tabIdGroups.add(new TabIdGroup(new int[] {0}, false));
-        tabIdGroups.add(new TabIdGroup(new int[] {5, 3}, true));
-        tabIdGroups.add(new TabIdGroup(new int[] {4}, false));
-        tabIdGroups.add(new TabIdGroup(new int[] {8, 7, 6}, true));
-        tabIdGroups.add(new TabIdGroup(new int[] {10, 11, 12}, true));
-        tabIdGroups.add(new TabIdGroup(new int[] {1}, true));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {0},
+                        /* isGroup= */ false,
+                        /* selected= */ false,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {5, 3},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {4},
+                        /* isGroup= */ false,
+                        /* selected= */ false,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {8, 7, 6},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {10, 11, 12},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {1},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
         TabListHolder holder =
                 TabListEditorActionUnitTestHelper.configureTabs(
-                        mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, false);
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
 
-        Assert.assertEquals(4, holder.getSelectedTabs().size());
-        Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());
-        Assert.assertEquals(8, holder.getSelectedTabs().get(1).getId());
-        Assert.assertEquals(10, holder.getSelectedTabs().get(2).getId());
-        Assert.assertEquals(1, holder.getSelectedTabs().get(3).getId());
+        assertEquals(4, holder.getSelectedTabs().size());
+        assertEquals(5, holder.getSelectedTabs().get(0).getId());
+        assertEquals(8, holder.getSelectedTabs().get(1).getId());
+        assertEquals(10, holder.getSelectedTabs().get(2).getId());
+        assertEquals(1, holder.getSelectedTabs().get(3).getId());
         mAction.onSelectionStateChange(holder.getSelectedTabIds());
-        Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
-        Assert.assertEquals(
-                9, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+        assertEquals(true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(9, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
-        Assert.assertEquals(9, holder.getSelectedAndRelatedTabs().size());
-        Assert.assertEquals(5, holder.getSelectedAndRelatedTabs().get(0).getId());
-        Assert.assertEquals(3, holder.getSelectedAndRelatedTabs().get(1).getId());
-        Assert.assertEquals(8, holder.getSelectedAndRelatedTabs().get(2).getId());
-        Assert.assertEquals(7, holder.getSelectedAndRelatedTabs().get(3).getId());
-        Assert.assertEquals(6, holder.getSelectedAndRelatedTabs().get(4).getId());
-        Assert.assertEquals(10, holder.getSelectedAndRelatedTabs().get(5).getId());
-        Assert.assertEquals(11, holder.getSelectedAndRelatedTabs().get(6).getId());
-        Assert.assertEquals(12, holder.getSelectedAndRelatedTabs().get(7).getId());
-        Assert.assertEquals(1, holder.getSelectedAndRelatedTabs().get(8).getId());
-        Assert.assertTrue(mAction.perform());
+        assertEquals(9, holder.getSelectedAndRelatedTabs().size());
+        assertEquals(5, holder.getSelectedAndRelatedTabs().get(0).getId());
+        assertEquals(3, holder.getSelectedAndRelatedTabs().get(1).getId());
+        assertEquals(8, holder.getSelectedAndRelatedTabs().get(2).getId());
+        assertEquals(7, holder.getSelectedAndRelatedTabs().get(3).getId());
+        assertEquals(6, holder.getSelectedAndRelatedTabs().get(4).getId());
+        assertEquals(10, holder.getSelectedAndRelatedTabs().get(5).getId());
+        assertEquals(11, holder.getSelectedAndRelatedTabs().get(6).getId());
+        assertEquals(12, holder.getSelectedAndRelatedTabs().get(7).getId());
+        assertEquals(1, holder.getSelectedAndRelatedTabs().get(8).getId());
+        assertTrue(mAction.perform());
         List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
         // Remove selected destination tab and all related tabs from the expected tabs list
         List<Tab> destinationAndRelatedTabs =
@@ -365,5 +533,162 @@ public class TabListEditorGroupActionUnitTest {
         verify(mGroupFilter)
                 .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true);
         verify(mDelegate).hideByAction();
+    }
+
+    @Test
+    @SmallTest
+    public void testGroupActionWithTabGroups_MergeTabsAndGroupsToCollaborationGroup() {
+        List<TabIdGroup> tabIdGroups = new ArrayList<>();
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {0},
+                        /* isGroup= */ false,
+                        /* selected= */ false,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {5, 3},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {4},
+                        /* isGroup= */ false,
+                        /* selected= */ false,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {8, 7, 6},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ true));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {10, 11, 12},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {1},
+                        /* isGroup= */ false,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        TabListHolder holder =
+                TabListEditorActionUnitTestHelper.configureTabs(
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
+
+        List<Tab> selectedTabs = holder.getSelectedTabs();
+        assertEquals(4, selectedTabs.size());
+        assertEquals(5, selectedTabs.get(0).getId());
+        assertEquals(8, selectedTabs.get(1).getId());
+        assertEquals(10, selectedTabs.get(2).getId());
+        assertEquals(1, selectedTabs.get(3).getId());
+        mAction.onSelectionStateChange(holder.getSelectedTabIds());
+        assertEquals(true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(9, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+
+        List<Tab> selectedAndRelatedTabs = holder.getSelectedAndRelatedTabs();
+        assertEquals(9, selectedAndRelatedTabs.size());
+        assertEquals(5, selectedAndRelatedTabs.get(0).getId());
+        assertEquals(3, selectedAndRelatedTabs.get(1).getId());
+        assertEquals(8, selectedAndRelatedTabs.get(2).getId());
+        assertEquals(7, selectedAndRelatedTabs.get(3).getId());
+        assertEquals(6, selectedAndRelatedTabs.get(4).getId());
+        assertEquals(10, selectedAndRelatedTabs.get(5).getId());
+        assertEquals(11, selectedAndRelatedTabs.get(6).getId());
+        assertEquals(12, selectedAndRelatedTabs.get(7).getId());
+        assertEquals(1, selectedAndRelatedTabs.get(8).getId());
+        assertTrue(mAction.perform());
+
+        List<Tab> expectedTabs = selectedAndRelatedTabs;
+        // Remove selected destination tab and all related tabs from the expected tabs list. Note
+        // that we are merging to the collaboration group.
+        List<Tab> destinationAndRelatedTabs =
+                mGroupFilter.getRelatedTabList(holder.getSelectedTabIds().get(1));
+        expectedTabs.removeAll(destinationAndRelatedTabs);
+        verify(mGroupFilter)
+                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(1), true);
+        verify(mDelegate).hideByAction();
+    }
+
+    @Test
+    @SmallTest
+    public void testGroupActionWithTabGroups_MergeCollaborationIsFirst() {
+        List<TabIdGroup> tabIdGroups = new ArrayList<>();
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {5, 3},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ true));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {8, 7, 6},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ false));
+        TabListHolder holder =
+                TabListEditorActionUnitTestHelper.configureTabs(
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
+
+        mAction.onSelectionStateChange(holder.getSelectedTabIds());
+        assertEquals(true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(5, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+
+        assertTrue(mAction.perform());
+
+        List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
+        // Remove selected destination tab and all related tabs from the expected tabs list. Note
+        // that we are merging to the collaboration group.
+        List<Tab> destinationAndRelatedTabs =
+                mGroupFilter.getRelatedTabList(holder.getSelectedTabIds().get(0));
+        expectedTabs.removeAll(destinationAndRelatedTabs);
+        verify(mGroupFilter)
+                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true);
+        verify(mDelegate).hideByAction();
+    }
+
+    @Test(expected = AssertionError.class)
+    @SmallTest
+    public void testGroupActionWithTabGroups_MergeCollaborationsAsserts() {
+        List<TabIdGroup> tabIdGroups = new ArrayList<>();
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {5, 3},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ true));
+        tabIdGroups.add(
+                new TabIdGroup(
+                        new int[] {8, 7, 6},
+                        /* isGroup= */ true,
+                        /* selected= */ true,
+                        /* isCollaboration= */ true));
+        TabListHolder holder =
+                TabListEditorActionUnitTestHelper.configureTabs(
+                        mTabModel,
+                        mGroupFilter,
+                        mTabGroupSyncService,
+                        mSelectionDelegate,
+                        tabIdGroups,
+                        false);
+
+        mAction.onSelectionStateChange(holder.getSelectedTabIds());
+        assertEquals(false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(5, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+
+        mAction.perform();
     }
 }

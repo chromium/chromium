@@ -415,13 +415,14 @@ class CONTENT_EXPORT BackForwardCacheImpl
   static bool UsingForegroundBackgroundCacheSizeLimit();
 
   // Returns true if one of the BFCache entries has a matching
-  // BrowsingInstanceId/SiteInstanceId/RenderFrameProxyHost.
-  // TODO(crbug.com/40195481): Remove these once the bug is fixed.
-  bool IsBrowsingInstanceInBackForwardCacheForDebugging(
-      BrowsingInstanceId browsing_instance_id);
-  bool IsSiteInstanceInBackForwardCacheForDebugging(
-      SiteInstanceId site_instance_id);
-  bool IsProxyInBackForwardCacheForDebugging(RenderFrameProxyHost* proxy);
+  // RFH/RFPH/RVH with the same SIG ID/RVH ID.
+  // TODO(crbug.com/354382462): Remove these once the bug is fixed.
+  bool IsRenderFrameHostWithSIGInBackForwardCacheForDebugging(
+      SiteInstanceGroupId site_instance_group_id);
+  bool IsRenderFrameProxyHostWithSIGInBackForwardCacheForDebugging(
+      SiteInstanceGroupId site_instance_group_id);
+  bool IsRenderViewHostWithMapIdInBackForwardCacheForDebugging(
+      const RenderViewHostImpl& rvh);
 
   // StoredPage::Delegate overrides:
   void RenderViewHostNoLongerStored(RenderViewHostImpl* rvh) override;
@@ -441,6 +442,18 @@ class CONTENT_EXPORT BackForwardCacheImpl
   bool should_allow_storing_pages_with_cache_control_no_store() {
     return should_allow_storing_pages_with_cache_control_no_store_;
   }
+
+  // Returns true if there is a BFCached entry that sufficiently matches the
+  // navigation that just committed in `committing_rfh` with initiator origin
+  // `initiator_origin`, such that the entry could have been used (the URL,
+  // origin, initiator origin, and security properties are the same, and if
+  // `require_no_subframes` is used, has no subframes). This is
+  // called in response to new non-reload/session-restore cross-document
+  // navigation commits.
+  bool HasPotentiallyMatchingEntry(
+      const RenderFrameHostImpl& committing_rfh,
+      const std::optional<url::Origin>& initiator_origin,
+      bool require_no_subframes) const;
 
  private:
   // Destroys all evicted frames in the BackForwardCache.

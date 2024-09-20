@@ -91,7 +91,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -1058,12 +1058,12 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       .Times(0);
 
   auto delegate = CreateDelegate();
-  delegate->SetAccountStorageOptIn(true, web_contents.get());
+  delegate->SetAccountStorageEnabled(true, web_contents.get());
 
   profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
 
   // Implicit and explicit sign-ins are treated alike.
-  delegate->SetAccountStorageOptIn(true, web_contents.get());
+  delegate->SetAccountStorageEnabled(true, web_contents.get());
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
@@ -1083,7 +1083,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_CALL(*feature_manager, OptOutOfAccountStorage);
 
   auto delegate = CreateDelegate();
-  delegate->SetAccountStorageOptIn(false, web_contents.get());
+  delegate->SetAccountStorageEnabled(false, web_contents.get());
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -1411,7 +1411,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportResultsStatus) {
                 int{password_manager::ImportResults::Status::CONFLICTS});
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Checks if authentication is triggered.
 TEST_F(PasswordsPrivateDelegateImplTest,
        SwitchBiometricAuthBeforeFillingState) {

@@ -70,12 +70,14 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
  public:
   // Keep in sync with WebMediaPlayer::CorsMode.
   enum CorsMode { CORS_UNSPECIFIED, CORS_ANONYMOUS, CORS_USE_CREDENTIALS };
+  enum CacheMode { kNormal, kCacheDisabled };
   using KeyType = std::pair<GURL, CorsMode>;
 
   UrlData(base::PassKey<UrlIndex>,
           const GURL& url,
           CorsMode cors_mode,
           UrlIndex* url_index,
+          CacheMode cache_lookup_mode,
           scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   UrlData(const UrlData&) = delete;
   UrlData& operator=(const UrlData&) = delete;
@@ -100,6 +102,10 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // True if we found a reason why this URL won't be stored in the
   // HTTP disk cache.
   bool cacheable() const { return cacheable_; }
+
+  // True if this UrlData and any it might redirect to should bypass cache
+  // lookups, regardless of disk cache or response status.
+  CacheMode cache_lookup_mode() const { return cache_lookup_mode_; }
 
   // Last used time.
   base::Time last_used() const { return last_used_; }
@@ -183,6 +189,7 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   UrlData(const GURL& url,
           CorsMode cors_mode,
           UrlIndex* url_index,
+          CacheMode cache_lookup_mode,
           scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   virtual ~UrlData();
 
@@ -228,6 +235,11 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // will not cache this url.
   bool cacheable_;
 
+  // While `cacheable_` determines whether this UrlData's underlying data should
+  // be stored in the cache, `cache_lookup_mode_` determines whether this
+  // UrlData should use existing underlying cached data.
+  CacheMode cache_lookup_mode_;
+
   // https://html.spec.whatwg.org/#cors-cross-origin
   bool is_cors_cross_origin_ = false;
 
@@ -265,8 +277,6 @@ class PLATFORM_EXPORT UrlIndex {
            scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   virtual ~UrlIndex();
 
-  enum CacheMode { kNormal, kCacheDisabled };
-
   // Look up an UrlData in the index and return it. If none is found,
   // create a new one. Note that newly created UrlData entries are NOT
   // added to the index, instead you must call TryInsert on them after
@@ -276,7 +286,7 @@ class PLATFORM_EXPORT UrlIndex {
   // released before |this| is destroyed.
   scoped_refptr<UrlData> GetByUrl(const GURL& gurl,
                                   UrlData::CorsMode cors_mode,
-                                  CacheMode cache_mode);
+                                  UrlData::CacheMode cache_mode);
 
   // Add the given UrlData to the index if possible. If a better UrlData
   // is already present in the index, return it instead. (If not, we just
@@ -309,8 +319,10 @@ class PLATFORM_EXPORT UrlIndex {
   void RemoveUrlData(const scoped_refptr<UrlData>& url_data);
 
   // Virtual so we can override it in tests.
-  virtual scoped_refptr<UrlData> NewUrlData(const GURL& url,
-                                            UrlData::CorsMode cors_mode);
+  virtual scoped_refptr<UrlData> NewUrlData(
+      const GURL& url,
+      UrlData::CorsMode cors_mode,
+      UrlData::CacheMode cache_lookup_mode);
 
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);

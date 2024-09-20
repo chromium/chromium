@@ -72,7 +72,7 @@ TEST_P(ChromeOSCompressedGpuMemoryBufferTest,
   }
   EXPECT_EQ(frame->layout().modifier(), modifier);
   EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-  EXPECT_EQ(frame->GetGpuMemoryBuffer(), gmb_raw_ptr);
+  EXPECT_EQ(frame->GetGpuMemoryBufferForTesting(), gmb_raw_ptr);
   EXPECT_EQ(frame->coded_size(), kCodedSize);
   EXPECT_EQ(frame->visible_rect(), kVisibleRect);
   EXPECT_EQ(frame->natural_size(), kNaturalSize);

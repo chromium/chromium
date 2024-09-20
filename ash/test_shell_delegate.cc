@@ -53,6 +53,10 @@ TestShellDelegate::CreateClipboardHistoryControllerDelegate() const {
   return std::make_unique<TestClipboardHistoryControllerDelegateImpl>();
 }
 
+std::unique_ptr<CoralDelegate> TestShellDelegate::CreateCoralDelegate() const {
+  return nullptr;
+}
+
 std::unique_ptr<GameDashboardDelegate>
 TestShellDelegate::CreateGameDashboardDelegate() const {
   return std::make_unique<TestGameDashboardDelegate>();
@@ -114,6 +118,11 @@ TestShellDelegate::CreateUserEducationDelegate() const {
   return user_education_delegate_factory_
              ? user_education_delegate_factory_.Run()
              : std::make_unique<testing::NiceMock<MockUserEducationDelegate>>();
+}
+
+std::unique_ptr<ash::ScannerDelegate> TestShellDelegate::CreateScannerDelegate()
+    const {
+  return nullptr;
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

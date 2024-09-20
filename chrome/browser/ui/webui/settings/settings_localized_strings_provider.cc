@@ -574,107 +574,6 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"getTheMostOutOfChrome", IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME},
-      {"getTheMostOutOfChromeBetterForYou",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_FOR_YOU},
-      {"getTheMostOutOfChromeYourDataInChrome",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_IN_CHROME},
-      {"getTheMostOutOfChromeBeyondCookies",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES},
-      {"getTheMostOutOfChromeWorkBetterForYou",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_WORK_BETTER_FOR_YOU},
-      {"getTheMostOutOfChromeSearchHistory",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_SEARCH_HISTORY},
-      {"getTheMostOutOfChromeThirdPartyCookies",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_THIRD_PARTY_COOKIES},
-
-      // Better web section.
-      {"getTheMostOutOfChromeBetterWebMakingTheWeb",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_MAKING_THE_WEB},
-      {"getTheMostOutOfChromeBetterWebSubTitleChromeGivesYouChoice",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_SUB_TITLE_CHROME_GIVES_YOU_CHOICE},
-      {"getTheMostOutOfChromeBetterWebSubTitleChromeSupportsFreeWeb",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_SUB_TITLE_CHROME_SUPPORTS_FREE_WEB},
-      {"getTheMostOutOfChromeBetterWebAdsCritical",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_CRITICAL},
-      {"getTheMostOutOfChromeBetterWebAdsAlsoSupport",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_ALSO_SUPPORT},
-
-      // Your data section.
-      {"getTheMostOutOfChromeYourDataWhenYouBrowse",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_WHEN_YOU_BROWSE},
-      {"getTheMostOutOfChromeYourDataThisInformationUseful",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_THIS_INFORMATION_USEFUL},
-      {"getTheMostOutOfChromeYourDataSubTitleWhatsDifferenceBrowsingSearchHisto"
-       "ry",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_SUB_TITLE_WHATS_DIFFERENCE_BROWSING_SEARCH_HISTORY},
-      {"getTheMostOutOfChromeYourDataBrowsingHistory",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_BROWSING_HISTORY},
-      {"getTheMostOutOfChromeYourDataWhenYouSearch",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_WHEN_YOU_SEARCH},
-
-      // Beyond cookies section.
-      {"getTheMostOutOfChromeBeyondCookiesOnceYouFindASite",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_ONCE_YOU_FIND_ASITE},
-      {"getTheMostOutOfChromeBeyondCookiesDependingOnSitePermissions",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_DEPENDING_ON_SITE_PERMISSIONS},
-      {"getTheMostOutOfChromeBeyondCookiesCookiesCanEnrich",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_COOKIES_CAN_ENRICH},
-      {"getTheMostOutOfChromeBeyondCookiesImagineYouHaveFavoriteCafe",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_IMAGINE_YOU_HAVE_FAVORITE_CAFE},
-      {"getTheMostOutOfChromeBeyondCookiesCookiesAllowSameLevelCustomization",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_COOKIES_ALLOW_SAME_LEVEL_CUSTOMIZATION},
-      {"getTheMostOutOfChromeBeyondCookiesSomesSitesMisuseCookies",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_SOMES_SITES_MISUSE_COOKIES},
-      {"getTheMostOutOfChromeBeyondCookiesWhatAreThirdPartyCookies",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_WHAT_ARE_THIRD_PARTY_COOKIES},
-  };
-
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  html_source->AddString(
-      "getTheMostOutOfChromeBetterWebYouCanCustomize",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_YOU_CAN_CUSTOMIZE,
-          base::ASCIIToUTF16(
-              google_util::AppendGoogleLocaleParam(
-                  extension_urls::AppendUtmSource(
-                      GURL(extension_urls::GetWebstoreExtensionsCategoryURL()),
-                      extension_urls::kGetMostChromeUtmSource),
-                  g_browser_process->GetApplicationLocale())
-                  .spec())));
-  html_source->AddString(
-      "getTheMostOutOfChromeYourDataVisitChromeHistory",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_VISIT_CHROME_HISTORY,
-          chrome::kChromeUIHistoryURL16,
-          chrome::kClearBrowsingDataHelpCenterURL));
-  html_source->AddString(
-      "getTheMostOutOfChromeYourDataVisitSearchHistory",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_VISIT_SEARCH_HISTORY,
-          chrome::kSearchHistoryUrlInGetTheMostOutOfChrome));
-  html_source->AddString(
-      "getTheMostOutOfChromeBeyondCookiesReviewPermissions",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_REVIEW_PERMISSIONS,
-          chrome::kChromeUIContentSettingsURL16));
-  html_source->AddString(
-      "getTheMostOutOfChromeBeyondCookiesPlanningToPhaseOut",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_PLANNING_TO_PHASE_OUT,
-          chrome::kUKCMAPrivacySandboxURL));
-  html_source->AddString(
-      "getTheMostOutOfChromeBeyondCookiesChromePartOfEffort",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_CHROME_PART_OF_EFFORT,
-          chrome::kPrivacySandboxURL));
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void AddIncompatibleApplicationsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -1233,12 +1132,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_AUTOFILL_MANAGE_PASSKEYS_MORE_ACTIONS_LABEL},
 #endif
 #if BUILDFLAG(IS_MAC)
-      {"biometricAuthenticaionForFillingLabel",
-       IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC},
       {"managePasskeysSubTitle", IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE_MAC},
 #elif BUILDFLAG(IS_WIN)
-      {"biometricAuthenticaionForFillingLabel",
-       IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_WIN},
       {"managePasskeysSubTitle", IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE_WIN},
 #endif
       {"plusAddressSettings", IDS_PLUS_ADDRESS_SETTINGS_LABEL},
@@ -1274,6 +1169,16 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE},
       {"autofillPredictionImprovementsUserAnnotationsHeader",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER},
+      {"autofillPredictionImprovementsDeleteEntryDialogTitle",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE},
+      {"autofillPredictionImprovementsDeleteEntryDialogText",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT},
+      {"autofillPredictionImprovementsDeleteAllEntriesButtonLabel",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_BUTTON_LABEL},
+      {"autofillPredictionImprovementsDeleteAllEntriesDialogTitle",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TITLE},
+      {"autofillPredictionImprovementsDeleteAllEntriesDialogText",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT},
   };
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
@@ -2574,8 +2479,8 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SITE_SETTINGS_TYPE_INSECURE_CONTENT},
       {"siteSettingsCategoryLocation", IDS_SITE_SETTINGS_TYPE_LOCATION},
       {"siteSettingsCategoryJavascript", IDS_SITE_SETTINGS_TYPE_JAVASCRIPT},
-      {"siteSettingsCategoryJavascriptJit",
-       IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_JIT},
+      {"siteSettingsCategoryJavascriptOptimizer",
+       IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_OPTIMIZER},
       {"siteSettingsCategoryMicrophone", IDS_SITE_SETTINGS_TYPE_MIC},
       {"siteSettingsMicrophoneLabel", IDS_SITE_SETTINGS_TYPE_MIC},
       {"siteSettingsCategoryNotifications",
@@ -2662,9 +2567,11 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsJavascript", IDS_SITE_SETTINGS_TYPE_JAVASCRIPT},
       {"siteSettingsJavascriptMidSentence",
        IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_MID_SENTENCE},
-      {"siteSettingsJavascriptJit", IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_JIT},
-      {"siteSettingsJavascriptJitMidsentence",
-       IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_JIT},  // Deliberately the same form.
+      {"siteSettingsJavascriptOptimizer",
+       IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_OPTIMIZER},
+      {"siteSettingsJavascriptOptimizerMidsentence",
+       IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_OPTIMIZER},  // Deliberately the same
+                                                      // form.
       {"siteSettingsSound", IDS_SITE_SETTINGS_TYPE_SOUND},
       {"siteSettingsSoundMidSentence",
        IDS_SITE_SETTINGS_TYPE_SOUND_MID_SENTENCE},
@@ -3079,20 +2986,20 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED_EXCEPTIONS},
       {"siteSettingsJavascriptBlockedExceptions",
        IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED_EXCEPTIONS},
-      {"siteSettingsJavascriptJitDescription",
-       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_DESCRIPTION},
-      {"siteSettingsJavascriptJitAllowed",
-       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_ALLOWED},
-      {"siteSettingsJavascriptJitAllowedSubLabel",
-       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_ALLOWED_SUB_LABEL},
-      {"siteSettingsJavascriptJitBlocked",
-       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_BLOCKED},
-      {"siteSettingsJavascriptJitBlockedSubLabel",
-       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_BLOCKED_SUB_LABEL},
-      {"siteSettingsJavascriptJitAllowedExceptions",
-       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_ALLOWED_EXCEPTIONS},
-      {"siteSettingsJavascriptJitBlockedExceptions",
-       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_BLOCKED_EXCEPTIONS},
+      {"siteSettingsJavascriptOptimizerDescription",
+       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_DESCRIPTION},
+      {"siteSettingsJavascriptOptimizerAllowed",
+       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED},
+      {"siteSettingsJavascriptOptimizerAllowedSubLabel",
+       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED_SUB_LABEL},
+      {"siteSettingsJavascriptOptimizerBlocked",
+       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED},
+      {"siteSettingsJavascriptOptimizerBlockedSubLabel",
+       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED_SUB_LABEL},
+      {"siteSettingsJavascriptOptimizerAllowedExceptions",
+       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED_EXCEPTIONS},
+      {"siteSettingsJavascriptOptimizerBlockedExceptions",
+       IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED_EXCEPTIONS},
       {"siteSettingsKeyboardLock", IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK},
       {"siteSettingsKeyboardLockAllowed",
        IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_ALLOWED},
@@ -3289,6 +3196,20 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsArBlock", IDS_SETTINGS_SITE_SETTINGS_AR_BLOCK},
       {"siteSettingsVr", IDS_SITE_SETTINGS_TYPE_VR},
       {"siteSettingsVrMidSentence", IDS_SITE_SETTINGS_TYPE_VR_MID_SENTENCE},
+      {"siteSettingsWebAppInstallation",
+       IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION},
+      {"siteSettingsWebAppInstallationMidSentence",
+       IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION_MID_SENTENCE},
+      {"siteSettingsWebAppInstallationDescription",
+       IDS_SETTINGS_SITE_SETTINGS_WEB_APP_INSTALLATION_DESCRIPTION},
+      {"siteSettingsWebAppInstallationAsk",
+       IDS_SETTINGS_SITE_SETTINGS_WEB_APP_INSTALLATION_ASK},
+      {"siteSettingsWebAppInstallationBlock",
+       IDS_SETTINGS_SITE_SETTINGS_WEB_APP_INSTALLATION_BLOCK},
+      {"siteSettingsWebAppInstallationAllowedExceptions",
+       IDS_SETTINGS_SITE_SETTINGS_WEB_APP_INSTALLATION_ALLOWED_EXCEPTIONS},
+      {"siteSettingsWebAppInstallationBlockedExceptions",
+       IDS_SETTINGS_SITE_SETTINGS_WEB_APP_INSTALLATION_BLOCKED_EXCEPTIONS},
       {"siteSettingsWebPrinting", IDS_SITE_SETTINGS_TYPE_WEB_PRINTING},
       {"siteSettingsWebPrintingMidSentence",
        IDS_SITE_SETTINGS_TYPE_WEB_PRINTING_MID_SENTENCE},
@@ -3362,7 +3283,15 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_OFFER_WRITING_HELP_NO_DISABLED_SITES},
       {"offerWritingHelpRemoveDisabledSiteAriaLabel",
        IDS_SETTINGS_OFFER_WRITING_HELP_REMOVE_SITE_ARIA_LABEL},
-  };
+      {"siteSettingsSmartCardReaders", IDS_SITE_SETTINGS_SMART_CARD_READERS},
+      {"siteSettingsSmartCardReadersDescription",
+       IDS_SITE_SETTINGS_SMART_CARD_READERS_DESCRIPTION},
+      {"siteSettingsSmartCardReadersDefaultDescription",
+       IDS_SITE_SETTINGS_SMART_CARDS_DEFAULT_DESCRIPTION},
+      {"siteSettingsSmartCardReadersAllowed",
+       IDS_SITE_SETTINGS_SMART_CARDS_ALLOWED},
+      {"siteSettingsSmartCardReadersBlocked",
+       IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Tracking protection learn more links.
@@ -3712,10 +3641,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddAboutStrings(html_source, profile);
   AddAutofillStrings(html_source, profile, web_contents);
   AddAppearanceStrings(html_source, profile);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  AddGetTheMostOutOfChromeStrings(html_source);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   AddIncompatibleApplicationsStrings(html_source);

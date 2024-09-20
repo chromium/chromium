@@ -111,6 +111,7 @@ void PictureLayerTilingSet::CopyTilingsAndPropertiesFromPendingTwin(
     }
     this_tiling->TakeTilesAndPropertiesFrom(pending_twin_tiling.get(),
                                             layer_invalidation);
+    all_tiles_done_ &= this_tiling->all_tiles_done();
   }
 
   if (tiling_sort_required) {
@@ -156,6 +157,8 @@ void PictureLayerTilingSet::UpdateTilingsToCurrentRasterSourceForActivation(
     // low resolution to not lose them.
     if (tiling->resolution() != LOW_RESOLUTION)
       tiling->set_resolution(NON_IDEAL_RESOLUTION);
+
+    all_tiles_done_ &= tiling->all_tiles_done();
   }
 
   VerifyTilings(pending_twin_set);
@@ -172,7 +175,8 @@ void PictureLayerTilingSet::UpdateTilingsToCurrentRasterSourceForCommit(
   raster_source_ = raster_source;
 
   // Invalidate tiles and update them to the new raster source.
-  for (const std::unique_ptr<PictureLayerTiling>& tiling : tilings_) {
+  all_tiles_done_ = true;
+  for (const auto& tiling : tilings_) {
     DCHECK(tree_ != PENDING_TREE || !tiling->has_tiles());
     // Force |UpdateTilePriorities| on commit for cases when tiling needs update
     state_since_last_tile_priority_update_.tiling_needs_update |=
@@ -194,14 +198,18 @@ void PictureLayerTilingSet::UpdateTilingsToCurrentRasterSourceForCommit(
     // recordings exist in the raster source that did not exist on the last
     // raster source.
     tiling->CreateMissingTilesInLiveTilesRect();
+
+    all_tiles_done_ &= tiling->all_tiles_done();
   }
   VerifyTilings(nullptr /* pending_twin_set */);
 }
 
 void PictureLayerTilingSet::Invalidate(const Region& layer_invalidation) {
+  all_tiles_done_ = true;
   for (const auto& tiling : tilings_) {
     tiling->Invalidate(layer_invalidation);
     tiling->CreateMissingTilesInLiveTilesRect();
+    all_tiles_done_ &= tiling->all_tiles_done();
   }
   state_since_last_tile_priority_update_.invalidated = true;
 }

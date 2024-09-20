@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOFILL_PLUS_ADDRESS_DELEGATE_H_
 
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,17 +23,13 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               GetSuggestions,
               (const url::Origin&,
                bool,
-               const AutofillClient::PasswordFormClassification&,
+               const PasswordFormClassification&,
                const FormFieldData&,
                AutofillSuggestionTriggerSource,
                GetSuggestionsCallback),
               (override));
   MOCK_METHOD(autofill::Suggestion,
               GetManagePlusAddressSuggestion,
-              (),
-              (const override));
-  MOCK_METHOD(bool,
-              ShouldMixWithSingleFieldFormFillSuggestions,
               (),
               (const override));
   MOCK_METHOD(void,
@@ -45,7 +42,7 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                FormGlobalId,
                FieldGlobalId,
                SuggestionContext,
-               AutofillClient::PasswordFormClassification::Type,
+               PasswordFormClassification::Type,
                SuggestionType),
               (override));
   MOCK_METHOD(void,
@@ -61,6 +58,18 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               (const url::Origin&,
                base::span<const Suggestion>,
                UpdateSuggestionsCallback),
+              (override));
+  MOCK_METHOD(void,
+              OnAcceptedInlineSuggestion,
+              (const url::Origin&,
+               base::span<const Suggestion>,
+               size_t,
+               UpdateSuggestionsCallback,
+               HideSuggestionsCallback,
+               PlusAddressCallback,
+               ShowAffiliationErrorDialogCallback,
+               ShowErrorDialogCallback,
+               base::OnceClosure),
               (override));
 };
 

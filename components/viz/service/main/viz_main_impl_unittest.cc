@@ -74,7 +74,10 @@ class MockPowerMonitorSource : public base::PowerMonitorSource {
 
   ~MockPowerMonitorSource() override { *leak_guard_ = false; }
 
-  bool IsOnBatteryPower() const override { return false; }
+  base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus()
+      const override {
+    return base::PowerStateObserver::BatteryPowerStatus::kUnknown;
+  }
 
  private:
   // An external flag to signal as to whether or not this object is still

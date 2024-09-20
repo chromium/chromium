@@ -94,13 +94,19 @@ namespace blink {
 FontCustomPlatformData::FontCustomPlatformData(PassKey,
                                                sk_sp<SkTypeface> typeface,
                                                size_t data_size)
-    : base_typeface_(std::move(typeface)), data_size_(data_size) {}
+    : base_typeface_(std::move(typeface)), data_size_(data_size) {
+  // The new instance of SkData was created while decoding. It stores data
+  // from decoded font resource. GC is not aware of this allocation, so we
+  // need to inform it.
+  if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+    external_memory_accounter_.Increase(isolate, data_size_);
+  }
+}
 
 FontCustomPlatformData::~FontCustomPlatformData() {
   if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
     // Safe cast since WebFontDecoder has max decompressed size of 128MB.
-    isolate->AdjustAmountOfExternalAllocatedMemory(
-        -static_cast<int64_t>(data_size_));
+    external_memory_accounter_.Decrease(isolate, data_size_);
   }
 }
 
@@ -249,8 +255,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     Vector<FontPalette::FontPaletteOverride> color_overrides;
     std::optional<uint16_t> palette_index = std::nullopt;
     PaletteInterpolation palette_interpolation(base_typeface_);
-    if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled() &&
-        palette->IsInterpolablePalette()) {
+    if (palette->IsInterpolablePalette()) {
       color_overrides =
           palette_interpolation.ComputeInterpolableFontPalette(palette);
       palette_index = 0;
@@ -321,12 +326,6 @@ FontCustomPlatformData* FontCustomPlatformData::Create(
 FontCustomPlatformData* FontCustomPlatformData::Create(
     sk_sp<SkTypeface> typeface,
     size_t data_size) {
-  // The new instance of SkData was created while decoding. It stores data
-  // from decoded font resource. GC is not aware of this allocation, so we
-  // need to inform it.
-  if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
-    isolate->AdjustAmountOfExternalAllocatedMemory(data_size);
-  }
   return MakeGarbageCollected<FontCustomPlatformData>(
       PassKey(), std::move(typeface), data_size);
 }

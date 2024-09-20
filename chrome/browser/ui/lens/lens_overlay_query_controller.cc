@@ -78,7 +78,7 @@ constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
 constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
 // TODO(b/362997636): Video is temporary for prototyping. Needs to change once
 // the server is ready.
-constexpr char kPdfVisualInputTypeQueryParameterValue[] = "video";
+constexpr char kContextualVisualInputTypeQueryParameterValue[] = "video";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("lens_overlay", R"(
@@ -224,13 +224,15 @@ void LensOverlayQueryController::StartQueryFlow(
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-    base::span<const uint8_t> pdf_bytes,
+    base::span<const uint8_t> underlying_content_bytes,
+    const std::string& underlying_content_type,
     float ui_scale_factor) {
   original_screenshot_ = screenshot;
   page_url_ = page_url;
   page_title_ = page_title;
   significant_region_boxes_ = std::move(significant_region_boxes);
-  pdf_bytes_ = pdf_bytes;
+  underlying_content_bytes_ = underlying_content_bytes;
+  underlying_content_type_ = underlying_content_type;
   ui_scale_factor_ = ui_scale_factor;
   gen204_id_ = base::RandUint64();
 
@@ -274,6 +276,11 @@ void LensOverlayQueryController::OnImageDataReady(
                                    image_data.image_metadata().height());
 
   AddSignificantRegions(image_data, std::move(significant_region_boxes_));
+
+  // The image sequence should be incremented and the analytics id updated
+  // for all full-image requests.
+  request_id_generator_->IncrementImageSequenceId();
+  request_id_generator_->CreateNewAnalyticsId();
   FetchFullImageRequest(request_id_generator_->GetNextRequestId(), image_data,
                         ref_counted_logs->client_logs());
 }
@@ -362,13 +369,13 @@ void LensOverlayQueryController::FetchFullImageRequest(
       request_context);
   request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
 
-  // The PDF bytes are optional, so if they were included in the StartQueryFlow,
-  // included them in the request.
-  if (!pdf_bytes_.empty()) {
+  // The content bytes are optional, so if they were included in the
+  // StartQueryFlow, included them in the request.
+  if (!underlying_content_bytes_.empty()) {
     lens::Payload payload;
-    payload.mutable_content_data()->assign(pdf_bytes_.begin(),
-                                           pdf_bytes_.end());
-    payload.set_content_type("application/pdf");
+    payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
+                                           underlying_content_bytes_.end());
+    payload.set_content_type(underlying_content_type_);
     request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
   }
 
@@ -570,6 +577,12 @@ void LensOverlayQueryController::SendFullPageTranslateQuery(
   PrepareAndFetchFullImageRequest();
 }
 
+void LensOverlayQueryController::SendEndTranslateModeQuery() {
+  translate_options_.reset();
+
+  PrepareAndFetchFullImageRequest();
+}
+
 void LensOverlayQueryController::SendRegionSearch(
     lens::mojom::CenterRotatedBoxPtr region,
     lens::LensOverlaySelectionType lens_selection_type,
@@ -601,13 +614,13 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   // Increment the request counter to cancel previously issued fetches.
   request_counter_++;
 
-  // If PDF bytes exist on a text only query, contextualize the query via a Lens
-  // request, instead of going straight through GWS.
-  if (!pdf_bytes_.empty()) {
+  // If content bytes exist on a text only query, contextualize the query via a
+  // Lens request, instead of going straight through GWS.
+  if (!underlying_content_bytes_.empty()) {
     // Include the vit to get contextualized results.
     additional_search_query_params.insert(
         {kVisualInputTypeQueryParameterKey,
-         kPdfVisualInputTypeQueryParameterValue});
+         kContextualVisualInputTypeQueryParameterValue});
 
     // TODO(b/362816047): Send the correct selection type once it is ready.
     SendInteraction(/*region=*/nullptr, query_text,

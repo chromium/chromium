@@ -205,7 +205,7 @@ void HostWindowProxy::Core::SetDisableInputs(bool disable_inputs) {
 
 void HostWindowProxy::Core::OnDesktopDisplayChanged(
     std::unique_ptr<protocol::VideoLayout> layout) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace remoting

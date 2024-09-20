@@ -53,6 +53,7 @@ import * as transferTests from './file_manager/transfer.js';
 import * as trashTests from './file_manager/trash.js';
 import * as traverseTests from './file_manager/traverse.js';
 import * as zipFilesTests from './file_manager/zip_files.js';
+import * as skyVaultTests from './file_manager/skyvault.js';
 // clang-format on
 
 export type TestFunctionName = string;
@@ -112,4 +113,5 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   ...trashTests,
   ...traverseTests,
   ...zipFilesTests,
+  ...skyVaultTests,
 };

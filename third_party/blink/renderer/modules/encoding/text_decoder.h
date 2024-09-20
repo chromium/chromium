@@ -67,8 +67,7 @@ class TextDecoder final : public ScriptWrappable {
   String decode(ExceptionState&);
 
  private:
-  String decode(const char* start,
-                uint32_t length,
+  String Decode(base::span<const uint8_t> input,
                 const TextDecodeOptions*,
                 ExceptionState&);
 

@@ -53,6 +53,7 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -195,7 +196,7 @@ AppWindow::CreateParams::CreateParams()
       alpha_enabled(false),
       is_ime_window(false),
       creator_process_id(0),
-      state(ui::SHOW_STATE_DEFAULT),
+      state(ui::mojom::WindowShowState::kDefault),
       hidden(false),
       resizable(true),
       focused(true),
@@ -312,7 +313,7 @@ void AppWindow::Init(const GURL& url,
 
   // Windows cannot be always-on-top in fullscreen mode for security reasons.
   cached_always_on_top_ = new_params.always_on_top;
-  if (new_params.state == ui::SHOW_STATE_FULLSCREEN &&
+  if (new_params.state == ui::mojom::WindowShowState::kFullscreen &&
       !ExtensionsBrowserClient::Get()->IsScreensaverInDemoMode(
           extension_id())) {
     new_params.always_on_top = false;
@@ -344,12 +345,13 @@ void AppWindow::Init(const GURL& url,
   } else {
     // These states may cause the window to show, so they are ignored if the
     // window is initially hidden.
-    if (new_params.state == ui::SHOW_STATE_FULLSCREEN)
+    if (new_params.state == ui::mojom::WindowShowState::kFullscreen) {
       Fullscreen();
-    else if (new_params.state == ui::SHOW_STATE_MAXIMIZED)
+    } else if (new_params.state == ui::mojom::WindowShowState::kMaximized) {
       Maximize();
-    else if (new_params.state == ui::SHOW_STATE_MINIMIZED)
+    } else if (new_params.state == ui::mojom::WindowShowState::kMinimized) {
       Minimize();
+    }
 
     Show(new_params.focused ? SHOW_ACTIVE : SHOW_INACTIVE);
   }
@@ -1023,7 +1025,8 @@ void AppWindow::SaveWindowPosition() {
   gfx::Rect bounds = native_app_window_->GetRestoredBounds();
   gfx::Rect screen_bounds =
       display::Screen::GetScreen()->GetDisplayMatching(bounds).work_area();
-  ui::WindowShowState window_state = native_app_window_->GetRestoredState();
+  ui::mojom::WindowShowState window_state =
+      native_app_window_->GetRestoredState();
   cache->SaveGeometry(extension_id(), window_key_, bounds, screen_bounds,
                       window_state);
 }
@@ -1078,7 +1081,8 @@ AppWindow::CreateParams AppWindow::LoadDefaults(CreateParams params) const {
 
     gfx::Rect cached_bounds;
     gfx::Rect cached_screen_bounds;
-    ui::WindowShowState cached_state = ui::SHOW_STATE_DEFAULT;
+    ui::mojom::WindowShowState cached_state =
+        ui::mojom::WindowShowState::kDefault;
     if (cache->GetGeometry(extension_id(), params.window_key, &cached_bounds,
                            &cached_screen_bounds, &cached_state)) {
       // App window has cached screen bounds, make sure it fits on screen in

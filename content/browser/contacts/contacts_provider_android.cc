@@ -111,7 +111,7 @@ void ContactsProviderAndroid::AddContact(
          addresses_java.ReadElements<jbyteArray>()) {
       payments::mojom::PaymentAddressPtr address;
       base::span<const uint8_t> address_bytes =
-          base::android::JavaByteBufferToSpan(env, j_address.obj());
+          base::android::JavaByteBufferToSpan(env, j_address);
       if (!payments::mojom::PaymentAddress::Deserialize(
               address_bytes.data(), address_bytes.size(), &address)) {
         continue;
@@ -130,7 +130,7 @@ void ContactsProviderAndroid::AddContact(
          icons_java.ReadElements<jbyteArray>()) {
       blink::mojom::ContactIconBlobPtr icon;
       base::span<const uint8_t> icon_bytes =
-          base::android::JavaByteBufferToSpan(env, j_icon.obj());
+          base::android::JavaByteBufferToSpan(env, j_icon);
       if (!blink::mojom::ContactIconBlob::Deserialize(
               icon_bytes.data(), icon_bytes.size(), &icon)) {
         continue;

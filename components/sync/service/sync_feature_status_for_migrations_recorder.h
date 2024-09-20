@@ -18,15 +18,17 @@ namespace syncer {
 
 class SyncService;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// These values are persisted to logs *and* prefs. Entries should not be
+// renumbered and numeric values should never be reused.
 // LINT.IfChange(SyncFeatureStatusForSyncToSigninMigration)
 enum class SyncFeatureStatusForSyncToSigninMigration {
   kUndefined = 0,
-  kDisabledOrPaused = 1,
+  // Deprecated: kDisabledOrPaused = 1,
   kInitializing = 2,
   kActive = 3,
-  kMaxValue = kActive
+  kPaused = 4,
+  kDisabled = 5,
+  kMaxValue = kDisabled
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncFeatureStatusForSyncToSigninMigration)
 

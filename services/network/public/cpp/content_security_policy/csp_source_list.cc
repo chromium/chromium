@@ -200,17 +200,9 @@ CSPCheckResult CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
                                   const GURL& url,
                                   const mojom::CSPSource& self_source,
                                   bool has_followed_redirect,
-                                  bool is_response_check,
                                   bool is_opaque_fenced_frame) {
   if (is_opaque_fenced_frame)
     DCHECK_EQ(directive_name, mojom::CSPDirectiveName::FencedFrameSrc);
-
-  // If the source list allows all redirects, the decision can't be made until
-  // the response is received.
-  if (directive_name == mojom::CSPDirectiveName::NavigateTo &&
-      source_list.allow_response_redirects && !is_response_check) {
-    return CSPCheckResult::Allowed();
-  }
 
   // Wildcards match network schemes ('http', 'https', 'ftp', 'ws', 'wss'), and
   // the scheme of the protected resource:

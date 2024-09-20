@@ -46,6 +46,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/grouped_secondary_background_color.colorset/Contents.json",
     "Assets.xcassets/inverted_text_primary_color.colorset/Contents.json",
     "Assets.xcassets/inverted_text_secondary_color.colorset/Contents.json",
+    "Assets.xcassets/lens_overlay_consent_dialog_description_color.colorset/Contents.json",
     "Assets.xcassets/light_only_grey_200_color.colorset/Contents.json",
     "Assets.xcassets/mdc_ink_color.colorset/Contents.json",
     "Assets.xcassets/mdc_secondary_ink_color.colorset/Contents.json",
@@ -73,6 +74,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/solid_button_text_color.colorset/Contents.json",
     "Assets.xcassets/solid_white_color.colorset/Contents.json",
     "Assets.xcassets/static_blue_400_color.colorset/Contents.json",
+    "Assets.xcassets/static_blue_color.colorset/Contents.json",
     "Assets.xcassets/static_green_50_color.colorset/Contents.json",
     "Assets.xcassets/static_green_700_color.colorset/Contents.json",
     "Assets.xcassets/static_grey_300_color.colorset/Contents.json",
@@ -100,6 +102,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/toolbar_button_color.colorset/Contents.json",
     "Assets.xcassets/toolbar_shadow_color.colorset/Contents.json",
     "Assets.xcassets/updated_tertiary_background_color.colorset/Contents.json",
+    "Assets.xcassets/white_black_alpha_50_color.colorset/Contents.json",
     "Assets.xcassets/yellow_500_color.colorset/Contents.json",
     "Assets.xcassets/yellow_600_color.colorset/Contents.json",
   ]

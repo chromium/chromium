@@ -3600,8 +3600,8 @@ if (enable_java_templates) {
         _output_name = _main_target_name
       }
 
-      _build_host_jar =
-          _is_java_binary || _is_annotation_processor || _type == "java_library"
+      _build_host_jar = _is_java_binary || _is_annotation_processor ||
+                        _type == "java_library" || _type == "dist_jar"
       _build_device_jar = _type != "system_java_library" && _supports_android
 
       _jacoco_instrument =
@@ -4599,5 +4599,37 @@ template("create_android_app_bundle_module") {
              "--depfile",
              rebase_path(depfile, root_build_dir),
            ]
+  }
+}
+
+template("rename_jar_classes") {
+  action_with_pydeps(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                           ])
+    script = "//build/android/gyp/rename_java_classes.py"
+    inputs = [
+      _r8_path,
+      invoker.input,
+    ]
+    outputs = [ invoker.output ]
+    args = [
+      "--r8-path",
+      rebase_path(_r8_path, root_build_dir),
+      "--input-jar",
+      rebase_path(invoker.input, root_build_dir),
+      "--output-jar",
+      rebase_path(invoker.output, root_build_dir),
+    ]
+
+    foreach(_rule, invoker.renaming_rules) {
+      args += [
+        "--map",
+        _rule,
+      ]
+    }
   }
 }

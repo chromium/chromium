@@ -372,7 +372,7 @@ base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
     front_discard(const scoped_refptr<media::DecoderBuffer>& input) {
   static_assert(
       std::is_same<decltype(input->discard_padding()),
-                   const std::pair<base::TimeDelta, base::TimeDelta>&>::value,
+                   std::pair<base::TimeDelta, base::TimeDelta>>::value,
       "Unexpected type for input->discard_padding(). If you need to change "
       "this assertion, please contact chromeos-gfx-video@google.com.");
   static_assert(
@@ -392,7 +392,7 @@ base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
     back_discard(const scoped_refptr<media::DecoderBuffer>& input) {
   static_assert(
       std::is_same<decltype(input->discard_padding()),
-                   const std::pair<base::TimeDelta, base::TimeDelta>&>::value,
+                   std::pair<base::TimeDelta, base::TimeDelta>>::value,
       "Unexpected type for input->discard_padding(). If you need to change "
       "this assertion, please contact chromeos-gfx-video@google.com.");
   static_assert(
@@ -413,7 +413,7 @@ StructTraits<media::stable::mojom::DecoderBufferDataView,
     side_data(const scoped_refptr<media::DecoderBuffer>& input) {
   static_assert(
       std::is_same<decltype(input->side_data()),
-                   const std::optional<media::DecoderBufferSideData>&>::value,
+                   std::optional<media::DecoderBufferSideData>>::value,
       "Unexpected type for input->side_data(). If you need to change this "
       "assertion, please contact chromeos-gfx-video@google.com.");
   if (input->end_of_stream()) {
@@ -462,6 +462,14 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
   if (decrypt_config)
     decoder_buffer->set_decrypt_config(std::move(decrypt_config));
 
+  std::optional<media::DecoderBufferSideData> side_data;
+  if (!input.ReadSideData(&side_data)) {
+    return false;
+  }
+  decoder_buffer->set_side_data(side_data);
+
+  // Note: DiscardPadding must be set after side data since the non-stable
+  // interface has moved the discard padding into side data.
   base::TimeDelta front_discard;
   if (!input.ReadFrontDiscard(&front_discard))
     return false;
@@ -476,13 +484,9 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
       "chromeos-gfx-video@google.com.");
   media::DecoderBuffer::DiscardPadding discard_padding(front_discard,
                                                        back_discard);
-  decoder_buffer->set_discard_padding(discard_padding);
-
-  std::optional<media::DecoderBufferSideData> side_data;
-  if (!input.ReadSideData(&side_data)) {
-    return false;
+  if (discard_padding != media::DecoderBuffer::DiscardPadding()) {
+    decoder_buffer->set_discard_padding(discard_padding);
   }
-  decoder_buffer->set_side_data(side_data);
 
   // TODO(b/269383891): Remove this in M120.
   // If the input is an older version than us, then it may have |raw_side_data|

@@ -22,28 +22,28 @@ reviewer.
 <variants name="ActivityTypeStoragePercentage">
   <variant name="AGSACCT"
       summary="Percentage of AGSACCT in the list stored in the
-               privacy_sandbox.activity_type.record pref"/>
+               privacy_sandbox.activity_type.record2 pref"/>
   <variant name="BrApp"
       summary="Percentage of BrApp in the list stored in the
-               privacy_sandbox.activity_type.record pref"/>
+               privacy_sandbox.activity_type.record2 pref"/>
   <variant name="NonAGSACCT"
       summary="Percentage of NonAGSACCT in the list stored in the
-               privacy_sandbox.activity_type.record pref"/>
+               privacy_sandbox.activity_type.record2 pref"/>
   <variant name="Other"
       summary="Percentage of Other in the list stored in the
-               privacy_sandbox.activity_type.record pref"/>
+               privacy_sandbox.activity_type.record2 pref"/>
   <variant name="PreFirstTab"
       summary="Percentage of PreFirstTab in the list stored in the
-               privacy_sandbox.activity_type.record pref"/>
+               privacy_sandbox.activity_type.record2 pref"/>
   <variant name="TWA"
       summary="Percentage of TWA in the list stored in the
-               privacy_sandbox.activity_type.record pref"/>
+               privacy_sandbox.activity_type.record2 pref"/>
   <variant name="WebApk"
       summary="Percentage of WebApk in the list stored in the
-               privacy_sandbox.activity_type.record pref"/>
+               privacy_sandbox.activity_type.record2 pref"/>
   <variant name="WebApp"
       summary="Percentage of WebApp in the list stored in the
-               privacy_sandbox.activity_type.record pref"/>
+               privacy_sandbox.activity_type.record2 pref"/>
 </variants>
 
 <variants name="DIPSCookieMode">
@@ -129,7 +129,7 @@ reviewer.
 </variants>
 
 <histogram name="Privacy.3PCD.AdsHeuristicAddedToOverrides"
-    enum="AdsHeuristicCookieOverride" expires_after="2025-01-05">
+    enum="AdsHeuristicCookieOverride" expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
@@ -157,7 +157,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.3pcd.ProfileEligibilityMismatch"
-    enum="ProfileEligibilityMismatch" expires_after="2025-01-05">
+    enum="ProfileEligibilityMismatch" expires_after="2025-03-09">
   <owner>trishalfonso@google.com</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
@@ -175,7 +175,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.3PCD.SecCookieDeprecationHeaderStatus"
-    enum="SecCookieDeprecationHeaderStatus" expires_after="2025-01-05">
+    enum="SecCookieDeprecationHeaderStatus" expires_after="2025-03-09">
   <owner>linnan@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
@@ -326,6 +326,30 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Privacy.DeleteBrowsingData.Dialog"
+    enum="DeleteBrowsingDataDialogAction" expires_after="2025-03-09">
+  <owner>fsenra@google.com</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Cross-platform metric to show interactions with DBD Dialog. Recorded when
+    the user interacts with the dialog either by opening it, changing its prefs
+    from time range to different browsing data selection, or commiting deletion.
+  </summary>
+</histogram>
+
+<histogram
+    name="Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationStartDelay"
+    units="microseconds" expires_after="2025-03-09">
+  <owner>fsenra@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <component>1456716</component>
+  <summary>
+    The microseconds that passed between the tabs closure animation being
+    triggered by Delete Browsing Data and the animation starting, iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
     enum="DIPSRedirectCategory" expires_after="2025-01-12">
   <owner>rtarpine@chromium.org</owner>
@@ -344,7 +368,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.ClearedSitesCount{DIPSCookieMode}" units="sites"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -369,7 +393,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.Database.Operation.{DIPSDatabaseOperation}Time"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>etienneb@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
@@ -397,7 +421,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseErrors" enum="SqliteLoggedResultCode"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -421,7 +445,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseInit" units="attempts"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -460,7 +484,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.Deletion{DIPSCookieMode}"
-    enum="DIPSDeletionAction" expires_after="2025-01-05">
+    enum="DIPSDeletionAction" expires_after="2025-03-09">
   <owner>njeunje@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -518,7 +542,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.QuickDelete" enum="QuickDeleteAction"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>fsenra@google.com</owner>
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -572,20 +596,6 @@ reviewer.
   </summary>
 </histogram>
 
-<!--TODO(crbug.com/348369971): Clean up old ActivityTypeStorage histograms.-->
-
-<histogram
-    name="PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment"
-    enum="PrivacySandboxStorageUserSegmentByRecentActivity"
-    expires_after="2024-12-24">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the user segment based on the 10 most recent records. Recorded at
-    most once on Clank startup.
-  </summary>
-</histogram>
-
 <histogram
     name="PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2"
     enum="PrivacySandboxStorageUserSegmentByRecentActivity"
@@ -594,18 +604,6 @@ reviewer.
   <owner>koilos@google.com</owner>
   <summary>
     Records the user segment based on the 10 most recent records. Recorded at
-    most once on Clank startup.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment"
-    enum="PrivacySandboxStorageUserSegmentByRecentActivity"
-    expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the user segment based on the 20 most recent records. Recorded at
     most once on Clank startup.
   </summary>
 </histogram>
@@ -629,66 +627,6 @@ reviewer.
   <summary>
     Records the days since the oldest record in the Activity Type Storage list.
     Recorded once on Clank startup.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.AGSACCT"
-    units="%" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the percentage of AGSACCT activity type launches. Recorded once on
-    Clank startup.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.BrApp" units="%"
-    expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the percentage of BrApp activity type launches. Recorded once on
-    Clank startup.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.NonAGSACCT"
-    units="%" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the percentage of NonAGSACCT activity type launches. Recorded once
-    on Clank startup.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.TWA" units="%"
-    expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the percentage of TWA activity type launches. Recorded once on Clank
-    startup.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.WebApk"
-    units="%" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the percentage of WebApk activity type launches. Recorded once on
-    Clank startup.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.WebApp"
-    units="%" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the percentage of WebApp activity type launches. Recorded once on
-    Clank startup.
   </summary>
 </histogram>
 
@@ -943,7 +881,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.InitStatus"
     enum="PrivacySandboxAggregationServiceStorageSqlInitStatus"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1059,7 +997,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.Attestations.EstimateMemoryUsage.AttestationsMap"
-    units="KB" expires_after="2025-01-05">
+    units="KB" expires_after="2025-03-09">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1117,7 +1055,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.InitializationDuration.Parsing"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1142,7 +1080,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.IsSiteAttested.FileSource"
-    enum="PrivacySandboxAttestationsFileSource" expires_after="2025-01-05">
+    enum="PrivacySandboxAttestationsFileSource" expires_after="2025-03-09">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1154,7 +1092,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.IsSiteAttested.FirstCheckTime"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1186,7 +1124,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.Parsing.Status"
-    enum="PrivacySandboxAttestationParsingStatus" expires_after="2025-01-05">
+    enum="PrivacySandboxAttestationParsingStatus" expires_after="2025-03-09">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1325,6 +1263,16 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.PrivacyPolicy.LoadingTime" units="ms"
+    expires_after="2025-08-01">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the load time of the privacy policy page once the privacy policy
+    link is clicked on the Topics Consent Notice.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2"
     enum="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2"
@@ -1375,7 +1323,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult3"
     enum="PrivacySandboxPrivateAggregationBudgeterRequestResult3"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1509,7 +1457,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Host.PipeResult"
     enum="PrivacySandboxPrivateAggregationHostPipeResult"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1706,6 +1654,8 @@ reviewer.
     <variant name="IsFledgeLeaveAllowed" summary="IsFledgeLeaveAllowed"/>
     <variant name="IsFledgeSellAllowed" summary="IsFledgeSellAllowed"/>
     <variant name="IsFledgeUpdateAllowed" summary="IsFledgeUpdateAllowed"/>
+    <variant name="IsLocalUnpartitionedDataAccessAllowed"
+        summary="IsLocalUnpartitionedDataAccessAllowed"/>
     <variant name="IsPrivacySandboxReportingDestinationAttested"
         summary="IsPrivacySandboxReportingDestinationAttested"/>
     <variant name="IsPrivateAggregationAllowed"

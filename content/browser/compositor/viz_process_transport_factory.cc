@@ -202,15 +202,6 @@ void VizProcessTransportFactory::CreateLayerTreeFrameSink(
       compositor->widget());
 #endif
 
-  const bool gpu_channel_always_allowed =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-  bool software_mode =
-      is_gpu_compositing_disabled_ || compositor->force_software_compositor();
-  if (software_mode && !gpu_channel_always_allowed) {
-    OnEstablishedGpuChannel(compositor, nullptr);
-    return;
-  }
-
   gpu_channel_establish_factory_->EstablishGpuChannel(
       base::BindOnce(&VizProcessTransportFactory::OnEstablishedGpuChannel,
                      weak_ptr_factory_.GetWeakPtr(), compositor));

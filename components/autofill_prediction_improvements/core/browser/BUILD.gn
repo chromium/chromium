@@ -4,8 +4,11 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(is_win || is_mac || is_linux || is_chromeos)
+
 static_library("browser") {
   sources = [
+    "autofill_prediction_improvements_annotation_prompt_strike_database.h",
     "autofill_prediction_improvements_client.h",
     "autofill_prediction_improvements_features.cc",
     "autofill_prediction_improvements_features.h",
@@ -14,6 +17,10 @@ static_library("browser") {
     "autofill_prediction_improvements_filling_engine_impl.h",
     "autofill_prediction_improvements_manager.cc",
     "autofill_prediction_improvements_manager.h",
+    "autofill_prediction_improvements_utils.cc",
+    "autofill_prediction_improvements_utils.h",
+    "autofill_prediction_improvements_value_filter.cc",
+    "autofill_prediction_improvements_value_filter.h",
   ]
 
   deps = [
@@ -23,7 +30,9 @@ static_library("browser") {
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/strings",
     "//components/user_annotations",
+    "//components/user_annotations:user_annotations",
   ]
 }
 
@@ -31,7 +40,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_prediction_improvements_filling_engine_impl_unittest.cc",
+    "autofill_prediction_improvements_manager_test_api.h",
     "autofill_prediction_improvements_manager_unittest.cc",
+    "autofill_prediction_improvements_utils_unittest.cc",
+    "autofill_prediction_improvements_value_filter_unittest.cc",
   ]
   deps = [
     ":browser",
@@ -43,6 +55,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/user_annotations:test_support",
+    "//components/user_annotations:user_annotations",
     "//testing/gmock",
     "//testing/gtest",
   ]

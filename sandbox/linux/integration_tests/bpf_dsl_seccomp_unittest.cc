@@ -194,10 +194,8 @@ bool IsSyscallForTestHarness(int sysno) {
   if (sysno == kMMapNr || sysno == __NR_munmap ||
 #if !defined(__aarch64__)
       sysno == __NR_pipe ||
-#else
-      sysno == __NR_pipe2 ||
 #endif
-      sysno == __NR_sigaltstack) {
+      sysno == __NR_pipe2 || sysno == __NR_sigaltstack) {
     return true;
   }
 #endif

@@ -103,28 +103,28 @@ void StoreImpl(const base::FilePath& cache_dir,
   MaybeCreateCache(cache_dir);
   if (contents.size() > kMaxPpdSizeBytes) {
     LOG(ERROR) << "Ignoring attempt to cache large object";
-  } else {
-    auto path = FilePathForKey(cache_dir, key);
-    base::File file(path,
-                    base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    std::string checksum = crypto::SHA256HashString(contents);
-    if (!file.IsValid() ||
-        file.WriteAtCurrentPos(contents.data(), contents.size()) !=
-            static_cast<int>(contents.size()) ||
-        file.WriteAtCurrentPos(checksum.data(), checksum.size()) !=
-            static_cast<int>(checksum.size())) {
-      LOG(ERROR) << "Failed to create ppd cache file";
-      file.Close();
-      if (!base::DeleteFile(path)) {
-        LOG(ERROR) << "Failed to cleanup failed creation.";
-      }
-    } else {
-      // Successfully wrote the file, adjust the age if requested.
-      if (!age.is_zero()) {
-        base::Time mod_time = base::Time::Now() - age;
-        file.SetTimes(mod_time, mod_time);
-      }
+    return;
+  }
+
+  auto path = FilePathForKey(cache_dir, key);
+  base::File file(path,
+                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  std::string checksum = crypto::SHA256HashString(contents);
+  if (!file.IsValid() ||
+      !file.WriteAtCurrentPosAndCheck(base::as_byte_span(contents)) ||
+      !file.WriteAtCurrentPosAndCheck(base::as_byte_span(checksum))) {
+    LOG(ERROR) << "Failed to create ppd cache file";
+    file.Close();
+    if (!base::DeleteFile(path)) {
+      LOG(ERROR) << "Failed to cleanup failed creation.";
     }
+    return;
+  }
+
+  // Successfully wrote the file, adjust the age if requested.
+  if (!age.is_zero()) {
+    base::Time mod_time = base::Time::Now() - age;
+    file.SetTimes(mod_time, mod_time);
   }
 }
 

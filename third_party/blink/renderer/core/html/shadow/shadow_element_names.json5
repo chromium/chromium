@@ -58,10 +58,6 @@
       Symbol: "kIdPasswordRevealButton",
     },
     {
-      name: "password-strong-label",
-      Symbol: "kIdPasswordStrongLabel",
-    },
-    {
       name: "thumb",
       Symbol: "kIdSliderThumb",
     },
@@ -92,14 +88,6 @@
     {
       name: "select-popover-options",
       Symbol: "kSelectPopoverOptions",
-    },
-    {
-      name: "select-fallback-button",
-      Symbol: "kSelectFallbackButton",
-    },
-    {
-      name: "select-fallback-button-text",
-      Symbol: "kSelectFallbackButtonText",
     },
     {
       name: "picker(select)",

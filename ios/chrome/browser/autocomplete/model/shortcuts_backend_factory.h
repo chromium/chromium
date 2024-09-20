@@ -14,14 +14,13 @@ class ShortcutsBackend;
 
 namespace ios {
 // Singleton that owns all ShortcutsBackends and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class ShortcutsBackendFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<ShortcutsBackend> GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static scoped_refptr<ShortcutsBackend> GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static scoped_refptr<ShortcutsBackend> GetForProfile(ProfileIOS* profile);
+  static scoped_refptr<ShortcutsBackend> GetForProfileIfExists(
+      ProfileIOS* profile);
   static ShortcutsBackendFactory* GetInstance();
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactory();

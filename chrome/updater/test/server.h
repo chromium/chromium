@@ -77,6 +77,8 @@ class ScopedServer {
                   const std::string& response_body,
                   net::HttpStatusCode response_status_code = net::HTTP_OK);
 
+  GURL base_url() const { return test_server_->base_url(); }
+
   std::string update_path() const { return "/update"; }
   GURL update_url() const { return test_server_->GetURL(update_path()); }
 

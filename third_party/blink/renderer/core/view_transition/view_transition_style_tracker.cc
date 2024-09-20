@@ -507,7 +507,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     for (const auto& [id, value] :
          transition_state_element.captured_css_properties) {
       css_property_builder.Insert(FromTransitionPropertyId(id),
-                                  String::FromUTF8(value.c_str()));
+                                  String::FromUTF8(value));
     }
     element_data->captured_css_properties =
         std::move(css_property_builder).Finish();
@@ -2010,8 +2010,9 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     }
   }
 
-  const bool visible = box.StyleRef().Visibility() == EVisibility::kVisible ||
-                       !box.VisualRectRespectsVisibility();
+  const bool visible =
+      box.StyleRef().UsedVisibility() == EVisibility::kVisible ||
+      !box.VisualRectRespectsVisibility();
   if (auto clip_path_bounds = ClipPathClipper::LocalClipPathBoundingBox(box)) {
     // TODO(crbug.com/1326514): This is just the bounds of the clip-path, as
     // opposed to the intersection between the clip-path and the border box
@@ -2050,7 +2051,7 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
         }
 
         const bool child_visible =
-            child_text->StyleRef().Visibility() == EVisibility::kVisible ||
+            child_text->StyleRef().UsedVisibility() == EVisibility::kVisible ||
             !child_text->VisualRectRespectsVisibility();
         if (!child_visible) {
           continue;

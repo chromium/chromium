@@ -62,7 +62,6 @@
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/email_input_type.h"
@@ -108,8 +107,6 @@ using mojom::blink::FormControlType;
 namespace {
 
 const unsigned kMaxEmailFieldLength = 254;
-
-const unsigned kMinStrongPasswordLabelWidth = 220;
 
 static bool is_default_font_prewarmed_ = false;
 
@@ -856,9 +853,7 @@ void HTMLInputElement::ParseAttribute(
         autocomplete_ = kOn;
     }
   } else if (name == html_names::kTypeAttr) {
-    if ((!RuntimeEnabledFeatures::
-             SkipUpdateTypeForHTMLInputElementCreatedByParserEnabled() ||
-         params.reason != AttributeModificationReason::kByParser) &&
+    if (params.reason != AttributeModificationReason::kByParser &&
         params.old_value != value) {
       UpdateType(value);
     }
@@ -1060,7 +1055,7 @@ void HTMLInputElement::ResetImpl() {
 }
 
 bool HTMLInputElement::IsTextField() const {
-  return input_type_->IsTextField();
+  return input_type_->IsTextFieldInputType();
 }
 
 bool HTMLInputElement::IsTelephone() const {
@@ -1244,17 +1239,6 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
       placeholder->classList().Add(reveal);
     } else {
       placeholder->classList().Remove(reveal);
-    }
-
-    // Prevent fade out and displaying strong password label in narrow forms.
-    if (GetBoundingClientRect()->width() < kMinStrongPasswordLabelWidth) {
-      should_show_strong_password_label_ = false;
-    }
-    const AtomicString fade_out("fade-out-password");
-    if (should_show_strong_password_label_) {
-      placeholder->classList().Add(fade_out);
-    } else {
-      placeholder->classList().Remove(fade_out);
     }
   }
 

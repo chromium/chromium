@@ -5,6 +5,7 @@
 #include "media/cast/sender/video_sender.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -22,8 +23,8 @@
 #include "media/cast/encoding/video_encoder.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
 #include "media/cast/sender/performance_metrics_overlay.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
-#include "third_party/openscreen/src/cast/streaming/sender.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender.h"
 
 namespace media::cast {
 

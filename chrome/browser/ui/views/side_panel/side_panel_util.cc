@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
@@ -32,13 +31,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
-#include "extensions/common/extension_features.h"
-
-DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelContentState)
-DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelContentState>,
-                             kSidePanelContentStateKey,
-                             std::underlying_type_t<SidePanelContentState>(
-                                 SidePanelContentState::kReadyToShow))
 
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
@@ -67,11 +59,8 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
     SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
   }
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
     extensions::ExtensionSidePanelManager::CreateForBrowser(browser,
                                                             window_registry);
-  }
 
   return;
 }

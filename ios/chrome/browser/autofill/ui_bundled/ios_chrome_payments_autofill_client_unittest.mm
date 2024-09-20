@@ -77,6 +77,9 @@
 - (void)showEditAddressBottomSheet {
 }
 
+- (void)dismissEditAddressBottomSheet {
+}
+
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext {
   _errorContext = std::move(errorContext);
@@ -98,11 +101,11 @@ using ::testing::_;
 
 class TestChromeAutofillClient : public ChromeAutofillClientIOS {
  public:
-  explicit TestChromeAutofillClient(ChromeBrowserState* browser_state,
+  explicit TestChromeAutofillClient(ProfileIOS* profile,
                                     web::WebState* web_state,
                                     infobars::InfoBarManager* infobar_manager,
                                     AutofillAgent* autofill_agent)
-      : ChromeAutofillClientIOS(browser_state,
+      : ChromeAutofillClientIOS(profile,
                                 web_state,
                                 infobar_manager,
                                 autofill_agent) {
@@ -136,8 +139,8 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    web::WebState::CreateParams params(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
@@ -145,11 +148,10 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
     infobars::InfoBarManager* infobar_manager =
         InfoBarManagerImpl::FromWebState(web_state_.get());
     autofill_agent_ =
-        [[AutofillAgent alloc] initWithPrefService:browser_state_->GetPrefs()
+        [[AutofillAgent alloc] initWithPrefService:profile_->GetPrefs()
                                           webState:web_state_.get()];
     autofill_client_ = std::make_unique<TestChromeAutofillClient>(
-        browser_state_.get(), web_state_.get(), infobar_manager,
-        autofill_agent_);
+        profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
 
     // Inject the autofill commands fake into the AutofillTabHelper and
     // ChromeAutofillClient.
@@ -184,7 +186,7 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   AutofillAgent* autofill_agent_;
   std::unique_ptr<TestChromeAutofillClient> autofill_client_;

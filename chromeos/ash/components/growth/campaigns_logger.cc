@@ -74,6 +74,10 @@ CampaignsLogger::~CampaignsLogger() {
   g_instance = nullptr;
 }
 
+std::vector<std::string> CampaignsLogger::GetLogs() {
+  return std::vector<std::string>(logs_.begin(), logs_.end());
+}
+
 bool CampaignsLogger::HasLogForTesting() {
   return !logs_.empty();
 }
@@ -87,6 +91,10 @@ void CampaignsLogger::Log(LogLevel level,
 
   std::string log = base::JoinString({ToString(location), log_string}, ": ");
   SendToLog(level, log);
+
+  if (!ash::features::IsGrowthInternalsEnabled()) {
+    return;
+  }
 
   log = base::JoinString({ToString(base::Time::Now()), ToString(level), log},
                          ": ");

@@ -4,17 +4,21 @@
 
 package org.chromium.components.signin;
 
+
 /**
  * Displayability of email addresses in Chrome UI based on the email domain.
  *
- * The correct version of this class will be determined at compile time via build rules.
+ * <p>The correct version of this class will be determined at compile time via build rules.
  */
 public class AccountEmailDomainDisplayability {
+    public interface Impl {
+        boolean checkIfDisplayableEmailAddress(String email);
+    }
+
     /**
      * Check if the user's email address can be displayed based on the email domain.
      *
-     * This method is used in place of
-     * {@link
+     * <p>This method is used in place of {@link
      * org.chromium.components.signin.base.AccountCapabilities#canHaveEmailAddressDisplayed()} when
      * the capability or {@link org.chromium.components.signin.base.AccountInfo} is not available.
      */

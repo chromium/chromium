@@ -1,6 +1,7 @@
 include_rules = [
   "+content/public/browser",
   "+components/crash/core/common",
+  "+components/javascript_dialogs",
   "+components/js_injection",
 ]
 specific_include_rules = {

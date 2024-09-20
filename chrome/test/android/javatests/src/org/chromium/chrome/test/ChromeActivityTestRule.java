@@ -172,29 +172,35 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
     /** Wait until the activity is completely loaded, and a tab is shown. */
     public void waitForActivityCompletelyLoaded() {
+        waitForActivityCompletelyLoaded(getActivity());
+    }
+
+    public static void waitForActivityCompletelyLoaded(ChromeActivity activity) {
         CriteriaHelper.pollUiThread(
-                () -> getActivity().getActivityTab() != null, "Tab never selected/initialized.");
-        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> getActivity().getActivityTab());
+                () -> activity.getActivityTab() != null, "Tab never selected/initialized.");
+        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
 
         ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
 
         if (tab != null
                 && UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlStringOnUiThread(tab))
-                && !getActivity().isInOverviewMode()) {
+                && !activity.isInOverviewMode()) {
             NewTabPageTestUtils.waitForNtpLoaded(tab);
         }
 
-        assertTrue(waitForDeferredStartup());
+        assertTrue(waitForDeferredStartup(activity));
 
         assertNotNull(tab);
         assertNotNull(tab.getView());
     }
 
     public boolean waitForDeferredStartup() {
+        return waitForDeferredStartup(getActivity());
+    }
+
+    public static boolean waitForDeferredStartup(ChromeActivity activity) {
         CriteriaHelper.pollUiThread(
-                () -> {
-                    getActivity().deferredStartupPostedForTesting();
-                },
+                activity::deferredStartupPostedForTesting,
                 20000L,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         return DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(

@@ -40,6 +40,7 @@
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
+#include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_generation_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -1133,6 +1134,17 @@ void PasswordFormManager::FillNow() {
   FormParsingResult form_parsing_result =
       ParseFormAndMakeLogging(*observed_form(), FormDataParser::Mode::kFilling);
   parsed_observed_form_ = std::move(form_parsing_result.password_form);
+
+  // Server predicts new password field on a text field. Enable manual
+  // generation on such fields.
+  if (!form_parsing_result.manual_generation_enabled_field.is_null()) {
+    PasswordGenerationFrameHelper* password_generation_helper =
+        driver_->GetPasswordGenerationHelper();
+    if (password_generation_helper) {
+      password_generation_helper->AddManualGenerationEnabledField(
+          form_parsing_result.manual_generation_enabled_field);
+    }
+  }
 
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_observed_form_,
                          FormDataParser::Mode::kFilling);

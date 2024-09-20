@@ -50,18 +50,6 @@ uint32_t ComputeTextureTargetForSharedImage(
     scoped_refptr<SharedImageInterface> sii) {
   CHECK(sii);
 
-#if !BUILDFLAG(IS_OZONE)
-  // External sampling with GMBs is supported in Chromium only for Ozone.
-  // Android uses a bespoke path for external sampling where the AHB doesn't get
-  // put in a GMB and multiplanar formats aren't used, and other platforms
-  // don't use external sampling at all. It is not possible to set
-  // PrefersExternalSampler() on a MP SIF outside of Ozone, but legacy MP
-  // formats could theoretically be used on any platform. Such usage would be
-  // incorrect outside of Ozone as legacy MP formats work only with external
-  // sampling. This CHECK ensures that it does not occur.
-  CHECK(!metadata.format.IsLegacyMultiplanar());
-#endif
-
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE)
   return GL_TEXTURE_2D;
 #elif BUILDFLAG(IS_MAC)
@@ -80,30 +68,17 @@ uint32_t ComputeTextureTargetForSharedImage(
              : GL_TEXTURE_2D;
 #else  // Ozone
   // Check for external sampling being used.
-  bool uses_external_sampler = metadata.format.PrefersExternalSampler() ||
-                               metadata.format.IsLegacyMultiplanar();
-
-  if (!uses_external_sampler) {
+  if (!metadata.format.PrefersExternalSampler()) {
     return GL_TEXTURE_2D;
   }
 
-  // Software video decode on ChromeOS for single P010 GpuMemoryBuffers with
-  // legacy multiplanar SI codepath, always fallback to VideoResourceUpdater
-  // instead of GMBVideoFramePool; this is due to mismatch in BufferUsage flags
-  // which is not supported and causes this CHECK to surface. Accordingly, just
-  // perform the CHECK for non-legacy multiplanar SI path that avoids preferring
-  // external sampler when shared memory GMB is used and thus does not fallback.
-  // TODO(crbug.com/40239769): Remove condition once multiplanar SI launches
-  // everywhere.
-  if (!metadata.format.IsLegacyMultiplanar()) {
-    // The client should configure an SI to use external sampling only if they
-    // have provided a native buffer to back that SI.
-    // TODO(crbug.com/332069927): Figure out why this is going off on LaCrOS and
-    // turn this into a CHECK.
-    DUMP_WILL_BE_CHECK(
-        GMBIsNative(client_gmb_type) ||
-        allow_external_sampling_without_native_buffers_for_testing);
-  }
+  // The client should configure an SI to use external sampling only if they
+  // have provided a native buffer to back that SI.
+  // TODO(crbug.com/332069927): Figure out why this is going off on LaCrOS and
+  // turn this into a CHECK.
+  DUMP_WILL_BE_CHECK(
+      GMBIsNative(client_gmb_type) ||
+      allow_external_sampling_without_native_buffers_for_testing);
 
   // See the note at the top of this function wrt Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)

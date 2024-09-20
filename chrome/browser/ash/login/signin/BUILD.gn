@@ -74,8 +74,6 @@ static_library("signin") {
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/ash/multi_user",
-    "//chrome/browser/ui/webui/ash/login",
-    "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/components/account_manager",
@@ -97,7 +95,6 @@ static_library("signin") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ui/webui/ash/login",
   ]
 }
 
@@ -121,10 +118,10 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

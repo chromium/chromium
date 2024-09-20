@@ -13,12 +13,14 @@
 
 #include <algorithm>
 #include <array>
+#include <iterator>
 #include <limits>
 #include <numeric>
 
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -45,6 +47,7 @@
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -207,19 +210,21 @@ base::expected<void, mojom::ErrorPtr> CreateUnexpectedError(
 // Calculate the total byte length of buffers and the D3D12_RANGE for each
 // buffer, all with the required alignment.
 std::optional<AlignedByteLength<uint64_t>> CalculateAlignedByteLength(
-    const base::flat_map<uint64_t, mojo_base::BigBuffer>& ids_to_buffers) {
+    const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands) {
   base::CheckedNumeric<size_t> total_byte_length(0);
   std::map<uint64_t, D3D12_RANGE> key_to_d3d12_range_map;
 
-  for (const auto& [buffer_id, buffer] : ids_to_buffers) {
-    auto& d3d12_range = key_to_d3d12_range_map[buffer_id];
+  for (const auto& [operand_id, constant_operand] : constant_operands) {
+    auto& d3d12_range = key_to_d3d12_range_map[operand_id];
     d3d12_range.Begin = total_byte_length.ValueOrDie();
 
     // The buffer has a minimum base address alignment requirement of 16 bytes
     // in the macro `DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT`:
     // https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-directml-constants
-    total_byte_length += base::bits::AlignUp<size_t>(
-        buffer.size(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
+    total_byte_length +=
+        base::bits::AlignUp<size_t>(constant_operand->ByteSpan().size(),
+                                    DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
     if (!total_byte_length.IsValid()) {
       LOG(ERROR) << "[WebNN] Failed to calculate the total byte length.";
       return std::nullopt;
@@ -281,7 +286,8 @@ struct UploadAndDefaultBuffers {
 base::expected<std::map<uint64_t, DML_BUFFER_BINDING>, HRESULT>
 UploadAndCreateConstantBufferBinding(
     CommandRecorder* command_recorder,
-    const base::flat_map<uint64_t, mojo_base::BigBuffer>& key_to_buffer_map,
+    const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     const AlignedByteLength<uint64_t>& aligned_byte_length,
     absl::variant<UploadAndDefaultBuffers, ComPtr<ID3D12Resource>>
         buffer_variant) {
@@ -311,16 +317,18 @@ UploadAndCreateConstantBufferBinding(
   RETURN_UNEXPECTED_IF_FAILED(buffer_to_map->Map(0, nullptr, &mapped_buffer));
 
   std::map<uint64_t, DML_BUFFER_BINDING> key_to_buffer_binding_map;
-  for (auto& [key, buffer] : key_to_buffer_map) {
+  for (auto& [operand_id, constant_operand] : constant_operands) {
     // Copy the input data to the upload heap with byte offset
     const auto& d3d12_range =
-        aligned_byte_length.key_to_d3d12_range_map.at(key);
-    memcpy(static_cast<uint8_t*>(mapped_buffer) + d3d12_range.Begin,
-           buffer.data(), buffer.size());
+        aligned_byte_length.key_to_d3d12_range_map.at(operand_id);
+    auto mapped_buffer_span = base::make_span(
+        static_cast<uint8_t*>(mapped_buffer) + d3d12_range.Begin,
+        constant_operand->descriptor().PackedByteLength());
+    mapped_buffer_span.copy_from(constant_operand->ByteSpan());
     // Create the buffer binding for each constant/input and push back into the
     // DML_BUFFER_BINDING array.
     auto size_in_bytes = d3d12_range.End - d3d12_range.Begin;
-    key_to_buffer_binding_map[key] =
+    key_to_buffer_binding_map[operand_id] =
         DML_BUFFER_BINDING{.Buffer = buffer_to_bind,
                            .Offset = d3d12_range.Begin,
                            .SizeInBytes = size_in_bytes};
@@ -417,33 +425,35 @@ const DML_TENSOR_DESC* GetOptionalDmlTensorDescPtr(
 // Build a one-element constant operand with specified rank for float value and
 // add it into the graph info. For example, if the rank is 3, the operand
 // dimensions would be {1, 1, 1}.
-uint64_t BuildConstantOperandForFloatValue(mojom::GraphInfoPtr& graph_info,
-                                           uint64_t& next_operand_id,
-                                           OperandDataType data_type,
-                                           size_t rank,
-                                           float value) {
-  OperandPtr constant_operand = Operand::New();
-  constant_operand->kind = Operand::Kind::kConstant;
-  constant_operand->descriptor =
+uint64_t BuildConstantOperandForFloatValue(
+    mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
+    uint64_t& next_operand_id,
+    OperandDataType data_type,
+    size_t rank,
+    float value) {
+  auto descriptor =
       *OperandDescriptor::Create(data_type, std::vector<uint32_t>(rank, 1));
 
-  uint64_t constant_id = next_operand_id++;
+  auto constant_operand =
+      Operand::New(Operand::Kind::kConstant, descriptor, /*name=*/std::nullopt);
+
+  uint64_t constant_operand_id = next_operand_id++;
   CHECK(graph_info->id_to_operand_map
-            .try_emplace(constant_id, std::move(constant_operand))
+            .try_emplace(constant_operand_id, std::move(constant_operand))
             .second);
 
-  mojo_base::BigBuffer buffer;
-
+  base::HeapArray<uint8_t> buffer;
   switch (data_type) {
-    case OperandDataType::kFloat32: {
-      buffer = mojo_base::BigBuffer(base::make_span(
-          reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+    case OperandDataType::kFloat32:
+      buffer =
+          base::HeapArray<uint8_t>::CopiedFrom(base::byte_span_from_ref(value));
       break;
-    }
     case OperandDataType::kFloat16: {
       uint16_t fp16_value = fp16_ieee_from_fp32_value(value);
-      buffer = mojo_base::BigBuffer(base::make_span(
-          reinterpret_cast<const uint8_t*>(&fp16_value), sizeof(fp16_value)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(
+          base::byte_span_from_ref(fp16_value));
       break;
     }
     default:
@@ -452,11 +462,13 @@ uint64_t BuildConstantOperandForFloatValue(mojom::GraphInfoPtr& graph_info,
       NOTREACHED();
   }
 
-  CHECK(graph_info->constant_id_to_buffer_map
-            .try_emplace(constant_id, std::move(buffer))
+  CHECK(constant_operands
+            .try_emplace(constant_operand_id,
+                         std::make_unique<WebNNConstantOperand>(
+                             std::move(descriptor), std::move(buffer)))
             .second);
 
-  return constant_id;
+  return constant_operand_id;
 }
 
 const TensorDesc CreateOutputTensorDesc(const IdToOperandMap& id_to_operand_map,
@@ -800,6 +812,12 @@ void RetrieveOperationConnectivity(
       output_ids = {conv2d->output_operand_id};
       break;
     }
+    case Operation::Tag::kCumulativeSum: {
+      const auto& cumulative_sum = operation->get_cumulative_sum();
+      input_ids = {cumulative_sum->input_operand_id};
+      output_ids = {cumulative_sum->output_operand_id};
+      break;
+    }
     case Operation::Tag::kDequantizeLinear: {
       const auto& dequantize_linear = operation->get_dequantize_linear();
       input_ids = {dequantize_linear->input_operand_id,
@@ -843,6 +861,12 @@ void RetrieveOperationConnectivity(
       input_ids = {gather_elements->input_operand_id,
                    gather_elements->indices_operand_id};
       output_ids = {gather_elements->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kGatherNd: {
+      const auto& gather_nd = operation->get_gather_nd();
+      input_ids = {gather_nd->input_operand_id, gather_nd->indices_operand_id};
+      output_ids = {gather_nd->output_operand_id};
       break;
     }
     case Operation::Tag::kGelu: {
@@ -1052,6 +1076,13 @@ void RetrieveOperationConnectivity(
       const auto& reshape = operation->get_reshape();
       input_ids = {reshape->input_operand_id};
       output_ids = {reshape->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kScatterNd: {
+      const auto& scatter_nd = operation->get_scatter_nd();
+      input_ids = {scatter_nd->input_operand_id, scatter_nd->indices_operand_id,
+                   scatter_nd->updates_operand_id};
+      output_ids = {scatter_nd->output_operand_id};
       break;
     }
     case Operation::Tag::kSigmoid: {
@@ -1355,6 +1386,8 @@ void CreateOperatorNodeForBatchNormalization(
     const std::map<const Operation*, const Operation*>&
         operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -1409,7 +1442,7 @@ void CreateOperatorNodeForBatchNormalization(
     // If the scale is not present, create a constant operand for scale and
     // insert the operand into the graph.
     scale_operand_id = BuildConstantOperandForFloatValue(
-        graph_info, next_operand_id, data_type,
+        graph_info, constant_operands, next_operand_id, data_type,
         /*rank*/ 1, /*default scale*/ 1.0);
 
     // Create an input node for the scale operand and store the assigned input
@@ -1442,7 +1475,7 @@ void CreateOperatorNodeForBatchNormalization(
     // If the bias is not present, create a constant operand for bias and insert
     // the operand into the graph.
     bias_operand_id = BuildConstantOperandForFloatValue(
-        graph_info, next_operand_id, data_type,
+        graph_info, constant_operands, next_operand_id, data_type,
         /*rank*/ 1, /*default bias*/ 0);
 
     // Create an input node for the bias operand and store the assigned input
@@ -1734,6 +1767,70 @@ const OperatorNode* CreateBinaryOperator(const TensorDesc& a_tensor,
       .OutputTensor = &output_tensor.GetDMLTensorDesc()};
   return graph_builder.CreateOperatorNode(operator_type, &binary_operator_desc,
                                           inputs, label);
+}
+
+template <typename DML_OPERATOR_DESC, typename DequantizeOrQuantizeLinearPtr>
+  requires(
+      std::is_same_v<DequantizeOrQuantizeLinearPtr,
+                     mojom::DequantizeLinearPtr> ||
+      std::is_same_v<DequantizeOrQuantizeLinearPtr, mojom::QuantizeLinearPtr>)
+void CreateOperatorNodeForDequantizeOrQuantizeLinear(
+    const ContextProperties& context_properties,
+    const IdToOperandMap& id_to_operand_map,
+    const DequantizeOrQuantizeLinearPtr& operation_ptr,
+    GraphBuilderDml& graph_builder,
+    DML_OPERATOR_TYPE operator_type,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, operation_ptr->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  const NodeOutput* scale = GetNodeOutputForOperand(
+      id_to_node_output_map, operation_ptr->scale_operand_id);
+  auto scale_tensor_desc = scale->GetTensorDesc();
+
+  const NodeOutput* zero_point = GetNodeOutputForOperand(
+      id_to_node_output_map, operation_ptr->zero_point_operand_id);
+  auto zero_point_tensor_desc = zero_point->GetTensorDesc();
+
+  uint64_t output_id = operation_ptr->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  const auto& output_dimensions = output_tensor_desc.GetDimensions();
+  if (scale_tensor_desc.GetDimensions() != output_dimensions) {
+    scale_tensor_desc.BroadcastTo(output_dimensions);
+  }
+  if (zero_point_tensor_desc.GetDimensions() != output_dimensions) {
+    zero_point_tensor_desc.BroadcastTo(output_dimensions);
+  }
+
+  if constexpr (std::is_same_v<DequantizeOrQuantizeLinearPtr,
+                               mojom::DequantizeLinearPtr>) {
+    CHECK(context_properties.data_type_limits.dequantize_linear_input.Has(
+        DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+    CHECK(context_properties.data_type_limits.dequantize_linear_scale.Has(
+        DmlDataTypeToOperand(scale_tensor_desc.GetDataType())));
+  } else /* `DequantizeOrQuantizeLinearPtr` is `mojom::QuantizeLinearPtr` */ {
+    CHECK(context_properties.data_type_limits.quantize_linear_input.Has(
+        DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+    CHECK(context_properties.data_type_limits.quantize_linear_zero_point.Has(
+        DmlDataTypeToOperand(zero_point_tensor_desc.GetDataType())));
+  }
+
+  DML_OPERATOR_DESC operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .ScaleTensor = &scale_tensor_desc.GetDMLTensorDesc(),
+      .ZeroPointTensor = &zero_point_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
+  const std::string& label = operation_ptr->label;
+  std::array<const NodeOutput*, 3> inputs = {input, scale, zero_point};
+  const OperatorNode* operator_node = graph_builder.CreateOperatorNode(
+      operator_type, &operator_desc, inputs, label);
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      operator_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 }
 
 void CreateOperatorNodeForBinary(
@@ -2144,6 +2241,71 @@ void CreateOperatorNodeForPrelu(const ContextProperties context_properties,
       graph_builder.CreateNodeOutput(prelu_node, std::move(output_tensor_desc));
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+}
+
+void CreateOperatorNodeForScatterND(const ContextProperties& context_properties,
+                                    const IdToOperandMap& id_to_operand_map,
+                                    const mojom::ScatterNDPtr& scatter_nd,
+                                    GraphBuilderDml& graph_builder,
+                                    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, scatter_nd->input_operand_id);
+  TensorDesc input_tensor_desc = input->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.scatter_nd_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+
+  const NodeOutput* indices = GetNodeOutputForOperand(
+      id_to_node_output_map, scatter_nd->indices_operand_id);
+  TensorDesc indices_tensor_desc = indices->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.scatter_nd_indices.Has(
+      DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
+
+  const NodeOutput* updates = GetNodeOutputForOperand(
+      id_to_node_output_map, scatter_nd->updates_operand_id);
+  TensorDesc updates_tensor_desc = updates->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.scatter_nd_input.Has(
+      DmlDataTypeToOperand(updates_tensor_desc.GetDataType())));
+
+  uint64_t output_id = scatter_nd->output_operand_id;
+  const TensorDesc original_output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  size_t input_rank = input_tensor_desc.GetDimensions().size();
+  size_t indices_rank = indices_tensor_desc.GetDimensions().size();
+  size_t updates_rank = updates_tensor_desc.GetDimensions().size();
+  size_t output_rank = original_output_tensor_desc.GetDimensions().size();
+  size_t maximum_rank =
+      std::max({input_rank, indices_rank, updates_rank, output_rank});
+
+  // DML_SCATTER_ND_OPERATOR_DESC requires IndicesTensor, InputTensor,
+  // OutputTensor, and UpdatesTensor must have the same DimensionCount.
+  input_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                      TensorDesc::Alignment::kTrailing);
+  indices_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                        TensorDesc::Alignment::kTrailing);
+  updates_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                        TensorDesc::Alignment::kTrailing);
+
+  TensorDesc output_tensor_desc = original_output_tensor_desc;
+  output_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                       TensorDesc::Alignment::kTrailing);
+
+  DML_SCATTER_ND_OPERATOR_DESC scatter_nd_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .IndicesTensor = &indices_tensor_desc.GetDMLTensorDesc(),
+      .UpdatesTensor = &updates_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .InputDimensionCount = base::checked_cast<uint32_t>(input_rank),
+      .IndicesDimensionCount = base::checked_cast<uint32_t>(indices_rank)};
+
+  std::array<const NodeOutput*, 3> inputs = {input, indices, updates};
+  const OperatorNode* node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_SCATTER_ND, &scatter_nd_desc, inputs, scatter_nd->label);
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      node, std::move(original_output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
 void CreateOperatorNodeForSlice(const IdToOperandMap& id_to_operand_map,
@@ -2802,11 +2964,69 @@ void CreateOperatorNodeForGatherElements(
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
+void CreateOperatorNodeForGatherND(const ContextProperties& context_properties,
+                                   const IdToOperandMap& id_to_operand_map,
+                                   const mojom::GatherNDPtr& gather_nd,
+                                   GraphBuilderDml& graph_builder,
+                                   IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, gather_nd->input_operand_id);
+  TensorDesc input_tensor_desc = input->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.gather_nd_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+
+  const NodeOutput* indices = GetNodeOutputForOperand(
+      id_to_node_output_map, gather_nd->indices_operand_id);
+  TensorDesc indices_tensor_desc = indices->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.gather_nd_indices.Has(
+      DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
+
+  uint64_t output_id = gather_nd->output_operand_id;
+  const TensorDesc original_output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  size_t input_rank = input_tensor_desc.GetDimensions().size();
+  size_t indices_rank = indices_tensor_desc.GetDimensions().size();
+  size_t output_rank = original_output_tensor_desc.GetDimensions().size();
+  size_t maximum_rank = std::max({input_rank, indices_rank, output_rank});
+
+  // Add leading ones to the dimensions to ensure these tensors have the same
+  // rank as required.
+  input_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                      TensorDesc::Alignment::kTrailing);
+  indices_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                        TensorDesc::Alignment::kTrailing);
+
+  TensorDesc output_tensor_desc = original_output_tensor_desc;
+  output_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                       TensorDesc::Alignment::kTrailing);
+
+  // DirectML handles out-of-bounds indices internally and ensures no invalid
+  // reads outside of input tensor.
+  DML_GATHER_ND_OPERATOR_DESC gather_nd_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .IndicesTensor = &indices_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .InputDimensionCount = base::checked_cast<uint32_t>(input_rank),
+      .IndicesDimensionCount = base::checked_cast<uint32_t>(indices_rank)};
+
+  std::array<const NodeOutput*, 2> inputs = {input, indices};
+  const OperatorNode* node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_GATHER_ND, &gather_nd_desc, inputs, gather_nd->label);
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      node, std::move(original_output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+}
+
 void CreateOperatorNodeForGelu(
     Adapter* adapter,
     const IdToOperandMap& id_to_operand_map,
     const mojom::GeluPtr& gelu,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -2828,7 +3048,7 @@ void CreateOperatorNodeForGelu(
       id_to_operand_map.at(gelu->input_operand_id);
   const OperandDataType data_type = input_operand->descriptor.data_type();
   uint64_t constant_for_sqrt_operand_id = BuildConstantOperandForFloatValue(
-      graph_info, next_operand_id, data_type, /*rank*/ 1,
+      graph_info, constant_operands, next_operand_id, data_type, /*rank*/ 1,
       /*default value*/ 2.0);
   uint32_t constant_for_sqrt_input_index =
       CreateInputNode(id_to_operand_map, constant_for_sqrt_operand_id,
@@ -2893,7 +3113,7 @@ void CreateOperatorNodeForGelu(
 
   // Build constant operand (1.0)
   uint64_t constant_for_add_operand_id = BuildConstantOperandForFloatValue(
-      graph_info, next_operand_id, data_type, /*rank*/ 1,
+      graph_info, constant_operands, next_operand_id, data_type, /*rank*/ 1,
       /*default value*/ 1.0);
   uint32_t constant_for_add_input_index =
       CreateInputNode(id_to_operand_map, constant_for_add_operand_id,
@@ -2935,7 +3155,7 @@ void CreateOperatorNodeForGelu(
 
   // Build constant operand (0.5)
   uint64_t constant_for_mul_operand_id = BuildConstantOperandForFloatValue(
-      graph_info, next_operand_id, data_type, /*rank*/ 1,
+      graph_info, constant_operands, next_operand_id, data_type, /*rank*/ 1,
       /*default value*/ 0.5);
   uint32_t constant_for_mul_input_index =
       CreateInputNode(id_to_operand_map, constant_for_mul_operand_id,
@@ -3099,6 +3319,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
     const IdToOperandMap& id_to_operand_map,
     const GruType& gru,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -3181,7 +3403,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
     if (!gru->bias_operand_id.has_value() ||
         !gru->recurrent_bias_operand_id.has_value()) {
       uint64_t zero_bias_operand_id = BuildConstantOperandForFloatValue(
-          graph_info, next_operand_id, data_type, /*rank*/ 1,
+          graph_info, constant_operands, next_operand_id, data_type, /*rank*/ 1,
           /*default bias*/ 0);
       uint32_t bias_input_index =
           CreateInputNode(id_to_operand_map, zero_bias_operand_id,
@@ -3486,6 +3708,8 @@ CreateOperatorNodeForMeanVarianceNormalization(
     const std::map<const Operation*, const Operation*>&
         operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -3530,7 +3754,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
   if ((scale && !bias) || (!scale && bias)) {
     if (!scale) {
       uint64_t scale_operand_id = BuildConstantOperandForFloatValue(
-          graph_info, next_operand_id, data_type,
+          graph_info, constant_operands, next_operand_id, data_type,
           scale_bias_broadcast_axes.size(),
           /*default scale*/ 1.0);
 
@@ -3548,7 +3772,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
     }
     if (!bias) {
       uint64_t bias_operand_id = BuildConstantOperandForFloatValue(
-          graph_info, next_operand_id, data_type,
+          graph_info, constant_operands, next_operand_id, data_type,
           scale_bias_broadcast_axes.size(),
           /*default bias*/ 0);
 
@@ -3703,6 +3927,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
     const ContextProperties& context_properties,
     const LstmType& lstm,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -3823,7 +4049,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   // given.
   if ((bias && !recurrent_bias) || (!bias && recurrent_bias)) {
     uint64_t bias_operand_id = BuildConstantOperandForFloatValue(
-        graph_info, next_operand_id, output_data_type,
+        graph_info, constant_operands, next_operand_id, output_data_type,
         /*rank=*/1, /*default bias=*/0);
 
     // Create an input node for the bias operand and store the assigned input
@@ -4113,12 +4339,30 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
            output_tensor_dims.size());
 
   const std::string& label = matmul->label;
-  // TODO(issues.chromium.org/353856233): Flatten adjacent dimensions for GEMM >
-  // 4D because DML_GEMM_OPERATOR_DESC restricts tensor's rank <= 4.
-  if (input_a_tensor_desc.GetDimensions().size() > 4) {
-    return CreateUnexpectedError(
-        mojom::Error::Code::kNotSupportedError,
-        "The input tensor rank is larger than 4 for matmul operator.", label);
+  // Flatten adjacent dimensions for GEMM > 4D because DML_GEMM_OPERATOR_DESC
+  // restricts tensor's rank <= 4.
+  auto adjusted_output_tensor_desc = output_tensor_desc;
+  if (output_tensor_dims.size() > 4) {
+    // If flattening fails due to the non-default strides caused by
+    // broadcasting, append an identity node after the input to consume the
+    // non-default strides, ensuring successful flattening of the input.
+    if (!input_a_tensor_desc.RightAlignedFlattenTo(4)) {
+      input_a_node_output = AppendIdentityNode(
+          graph_builder, input_a_node_output, &input_a_tensor_desc);
+      input_a_tensor_desc = input_a_node_output->GetTensorDesc();
+
+      CHECK(input_a_tensor_desc.RightAlignedFlattenTo(4));
+    }
+
+    if (!input_b_tensor_desc.RightAlignedFlattenTo(4)) {
+      input_b_node_output = AppendIdentityNode(
+          graph_builder, input_b_node_output, &input_b_tensor_desc);
+      input_b_tensor_desc = input_b_node_output->GetTensorDesc();
+
+      CHECK(input_b_tensor_desc.RightAlignedFlattenTo(4));
+    }
+
+    CHECK(adjusted_output_tensor_desc.RightAlignedFlattenTo(4));
   }
 
   // Use 4D GEMM which is available since feature level 1.0 for best
@@ -4127,11 +4371,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gemm_operator_desc.
   // TODO(issues.chromium.org/327244277): Remove the workaround of coercing
   // GEMM's tensors to 4D.
-  auto expanded_output_tensor_desc = output_tensor_desc;
-  if (output_tensor_dims.size() < 4) {
+  else if (output_tensor_dims.size() < 4) {
     input_a_tensor_desc.EnsureMinimumRank(4, TensorDesc::Alignment::kTrailing);
     input_b_tensor_desc.EnsureMinimumRank(4, TensorDesc::Alignment::kTrailing);
-    expanded_output_tensor_desc.EnsureMinimumRank(
+    adjusted_output_tensor_desc.EnsureMinimumRank(
         4, TensorDesc::Alignment::kTrailing);
   }
 
@@ -4153,7 +4396,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
       .ATensor = &input_a_tensor_desc.GetDMLTensorDesc(),
       .BTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
       .CTensor = nullptr,
-      .OutputTensor = &expanded_output_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &adjusted_output_tensor_desc.GetDMLTensorDesc(),
       .TransA = transpose_a ? DML_MATRIX_TRANSFORM_TRANSPOSE
                             : DML_MATRIX_TRANSFORM_NONE,
       .TransB = transpose_b ? DML_MATRIX_TRANSFORM_TRANSPOSE
@@ -4442,6 +4685,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
     Adapter* adapter,
     const mojom::TriangularPtr& triangular,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -4586,7 +4831,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
 
   OperandDataType webnn_mask_data_type;
   DML_TENSOR_DATA_TYPE dml_mask_data_type;
-  mojo_base::BigBuffer buffer;
+  base::HeapArray<uint8_t> buffer;
   switch (data_type) {
     case OperandDataType::kInt8:
     case OperandDataType::kUint8: {
@@ -4594,7 +4839,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT8;
       std::array<uint8_t, 2> values = {static_cast<uint8_t>(lower_mask),
                                        static_cast<uint8_t>(upper_mask)};
-      buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(values));
       break;
     }
     case OperandDataType::kFloat16: {
@@ -4604,7 +4849,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT16;
       std::array<uint16_t, 2> values = {static_cast<uint16_t>(lower_mask),
                                         static_cast<uint16_t>(upper_mask)};
-      buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(values));
       break;
     }
     case OperandDataType::kFloat32:
@@ -4614,7 +4859,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT32;
       std::array<uint32_t, 2> values = {static_cast<uint32_t>(lower_mask),
                                         static_cast<uint32_t>(upper_mask)};
-      buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(values));
       break;
     }
     case OperandDataType::kInt64:
@@ -4623,22 +4868,26 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT64;
       std::array<uint64_t, 2> values = {static_cast<uint64_t>(lower_mask),
                                         static_cast<uint64_t>(upper_mask)};
-      buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(
+          base::as_bytes(base::make_span(values)));
       break;
     }
   }
 
-  OperandPtr constant_operand = Operand::New();
-  constant_operand->kind = Operand::Kind::kConstant;
-  constant_operand->descriptor = *OperandDescriptor::Create(
+  auto descriptor = *OperandDescriptor::Create(
       webnn_mask_data_type, std::array<uint32_t, 3>{1, 2, 1});
+
+  auto constant_operand =
+      Operand::New(Operand::Kind::kConstant, descriptor, /*name=*/std::nullopt);
 
   uint64_t constant_operand_id = next_operand_id++;
   CHECK(graph_info->id_to_operand_map
             .try_emplace(constant_operand_id, std::move(constant_operand))
             .second);
-  CHECK(graph_info->constant_id_to_buffer_map
-            .try_emplace(constant_operand_id, std::move(buffer))
+  CHECK(constant_operands
+            .try_emplace(constant_operand_id,
+                         std::make_unique<WebNNConstantOperand>(
+                             descriptor, std::move(buffer)))
             .second);
 
   uint32_t constant_input_index =
@@ -4848,15 +5097,15 @@ void HandleGraphCreationFailure(
 }
 
 bool IsDispatchBindingValid(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_buffers,
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_tensors,
     const base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>&
-        prev_named_buffers) {
+        prev_named_tensors) {
   return base::ranges::equal(
-      named_buffers, prev_named_buffers,
+      named_tensors, prev_named_tensors,
       [](const auto& pair, const auto& previous_pair) {
-        const auto& [name, buffer] = pair;
-        const auto& [prev_name, prev_buffer] = previous_pair;
-        return name == prev_name && buffer == prev_buffer.get();
+        const auto& [name, tensor] = pair;
+        const auto& [prev_name, prev_tensor] = previous_pair;
+        return name == prev_name && tensor == prev_tensor.get();
       });
 }
 
@@ -5243,10 +5492,11 @@ void GraphImplDml::OnCompilationComplete(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     WebNNContextImpl::CreateGraphImplCallback callback,
-    base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
     std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
     GraphBufferBindingInfo graph_buffer_binding_info,
     ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     base::expected<ComPtr<IDMLCompiledOperator>, HRESULT> compilation_result) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::OnCompilationComplete");
 
@@ -5308,10 +5558,10 @@ void GraphImplDml::OnCompilationComplete(
   std::vector<DML_BUFFER_BINDING> input_buffer_binding(
       graph_buffer_binding_info.input_buffer_binding_count,
       DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
-  if (!constant_id_to_buffer_map.empty()) {
+  if (!constant_operands.empty()) {
     std::optional<AlignedByteLength<uint64_t>>
         aligned_byte_length_of_constants =
-            CalculateAlignedByteLength(constant_id_to_buffer_map);
+            CalculateAlignedByteLength(constant_operands);
     if (!aligned_byte_length_of_constants) {
       std::move(callback).Run(base::unexpected(CreateError(
           mojom::Error::Code::kUnknownError,
@@ -5372,7 +5622,7 @@ void GraphImplDml::OnCompilationComplete(
     ASSIGN_OR_RETURN(
         (std::map<uint64_t, DML_BUFFER_BINDING> constant_buffer_binding),
         UploadAndCreateConstantBufferBinding(
-            initialization_command_recorder.get(), constant_id_to_buffer_map,
+            initialization_command_recorder.get(), constant_operands,
             aligned_byte_length_of_constants.value(),
             std::move(buffer_variant)),
         &HandleGraphCreationFailure, "Failed to upload constant weight data.",
@@ -5612,6 +5862,8 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
     const ContextProperties& context_properties,
     scoped_refptr<Adapter> adapter,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     GraphBufferBindingInfo& graph_buffer_binding_info) {
@@ -5630,7 +5882,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
 
   // The constant operand in WebNNGraph also is treated as input node in graph
   // desc.
-  for (auto& [constant_id, _] : graph_info->constant_id_to_buffer_map) {
+  for (auto& [constant_id, _] : constant_operands) {
     auto graph_input_index = CreateInputNode(
         id_to_operand_map, constant_id, graph_builder, id_to_node_output_map);
     constant_id_to_input_index_map[constant_id] = graph_input_index;
@@ -5684,7 +5936,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         CreateOperatorNodeForBatchNormalization(
             context_properties, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
@@ -5704,6 +5956,14 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
             context_properties, id_to_operand_map, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
             graph_builder, id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kDequantizeLinear: {
+        CreateOperatorNodeForDequantizeOrQuantizeLinear<
+            DML_ELEMENT_WISE_DEQUANTIZE_LINEAR_OPERATOR_DESC>(
+            context_properties, id_to_operand_map,
+            operation->get_dequantize_linear(), graph_builder,
+            DML_OPERATOR_ELEMENT_WISE_DEQUANTIZE_LINEAR, id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kElementWiseBinary: {
@@ -5744,10 +6004,16 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
             id_to_node_output_map);
         break;
       }
+      case mojom::Operation::Tag::kGatherNd: {
+        CreateOperatorNodeForGatherND(context_properties, id_to_operand_map,
+                                      operation->get_gather_nd(), graph_builder,
+                                      id_to_node_output_map);
+        break;
+      }
       case mojom::Operation::Tag::kGelu: {
         CreateOperatorNodeForGelu(
             adapter.get(), id_to_operand_map, operation->get_gelu(), graph_info,
-            graph_builder, id_to_node_output_map,
+            constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
@@ -5761,14 +6027,14 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       case mojom::Operation::Tag::kGru: {
         create_operator_result = CreateOperatorNodeForGru<mojom::GruPtr>(
             context_properties, id_to_operand_map, operation->get_gru(),
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
       case mojom::Operation::Tag::kGruCell: {
         create_operator_result = CreateOperatorNodeForGru<mojom::GruCellPtr>(
             context_properties, id_to_operand_map, operation->get_gru_cell(),
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
@@ -5804,7 +6070,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
             context_properties, instance_normalization, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id, mean_variance_axes,
             scale_bias_broadcast_axes, Operation::Tag::kInstanceNormalization);
         break;
@@ -5815,7 +6081,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
             context_properties, layer_normalization, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id, axes, axes,
             Operation::Tag::kLayerNormalization);
         break;
@@ -5835,14 +6101,14 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       case Operation::Tag::kLstm: {
         create_operator_result = CreateOperatorNodeForLstm<mojom::Lstm>(
             context_properties, *operation->get_lstm(), graph_info,
-            graph_builder, id_to_node_output_map,
+            constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
       case Operation::Tag::kLstmCell: {
         create_operator_result = CreateOperatorNodeForLstm<mojom::LstmCell>(
             context_properties, *operation->get_lstm_cell(), graph_info,
-            graph_builder, id_to_node_output_map,
+            constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
@@ -5872,6 +6138,14 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
                                    id_to_node_output_map);
         break;
       }
+      case Operation::Tag::kQuantizeLinear: {
+        CreateOperatorNodeForDequantizeOrQuantizeLinear<
+            DML_ELEMENT_WISE_QUANTIZE_LINEAR_OPERATOR_DESC>(
+            context_properties, id_to_operand_map,
+            operation->get_quantize_linear(), graph_builder,
+            DML_OPERATOR_ELEMENT_WISE_QUANTIZE_LINEAR, id_to_node_output_map);
+        break;
+      }
       case Operation::Tag::kReduce: {
         CreateOperatorNodeForReduce(context_properties, id_to_operand_map,
                                     operation->get_reduce(), graph_builder,
@@ -5895,6 +6169,12 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         CreateOperatorNodeForReshape(context_properties, id_to_operand_map,
                                      operation->get_reshape(), graph_builder,
                                      id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kScatterNd: {
+        CreateOperatorNodeForScatterND(context_properties, id_to_operand_map,
+                                       operation->get_scatter_nd(),
+                                       graph_builder, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kSigmoid: {
@@ -5957,7 +6237,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       case mojom::Operation::Tag::kTriangular: {
         create_operator_result = CreateOperatorNodeForTriangular(
             context_properties, adapter.get(), operation->get_triangular(),
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
@@ -6016,6 +6296,8 @@ void GraphImplDml::CreateAndBuild(
     base::WeakPtr<ContextImplDml> context,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     WebNNContextImpl::CreateGraphImplCallback callback,
     const bool pass_dml_execution_disable_meta_commands) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
@@ -6025,8 +6307,9 @@ void GraphImplDml::CreateAndBuild(
   GraphBufferBindingInfo graph_buffer_binding_info;
   base::expected<void, mojom::ErrorPtr> create_operator_result =
       GraphImplDml::CreateAndBuildInternal(
-          context->properties(), adapter, graph_info, graph_builder,
-          constant_id_to_input_index_map, graph_buffer_binding_info);
+          context->properties(), adapter, graph_info, constant_operands,
+          graph_builder, constant_id_to_input_index_map,
+          graph_buffer_binding_info);
 
   // TODO(crbug.com/349649099): Handle context lost for operator creation
   // failures.
@@ -6045,10 +6328,10 @@ void GraphImplDml::CreateAndBuild(
                      pass_dml_execution_disable_meta_commands),
       base::BindOnce(&GraphImplDml::OnCompilationComplete, std::move(adapter),
                      std::move(context), std::move(callback),
-                     std::move(graph_info->constant_id_to_buffer_map),
                      std::move(constant_id_to_input_index_map),
                      std::move(graph_buffer_binding_info),
-                     std::move(compute_resource_info)));
+                     std::move(compute_resource_info),
+                     std::move(constant_operands)));
 }
 
 void GraphImplDml::HandleComputationFailure(
@@ -6067,8 +6350,8 @@ void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
 
   // Clear out previous buffers recorded for dispatch() so we don't mistakenly
   // skip recording on failure.
-  previous_input_buffers_.clear();
-  previous_output_buffers_.clear();
+  previous_input_tensors_.clear();
+  previous_output_tensors_.clear();
   context_->HandleContextLostOrCrash(error_message, hr);
 }
 
@@ -6238,16 +6521,16 @@ void GraphImplDml::DispatchImpl(
   TRACE_EVENT0("gpu", "dml::GraphImplDml::DispatchImpl");
 
   // It indicates whether we need to record commands and bind resources again.
-  // If either the I/O buffers change or `graph_resources_` is not available
+  // If either the I/O tensors change or `graph_resources_` is not available
   // during the graph execution, it must be set to true.
   bool is_command_recording_needed = false;
 
-  // TODO(crbug.com/40278771): avoid re-bindings for all buffers
-  if (!IsDispatchBindingValid(named_inputs, previous_input_buffers_)) {
+  // TODO(crbug.com/40278771): avoid re-bindings for all tensors
+  if (!IsDispatchBindingValid(named_inputs, previous_input_tensors_)) {
     is_command_recording_needed = true;
   }
 
-  if (!IsDispatchBindingValid(named_outputs, previous_output_buffers_)) {
+  if (!IsDispatchBindingValid(named_outputs, previous_output_tensors_)) {
     is_command_recording_needed = true;
   }
 
@@ -6292,7 +6575,7 @@ void GraphImplDml::DispatchImpl(
         graph_buffer_binding_info_.input_buffer_binding_count,
         DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
 
-    previous_input_buffers_.reserve(named_inputs.size());
+    previous_input_tensors_.reserve(named_inputs.size());
 
     // The graph input tensors must be bound to the binding table during the
     // graph execution.
@@ -6300,23 +6583,23 @@ void GraphImplDml::DispatchImpl(
         graph_buffer_binding_info_.input_buffer_binding_count,
         DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
 
-    for (auto& [name, input_buffer] : named_inputs) {
-      TensorImplDml* input_buffer_impl =
-          static_cast<TensorImplDml*>(input_buffer);
+    for (auto& [name, input_tensor] : named_inputs) {
+      TensorImplDml* input_tensor_impl =
+          static_cast<TensorImplDml*>(input_tensor);
       // Get the graph input index for the name.
       const size_t graph_input_index =
           graph_buffer_binding_info_.graph_input_name_to_index_map.at(
               std::string(name));
       graph_input_buffer_bindings[graph_input_index] = DML_BUFFER_BINDING{
-          .Buffer = input_buffer_impl->buffer(),
+          .Buffer = input_tensor_impl->buffer(),
           .Offset = 0,
-          .SizeInBytes = input_buffer_impl->PackedByteLength()};
+          .SizeInBytes = input_tensor_impl->PackedByteLength()};
       input_buffer_binding_desc[graph_input_index] = {
           DML_BINDING_TYPE_BUFFER,
           &graph_input_buffer_bindings[graph_input_index]};
-      previous_input_buffers_[std::string(name)] =
-          input_buffer_impl->GetWeakPtr();
-      command_recorder_->OnBufferAccessed(input_buffer_impl);
+      previous_input_tensors_[std::string(name)] =
+          input_tensor_impl->GetWeakPtr();
+      command_recorder_->OnTensorAccessed(input_tensor_impl);
     }
 
     // TODO(crbug.com/40278771): consider pre-computing the output binding
@@ -6335,26 +6618,26 @@ void GraphImplDml::DispatchImpl(
         output_buffer_binding_count,
         DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
 
-    previous_output_buffers_.reserve(named_outputs.size());
+    previous_output_tensors_.reserve(named_outputs.size());
 
-    for (auto& [name, output_buffer] : named_outputs) {
-      TensorImplDml* output_buffer_impl =
-          static_cast<TensorImplDml*>(output_buffer);
+    for (auto& [name, output_tensor] : named_outputs) {
+      TensorImplDml* output_tensor_impl =
+          static_cast<TensorImplDml*>(output_tensor);
       // Get the graph output index with the name.
       const size_t graph_output_index =
           graph_buffer_binding_info_.graph_output_name_to_index_map.at(
               std::string(name));
       graph_output_buffer_bindings[graph_output_index] = DML_BUFFER_BINDING{
-          .Buffer = output_buffer_impl->buffer(),
+          .Buffer = output_tensor_impl->buffer(),
           .Offset = 0,
-          .SizeInBytes = output_buffer_impl->PackedByteLength()};
+          .SizeInBytes = output_tensor_impl->PackedByteLength()};
       output_buffer_binding_desc[graph_output_index] = {
           DML_BINDING_TYPE_BUFFER,
           &graph_output_buffer_bindings[graph_output_index]};
-      previous_output_buffers_[std::string(name)] =
-          output_buffer_impl->GetWeakPtr();
+      previous_output_tensors_[std::string(name)] =
+          output_tensor_impl->GetWeakPtr();
       // Only output buffers could get modified upon execution.
-      command_recorder_->OnBufferAccessed(output_buffer_impl);
+      command_recorder_->OnTensorAccessed(output_tensor_impl);
     }
 
     std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;

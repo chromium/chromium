@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_value_map.h"
@@ -398,8 +399,14 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
               ]
             }
           ])",
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
         u"Error at PolicyForTesting[0]: Keys \"and, or\" cannot be set in the "
-        u"same dictionary"},
+        u"same dictionary",
+#else
+        u"Error at PolicyForTesting[0]: \"SCREENSHOT\" is not a supported "
+        u"restriction on this platform",
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+    },
 
     {
         R"([
@@ -414,8 +421,14 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
               ]
             }
           ])",
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
         u"Error at PolicyForTesting[0]: Keys \"destinations\" cannot be set in "
-        u"the same dictionary as the \"not\" keys"},
+        u"the same dictionary as the \"not\" keys",
+#else
+        u"Error at PolicyForTesting[0]: \"SCREENSHOT\" is not a supported "
+        u"restriction on this platform",
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+    },
     {
         R"([
             {
@@ -431,8 +444,14 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
               ]
             }
           ])",
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
         u"Error at PolicyForTesting[0].sources: Keys \"incognito\" cannot be "
-        u"set in the same dictionary as the \"os_clipboard\" keys"},
+        u"set in the same dictionary as the \"os_clipboard\" keys",
+#else
+        u"Error at PolicyForTesting[0]: \"SCREENSHOT\" is not a supported "
+        u"restriction on this platform",
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+    },
     {
         R"([
              {
@@ -445,8 +464,14 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
                ]
              }
           ])",
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
         u"Error at PolicyForTesting[0]: \"destinations\" is not a supported "
-        u"condition for \"SCREENSHOT\""},
+        u"condition for \"SCREENSHOT\"",
+#else
+        u"Error at PolicyForTesting[0]: \"SCREENSHOT\" is not a supported "
+        u"restriction on this platform",
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+    },
     {
         R"([
              {
@@ -459,8 +484,14 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
                ]
              }
           ])",
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
         u"Error at PolicyForTesting[0]: \"SCREENSHOT\" cannot be set to "
-        u"\"WARN\""},
+        u"\"WARN\"",
+#else
+        u"Error at PolicyForTesting[0]: \"SCREENSHOT\" is not a supported "
+        u"restriction on this platform",
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+    },
     {
         R"([
              {
@@ -475,7 +506,8 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
         u"Error at PolicyForTesting[0].restrictions[0].class: Schema "
         u"validation error: Invalid value for string\n"
         u"Error at PolicyForTesting[0]: \"PRINTING\" is not a supported "
-        u"restriction on this platform"},
+        u"restriction on this platform",
+    },
 };
 
 class DataControlsPolicyHandlerTest : public testing::Test {

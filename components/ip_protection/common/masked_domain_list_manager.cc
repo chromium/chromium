@@ -1,14 +1,14 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
+
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 
 #include <set>
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
@@ -47,7 +47,8 @@ ResourceOwner RemovePslPrivateDomainsFromOwnedResources(
 
 MaskedDomainListManager::MaskedDomainListManager(
     IpProtectionProxyBypassPolicy policy)
-    : proxy_bypass_policy_{policy} {}
+    : proxy_bypass_policy_{policy},
+      creation_time_for_mdl_update_metric_(base::TimeTicks::Now()) {}
 
 MaskedDomainListManager::~MaskedDomainListManager() = default;
 
@@ -81,7 +82,8 @@ bool MaskedDomainListManager::IsEnabled() const {
 }
 
 bool MaskedDomainListManager::IsPopulated() const {
-  return url_matcher_with_bypass_.IsPopulated();
+  return url_matcher_with_bypass_.IsPopulated() ||
+         !public_suffix_list_matcher_.rules().empty();
 }
 
 size_t MaskedDomainListManager::EstimateMemoryUsage() const {
@@ -109,6 +111,12 @@ bool MaskedDomainListManager::Matches(
       }
       DVLOG(3) << "NSPAL::Matches(" << request_url << ", "
                << top_frame_site.value() << ")";
+
+      // Bypass the proxy for same-site requests.
+      net::SchemefulSite request_site(request_url);
+      if (top_frame_site.has_value() && top_frame_site == request_site) {
+        return false;
+      }
 
       // Only proxy traffic where the top-level site is an HTTP/HTTPS page or
       // where the NAK corresponds to a fenced frame.
@@ -186,6 +194,12 @@ std::set<std::string> MaskedDomainListManager::ExcludeDomainsFromMDL(
 void MaskedDomainListManager::UpdateMaskedDomainList(
     const masked_domain_list::MaskedDomainList& mdl,
     const std::vector<std::string>& exclusion_list) {
+  if (creation_time_for_mdl_update_metric_.has_value()) {
+    Telemetry().MdlFirstUpdateTime(base::TimeTicks::Now() -
+                                   *creation_time_for_mdl_update_metric_);
+    creation_time_for_mdl_update_metric_.reset();
+  }
+
   const int experiment_group_id =
       network::features::kMaskedDomainListExperimentGroup.Get();
   // Clients are in the default group if the experiment_group_id is the
@@ -251,8 +265,8 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
         break;
       }
     }
-    AddPublicSuffixListRules(psl_private_domains);
   }
+  AddPublicSuffixListRules(psl_private_domains);
   ip_protection::Telemetry().MdlEstimatedMemoryUsage(EstimateMemoryUsage());
 }
 

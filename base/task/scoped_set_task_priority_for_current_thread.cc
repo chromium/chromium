@@ -5,14 +5,13 @@
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 
 #include "base/compiler_specific.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace internal {
 
 namespace {
 
-ABSL_CONST_INIT thread_local TaskPriority task_priority_for_current_thread =
+constinit thread_local TaskPriority task_priority_for_current_thread =
     TaskPriority::USER_BLOCKING;
 
 }  // namespace

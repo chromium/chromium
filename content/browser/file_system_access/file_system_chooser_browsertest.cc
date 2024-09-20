@@ -197,6 +197,24 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenFileNonASCII) {
              "return await file.text(); })()"));
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       OpenFile_DisplayNameNotBaseName) {
+  const base::FilePath test_file = CreateTestFile("hello world!");
+  std::string display_name = "display-name";
+  ui::SelectedFileInfo selected_file = {test_file, test_file};
+  selected_file.display_name = base::FilePath::FromASCII(display_name).value();
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<ui::SelectedFileInfo>{selected_file}, &dialog_params_));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(display_name, EvalJs(shell(),
+                                 "(async () => {"
+                                 "  let [e] = await self.showOpenFilePicker();"
+                                 "  return e.name; })()"));
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, FullscreenOpenFile) {
   const std::string file_contents = "hello world!";
   const base::FilePath test_file = CreateTestFile(file_contents);

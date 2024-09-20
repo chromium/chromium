@@ -339,6 +339,20 @@ void EncodePasswordAttributesMetadata(
   upload.set_password_length(password_attributes.password_length_vote);
 }
 
+void AdjustTypesForForgotPasswordFormVotes(
+    FieldType& field_type,
+    autofill::AutofillUploadContents_Field_SingleUsernameVoteType& vote_type) {
+  if (field_type == autofill::SINGLE_USERNAME) {
+    field_type = autofill::SINGLE_USERNAME_FORGOT_PASSWORD;
+  }
+
+  if (vote_type == AutofillUploadContents::Field::STRONG) {
+    vote_type = AutofillUploadContents::Field::STRONG_FORGOT_PASSWORD;
+  } else if (vote_type == AutofillUploadContents::Field::WEAK) {
+    vote_type = AutofillUploadContents::Field::WEAK_FORGOT_PASSWORD;
+  }
+}
+
 }  // namespace
 
 SingleUsernameVoteData::SingleUsernameVoteData()
@@ -827,10 +841,11 @@ void VotesUploader::SetKnownValueFlag(
   // If we are updating a password, the known value is the old password, not
   // the new one.
   for (auto& field : *form) {
-    if (field->value().empty()) {
+    if (field->value(autofill::ValueSemantics::kCurrent).empty()) {
       continue;
     }
-    if (known_username == field->value() || known_password == field->value()) {
+    if (known_username == field->value(autofill::ValueSemantics::kCurrent) ||
+        known_password == field->value(autofill::ValueSemantics::kCurrent)) {
       field->set_properties_mask(field->properties_mask() |
                                  autofill::FieldPropertiesFlags::kKnownValue);
     }
@@ -990,14 +1005,14 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
     IsMostRecentSingleUsernameCandidate
         is_most_recent_single_username_candidate,
     bool is_forgot_password_vote) {
-  FieldType type = autofill::UNKNOWN_TYPE;
+  FieldType field_type = autofill::UNKNOWN_TYPE;
   autofill::AutofillUploadContents_Field_SingleUsernameVoteType vote_type =
       AutofillUploadContents::Field::DEFAULT;
 
   // Send a negative vote if the possible username value contains whitespaces.
   if (single_username.username_candidate_value.find(' ') !=
       std::u16string::npos) {
-    type = autofill::NOT_USERNAME;
+    field_type = autofill::NOT_USERNAME;
     vote_type = AutofillUploadContents::Field::STRONG;
   } else {
     const auto& prompt_edit = single_username.prompt_edit;
@@ -1009,28 +1024,29 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
 
     if (prompt_edit == AutofillUploadContents::EDITED_POSITIVE ||
         prompt_edit == AutofillUploadContents::NOT_EDITED_POSITIVE) {
-      type = is_forgot_password_vote ? autofill::SINGLE_USERNAME_FORGOT_PASSWORD
-                                     : autofill::SINGLE_USERNAME;
+      field_type = autofill::SINGLE_USERNAME;
     } else {
-      type = autofill::NOT_USERNAME;
+      field_type = autofill::NOT_USERNAME;
     }
+
     if (is_form_overrule) {
       vote_type = AutofillUploadContents::Field::IN_FORM_OVERRULE;
     } else if (prompt_edit == AutofillUploadContents::EDITED_POSITIVE ||
                prompt_edit == AutofillUploadContents::EDITED_NEGATIVE) {
-      vote_type = is_forgot_password_vote
-                      ? AutofillUploadContents::Field::STRONG_FORGOT_PASSWORD
-                      : AutofillUploadContents::Field::STRONG;
+      vote_type = AutofillUploadContents::Field::STRONG;
     } else {
-      vote_type = is_forgot_password_vote
-                      ? AutofillUploadContents::Field::WEAK_FORGOT_PASSWORD
-                      : AutofillUploadContents::Field::WEAK;
+      vote_type = AutofillUploadContents::Field::WEAK;
     }
   }
-  CHECK_NE(type, autofill::UNKNOWN_TYPE);
+
+  if (is_forgot_password_vote) {
+    AdjustTypesForForgotPasswordFormVotes(field_type, vote_type);
+  }
+
+  CHECK_NE(field_type, autofill::UNKNOWN_TYPE);
   CHECK_NE(vote_type, AutofillUploadContents::Field::DEFAULT);
-  available_field_types->insert(type);
-  field->set_possible_types({type});
+  available_field_types->insert(field_type);
+  field->set_possible_types({field_type});
   field->set_single_username_vote_type(vote_type);
   field->set_is_most_recent_single_username_candidate(
       is_most_recent_single_username_candidate);

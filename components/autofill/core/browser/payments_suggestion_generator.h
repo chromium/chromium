@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
@@ -44,17 +45,29 @@ struct CreditCardSuggestionSummary {
   autofill_metrics::SuggestionRankingContext ranking_context;
 };
 
+// Returns a mapping of credit card guid values to virtual card last fours for
+// standalone CVC field. Cards will only be added to the returned map if they
+// have usage data on the webpage and the VCN last four was found on webpage
+// DOM.
+base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+GetVirtualCreditCardsForStandaloneCvcField(
+    const PaymentsDataManager& data_manager,
+    const url::Origin& origin,
+    const std::vector<std::string>& four_digit_combinations_in_dom);
+
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type`, `trigger_field` and `trigger_source`.
 // `summary` contains metadata about the returned suggestions.
-// `last_four_list_for_suggestion_filtering` is a list of card number last four
-// that will be used for suggestion filtering. It is a list because it can be a
-// list of last four extracted from the DOM.
+// `last_four_set_for_cvc_suggestion_filtering` is a set of card number last
+// four that will be used for suggestion filtering. This is used to avoid
+// showing suggestions that is unrelated to the cards that have already been
+// autofilled in the form.
 // TODO(crbug.com/40916587): Implement last four extraction from the DOM.
 std::vector<Suggestion> GetSuggestionsForCreditCards(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
-    const std::vector<std::u16string>& last_four_list_for_suggestion_filtering,
+    const base::flat_set<std::u16string>&
+        last_four_set_for_cvc_suggestion_filtering,
     FieldType trigger_field_type,
     AutofillSuggestionTriggerSource trigger_source,
     bool should_show_scan_credit_card,

@@ -4,6 +4,8 @@
 
 package org.chromium.components.commerce.core;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 
 import java.util.Optional;
@@ -31,9 +33,9 @@ public final class DiscountInfo {
             @DiscountType int type,
             String languageCode,
             String descriptionDetail,
-            Optional<String> termsAndConditions,
+            @Nullable String termsAndConditions,
             String valueInText,
-            Optional<String> discountCode,
+            @Nullable String discountCode,
             long id,
             boolean isMerchantWide,
             double expiryTimeSec,
@@ -42,9 +44,10 @@ public final class DiscountInfo {
         this.type = type;
         this.languageCode = languageCode;
         this.descriptionDetail = descriptionDetail;
-        this.termsAndConditions = termsAndConditions;
         this.valueInText = valueInText;
-        this.discountCode = discountCode;
+        this.termsAndConditions =
+                termsAndConditions == null ? Optional.empty() : Optional.of(termsAndConditions);
+        this.discountCode = discountCode == null ? Optional.empty() : Optional.of(discountCode);
         this.id = id;
         this.isMerchantWide = isMerchantWide;
         this.expiryTimeSec = expiryTimeSec;

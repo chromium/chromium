@@ -1,0 +1,3 @@
+HTTP/1.1 200 OK
+content-type: text/html
+Content-Security-Policy: frame-ancestors https:;

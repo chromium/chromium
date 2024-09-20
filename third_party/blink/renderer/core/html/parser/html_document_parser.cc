@@ -464,6 +464,8 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
 
   if (prefetch_policy == kAllowPrefetching)
     preloader_ = MakeGarbageCollected<HTMLResourcePreloader>(document);
+
+  should_skip_preload_scan_ = ShouldSkipPreloadScan();
 }
 
 HTMLDocumentParser::~HTMLDocumentParser() {
@@ -847,7 +849,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
   if (is_stopped_or_parsing_fragment)
     return false;
 
-  if (IsPaused() && preloader_ && !background_scanner_) {
+  if (IsPaused() && preloader_ && !background_scanner_ &&
+      !should_skip_preload_scan_) {
     if (!preload_scanner_) {
       preload_scanner_ =
           CreatePreloadScanner(TokenPreloadScanner::ScannerType::kMainDocument);
@@ -958,7 +961,7 @@ void HTMLDocumentParser::insert(const String& source) {
   // Call EndIfDelayed manually at the end to maintain preload behaviour.
   PumpTokenizerIfPossible();
 
-  if (IsPaused()) {
+  if (IsPaused() && !should_skip_preload_scan_) {
     // Check the document.write() output with a separate preload scanner as
     // the main scanner can't deal with insertions.
     if (!insertion_preload_scanner_) {
@@ -987,7 +990,7 @@ void HTMLDocumentParser::Append(const String& input_source) {
   ScanInBackground(input_source);
 
   if (!background_scanner_ && !preload_scanner_ && preloader_ &&
-      GetDocument()->Url().IsValid() &&
+      GetDocument()->Url().IsValid() && !should_skip_preload_scan_ &&
       (!task_runner_state_->IsSynchronous() ||
        GetDocument()->IsPrefetchOnly() || IsPaused())) {
     // If we're operating with a budget, we need to create a preload scanner to
@@ -1603,7 +1606,7 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
       // TODO(crbug.com/1329535): Support scanning prefetch documents in the
       // background.
       !GetDocument()->IsPrefetchOnly() &&
-      IsPreloadScanningEnabled(GetDocument())) {
+      IsPreloadScanningEnabled(GetDocument()) && !should_skip_preload_scan_) {
     // The background scanner should never be created if a main thread scanner
     // is already available.
     DCHECK(!preload_scanner_);
@@ -1747,6 +1750,21 @@ ALWAYS_INLINE bool HTMLDocumentParser::ShouldCheckTimeBudget(
   // The token is probably fast to parse, only update the timer for 10% of
   // those tokens.
   return tokens_parsed % 10 == 0;
+}
+
+bool HTMLDocumentParser::ShouldSkipPreloadScan() {
+  // Check if Document-Policy has Expect-No-Linked-Resources hint.
+  auto* document = GetDocument();
+  if (const auto* context = document->GetExecutionContext()) {
+    if (context->IsFeatureEnabled(
+            mojom::blink::DocumentPolicyFeature::kExpectNoLinkedResources)) {
+      UseCounter::Count(document,
+                        WebFeature::kDocumentPolicyExpectNoLinkedResources);
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace blink

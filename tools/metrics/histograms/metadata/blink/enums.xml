@@ -332,6 +332,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Repeated mismatch in a request, with hints"/>
 </enum>
 
+<enum name="FedCmPopupInteraction">
+  <int value="0" label="User loses focus of pop-up and pop-up closed by IDP"/>
+  <int value="1"
+      label="User loses focus of pop-up and pop-up not closed by IDP"/>
+  <int value="2"
+      label="User never loses focus of pop-up and pop-up closed by IDP"/>
+  <int value="3"
+      label="User never loses focus of pop-up and pop-up not closed by IDP"/>
+</enum>
+
 <enum name="FedCmPopupWindowResult">
   <int value="0" label="Accounts received and pop-up closed by IDP"/>
   <int value="1" label="Accounts received but pop-up not closed by IDP"/>
@@ -532,7 +542,7 @@ chromium-metrics-reviews@google.com.
 <enum name="PermissionElementUserInteractionDeniedReason">
   <int value="0" label="Invalid type"/>
   <int value="1" label="Failed or has not been registered"/>
-  <int value="2" label="Recently inserted into DOM"/>
+  <int value="2" label="Recently attached to layout tree"/>
   <int value="3"
       label="Intersection visibility has recently become fully visible"/>
   <int value="4" label="Invalid style"/>

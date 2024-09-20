@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/infra/transition.h"
@@ -71,7 +72,7 @@ class BorealisInstallerImpl::Installation
       override {
     install_info_ = std::move(start_instance);
     SetState(InstallingState::kCheckingIfAllowed);
-    BorealisService::GetForProfile(profile_)->Features().IsAllowed(
+    BorealisServiceFactory::GetForProfile(profile_)->Features().IsAllowed(
         base::BindOnce(&Installation::OnAllowedCheckCompleted,
                        weak_factory_.GetWeakPtr()));
   }
@@ -167,9 +168,10 @@ class BorealisInstallerImpl::Installation
   // Chrome. See go/borealis-mid-launch for details.
   void StartupBorealis() {
     SetState(InstallingState::kStartingUp);
-    BorealisService::GetForProfile(profile_)->ContextManager().StartBorealis(
-        base::BindOnce(&Installation::OnBorealisStarted,
-                       weak_factory_.GetWeakPtr()));
+    BorealisServiceFactory::GetForProfile(profile_)
+        ->ContextManager()
+        .StartBorealis(base::BindOnce(&Installation::OnBorealisStarted,
+                                      weak_factory_.GetWeakPtr()));
   }
 
   void OnBorealisStarted(BorealisContextManager::ContextOrFailure result) {
@@ -261,9 +263,10 @@ class BorealisInstallerImpl::Uninstallation
   void Start(std::unique_ptr<BorealisInstallerImpl::InstallInfo> start_instance)
       override {
     uninstall_info_ = std::move(start_instance);
-    BorealisService::GetForProfile(profile_)->ContextManager().ShutDownBorealis(
-        base::BindOnce(&Uninstallation::OnShutdownCompleted,
-                       weak_factory_.GetWeakPtr()));
+    BorealisServiceFactory::GetForProfile(profile_)
+        ->ContextManager()
+        .ShutDownBorealis(base::BindOnce(&Uninstallation::OnShutdownCompleted,
+                                         weak_factory_.GetWeakPtr()));
   }
 
  private:

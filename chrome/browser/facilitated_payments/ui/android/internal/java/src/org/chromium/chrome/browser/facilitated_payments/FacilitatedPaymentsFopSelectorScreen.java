@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType;
+import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -31,9 +32,8 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * instruments.
  */
 public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPaymentsSequenceView {
-    private static class FacilitatedPaymentsHorizontalDividerItemDecoration
-            extends FacilitatedPaymentsItemDividerBase {
-        FacilitatedPaymentsHorizontalDividerItemDecoration(Context context) {
+    private static class HorizontalDividerItemDecoration extends ItemDividerBase {
+        HorizontalDividerItemDecoration(Context context) {
             super(context);
         }
 
@@ -43,7 +43,7 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
         }
 
         @Override
-        protected boolean containsContinueButton(RecyclerView parent) {
+        protected boolean containsFillButton(RecyclerView parent) {
             int itemCount = parent.getAdapter().getItemCount();
             // The button will be above the footer if it's present.
             return itemCount > 1
@@ -76,8 +76,7 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
                             RecyclerView.State state,
                             AccessibilityNodeInfoCompat info) {}
                 });
-        mView.addItemDecoration(
-                new FacilitatedPaymentsHorizontalDividerItemDecoration(mView.getContext()));
+        mView.addItemDecoration(new HorizontalDividerItemDecoration(mView.getContext()));
     }
 
     @Override

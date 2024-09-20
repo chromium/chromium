@@ -15,34 +15,11 @@
 #include "base/time/clock.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/proto/signal_storage_config.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
-
-// CleanupItem is used to store signals for cleanup.
-struct CleanupItem {
- public:
-  CleanupItem();
-  CleanupItem(uint64_t name_hash,
-              uint64_t event_hash,
-              proto::SignalType signal_type,
-              base::Time timestamp);
-  ~CleanupItem();
-
-  bool operator==(const CleanupItem& other) const;
-
-  // Name of the signal to be cleaned up.
-  uint64_t name_hash;
-  // Event hash for the signal.
-  uint64_t event_hash;
-  // Type of signal.
-  proto::SignalType signal_type;
-  // Indicates the time when the signal was last cleaned up.
-  base::Time timestamp;
-  // Event hash for non UKM signals.
-  static const uint64_t kNonUkmEventHash = 0;
-};
 
 // SignalStorageConfig is used to determine whether the signals for a model have
 // been captured long enough to be used for model evaluation. It is also used

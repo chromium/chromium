@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
 namespace blink {
@@ -46,39 +47,32 @@ BASE_FEATURE(kThrowExceptionWhenTextEncodeOOM,
 
 TextEncoder* TextEncoder::Create(ExecutionContext* context,
                                  ExceptionState& exception_state) {
-  WTF::TextEncoding encoding("UTF-8");
-  return MakeGarbageCollected<TextEncoder>(encoding);
+  return MakeGarbageCollected<TextEncoder>(UTF8Encoding());
 }
 
 TextEncoder::TextEncoder(const WTF::TextEncoding& encoding)
     : encoding_(encoding), codec_(NewTextCodec(encoding)) {
-  String name(encoding_.GetName());
-  DCHECK_EQ(name, "UTF-8");
+  DCHECK_EQ(encoding_.GetName(), "UTF-8");
 }
 
 TextEncoder::~TextEncoder() = default;
 
 String TextEncoder::encoding() const {
-  String name = String(encoding_.GetName()).DeprecatedLower();
+  String name = encoding_.GetName().GetString().DeprecatedLower();
   DCHECK_EQ(name, "utf-8");
   return name;
 }
 
 NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
                                              ExceptionState& exception_state) {
-  std::string result;
   // Note that the UnencodableHandling here is never used since the
   // only possible encoding is UTF-8, which will use
   // U+FFFD-replacement rather than ASCII fallback substitution when
   // unencodable sequences (for instance, unpaired UTF-16 surrogates)
   // are present in the input.
-  if (input.Is8Bit()) {
-    result = codec_->Encode(input.Characters8(), input.length(),
-                            WTF::kNoUnencodables);
-  } else {
-    result = codec_->Encode(input.Characters16(), input.length(),
-                            WTF::kNoUnencodables);
-  }
+  std::string result = WTF::VisitCharacters(input, [this](auto chars) {
+    return codec_->Encode(chars, WTF::kNoUnencodables);
+  });
   if (base::FeatureList::IsEnabled(kThrowExceptionWhenTextEncodeOOM)) {
     NotShared<DOMUint8Array> result_array(
         DOMUint8Array::CreateOrNull(base::as_byte_span(result)));
@@ -98,18 +92,10 @@ TextEncoderEncodeIntoResult* TextEncoder::encodeInto(
   TextEncoderEncodeIntoResult* encode_into_result =
       TextEncoderEncodeIntoResult::Create();
 
-  TextCodec::EncodeIntoResult encode_into_result_data;
-  unsigned char* destination_buffer = destination->Data();
-  if (source.Is8Bit()) {
-    encode_into_result_data =
-        codec_->EncodeInto(source.Characters8(), source.length(),
-                           destination_buffer, destination->length());
-  } else {
-    encode_into_result_data =
-        codec_->EncodeInto(source.Characters16(), source.length(),
-                           destination_buffer, destination->length());
-  }
-
+  TextCodec::EncodeIntoResult encode_into_result_data =
+      WTF::VisitCharacters(source, [this, &destination](auto chars) {
+        return codec_->EncodeInto(chars, destination->ByteSpan());
+      });
   encode_into_result->setRead(encode_into_result_data.code_units_read);
   encode_into_result->setWritten(encode_into_result_data.bytes_written);
   return encode_into_result;

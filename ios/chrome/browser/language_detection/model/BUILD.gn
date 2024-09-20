@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "language_detection_model_loader_service_ios_factory.h",
+    "language_detection_model_loader_service_ios_factory.mm",
+    "language_detection_model_service_factory.h",
+    "language_detection_model_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/language_detection/core/browser:language_detection_model_service",
+    "//components/language_detection/ios/browser",
+    "//components/optimization_guide/core:features",
+    "//components/prefs",
+    "//components/translate/core/common",
+    "//components/translate/core/common",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+}

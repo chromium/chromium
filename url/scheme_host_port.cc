@@ -29,7 +29,7 @@ namespace url {
 
 namespace {
 
-bool IsCanonicalHost(const std::string_view& host) {
+bool IsCanonicalHost(std::string_view host) {
   std::string canon_host;
 
   // Try to canonicalize the host (copy/pasted from net/base. :( ).
@@ -57,8 +57,8 @@ bool IsCanonicalHost(const std::string_view& host) {
 // ShouldTreatAsOpaqueOrigin in Blink (there might be existing differences in
 // behavior between these 2 layers, but we should avoid introducing new
 // differences).
-bool IsValidInput(const std::string_view& scheme,
-                  const std::string_view& host,
+bool IsValidInput(std::string_view scheme,
+                  std::string_view host,
                   uint16_t port,
                   SchemeHostPort::ConstructPolicy policy) {
   // Empty schemes are never valid.
@@ -143,8 +143,7 @@ bool IsValidInput(const std::string_view& scheme,
       return false;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
@@ -68,7 +69,7 @@ struct TextCodecFactory {
 
 typedef HashMap<const char*, const char*, CaseFoldingHashTraits<const char*>>
     TextEncodingNameMap;
-typedef HashMap<const char*, TextCodecFactory> TextCodecMap;
+typedef HashMap<String, TextCodecFactory> TextCodecMap;
 
 static base::Lock& EncodingRegistryLock() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
@@ -148,9 +149,7 @@ static void AddToTextCodecMap(const char* name,
                               NewTextCodecFunction function,
                               const void* additional_data) {
   EncodingRegistryLock().AssertAcquired();
-  const char* atomic_name = g_text_encoding_name_map->at(name);
-  DCHECK(atomic_name);
-  g_text_codec_map->insert(atomic_name,
+  g_text_codec_map->insert(AtomicString(name),
                            TextCodecFactory(function, additional_data));
 }
 

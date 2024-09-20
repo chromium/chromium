@@ -21,7 +21,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_gradient_element.h"
 
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
@@ -90,26 +89,11 @@ void SVGGradientElement::ClearResourceReferences() {
   RemoveAllOutgoingReferences();
 }
 
-void SVGGradientElement::CollectStyleForPresentationAttribute(
-    const QualifiedName& name,
-    const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  if (name == svg_names::kGradientTransformAttr) {
-    AddPropertyToPresentationAttributeStyle(
-        style, CSSPropertyID::kTransform,
-        *gradient_transform_->CurrentValue()->CssValue());
-    return;
-  }
-  SVGElement::CollectStyleForPresentationAttribute(name, value, style);
-}
-
 void SVGGradientElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kGradientTransformAttr) {
-    InvalidateSVGPresentationAttributeStyle();
-    SetNeedsStyleRecalc(kLocalStyleChange,
-                        StyleChangeReasonForTracing::FromAttribute(attr_name));
+    UpdatePresentationAttributeStyle(*gradient_transform_);
   }
 
   if (attr_name == svg_names::kGradientUnitsAttr ||
@@ -234,11 +218,7 @@ void SVGGradientElement::SynchronizeAllSVGAttributes() const {
 
 void SVGGradientElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  DCHECK(gradient_transform_->HasPresentationAttributeMapping());
-  if (gradient_transform_->IsAnimating()) {
-    CollectStyleForPresentationAttribute(svg_names::kGradientTransformAttr,
-                                         g_empty_atom, style);
-  }
+  AddAnimatedPropertyToPresentationAttributeStyle(*gradient_transform_, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }
 

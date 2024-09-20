@@ -87,7 +87,7 @@ MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     const bookmarks::BookmarkNode* original_folder,
     const bookmarks::BookmarkNode* folder,
     bookmarks::BookmarkModel* model,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService);
 
@@ -100,7 +100,7 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
     const bookmarks::BookmarkNode* folder,
     int position,
     bookmarks::BookmarkModel* model,
-    ChromeBrowserState* browser_state);
+    ProfileIOS* profile);
 
 // Updates a bookmark node position, and returns a snackbar with an undo action.
 // Returns nil if the operation wasn't successful or there's nothing to undo.
@@ -109,7 +109,7 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     const bookmarks::BookmarkNode* folder,
     size_t position,
     bookmarks::BookmarkModel* model,
-    ChromeBrowserState* browser_state);
+    ProfileIOS* profile);
 
 // Deletes all nodes in `bookmarks` from `bookmark_model` and returns a snackbar
 // with an undo action. Returns nil if the operation wasn't successful or
@@ -117,7 +117,7 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
 MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
     const std::set<const bookmarks::BookmarkNode*>& bookmarks,
     bookmarks::BookmarkModel* bookmark_model,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     const base::Location& location);
 
 // Deletes all nodes in `bookmarks`.
@@ -132,7 +132,7 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
     const std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* destination_folder,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService);
 

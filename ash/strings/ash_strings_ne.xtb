@@ -42,6 +42,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> को जानकारीको डायलग खोल्नुहोस्</translation>
 <translation id="1150989369772528668">पात्रो</translation>
 <translation id="1153356358378277386">कनेक्ट गरिएका डिभाइस</translation>
+<translation id="1153918444040990015">फोकस साउन्डमा कनेक्ट गर्न सकिएन</translation>
 <translation id="1155734730463845512">अहिलेको ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />% छ</translation>
 <translation id="1157514002898505378">जेनेरेटिभ AI परीक्षणका क्रममा भएकाले सामग्री गलत, भ्रामक वा आपत्तिजनक हुन सक्छ। कुनै समस्याका बारेमा रिपोर्ट गर्न आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्। <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">अन छ र प्रयोग भइरहेको छ</translation>
@@ -77,6 +78,7 @@
 <translation id="1240638468526743569">कुनै एप</translation>
 <translation id="1242198791279543032">नोटिफिकेसनहरू म्युट गरिएका छन्</translation>
 <translation id="1242883863226959074">डिभाइस</translation>
+<translation id="1245476784081715330">अद्भुत!</translation>
 <translation id="1245644940275736236">सहायकमा जानुहोस्</translation>
 <translation id="124678866338384709">हालको ट्याब बन्द गर्नुहोस्</translation>
 <translation id="1246890715821376239">प्रयोग गर्न नमिल्ने एपहरू</translation>
@@ -118,7 +120,6 @@
 <translation id="1346748346194534595">दायाँ</translation>
 <translation id="1350494136075914725">चलिरहेको छ · ट्याबमा फर्कनुहोस्</translation>
 <translation id="1351937230027495976">मेनु संक्षिप्त गर्नुहोस्</translation>
-<translation id="1352537790882153971">तपाईं तारवाला हेडफोन प्रयोग गरी आफ्नो माइक्रोफोनको साउन्ड जाँच गर्न सक्नुहुन्छ। जाँच गर्न छाड्न प्यानल बन्द गर्नुहोस्।</translation>
 <translation id="1360220746312242196">कुनै पेज खोज्दा खोज पदसँग मिल्दोजुल्दो अघिल्लो परिणाममा जानुहोस्</translation>
 <translation id="1360788414852622716">प्रोफाइल असक्षम पारिँदै छ। यो कार्य गर्न केही बेर लाग्न सक्छ।</translation>
 <translation id="1364382257761975320">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने आफ्नो फिंगरप्रिन्ट प्रयोग गर्नुहोस्</translation>
@@ -176,6 +177,7 @@
 <translation id="1550523713251050646">थप विकल्पहरूका लागि क्लिक गर्नुहोस्</translation>
 <translation id="1555130319947370107">निलो</translation>
 <translation id="1557622599341396706">डेस्कको नाम देखाउनुहोस्</translation>
+<translation id="1567138500090284106">माउस की बटन</translation>
 <translation id="1569384531973824928">तपाईंले यसो गर्नुभयो भने क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="1571697193564730395">Do Not Disturb अन वा अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">म्याग्निफायर अन भएका बेला जुम आउट गर्नुहोस्</translation>
@@ -213,6 +215,7 @@
 <translation id="1703117532528082099">सक्रिय विन्डो बायाँतिर डक गरिएको छ।</translation>
 <translation id="1708345662127501511">डेस्क: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">नेटवर्कसम्बन्धी सेटिङहरू</translation>
+<translation id="171610090693716835">पर्सनलाइज गरिएका फोकस प्लेलिस्टहरूको आनन्द लिएर नयाँ गीतहरू सुन्नुहोस्। YouTube Premium को ३ महिने निःशुल्क सदस्यता लिएर विज्ञापनरहित YouTube Music र YouTube को आनन्द लिनुहोस्।</translation>
 <translation id="1719094688023114093">लाइभ क्याप्सन अन छ।</translation>
 <translation id="1720011244392820496">Wi-Fi सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="1720230731642245863">हटस्पट अफ गरिएको छ</translation>
@@ -243,6 +246,7 @@
 <translation id="1787955149152357925">अफ छ</translation>
 <translation id="1796561540704213354">तपाईंले हेर्नुभएका पेज र हाल खोलिएका पेजलगायतका वेबसाइटहरू</translation>
 <translation id="179842970735685253">Google का सेवाका सर्तहरू</translation>
+<translation id="1805407494113167797">फोकस साउन्डहरू प्ले गर्न सकिएन</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="1816896987747843206">यसले क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
@@ -374,6 +378,7 @@
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2360398059912971776">ब्याट्री</translation>
 <translation id="2361210043495191221">Wi-Fi टगल गर्नुहोस्। <ph name="STATE" />।</translation>
+<translation id="2364710166605611987">स्वरूपसम्बन्धी इफेक्टहरू</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" /> बाट पठाइएको</translation>
 <translation id="2367186422933365202">तपाईंको Chromebook मा साइन इन गर्न सकिएन</translation>
 <translation id="2367972762794486313">एप्स देखाउनुहोस्</translation>
@@ -396,7 +401,6 @@
 <translation id="2426051945783024481">क्यामेराको फ्रेम स्वतः बिच भागमा पारियो</translation>
 <translation id="2427507373259914951">बायाँ क्लिक गर्नुहोस्</translation>
 <translation id="2429753432712299108">ब्लुतुथ यन्त्र "<ph name="DEVICE_NAME" />" ले मेल गर्न अनुमति चाहन्छ। स्वीकार गर्नुअघि, कृपया पक्का गर्नुहोस् की यो पासकुञ्जी त्यो यन्त्रमा देखाइएको छ: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">समय सकियो। तपाईं लगातार सफल भइरहनुभएको छ!</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="2437771564543046790">ब्याट्री कम छ। ब्याट्री सेभर अन छ</translation>
 <translation id="243878895369688216">हिजो खोलिएको</translation>
@@ -734,6 +738,7 @@
 <translation id="3600061223661453002">अफ गर्नुहोस्</translation>
 <translation id="3604801046548457007">डेस्क <ph name="DESK_TITILE" /> सिर्जना गरियो</translation>
 <translation id="3606978283550408104">ब्रेल प्रदर्शन जडित छ।</translation>
+<translation id="3612634595000403645">स्वरूपसम्बन्धी इफेक्टहरूका प्राथमिकताहरू</translation>
 <translation id="3615926715408477684">तपाईंले मोबाइल डेटा अन गर्नुभयो भने ब्लुटुथ अन हुने छ</translation>
 <translation id="3616113530831147358">अडियो</translation>
 <translation id="3616883743181209306">मेनु सारेर स्क्रिनको सिरानको दायाँ कुनामा लगियो।</translation>
@@ -775,7 +780,6 @@
 <translation id="3706423975342040244">मनोरञ्जन</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> र <ph name="UNAVAILABLE_DLC_TWO" /> उपलब्ध छैनन्।</translation>
 <translation id="3708186454126126312">यसअघि कनेक्ट गरिएका डिभाइस</translation>
-<translation id="3711282657843423160">सबै कार्य सम्पन्न भयो। यो क्रम जारी राख्नुहोस्!</translation>
 <translation id="3712143870407382523">यो साइडमा राख्ने विन्डो चयन गर्नुहोस्</translation>
 <translation id="371370241367527062">अगाडिको माइक्रोफोन</translation>
 <translation id="3713734891607377840">डाउनलोड भएपछि खुल्ने छ</translation>
@@ -840,12 +844,12 @@
 <translation id="3958714870339660776">दिनभर</translation>
 <translation id="3962859241508114581">अघिल्लो ट्र्याक</translation>
 <translation id="3963124517343721543">आफ्ना यसअघिका विन्डो तथा ट्याबहरू खोलेर आफूले छाडेकै ठाउँबाट सजिलैसँग जारी राख्नुहोस्। तपाईं यसपछि गर्न सकिने कार्यहरूका बारेमा पर्सनलाइज गरिएका सुझावहरू देख्नु हुने छ।</translation>
+<translation id="396506362088290977">आफ्नो माइकको आवाज जाँच्नुहोस्</translation>
 <translation id="3969043077941541451">अफ छ</translation>
 <translation id="3970324493235864154">आफ्नो फोनमा भएका सूचनाहरू हेर्नुहोस्</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="397726367135689299">ब्याट्री राम्रोसँग चार्ज नहुन सक्छ।</translation>
 <translation id="3977512764614765090">ब्याट्री <ph name="PERCENTAGE" />% छ र चार्ज हुँदै छ।</translation>
-<translation id="397808938113646171">समय सकियो। अद्भुत!</translation>
 <translation id="3982013579989864579">अडियो आउटपुट बदल्ने हो?</translation>
 <translation id="3984536049089846927">अर्को पेज</translation>
 <translation id="3986082989454912832">कल उठाउनुहोस्</translation>
@@ -894,9 +898,11 @@
 <translation id="4146671046252289537">अर्को शब्दको अन्त्यमा जानुहोस्</translation>
 <translation id="4146833061457621061">सङ्गीत प्ले गर्नुहोस्</translation>
 <translation id="4150201353443180367">प्रदर्शन</translation>
+<translation id="4151054805501931758">पोर्ट्रेट टच-अप</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ (लगभग <ph name="TIME_LEFT" />)।
 ब्याट्री अझ बढी टिकाउन केही सुविधाहरू सीमित गरिएका छन्।</translation>
 <translation id="4160919062868802509">एकभन्दा बढी अडियो स्रोतहरू पत्ता लागेका छन्</translation>
+<translation id="416245495747357243">पूरा भयो!</translation>
 <translation id="4165275524535002941">यो केबल डिस्प्लेहरूमा जोड्न मिल्दैन</translation>
 <translation id="4177415338862979658">थप जानकारीका लागि क्लिक गर्नुहोस्</translation>
 <translation id="4177913004758410636">{0,plural, =1{एक दिनभित्र डिभाइस रिस्टार्ट गर्नुहोस्}other{# दिनभित्र डिभाइस रिस्टार्ट गर्नुहोस्}}</translation>
@@ -917,6 +923,7 @@
 <translation id="4209973997261364186">Wi-Fi अन गरियो</translation>
 <translation id="4212246570487010370">ब्राउजिङ जारी राख्नुहोस्</translation>
 <translation id="4212472694152630271">पिन प्रयोग गर्न थाल्नुहोस्</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, टगल गर्ने बटन, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN सेटिङहरू</translation>
 <translation id="4217571870635786043">श्रुतिलेखन</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इन्स्टल गरिएको एप, अस्थायी रूपमा रोकिएको</translation>
@@ -981,6 +988,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> अफ छ।</translation>
 <translation id="4417647906073317561">फोकस मोडका सेटिङ। यो सेटिङ प्रयोग गरी टाइमर, कार्य र सङ्गीत सेट गर्नुहोस्।</translation>
 <translation id="4424159417645388645">डेस्क ५</translation>
+<translation id="4426817706804363424">स्याबास!</translation>
 <translation id="4430019312045809116">आयतन</translation>
 <translation id="4441283832827406317">एपहरू नामअनुसार क्रमबद्ध गरिन्छन्</translation>
 <translation id="4445159312344259901">अनलक गर्न साइन इन गर्नुहोस्</translation>
@@ -999,7 +1007,6 @@
 <translation id="4477751544736611934">यसो गर्दा प्रयोग हुने डेटाबापत शुल्क तिर्नु पर्ने हुन सक्छ।
 एउटा डिभाइस कनेक्ट गरिएको छ।</translation>
 <translation id="4477892968187500306">यो डिभाइसमा Google ले पुष्टि नगरेका एपहरू हुन सक्छन्।</translation>
-<translation id="4479130137987693286">आवश्यक परेमा थोरै समय थप्न वा फोकस मोडको सत्र अन्त्य गर्न सकिन्छ</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4481530544597605423">जोडा हटाइएका यन्त्रहरू</translation>
 <translation id="4485506555414638855">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया, एप तथा सूचनाहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
@@ -1052,7 +1059,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox सक्षम पारियो</translation>
-<translation id="4665182893355091947">सबै कार्य सम्पन्न भयो। अझै राम्रो गर्नुहोस्!</translation>
 <translation id="4666911709726371538">थप एपहरू</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> डाउनलोड गरिँदै छ</translation>
 <translation id="4672539464599646374">ब्याट्री सेभर अन गरिएको छ</translation>
@@ -1105,6 +1111,7 @@
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
 <translation id="482908187605862807">Play स्टोरमा उपलब्ध एपहरू</translation>
 <translation id="4831034276697007977">तपाईंले स्वचालित क्लिक सुविधा निष्क्रिय पार्न चाहनुभएकै हो?</translation>
+<translation id="4835677468087803981">PIN लुकाउनुहोस्</translation>
 <translation id="4849058404725798627">किबोर्डको फोकसमार्फत वस्तुलाई हाइलाइट</translation>
 <translation id="485592688953820832">कुनै कारबाही नगर्नुहोस् (पज गर्नुहोस्)</translation>
 <translation id="485634149294284819">किबोर्डसम्बन्धी मेनु खोल्नुहोस्</translation>
@@ -1187,6 +1194,7 @@
 <translation id="5078796286268621944">गलत PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + अप एरो</translation>
 <translation id="5083553833479578423">सहायकका थप सुविधाहरू अनलक गर्नुहोस्।</translation>
+<translation id="5091636240353511739">PIN देखाउनुहोस्</translation>
 <translation id="5092436659250499817">किबोर्डको ब्याकलाइट अन/अफ गर्नुहोस्</translation>
 <translation id="5094577350232361255">यस बारेमा</translation>
 <translation id="5095136268899496849">सेटिङमा गई <ph name="PRODUCT_NAME" /> कस्टमाइज तथा पर्सनलाइज गर्नुहोस्। आफ्नो वालपेपर परिवर्तन गरी वा स्क्रिन सेभर सेटअप गरी हेर्नुहोस्।</translation>
@@ -1245,6 +1253,7 @@
 <translation id="5283198616748585639">१ मिनट थप्नुहोस्</translation>
 <translation id="528468243742722775">समाप्त</translation>
 <translation id="5286194356314741248">स्क्यान गर्दै</translation>
+<translation id="528641622273682395">माइक जाँच्ने प्रक्रिया टगल गर्नुहोस्</translation>
 <translation id="5297423144044956168">कुनै पनि मोबाइल फोन वा ट्याब्लेट भेटिएन</translation>
 <translation id="5297704307811127955">अफ</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
@@ -1272,6 +1281,7 @@
 <translation id="536019650977002321">तपाईंका एड्मिनले अडियो क्याप्चर गर्ने अनुमति दिनुभएको छैन। तपाईं यस सम्बन्धमा थप जानकारी प्राप्त गर्न चाहनुहुन्छ भने आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू आंशिक रूपमा डाउनलोड गरिएका छन्</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> यो ट्याबमा जानुहोस्</translation>
+<translation id="5363835273551457276">तपाईं आफ्नो माइक्रोफोनको आवाज जाँच्न सक्नुहुन्छ। जाँच्ने कार्य रोक्न प्यानल बन्द गर्नुहोस्।</translation>
 <translation id="5364693579536176785">भण्डारणमा रहेको खाली ठाउँ</translation>
 <translation id="5369573834963677938">यो डिभाइसका अन्य प्रयोगकर्ताहरू फेस कन्ट्रोल प्रयोग गर्न सक्ने छन्</translation>
 <translation id="5369717264580061086">Files एपमा प्रिभ्यू गर्नुहोस्</translation>
@@ -1354,6 +1364,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">तपाईंको पासवर्ड पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5632485077360054581">यसो गर्ने तरिका देखाउनुहोस्</translation>
+<translation id="5633826232582408011">तपाईंले "मलाई लेख्न मद्दत गर्नुहोस्" र "मलाई पढ्न मद्दत गर्नुहोस्" अन गरेपछि लेखनसम्बन्धी सुझावहरू तयार पार्ने, सारांश बनाउने, प्रश्नहरूको जवाफ दिने र यो उत्पादनको गुणस्तर सुधार गर्ने प्रयोजनका लागि हालिएको टेक्स्ट, डकुमेन्टमा भएका सामग्री र वेबपेजको URL <ph name="LINK_TO_SERVICE_TERMS" />बमोजिम Google AI का सर्भरहरूमा पठाइन्छन्। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी समावेश नगर्नुहोस्।</translation>
 <translation id="5648021990716966815">माइकको ज्याक</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> तपाईंको ध्यानाकर्षण गराउन चाहन्छ।</translation>
 <translation id="5662075790140998213">डेस्क १०</translation>
@@ -1404,6 +1415,7 @@
 <translation id="5777841717266010279">स्क्रिन साझा गर्ने रोक्ने?</translation>
 <translation id="5779721926447984944">पिन गरिएका फाइलहरू</translation>
 <translation id="5785221443435874078">यो सुझाव हटाउनुहोस्</translation>
+<translation id="5787431783058088906">लाभ प्राप्त गर्नुहोस्</translation>
 <translation id="5788127256798019331">Play मा भएका फाइलहरू</translation>
 <translation id="5788535737706478207">पछिल्लो पटक बन्द गरिएको ट्याब वा विन्डो पुनः खोल्नुहोस्</translation>
 <translation id="5790085346892983794">सफलता</translation>
@@ -1411,6 +1423,7 @@
 <translation id="5802516411616338943">द्रुत सेटिङ खोल्नुहोस्</translation>
 <translation id="5804651031882187592">"SIM लक गर्नुहोस्" सेटिङ अफ गर्नुहोस्</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अन गर्न क्लिक गर्नुहोस्</translation>
+<translation id="5818796501620225415">तपाईं समय थप्न वा फोकस मोडको सत्र अन्त्य गर्न सक्नुहुन्छ</translation>
 <translation id="5819918159912280082">तपाईंको Chromebook अनपेक्षित रूपमा रिस्टार्ट भयो। आफूले यसअघि खोलेका विन्डो तथा एपहरू खोल्नुहोस्।</translation>
 <translation id="5823239091726045201">वेबमा उपलब्ध Google Tasks</translation>
 <translation id="5825969630400862129">कनेक्ट गरिएका यन्त्रहरूसम्बन्धी सेटिङ</translation>
@@ -1504,7 +1517,6 @@
 <translation id="6119972796024789243">कलर करेक्सन</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> को डाउनलोड पुष्टि गर्नुहोस्</translation>
 <translation id="612734058257491180">Google सहायक अतिथिको सत्रमा उपलब्ध हुँदैन।</translation>
-<translation id="6127370444807669747">पर्सनलाइज गरिएका प्लेलिस्ट र थप फोकस म्युजिकका लागि YouTube Music Premium चलाई हेर्नुहोस्</translation>
 <translation id="6127395413317891856">तपाईं अफलाइन हुनुहुन्छ। इन्टरनेट जाँचेर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> को खाता हटाउने कार्यसम्बन्धी डायलग खोल्नुहोस्</translation>
@@ -1635,11 +1647,13 @@
 <translation id="6574587113394758819">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_TITLE" /> सम्बन्धी सूचना लुकाइएको छ</translation>
 <translation id="6574622320167699133">तपाईंको फोनमार्फत अनलक गरिएको। तपाईं Chromebook खोल्न चाहनुहुन्छ भने ट्याप गर्नुहोस् वा क्लिक गर्नुहोस्।</translation>
 <translation id="6578407462441924264">नामविहीन</translation>
+<translation id="6582012689384648647">पर्सनलाइज गरिएका फोकस प्लेलिस्टहरूको आनन्द लिन YouTube Music को एक्सेस दिनुहोस्</translation>
 <translation id="6582034443359256692">ब्याट्रीको चार्जको स्तर निकालिँदै छ।</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुन्छ।</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">क्यामेरा पुछारको बायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="6605415194043280389">फोकस मोड अन छ</translation>
+<translation id="660846213831377756">माउस की सुविधा</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6612802754306526077">स्क्रिन रेकर्डिङ मोड चयन गरियो</translation>
 <translation id="6612889377159412215">उपकार्य</translation>
@@ -1775,7 +1789,6 @@
 <translation id="7064351585062927183">आउँदो <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">यस नेटवर्कलाई तपाईंको प्रशासकद्वारा असक्षम गरिएको छ।</translation>
 <translation id="7067196344162293536">स्वतः घुमाउनुहोस्</translation>
-<translation id="7067569040620564762">समय सकियो। पूरा भयो!</translation>
 <translation id="7068360136237591149">फाइलहरू खोल्नुहोस्</translation>
 <translation id="7076293881109082629">साइनइन गर्दै</translation>
 <translation id="7076878155205969899">आवाज म्युट गर्नुहोस्</translation>
@@ -1810,7 +1823,6 @@
 <translation id="7189412385142492784">शुक्र ग्रह पृथ्वीबाट कति टाढा छ</translation>
 <translation id="7198435252016571249">क्यामेरा पुछारको दायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="7219573373513695352">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
-<translation id="7226347284543965442">समय सकियो। तपाईंले गरेर देखाउनुभयो!</translation>
 <translation id="7229029500464092426">कुल <ph name="TOTAL_MEMORY" /> मध्ये <ph name="AVAILABLE_MEMORY" /> मेमोरी प्रयोग गरिएको छ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ। आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। कुनै अद्यावधिक लागू गर्न यो Chromebook पुनः सुरु गर्नु पर्ने हुन्छ। यो प्रक्रिया पूरा हुन १ मिनेटसम्म लाग्न सक्छ।</translation>
@@ -1874,6 +1886,7 @@
 <translation id="7477793887173910789">आफ्नो सङ्गीत, भिडियो र थप कुराहरू नियन्त्रण गर्नुहोस्</translation>
 <translation id="7488762544858401571">सम्पादन गरिएको</translation>
 <translation id="7489261257412536105">फुल स्क्रिन मोड अन वा अफ गर्नुहोस्</translation>
+<translation id="7490157877815329797">विज्ञापनरहित सङ्गीत सुन्न र पर्सनलाइज गरिएको फोकस म्युजिकको आनन्द लिन YouTube Music Premium चलाई हेर्नुहोस्</translation>
 <translation id="7490360161041035804">तपाईं Google Drive का फाइललगायतका महत्त्वपूर्ण फाइलहरू पिन गर्न सक्नुहुन्छ। पिन गर्न कुनै फाइलमाथि होभर गर्नुहोस् वा "फाइलहरू" खोल्नुहोस् र कुनै फाइलमा दायाँ क्लिक गर्नुहोस्।</translation>
 <translation id="7497767806359279797">भाषा तथा किबोर्ड छनौट गर्नुहोस्</translation>
 <translation id="7507162824403726948">आफ्नो पहिचान पुष्टि गर्ने प्रक्रिया पूरा गर्नुहोस्</translation>
@@ -1959,7 +1972,6 @@
 <translation id="7727952505535211425">एड्रेस बारमा हालिएको वेबसाइट नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="7728657226117099693">क्याप्स लक अफ गर्नुहोस्</translation>
 <translation id="7742327441377685481">कुनै पनि सूचना छैन</translation>
-<translation id="774736258792760908">तपाईंले "मलाई लेख्न मद्दत गर्नुहोस्" र "मलाई पढ्न मद्दत गर्नुहोस्" अन गर्दा लेखनसम्बन्धी सुझाव दिने, सारांश बनाउने, प्रश्नहरूको जवाफ दिने र उत्पादनको गुणस्तर सुधार गर्ने प्रयोजनका लागि इन्पुट टेक्स्ट र डकुमेन्टमा भएको सामग्री <ph name="LINK_TO_SERVICE_TERMS" /> बमोजिम Google AI का सर्भरहरूमा पठाइन्छन्। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी नहाल्नुहोस्।</translation>
 <translation id="7748275671948949022">सेल्फमा भएको लन्चर बटन हाइलाइट गर्नुहोस्</translation>
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
 <translation id="7749958366403230681">ExpressKey ४</translation>
@@ -1968,6 +1980,7 @@
 <translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
 <translation id="7769299611924763557">तपाईंको GIF चाँडै नै तयार हुने छ</translation>
 <translation id="7773536009433685931">बरु Wi-Fi अन गर्नुहोस्</translation>
+<translation id="77747521138552256">धेरै पटक PIN हाल्ने प्रयास गरियो। <ph name="TIME_LEFT" /> प्रतीक्षा गर्नुहोस् र फेरि PIN हाली हेर्नुहोस् वा तुरुन्तै साइन इन गर्न पासवर्ड हाल्नुहोस्।</translation>
 <translation id="7780094051999721182">सर्टकट</translation>
 <translation id="7780159184141939021">स्क्रिन घुमाउनुहोस्</translation>
 <translation id="7781829728241885113">हिजो</translation>
@@ -2123,6 +2136,7 @@
 <translation id="8262312463845990408">प्लेब्याक टगल गर्नुहोस्</translation>
 <translation id="8268302343625273732">Google Classroom का सबै असाइनमेन्टहरू हेर्नुहोस्</translation>
 <translation id="8277261673056602147">स्क्रिनमा देखाइएको टेक्स्ट हाइलाइट गर्नुहोस्</translation>
+<translation id="8282784978194352587">तपाईंहरूले गरेर देखाउनुभयो!</translation>
 <translation id="8287009018010202411">उत्पादकत्व</translation>
 <translation id="828708037801473432">अफ</translation>
 <translation id="8297006494302853456">कमजोर</translation>
@@ -2148,6 +2162,7 @@
 <translation id="8380784334203145311">नमस्ते,</translation>
 <translation id="8382715499079447151">सुरक्षित रूपमा हेर्ने सुविधा</translation>
 <translation id="8383614331548401927">स्वागत रिक्याप</translation>
+<translation id="838540623579162843">Music Premium को सदस्यता लिनुहोस्</translation>
 <translation id="8388750414311082622">अन्तिम डेस्क हटाउन सकिँदैन।</translation>
 <translation id="8394567579869570560">तपाईंका अभिभावकले यो डिभाइस लक गर्नुभयो</translation>
 <translation id="8401850874595457088">भाषासम्बन्धी मेनु खोल्नुहोस्</translation>
@@ -2165,7 +2180,6 @@
 <translation id="8443879455002739353">"कपी गर"</translation>
 <translation id="8444246603146515890">डेस्क <ph name="DESK_TITILE" /> सक्रिय गरियो</translation>
 <translation id="8446884382197647889">थप जान्नुहोस्</translation>
-<translation id="8452090802952003258">आफ्नो माइकको साउन्ड सुन्नुहोस्</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'सेलेक्ट टु स्पिक' बन्द गर्नुहोस्</translation>
 <translation id="8468806060683421065"><ph name="DUE_DATE_AND_TIME" /> भित्र सम्पन्न हुनु पर्ने</translation>
@@ -2201,6 +2215,7 @@
 <translation id="8609384513243082612">नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="861045123704058818">एपहरू अस्थायी रूपमा कोटीअनुसार व्यवस्थापन गरिएका छन्</translation>
 <translation id="8612216344243590325">महत्त्वपूर्ण फाइलहरूलाई डेस्कटपको साटो <ph name="HOLDING_SPACE_TITLE" /> मा राख्नुहोस्। यसका लागि तपाईंले फाइलहरू ड्रयाग गरेर <ph name="HOLDING_SPACE_TITLE" /> मा लगे पुग्छ।</translation>
+<translation id="8612338981637220013">तपाईं लगातार सफल भइरहनुभएको छ!</translation>
 <translation id="8614517853887502247">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" /> र <ph name="APP_2_TITLE" /> सम्बन्धी सूचनाहरू लुकाइएका छन्</translation>
 <translation id="8615778328722901791">टुलबार खोल्नुहोस्</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2227,7 +2242,6 @@
 <translation id="8683506306463609433">प्रदर्शन ट्रेस सक्रिय छ</translation>
 <translation id="8703634754197148428">रेकर्ड गर्न थाल्नुहोस्। रेकर्ड हुन थालेपछि सेल्फमा जान Alt + Shift + L थिच्नुहोस् र रेकर्ड गर्न बन्द गर्ने बटन भेट्टाउनुहोस्</translation>
 <translation id="8704155109538237473">Picture-in-Picture विन्डोमा फोकस गर्नुहोस्</translation>
-<translation id="8708657523363087260">साइडटोन टगल गर्नुहोस्</translation>
 <translation id="870917907284186124">स्पिच-टु-टेक्स्ट (बोलेरै टाइप गर्ने सुविधा) अन/अफ गर्नुहोस्</translation>
 <translation id="8711169534266271368">गेम ड्यासबोर्डसम्बन्धी विकल्पहरू</translation>
 <translation id="8712637175834984815">भयो</translation>
@@ -2244,6 +2258,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: एक्टिभेट गरिँदै छ...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">यो क्रम जारी राख्नुहोस्!</translation>
 <translation id="8753368202781196133">यो भाषा अहिले प्रयोग गर्न मिल्दैन।</translation>
 <translation id="8755498163081687682">आफ्नो पहिचान पुष्टि गर्नुहोस्: <ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="875593634123171288">VPN सेटिङहरू देखाउनुहोस्</translation>
@@ -2285,8 +2300,8 @@
 <translation id="8876661425082386199">आफ्नो यन्त्रको ब्लुटुथ वा Wi-Fi कनेक्सन जाँच्नुहोस्</translation>
 <translation id="8877788021141246043">कुनै रिमाइन्डर सेट गर्नुहोस्</translation>
 <translation id="8878886163241303700">स्क्रिनलाई विस्तार गर्दै</translation>
+<translation id="8885424115080869847">YouTube Music मा कनेक्ट गर्न सकिएन</translation>
 <translation id="888982883502837004">तपाईंको डिभाइसका हकमा फर्मवेयरसम्बन्धी अपडेटहरू उपलब्ध छन्। तपाईं समीक्षा हेर्न र अपडेट प्राप्त गर्न चाहनुहुन्छ भने क्लिक गर्नुहोस्।</translation>
-<translation id="8893479486525393799">स्टुडियो माइक</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> सदाका लागि मेटाइने छ</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ (लगभग <ph name="TIME_LEFT" />)। आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
 <translation id="88986195241502842">पृष्ठ तल</translation>
@@ -2301,6 +2316,7 @@
 <translation id="8938800817013097409">USB-C यन्त्र (पछाडिको दायाँ पोर्ट)</translation>
 <translation id="8939855324412367560">इनपुट अडियो "<ph name="INPUT_DEVICE_NAME" />" हो र आउटपुट अडियो "<ph name="OUTPUT_DEVICE_NAME" />" हो। परिवर्तन गर्न "सेटिङ" मा जानुहोस्।</translation>
 <translation id="8940956008527784070">ब्याटरी कम (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">स्टुडियो शैलीको माइक</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> जाँच बाकसमा चिन्ह लगाइएको छैन।</translation>
 <translation id="8949925099261528566">कनेक्ट भयो, इन्टरनेट छैन</translation>
 <translation id="8951539504029375108">तपाईंको Chromebook मा स्वीकृत Thunderbolt यन्त्रहरू मात्र चल्छन्</translation>

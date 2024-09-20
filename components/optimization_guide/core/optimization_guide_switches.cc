@@ -128,6 +128,10 @@ const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[] =
 const char kOptimizationGuideLanguageOverride[] =
     "optimization-guide-language-override";
 
+// Enables overriding Google API key configuration check for permissions.
+const char kGoogleApiKeyConfigurationCheckOverride[] =
+    "optimization-guide-google-api-key-configuration-check-override";
+
 std::string GetModelQualityServiceAPIKey() {
   // Command line override takes priority.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -285,6 +289,11 @@ std::optional<base::FilePath> GetOnDeviceValidationWriteToFile() {
 bool ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kGetFreeDiskSpaceWithUserVisiblePriorityTask);
+}
+
+bool ShouldSkipGoogleApiKeyConfigurationCheck() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(kGoogleApiKeyConfigurationCheckOverride);
 }
 
 }  // namespace switches

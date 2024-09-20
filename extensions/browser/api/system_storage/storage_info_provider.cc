@@ -57,11 +57,9 @@ void StorageInfoProvider::GetAllStoragesIntoInfoList() {
   std::vector<StorageInfo> storage_list =
       StorageMonitor::GetInstance()->GetAllAvailableStorages();
 
-  for (std::vector<StorageInfo>::const_iterator it = storage_list.begin();
-       it != storage_list.end();
-       ++it) {
+  for (const auto& info : storage_list) {
     StorageUnitInfo unit;
-    systeminfo::BuildStorageUnitInfo(*it, &unit);
+    systeminfo::BuildStorageUnitInfo(info, &unit);
     info_.push_back(std::move(unit));
   }
 }
@@ -75,12 +73,11 @@ double StorageInfoProvider::GetStorageFreeSpaceFromTransientIdAsync(
       StorageMonitor::GetInstance()->GetDeviceIdForTransientId(transient_id);
 
   // Lookup the matched storage info by |device_id|.
-  for (std::vector<StorageInfo>::const_iterator it = storage_list.begin();
-       it != storage_list.end();
-       ++it) {
-    if (device_id == it->device_id())
-      return static_cast<double>(
-          base::SysInfo::AmountOfFreeDiskSpace(base::FilePath(it->location())));
+  for (const auto& info : storage_list) {
+    if (device_id == info.device_id()) {
+      return static_cast<double>(base::SysInfo::AmountOfFreeDiskSpace(
+          base::FilePath(info.location())));
+    }
   }
 
   return -1;
@@ -88,8 +85,9 @@ double StorageInfoProvider::GetStorageFreeSpaceFromTransientIdAsync(
 
 // static
 StorageInfoProvider* StorageInfoProvider::Get() {
-  if (provider_.Get().get() == nullptr)
+  if (provider_.Get().get() == nullptr) {
     provider_.Get() = new StorageInfoProvider();
+  }
   return provider_.Get().get();
 }
 

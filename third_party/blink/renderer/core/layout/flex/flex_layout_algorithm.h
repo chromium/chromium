@@ -73,8 +73,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   void ConstructAndAppendFlexItems(
       Phase phase,
       HeapVector<Member<LayoutBox>>* oof_children = nullptr);
-  void ApplyFinalAlignmentAndReversals(
-      HeapVector<NGFlexLine>* flex_line_outputs);
+  void ApplyReversals(HeapVector<NGFlexLine>* flex_line_outputs);
   LayoutResult::EStatus GiveItemsFinalPositionAndSize(
       HeapVector<NGFlexLine>* flex_line_outputs,
       Vector<EBreakBetween>* row_break_between_outputs);

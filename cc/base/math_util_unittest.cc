@@ -189,9 +189,7 @@ TEST(MathUtilTest, EnclosingClippedRectHandlesSmallPositiveW) {
 }
 
 TEST(MathUtilTest, EnclosingRectOfVerticesUsesCorrectInitialBounds) {
-  gfx::PointF vertices[3];
-  int num_vertices = 3;
-
+  std::array<gfx::PointF, 3> vertices;
   vertices[0] = gfx::PointF(-10, -100);
   vertices[1] = gfx::PointF(-100, -10);
   vertices[2] = gfx::PointF(-30, -30);
@@ -200,8 +198,7 @@ TEST(MathUtilTest, EnclosingRectOfVerticesUsesCorrectInitialBounds) {
   // However, if there is a bug where the initial xmin/xmax/ymin/ymax are
   // initialized to numeric_limits<float>::min() (which is zero, not -flt_max)
   // then the enclosing clipped rect will be computed incorrectly.
-  gfx::RectF result =
-      MathUtil::ComputeEnclosingRectOfVertices(vertices, num_vertices);
+  gfx::RectF result = MathUtil::ComputeEnclosingRectOfVertices(vertices);
 
   EXPECT_RECTF_EQ(gfx::RectF(-100, -100, 90, 90), result);
 }
@@ -631,7 +628,7 @@ TEST(MathUtilTest, MapClippedQuadDuplicateTriangle) {
                       gfx::PointF(-99.0f, -300.0f),
                       gfx::PointF(-99.0f, -100.0f));
 
-  gfx::Point3F clipped_quad[8];
+  std::array<gfx::Point3F, 6> clipped_quad;
   int num_vertices_in_clipped_quad;
 
   MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
@@ -656,7 +653,7 @@ TEST(MathUtilTest, MapClippedQuadDuplicatePoints) {
   gfx::QuadF src_quad(gfx::PointF(-99.0f, -50.0f), gfx::PointF(-99.0f, -50.0f),
                       gfx::PointF(0.0f, 100.0f), gfx::PointF(0.0f, -100.0f));
 
-  gfx::Point3F clipped_quad[8];
+  std::array<gfx::Point3F, 6> clipped_quad;
   int num_vertices_in_clipped_quad;
 
   MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
@@ -676,7 +673,7 @@ TEST(MathUtilTest, MapClippedQuadDuplicatePointsWrapped) {
   gfx::QuadF src_quad(gfx::PointF(-99.0f, -50.0f), gfx::PointF(0.0f, 100.0f),
                       gfx::PointF(0.0f, -100.0f), gfx::PointF(-99.0f, -50.0f));
 
-  gfx::Point3F clipped_quad[8];
+  std::array<gfx::Point3F, 6> clipped_quad;
   int num_vertices_in_clipped_quad;
 
   MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
@@ -697,7 +694,7 @@ TEST(MathUtilTest, MapClippedQuadDuplicateQuad) {
   gfx::QuadF src_quad(gfx::PointF(0.0f, -50.0f), gfx::PointF(400.0f, -50.0f),
                       gfx::PointF(0.0f, -100.0f), gfx::PointF(-99.0f, -300.0f));
 
-  gfx::Point3F clipped_quad[8];
+  std::array<gfx::Point3F, 6> clipped_quad;
   int num_vertices_in_clipped_quad;
 
   MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
@@ -752,7 +749,7 @@ TEST(MathUtilTest, MapClippedQuadInfiniteInSomeDimensions) {
   gfx::QuadF src_quad(gfx::PointF(0.0f, 0.0f), gfx::PointF(0.0f, 100.0f),
                       gfx::PointF(100.0f, 100.0f), gfx::PointF(100.0f, 0.0f));
 
-  gfx::Point3F clipped_quad[8];
+  std::array<gfx::Point3F, 6> clipped_quad;
   int num_vertices_in_clipped_quad;
 
   MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
@@ -792,7 +789,7 @@ TEST(MathUtilTest, MapClippedQuadInfiniteInSomeDimensionsNonZero) {
   gfx::QuadF src_quad(gfx::PointF(0.0f, 0.0f), gfx::PointF(0.0f, 100.0f),
                       gfx::PointF(100.0f, 100.0f), gfx::PointF(100.0f, 0.0f));
 
-  gfx::Point3F clipped_quad[8];
+  std::array<gfx::Point3F, 6> clipped_quad;
   int num_vertices_in_clipped_quad;
 
   MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
@@ -826,7 +823,7 @@ TEST(MathUtilTest, MapClippedQuadClampInvisiblePlane) {
                       gfx::PointF(1000.0f, 1000.0f),
                       gfx::PointF(1000.0f, 0.0f));
 
-  gfx::Point3F clipped_quad[8];
+  std::array<gfx::Point3F, 6> clipped_quad;
   int num_vertices_in_clipped_quad;
 
   transform.MakeIdentity();
@@ -922,7 +919,7 @@ TEST(MathUtilTest, MapClippedQuadClampWholePlane) {
                       gfx::PointF(100.0f, 10000.0f),
                       gfx::PointF(100.0f, -10000.0f));
 
-  gfx::Point3F clipped_quad[8];
+  std::array<gfx::Point3F, 6> clipped_quad;
   int num_vertices_in_clipped_quad;
 
   MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
@@ -959,7 +956,7 @@ TEST(MathUtilTest, MapClippedQuadClampWholePlaneBelow) {
                       gfx::PointF(10000.0f, 100.0f),
                       gfx::PointF(10000.0f, 0.0f));
 
-  gfx::Point3F clipped_quad[8];
+  std::array<gfx::Point3F, 6> clipped_quad;
   int num_vertices_in_clipped_quad;
 
   MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
@@ -996,7 +993,7 @@ TEST(MathUtilTest, MapClippedQuadInfiniteMatrix) {
   gfx::QuadF src_quad(gfx::PointF(0.0f, 1.0f), gfx::PointF(1.0f, 1.0f),
                       gfx::PointF(1.0f, 2.0f), gfx::PointF(0.0f, 2.0f));
 
-  gfx::Point3F clipped_quad[8];
+  std::array<gfx::Point3F, 6> clipped_quad;
   int num_vertices_in_clipped_quad;
 
   MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,

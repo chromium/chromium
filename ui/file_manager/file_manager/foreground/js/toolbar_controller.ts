@@ -8,7 +8,6 @@ import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
-import {isNonModifiable} from '../../common/js/entry_utils.js';
 import {isCrosComponentsEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
 import {canBulkPinningCloudPanelShow} from '../../common/js/util.js';
@@ -252,10 +251,7 @@ export class ToolbarController {
 
     // Update visibility of the delete and move to trash buttons.
     this.deleteButton_.hidden =
-        (selection.totalCount === 0 ||
-         selection.hasReadOnlyEntry() ||
-         selection.entries.some(
-             entry => isNonModifiable(this.volumeManager_, entry)));
+        (selection.totalCount === 0 || selection.hasReadOnlyEntry());
     // Show 'Move to Trash' rather than 'Delete' if possible. The
     // `moveToTrashCommand` needs to be set to hidden to ensure the
     // `canExecuteChange` invokes the `hiddenChange` event in the case where

@@ -569,7 +569,8 @@ crbug.com/1473838 [ android angle-opengles passthrough ] conformance2/extensions
 
 # Failing on some platforms.
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/1175371 [ angle-metal mac no-asan oop-c ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/1175371 [ amd-0x7340 angle-metal mac-x86_64 no-asan oop-c sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/366502831 [ mac angle-metal intel-0x3e9b passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
@@ -582,6 +583,10 @@ crbug.com/949249 [ linux passthrough angle-opengl ] conformance2/extensions/ovr_
 
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
+
+# Flaking on Win/Intel UHD 770 and Mac/M1
+crbug.com/365680830 [ win angle-d3d11 intel-0x4680 ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
+crbug.com/365680830 [ mac angle-metal apple ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
 
 
 ####################
@@ -665,33 +670,33 @@ crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] conf
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/pixelbufferobject.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/shaderpackingfunction.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_greater_or_equal.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_greater_or_equal.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_greater_or_equal.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_greater.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_greater.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_greater.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_less_or_equal.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_less_or_equal.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_less_or_equal.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_less.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_less.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_nearest_less.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_greater_or_equal.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_greater_or_equal.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_greater_or_equal.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_greater.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_greater.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_greater.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_less_or_equal.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_less_or_equal.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_less_or_equal.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_less.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_less.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_linear_mipmap_nearest_less.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_greater_or_equal.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_greater_or_equal.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_greater_or_equal.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_greater.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_greater.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_greater.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_less_or_equal.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_less_or_equal.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_less_or_equal.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_less.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_less.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_less.html [ Failure ]
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/texturespecification/texstorage2d_format_depth_stencil.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/texturespecification/texstorage2d_format_depth_stencil.html [ Failure ]
+crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/texturespecification/texstorage2d_format_depth_stencil.html [ Failure ]
 crbug.com/angleproject/7425 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
-crbug.com/angleproject/7425 [ angle-metal intel-gen-9 passthrough sonoma ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
+crbug.com/angleproject/7425 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
 
 
 crbug.com/328100306 [ amd angle-metal graphite-enabled sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
@@ -876,6 +881,7 @@ crbug.com/1081978 [ angle-opengl intel-0x9bc5 linux passthrough ] conformance2/t
 ## Linux NVIDIA ##
 
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
+crbug.com/366284863 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/shaderoperator/sequence.html [ RetryOnFailure ]
 
 ## Linux AMD RX 5500 XT ##
 
@@ -966,8 +972,6 @@ crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 
 crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/extensions/ext-render-snorm.html [ Failure ]
 
-crbug.com/365033313 [ chromeos cros-chrome chromeos-board-amd64-generic ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/365033313 [ chromeos cros-chrome chromeos-board-amd64-generic ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 
 # Suspected i915 image uprev
 crbug.com/1498990 [ chromeos chromeos-board-octopus ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
@@ -1010,6 +1014,7 @@ crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functiona
 crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/single_basic_array.html [ Failure ]
 crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/single_basic_type.html [ Failure ]
+crbug.com/40285462 [ chromeos cros-chrome chromeos-board-jacuzzi angle-opengles passthrough arm ] conformance2/extensions/ext-disjoint-timer-query-webgl2.html [ Failure ]
 # Broadly flaky unsymbolized crashes on Jacuzzi
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/* [ RetryOnFailure ]
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/* [ RetryOnFailure ]

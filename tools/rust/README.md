@@ -124,19 +124,6 @@ gen` does different things for creating gn rules for the standard library
 versus for various non-standard-library packages, such as producing a single
 BUILD.gn file.
 
-### Possible failure: Missing dependencies
-
-`build_rust.py` will vendor all dependencies before starting the build. To do
-this it first initializes git submodules. Then it runs `cargo vendor`. However
-some parts of the compiler build are excluded from the top level Cargo.toml
-workspace. Thus it passes `--sync dir` for a number of subdirectories, based
-on [dist.rs, the nightly tarball packager](
-https://github.com/rust-lang/rust/blob/master/src/bootstrap/dist.rs#L986-L995).
-
-If another Cargo.toml is required in the future, and not part of the workspace
-it would produce missing dependencies, and the set of directories in
-`build_rust.py` would need to be updated.
-
 ### Possible failure: Missing sources or inputs
 
 A build error when building the stdlib in Chromium may look like:
@@ -185,21 +172,40 @@ To fix the error:
 * Find the failing build target crate's rules in
   `//build/rust/std/gnrt_config.toml`. The failing crate in the above example
   is `libstd.rlib`, so we want the `[crate.std]` section of the config file.
+* Determine if the target being built is a library or a build script. Build
+  script targets end with the suffix `_build_script`. For example:
+  ```
+  [13627/84339] RUST(BIN) clang_x64_for_rust_host_build_tools/compiler_builtins_compiler_builtins_vunknown_build_script
+  python3 ../../build/rust/rustc_wrapper.py --rustc=../../third_party/rust-toolchain/bin/rustc --depfi...(too long)
+  ERROR: file not in GN sources: ../../third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.123/configure.rs
+  ```
 * Determine if the missing file should go in `sources` or `inputs`.
   * For `sources`, add the path to a `extra_src_roots` list in the crate's
     rules. For the above example, we could add
     `extra_src_roots = ['../../portable-simd/crates/std_float/src']`.
+    * Or if it was a build script target, then
+      `extra_build_script_src_roots = ['../../portable-simd/crates/std_float/src']`.
   * For `inputs`, add the path to a `extra_input_roots` list in the crate's
     rules. For the above example, we could add
     `extra_input_roots = ['../../stdarch/crates/core_arch/src']`.
+    * Or if it was a build script target, then
+      `extra_build_script_input_roots = ['../../stdarch/crates/core_arch/src']`.
 * With the roll CL checked out, run `gclient sync`.
+
 *** note
 NOTE: `gclient sync` will download the version of the rust toolchain from the
 roll CL. In order for this to work, the upload_rust bots should've completed and
 `copy_staging_to_prod_and_goma.sh should've been run.
 ***
+
 * Run `tools/rust/gnrt_stdlib.py` to use gnrt to rebuild the stdlib GN rules
   using the updated config.
+
+*** note
+NOTE: All gnrt_config options are found in
+[//tools/crates/gnrt/lib/config.rs](https://source.chromium.org/chromium/chromium/src/+/main:tools/crates/gnrt/lib/config.rs).
+The `CrateConfig` type has the various per-crate config options.
+***
 
 ### Generating `BUILD.gn` files for stdlib crates
 

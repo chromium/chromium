@@ -17,8 +17,8 @@ make persistent changes to the computer or access information that is
 confidential. The architecture and exact assurances that the sandbox provides
 are dependent on the operating system. This document covers the Windows
 implementation as well as the general design. The Linux implementation is
-described [here](../linux/sandboxing.md), the OSX implementation
-[here](http://dev.chromium.org/developers/design-documents/sandbox/osx-sandboxing-design).
+described [here](../../linux/sandbox/linux/README.md), the OSX implementation
+[here](https://dev.chromium.org/developers/design-documents/sandbox/osx-sandboxing-design).
 
 If you don't feel like reading this whole document you can read the
 [Sandbox FAQ](sandbox_faq.md) instead. A description of what the sandbox does

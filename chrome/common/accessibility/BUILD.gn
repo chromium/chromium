@@ -10,6 +10,7 @@ mojom("mojo_bindings") {
   sources = [ "read_anything.mojom" ]
   public_deps = [
     "//mojo/public/mojom/base",
+    "//ui/accessibility:ax_features_mojo",
     "//ui/accessibility/mojom",
     "//url/mojom:url_mojom_gurl",
   ]

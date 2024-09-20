@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/features.h"
@@ -28,13 +29,34 @@
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/saved_tab_groups/utils.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/service/account_pref_utils.h"
 
 namespace tab_groups {
 namespace {
 constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Seconds(10);
+
+void OnCanApplyOptimizationCompleted(
+    TabGroupSyncService::UrlRestrictionCallback callback,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::optional<proto::UrlRestriction> url_restriction;
+  if (metadata.any_metadata().has_value()) {
+    url_restriction =
+        optimization_guide::ParsedAnyMetadata<proto::UrlRestriction>(
+            metadata.any_metadata().value());
+  }
+
+  std::move(callback).Run(std::move(url_restriction));
+}
 
 }  // namespace
 
@@ -43,7 +65,8 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
     PrefService* pref_service,
-    std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger)
+    std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : model_(std::move(model)),
       sync_bridge_mediator_(std::make_unique<TabGroupSyncBridgeMediator>(
           model_.get(),
@@ -51,8 +74,13 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
           std::move(saved_tab_group_configuration),
           std::move(shared_tab_group_configuration))),
       metrics_logger_(std::move(metrics_logger)),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      opt_guide_(optimization_guide_decider) {
   model_->AddObserver(this);
+  if (opt_guide_) {
+    opt_guide_->RegisterOptimizationTypes(
+        {optimization_guide::proto::SAVED_TAB_GROUP});
+  }
 }
 
 TabGroupSyncServiceImpl::~TabGroupSyncServiceImpl() {
@@ -73,6 +101,19 @@ void TabGroupSyncServiceImpl::SetCoordinator(
 std::unique_ptr<ScopedLocalObservationPauser>
 TabGroupSyncServiceImpl::CreateScopedLocalObserverPauser() {
   return coordinator_->CreateScopedLocalObserverPauser();
+}
+
+void TabGroupSyncServiceImpl::GetURLRestriction(
+    const GURL& url,
+    TabGroupSyncService::UrlRestrictionCallback callback) {
+  if (!opt_guide_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  opt_guide_->CanApplyOptimization(
+      url, optimization_guide::proto::SAVED_TAB_GROUP,
+      base::BindOnce(&OnCanApplyOptimizationCompleted, std::move(callback)));
 }
 
 void TabGroupSyncServiceImpl::AddObserver(
@@ -120,14 +161,19 @@ void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
 
   VLOG(2) << __func__;
   base::Uuid group_id = group.saved_guid();
-  LocalTabGroupID local_group_id = group.local_group_id().value();
   group.SetCreatedBeforeSyncingTabGroups(
       !sync_bridge_mediator_->IsSavedBridgeSyncing());
   group.SetCreatorCacheGuid(
       sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
+
+  std::optional<LocalTabGroupID> local_group_id = group.local_group_id();
+
   model_->Add(std::move(group));
 
-  LogEvent(TabGroupEvent::kTabGroupCreated, local_group_id);
+  // Local group id can be null for tests.
+  if (local_group_id.has_value()) {
+    LogEvent(TabGroupEvent::kTabGroupCreated, local_group_id.value());
+  }
 }
 
 void TabGroupSyncServiceImpl::RemoveGroup(const LocalTabGroupID& local_id) {
@@ -359,6 +405,11 @@ void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(
   }
 
   VLOG(2) << __func__;
+
+  // If the group was marked as locally-closed in prefs, clear that entry - the
+  // group has been reopened.
+  RemoveLocallyClosedGroupIdFromPref(sync_id);
+
   model_->OnGroupOpenedInTabStrip(sync_id, local_id);
 }
 
@@ -371,6 +422,9 @@ void TabGroupSyncServiceImpl::RemoveLocalTabGroupMapping(
   if (!group) {
     return;
   }
+
+  // Record the group's guid as locally-closed in prefs.
+  AddLocallyClosedGroupIdToPref(group->saved_guid());
 
   model_->OnGroupClosedInTabStrip(local_id);
 }
@@ -413,6 +467,19 @@ bool TabGroupSyncServiceImpl::IsRemoteDevice(
   }
 
   return local_cache_guid.value() != cache_guid.value();
+}
+
+bool TabGroupSyncServiceImpl::WasTabGroupClosedLocally(
+    const base::Uuid& sync_tab_group_id) const {
+  std::optional<std::string> account_id =
+      sync_bridge_mediator_->GetAccountIdForSavedBridge();
+  if (account_id) {
+    return syncer::GetAccountKeyedPrefDictEntry(
+        pref_service_, prefs::kLocallyClosedRemoteTabGroupIds,
+        signin::GaiaIdHash::FromGaiaId(*account_id),
+        sync_tab_group_id.AsLowercaseString().c_str());
+  }
+  return false;
 }
 
 void TabGroupSyncServiceImpl::RecordTabGroupEvent(
@@ -561,6 +628,16 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
     TriggerSource source) {
   VLOG(2) << __func__;
 
+  // When a group is deleted, there's no more need to keep any "was locally
+  // closed" pref entry around.
+  // TODO(crbug.com/363927991): This also gets called during signout, when all
+  // groups that belong to the account get closed. In that case, the pref
+  // entries should *not* get cleared. Currently this only works because the
+  // account_id has already been cleared here, which is fragile. Ideally,
+  // HandleTabGroupRemoved() would receive a "reason" param, where one of the
+  // possible values would be "signout".
+  RemoveLocallyClosedGroupIdFromPref(id_pair.first);
+
   if (is_initialized_) {
     for (auto& observer : observers_) {
       observer.OnTabGroupRemoved(id_pair.first, source);
@@ -618,6 +695,36 @@ void TabGroupSyncServiceImpl::RemoveDeletedGroupIdFromPref(
     const LocalTabGroupID& local_id) {
   ScopedDictPrefUpdate update(pref_service_, prefs::kDeletedTabGroupIds);
   update->Remove(LocalTabGroupIDToString(local_id));
+}
+
+void TabGroupSyncServiceImpl::AddLocallyClosedGroupIdToPref(
+    const base::Uuid& sync_id) {
+  std::optional<std::string> account_id =
+      sync_bridge_mediator_->GetAccountIdForSavedBridge();
+  if (!account_id) {
+    // If there's no signed-in account, nothing to do.
+    return;
+  }
+  syncer::SetAccountKeyedPrefDictEntry(
+      pref_service_, prefs::kLocallyClosedRemoteTabGroupIds,
+      signin::GaiaIdHash::FromGaiaId(*account_id),
+      sync_id.AsLowercaseString().c_str(), base::Value());
+}
+
+void TabGroupSyncServiceImpl::RemoveLocallyClosedGroupIdFromPref(
+    const base::Uuid& sync_id) {
+  std::optional<std::string> account_id =
+      sync_bridge_mediator_->GetAccountIdForSavedBridge();
+  if (!account_id) {
+    // If there's no signed-in account, nothing to do. Most notably, this
+    // happens right after sign-out, when all tab groups associated to the
+    // account get closed.
+    return;
+  }
+  syncer::RemoveAccountKeyedPrefDictEntry(
+      pref_service_, prefs::kLocallyClosedRemoteTabGroupIds,
+      signin::GaiaIdHash::FromGaiaId(*account_id),
+      sync_id.AsLowercaseString().c_str());
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupLocalIdChanged(

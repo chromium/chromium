@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.EntryPoints" enum="IOSMenuScenario"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
@@ -180,6 +180,8 @@ chromium-metrics-reviews@google.com.
         summary="Autofill manual fallback password entry"/>
     <variant name="AutofillManualFallbackPaymentEntry"
         summary="Autofill manual fallback payment entry"/>
+    <variant name="AutofillManualFallbackPlusAddressEntry"
+        summary="Autofill manual fallback plus address entry"/>
     <variant name="BookmarkEntry" summary="Bookmark entry"/>
     <variant name="BookmarkFolder" summary="Bookmark folder"/>
     <variant name="HistoryEntry" summary="History entry"/>
@@ -200,6 +202,8 @@ chromium-metrics-reviews@google.com.
     <variant name="TabGridSearchResult" summary="Tab Grid Search Result"/>
     <variant name="TabGroupEntry" summary="Tab group view entry"/>
     <variant name="TabGroupIndicatorEntry" summary="Tab Group Indicator Entry"/>
+    <variant name="TabGroupIndicatorNTPEntry"
+        summary="Tab Group Indicator on NTP Entry"/>
     <variant name="TabGroupsPanelEntry" summary="Tab group panel entry"/>
     <variant name="TabGroupViewEntry"
         summary="Tab group view entry in tab grid"/>
@@ -307,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Event.{MobileInfobarType}"
-    enum="MobileMessagesBannerEvent" expires_after="2025-01-05">
+    enum="MobileMessagesBannerEvent" expires_after="2025-03-09">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records infobar banner events. {MobileInfobarType}</summary>
@@ -384,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Event"
-    enum="MobileMessagesPasswordsModalEvent" expires_after="2024-09-29">
+    enum="MobileMessagesPasswordsModalEvent" expires_after="2025-09-29">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -1003,7 +1007,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.Progress.{MobileFreEntryType}"
-    enum="MobileFreProgress" expires_after="2025-01-05">
+    enum="MobileFreProgress" expires_after="2025-03-09">
   <owner>bsazonov@chromium.org</owner>
   <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1160,7 +1164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileOmnibox.PressedClipboardSuggestionAge" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
@@ -1208,8 +1212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilDismiss"
-    units="impressions" expires_after="2024-09-15">
-  <owner>mrefaat@chromium.org</owner>
+    units="impressions" expires_after="2025-09-15">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1219,8 +1222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="2023-06-01">
-  <owner>mrefaat@chromium.org</owner>
+    units="impressions" expires_after="2025-09-15">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1232,8 +1234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilXButton"
-    units="impressions" expires_after="2024-10-06">
-  <owner>mrefaat@chromium.org</owner>
+    units="impressions" expires_after="2025-09-15">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1313,7 +1314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.IntentToCreationTime" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>

@@ -1,4 +1,4 @@
-rootWebArea pageLocation=(0, 0)
+rootWebArea pageLocation=(0, 0) name='done'
 ++genericContainer ignored
 ++++genericContainer pageLocation=(0, 50)
 ++++++genericContainer pageLocation=(0, 50)

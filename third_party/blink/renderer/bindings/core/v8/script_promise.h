@@ -81,8 +81,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
   ScriptPromise<IDLAny> Then(ScriptFunction* on_fulfilled,
                              ScriptFunction* on_rejected = nullptr);
 
-  ScriptValue AsScriptValue() const { return promise_; }
-
   v8::Local<v8::Value> V8Value() const { return promise_.V8Value(); }
   v8::Local<v8::Promise> V8Promise() const {
     // This is safe because `promise_` always stores a promise value as long
@@ -104,19 +102,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
   bool operator!=(const ScriptPromiseUntyped& value) const {
     return !operator==(value);
   }
-
-  // Constructs and returns a ScriptPromiseUntyped from |value|.
-  // if `value` is not a Promise object, returns a Promise object
-  // resolved with `value`.
-  // Returns `value` itself if it is a Promise.
-  // This is intended only for cases where we are receiving an arbitrary
-  // `value` of unknown type from script. If constructing a ScriptPromise
-  // of known type, use ToResolvedPromise<>.
-  static ScriptPromiseUntyped FromUntypedValueForBindings(ScriptState*,
-                                                          v8::Local<v8::Value>);
-
-  // Constructs and returns a ScriptPromiseUntyped resolved with undefined.
-  static ScriptPromiseUntyped CastUndefined(ScriptState*);
 
   static ScriptPromiseUntyped Reject(ScriptState*, const ScriptValue&);
   static ScriptPromiseUntyped Reject(ScriptState*, v8::Local<v8::Value>);
@@ -149,11 +134,23 @@ class ScriptPromise : public ScriptPromiseUntyped {
   ScriptPromise() = default;
 
   template <typename T = IDLResolvedType>
-  static ScriptPromise<T> FromV8Promise(
-      v8::Isolate* isolate,
-      v8::Local<v8::Promise> promise,
-      typename std::enable_if<std::is_same_v<T, IDLAny>>::type* = 0) {
+    requires std::is_same_v<T, IDLAny>
+  static ScriptPromise<T> FromV8Promise(v8::Isolate* isolate,
+                                        v8::Local<v8::Promise> promise) {
     return ScriptPromise<T>(isolate, promise);
+  }
+
+  template <typename T = IDLResolvedType>
+    requires std::is_same_v<T, IDLAny>
+  static ScriptPromise<T> FromV8Value(v8::Isolate* isolate,
+                                      v8::Local<v8::Value> value) {
+    if (value.IsEmpty()) {
+      return ScriptPromise<T>();
+    }
+    if (value->IsPromise()) {
+      return FromV8Promise(isolate, value.As<v8::Promise>());
+    }
+    return ToResolvedPromise<T>(ScriptState::ForCurrentRealm(isolate), value);
   }
 
   static ScriptPromise<IDLResolvedType> RejectWithDOMException(
@@ -237,6 +234,13 @@ namespace WTF {
 template <>
 struct VectorTraits<blink::ScriptPromiseUntyped>
     : VectorTraitsBase<blink::ScriptPromiseUntyped> {
+  STATIC_ONLY(VectorTraits);
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+};
+
+template <typename T>
+struct VectorTraits<blink::ScriptPromise<T>>
+    : VectorTraitsBase<blink::ScriptPromise<T>> {
   STATIC_ONLY(VectorTraits);
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
 };

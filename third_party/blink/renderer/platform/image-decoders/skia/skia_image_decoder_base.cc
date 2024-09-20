@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/skia/skia_image_decoder_base.h"
 
 #include <limits>
+#include <stack>
 
 #include "third_party/blink/renderer/platform/image-decoders/segment_stream.h"
 #include "third_party/skia/include/codec/SkCodec.h"
@@ -209,116 +210,137 @@ void SkiaImageDecoderBase::InitializeNewFrame(wtf_size_t index) {
 }
 
 void SkiaImageDecoderBase::Decode(wtf_size_t index) {
-  if (!codec_ || segment_stream_->IsCleared() || IsFailedFrameIndex(index)) {
-    return;
-  }
+  struct FrameData {
+    wtf_size_t index;
+    wtf_size_t previous_frame_index;
+  };
+  std::stack<FrameData> frames_to_decode;
+  frames_to_decode.push({index, kNotFound});
 
-  DCHECK(!Failed());
+  while (!frames_to_decode.empty()) {
+    const FrameData& current_frame = frames_to_decode.top();
+    wtf_size_t current_frame_index = current_frame.index;
+    wtf_size_t previous_frame_index = current_frame.previous_frame_index;
+    frames_to_decode.pop();
 
-  DCHECK_LT(index, frame_buffer_cache_.size());
+    if (!codec_ || segment_stream_->IsCleared() || IsFailedFrameIndex(current_frame_index)) {
+      continue;
+    }
 
-  ImageFrame& frame = frame_buffer_cache_[index];
-  if (frame.GetStatus() == ImageFrame::kFrameComplete) {
-    return;
-  }
+    DCHECK(!Failed());
 
-  UpdateAggressivePurging(index);
+    DCHECK_LT(current_frame_index, frame_buffer_cache_.size());
 
-  if (frame.GetStatus() == ImageFrame::kFrameEmpty) {
-    wtf_size_t required_previous_frame_index =
-        frame.RequiredPreviousFrameIndex();
-    if (required_previous_frame_index == kNotFound) {
-      frame.AllocatePixelData(Size().width(), Size().height(),
-                              ColorSpaceForSkImages());
-      frame.ZeroFillPixelData();
-      prior_frame_ = SkCodec::kNoFrame;
-    } else {
-      wtf_size_t previous_frame_index = GetViableReferenceFrameIndex(index);
-      if (previous_frame_index == kNotFound) {
-        previous_frame_index = required_previous_frame_index;
-        Decode(previous_frame_index);
+    ImageFrame& frame = frame_buffer_cache_[current_frame_index];
+    if (frame.GetStatus() == ImageFrame::kFrameComplete) {
+      continue;
+    }
+
+    UpdateAggressivePurging(current_frame_index);
+
+    if (frame.GetStatus() == ImageFrame::kFrameEmpty) {
+      wtf_size_t required_previous_frame_index =
+          frame.RequiredPreviousFrameIndex();
+      if (required_previous_frame_index == kNotFound) {
+        frame.AllocatePixelData(Size().width(), Size().height(),
+                                ColorSpaceForSkImages());
+        frame.ZeroFillPixelData();
+        prior_frame_ = SkCodec::kNoFrame;
+      } else {
+        // We check if previous_frame_index is already initialized, meaning it
+        // has been visited already, then if a viable reference frame exists.
+        // If neither, decode required_previous_frame_index.
+        if (previous_frame_index == kNotFound) {
+          previous_frame_index = GetViableReferenceFrameIndex(current_frame_index);
+          if (previous_frame_index == kNotFound) {
+            frames_to_decode.push({current_frame_index, required_previous_frame_index});
+            frames_to_decode.push({required_previous_frame_index, kNotFound});
+            continue;
+          }
+        }
+
         if (IsFailedFrameIndex(previous_frame_index)) {
-          return;
+            continue;
+        }
+
+        // We try to reuse |previous_frame| as starting state to avoid copying.
+        // If CanReusePreviousFrameBuffer returns false, we must copy the data
+        // since |previous_frame| is necessary to decode this or later frames.
+        // In that case copy the data instead.
+        ImageFrame& previous_frame = frame_buffer_cache_[previous_frame_index];
+        if ((!CanReusePreviousFrameBuffer(current_frame_index) ||
+            !frame.TakeBitmapDataIfWritable(&previous_frame)) &&
+            !frame.CopyBitmapData(previous_frame)) {
+          SetFailedFrameIndex(current_frame_index);
+          continue;
+        }
+        prior_frame_ = previous_frame_index;
+      }
+    }
+
+    if (frame.GetStatus() == ImageFrame::kFrameInitialized) {
+      SkCodec::FrameInfo frame_info;
+      bool frame_info_received = codec_->getFrameInfo(current_frame_index, &frame_info);
+      DCHECK(frame_info_received);
+
+      SkAlphaType alpha_type = kOpaque_SkAlphaType;
+      if (frame_info.fAlphaType != kOpaque_SkAlphaType) {
+        if (premultiply_alpha_) {
+          alpha_type = kPremul_SkAlphaType;
+        } else {
+          alpha_type = kUnpremul_SkAlphaType;
         }
       }
 
-      // We try to reuse |previous_frame| as starting state to avoid copying.
-      // If CanReusePreviousFrameBuffer returns false, we must copy the data
-      // since |previous_frame| is necessary to decode this or later frames.
-      // In that case copy the data instead.
-      ImageFrame& previous_frame = frame_buffer_cache_[previous_frame_index];
-      if ((!CanReusePreviousFrameBuffer(index) ||
-           !frame.TakeBitmapDataIfWritable(&previous_frame)) &&
-          !frame.CopyBitmapData(previous_frame)) {
-        SetFailedFrameIndex(index);
-        return;
-      }
-      prior_frame_ = previous_frame_index;
-    }
-  }
+      SkImageInfo image_info = codec_->getInfo()
+                                  .makeColorType(kN32_SkColorType)
+                                  .makeColorSpace(ColorSpaceForSkImages())
+                                  .makeAlphaType(alpha_type);
 
-  if (frame.GetStatus() == ImageFrame::kFrameInitialized) {
-    SkCodec::FrameInfo frame_info;
-    bool frame_info_received = codec_->getFrameInfo(index, &frame_info);
-    DCHECK(frame_info_received);
+      SkCodec::Options options;
+      options.fFrameIndex = current_frame_index;
+      options.fPriorFrame = prior_frame_;
+      options.fZeroInitialized = SkCodec::kNo_ZeroInitialized;
 
-    SkAlphaType alpha_type = kOpaque_SkAlphaType;
-    if (frame_info.fAlphaType != kOpaque_SkAlphaType) {
-      if (premultiply_alpha_) {
-        alpha_type = kPremul_SkAlphaType;
-      } else {
-        alpha_type = kUnpremul_SkAlphaType;
+      SkCodec::Result start_incremental_decode_result =
+          codec_->startIncrementalDecode(image_info, frame.Bitmap().getPixels(),
+                                        frame.Bitmap().rowBytes(), &options);
+      switch (start_incremental_decode_result) {
+        case SkCodec::kSuccess:
+          break;
+        case SkCodec::kIncompleteInput:
+          continue;
+        default:
+          SetFailedFrameIndex(current_frame_index);
+          continue;
       }
+      frame.SetStatus(ImageFrame::kFramePartial);
     }
 
-    SkImageInfo image_info = codec_->getInfo()
-                                 .makeColorType(kN32_SkColorType)
-                                 .makeColorSpace(ColorSpaceForSkImages())
-                                 .makeAlphaType(alpha_type);
-
-    SkCodec::Options options;
-    options.fFrameIndex = index;
-    options.fPriorFrame = prior_frame_;
-    options.fZeroInitialized = SkCodec::kNo_ZeroInitialized;
-
-    SkCodec::Result start_incremental_decode_result =
-        codec_->startIncrementalDecode(image_info, frame.Bitmap().getPixels(),
-                                       frame.Bitmap().rowBytes(), &options);
-    switch (start_incremental_decode_result) {
-      case SkCodec::kSuccess:
+    SkCodec::Result incremental_decode_result = codec_->incrementalDecode();
+    switch (incremental_decode_result) {
+      case SkCodec::kSuccess: {
+        SkCodec::FrameInfo frame_info;
+        bool frame_info_received = codec_->getFrameInfo(current_frame_index, &frame_info);
+        DCHECK(frame_info_received);
+        frame.SetHasAlpha(frame_info.fAlphaType !=
+                          SkAlphaType::kOpaque_SkAlphaType);
+        frame.SetPixelsChanged(true);
+        frame.SetStatus(ImageFrame::kFrameComplete);
+        PostDecodeProcessing(current_frame_index);
         break;
-      case SkCodec::kIncompleteInput:
-        return;
-      default:
-        SetFailedFrameIndex(index);
-        return;
-    }
-    frame.SetStatus(ImageFrame::kFramePartial);
-  }
-
-  SkCodec::Result incremental_decode_result = codec_->incrementalDecode();
-  switch (incremental_decode_result) {
-    case SkCodec::kSuccess: {
-      SkCodec::FrameInfo frame_info;
-      bool frame_info_received = codec_->getFrameInfo(index, &frame_info);
-      DCHECK(frame_info_received);
-      frame.SetHasAlpha(frame_info.fAlphaType !=
-                        SkAlphaType::kOpaque_SkAlphaType);
-      frame.SetPixelsChanged(true);
-      frame.SetStatus(ImageFrame::kFrameComplete);
-      PostDecodeProcessing(index);
-      break;
-    }
-    case SkCodec::kIncompleteInput:
-      frame.SetPixelsChanged(true);
-      if (FrameIsReceivedAtIndex(index) || IsAllDataReceived()) {
-        SetFailedFrameIndex(index);
       }
-      break;
-    default:
-      frame.SetPixelsChanged(true);
-      SetFailedFrameIndex(index);
-      break;
+      case SkCodec::kIncompleteInput:
+        frame.SetPixelsChanged(true);
+        if (FrameIsReceivedAtIndex(current_frame_index) || IsAllDataReceived()) {
+          SetFailedFrameIndex(current_frame_index);
+        }
+        break;
+      default:
+        frame.SetPixelsChanged(true);
+        SetFailedFrameIndex(current_frame_index);
+        break;
+    }
   }
 }
 

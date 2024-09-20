@@ -16,6 +16,8 @@
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
@@ -43,6 +45,8 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+using ::testing::_;
+
 class SafetyHubMenuNotificationServiceTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -58,17 +62,30 @@ class SafetyHubMenuNotificationServiceTest
             safe_browsing::kSafetyHubAbusiveNotificationRevocation,
 #if BUILDFLAG(IS_ANDROID)
             features::kSafetyHubFollowup,
+#else
+            features::kSafetyHubHaTSOneOffSurvey,
 #endif
         },
         {});
     prefs()->SetBoolean(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
+#if !BUILDFLAG(IS_ANDROID)
+    // mock_hats_service_ should return true for CanShowAnySurvey on each test
+    // running for desktop, since hats service is called in
+    // SafetyHubMenuNotificationService ctor.
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(), base::BindRepeating(&BuildMockHatsService)));
+    EXPECT_CALL(*mock_hats_service(), CanShowAnySurvey(_))
+        .WillRepeatedly(testing::Return(true));
+#endif
   }
 
   void TearDown() override {
     // Wait till all ongoing tasks to be finalized to let password manager
     // enough time to complete password checks.
     RunUntilIdle();
+    mock_hats_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -137,6 +154,7 @@ class SafetyHubMenuNotificationServiceTest
   HostContentSettingsMap* hcsm() {
     return HostContentSettingsMapFactory::GetForProfile(profile());
   }
+  MockHatsService* mock_hats_service() { return mock_hats_service_; }
   // Using |AdvanceClockBy| when the timers are not required to execute.
   void AdvanceClockBy(base::TimeDelta delta) {
     task_environment()->AdvanceClock(delta);
@@ -150,6 +168,7 @@ class SafetyHubMenuNotificationServiceTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  raw_ptr<MockHatsService> mock_hats_service_;
 };
 
 TEST_F(SafetyHubMenuNotificationServiceTest, GetNotificationToShowNoResult) {
@@ -729,4 +748,27 @@ TEST_F(SafetyHubMenuNotificationServiceDesktopOnlyTest, PasswordMigration) {
   SetMockCredentialEntry(kOrigin, true);
   EXPECT_TRUE(menu_notification_service()->GetNotificationToShow().has_value());
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(SafetyHubMenuNotificationServiceDesktopOnlyTest, HaTSControlTriggerNew) {
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentControl,
+                           _, _, _, _))
+      .Times(1);
+  // Creating service without any notification should trigger survey for control
+  // group for A/B experiment.
+  std::optional<MenuNotificationEntry> notification =
+      menu_notification_service()->GetNotificationToShow();
+
+  // After a notification is shown, control group should not be triggered for
+  // A/B experiment.
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentControl,
+                           _, _, _, _))
+      .Times(0);
+  CreateMockUnusedSitePermissionsEntry("https://example1.com:443");
+  // The notification to show should be the unused site permissions one with
+  // one revoked permission. The relevant command should be to open Safety Hub.
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

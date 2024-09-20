@@ -65,7 +65,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-blink.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -472,21 +472,22 @@ static bool DisplayStateMediaFeatureEval(const MediaQueryExpValue& value,
     return false;
   }
 
-  ui::WindowShowState state = media_values.WindowShowState();
+  ui::mojom::blink::WindowShowState state = media_values.WindowShowState();
   MaybeRecordMediaFeatureValue(
       media_values, IdentifiableSurface::MediaFeatureName::kDisplayState,
       state);
 
   switch (value.Id()) {
     case CSSValueID::kFullscreen:
-      return state == ui::SHOW_STATE_FULLSCREEN;
+      return state == ui::mojom::blink::WindowShowState::kFullscreen;
     case CSSValueID::kMaximized:
-      return state == ui::SHOW_STATE_MAXIMIZED;
+      return state == ui::mojom::blink::WindowShowState::kMaximized;
     case CSSValueID::kMinimized:
-      return state == ui::SHOW_STATE_MINIMIZED;
+      return state == ui::mojom::blink::WindowShowState::kMinimized;
     case CSSValueID::kNormal:
-      return state == ui::SHOW_STATE_DEFAULT ||
-             state == ui::SHOW_STATE_INACTIVE || state == ui::SHOW_STATE_NORMAL;
+      return state == ui::mojom::blink::WindowShowState::kDefault ||
+             state == ui::mojom::blink::WindowShowState::kInactive ||
+             state == ui::mojom::blink::WindowShowState::kNormal;
     default:
       NOTREACHED();
   }
@@ -1541,13 +1542,13 @@ static bool StuckMediaFeatureEval(const MediaQueryExpValue& value,
       return media_values.StuckVertical() == ContainerStuckPhysical::kBottom;
     case CSSValueID::kRight:
       return media_values.StuckHorizontal() == ContainerStuckPhysical::kRight;
-    case CSSValueID::kInsetBlockStart:
+    case CSSValueID::kBlockStart:
       return media_values.StuckBlock() == ContainerStuckLogical::kStart;
-    case CSSValueID::kInsetBlockEnd:
+    case CSSValueID::kBlockEnd:
       return media_values.StuckBlock() == ContainerStuckLogical::kEnd;
-    case CSSValueID::kInsetInlineStart:
+    case CSSValueID::kInlineStart:
       return media_values.StuckInline() == ContainerStuckLogical::kStart;
-    case CSSValueID::kInsetInlineEnd:
+    case CSSValueID::kInlineEnd:
       return media_values.StuckInline() == ContainerStuckLogical::kEnd;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -1563,7 +1564,7 @@ static bool SnappedMediaFeatureEval(const MediaQueryExpValue& value,
   }
   switch (value.Id()) {
     case CSSValueID::kNone:
-      return media_values.Snapped();
+      return !media_values.Snapped();
     case CSSValueID::kX:
       return media_values.SnappedX();
     case CSSValueID::kY:
@@ -1761,7 +1762,9 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     CSSVariableData* computed =
         container->ComputedStyleRef().GetVariableData(property_name);
 
-    if (base::ValuesEquivalent(computed, query_computed)) {
+    if (computed == query_computed ||
+        (computed && query_computed &&
+         computed->EqualsIgnoringTaint(*query_computed))) {
       return KleeneValue::kTrue;
     }
     return KleeneValue::kFalse;

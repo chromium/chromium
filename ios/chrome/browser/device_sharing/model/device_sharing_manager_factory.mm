@@ -22,9 +22,15 @@ std::unique_ptr<KeyedService> BuildDeviceSharingManager(
 
 // static
 DeviceSharingManager* DeviceSharingManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+DeviceSharingManager* DeviceSharingManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<DeviceSharingManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

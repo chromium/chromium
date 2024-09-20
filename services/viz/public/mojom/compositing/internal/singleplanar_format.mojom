@@ -26,13 +26,4 @@ enum SingleplanarFormat {
   RGBA_1010102,
   BGRA_1010102,
   R_F16,
-
-  // Legacy multiplanar formats (used before Multiplanar SharedImage was
-  // introduced).
-  // TODO(crbug.com/40239769): Remove these once all clients are converted to
-  // use MultiplanarSharedImage for this use case.
-  YV12_LEGACY,
-  NV12_LEGACY,
-  NV12A_LEGACY,
-  P010_LEGACY,
 };

@@ -833,6 +833,9 @@ bool IsInterruptedDownloadAutoResumable(download::DownloadItem* download_item,
 
 bool IsContentDispositionAttachmentInHead(
     const network::mojom::URLResponseHead& response_head) {
+  if (!response_head.headers) {
+    return false;
+  }
   std::string disposition;
   response_head.headers->GetNormalizedHeader("content-disposition",
                                              &disposition);

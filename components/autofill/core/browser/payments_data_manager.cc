@@ -795,8 +795,10 @@ gfx::Image* PaymentsDataManager::GetCreditCardArtImageForUrl(
   if (cached_image) {
     return cached_image;
   }
-
-  FetchImagesForURLs(base::span_from_ref(card_art_url));
+  // The sizes are used on Android, but ignored on desktop.
+  FetchImagesForURLs(base::span_from_ref(card_art_url),
+                     base::span({AutofillImageFetcherBase::ImageSize::kSmall,
+                                 AutofillImageFetcherBase::ImageSize::kLarge}));
   return nullptr;
 }
 
@@ -962,7 +964,7 @@ PaymentsDataManager::GetPaymentsSigninStateForMetrics() const {
 
 bool PaymentsDataManager::IsCardPresentAsBothLocalAndServerCards(
     const CreditCard& credit_card) {
-  for (CreditCard* card_from_list : GetCreditCards()) {
+  for (const CreditCard* card_from_list : GetCreditCards()) {
     if (credit_card.IsLocalOrServerDuplicateOf(*card_from_list)) {
       return true;
     }
@@ -1810,14 +1812,16 @@ void PaymentsDataManager::LoadPaymentsCustomerData() {
 }
 
 void PaymentsDataManager::FetchImagesForURLs(
-    base::span<const GURL> updated_urls) const {
+    base::span<const GURL> updated_urls,
+    base::span<const AutofillImageFetcherBase::ImageSize> image_sizes) const {
   if (!image_fetcher_) {
     return;
   }
 
   image_fetcher_->FetchImagesForURLs(
-      updated_urls, base::BindOnce(&PaymentsDataManager::OnCardArtImagesFetched,
-                                   weak_factory_.GetMutableWeakPtr()));
+      updated_urls, image_sizes,
+      base::BindOnce(&PaymentsDataManager::OnCardArtImagesFetched,
+                     weak_factory_.GetMutableWeakPtr()));
 }
 
 void PaymentsDataManager::LogStoredPaymentsDataMetrics() const {
@@ -1947,7 +1951,10 @@ void PaymentsDataManager::ProcessCardArtUrlChanges() {
     }
   }
   if (!updated_urls.empty()) {
-    FetchImagesForURLs(updated_urls);
+    FetchImagesForURLs(
+        updated_urls,
+        base::span({AutofillImageFetcherBase::ImageSize::kSmall,
+                    AutofillImageFetcherBase::ImageSize::kLarge}));
   }
 }
 
@@ -2001,7 +2008,9 @@ void PaymentsDataManager::OnMaskedBankAccountsRefreshed() {
     updated_urls.emplace_back(display_icon_url);
   }
   if (!updated_urls.empty()) {
-    FetchImagesForURLs(updated_urls);
+    FetchImagesForURLs(
+        updated_urls,
+        base::span({AutofillImageFetcherBase::ImageSize::kSquare}));
   }
 }
 

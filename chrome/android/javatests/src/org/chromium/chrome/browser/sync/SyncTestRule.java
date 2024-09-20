@@ -215,7 +215,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     /** Adds an account of given account name to AccountManagerFacade and waits for the seeding. */
     public CoreAccountInfo addAccount(String accountName) {
-        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(accountName);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccount(accountName);
         Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
         return coreAccountInfo;
     }

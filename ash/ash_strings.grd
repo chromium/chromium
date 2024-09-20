@@ -817,11 +817,23 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_MEDIA_CONTROLS_SOURCE_TITLE" desc="The source title shown in the media controls if a focus mode playlist is selected and playing.">
         <ph name="PLAYLIST_TYPE">$1<ex>Focus sounds</ex></ph> ᐧ <ph name="PLAYLIST_TITLE">$2<ex>Nature</ex></ph>
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OAUTH_CONSENT_LABEL" desc="The text on the label used for showing a text to mention the user the focus panel will access the YouTube Music for personalized music.">
+        For personalized focus playlists, allow access to YouTube Music
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OAUTH_CONSENT_BUTTON" desc="The text on the get started button.">
+        Get started
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_FREE_TRIAL_LABEL" desc="The text on the label used for showing a text to mention the user to get three months free trial of YouTube Music premium.">
+        Stay on track with personalized focus playlists. Get YouTube Music and YouTube, ad-free, with 3 months of YouTube Premium at no cost.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_FREE_TRIAL_BUTTON" desc="The text on the free trial button.">
+        Get perk
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_NON_PREMIUM_LABEL" desc="The text on the label used for showing a text to mention the user without a premium account for YouTube Music.">
-        For personalized playlists and more focus music, try YouTube Music Premium
+        To listen to music ad-free and enjoy personalized focus music, try YouTube Music Premium
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_LEARN_MORE_BUTTON" desc="The text on the learn more button.">
-        Learn more
+        Get Music Premium
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OFFLINE_LABEL_ONE" desc="The text shown to the user in the first line of the sounds view when they are offline.">
         You're offline.
@@ -837,6 +849,15 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_UNSELECTED_ACCESSIBLE_DESCRIPTION" desc="The accessible description for a unselected playlist image button on the focus panel">
         Unselected
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_YOUTUBE_MUSIC" desc="The text for the error toast when the focus mode isn't connected to the YouTube Music">
+        Couldn’t connect to YouTube Music
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_FOCUS_SOUNDS" desc="The text for the error toast when the focus mode isn't connected to the Focus sounds">
+        Couldn’t connect to Focus sounds
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_FAILED_PLAYING_SOUNDS" desc="The text for the error toast when the player couldn't play the Soundscape playlist">
+        Couldn’t play Focus sounds
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB" desc="The label text shown on the left side of do not disturb button in Focus mode settings panel.">
         Do Not Disturb while in Focus
@@ -872,28 +893,28 @@ Style notes:
         Send feedback
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        Time's up. Great job!
+        Great job!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_1" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        Time's up. You did it!
+        You did it!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_2" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        Time's up. You're on a roll!
+        You're on a roll!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_3" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        All done. Way to go!
+        Way to go!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_4" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        All done. Keep it up!
+        Keep it up!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_5" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        Time's up. Done and done!
+        Done and done!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT" desc="The accessibility alert for the ending moment nudge.">
         <ph name="TITLE">$1<ex>Time's up. Great job!</ex></ph> You've just focused for <ph name="FOCUSED_TIME">$2<ex>24 minutes</ex></ph>. Open Quick settings to focus again.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY" desc="The message for the ending moment panel.">
-        You can add a little more time if you need it, or end your focus session
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY" desc="The message for the ending moment panel. [CHAR_LIMIT=64]">
+        You can add more time, or end your focus session
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DIALOG" desc="The annoucement for the ending moment panel.">
         <ph name="TITLE">$1<ex>Time's up. Great job!</ex></ph> <ph name="BODY">$2<ex>Congratulations on another productive session!</ex></ph>
@@ -1226,6 +1247,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SPOKEN_FEEDBACK" desc="The label used in the accessibility menu of the
     system tray to toggle on/off spoken feedback feature.">
         ChromeVox (spoken feedback)
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
+        Mouse keys
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK" desc="The label used in the accessibility menu of the system tray to toggle on/off the select-to-speak feature.">
         Select-to-speak
@@ -1815,7 +1839,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Video call controls
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP" desc="Tooltip shown for a toggle to enable or disable sidetone.">
-        Toggle sidetone
+        Toggle mic test
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_PREFERENCE_STATE_ACCESSIBLE_NAME" desc="Text for screen readers describing the state of a Studio Look preference. The commas are significant as they will introduce a pause in the spoken text.">
         <ph name="PREFERENCE_TITLE">$1<ex>Studio Look preference</ex></ph>, <ph name="EFFECT_NAME">$2<ex>Face retouch</ex></ph>, toggle button, <ph name="STATE">$3<ex>on</ex></ph>
@@ -1839,10 +1863,10 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Privacy settings
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE" desc="The title of the bubble when sidetone is enabled.">
-        Listen to your mic sound
+        Test your mic sound
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_BODY" desc="The body of the bubble when sidetone is enabled.">
-        You can monitor your microphone sound from wired headphones. Close panel to stop.
+        You can test your microphone sound. Close panel to stop.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_TITLE" desc="The title of the bubble when the active device doesn't support sidetone.">
         Connect wired headphone
@@ -1851,7 +1875,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         To avoid echo, you can listen to your mic only with wired headphone.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_ANNOUNCEMENT" desc="Accessibility announcement that notifies whether sidetone is supported after user presses the toggle.">
-        <ph name="TITLE">$1<ex>Listen to your mic sound</ex></ph>. <ph name="DESCRIPTION">$2<ex>You can monitor your microphone sound from wired headphones. Close panel to stop.</ex></ph>
+        <ph name="TITLE">$1<ex>Test your mic sound</ex></ph>. <ph name="DESCRIPTION">$2<ex>You can test your microphone sound. Close panel to stop.</ex></ph>
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
         Dismiss
@@ -3547,7 +3571,7 @@ No devices connected.
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_STYLE_TRANSFER" desc="label used for input style transfer toggle">
-        Studio mic
+        Studio-style mic
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_HFP_MIC_SR" desc="label used for input hfp mic sr toggle">
@@ -4052,6 +4076,9 @@ No devices connected.
 
       <message name="IDS_ASH_IME_MENU_ACCESSIBLE_NAME" desc="The accessible text for opt-in IME menu icon in status tray.">
         IME menu button
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the mouse keys menu icon in the status tray.">
+        Mouse keys button
       </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the select-to-speak menu icon in the status tray.">
         Select-to-speak button
@@ -5239,6 +5266,12 @@ No devices connected.
       <message name="IDS_ASH_AUTH_TEXTFIELD_PASSWORD_ACCESSIBLE_NAME" desc="The accessibility text for the authentication password textfield.">
         Password
       </message>
+      <message name="IDS_ASH_AUTH_DISPLAY_PIN_BUTTON_ACCESSIBLE_NAME_SHOW" desc="Text to be spoken when the focus is set to the display pin button (in Show state) on login screen and in-session auth dialog.">
+        Show PIN
+      </message>
+      <message name="IDS_ASH_AUTH_DISPLAY_PIN_BUTTON_ACCESSIBLE_NAME_HIDE" desc="Text to be spoken when the focus is set to the display pin button (in Hide state) on login screen and in-session auth dialog.">
+        Hide PIN
+      </message>
 
       <!-- Fast Pair strings -->
       <message name="IDS_FAST_PAIR_CONNECTION_ERROR_TITLE" desc="Notification title shown when a there is a Fast Pair connection error.">
@@ -5481,7 +5514,7 @@ No devices connected.
         You must be at least 18 years old to use Help me write and Help me read.
       </message>
       <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO" desc="Text shown as the second paragraph of the Magic Boost disclamier view's body.">
-        When you turn on Help me write and Help me read, the input text and document content is sent to Google AI servers to generate writing suggestions, generate summaries, answer questions, and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Google's Terms of Service</ex></ph>. Don't include anything personal, sensitive, or confidential.
+        When you turn on Help me write and Help me read, the input text, document content, and web page URL are sent to Google AI servers to generate writing suggestions, generate summaries, answer questions, and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Google's Terms of Service</ex></ph>. Don't include anything personal, sensitive, or confidential.
       </message>
       <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE" desc="Text shown as the third paragraph of the Magic Boost disclamier view's body.">
         Generative AI is experimental, in early development, and currently has limited availability.

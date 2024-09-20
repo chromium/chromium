@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import '../strings.m.js';
 import './auto_tab_groups_group.js';
 import './auto_tab_groups_results_actions.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -95,20 +93,6 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     this.$.scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
   }
 
-  getTitle(): string {
-    if (this.missingActiveTab_()) {
-      return loadTimeData.getString('successMissingActiveTabTitle');
-    }
-    if (this.multiTabOrganization) {
-      if (this.hasMultipleOrganizations_()) {
-        return loadTimeData.getStringF(
-            'successTitleMulti', this.getOrganizations_().length);
-      }
-      return loadTimeData.getString('successTitleSingle');
-    }
-    return loadTimeData.getString('successTitle');
-  }
-
   focusInput() {
     const group = this.shadowRoot!.querySelector('auto-tab-groups-group');
     if (!group) {
@@ -126,29 +110,6 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
         'scrolled-to-bottom',
         scrollable.scrollTop + this.getMaxScrollableHeight_() >=
             scrollable.scrollHeight);
-  }
-
-  protected missingActiveTab_(): boolean {
-    if (!this.session) {
-      return false;
-    }
-
-    const id = this.session.activeTabId;
-    if (id === -1) {
-      return false;
-    }
-    let foundTab = false;
-    this.getOrganizations_().forEach(organization => {
-      organization.tabs.forEach((tab) => {
-        if (tab.tabId === id) {
-          foundTab = true;
-        }
-      });
-    });
-    if (foundTab) {
-      return false;
-    }
-    return true;
   }
 
   protected getOrganizations_(): TabOrganization[] {
@@ -191,7 +152,6 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     const organizations = groups.map((group: AutoTabGroupsGroupElement) => {
       return {
         organizationId: group.organizationId,
-        name: group.name,
         tabs: group.tabs,
       };
     });

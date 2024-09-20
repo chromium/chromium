@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -31,6 +32,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
 
@@ -46,7 +48,7 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
 
   Browser* AddBrowser() {
     Browser::CreateParams native_params(profile_.get(), true);
-    native_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+    native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
     std::unique_ptr<Browser> browser =
         CreateBrowserWithTestWindowForParams(native_params);
     Browser* browser_ptr = browser.get();
@@ -54,18 +56,18 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
     return browser_ptr;
   }
 
-  content::WebContents* AddTabToBrowser(Browser* browser, int index) {
-    std::unique_ptr<content::WebContents> web_contents =
+  tabs::TabModel* AddTabToBrowser(Browser* browser, int index) {
+    std::unique_ptr<tabs::TabModel> tab = std::make_unique<tabs::TabModel>(
         content::WebContentsTester::CreateTestWebContents(profile_.get(),
-                                                          nullptr);
+                                                          nullptr),
+        browser->tab_strip_model());
+    tabs::TabModel* tab_ptr = tab.get();
 
-    content::WebContents* web_contents_ptr = web_contents.get();
+    browser->tab_strip_model()->AddTab(
+        std::move(tab), index, ui::PageTransition::PAGE_TRANSITION_TYPED,
+        AddTabTypes::ADD_ACTIVE);
 
-    browser->tab_strip_model()->AddWebContents(
-        std::move(web_contents), index,
-        ui::PageTransition::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
-
-    return web_contents_ptr;
+    return tab_ptr;
   }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -127,8 +129,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // Create a new tab and add it to a group.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
   AddTabToBrowser(browser_1, 0);
-  content::WebContents* web_contents_ptr = AddTabToBrowser(browser_1, 1);
+  tabs::TabModel* tab = AddTabToBrowser(browser_1, 1);
   ASSERT_EQ(2, browser_1->tab_strip_model()->count());
+
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0, 1});
 
@@ -146,13 +149,13 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Expect that the listener map is listening to two tabs, including
   // `web_contents_ptr`.
-  auto& tab_token_mapping =
-      group_listener_map.at(group_id).GetWebContentsTokenMapForTesting();
-  EXPECT_EQ(2u, tab_token_mapping.size());
-  EXPECT_EQ(1u, tab_token_mapping.count(web_contents_ptr));
+  auto& tab_listener_mapping =
+      group_listener_map.at(group_id).GetTabListenerMappingForTesting();
+  EXPECT_EQ(2u, tab_listener_mapping.size());
+  EXPECT_EQ(1u, tab_listener_mapping.count(tab));
 
   // Remove `web_contents_ptr`.
-  web_contents_ptr->Close();
+  tab->contents()->Close();
   ASSERT_EQ(1, browser_1->tab_strip_model()->count());
 
   // Expect that the group is still listened to since there's still
@@ -160,7 +163,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   EXPECT_EQ(1u, group_listener_map.count(group_id));
 
   // Expect that `web_contents_ptr` is not being listened to.
-  EXPECT_EQ(0u, tab_token_mapping.count(web_contents_ptr));
+  EXPECT_EQ(0u, tab_listener_mapping.count(tab));
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedTabIsListenedTo) {
@@ -175,18 +178,18 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedTabIsListenedTo) {
   service()->SaveGroup(group_id);
 
   // One tab should be observed in this group.
-  auto& tab_token_mapping = service()
-                                ->listener()
-                                ->GetLocalTabGroupListenerMapForTesting()
-                                .at(group_id)
-                                .GetWebContentsTokenMapForTesting();
-  ASSERT_EQ(1u, tab_token_mapping.size());
+  auto& tab_listener_mapping = service()
+                                   ->listener()
+                                   ->GetLocalTabGroupListenerMapForTesting()
+                                   .at(group_id)
+                                   .GetTabListenerMappingForTesting();
+  ASSERT_EQ(1u, tab_listener_mapping.size());
 
   // Add a second tab and expect that it is observed too.
-  content::WebContents* added_tab = AddTabToBrowser(browser_1, 1);
+  tabs::TabModel* tab = AddTabToBrowser(browser_1, 1);
   browser_1->tab_strip_model()->AddToExistingGroup({1}, group_id);
-  EXPECT_EQ(2u, tab_token_mapping.size());
-  EXPECT_TRUE(tab_token_mapping.contains(added_tab));
+  EXPECT_EQ(2u, tab_listener_mapping.size());
+  EXPECT_TRUE(tab_listener_mapping.contains(tab));
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
@@ -195,7 +198,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
   // Create a saved tab group with two tabs, one in a saved group.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
   AddTabToBrowser(browser_1, 0);
-  content::WebContents* grouped_tab_ptr = AddTabToBrowser(browser_1, 1);
+  tabs::TabModel* tab = AddTabToBrowser(browser_1, 1);
   ASSERT_EQ(2, browser_1->tab_strip_model()->count());
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({1});
@@ -206,10 +209,10 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
   auto& group_listener_map =
       service()->listener()->GetLocalTabGroupListenerMapForTesting();
   ASSERT_EQ(1u, group_listener_map.count(group_id));
-  auto& tab_token_mapping =
-      group_listener_map.at(group_id).GetWebContentsTokenMapForTesting();
-  ASSERT_EQ(1u, tab_token_mapping.size());
-  ASSERT_EQ(1u, tab_token_mapping.count(grouped_tab_ptr));
+  auto& tab_listener_mapping =
+      group_listener_map.at(group_id).GetTabListenerMappingForTesting();
+  ASSERT_EQ(1u, tab_listener_mapping.size());
+  ASSERT_EQ(1u, tab_listener_mapping.count(tab));
 
   // Pause tracking.
   service()->PauseTrackingLocalTabGroup(group_id);
@@ -241,8 +244,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
   EXPECT_EQ(1u, service()->model()->Get(group_id)->saved_tabs().size());
   // The listener state should be the same as well.
   EXPECT_EQ(1u, group_listener_map.count(group_id));
-  EXPECT_EQ(1u, tab_token_mapping.size());
-  EXPECT_EQ(1u, tab_token_mapping.count(grouped_tab_ptr));
+  EXPECT_EQ(1u, tab_listener_mapping.size());
+  EXPECT_EQ(1u, tab_listener_mapping.count(tab));
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest, ResumeTrackingValidatesConsistency) {
@@ -764,8 +767,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, SimulateLocalThenSyncTabNavigations) {
       ->listener()
       ->GetLocalTabGroupListenerMapForTesting()
       .at(group_id)
-      .GetWebContentsTokenMapForTesting()
-      .at(tabstrip->GetWebContentsAt(0))
+      .GetTabListenerMappingForTesting()
+      .at(tabstrip->GetTabAtIndex(0))
       .NavigateToUrl(url_2);
   EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetURL(), url_2);
 }
@@ -790,8 +793,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, SimulateSyncThenLocalTabNavigations) {
       ->listener()
       ->GetLocalTabGroupListenerMapForTesting()
       .at(group_id)
-      .GetWebContentsTokenMapForTesting()
-      .at(tabstrip->GetWebContentsAt(0))
+      .GetTabListenerMappingForTesting()
+      .at(tabstrip->GetTabAtIndex(0))
       .NavigateToUrl(url_2);
   EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetURL(), url_2);
 
@@ -883,19 +886,19 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0, 1});
   service()->SaveGroup(group_id);
 
-  std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>&
-      web_contents_listener_map = service()
-                                      ->listener()
-                                      ->GetLocalTabGroupListenerMapForTesting()
-                                      .at(group_id)
-                                      .GetWebContentsTokenMapForTesting();
+  const auto& tab_listener_mapping =
+      service()
+          ->listener()
+          ->GetLocalTabGroupListenerMapForTesting()
+          .at(group_id)
+          .GetTabListenerMappingForTesting();
 
   const SavedTabGroup* group = service()->model()->Get(group_id);
   base::Token first_tab_token =
-      web_contents_listener_map.at(tabstrip->GetWebContentsAt(0))
+      tab_listener_mapping.at(tabstrip->GetTabAtIndex(0))
           .saved_tab_group_tab_id();
   base::Token second_tab_token =
-      web_contents_listener_map.at(tabstrip->GetWebContentsAt(1))
+      tab_listener_mapping.at(tabstrip->GetTabAtIndex(1))
           .saved_tab_group_tab_id();
 
   ASSERT_EQ(2u, group->saved_tabs().size());
@@ -939,23 +942,23 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   TabStripModel* const tabstrip = browser->tab_strip_model();
 
   // Create a saved tab group with two tabs.
-  content::WebContents* web_contents_0 = AddTabToBrowser(browser, 0);
-  content::WebContents* web_contents_1 = AddTabToBrowser(browser, 1);
+  tabs::TabModel* tab_0 = AddTabToBrowser(browser, 0);
+  tabs::TabModel* tab_1 = AddTabToBrowser(browser, 1);
   const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0, 1});
   service()->SaveGroup(group_id);
 
   const SavedTabGroup* group = service()->model()->Get(group_id);
 
-  std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>&
-      web_contents_listener_map = service()
-                                      ->listener()
-                                      ->GetLocalTabGroupListenerMapForTesting()
-                                      .at(group_id)
-                                      .GetWebContentsTokenMapForTesting();
-  base::Token web_contents_0_token =
-      web_contents_listener_map.at(web_contents_0).saved_tab_group_tab_id();
-  base::Token web_contents_1_token =
-      web_contents_listener_map.at(web_contents_1).saved_tab_group_tab_id();
+  const auto& tab_listener_mapping =
+      service()
+          ->listener()
+          ->GetLocalTabGroupListenerMapForTesting()
+          .at(group_id)
+          .GetTabListenerMappingForTesting();
+  base::Token tab_0_local_id =
+      tab_listener_mapping.at(tab_0).saved_tab_group_tab_id();
+  base::Token tab_1_local_id =
+      tab_listener_mapping.at(tab_1).saved_tab_group_tab_id();
 
   std::unique_ptr<content::WebContents> replacement_web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
@@ -966,10 +969,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // group updated the positions of the tabs accordingly.
   browser->tab_strip_model()->MoveWebContentsAt(0, 1, false);
 
-  EXPECT_EQ(web_contents_1_token,
-            group->saved_tabs()[0].local_tab_id().value());
-  EXPECT_EQ(web_contents_0_token,
-            group->saved_tabs()[1].local_tab_id().value());
+  EXPECT_EQ(tab_1_local_id, group->saved_tabs()[0].local_tab_id().value());
+  EXPECT_EQ(tab_0_local_id, group->saved_tabs()[1].local_tab_id().value());
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
@@ -1038,8 +1039,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedBadTabIsNTPInstead) {
 
   // Create a saved tab group with one tab.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
-  content::WebContents* added_tab = AddTabToBrowser(browser_1, 0);
-  added_tab->GetController().LoadURLWithParams(
+  tabs::TabModel* added_tab = AddTabToBrowser(browser_1, 0);
+  added_tab->contents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(GURL("file://1")));
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0});
@@ -1058,11 +1059,11 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Create a saved tab group with one good tab.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
-  content::WebContents* added_tab = AddTabToBrowser(browser_1, 0);
+  tabs::TabModel* added_tab = AddTabToBrowser(browser_1, 0);
   GURL good_gurl = GURL("http://www.google.com");
   GURL bad_gurl = GURL("file://1");
 
-  auto* tester = content::WebContentsTester::For(added_tab);
+  auto* tester = content::WebContentsTester::For(added_tab->contents());
   tester->NavigateAndCommit(good_gurl);
 
   tab_groups::TabGroupId group_id =
@@ -1083,12 +1084,12 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Create a saved tab group with one good tab.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
-  content::WebContents* added_tab = AddTabToBrowser(browser_1, 0);
+  tabs::TabModel* added_tab = AddTabToBrowser(browser_1, 0);
   GURL good_url = GURL("http://www.foo.com");
   GURL delete_url = GURL("http://www.delete.com");
   GURL redirect_url = GURL("http://www.redirect.com");
 
-  auto* tester = content::WebContentsTester::For(added_tab);
+  auto* tester = content::WebContentsTester::For(added_tab->contents());
   tester->NavigateAndCommit(good_url);
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0});
@@ -1096,7 +1097,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
 
   content::RenderFrameHost* render_frame_host =
-      added_tab->GetPrimaryMainFrame();
+      added_tab->contents()->GetPrimaryMainFrame();
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(delete_url,
                                                             render_frame_host);
@@ -1220,28 +1221,29 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, CreateTabStateOnSyncNavigations) {
   const GURL url2 = GURL("https://www.example2.com");
 
   // Manually navigate the webcontents of the saved tab locally.
-  content::WebContents* web_contents = tabstrip->GetWebContentsAt(0);
-  auto* tester = content::WebContentsTester::For(web_contents);
+  tabs::TabModel* tab = tabstrip->GetTabAtIndex(0);
+  content::WebContents* contents = tab->contents();
+  auto* tester = content::WebContentsTester::For(contents);
   tester->NavigateAndCommit(url);
-  EXPECT_EQ(web_contents->GetURL(), url);
-  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(web_contents));
+  EXPECT_EQ(contents->GetURL(), url);
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(contents));
 
   // Load a URL through sync.
   service()
       ->listener()
       ->GetLocalTabGroupListenerMapForTesting()
       .at(group_id)
-      .GetWebContentsTokenMapForTesting()
-      .at(web_contents)
+      .GetTabListenerMappingForTesting()
+      .at(tab)
       .NavigateToUrl(url2);
   tester->CommitPendingNavigation();
-  EXPECT_EQ(web_contents->GetURL(), url2);
-  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(web_contents));
+  EXPECT_EQ(contents->GetURL(), url2);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(contents));
 
   // Manually load a URL again.
   tester->NavigateAndCommit(url);
-  EXPECT_EQ(web_contents->GetURL(), url);
-  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(web_contents));
+  EXPECT_EQ(contents->GetURL(), url);
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(contents));
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest, TabStateClearedOnUserInput) {
@@ -1255,13 +1257,14 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, TabStateClearedOnUserInput) {
   const GURL url = GURL("https://www.example.com");
 
   // Simulate a sync navigation on the tab.
-  content::WebContents* web_contents = tabstrip->GetWebContentsAt(0);
+  tabs::TabModel* tab = tabstrip->GetTabAtIndex(0);
+  content::WebContents* web_contents = tab->contents();
   service()
       ->listener()
       ->GetLocalTabGroupListenerMapForTesting()
       .at(group_id)
-      .GetWebContentsTokenMapForTesting()
-      .at(web_contents)
+      .GetTabListenerMappingForTesting()
+      .at(tab)
       .NavigateToUrl(url);
   auto* tester = content::WebContentsTester::For(web_contents);
   tester->CommitPendingNavigation();
@@ -1285,7 +1288,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   const GURL url2 = GURL("https://www.example2.com");
 
   // Manually navigate the webcontents of the saved tab locally.
-  content::WebContents* web_contents = tabstrip->GetWebContentsAt(0);
+  tabs::TabModel* tab = tabstrip->GetTabAtIndex(0);
+  content::WebContents* web_contents = tab->contents();
+
   auto* tester = content::WebContentsTester::For(web_contents);
   tester->NavigateAndCommit(url);
   EXPECT_EQ(web_contents->GetURL(), url);
@@ -1296,8 +1301,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
       ->listener()
       ->GetLocalTabGroupListenerMapForTesting()
       .at(group_id)
-      .GetWebContentsTokenMapForTesting()
-      .at(web_contents)
+      .GetTabListenerMappingForTesting()
+      .at(tab)
       .NavigateToUrl(url2);
   tester->CommitPendingNavigation();
   EXPECT_EQ(web_contents->GetURL(), url2);
@@ -1325,7 +1330,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, TabStateNotClearedOnReload) {
   const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
   service()->SaveGroup(group_id);
   const GURL url = GURL("https://www.example.com");
-  content::WebContents* web_contents = tabstrip->GetWebContentsAt(0);
+
+  tabs::TabModel* tab = tabstrip->GetTabAtIndex(0);
+  content::WebContents* web_contents = tab->contents();
   auto* tester = content::WebContentsTester::For(web_contents);
 
   // Simulate a sync navigation on the tab.
@@ -1333,8 +1340,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, TabStateNotClearedOnReload) {
       ->listener()
       ->GetLocalTabGroupListenerMapForTesting()
       .at(group_id)
-      .GetWebContentsTokenMapForTesting()
-      .at(web_contents)
+      .GetTabListenerMappingForTesting()
+      .at(tab)
       .NavigateToUrl(url);
   tester->CommitPendingNavigation();
   EXPECT_EQ(web_contents->GetURL(), url);

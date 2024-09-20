@@ -85,6 +85,14 @@ class RequestHandler:
         # Put the import map before the first script tag.
         html = html.replace('<script', IMPORT_MAP + '<script')
 
+        strings = self._load_grd_strings()
+
+        def i18n_replace(m: re.Match):
+            return strings.get(m.group(1), '')
+
+        # Replace the i18n title that is used.
+        html = re.sub(r'\$i18n\{(\w+)\}', i18n_replace, html)
+
         return html
 
     def _transform_js(self, request_path: _RequestPath, js: str) -> str:

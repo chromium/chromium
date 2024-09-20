@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1444443021901415601">„Chrome“ nustato dominančias temas pagal jūsų naujausią naršymo istoriją</translation>
 <translation id="2252052615723281030">Kai esate prisijungę prie „Chrome“, šis nustatymas padeda užtikrinti IP adreso privatumą. Jei „Chrome“ įtaria, kad svetainė galbūt jus stebi, dalis jūsų srauto gali būti siunčiama per privatumo serverius.</translation>
+<translation id="2793385791865768072">„Chromium“ nustato dominančias temas pagal jūsų naujausią naršymo istoriją</translation>
 <translation id="33479675708419823">Kai esate prisijungę prie „Chrome“, šis nustatymas padeda užtikrinti IP adreso privatumą. Jei „Chrome“ įtaria, kad svetainė galbūt jus stebi, dalis jūsų srauto gali būti siunčiama per privatumo serverius. Sužinokite daugiau apie tai, <ph name="LINK_BEGIN" />kaip veikia IP apsauga<ph name="LINK_END" />.</translation>
 <translation id="3529311220178827364">Sužinokite daugiau apie IP adreso slėpimą</translation>
+<translation id="4041687306270459969">Senesnės nei keturių savaičių skelbimų temos ištrinamos automatiškai. Temos apima tokius dalykus kaip sportas, apranga ir kt.</translation>
+<translation id="4177501066905053472">Skelbimų temos</translation>
 <translation id="4301151630239508244">Skelbimų temos yra tik vienas iš daugelio dalykų, kuriuos svetainė gali naudoti skelbimams suasmeninti. Net jei nėra skelbimų temų, svetainės vis tiek gali rodyti skelbimus, bet jie gali būti mažiau suasmeninti. Sužinokite daugiau apie <ph name="BEGIN_LINK_1" />su skelbimais susijusio privatumo tvarkymą<ph name="END_LINK_1" />.</translation>
+<translation id="453692855554576066">„Chromium“ nustatymuose galite peržiūrėti skelbimų temas ir užblokuoti tas, kurių nenorite bendrinti su svetainėmis</translation>
 <translation id="4598427486995631491">Slėpti IP adresą</translation>
+<translation id="4692439979815346597">„Chrome“ nustatymuose galite peržiūrėti skelbimų temas ir užblokuoti tas, kurių nenorite bendrinti su svetainėmis</translation>
+<translation id="5413586988657235240">Svetainės, kuriose lankotės, gali prašyti „Chromium“ pateikti temas, kad būtų rodomi jums aktualūs skelbimai, apsaugant jūsų naršymo istoriją ir tapatybę</translation>
+<translation id="6186536480878693792">Svetainės, kuriose lankotės, gali prašyti „Chrome“ pateikti temas, kad būtų rodomi jums aktualūs skelbimai, apsaugant jūsų naršymo istoriją ir tapatybę</translation>
 <translation id="6371812158043974664">Kai esate prisijungę prie „Chromium“, šis nustatymas padeda užtikrinti IP adreso privatumą. Jei „Chromium“ įtaria, kad svetainė galbūt jus stebi, dalis jūsų srauto gali būti siunčiama per privatumo serverius. Sužinokite daugiau apie tai, <ph name="LINK_BEGIN" />kaip veikia IP apsauga<ph name="LINK_END" />.</translation>
 <translation id="7040031291654706261">Sužinokite, <ph name="BEGIN_LINK" />kaip veikia IP apsauga<ph name="END_LINK" /></translation>
+<translation id="7475768947023614021">Skelbimų temų nustatymo peržiūra</translation>
 </translationbundle>

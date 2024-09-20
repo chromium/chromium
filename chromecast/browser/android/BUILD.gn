@@ -188,7 +188,6 @@ common_java_sources = [
 
 generate_product_config_srcjar("product_config_for_browser") {
   java_package = "org.chromium.chromecast.shell"
-  is_bundle_module = false
 }
 
 generate_jni("jni_headers") {
@@ -197,6 +196,8 @@ generate_jni("jni_headers") {
     "apk/src/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
     "apk/src/org/chromium/chromecast/shell/CastMetricsHelper.java",
   ]
+
+  deps = [ "//components/android_autofill/browser:jni_headers_features" ]
 }
 
 android_library("cast_shell_java") {

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_progress_bar.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -125,6 +126,17 @@ UIView* SecondaryToolbarLocationBarContainerView(
     [self setUp];
   }
   return self;
+}
+
+- (void)makeTranslucent {
+  _visualEffectView.hidden = NO;
+  _contentView.backgroundColor = nil;
+}
+
+- (void)makeOpaque {
+  _visualEffectView.hidden = YES;
+  _contentView.backgroundColor =
+      self.buttonFactory.toolbarConfiguration.backgroundColor;
 }
 
 #pragma mark - UIView
@@ -349,6 +361,10 @@ UIView* SecondaryToolbarLocationBarContainerView(
   AddSameConstraints(self.locationBarView, self.locationBarContainer);
 }
 
+- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle {
+  self.tabGridButton.tabGridButtonStyle = tabGridButtonStyle;
+}
+
 #pragma mark - Private
 
 /// Updates `buttonStackView.topAnchor` constraints when adding/removing the
@@ -358,23 +374,12 @@ UIView* SecondaryToolbarLocationBarContainerView(
   _locationBarBottomConstraint.active = NO;
   _buttonStackViewNoOmniboxConstraint.active = NO;
 
-  // Set the correct constrant for `buttonStackView.topAnchor`.
+  // Set the correct constraint for `buttonStackView.topAnchor`.
   if (self.locationBarView) {
     _locationBarBottomConstraint.active = YES;
   } else {
     _buttonStackViewNoOmniboxConstraint.active = YES;
   }
-}
-
-- (void)makeTranslucent {
-  _visualEffectView.hidden = NO;
-  _contentView.backgroundColor = nil;
-}
-
-- (void)makeOpaque {
-  _visualEffectView.hidden = YES;
-  _contentView.backgroundColor =
-      self.buttonFactory.toolbarConfiguration.backgroundColor;
 }
 
 @end

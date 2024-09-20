@@ -810,8 +810,8 @@ StringKeyframeVector EffectInput::ParseKeyframesArgument(
 
   // 3. Let method be the result of GetMethod(object, @@iterator).
   v8::Isolate* isolate = script_state->GetIsolate();
-  auto script_iterator =
-      ScriptIterator::FromIterable(isolate, keyframes_obj, exception_state);
+  auto script_iterator = ScriptIterator::FromIterable(
+      isolate, keyframes_obj, exception_state, ScriptIterator::Kind::kSync);
   if (exception_state.HadException())
     return {};
 

@@ -20,8 +20,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -159,24 +157,13 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
         assertEquals(PRICE_TRACKING_DISABLED_BUTTON_TEXT, priceTrackingButton.getText());
         assertNotNull(priceTrackingButtonDrawable);
         assertEquals(
-                ContextCompat.getColor(
-                        mActivity,
-                        R.color
-                                .price_insights_sheet_price_tracking_ineligible_button_foreground_color),
+                mActivity.getColor(R.color.price_tracking_ineligible_button_foreground_color),
                 priceTrackingButton.getCurrentTextColor());
         assertEquals(
-                AppCompatResources.getColorStateList(
-                                mActivity,
-                                R.color
-                                        .price_insights_sheet_price_tracking_ineligible_button_foreground_color)
-                        .getDefaultColor(),
+                mActivity.getColor(R.color.price_tracking_ineligible_button_foreground_color),
                 priceTrackingButton.getCompoundDrawableTintList().getDefaultColor());
         assertEquals(
-                AppCompatResources.getColorStateList(
-                                mActivity,
-                                R.color
-                                        .price_insights_sheet_price_tracking_ineligible_button_bg_color)
-                        .getDefaultColor(),
+                mActivity.getColor(R.color.price_tracking_ineligible_button_background_color),
                 priceTrackingButton.getBackgroundTintList().getDefaultColor());
         assertEquals(PRICE_HISTORY_TITLE, priceHistoryTitleView.getText());
         assertEquals(View.VISIBLE, openUrlButton.getVisibility());

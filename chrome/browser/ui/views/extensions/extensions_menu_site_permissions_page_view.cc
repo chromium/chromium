@@ -178,7 +178,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
           DISTANCE_CONTROL_LIST_VERTICAL) /
       2;
 
-  // Views that need confirgutation after construction (e.g access size after a
+  // Views that need configuration after construction (e.g access size after a
   // separate view is constructed).
   views::Label* toggle_label;
 
@@ -244,17 +244,14 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
       .AddChildren(
-          // Subheader.
+          // Header.
           views::Builder<views::FlexLayoutView>()
-              .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
               // Add top dialog margins, since its the first element, and
               // horizontal dialog margins. Vertical margins will be handled
               // in between the contents.
               .SetInteriorMargin(gfx::Insets::TLBR(dialog_insets.top(),
                                                    dialog_insets.left(), 0,
                                                    dialog_insets.right()))
-              .SetProperty(views::kBoxLayoutFlexKey,
-                           views::BoxLayoutFlexSpecification())
               .AddChildren(
                   // Back button.
                   views::Builder<views::ImageButton>(
@@ -290,7 +287,13 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                                   kColorExtensionsMenuSecondaryText)
                               .SetProperty(views::kMarginsKey,
                                            gfx::Insets::TLBR(
-                                               0, horizontal_spacing, 0, 0)))),
+                                               0, horizontal_spacing, 0, 0))),
+                  // Close button.
+                  views::Builder<views::Button>(
+                      views::BubbleFrameView::CreateCloseButton(
+                          base::BindRepeating(
+                              &ExtensionsMenuHandler::CloseBubble,
+                              base::Unretained(menu_handler))))),
           create_separator_builder(/*full_width=*/true,
                                    /*is_bottom_hover_button=*/false),
           // Content.

@@ -7,12 +7,19 @@
 #include <string>
 #include <string_view>
 
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/almanac_api_client/proto/test_request.pb.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -30,11 +37,28 @@ class AlmanacApiUtilTest : public testing::Test {
   AlmanacApiUtilTest() = default;
   ~AlmanacApiUtilTest() override = default;
 
+  void SetUp() override {
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+    profile_ = profile_builder.Build();
+  }
+
   base::expected<TestProto, QueryError> QueryEndpoint() {
     base::test::TestFuture<base::expected<TestProto, QueryError>> future;
     QueryAlmanacApi<TestProto>(
-        test_url_loader_factory_, TRAFFIC_ANNOTATION_FOR_TESTS, "request body",
-        "endpoint",
+        test_url_loader_factory_.GetSafeWeakWrapper(),
+        TRAFFIC_ANNOTATION_FOR_TESTS, "request body", "endpoint",
+        /*max_response_size=*/1024 * 1024,
+        /*error_histogram_name=*/std::nullopt, future.GetCallback());
+    return future.Get();
+  }
+
+  base::expected<TestProto, QueryError> QueryEndpointWithContext(
+      proto::TestRequest request) {
+    base::test::TestFuture<base::expected<TestProto, QueryError>> future;
+    QueryAlmanacApiWithContext<proto::TestRequest, TestProto>(
+        profile_.get(), "endpoint", request, TRAFFIC_ANNOTATION_FOR_TESTS,
         /*max_response_size=*/1024 * 1024,
         /*error_histogram_name=*/std::nullopt, future.GetCallback());
     return future.Get();
@@ -42,7 +66,9 @@ class AlmanacApiUtilTest : public testing::Test {
 
  protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(AlmanacApiUtilTest, GetEndpointUrl) {
@@ -52,6 +78,39 @@ TEST_F(AlmanacApiUtilTest, GetEndpointUrl) {
             "https://chromeosalmanac-pa.googleapis.com/endpoint");
   EXPECT_EQ(GetAlmanacEndpointUrl("v1/app-preload").spec(),
             "https://chromeosalmanac-pa.googleapis.com/v1/app-preload");
+}
+
+TEST_F(AlmanacApiUtilTest, QueryAlmanacApi_RequestSettings) {
+  std::string method;
+  std::optional<std::string> method_override_header;
+  std::optional<std::string> content_type;
+  std::string body;
+  GURL url;
+
+  base::RunLoop run_loop;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        url = request.url;
+        content_type =
+            request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
+        method_override_header =
+            request.headers.GetHeader("X-HTTP-Method-Override");
+        method = request.method;
+        body = network::GetUploadData(request);
+        run_loop.Quit();
+      }));
+
+  QueryAlmanacApi<TestProto>(
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      TRAFFIC_ANNOTATION_FOR_TESTS, "serialized proto", "endpoint",
+      /*max_response_size=*/1024 * 1024,
+      /*error_histogram_name=*/std::nullopt, base::DoNothing());
+  run_loop.Run();
+  EXPECT_EQ(url, GetAlmanacEndpointUrl("endpoint"));
+  EXPECT_EQ(method, "POST");
+  EXPECT_EQ(method_override_header, "GET");
+  EXPECT_EQ(content_type, "application/x-protobuf");
+  EXPECT_EQ(body, "serialized proto");
 }
 
 TEST_F(AlmanacApiUtilTest, QueryAlmanacApi_ConnectionFailed) {
@@ -92,6 +151,28 @@ TEST_F(AlmanacApiUtilTest, QueryAlmanacApi_ServerValid) {
   test_url_loader_factory_.AddResponse(GetAlmanacEndpointUrl("endpoint").spec(),
                                        /*content=*/"valid", net::HTTP_OK);
   EXPECT_EQ(QueryEndpoint(), base::ok(TestProto()));
+}
+
+TEST_F(AlmanacApiUtilTest, QueryAlmanacApiWithContext_AddsContext) {
+  proto::TestRequest request;
+  request.set_package_id("web:foo");
+
+  proto::TestRequest sent_request;
+  base::RunLoop run_loop;
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(
+            sent_request.ParseFromString(network::GetUploadData(request)));
+      }));
+
+  test_url_loader_factory_.AddResponse(GetAlmanacEndpointUrl("endpoint").spec(),
+                                       /*content=*/"valid", net::HTTP_OK);
+  EXPECT_EQ(QueryEndpointWithContext(request), base::ok(TestProto()));
+
+  EXPECT_EQ(sent_request.package_id(), "web:foo");
+  EXPECT_TRUE(sent_request.has_device_context());
+  EXPECT_TRUE(sent_request.has_user_context());
 }
 
 }  // namespace

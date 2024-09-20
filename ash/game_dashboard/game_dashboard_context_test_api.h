@@ -32,6 +32,7 @@ namespace ash {
 
 class AnchoredNudge;
 class FeatureTile;
+class GameDashboardBatteryView;
 class GameDashboardButton;
 class GameDashboardButtonRevealController;
 class GameDashboardMainMenuCursorHandler;
@@ -77,6 +78,7 @@ class GameDashboardContextTestApi {
   views::Button* GetMainMenuGameControlsDetailsButton();
   PillButton* GetMainMenuGameControlsSetupButton();
   TimeView* GetMainMenuClockView();
+  GameDashboardBatteryView* GetMainMenuBatteryView();
   Switch* GetMainMenuGameControlsFeatureSwitch();
   views::LabelButton* GetMainMenuFeedbackButton();
   IconButton* GetMainMenuHelpButton();

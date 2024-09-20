@@ -17,6 +17,8 @@
 #include "components/download/public/common/download_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/download_manager.h"
+#include "content/public/browser/download_manager_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -43,6 +45,16 @@ static jint JNI_DownloadUtils_GetResumeMode(
   return static_cast<jint>(download::GetDownloadResumeMode(
       GURL(std::move(url)), reason, false /* restart_required */,
       true /* user_action_required */));
+}
+
+static jboolean JNI_DownloadUtils_IsDownloadRestrictedByPolicy(
+    JNIEnv* env,
+    Profile* profile) {
+  content::DownloadManager* manager = profile->GetDownloadManager();
+  if (manager) {
+    return manager->GetDelegate()->IsDownloadRestrictedByPolicy();
+  }
+  return false;
 }
 
 // static

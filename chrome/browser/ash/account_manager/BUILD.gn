@@ -49,7 +49,6 @@ static_library("account_manager") {
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/net",
-    "//chrome/browser/ui/webui/ash/edu_coexistence",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/components/mgs",
     "//components/user_manager",

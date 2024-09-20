@@ -2,42 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
+// <if expr="_google_chrome">
 import './data_sharing_sdk.js';
+// </if>
+// <if expr="not _google_chrome">
+import './dummy_data_sharing_sdk.js';
 
+// </if>
+
+import type {DataSharingMemberRole, DataSharingSdkGroupData, DataSharingSdkGroupMember} from './data_sharing_sdk_types.js';
 import type {GroupData, GroupMember} from './group_data.mojom-webui.js';
 import {MemberRole} from './group_data.mojom-webui.js';
 
 // Utilities to convert DataSharingSdkGroup in data sharing sdk to GroupData in
 // group_data.mojom
-// TODO(crbug.com/362524829): Replace any with types once they are exported from
-// data sharing sdk.
-export function toMojomGroupData(group: any): GroupData {
+export function toMojomGroupData(group: DataSharingSdkGroupData): GroupData {
   const members: GroupMember[] = [];
   for (const member of group.members) {
     members.push(toMojomGroupMember(member));
   }
   return {
-    groupId: group.id,
-    displayName: group.name || '',
-    // Fetching access token is not yet supported for the API.
-    accessToken: '',
+    groupId: group.groupId,
+    displayName: group.displayName || '',
+    accessToken: group.accessToken || '',
     members,
   };
 }
 
-function toMojomGroupMember(member: any): GroupMember {
+function toMojomGroupMember(member: DataSharingSdkGroupMember): GroupMember {
   return {
-    gaiaId: member.profileId,
+    gaiaId: member.focusObfuscatedGaiaId,
     displayName: member.displayName,
-    email: member.displayValue,
+    email: member.email,
     role: toMojomRole(member.role),
-    avatarUrl: {url: member.photoUrl},
+    avatarUrl: {url: member.avatarUrl},
   };
 }
 
-function toMojomRole(role: any): MemberRole {
-  // 'applicant' is not yet supported for the API.
+function toMojomRole(role: DataSharingMemberRole): MemberRole {
+  // Applicant will eventually be added, it's supported by the Data Sharing SDK.
   switch (role) {
     case 'invitee':
       return MemberRole.kInvitee;

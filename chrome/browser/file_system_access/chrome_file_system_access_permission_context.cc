@@ -60,6 +60,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -77,9 +78,11 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "extensions/browser/extension_registry.h"
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/extension_registry.h"  // nogncheck
 #include "extensions/common/extension.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -374,12 +377,15 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
   base::FilePath check_path;
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessSymbolicLinkCheck)) {
-    // `base::NormalizeFilePath()` is called to perform normalization. It
-    // will resolve any file path elements like symbolic links or junctions by
+    // `base::NormalizeFilePath()` is called to perform normalization. It will
+    // resolve any file path elements like symbolic links or junctions by
     // returning the target file path.
     //
-    //  `path` is expected to be absolute. On Windows, this call will fail if
-    //  the target file path is greater than MAX_PATH.
+    // `path` is expected to be absolute.
+    //
+    // TODO(crbug.com/368130513O): On Windows, this call will fail if the target
+    // file path is greater than MAX_PATH. We should decide how to handle this
+    // scenario.
     if (!base::NormalizeFilePath(path, &check_path)) {
       check_path = path;
     }
@@ -1239,6 +1245,15 @@ void ChromeFileSystemAccessPermissionContext::RevokeAllActiveGrants() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& [origin, origin_state] : active_permissions_map_) {
+    // Only update `persisted_grant_status` if the state has not already been
+    // set via tab backgrounding. We do this before iterating over grants so
+    // `FileSystemAccessPermissionGrant::Observer`s can update their state
+    // correctly.
+    if (origin_state.persisted_grant_status !=
+        PersistedGrantStatus::kBackgrounded) {
+      origin_state.persisted_grant_status = PersistedGrantStatus::kLoaded;
+    }
+
     for (auto grant_iter = origin_state.read_grants.begin(),
               grant_end = origin_state.read_grants.end();
          grant_iter != grant_end;) {
@@ -1258,12 +1273,6 @@ void ChromeFileSystemAccessPermissionContext::RevokeAllActiveGrants() {
       grant->SetStatus(
           PermissionStatus::ASK,
           PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
-    }
-    // Only update `persisted_grant_status` if the state has not already been
-    // set via tab backgrounding.
-    if (origin_state.persisted_grant_status !=
-        PersistedGrantStatus::kBackgrounded) {
-      origin_state.persisted_grant_status = PersistedGrantStatus::kLoaded;
     }
   }
 }
@@ -2617,6 +2626,8 @@ bool ChromeFileSystemAccessPermissionContext::
   if (GetPersistedGrantType(origin) != PersistedGrantType::kDormant) {
     return false;
   }
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // The restore prompt is not displayed when there is a platform app installed,
   // because there is no valid UI element to display the restore prompt from.
   const extensions::ExtensionRegistry* registry =
@@ -2625,9 +2636,10 @@ bool ChromeFileSystemAccessPermissionContext::
       registry ? registry->enabled_extensions().GetExtensionOrAppByURL(
                      origin.GetURL())
                : nullptr;
-  if (app && app->extensions::Extension::is_platform_app()) {
+  if (app && app->is_platform_app()) {
     return false;
   }
+#endif
 
   // While this method is called from `RequestPermission`, which implies that
   // a `PermissionGrantImpl` exists - we want to insert the origin into the

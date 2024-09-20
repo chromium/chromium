@@ -649,19 +649,6 @@ protocol::Response InspectorOverlayAgent::setShowViewportSizeOnResize(
 }
 
 protocol::Response InspectorOverlayAgent::setShowWebVitals(bool show) {
-  show_web_vitals_.Set(show);
-  if (show) {
-    protocol::Response response = CompositingEnabled();
-    if (!response.IsSuccess()) {
-      return response;
-    }
-  }
-  if (FrameWidgetInitialized()) {
-    FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-    cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
-    debug_state.show_web_vital_metrics = show;
-    widget->SetLayerTreeDebugState(debug_state);
-  }
   return protocol::Response::Success();
 }
 

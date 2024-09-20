@@ -44,6 +44,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
@@ -75,7 +76,7 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.delegate = new views::WidgetDelegate();
-  params.show_state = ui::SHOW_STATE_NORMAL;
+  params.show_state = ui::mojom::WindowShowState::kNormal;
   CHECK_EQ(Shell::Get()->session_controller()->GetSessionState(),
            session_manager::SessionState::ACTIVE);
   params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
@@ -138,28 +139,6 @@ const char* ActiveSessionAuthStateToString(
   NOTREACHED();
 }
 
-std::u16string BuildPinStatusMessage(const cryptohome::PinStatus& pin_status) {
-  if (!pin_status.IsLockedFactor()) {
-    return u"";
-  }
-  if (pin_status.AvailableAt() == base::Time::Max()) {
-    return l10n_util::GetStringUTF16(
-        IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS);
-  } else {
-    base::TimeDelta delta = pin_status.AvailableAt() - base::Time::Now();
-    std::u16string time_left_message;
-    if (base::TimeDurationCompactFormatWithSeconds(
-            delta, base::DurationFormatWidth::DURATION_WIDTH_WIDE,
-            &time_left_message)) {
-      return l10n_util::GetStringFUTF16(
-          IDS_ASH_IN_SESSION_AUTH_PIN_DELAY_REQUIRED, time_left_message);
-    } else {
-      return l10n_util::GetStringUTF16(
-          IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS);
-    }
-  }
-}
-
 }  // namespace
 
 ActiveSessionAuthControllerImpl::TestApi::TestApi(
@@ -183,18 +162,18 @@ void ActiveSessionAuthControllerImpl::TestApi::SubmitPin(
   controller_->OnPinSubmit(base::UTF8ToUTF16(pin));
 }
 
-void ActiveSessionAuthControllerImpl::TestApi::DisplayPinStatusMessage(
-    const cryptohome::PinStatus pin_status) {
-  controller_->DisplayPinStatusMessage(pin_status);
+void ActiveSessionAuthControllerImpl::TestApi::Close() {
+  controller_->StartClose();
+}
+
+void ActiveSessionAuthControllerImpl::TestApi::SetPinStatus(
+    std::unique_ptr<cryptohome::PinStatus> pin_status) {
+  controller_->contents_view_->SetPinStatus(std::move(pin_status));
 }
 
 const std::u16string&
 ActiveSessionAuthControllerImpl::TestApi::GetPinStatusMessage() const {
-  return controller_->pin_status_message_;
-}
-
-void ActiveSessionAuthControllerImpl::TestApi::Close() {
-  controller_->StartClose();
+  return controller_->contents_view_->GetPinStatusMessage();
 }
 
 ActiveSessionAuthControllerImpl::ActiveSessionAuthControllerImpl() = default;
@@ -267,6 +246,8 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
     return;
   }
 
+  auth_session_broadcast_id_ = user_context_->GetBroadcastId();
+
   uma_recorder_.RecordShow(auth_request_->GetAuthReason());
   UserDataAuthClient::Get()->AddAuthFactorStatusUpdateObserver(this);
 
@@ -282,7 +263,6 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
     if (!pin_factor->GetPinStatus().IsLockedFactor()) {
       available_factors_.Put(AuthInputType::kPin);
     }
-    pin_status_message_ = BuildPinStatusMessage(pin_factor->GetPinStatus());
   }
 
   MaybePrepareFingerprint(
@@ -396,8 +376,13 @@ void ActiveSessionAuthControllerImpl::InitUi() {
   contents_view_observer_.Observe(contents_view_);
   contents_view_->AddObserver(this);
   SetState(ActiveSessionAuthState::kInitialized);
-  if (!pin_status_message_.empty()) {
-    contents_view_->SetPinStatus(pin_status_message_);
+
+  const auto& auth_factors = user_context_->GetAuthFactorsData();
+
+  auto* pin_factor = auth_factors.FindPinFactor();
+  if (pin_factor) {
+    contents_view_->SetPinStatus(
+        std::make_unique<cryptohome::PinStatus>(pin_factor->GetPinStatus()));
   }
 
   MoveToTheCenter();
@@ -419,8 +404,8 @@ void ActiveSessionAuthControllerImpl::StartClose() {
   CHECK(contents_view_);
   contents_view_->RemoveObserver(this);
   contents_view_ = nullptr;
+  auth_session_broadcast_id_.clear();
 
-  pending_pin_factor_status_update_.reset();
   UserDataAuthClient::Get()->RemoveAuthFactorStatusUpdateObserver(this);
 
   auth_performer_->InvalidateCurrentAttempts();
@@ -523,10 +508,6 @@ void ActiveSessionAuthControllerImpl::OnAuthComplete(
   }
   if (authentication_error.has_value()) {
     uma_recorder_.RecordAuthFailed(input_type);
-    if (pending_pin_factor_status_update_.has_value()) {
-      ProcessAuthFactorStatusUpdate(pending_pin_factor_status_update_.value());
-      pending_pin_factor_status_update_.reset();
-    }
     contents_view_->SetErrorTitle(l10n_util::GetStringUTF16(
         input_type == AuthInputType::kPassword
             ? IDS_ASH_IN_SESSION_AUTH_PASSWORD_INCORRECT
@@ -615,24 +596,21 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorStatusUpdate(
     const user_data_auth::AuthFactorStatusUpdate& update) {
   switch (state_) {
     case ActiveSessionAuthState::kInitialized:
-      // Handle the updates in the initialized state.
-      CHECK(user_context_);
-      if (update.auth_factor_with_status().auth_factor().type() ==
-          user_data_auth::AUTH_FACTOR_TYPE_PIN) {
-        ProcessAuthFactorStatusUpdate(update);
-      }
-      return;
     case ActiveSessionAuthState::kPinAuthStarted:
     case ActiveSessionAuthState::kPasswordAuthStarted:
-      // Handle the updates in the *Started states.
-      if (update.auth_factor_with_status().auth_factor().type() ==
-          user_data_auth::AUTH_FACTOR_TYPE_PIN) {
-        if (pending_pin_factor_status_update_.has_value()) {
-          LOG(WARNING) << "Overwrite pending pin status update.";
+      CHECK_NE(auth_session_broadcast_id_, "");
+      if (auth_session_broadcast_id_ == update.broadcast_id()) {
+        auto auth_factor = cryptohome::DeserializeAuthFactor(
+            update.auth_factor_with_status(),
+            /*fallback_type=*/cryptohome::AuthFactorType::kPassword);
+        if (auth_factor.ref().type() == cryptohome::AuthFactorType::kPin) {
+          auto pin_status = auth_factor.GetPinStatus();
+          contents_view_->SetPinStatus(
+              std::make_unique<cryptohome::PinStatus>(pin_status));
         }
-        pending_pin_factor_status_update_ = update;
       }
       return;
+
     case ActiveSessionAuthState::kWaitForInit:
       return;
 
@@ -645,35 +623,6 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorStatusUpdate(
       return;
   }
   NOTREACHED();
-}
-
-void ActiveSessionAuthControllerImpl::ProcessAuthFactorStatusUpdate(
-    const user_data_auth::AuthFactorStatusUpdate& update) {
-  CHECK(user_context_);
-  // Broadcast id is a public id of an ongoing auth session.
-  // Generally it is unlikely to have two active auth session running
-  // in parallel, but we need to make sure we only react to signals
-  // mapped to this session.
-  if (user_context_->GetBroadcastId() == update.broadcast_id()) {
-    auto auth_factor = cryptohome::DeserializeAuthFactor(
-        update.auth_factor_with_status(),
-        /*fallback_type=*/cryptohome::AuthFactorType::kPassword);
-    if (auth_factor.ref().type() == cryptohome::AuthFactorType::kPin) {
-      CHECK(contents_view_);
-      auto pin_status = auth_factor.GetPinStatus();
-      bool pin_enabled = !pin_status.IsLockedFactor();
-      // Only need to update the auth view because |available_factors_| is only
-      // used to initialize the view.
-      contents_view_->SetHasPin(pin_enabled);
-      DisplayPinStatusMessage(pin_status);
-    }
-  }
-}
-
-void ActiveSessionAuthControllerImpl::DisplayPinStatusMessage(
-    const cryptohome::PinStatus pin_status) {
-  pin_status_message_ = BuildPinStatusMessage(pin_status);
-  contents_view_->SetPinStatus(pin_status_message_);
 }
 
 }  // namespace ash

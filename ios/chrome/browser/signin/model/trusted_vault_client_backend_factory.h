@@ -18,8 +18,10 @@ class TrustedVaultClientBackend;
 class TrustedVaultClientBackendFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static TrustedVaultClientBackend* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static TrustedVaultClientBackend* GetForBrowserState(ProfileIOS* profile);
+
+  static TrustedVaultClientBackend* GetForProfile(ProfileIOS* profile);
   static TrustedVaultClientBackendFactory* GetInstance();
 
  private:

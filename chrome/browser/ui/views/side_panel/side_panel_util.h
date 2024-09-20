@@ -63,8 +63,4 @@ class SidePanelUtil {
       base::TimeDelta largest_step_time);
 };
 
-extern const ui::ClassProperty<
-    std::underlying_type_t<SidePanelContentState>>* const
-    kSidePanelContentStateKey;
-
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_

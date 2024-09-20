@@ -26,6 +26,7 @@ import type {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
 import {UpdateStatus} from 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {isVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
 
 // <if expr="_google_chrome or not chromeos_ash">
@@ -100,26 +101,39 @@ suite('AllBuilds', function() {
   // <if expr="not chromeos_ash">
   const SPINNER_ICON: string = 'chrome://resources/images/throbber_small.svg';
 
+  async function assertSpinnerVisible(visible: boolean) {
+    const img = page.shadowRoot!.querySelector<HTMLImageElement>(
+        `img[src='${SPINNER_ICON}']`);
+    assertTrue(!!img);
+    if (img.complete) {
+      assertEquals(visible, isVisible(img));
+      return;
+    }
+
+    await eventToPromise('load', img);
+    assertEquals(visible, isVisible(img));
+  }
+
   /**
    * Test that the status icon and status message update according to
    * incoming 'update-status-changed' events.
    */
-  test('IconAndMessageUpdates', function() {
-    const icon = page.shadowRoot!.querySelector('iron-icon')!;
+  test('IconAndMessageUpdates', async function() {
+    const icon = page.shadowRoot!.querySelector('cr-icon')!;
     assertTrue(!!icon);
     const statusMessageEl =
         page.shadowRoot!.querySelector('#updateStatusMessage div')!;
     let previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.CHECKING);
-    assertEquals(SPINNER_ICON, icon.src);
-    assertEquals(null, icon.getAttribute('icon'));
+    await assertSpinnerVisible(true);
+    assertEquals('', icon.getAttribute('icon'));
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.UPDATING, {progress: 0});
-    assertEquals(SPINNER_ICON, icon.src);
-    assertEquals(null, icon.getAttribute('icon'));
+    await assertSpinnerVisible(true);
+    assertEquals('', icon.getAttribute('icon'));
     assertFalse(statusMessageEl.textContent!.includes('%'));
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
     previousMessageText = statusMessageEl.textContent;
@@ -130,24 +144,24 @@ suite('AllBuilds', function() {
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('settings:check-circle', icon.icon);
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.DISABLED_BY_ADMIN);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('cr20:domain', icon.icon);
     assertEquals(0, statusMessageEl.textContent!.trim().length);
 
     fireStatusChanged(UpdateStatus.FAILED);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('cr:error', icon.icon);
     assertEquals(0, statusMessageEl.textContent!.trim().length);
 
     fireStatusChanged(UpdateStatus.DISABLED);
-    assertEquals(null, icon.src);
-    assertEquals(null, icon.getAttribute('icon'));
+    await assertSpinnerVisible(false);
+    assertEquals('', icon.getAttribute('icon'));
     assertEquals(0, statusMessageEl.textContent!.trim().length);
   });
 
@@ -193,26 +207,26 @@ suite('AllBuilds', function() {
     }
 
     await initNewPage();
-    const icon = page.shadowRoot!.querySelector('iron-icon')!;
+    const icon = page.shadowRoot!.querySelector('cr-icon')!;
     assertTrue(!!icon);
     assertTrue(!!queryUpdateStatusMessage());
     assertTrue(!!queryDeprecationWarning());
     assertFalse(queryDeprecationWarning().hidden);
 
     fireStatusChanged(UpdateStatus.CHECKING);
-    assertEquals(SPINNER_ICON, icon.src);
-    assertEquals(null, icon.getAttribute('icon'));
+    await assertSpinnerVisible(true);
+    assertEquals('', icon.getAttribute('icon'));
     assertFalse(queryDeprecationWarning().hidden);
     assertFalse(queryUpdateStatusMessage().hidden);
 
     fireStatusChanged(UpdateStatus.UPDATING);
-    assertEquals(SPINNER_ICON, icon.src);
-    assertEquals(null, icon.getAttribute('icon'));
+    await assertSpinnerVisible(true);
+    assertEquals('', icon.getAttribute('icon'));
     assertFalse(queryDeprecationWarning().hidden);
     assertFalse(queryUpdateStatusMessage().hidden);
 
     fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('settings:check-circle', icon.icon);
     assertFalse(queryDeprecationWarning().hidden);
     assertFalse(queryUpdateStatusMessage().hidden);
@@ -239,7 +253,7 @@ suite('AllBuilds', function() {
     }
 
     await initNewPage();
-    const icon = page.shadowRoot!.querySelector('iron-icon')!;
+    const icon = page.shadowRoot!.querySelector('cr-icon')!;
     assertTrue(!!icon);
     assertTrue(!!queryDeprecationWarning());
     assertTrue(!!queryUpdateStatusMessage());
@@ -248,19 +262,19 @@ suite('AllBuilds', function() {
     assertTrue(queryUpdateStatusMessage().hidden);
 
     fireStatusChanged(UpdateStatus.CHECKING);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('cr:error', icon.icon);
     assertFalse(queryDeprecationWarning().hidden);
     assertTrue(queryUpdateStatusMessage().hidden);
 
     fireStatusChanged(UpdateStatus.FAILED);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('cr:error', icon.icon);
     assertFalse(queryDeprecationWarning().hidden);
     assertTrue(queryUpdateStatusMessage().hidden);
 
     fireStatusChanged(UpdateStatus.UPDATED);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('cr:error', icon.icon);
     assertFalse(queryDeprecationWarning().hidden);
     assertTrue(queryUpdateStatusMessage().hidden);

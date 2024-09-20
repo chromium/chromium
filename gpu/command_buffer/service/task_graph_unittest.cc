@@ -41,12 +41,11 @@ class TaskGraphTest : public testing::Test {
   }
 
   void CreateSequence(int sequence_key) {
-    SequenceId sequence_id = task_graph_->CreateSequence(
-        base::DoNothing(), base::SingleThreadTaskRunner::GetCurrentDefault());
     CommandBufferId command_buffer_id =
         CommandBufferId::FromUnsafeValue(sequence_key);
-    task_graph_->CreateSyncPointClientState(sequence_id, kNamespaceId,
-                                            command_buffer_id);
+    SequenceId sequence_id = task_graph_->CreateSequence(
+        base::DoNothing(), base::SingleThreadTaskRunner::GetCurrentDefault(),
+        kNamespaceId, command_buffer_id);
 
     sequence_info_.emplace(sequence_key,
                            SequenceInfo(sequence_id, command_buffer_id));

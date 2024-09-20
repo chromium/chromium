@@ -329,12 +329,18 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
 
   // Move the mouse to the specified `position` in screen coordinates. The
   // `reference` element will be used based on how `position` is specified.
+  //
+  // This verb is only available in interactive test suites; see
+  // `RequireInteractiveTest()`.
   [[nodiscard]] StepBuilder MoveMouseTo(AbsolutePositionSpecifier position);
   [[nodiscard]] StepBuilder MoveMouseTo(
       ElementSpecifier reference,
       RelativePositionSpecifier position = CenterPoint());
 
   // Clicks mouse button `button` at the current cursor position.
+  //
+  // This verb is only available in interactive test suites; see
+  // `RequireInteractiveTest()`.
   [[nodiscard]] StepBuilder ClickMouse(
       ui_controls::MouseButton button = ui_controls::LEFT,
       bool release = true);
@@ -342,6 +348,9 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // Depresses the left mouse button at the current cursor position and drags to
   // the target `position`. The `reference` element will be used based on how
   // `position` is specified.
+  //
+  // This verb is only available in interactive test suites; see
+  // `RequireInteractiveTest()`.
   [[nodiscard]] StepBuilder DragMouseTo(AbsolutePositionSpecifier position,
                                         bool release = true);
   [[nodiscard]] StepBuilder DragMouseTo(
@@ -351,6 +360,9 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
 
   // Releases the specified mouse button. Use when you previously called
   // ClickMouse() or DragMouseTo() with `release` = false.
+  //
+  // This verb is only available in interactive test suites; see
+  // `RequireInteractiveTest()`.
   [[nodiscard]] StepBuilder ReleaseMouse(
       ui_controls::MouseButton button = ui_controls::LEFT);
 

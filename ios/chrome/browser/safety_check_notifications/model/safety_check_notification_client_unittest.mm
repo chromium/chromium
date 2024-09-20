@@ -38,6 +38,7 @@
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -136,7 +137,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
   // matching `notification_id`.
   id NotificationRequestArg(NSString* notification_id) {
     return [OCMArg checkWithBlock:^BOOL(UNNotificationRequest* request) {
-      EXPECT_TRUE([request.identifier isEqualToString:notification_id]);
+      EXPECT_NSEQ(request.identifier, notification_id);
       return YES;
     }];
   }

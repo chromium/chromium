@@ -301,6 +301,10 @@ BASE_FEATURE(kEnableGetNetworkConnectivityHintAPI,
 BASE_FEATURE(kEnableTcpPortRandomization,
              "EnableTcpPortRandomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTcpSocketIoCompletionPortWin,
+             "TcpSocketIoCompletionPortWin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kAvoidEntryCreationForNoStore,
@@ -558,14 +562,6 @@ BASE_FEATURE(kPartitionProxyChains,
              "PartitionProxyChains",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStorageAccessHeaders,
-             "StorageAccessHeaders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kStorageAccessHeadersTrial,
-             "StorageAccessHeadersTrial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              "SpdySessionForProxyAdditionalChecks",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -594,6 +590,14 @@ BASE_FEATURE(kOptimizeParsingDataUrls,
 // if we haven't had to turn this off.
 BASE_FEATURE(kLegacyPKCS1ForTLS13,
              "LegacyPKCS1ForTLS13",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kKeepWhitespaceForDataUrls,
+             "KeepWhitespaceForDataUrls",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys,
+             "NoVarySearchIgnoreUnrecognizedKeys",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace net::features

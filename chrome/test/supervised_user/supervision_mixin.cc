@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,8 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
@@ -136,6 +139,27 @@ void SupervisionMixin::SetParentalControlsAccountCapability(
   signin::UpdateAccountInfoForAccount(identity_manager, account);
 }
 
+void SupervisionMixin::SetPendingStateForPrimaryAccount() {
+  CHECK_NE(sign_in_mode_, SignInMode::kSignedOut);
+
+  auto* identity_manager = GetIdentityTestEnvironment()->identity_manager();
+
+  // Invalidate refresh token and google auth cookie so that the supervised
+  // user is in pending state.
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  GetIdentityTestEnvironment()->SetInvalidRefreshTokenForAccount(
+      account_info.account_id);
+  signin::SetFreshnessOfAccountsInGaiaCookie(identity_manager,
+                                             /*accounts_are_fresh=*/false);
+
+  signin::AccountsInCookieJarInfo cookie_jar =
+      identity_manager->GetAccountsInCookieJar();
+  CHECK(!identity_manager->GetAccountsInCookieJar().accounts_are_fresh);
+  CHECK(identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)));
+}
+
 void SupervisionMixin::ConfigureIdentityTestEnvironment() {
   switch (sign_in_mode_) {
     case SignInMode::kSignedOut:
@@ -179,6 +203,7 @@ void SupervisionMixin::ConfigureIdentityTestEnvironment() {
   }
 
   GetIdentityTestEnvironment()->SetAutomaticIssueOfAccessTokens(true);
+  GetIdentityTestEnvironment()->SetFreshnessOfAccountsInGaiaCookie(true);
   ConfigureParentalControls(
       /*is_supervised_profile=*/sign_in_mode_ == SignInMode::kSupervised);
 }
@@ -205,7 +230,7 @@ void SupervisionMixin::SetNextReAuthStatus(
 
 void SupervisionMixin::SignIn(SignInMode mode) {
   CHECK_NE(mode, SignInMode::kSignedOut);
-  CHECK_EQ(sign_in_mode_, SignInMode::kSignedOut);
+
   sign_in_mode_ = mode;
   ConfigureIdentityTestEnvironment();
 }

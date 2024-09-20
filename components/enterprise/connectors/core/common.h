@@ -98,11 +98,9 @@ struct ReportingSettings {
   bool per_profile = false;
 };
 
-// Returns the pref path corresponding to a connector.
-const char* ConnectorPref(AnalysisConnector connector);
-const char* ConnectorPref(ReportingConnector connector);
-const char* ConnectorScopePref(AnalysisConnector connector);
-const char* ConnectorScopePref(ReportingConnector connector);
+// Returns the pref path corresponding to an analysis connector.
+const char* AnalysisConnectorPref(AnalysisConnector connector);
+const char* AnalysisConnectorScopePref(AnalysisConnector connector);
 
 // Returns the highest precedence action in the given parameters. Writes the tag
 // field of the result containing the highest precedence action into |tag|.

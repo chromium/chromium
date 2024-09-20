@@ -3952,7 +3952,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
       gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
   changes_1.push_back(blink::mojom::LocationChanges::New(0, relative_bounds_1));
   rfh_a->HandleAXLocationChanges(rfh_a->GetAXTreeID(), std::move(changes_1),
-                                 /*reset_token=*/1);
+                                 /*reset_token=*/1, {});
 
   // Generate another location change event.
   std::vector<blink::mojom::LocationChangesPtr> changes_2;
@@ -3961,7 +3961,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
       gfx::RectF(/*x=*/2, /*y=*/3, /*width=*/4, /*height=*/5);
   changes_2.push_back(blink::mojom::LocationChanges::New(0, relative_bounds_2));
   rfh_a->HandleAXLocationChanges(rfh_a->GetAXTreeID(), std::move(changes_2),
-                                 /*reset_token=*/1);
+                                 /*reset_token=*/1, {});
 
   // 4) Navigate back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));

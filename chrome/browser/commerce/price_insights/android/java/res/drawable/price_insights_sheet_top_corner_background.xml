@@ -5,10 +5,14 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/price_insights_sheet_bg_color"/>
+<org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:shape="rectangle"
+    app:surfaceElevation="@dimen/price_insights_surface_elevation">
+
     <corners
         android:topRightRadius="@dimen/price_insights_content_background_radius"
         android:topLeftRadius="@dimen/price_insights_content_background_radius"
     />
-</shape>
+</org.chromium.components.browser_ui.widget.SurfaceColorDrawable>

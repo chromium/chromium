@@ -84,6 +84,7 @@ source_set("safe_browsing_url_checker_unittest") {
     ":browser",
     "//base/test:test_support",
     "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
@@ -222,7 +223,10 @@ source_set("safe_browsing_hats_delegate_unittest") {
 }
 
 source_set("download_check_result") {
-  sources = [ "download_check_result.h" ]
+  sources = [
+    "download_check_result.cc",
+    "download_check_result.h",
+  ]
 }
 
 source_set("safe_browsing_metrics_collector") {

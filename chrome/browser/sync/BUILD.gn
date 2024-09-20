@@ -13,6 +13,8 @@ source_set("sync") {
     "account_bookmark_sync_service_factory.h",
     "chrome_sync_client.cc",
     "chrome_sync_client.h",
+    "chrome_sync_controller_builder.cc",
+    "chrome_sync_controller_builder.h",
     "data_type_store_service_factory.cc",
     "data_type_store_service_factory.h",
     "device_info_sync_client_impl.cc",
@@ -78,6 +80,7 @@ source_set("sync") {
     "//chrome/browser/favicon",
     "//chrome/browser/promos:utils",
     "//chrome/browser/search_engines",
+    "//chrome/browser/tab_group_sync:utils",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/common:buildflags",
@@ -137,10 +140,7 @@ source_set("sync") {
       "glue/web_contents_state_synced_tab_delegate.cc",
       "glue/web_contents_state_synced_tab_delegate.h",
     ]
-    deps += [
-      "//chrome/browser/sync/android:jni_headers",
-      "//chrome/browser/tab_group_sync:utils",
-    ]
+    deps += [ "//chrome/browser/sync/android:jni_headers" ]
   } else {
     sources += [
       "glue/extension_data_type_controller.cc",
@@ -152,7 +152,10 @@ source_set("sync") {
       "sync_ui_util.cc",
       "sync_ui_util.h",
     ]
-    public_deps += [ "//chrome/browser/ui/tabs:tab_strip_model_observer" ]
+    public_deps += [
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    ]
     deps += [
       "//chrome/browser/themes",
       "//chrome/browser/web_applications",

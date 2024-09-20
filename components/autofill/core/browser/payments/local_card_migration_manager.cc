@@ -442,7 +442,7 @@ void LocalCardMigrationManager::GetMigratableCreditCards() {
   migratable_credit_cards_.clear();
 
   // Initialize the local credit card list and queue for showing and uploading.
-  for (CreditCard* credit_card : local_credit_cards) {
+  for (const CreditCard* credit_card : local_credit_cards) {
     // If the card is valid (has a valid card number, expiration date, and is
     // not expired) and is not a server card, add it to the list of migratable
     // cards.

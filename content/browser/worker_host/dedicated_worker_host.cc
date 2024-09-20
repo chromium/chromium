@@ -793,6 +793,20 @@ void DedicatedWorkerHost::BindSerialService(
 
   ancestor_render_frame_host->BindSerialService(std::move(receiver));
 }
+
+void DedicatedWorkerHost::BindHidService(
+    mojo::PendingReceiver<blink::mojom::HidService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  // The ancestor frame may have already been closed. In that case, the worker
+  // will soon be terminated too, so abort the connection.
+  if (!ancestor_render_frame_host) {
+    return;
+  }
+
+  ancestor_render_frame_host->GetHidService(std::move(receiver));
+}
 #endif
 
 void DedicatedWorkerHost::CreateBucketManagerHost(

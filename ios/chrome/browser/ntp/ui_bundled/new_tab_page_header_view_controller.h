@@ -22,6 +22,7 @@
 @protocol LensCommands;
 @class LayoutGuideCenter;
 @class PrimaryToolbarViewController;
+@class TabGroupIndicatorView;
 
 // Controller for the header containing the logo and the fake omnibox, handling
 // the interactions between the header and the collection, and the rest of the
@@ -126,6 +127,9 @@
 
 // Hides the new feature badge on the Home customization menu's entrypoint.
 - (void)hideBadgeOnCustomizationMenu;
+
+// Sets the tabgroupIndicatorView.
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view;
 
 @end
 

@@ -195,6 +195,10 @@ const views::Button* GetSavedDeskDialogAcceptButton();
 // if testing a piece of the UI which calls into the desk model.
 void WaitForSavedDeskUI();
 
+// Waits until the library button is visible. Returns false if the library
+// button doesn't become visible within a timeout.
+bool WaitForLibraryButtonVisible();
+
 // Retrieves the AppRestoreData (if any) from a template. For both `app_id` and
 // `window_id`: if not set - the first occurrence is used. Returns nullptr if
 // matching data is not found.

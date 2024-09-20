@@ -527,6 +527,7 @@ component("platform") {
     "bindings/v8_dom_activity_logger.h",
     "bindings/v8_dom_wrapper.cc",
     "bindings/v8_dom_wrapper.h",
+    "bindings/v8_external_memory_accounter.h",
     "bindings/v8_global_value_map.h",
     "bindings/v8_histogram_accumulator.cc",
     "bindings/v8_histogram_accumulator.h",
@@ -1389,8 +1390,6 @@ component("platform") {
     "peerconnection/rtc_video_decoder_factory.h",
     "peerconnection/rtc_video_decoder_fallback_recorder.cc",
     "peerconnection/rtc_video_decoder_fallback_recorder.h",
-    "peerconnection/rtc_video_decoder_stream_adapter.cc",
-    "peerconnection/rtc_video_decoder_stream_adapter.h",
     "peerconnection/rtc_video_encoder.cc",
     "peerconnection/rtc_video_encoder.h",
     "peerconnection/rtc_video_encoder_factory.cc",
@@ -1741,6 +1740,7 @@ component("platform") {
     "//third_party/fdlibm",
     "//third_party/pffft:pffft",
     "//ui/base/cursor",
+    "//ui/base/mojom:ui_base_types_blink",
     "//ui/gfx",
     "//ui/native_theme:features",
   ]
@@ -2283,7 +2283,6 @@ source_set("blink_platform_unittests_sources") {
     "peerconnection/rtc_rtp_source_test.cc",
     "peerconnection/rtc_video_decoder_adapter_test.cc",
     "peerconnection/rtc_video_decoder_factory_test.cc",
-    "peerconnection/rtc_video_decoder_stream_adapter_test.cc",
     "peerconnection/rtc_video_encoder_factory_test.cc",
     "peerconnection/rtc_video_encoder_test.cc",
     "peerconnection/stats_collecting_decoder_test.cc",
@@ -2623,6 +2622,18 @@ source_set("blink_fuzzer_test_support") {
   ]
 }
 
+# This source set is used by image decoder fuzzers to initialize their decoders.
+source_set("blink_image_decoder_fuzzer_test_support") {
+  testonly = true
+  visibility = []  # Allow re-assignment of list.
+  visibility = [ "*" ]
+  sources = [
+    "image-decoders/image_decoder_fuzzer_utils.cc",
+    "image-decoders/image_decoder_fuzzer_utils.h",
+  ]
+  deps = [ ":platform" ]
+}
+
 # Fuzzer for WTF::unicode::MathVariant.
 fuzzer_test("math_transform_fuzzer") {
   sources = [ "math_transform_fuzzer.cc" ]
@@ -2772,6 +2783,7 @@ fuzzer_test("blink_png_decoder_fuzzer") {
   sources = [ "image-decoders/png/png_image_decoder_fuzzer.cc" ]
   deps = [
     ":blink_fuzzer_test_support",
+    ":blink_image_decoder_fuzzer_test_support",
     ":platform",
     "//third_party/libpng",
   ]
@@ -2788,10 +2800,25 @@ fuzzer_test("blink_jpeg_decoder_fuzzer") {
   sources = [ "image-decoders/jpeg/jpeg_image_decoder_fuzzer.cc" ]
   deps = [
     ":blink_fuzzer_test_support",
+    ":blink_image_decoder_fuzzer_test_support",
     ":platform",
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/jpegfuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+}
+
+fuzzer_test("blink_bmp_decoder_fuzzer") {
+  sources = [ "image-decoders/bmp/bmp_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":blink_image_decoder_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/bmp-suite/good" ]
+
+  # TODO: crbug.com/324586211 - raise the memory limit to avoid OOMs in the
+  # fuzzer harness. This can be removed once the global memory limit is raised.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
 
 # Fuzzer for blink::WEBPImageDecoder.

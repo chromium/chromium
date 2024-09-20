@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CrIconElement, CrToastManagerElement, ItemElement} from 'chrome://downloads/downloads.js';
+import type {CrIconElement, CrToastManagerElement, DownloadsItemElement} from 'chrome://downloads/downloads.js';
 import {BrowserProxy, DangerType, IconLoaderImpl, loadTimeData, SafeBrowsingState, State, TailoredWarningType} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -11,7 +11,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
 import {createDownload, TestDownloadsProxy, TestIconLoader} from './test_support.js';
 
 suite('ItemTest', function() {
-  let item: ItemElement;
+  let item: DownloadsItemElement;
   let testDownloadsProxy: TestDownloadsProxy;
   let testIconLoader: TestIconLoader;
   let toastManager: CrToastManagerElement;
@@ -765,7 +765,7 @@ suite('ItemTest', function() {
 });
 
 suite('ItemFocusTest', function() {
-  let item: ItemElement;
+  let item: DownloadsItemElement;
   let testDownloadsProxy: TestDownloadsProxy;
   let testIconLoader: TestIconLoader;
   let toastManager: CrToastManagerElement;

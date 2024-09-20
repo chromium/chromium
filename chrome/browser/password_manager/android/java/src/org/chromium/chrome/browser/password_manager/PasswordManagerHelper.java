@@ -10,7 +10,6 @@ import android.app.PendingIntent.CanceledException;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
 
 import org.jni_zero.JniType;
@@ -64,10 +62,6 @@ public class PasswordManagerHelper {
     // all points of entry to the passwords settings.
     public static final String MANAGE_PASSWORDS_REFERRER = "manage-passwords-referrer";
 
-    // Launch argument for the main settings. If set to to true, the passwords
-    // export flow starts immediately.
-    public static final String START_PASSWORDS_EXPORT = "start-passwords-export";
-
     // Indicates the operation that was requested from the {@link PasswordCheckupClientHelper}.
     @IntDef({
         PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
@@ -87,9 +81,6 @@ public class PasswordManagerHelper {
     }
 
     private static final String UPM_VARIATION_FEATURE_PARAM = "stage";
-
-    // Referrer string for the Google Play Store when installing GMS Core package
-    private static final String STORE_REFERER = "chrome_upm";
 
     // Loading dialog is dismissed with this delay after sending an intent to prevent
     // the old activity from showing up before the new one is shown.
@@ -155,15 +146,23 @@ public class PasswordManagerHelper {
      * Services.
      *
      * @param context used to show the UI to manage passwords.
+     * @param referrer indicates where the request to show the password settings UI comes from.
+     * @param modalDialogManagerSupplier provides a {@link ModalDialogManager}. Used to show error
+     *     modal dialogs or a loading dialog if opening the UI takes too long.
      * @param managePasskeys indicates whether passkey management is needed, which when true will
      *     attempt to launch the credential manager even without syncing enabled.
+     * @param account the account for which to open the UI. An empty or null account signals that
+     *     the UI should be opened for the local storage.
+     * @param customTabIntentHelper provides an intent to open a custom tab displaying a help center
+     *     article.
      */
     public void showPasswordSettings(
             Context context,
             @ManagePasswordsReferrer int referrer,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             boolean managePasskeys,
-            @Nullable String account) {
+            @Nullable String account,
+            CustomTabIntentHelper customTabIntentHelper) {
         RecordHistogram.recordEnumeratedHistogram(
                 "PasswordManager.ManagePasswordsReferrer",
                 referrer,
@@ -178,14 +177,15 @@ public class PasswordManagerHelper {
             Runnable startExportFlow =
                     referrer == ManagePasswordsReferrer.CHROME_SETTINGS
                             ? () -> launchExportFlow(context, modalDialogManagerSupplier)
-                            : () -> showMainSettingsAndStartExport(context);
+                            : () -> PasswordExportLauncher.showMainSettingsAndStartExport(context);
             new PasswordAccessLossDialogSettingsCoordinator()
                     .showPasswordAccessLossDialog(
                             context,
                             modalDialogManagerSupplier.get(),
                             warningType,
-                            PasswordManagerHelper::launchGmsUpdate,
-                            startExportFlow);
+                            GmsUpdateLauncher::launch,
+                            startExportFlow,
+                            customTabIntentHelper);
             return;
         }
 
@@ -240,15 +240,6 @@ public class PasswordManagerHelper {
                 SettingsLauncherFactory.createSettingsLauncher()
                         .createSettingsActivityIntent(
                                 context, SettingsFragment.PASSWORDS, fragmentArgs));
-    }
-
-    public static void showMainSettingsAndStartExport(Context context) {
-        Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putBoolean(START_PASSWORDS_EXPORT, true);
-        context.startActivity(
-                SettingsLauncherFactory.createSettingsLauncher()
-                        .createSettingsActivityIntent(
-                                context, SettingsFragment.MAIN, fragmentArgs));
     }
 
     /**
@@ -433,35 +424,6 @@ public class PasswordManagerHelper {
         // Re-enroll the user by resetting the enroll pref. Other state reset happens on
         // unenroll.
         prefs.setBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS, false);
-    }
-
-    public static void launchGmsUpdate(Context context) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        String deepLinkUrl =
-                "market://details?id="
-                        + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE
-                        + "&referrer="
-                        + STORE_REFERER;
-
-        intent.setPackage("com.android.vending");
-        intent.setData(Uri.parse(deepLinkUrl));
-        intent.putExtra("callerId", context.getPackageName());
-
-        // Request for overlay flow, Play Store will fallback to the default
-        // behaviour if overlay is not available.
-        // TODO(crbug.com/40855336): Use AlleyOop v3 overlay UI after fixing Chrome restart
-        // during the GMS Core installation.
-        // intent.putExtra("overlay", true);
-
-        try {
-            context.startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            // In case that Google Play Store isn't present on the device, its activity could not
-            // have been started.
-            // TODO: b/334051261 - Instead of silently failing to open Google Play Store to offer
-            // updating GMS Core, either don't offer the option at all or indicate why the update
-            // button didn't work.
-        }
     }
 
     public void launchExportFlow(
@@ -717,7 +679,7 @@ public class PasswordManagerHelper {
                         modalDialogManager,
                         context,
                         isAccepted -> {
-                            if (isAccepted) launchGmsUpdate(context);
+                            if (isAccepted) GmsUpdateLauncher.launch(context);
                         });
         dialog.show();
     }

@@ -1123,20 +1123,6 @@ void GLES2InterfaceStub::BeginSharedImageAccessDirectCHROMIUM(
     GLenum /* mode */) {}
 void GLES2InterfaceStub::EndSharedImageAccessDirectCHROMIUM(
     GLuint /* texture */) {}
-void GLES2InterfaceStub::ConvertRGBAToYUVAMailboxesINTERNAL(
-    GLenum /* planes_yuv_color_space */,
-    GLenum /* plane_config */,
-    GLenum /* subsampling */,
-    const GLbyte* /* mailboxes */) {}
-void GLES2InterfaceStub::ConvertYUVAMailboxesToRGBINTERNAL(
-    GLint /* src_x */,
-    GLint /* src_y */,
-    GLsizei /* width */,
-    GLsizei /* height */,
-    GLenum /* planes_yuv_color_space */,
-    GLenum /* plane_config */,
-    GLenum /* subsampling */,
-    const GLbyte* /* mailboxes */) {}
 void GLES2InterfaceStub::ConvertYUVAMailboxesToTextureINTERNAL(
     GLuint /* texture */,
     GLenum /* target */,

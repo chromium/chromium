@@ -77,4 +77,9 @@ void OutputSurface::InitDelegatedInkPointRendererReceiver(
   NOTREACHED_IN_MIGRATION();
 }
 
+void OutputSurface::ReadbackForTesting(
+    CopyOutputRequest::CopyOutputRequestCallback result_callback) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace viz

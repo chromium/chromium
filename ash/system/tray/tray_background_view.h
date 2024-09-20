@@ -269,7 +269,7 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   void StopPulseAnimation();
 
   // Used to bounce in animation on tray button.
-  void BounceInAnimation();
+  void BounceInAnimation(bool scale_animation = true);
 
   void SetContextMenuEnabled(bool should_enable_menu) {
     set_context_menu_controller(should_enable_menu ? this : nullptr);

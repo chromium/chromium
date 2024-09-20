@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/borealis/borealis_security_delegate.h"
 
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/borealis/testing/windows.h"
@@ -27,7 +28,7 @@ TEST_F(BorealisSecurityDelegateTest, MainAppCanSelfActivate) {
   CreateFakeMainApp(&profile_);
   std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
       "org.chromium.guest_os.borealis.wmclass.Steam",
-      &BorealisService::GetForProfile(&profile_)->WindowManager());
+      &BorealisServiceFactory::GetForProfile(&profile_)->WindowManager());
   EXPECT_TRUE(
       BorealisSecurityDelegate::MakeForTesting(&profile_)->CanSelfActivate(
           window->window()));
@@ -37,11 +38,12 @@ TEST_F(BorealisSecurityDelegateTest, NormalAppCanNotSelfActivate) {
   CreateFakeApp(&profile_, "not_steam", "borealis/123");
   std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
       "org.chromium.guest_os.borealis.wmclass.not_steam",
-      &BorealisService::GetForProfile(&profile_)->WindowManager());
+      &BorealisServiceFactory::GetForProfile(&profile_)->WindowManager());
 
   ASSERT_FALSE(BorealisWindowManager::IsAnonymousAppId(
-      BorealisService::GetForProfile(&profile_)->WindowManager().GetShelfAppId(
-          window->window())));
+      BorealisServiceFactory::GetForProfile(&profile_)
+          ->WindowManager()
+          .GetShelfAppId(window->window())));
 
   EXPECT_FALSE(
       BorealisSecurityDelegate::MakeForTesting(&profile_)->CanSelfActivate(
@@ -51,11 +53,12 @@ TEST_F(BorealisSecurityDelegateTest, NormalAppCanNotSelfActivate) {
 TEST_F(BorealisSecurityDelegateTest, AnonymousAppCanNotSelfActivate) {
   std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
       "org.chromium.guest_os.borealis.wmclass.anonymous",
-      &BorealisService::GetForProfile(&profile_)->WindowManager());
+      &BorealisServiceFactory::GetForProfile(&profile_)->WindowManager());
 
   ASSERT_TRUE(BorealisWindowManager::IsAnonymousAppId(
-      BorealisService::GetForProfile(&profile_)->WindowManager().GetShelfAppId(
-          window->window())));
+      BorealisServiceFactory::GetForProfile(&profile_)
+          ->WindowManager()
+          .GetShelfAppId(window->window())));
 
   EXPECT_FALSE(
       BorealisSecurityDelegate::MakeForTesting(&profile_)->CanSelfActivate(

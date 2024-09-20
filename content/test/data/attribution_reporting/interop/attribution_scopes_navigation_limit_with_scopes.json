@@ -1,0 +1,259 @@
+{
+  "description": "One unique scopes set per reporting origin per navigation - with scopes",
+  "api_config": {
+    "needs_attribution_scopes": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          // S1: Non-empty scopes set, should register.
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "attribution_scopes": {
+                  "limit": 2,
+                  "values": [
+                    "1"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          },
+          // S2: No scopes set, should not register.
+          {
+            "timestamp": "1",
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "234",
+                "debug_reporting": true
+              }
+            }
+          },
+          // S3: Different scopes set, should not register.
+          {
+            "timestamp": "2",
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "345",
+                "attribution_scopes": {
+                  "limit": 1,
+                  "values": [
+                    "2"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          },
+          // S4: Should register as reporting origin is different from S1.
+          {
+            "timestamp": "3",
+            "url": "https://reporter2.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "666",
+                "debug_reporting": true
+              }
+            }
+          },
+          // S5: Should register as reporting origin is different from S1.
+          {
+            "timestamp": "4",
+            "url": "https://reporter3.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "777",
+                "attribution_scopes": {
+                  "limit": 1,
+                  "values": [
+                    "2"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // T1: attribution scope -> [], should be attributed to S1.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // S6: Should register, as it's part of a different navigation.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "456",
+                "attribution_scopes": {
+                  "limit": 2,
+                  "values": [
+                    "2"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // T2: attribution scope -> "2", should be attributed to S6.
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
+                  }
+                ],
+                "attribution_scopes": [ "2" ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "666",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "3",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "777",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "4",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "456",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "3000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "1"
+        },
+        "report_time": "172800000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172803",
+          "source_event_id": "456",
+          "source_type": "navigation",
+          "trigger_data": "2"
+        },
+        "report_time": "172803000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ]
+  }
+}

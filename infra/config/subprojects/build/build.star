@@ -29,7 +29,10 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
-            groups = "project-chromium-admins",
+            groups = [
+                "project-chromium-admins",
+                "mdb/chrome-ops-browser-build-team",
+            ],
         ),
         acl.entry(
             roles = acl.SCHEDULER_TRIGGERER,

@@ -44,6 +44,8 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
       ContextImplCoreml* context,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
+      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
       WebNNContextImpl::CreateGraphImplCallback callback);
@@ -98,6 +100,8 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
   static void CreateAndBuildOnBackgroundThread(
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
+      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
       base::OnceCallback<void(

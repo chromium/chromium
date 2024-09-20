@@ -56,6 +56,7 @@ source_set("ui") {
     "//components/signin/public/base:signin_switches",
     "//components/signin/public/identity_manager",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements:elements_internal",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/authentication/signin:constants",

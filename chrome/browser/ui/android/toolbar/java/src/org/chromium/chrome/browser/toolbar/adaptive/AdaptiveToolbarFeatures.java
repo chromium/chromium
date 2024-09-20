@@ -45,6 +45,9 @@ public class AdaptiveToolbarFeatures {
     public static final String CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME =
             "CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME";
 
+    private static final String CONTEXTUAL_PAGE_ACTION_CHIP_ALTERNATE_COLOR =
+            "action_chip_with_different_color";
+
     @AdaptiveToolbarButtonVariant private static Integer sButtonVariant;
 
     /** For testing only. */
@@ -74,6 +77,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.READER_MODE:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+            case AdaptiveToolbarButtonVariant.DISCOUNTS:
                 return true;
         }
         return false;
@@ -106,6 +110,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.READER_MODE:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+            case AdaptiveToolbarButtonVariant.DISCOUNTS:
             case AdaptiveToolbarButtonVariant.TEST_BUTTON:
                 return true;
             default:
@@ -123,6 +128,7 @@ public class AdaptiveToolbarFeatures {
         switch (buttonVariant) {
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+            case AdaptiveToolbarButtonVariant.DISCOUNTS:
             case AdaptiveToolbarButtonVariant.TEST_BUTTON:
                 return DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS;
             case AdaptiveToolbarButtonVariant.READER_MODE:
@@ -148,6 +154,11 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.READER_MODE:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
                 return false;
+            case AdaptiveToolbarButtonVariant.DISCOUNTS:
+                return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.ENABLE_DISCOUNT_INFO_API,
+                        CONTEXTUAL_PAGE_ACTION_CHIP_ALTERNATE_COLOR,
+                        false);
             default:
                 assert false : "Unknown button variant " + buttonVariant;
                 return false;
@@ -164,16 +175,6 @@ public class AdaptiveToolbarFeatures {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS);
     }
 
-    public static boolean isAdaptiveToolbarTranslateEnabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE);
-    }
-
-    public static boolean isAdaptiveToolbarAddToBookmarksEnabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS);
-    }
-
     public static boolean isAdaptiveToolbarPageSummaryEnabled() {
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY);
@@ -185,6 +186,10 @@ public class AdaptiveToolbarFeatures {
 
     public static boolean isAdaptiveToolbarReadAloudEnabled(Profile profile) {
         return ReadAloudFeatures.isAllowed(profile);
+    }
+
+    public static boolean isDiscountsPageActionEnabled() {
+        return ChromeFeatureList.sEnableDiscountInfoApi.isEnabled();
     }
 
     /**

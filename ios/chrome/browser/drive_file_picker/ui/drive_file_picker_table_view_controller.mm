@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_alert_utils.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
-#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -28,6 +30,17 @@ constexpr CGFloat kCellIconCornerRadius = 10;
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierDriveMainFolders = kSectionIdentifierEnumZero,
 };
+
+DriveFilePickerItem* FindDriveFilePickerItem(
+    NSString* identifier,
+    NSArray<DriveFilePickerItem*>* items) {
+  for (DriveFilePickerItem* item in items) {
+    if ([item.identifier isEqual:identifier]) {
+      return item;
+    }
+  }
+  return nil;
+}
 
 }  // namespace
 
@@ -66,16 +79,21 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // The currently represented folder.
   NSString* _driveFolderTitle;
 
-  UITableViewDiffableDataSource<NSString*, DriveItemIdentifier*>*
-      _diffableDataSource;
-
-  DriveItemIdentifier* _downloadedItem;
+  UITableViewDiffableDataSource<NSNumber*, NSString*>* _diffableDataSource;
+  NSMutableArray<DriveFilePickerItem*>* _items;
 
   // A loading indocator displayed when the next page is being fetched.
   UIActivityIndicatorView* _loadingIndicator;
 
+  // A loading indocator displayed in the background while the items are being
+  // fetched.
+  UIActivityIndicatorView* _backgroundLoadingIndicator;
+
   // Next page availability.
   BOOL _nextPageAvailable;
+
+  // The selected item identifier.
+  NSString* _selectedIdentifier;
 }
 
 - (instancetype)init {
@@ -86,6 +104,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     [self initSortActions];
     [self initSortingDirectionSymbols];
     _nextPageAvailable = YES;
+    _items = [NSMutableArray array];
   }
   return self;
 }
@@ -95,8 +114,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  __weak __typeof(self) weakSelf = self;
+
   [self configureToolbar];
 
+  self.navigationItem.backAction =
+      [UIAction actionWithHandler:^(UIAction* action) {
+        [weakSelf backButtonTapped];
+      }];
   self.navigationItem.rightBarButtonItem = [self configureRightBarButtonItem];
 
   // Add the search bar.
@@ -113,10 +138,20 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   self.navigationController.toolbarHidden = NO;
 
-  __weak __typeof(self) weakSelf = self;
+  _backgroundLoadingIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  _backgroundLoadingIndicator.hidesWhenStopped = YES;
+  self.tableView.backgroundView = _backgroundLoadingIndicator;
+  [_backgroundLoadingIndicator startAnimating];
+
+  _loadingIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  _loadingIndicator.hidesWhenStopped = YES;
+  self.tableView.tableFooterView = _loadingIndicator;
+
   auto cellProvider = ^UITableViewCell*(UITableView* tableView,
                                         NSIndexPath* indexPath,
-                                        DriveItemIdentifier* itemIdentifier) {
+                                        NSString* itemIdentifier) {
     return [weakSelf cellForIndexPath:indexPath itemIdentifier:itemIdentifier];
   };
   _diffableDataSource =
@@ -128,11 +163,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
 
   [self.mutator fetchNextPage];
+}
 
-  _loadingIndicator = [[UIActivityIndicatorView alloc]
-      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-  _loadingIndicator.hidesWhenStopped = YES;
-  self.tableView.tableFooterView = _loadingIndicator;
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  if ([self isMovingFromParentViewController]) {
+    [self.delegate viewControllerDidDisappear:self];
+  }
 }
 
 #pragma mark - DriveFilePickerConsumer
@@ -154,10 +191,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 #pragma mark - UI actions
-
-- (void)confirmSelection {
-  [self.mutator submitFileSelection];
-}
 
 - (void)didSelectSortingCriteria:(DriveItemsSortingType)sortingCriteria {
   UIAction* selectedSortingAction =
@@ -194,6 +227,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 #pragma mark - Private
+
+- (void)backButtonTapped {
+  [self.mutator browseToParent];
+}
 
 // Configures the toolbar with 3 buttons, filterButton <---->
 // AccountButton(where the title is the user's email) <----> sortButton(which
@@ -249,8 +286,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   UIBarButtonItem* confirmButton = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_DRIVE_FILE_PICKER_CONFIRM)
               style:UIBarButtonItemStyleDone
-             target:self
-             action:@selector(confirmSelection)];
+             target:self.mutator
+             action:@selector(submitFileSelection)];
   return confirmButton;
 }
 
@@ -380,53 +417,65 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // Deques and sets up a cell for a drive item.
 - (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
-                      itemIdentifier:(DriveItemIdentifier*)itemIdentifier {
+                      itemIdentifier:(NSString*)itemIdentifier {
   TableViewDetailIconCell* cell =
       DequeueTableViewCell<TableViewDetailIconCell>(self.tableView);
+  DriveFilePickerItem* item = FindDriveFilePickerItem(itemIdentifier, _items);
+  CHECK(item);
+
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-  cell.userInteractionEnabled = YES;
-  [cell.textLabel setText:itemIdentifier.title];
+  [cell.textLabel setText:item.title];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  cell.userInteractionEnabled = itemIdentifier.enabled;
-  cell.textLabel.enabled = itemIdentifier.enabled;
-  cell.detailTextLabel.enabled = itemIdentifier.enabled;
 
-  if (!itemIdentifier.icon) {
+  if (!item.icon) {
     [self.mutator fetchIconForDriveItem:itemIdentifier];
   } else {
-    [cell setIconImage:itemIdentifier.icon
+    [cell setIconImage:item.icon
               tintColor:nil
         backgroundColor:cell.backgroundColor
            cornerRadius:kCellIconCornerRadius];
   }
 
-  if (itemIdentifier.type == DriveItemType::kFile) {
-    [cell setDetailText:itemIdentifier.creationDate];
+  if (item.type == DriveItemType::kFile) {
+    [cell setDetailText:item.creationDate];
     [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
-    cell.accessoryType = UITableViewCellAccessoryNone;
+    cell.accessoryType = [itemIdentifier isEqual:_selectedIdentifier]
+                             ? UITableViewCellAccessoryCheckmark
+                             : UITableViewCellAccessoryNone;
   }
 
-  if (itemIdentifier == _downloadedItem) {
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
-  }
-
+  cell.userInteractionEnabled = item.enabled;
+  cell.textLabel.enabled = item.enabled;
+  cell.detailTextLabel.enabled = item.enabled;
   return cell;
 }
 
 #pragma mark - DriveFilePickerConsumer
 
-- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems
+- (void)populateItems:(NSArray<DriveFilePickerItem*>*)driveItems
+               append:(BOOL)append
     nextPageAvailable:(BOOL)nextPageAvailable {
+  if (append) {
+    [_items addObjectsFromArray:driveItems];
+  } else {
+    _items = [driveItems mutableCopy];
+  }
+
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierDriveMainFolders) ]];
-  [snapshot appendItemsWithIdentifiers:driveItems];
+  NSMutableArray<NSString*>* identifiers = [NSMutableArray array];
+  for (DriveFilePickerItem* item in _items) {
+    [identifiers addObject:item.identifier];
+  }
+  [snapshot appendItemsWithIdentifiers:identifiers];
 
-  [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
   _nextPageAvailable = nextPageAvailable;
   [_loadingIndicator stopAnimating];
+  [_backgroundLoadingIndicator stopAnimating];
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
@@ -434,10 +483,27 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                                                      menu:emailsMenu];
 }
 
-- (void)reconfigureDriveItem:(DriveItemIdentifier*)driveItem {
+- (void)reconfigureDriveItem:(DriveFilePickerItem*)driveItem {
+  for (size_t i = 0; i < _items.count; ++i) {
+    if ([_items[i].identifier isEqual:driveItem.identifier]) {
+      _items[i] = driveItem;
+    }
+  }
   NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
-  [snapshot reconfigureItemsWithIdentifiers:@[ driveItem ]];
+  [snapshot reconfigureItemsWithIdentifiers:@[ driveItem.identifier ]];
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
+- (void)setIcon:(UIImage*)iconImage forItem:(NSString*)itemIdentifier {
+  for (size_t i = 0; i < _items.count; ++i) {
+    if ([_items[i].identifier isEqual:itemIdentifier]) {
+      _items[i].icon = iconImage;
+      break;
+    }
+  }
+  NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
+  [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {
@@ -446,16 +512,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (void)setEnabledItems:(NSSet<NSString*>*)identifiers {
-  NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
-  NSMutableArray* identifiersToReconfigure = [NSMutableArray array];
-  for (DriveItemIdentifier* itemIdentifier in snapshot.itemIdentifiers) {
-    BOOL itemShouldBeEnabled =
-        [identifiers containsObject:itemIdentifier.identifier];
-    if (itemIdentifier.enabled != itemShouldBeEnabled) {
-      itemIdentifier.enabled = itemShouldBeEnabled;
-      [identifiersToReconfigure addObject:itemIdentifier];
+  NSMutableArray<NSString*>* identifiersToReconfigure = [NSMutableArray array];
+  for (DriveFilePickerItem* item in _items) {
+    BOOL itemShouldBeEnabled = [identifiers containsObject:item.identifier];
+    if (item.enabled == itemShouldBeEnabled) {
+      continue;
     }
+    item.enabled = itemShouldBeEnabled;
+    [identifiersToReconfigure addObject:item.identifier];
   }
+  NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
   [snapshot reconfigureItemsWithIdentifiers:identifiersToReconfigure];
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
@@ -517,6 +583,27 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _sortButton.menu = [self createSortButtonMenu];
 }
 
+- (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier {
+  if ([_selectedIdentifier isEqual:selectedIdentifier]) {
+    return;
+  }
+  NSString* previousSelectedIdentifier = _selectedIdentifier;
+  _selectedIdentifier = selectedIdentifier;
+  NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
+  NSMutableArray* identifiersToReconfigure = [NSMutableArray array];
+  for (NSString* itemIdentifier in snapshot.itemIdentifiers) {
+    if ([itemIdentifier isEqual:previousSelectedIdentifier] ||
+        [itemIdentifier isEqual:_selectedIdentifier]) {
+      [identifiersToReconfigure addObject:itemIdentifier];
+    }
+  }
+  [snapshot reconfigureItemsWithIdentifiers:identifiersToReconfigure];
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+- (void)disableConfirmation {
+}
+
 #pragma mark - UI element creation helpers
 
 // Helper to create the menu presented by `_filterButton`.
@@ -550,14 +637,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  DriveItemIdentifier* driveItem =
+  NSString* itemIdentifier =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
-    [self.mutator selectDriveItem:driveItem];
-    if (driveItem.type == DriveItemType::kFile) {
-      _downloadedItem = driveItem;
-      UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-      cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    }
+  DriveFilePickerItem* item = FindDriveFilePickerItem(itemIdentifier, _items);
+  CHECK(item);
+  if (!item.enabled) {
+    // If selecting a disabled item, nothing should happen.
+    return;
+  }
+  [self.mutator selectDriveItem:itemIdentifier];
 }
 
 - (void)tableView:(UITableView*)tableView

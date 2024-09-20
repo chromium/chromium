@@ -20,6 +20,7 @@
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/prefetch_browser_callbacks.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "net/http/http_no_vary_search_data.h"
@@ -118,6 +119,22 @@ class CONTENT_EXPORT PrefetchContainer {
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr);
+
+  // Ctor used for browser-initiated prefetch that doesn't depend on web
+  // contents. We can pass the referring origin of prefetches via
+  // `referrer_origin` if necessary. When `std::nullopt` is passed, the
+  // referring origin will be opaque.
+  PrefetchContainer(
+      BrowserContext* browser_context,
+      const GURL& url,
+      const PrefetchType& prefetch_type,
+      const blink::mojom::Referrer& referrer,
+      bool javascript_enabled,
+      const std::optional<url::Origin>& referring_origin,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      base::WeakPtr<PreloadingAttempt> attempt = nullptr,
+      std::optional<PrefetchBrowserCallback> prefetch_browser_callback =
+          std::nullopt);
 
   ~PrefetchContainer();
 
@@ -522,6 +539,10 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnDetectedCookiesChange();
   void OnDetectedCookiesChange2();
 
+  // Called when the prefetch request is started (i.e. the URL loader is created
+  // & started).
+  void OnPrefetchStarted();
+
   class SinglePrefetch;
 
   // A `Reader` represents the current state of serving.
@@ -675,7 +696,8 @@ class CONTENT_EXPORT PrefetchContainer {
       ukm::SourceId ukm_source_id,
       base::WeakPtr<PreloadingAttempt> attempt,
       std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
-      bool is_javascript_enabed);
+      std::optional<PrefetchBrowserCallback> prefetch_browser_callback,
+      bool is_javascript_enabled);
 
   // Update |prefetch_status_| and report prefetch status to
   // DevTools without updating TriggeringOutcome.
@@ -848,6 +870,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // TODO(crbug.com/353490734): Remove it.
   base::OnceCallback<void(PrefetchContainer&)>
       on_maybe_determined_head_callback_;
+
+  // Browser callbacks.
+  std::optional<PrefetchBrowserCallback> prefetch_browser_callback_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 

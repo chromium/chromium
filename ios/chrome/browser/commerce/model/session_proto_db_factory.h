@@ -14,6 +14,7 @@
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #import "components/session_proto_db/session_proto_db.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -59,7 +60,9 @@ class SessionProtoDBFactory : public BrowserStateKeyedServiceFactory {
   SessionProtoDBFactory& operator=(const SessionProtoDBFactory&) = delete;
 
   static SessionProtoDBFactory<T>* GetInstance();
-  static SessionProtoDB<T>* GetForBrowserState(web::BrowserState* state);
+  static SessionProtoDB<T>* GetForProfile(ProfileIOS* profile);
+  // Deprecated: use GetForProfile(...).
+  static SessionProtoDB<T>* GetForBrowserState(ProfileIOS* profile);
 
   static TestingFactory GetDefaultFactory();
 
@@ -75,15 +78,17 @@ class SessionProtoDBFactory : public BrowserStateKeyedServiceFactory {
 
 // static
 template <typename T>
-SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForBrowserState(
-    web::BrowserState* state) {
-  // Incognito is currently not supported
-  if (state->IsOffTheRecord()) {
-    return nullptr;
-  }
-
+SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<SessionProtoDB<T>*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+template <typename T>
+SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForBrowserState(
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 template <typename T>

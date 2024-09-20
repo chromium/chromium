@@ -23,6 +23,16 @@ FacilitatedPaymentsBottomSheetBridge::FacilitatedPaymentsBottomSheetBridge(
 FacilitatedPaymentsBottomSheetBridge::~FacilitatedPaymentsBottomSheetBridge() =
     default;
 
+bool FacilitatedPaymentsBottomSheetBridge::IsInLandscapeMode() {
+  if (!GetJavaBridge()) {
+    return false;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_FacilitatedPaymentsPaymentMethodsViewBridge_isInLandscapeMode(
+      env, GetJavaBridge());
+}
+
 bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
     base::span<const autofill::BankAccount> bank_account_suggestions) {
   if (!GetJavaBridge()) {

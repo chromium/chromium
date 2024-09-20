@@ -30,9 +30,8 @@ void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        bool use_dark_mode);
 
-GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
-                                   std::optional<GURL> page_url,
-                                   std::optional<std::string> page_title);
+GURL AppendVideoContextParamToURL(const GURL& url_to_modify,
+                                  std::optional<GURL> page_url);
 
 GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode);
 

@@ -245,6 +245,46 @@ FooService : public KeyedService {
 * Threaded code should have DCHECKs asserting correct sequence.
     * Provides documentation and correctness checks.
     * See base/sequence_checker.h.
+* Avoid tight coupling of unrelated features.
+    * This results in O(N^2) complexity, since every pair of features ends up
+      implicitly coupled.
+    * The proper solution is to work with UX to use consistent design language,
+      which in turn results in O(N) complexity.
+```cpp
+// Good, complexity is O(N) and no tight coupling using a well-understood and
+// common design pattern: modality. Similar logic will be needed in other modal
+// UIs. The logic in this class does not change regardless of how many other new
+// modal features are created.
+class Sparkles {
+  // Shows sparkles over the entire tab. Should not be shown over other Chrome
+  // contents (e.g. print preview)
+  void Show() {
+    if (tab_->CanShowModalUI()) {
+      MakeSparkles();
+      // Prevents other modals from showing until the member is reset.
+      modal_ui_ = tab_->ShowModalUI();
+    }
+  }
+
+  std::unique_ptr<ScopedTabModalUI> modal_ui_;
+  raw_ptr<TabInterface> tab_;
+};
+
+// Bad. Introduces tight coupling between unrelated features. Similar logic is
+// needed in PrintPreview and DevTools. Complexity will scale with O(N^2). When
+// a new modal feature is created, every modal feature will need to be updated.
+class Sparkles {
+  void Show() {
+    if (PrintPreview::Showing()) {
+      return;
+    }
+    if (DevTools::Showing()) {
+      return;
+    }
+    MakeSparkles();
+  }
+};
+```
 * Most features should be gated by base::Feature, API keys and/or gn build
   configuration, not C preprocessor conditionals e.g. `#if
   BUILDFLAG(FEATURE_FOO)`.
@@ -294,8 +334,8 @@ FooService : public KeyedService {
       features) should be able to unconditionally reference "class BrowserView".
       The existence of this test suite forces features tested by these tests to
       have "if (!browser_view)" test-only checks in production code. Either
-      write a browser test (where both classes are provided by the test fixture) or a unit test
-      that requires neither.
+      write a browser test (where both classes are provided by the test fixture)
+      or a unit test that requires neither.
         * This also comes from a corollary of don't use "class Browser".
           Historically, features were written that take a "class Browser" as an
           input parameter. "class Browser" cannot be stubbed/faked/mocked, and
@@ -303,6 +343,42 @@ FooService : public KeyedService {
           provide a "class Browser" without a "class BrowserView". New features
           should not be taking "class Browser" as input, and should instead
           perform dependency injection.
+* Every UI feature should have at least 1 CUJ test.
+    * New UI features should write these tests using InteractiveBrowserTest.
+* Do not write change detector unit tests. The purpose of a unit test is to
+  validate behavior of common and edge cases for a block of code that has many
+  possible valid inputs.
+```cpp
+// Good. Depending on context, this can be broken into separate tests.
+bool IsPrime(int input);
+TEST(Math, CheckIsPrime) {
+  EXPECT_TRUE(IsPrime(2));
+  EXPECT_TRUE(IsPrime(3));
+  EXPECT_FALSE(IsPrime(99));
+  EXPECT_FALSE(IsPrime(-2));
+  EXPECT_FALSE(IsPrime(0));
+  EXPECT_FALSE(IsPrime(1));
+}
+
+// Bad. This is a change detector test. Change detector tests are easy to spot
+// because the test logic looks the same as the production logic.
+class ShowButtonOnBrowserActivation : public BrowserActivationListener {
+  void ShowButton();
+  bool DidShowButton();
+
+  // BrowserActivationListener overrides:
+  void BrowserDidActivate() override {
+    ShowButton();
+  }
+};
+
+Test(ShowButtonOnBrowserActivationTest, ShowButtonOnActivate) {
+  ShowButtonOnBrowserActivation listener;
+  listener.BrowserDidActivate();
+  EXPECT_TRUE(listener.DidShowButton());
+}
+
+```
 * Avoid unreachable branches.
     * We should have a semantic understanding of each path of control flow. How
       is this reached? If we don't know, then we should not have a conditional.

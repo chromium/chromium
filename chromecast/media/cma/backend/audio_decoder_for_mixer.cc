@@ -75,8 +75,7 @@ int ToPlayoutChannel(AudioChannel audio_channel) {
     case AudioChannel::kRight:
       return 1;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kChannelAll;
+  NOTREACHED();
 }
 
 int MaxQueuedFrames(int sample_rate) {

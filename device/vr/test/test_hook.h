@@ -10,12 +10,13 @@
 #ifndef DEVICE_VR_TEST_TEST_HOOK_H_
 #define DEVICE_VR_TEST_TEST_HOOK_H_
 
+#include <cstdint>
+
 #include "base/check.h"
+#include "base/component_export.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
-
-#include <cstdint>
 
 namespace device {
 
@@ -119,7 +120,15 @@ enum ControllerRole {
   kControllerRoleVoice  // Simulates voice input such as saying "select" in WMR.
 };
 
-struct ControllerFrameData {
+struct XRHandJointData {
+  mojom::XRHandJoint joint;
+  // The transform of pose of this joint in mojo space.
+  std::optional<gfx::Transform> mojo_from_joint;
+  // The radius of the joint in meters.
+  float radius = 0;
+};
+
+struct COMPONENT_EXPORT(VR_TEST_HOOK) ControllerFrameData {
   unsigned int packet_number = 0;
   uint64_t buttons_pressed = 0;
   uint64_t buttons_touched = 0;
@@ -127,7 +136,14 @@ struct ControllerFrameData {
   ControllerAxisData axis_data[kMaxNumAxes];
   PoseFrameData pose_data = {};
   ControllerRole role = kControllerRoleInvalid;
+  std::vector<XRHandJointData> hand_data = {};
   bool is_valid = false;
+
+  ControllerFrameData();
+  ~ControllerFrameData();
+  ControllerFrameData(const ControllerFrameData& other);
+  ControllerFrameData& operator=(const ControllerFrameData& other);
+  ControllerFrameData& operator=(ControllerFrameData&& other);
 };
 
 inline gfx::Transform PoseFrameDataToTransform(PoseFrameData data) {

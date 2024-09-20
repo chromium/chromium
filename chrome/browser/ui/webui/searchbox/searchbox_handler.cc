@@ -311,14 +311,16 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
       const omnibox::AnswerData& answer_data =
           match.answer_template->answers(0);
       const omnibox::FormattedString& headline = answer_data.headline();
-      const std::string& headline_text = headline.text();
-      // Grab the substring of headline starting after the first fragment text
-      // ends. Not making use of the first fragment because it contains the same
-      // data as `match.contents` but with HTML tags.
-      const std::u16string headline_substr =
-          base::UTF8ToUTF16(headline_text.substr(
-              headline.fragments(0).text().size(),
-              headline_text.size() - headline.fragments(0).text().size()));
+      std::u16string headline_substr;
+      if (headline.fragments_size() > 0) {
+        const std::string& headline_text = headline.text();
+        // Grab the substring of headline starting after the first fragment text
+        // ends. Not making use of the first fragment because it contains the
+        // same data as `match.contents` but with HTML tags.
+        headline_substr = base::UTF8ToUTF16(headline_text.substr(
+            headline.fragments(0).text().size(),
+            headline_text.size() - headline.fragments(0).text().size()));
+      }
 
       const auto& subhead_text =
           base::UTF8ToUTF16(answer_data.subhead().text());

@@ -1,6 +1,0 @@
-This is a wdspec test.
-[FAIL] test_reason_phrase
-  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
-[FAIL] test_reason_phrase_and_status_code
-  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
-Harness: the test ran to completion.

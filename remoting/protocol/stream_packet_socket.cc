@@ -233,8 +233,7 @@ int StreamPacketSocket::GetOption(rtc::Socket::Option option, int* value) {
 
 int StreamPacketSocket::SetOption(rtc::Socket::Option option, int value) {
   if (!socket_) {
-    NOTREACHED_IN_MIGRATION();
-    return -1;
+    NOTREACHED();
   }
 
   switch (option) {
@@ -254,8 +253,7 @@ int StreamPacketSocket::SetOption(rtc::Socket::Option option, int value) {
 
     case rtc::Socket::OPT_NODELAY:
       // Should call TCPClientSocket::SetNoDelay directly.
-      NOTREACHED_IN_MIGRATION();
-      return -1;
+      NOTREACHED();
 
     case rtc::Socket::OPT_IPV6_V6ONLY:
       NOTIMPLEMENTED();
@@ -274,8 +272,7 @@ int StreamPacketSocket::SetOption(rtc::Socket::Option option, int value) {
       return -1;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int StreamPacketSocket::GetError() const {

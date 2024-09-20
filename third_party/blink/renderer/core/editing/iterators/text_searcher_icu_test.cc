@@ -27,7 +27,7 @@ TEST(TextSearcherICUTest, FindSubstring) {
   searcher.SetPattern(pattern, FindOptions());
 
   const String& text = MakeUTF16("Long text with substring content.");
-  searcher.SetText(text.Characters16(), text.length());
+  searcher.SetText(text.Span16());
 
   std::optional<MatchResultICU> result = searcher.NextMatchResult();
   EXPECT_TRUE(result);
@@ -45,7 +45,7 @@ TEST(TextSearcherICUTest, FindIgnoreCaseSubstring) {
   searcher.SetPattern(pattern, FindOptions().SetCaseInsensitive(true));
 
   const String& text = MakeUTF16("Long text with SubStrinG content.");
-  searcher.SetText(text.Characters16(), text.length());
+  searcher.SetText(text.Span16());
 
   std::optional<MatchResultICU> result = searcher.NextMatchResult();
   EXPECT_TRUE(result);
@@ -67,7 +67,7 @@ TEST(TextSearcherICUTest, FindSubstringWithOffset) {
 
   const String& text =
       MakeUTF16("Long text with substring content. Second substring");
-  searcher.SetText(text.Characters16(), text.length());
+  searcher.SetText(text.Span16());
 
   std::optional<MatchResultICU> first_result = searcher.NextMatchResult();
   EXPECT_TRUE(first_result);
@@ -100,9 +100,25 @@ TEST(TextSearcherICUTest, FindControlCharacter) {
   searcher.SetPattern(pattern, FindOptions());
 
   const String& text = MakeUTF16("some text");
-  searcher.SetText(text.Characters16(), text.length());
+  searcher.SetText(text.Span16());
 
   EXPECT_FALSE(searcher.NextMatchResult());
+}
+
+// Find-ruby-in-page relies on this behavior.
+// crbug.com/40755728
+TEST(TextSearcherICUTest, IgnoreNull) {
+  TextSearcherICU searcher;
+  const String pattern = MakeUTF16("substr");
+  searcher.SetPattern(pattern, FindOptions());
+
+  const String text(u" sub\0\0string ", 13u);
+  searcher.SetText(text.Span16());
+
+  std::optional<MatchResultICU> result = searcher.NextMatchResult();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(1u, result->start);
+  EXPECT_EQ(8u, result->length);  // Longer than "substr".
 }
 
 // For http://crbug.com/1138877
@@ -117,7 +133,7 @@ TEST(TextSearcherICUTest, BrokenSurrogate) {
   two[0] = 0x0022;
   two[1] = 0xDB00;
   const String text(two, 2u);
-  searcher.SetText(text.Characters16(), text.length());
+  searcher.SetText(text.Span16());
 
   // Note: Because even if ICU find U+DB00 but ICU doesn't think U+DB00 as
   // word, we consider it doesn't match whole word.

@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -165,9 +166,10 @@ class FormStructureBrowserTest
 
   web::WebState* web_state() const { return web_state_.get(); }
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
   AutofillAgent* autofill_agent_;
@@ -183,7 +185,7 @@ class FormStructureBrowserTest
 FormStructureBrowserTest::FormStructureBrowserTest()
     : DataDrivenTest(GetTestDataDir(), kFeatureName, kTestName),
       web_client_(std::make_unique<ChromeWebClient>()) {
-  TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       IOSChromeProfilePasswordStoreFactory::GetInstance(),
       base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
@@ -195,9 +197,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
             return std::make_unique<syncer::FakeUserEventService>();
           }));
-  browser_state_ = std::move(builder).Build();
+  profile_ = std::move(builder).Build();
 
-  web::WebState::CreateParams params(browser_state_.get());
+  web::WebState::CreateParams params(profile_.get());
   web_state_ = web::WebState::Create(params);
   feature_list_.InitWithFeatures(
       // Enabled
@@ -240,7 +242,7 @@ void FormStructureBrowserTest::SetUp() {
   AddressNormalizerFactory::GetInstance();
 
   autofill_agent_ =
-      [[AutofillAgent alloc] initWithPrefService:browser_state_->GetPrefs()
+      [[AutofillAgent alloc] initWithPrefService:profile_->GetPrefs()
                                         webState:web_state()];
   suggestion_controller_ =
       [[FormSuggestionController alloc] initWithWebState:web_state()
@@ -250,7 +252,7 @@ void FormStructureBrowserTest::SetUp() {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
   autofill_client_ = std::make_unique<TestAutofillClient>(
-      browser_state_.get(), web_state(), infobar_manager, autofill_agent_);
+      profile_.get(), web_state(), infobar_manager, autofill_agent_);
 
   std::string locale("en");
   autofill::AutofillDriverIOSFactory::CreateForWebState(
@@ -336,10 +338,11 @@ std::string FormStructureBrowserTest::FormStructuresToString(
               section_index);
         }
       }
-      form_string += base::StrCat({field->Type().ToStringView(), " | ", name,
-                                   " | ", base::UTF16ToUTF8(field->label()),
-                                   " | ", base::UTF16ToUTF8(field->value()),
-                                   " | ", section, "\n"});
+      form_string += base::StrCat(
+          {field->Type().ToStringView(), " | ", name, " | ",
+           base::UTF16ToUTF8(field->label()), " | ",
+           base::UTF16ToUTF8(field->value(ValueSemantics::kCurrent)), " | ",
+           section, "\n"});
     }
     forms_string.push_back(form_string);
   }
@@ -378,7 +381,7 @@ const auto& GetFailingTestNames() {
 // DISABLED_DataDrivenHeuristics.
 TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (GetActiveHeuristicSource() != HeuristicSource::kLegacy) {
+  if (GetActiveHeuristicSource() != HeuristicSource::kLegacyRegexes) {
     GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                     "parsing patterns";
   }

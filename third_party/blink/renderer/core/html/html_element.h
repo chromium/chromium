@@ -48,6 +48,8 @@ class HTMLSelectListElement;
 class KeyboardEvent;
 class TextControlElement;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;
+class V8UnionBooleanOrTogglePopoverOptions;
+class ShowPopoverOptions;
 
 enum TranslateAttributeMode {
   kTranslateAttributeYes,
@@ -260,8 +262,11 @@ class CORE_EXPORT HTMLElement : public Element {
                       bool include_event_handler_text,
                       Document* expected_document) const;
   bool togglePopover(ExceptionState& exception_state);
-  bool togglePopover(bool force, ExceptionState& exception_state);
+  bool togglePopover(V8UnionBooleanOrTogglePopoverOptions* options_or_force,
+                     ExceptionState& exception_state);
   void showPopover(ExceptionState& exception_state);
+  void showPopover(ShowPopoverOptions* options,
+                   ExceptionState& exception_state);
   void hidePopover(ExceptionState& exception_state);
   // |exception_state| can be nullptr when exceptions can't be thrown, such as
   // when the browser hides a popover during light dismiss or shows a popover in

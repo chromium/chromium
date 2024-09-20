@@ -16,6 +16,7 @@
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
@@ -657,6 +658,7 @@ void DisplayConfigurator::SetConfigureDisplays(bool configure_displays) {
 }
 
 void DisplayConfigurator::TakeControl(DisplayControlCallback callback) {
+  TRACE_EVENT0("ui", "DisplayConfigurator::TakeControl");
   if (display_control_changing_) {
     LOG(ERROR) << __func__
                << " failed. There is another RelinquishControl() or "
@@ -680,6 +682,8 @@ void DisplayConfigurator::TakeControl(DisplayControlCallback callback) {
 
 void DisplayConfigurator::OnDisplayControlTaken(DisplayControlCallback callback,
                                                 bool success) {
+  TRACE_EVENT1("ui", "DisplayConfigurator::OnDisplayControlTaken", "success",
+               success);
   display_control_changing_ = false;
   display_externally_controlled_ = !success;
   if (success) {
@@ -696,6 +700,7 @@ void DisplayConfigurator::OnDisplayControlTaken(DisplayControlCallback callback,
 }
 
 void DisplayConfigurator::RelinquishControl(DisplayControlCallback callback) {
+  TRACE_EVENT0("ui", "DisplayConfigurator::RelinquishControl");
   if (display_control_changing_) {
     LOG(ERROR) << __func__
                << " failed. There is another RelinquishControl() or "
@@ -739,6 +744,8 @@ void DisplayConfigurator::GetSeamlessRefreshRates(
 void DisplayConfigurator::SendRelinquishDisplayControl(
     DisplayControlCallback callback,
     bool success) {
+  TRACE_EVENT1("ui", "DisplayConfigurator::SendRelinquishDisplayControl",
+               "success", success);
   if (success) {
     // Set the flag early such that an incoming configuration event won't start
     // while we're releasing control of the displays.
@@ -758,6 +765,9 @@ void DisplayConfigurator::SendRelinquishDisplayControl(
 void DisplayConfigurator::OnDisplayControlRelinquished(
     DisplayControlCallback callback,
     bool success) {
+  TRACE_EVENT1("ui", "DisplayConfigurator::OnDisplayControlRelinquished",
+               "success", success);
+
   display_control_changing_ = false;
   display_externally_controlled_ = success;
   if (!success) {

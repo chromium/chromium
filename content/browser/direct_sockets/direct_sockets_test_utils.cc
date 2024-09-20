@@ -185,7 +185,14 @@ IsolatedWebAppContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
       /*allowed_origins=*/{},
       /*self_if_matches=*/app_origin,
       /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
-  return {{coi_decl, sockets_decl}};
+
+  blink::ParsedPermissionsPolicyDeclaration sockets_pna_decl(
+      blink::mojom::PermissionsPolicyFeature::kDirectSocketsPrivate,
+      /*allowed_origins=*/{},
+      /*self_if_matches=*/app_origin,
+      /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
+
+  return {{coi_decl, sockets_decl, sockets_pna_decl}};
 }
 
 // misc

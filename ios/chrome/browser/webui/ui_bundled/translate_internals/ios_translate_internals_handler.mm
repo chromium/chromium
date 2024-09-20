@@ -44,17 +44,14 @@ void IOSTranslateInternalsHandler::CallJavascriptFunction(
 
 void IOSTranslateInternalsHandler::RegisterMessages() {
   web::BrowserState* browser_state = web_ui()->GetWebState()->GetBrowserState();
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state)
-          ->GetOriginalChromeBrowserState();
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(browser_state)->GetOriginalProfile();
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(chrome_browser_state);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
 
   const BrowserList::BrowserType browser_types =
-      chrome_browser_state->IsOffTheRecord()
-          ? BrowserList::BrowserType::kIncognito
-          : BrowserList::BrowserType::kRegularAndInactive;
+      profile->IsOffTheRecord() ? BrowserList::BrowserType::kIncognito
+                                : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   for (Browser* browser : browsers) {
@@ -65,7 +62,7 @@ void IOSTranslateInternalsHandler::RegisterMessages() {
   }
 
   AllWebStateListObservationRegistrar::Mode mode =
-      chrome_browser_state->IsOffTheRecord()
+      profile->IsOffTheRecord()
           ? AllWebStateListObservationRegistrar::Mode::INCOGNITO
           : AllWebStateListObservationRegistrar::Mode::REGULAR;
   registrar_ = std::make_unique<AllWebStateListObservationRegistrar>(

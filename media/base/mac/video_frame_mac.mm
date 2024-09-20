@@ -130,7 +130,7 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
 
     // If the frame has a GMB, yank out its IOSurface if possible.
     if (frame->HasMappableGpuBuffer()) {
-      auto handle = frame->GetGpuMemoryBuffer()->CloneHandle();
+      auto handle = frame->GetGpuMemoryBufferHandle();
       if (handle.type == gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
         gfx::ScopedIOSurface io_surface = handle.io_surface;
         if (io_surface) {

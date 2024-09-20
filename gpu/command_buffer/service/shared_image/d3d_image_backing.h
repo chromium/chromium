@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <d3d11.h>
+#include <d3d12.h>
 #include <dcomp.h>
 #include <dxgi1_2.h>
 #include <wrl/client.h>
@@ -69,6 +70,14 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       bool use_update_subresource1 = false,
       bool is_thread_safe = false);
 
+  // Creation method meant for buffer resources originating as ID3D12Resources.
+  static std::unique_ptr<D3DImageBacking> CreateFromD3D12Resource(
+      const Mailbox& mailbox,
+      const uint32_t size,
+      gpu::SharedImageUsageSet usage,
+      std::string debug_label,
+      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
+
   static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffer(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -115,6 +124,16 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                                 wgpu::TextureUsage internal_usage,
                                 std::vector<wgpu::TextureFormat> view_formats);
   void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
+
+  std::unique_ptr<DawnBufferRepresentation> ProduceDawnBuffer(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      const wgpu::Device& device,
+      wgpu::BackendType backend_type) override;
+  wgpu::Buffer BeginAccessDawnBuffer(const wgpu::Device& device,
+                                     wgpu::BackendType backend_type,
+                                     wgpu::BufferUsage usage);
+  void EndAccessDawnBuffer(const wgpu::Device& device, wgpu::Buffer buffer);
 
   std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
 
@@ -229,6 +248,12 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   bool use_update_subresource1 = false,
                   bool is_thread_safe = false);
 
+  D3DImageBacking(const Mailbox& mailbox,
+                  const gfx::Size& size,
+                  gpu::SharedImageUsageSet usage,
+                  std::string debug_label,
+                  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
+
   bool use_cross_device_fence_synchronization() const {
     // Fences are needed if we're sharing between devices and there's no keyed
     // mutex for synchronization.
@@ -284,6 +309,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Texture could be nullptr if an empty backing is needed for testing.
   const Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
+
+  // Set if this backing is used for a D3D12 resource, otherwise will be
+  // nullptr.
+  const Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource_;
 
   // Set if this backing was used for |DCompTextureOverlayImageRepresentation|.
   // Once set, this is cached and reused for future overlay representations.
@@ -357,6 +386,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // SharedTextureData that vends WebGPU textures for the underlying d3d
   // texture. Only used if the backing doesn't have a shared handle.
   DawnSharedTextureHolder dawn_shared_texture_holder_ GUARDED_BY(lock_);
+
+  // Dawn SharedBufferMemory will exist when backing is being used for buffer
+  // interop.
+  wgpu::SharedBufferMemory dawn_shared_buffer_memory_ GUARDED_BY(lock_);
 
   // TODO(crbug.com/348598119, hitawala): Move texture begin/end access tracking
   // to DawnSharedTextureHolder. Tracks the number of currently-ongoing accesses

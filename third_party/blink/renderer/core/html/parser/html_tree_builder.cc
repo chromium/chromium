@@ -209,8 +209,8 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
   }
 
   void GiveRemainingTo(StringBuilder& recipient) {
-    WTF::VisitCharacters(characters_, [&](const auto* chars, unsigned length) {
-      recipient.Append(chars + current_, end_ - current_);
+    WTF::VisitCharacters(characters_, [&](auto chars) {
+      recipient.Append(chars.data() + current_, end_ - current_);
     });
     current_ = end_;
   }
@@ -928,6 +928,10 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case HTMLTag::kSelect:
       if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
           tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
+        tree_.OpenElements()->TopNode()->AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.");
         // Don't allow nested <select>s. This is the exact same logic as
         // <button>s.
         ParseError(token);
@@ -1522,6 +1526,10 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
           return;
         case HTMLTag::kSelect: {
+        tree_.OpenElements()->TopNode()->AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            "A <select> tag was parsed within another <select> tag and was converted into </select>. This behavior will change in a future browser version. Please add the missing </select> end tag.");
           ParseError(token);
           AtomicHTMLToken end_select(HTMLToken::kEndTag, HTMLTag::kSelect);
           ProcessEndTag(&end_select);
@@ -1529,7 +1537,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         }
         case HTMLTag::kInput:
           // TODO(crbug.com/1511354): Remove this UseCounter when the
-          // SelectParserRelaxation/StylableSelect flags are removed.
+          // SelectParserRelaxation/CustomizableSelect flags are removed.
           UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                             WebFeature::kHTMLInputInSelect);
           [[fallthrough]];
@@ -1569,7 +1577,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         case HTMLTag::kButton:
           if (!RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
             // TODO(crbug.com/1511354): Remove this UseCounter when the
-            // SelectParserRelaxation/StylableSelect flags are removed.
+            // SelectParserRelaxation/CustomizableSelect flags are removed.
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kHTMLButtonInSelect);
           }
@@ -1578,7 +1586,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           if (tag == HTMLTag::kDatalist &&
               !RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
             // TODO(crbug.com/1511354): Remove this UseCounter when the
-            // SelectParserRelaxation/StylableSelect flags are removed.
+            // SelectParserRelaxation/CustomizableSelect flags are removed.
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kHTMLDatalistInSelect);
           }
@@ -1588,7 +1596,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
             ProcessStartTagForInBody(token);
           } else {
             // TODO(crbug.com/1511354): Remove this UseCounter when the
-            // SelectParserRelaxation/StylableSelect flags are removed.
+            // SelectParserRelaxation/CustomizableSelect flags are removed.
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kSelectParserDroppedTag);
             tree_.OpenElements()->TopNode()->AddConsoleMessage(

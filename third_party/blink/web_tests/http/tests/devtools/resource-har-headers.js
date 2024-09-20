@@ -94,7 +94,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     '_transferSize': 'formatAsTypeName',
     '_error': 'skip'
   };
-  var har = await NetworkTestRunner.buildHARLogEntry(testRequest);
+  var har = await NetworkTestRunner.buildHARLogEntry(testRequest, {sanitize: false});
   TestRunner.addObject(har, stillNondeterministic, '', 'HAR:');
   TestRunner.completeTest();
 })();

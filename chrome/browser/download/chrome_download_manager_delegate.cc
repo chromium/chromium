@@ -49,6 +49,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -151,6 +152,7 @@
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -901,6 +903,46 @@ bool ChromeDownloadManagerDelegate::ShouldOpenDownload(
   return true;
 }
 
+bool ChromeDownloadManagerDelegate::ShouldObfuscateDownload(
+    download::DownloadItem* item) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  if (!base::FeatureList::IsEnabled(
+          enterprise_obfuscation::kEnterpriseFileObfuscation)) {
+    return false;
+  }
+
+  // Skip obfuscation for chrome-initiated and save package downloads.
+  if (item && !item->RequireSafetyChecks() && item->IsSavePackageDownload()) {
+    return false;
+  }
+
+  // Skip obfuscation for large files if size is known.
+  if (static_cast<size_t>(item->GetTotalBytes()) >
+      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes) {
+    return false;
+  }
+
+  // Skip obfuscation if there are no matching connector policies and for
+  // report-only scans.
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item));
+  if (profile) {
+    auto settings =
+        safe_browsing::DeepScanningRequest::ShouldUploadBinary(item);
+    if (settings.has_value() &&
+        settings.value().block_until_verdict ==
+            enterprise_connectors::BlockUntilVerdict::kBlock) {
+      item->SetUserData(
+          enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
+          std::make_unique<enterprise_obfuscation::DownloadObfuscationData>(
+              true));
+      return true;
+    }
+  }
+#endif
+  return false;
+}
+
 bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
     const GURL& url,
     const std::string& user_agent,
@@ -1005,7 +1047,7 @@ void ChromeDownloadManagerDelegate::SanitizeDownloadParameters(
 void ChromeDownloadManagerDelegate::OpenDownloadUsingPlatformHandler(
     DownloadItem* download) {
   base::FilePath platform_path(
-      GetPlatformDownloadPath(download, PLATFORM_TARGET_PATH));
+      GetPlatformDownloadPath(download, PLATFORM_CURRENT_PATH));
   DCHECK(!platform_path.empty());
   platform_util::OpenItem(profile_, platform_path, platform_util::OPEN_FILE,
                           platform_util::OpenOperationCallback());
@@ -1874,7 +1916,7 @@ void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadCanceledReport(
     DownloadItem* download,
     bool is_shutdown) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  if (!DownloadProtectionService::ShouldSendDangerousDownloadReport(download)) {
+  if (!safe_browsing::ShouldSendDangerousDownloadReport(download)) {
     return;
   }
   safe_browsing::SafeBrowsingService* sb_service =
@@ -2071,6 +2113,11 @@ bool ChromeDownloadManagerDelegate::IsFromExternalApp(
 
 bool ChromeDownloadManagerDelegate::ShouldOpenPdfInline() {
   return ShouldOpenPdfInlineInternal(profile_->IsOffTheRecord());
+}
+
+bool ChromeDownloadManagerDelegate::IsDownloadRestrictedByPolicy() {
+  return download_prefs_->download_restriction() ==
+         DownloadPrefs::DownloadRestriction::ALL_FILES;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

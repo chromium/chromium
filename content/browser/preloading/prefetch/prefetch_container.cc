@@ -37,6 +37,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/prefetch_browser_callbacks.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
@@ -477,6 +478,7 @@ PrefetchContainer::PrefetchContainer(
           GetUkmSourceId(referring_render_frame_host),
           std::move(attempt),
           referring_render_frame_host.GetDevToolsNavigationToken(),
+          /* prefetch_browser_callback=*/std::nullopt,
           WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
               ->GetOrCreateWebPreferences()
               .javascript_enabled) {
@@ -506,8 +508,39 @@ PrefetchContainer::PrefetchContainer(
           ukm::kInvalidSourceId,
           std::move(attempt),
           /*initiator_devtools_navigation_token=*/std::nullopt,
+          /* prefetch_browser_callback=*/std::nullopt,
           referring_web_contents.GetOrCreateWebPreferences()
               .javascript_enabled) {
+  CHECK(!prefetch_type_.IsRendererInitiated());
+  CHECK(PrefetchBrowserInitiatedTriggersEnabled());
+}
+
+PrefetchContainer::PrefetchContainer(
+    BrowserContext* browser_context,
+    const GURL& url,
+    const PrefetchType& prefetch_type,
+    const blink::mojom::Referrer& referrer,
+    bool javascript_enabled,
+    const std::optional<url::Origin>& referring_origin,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    base::WeakPtr<PreloadingAttempt> attempt,
+    std::optional<PrefetchBrowserCallback> prefetch_browser_callback)
+    : PrefetchContainer(GlobalRenderFrameHostId(),
+                        referring_origin.value_or(url::Origin()),
+                        /*referring_url_hash=*/std::nullopt,
+                        PrefetchContainer::Key(
+                            std::optional<blink::DocumentToken>(std::nullopt),
+                            url),
+                        prefetch_type,
+                        referrer,
+                        std::move(no_vary_search_hint),
+                        /*prefetch_document_manager=*/nullptr,
+                        browser_context->GetWeakPtr(),
+                        ukm::kInvalidSourceId,
+                        std::move(attempt),
+                        /*initiator_devtools_navigation_token=*/std::nullopt,
+                        std::move(prefetch_browser_callback),
+                        javascript_enabled) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
 }
@@ -525,7 +558,8 @@ PrefetchContainer::PrefetchContainer(
     ukm::SourceId ukm_source_id,
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
-    bool is_javascript_enabed)
+    std::optional<PrefetchBrowserCallback> prefetch_browser_callback,
+    bool is_javascript_enabled)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       referring_origin_(referring_origin),
       referring_url_hash_(referring_url_hash),
@@ -540,7 +574,8 @@ PrefetchContainer::PrefetchContainer(
       attempt_(std::move(attempt)),
       initiator_devtools_navigation_token_(
           std::move(initiator_devtools_navigation_token)),
-      is_javascript_enabled_(is_javascript_enabed) {
+      prefetch_browser_callback_(std::move(prefetch_browser_callback)),
+      is_javascript_enabled_(is_javascript_enabled) {
   redirect_chain_.push_back(
       std::make_unique<SinglePrefetch>(GetURL(), referring_origin_));
 }
@@ -1406,6 +1441,13 @@ void PrefetchContainer::OnDetectedCookiesChange2() {
   }
 
   OnDetectedCookiesChange();
+}
+
+void PrefetchContainer::OnPrefetchStarted() {
+  SetLoadState(PrefetchContainer::LoadState::kStarted);
+  if (prefetch_browser_callback_.has_value()) {
+    prefetch_browser_callback_.value().Run(PrefetchCallbackType::kStarted);
+  }
 }
 
 // TODO(crbug.com/40274818): We might be waiting on PrefetchContainer's head

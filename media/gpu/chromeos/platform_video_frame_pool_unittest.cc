@@ -4,7 +4,6 @@
 
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 
-#include <drm_fourcc.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <memory>
@@ -17,8 +16,6 @@
 #include "media/base/format_utils.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
-#include "media/gpu/chromeos/fake_chromeos_intel_compressed_gpu_memory_buffer.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/video/fake_gpu_memory_buffer.h"
@@ -46,28 +43,6 @@ CroStatus::Or<scoped_refptr<FrameResource>> CreateGpuMemoryBufferFrameResource(
           visible_rect, natural_size,
           std::make_unique<FakeGpuMemoryBuffer>(coded_size, *gfx_format,
                                                 modifier),
-          timestamp)));
-}
-
-CroStatus::Or<scoped_refptr<FrameResource>>
-CreateChromeOSCompressedGpuMemoryBufferFrameResource(
-    uint64_t modifier,
-    VideoPixelFormat format,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    bool use_protected,
-    bool use_linear_buffers,
-    bool needs_detiling,
-    base::TimeDelta timestamp) {
-  std::optional<gfx::BufferFormat> gfx_format =
-      VideoPixelFormatToGfxBufferFormat(format);
-  DCHECK(gfx_format);
-  return static_cast<scoped_refptr<FrameResource>>(VideoFrameResource::Create(
-      WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
-          visible_rect, natural_size,
-          std::make_unique<FakeChromeOSIntelCompressedGpuMemoryBuffer>(
-              coded_size, *gfx_format, modifier),
           timestamp)));
 }
 
@@ -348,62 +323,6 @@ TEST_P(PlatformVideoFramePoolTest, ModifierIsPassed) {
 
   EXPECT_EQ(layout_->modifier(), kSampleModifier);
   EXPECT_TRUE(GetFrame(10));
-}
-
-class PlatformVideoFramePoolWithMediaCompressionTest
-    : public PlatformVideoFramePoolTestBase,
-      public testing::WithParamInterface<
-          std::tuple<VideoPixelFormat, uint64_t>> {
- public:
-  PlatformVideoFramePoolWithMediaCompressionTest() = default;
-  ~PlatformVideoFramePoolWithMediaCompressionTest() override = default;
-
-  struct PrintToStringParamName {
-    template <class ParamType>
-    std::string operator()(
-        const testing::TestParamInfo<ParamType>& info) const {
-      return base::StringPrintf(
-          "%s_%s", VideoPixelFormatToString(std::get<0>(info.param)).c_str(),
-          IntelMediaCompressedModifierToString(std::get<1>(info.param))
-              .c_str());
-    }
-  };
-};
-
-constexpr uint64_t kCompressedBufferModifiers[] = {
-    I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS, I915_FORMAT_MOD_4_TILED_MTL_MC_CCS};
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PlatformVideoFramePoolWithMediaCompressionTest,
-    testing::Combine(testing::ValuesIn(kPixelFormats),
-                     testing::ValuesIn(kCompressedBufferModifiers)),
-    PlatformVideoFramePoolWithMediaCompressionTest::PrintToStringParamName());
-
-TEST_P(PlatformVideoFramePoolWithMediaCompressionTest,
-       CompressedGpuMemoryBufferIsPassed) {
-  const VideoPixelFormat pixel_format = std::get<0>(GetParam());
-  const uint64_t modifier = std::get<1>(GetParam());
-  if (pixel_format != PIXEL_FORMAT_NV12 &&
-      pixel_format != PIXEL_FORMAT_P010LE) {
-    GTEST_SKIP() << "Pixel format doesn't support compressed GPU memory buffer";
-  }
-  const auto fourcc = Fourcc::FromVideoPixelFormat(pixel_format);
-  ASSERT_TRUE(fourcc.has_value());
-
-  pool_->SetCustomFrameAllocator(
-      base::BindRepeating(&CreateChromeOSCompressedGpuMemoryBufferFrameResource,
-                          modifier),
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-
-  ASSERT_TRUE(Initialize(fourcc.value()));
-  EXPECT_EQ(layout_->modifier(), modifier);
-  constexpr size_t kExpectedNumberOfPlanes = 4u;
-  EXPECT_EQ(layout_->planes().size(), kExpectedNumberOfPlanes);
-  scoped_refptr<FrameResource> frame = GetFrame(10);
-  EXPECT_EQ(frame->layout().num_planes(), kExpectedNumberOfPlanes);
-  EXPECT_EQ(frame->GetGpuMemoryBufferHandleForTesting()
-                .native_pixmap_handle.planes.size(),
-            kExpectedNumberOfPlanes);
 }
 
 // TODO(akahuang): Add a testcase to verify calling Initialize() only with

@@ -37,27 +37,26 @@
 
 using ProfileStateTest = PlatformTest;
 
-// Tests that a newly created ProfileState has no -browserState.
+// Tests that a newly created ProfileState has no -profile.
 TEST_F(ProfileStateTest, initializer) {
   ProfileState* state = [[ProfileState alloc] init];
-  EXPECT_EQ(state.browserState, nullptr);
+  EXPECT_EQ(state.profile, nullptr);
 }
 
-// Tests that -browserState uses a weak pointer.
-TEST_F(ProfileStateTest, browserState) {
+// Tests that -profile uses a weak pointer.
+TEST_F(ProfileStateTest, profile) {
   base::test::TaskEnvironment task_environment;
-  std::unique_ptr<TestChromeBrowserState> browser_state =
-      TestChromeBrowserState::Builder().Build();
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
 
   ProfileState* state = [[ProfileState alloc] init];
-  EXPECT_EQ(state.browserState, nullptr);
+  EXPECT_EQ(state.profile, nullptr);
 
-  state.browserState = browser_state.get();
-  EXPECT_EQ(state.browserState, browser_state.get());
+  state.profile = profile.get();
+  EXPECT_EQ(state.profile, profile.get());
 
-  // Destroy the BrowserState and check that the property becomes null.
-  browser_state.reset();
-  EXPECT_EQ(state.browserState, nullptr);
+  // Destroy the profile and check that the property becomes null.
+  profile.reset();
+  EXPECT_EQ(state.profile, nullptr);
 }
 
 // Tests that initStage can be set and get correctly.

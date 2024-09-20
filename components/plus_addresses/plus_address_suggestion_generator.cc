@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -20,6 +21,7 @@
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/http/http_status_code.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace plus_addresses {
@@ -27,10 +29,9 @@ namespace plus_addresses {
 namespace {
 
 using autofill::FormFieldData;
+using autofill::PasswordFormClassification;
 using autofill::Suggestion;
 using autofill::SuggestionType;
-using PasswordFormClassification =
-    autofill::AutofillClient::PasswordFormClassification;
 
 // Returns `true` when we wish to offer plus address creation on a form with
 // password manager classification `form_classification` and a focused field
@@ -74,23 +75,55 @@ Suggestion CreateFillPlusAddressSuggestion(std::u16string plus_address) {
   return suggestion;
 }
 
+// Returns the labels for a create new plus address suggestion.
+// `forwarding_address` is the email that traffic is forwarded to.
+std::vector<std::vector<Suggestion::Text>> CreateLabelsForCreateSuggestion(
+    bool has_accepted_notice,
+    std::string_view forwarding_address) {
+  // On Android, there are no labels since the Keyboard Accessory only allows
+  // for single line chips.
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    return {};
+  }
+  if (!has_accepted_notice &&
+      base::FeatureList::IsEnabled(features::kPlusAddressSuggestionRedesign)) {
+    return {};
+  }
+
+  // On iOS the `forwarding_address` is not shown due to size constraints.
+  if constexpr (BUILDFLAG(IS_IOS)) {
+    return {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
+  }
+
+  std::u16string label_text =
+      features::kShowForwardingEmailInSuggestion.Get()
+          ? l10n_util::GetStringFUTF16(
+                IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT_WITH_FORWARDING_INFO,
+                base::UTF8ToUTF16(forwarding_address))
+          : l10n_util::GetStringUTF16(
+                IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT);
+  return {{Suggestion::Text(std::move(label_text))}};
+}
+
 }  // namespace
 
 PlusAddressSuggestionGenerator::PlusAddressSuggestionGenerator(
     const PlusAddressSettingService* setting_service,
     PlusAddressAllocator* allocator,
-    url::Origin origin)
+    url::Origin origin,
+    std::string primary_email)
     : setting_service_(CHECK_DEREF(setting_service)),
       allocator_(CHECK_DEREF(allocator)),
-      origin_(std::move(origin)) {}
+      origin_(std::move(origin)),
+      primary_email_(std::move(primary_email)) {}
 
 PlusAddressSuggestionGenerator::~PlusAddressSuggestionGenerator() = default;
 
 std::vector<autofill::Suggestion>
 PlusAddressSuggestionGenerator::GetSuggestions(
     bool is_creation_enabled,
-    const autofill::AutofillClient::PasswordFormClassification&
-        focused_form_classification,
+    const autofill::PasswordFormClassification& focused_form_classification,
     const autofill::FormFieldData& focused_field,
     autofill::AutofillSuggestionTriggerSource trigger_source,
     std::vector<PlusProfile> affiliated_profiles) {
@@ -147,13 +180,32 @@ Suggestion PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion() {
 }
 
 // static
-Suggestion PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion() {
+Suggestion PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
+    const PlusAddressRequestError& error) {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kPlusAddressError);
   suggestion.icon = Suggestion::Icon::kError;
-  suggestion.labels = {{Suggestion::Text(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT))}};
+
+  // Refreshing does not make sense for a quota error, since those will persist
+  // for a significant amount of time.
+  Suggestion::PlusAddressPayload payload;
+  payload.offer_refresh = !error.IsQuotaError();
+  suggestion.payload = std::move(payload);
+
+  // The label depends on the error type.
+  std::u16string label_text;
+  if (error.IsQuotaError()) {
+    label_text =
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_QUOTA_ERROR_TEXT);
+  } else if (error.IsTimeoutError()) {
+    label_text =
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_TIMEOUT_ERROR_TEXT);
+  } else {
+    label_text =
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT);
+  }
+  suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
   return suggestion;
 }
 
@@ -176,10 +228,11 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kCreateNewPlusAddress);
 
-  if constexpr (!BUILDFLAG(IS_ANDROID)) {
-    suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
-  }
+  suggestion.labels = CreateLabelsForCreateSuggestion(
+      !base::FeatureList::IsEnabled(
+          features::kPlusAddressUserOnboardingEnabled) ||
+          setting_service_->GetHasAcceptedNotice(),
+      primary_email_);
   suggestion.icon = Suggestion::Icon::kPlusAddress;
   suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
   suggestion.feature_for_iph =
@@ -217,15 +270,22 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
           allocator_->AllocatePlusAddressSynchronously(
               origin_, PlusAddressAllocator::AllocationMode::kNewPlusAddress)) {
     SetSuggestedPlusAddressForSuggestion(profile->plus_address, suggestion);
+    // Set IPH and new badge information only if allocation is synchronous.
+    // Otherwise, they will be showing only during the loading stage and then be
+    // hidden automatically.
+    suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
+    suggestion.feature_for_iph =
+        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
   } else {
     suggestion.payload = Suggestion::PlusAddressPayload();
     suggestion.is_loading = Suggestion::IsLoading(true);
   }
   suggestion.icon = Suggestion::Icon::kPlusAddress;
-  suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
-  // TODO(crbug.com/362445807): Consider adding IPH and new badge for inline
-  // suggestions.
+  suggestion.labels = CreateLabelsForCreateSuggestion(
+      !base::FeatureList::IsEnabled(
+          features::kPlusAddressUserOnboardingEnabled) ||
+          setting_service_->GetHasAcceptedNotice(),
+      primary_email_);
   return suggestion;
 }
 

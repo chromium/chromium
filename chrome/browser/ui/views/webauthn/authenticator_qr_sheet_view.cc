@@ -131,31 +131,43 @@ AuthenticatorQRSheetView::BuildStepSpecificContent() {
   container->AddChildView(
       std::make_unique<AuthenticatorQRViewCentered>(qr_string_));
 
-  if (sheet_model->ShowSecurityKeyLabel()) {
-    auto* label_container =
+  const std::vector<std::u16string> labels =
+      sheet_model->GetSecurityKeyLabels();
+  if (!labels.empty()) {
+    auto* security_key_container =
         container->AddChildView(std::make_unique<views::TableLayoutView>());
-    label_container->AddColumn(
+    security_key_container->AddColumn(
         views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch,
         views::TableLayout::kFixedSize,
         views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-    label_container->AddPaddingColumn(
+    security_key_container->AddPaddingColumn(
         views::TableLayout::kFixedSize,
         views::LayoutProvider::Get()->GetDistanceMetric(
             views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-    label_container->AddColumn(
+    security_key_container->AddColumn(
         views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch,
         /*horizontal_resize=*/1, views::TableLayout::ColumnSize::kUsePreferred,
         0, 0);
-    label_container->AddRows(1, views::TableLayout::kFixedSize);
-    label_container->AddChildView(
+    security_key_container->AddRows(labels.size(),
+                                    views::TableLayout::kFixedSize);
+    security_key_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             kUsbSecurityKeyIcon, ui::kColorIcon, kSecurityKeyIconSize)));
-    auto* label = label_container->AddChildView(
-        std::make_unique<views::Label>(sheet_model->GetSecurityKeyLabel(),
-                                       views::style::CONTEXT_DIALOG_BODY_TEXT));
-    label->SetMultiLine(true);
-    label->SetAllowCharacterBreak(true);
-    label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    auto* label_container = security_key_container->AddChildView(
+        std::make_unique<views::BoxLayoutView>());
+    label_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
+    label_container->SetBetweenChildSpacing(
+        views::LayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_RELATED_CONTROL_VERTICAL));
+
+    for (const std::u16string& label_str : labels) {
+      auto* label =
+          label_container->AddChildView(std::make_unique<views::Label>(
+              label_str, views::style::CONTEXT_DIALOG_BODY_TEXT));
+      label->SetMultiLine(true);
+      label->SetAllowCharacterBreak(true);
+      label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    }
   }
   return std::make_pair(std::move(container), AutoFocus::kNo);
 }

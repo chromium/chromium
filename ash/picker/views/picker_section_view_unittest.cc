@@ -9,13 +9,13 @@
 #include <utility>
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/views/picker_gif_view.h"
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_submenu_controller.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"

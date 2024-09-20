@@ -466,19 +466,6 @@ RunAttributionInteropSimulation(
       scoped_max_trigger_state_cardinality(
           run.config.max_trigger_state_cardinality);
 
-  attribution_reporting::ScopedMaxNavigationChannelCapacityForTesting
-      scoped_max_navigation_info_gain(run.config.max_navigation_info_gain);
-
-  attribution_reporting::ScopedMaxEventChannelCapacityForTesting
-      scoped_max_event_info_gain(run.config.max_event_info_gain);
-
-  attribution_reporting::ScopedMaxScopesNavigationChannelCapacityForTesting
-      scoped_max_scopes_navigation_info_gain(
-          run.config.max_scopes_navigation_info_gain);
-
-  attribution_reporting::ScopedMaxScopesEventChannelCapacityForTesting
-      scoped_max_scopes_event_info_gain(run.config.max_scopes_event_info_gain);
-
   // Prerequisites for using an environment with mock time.
   BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);

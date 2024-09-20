@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -57,7 +58,8 @@ constexpr std::string_view kPlaylistIdKey = "playlistId";
 
 constexpr base::TimeDelta kMinimumDuration = base::Minutes(1);
 constexpr base::TimeDelta kMaximumDuration = base::Minutes(300);
-constexpr base::TimeDelta kEndingMomentDuration = base::Seconds(9);
+
+constexpr base::TimeDelta kInitialEndingMomentDuration = base::Seconds(9);
 
 // Number of steps we break the tray circular progress indicator into.
 constexpr int kProgressIndicatorSteps = 120;
@@ -124,6 +126,19 @@ ASH_EXPORT std::u16string GetCongratulatoryTextAndEmoji(const size_t index);
 // entire progress into equal parts (`kProgressIndicatorSteps`), then returning
 // the threshold required to hit the next step.
 ASH_EXPORT int GetNextProgressStep(double current_progress);
+
+ASH_EXPORT void RecordHistogramForApiStatus(
+    const std::string& method,
+    const google_apis::ApiErrorCode error_code);
+
+ASH_EXPORT void RecordHistogramForApiLatency(const std::string& method,
+                                             const base::TimeDelta latency);
+
+ASH_EXPORT void RecordHistogramForApiResult(const std::string& method,
+                                            const bool successful);
+
+ASH_EXPORT void RecordHistogramForApiRetryCount(const std::string& method,
+                                                const int retry_count);
 
 }  // namespace focus_mode_util
 

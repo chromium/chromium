@@ -4015,7 +4015,7 @@ Called by update_autofill_enums.py.-->
 <enum name="AutofillProfileImportDecision">
   <int value="0" label="Undefined"/>
   <int value="1" label="UserNotAsked"/>
-  <int value="2" label="Accpeted"/>
+  <int value="2" label="Accepted"/>
   <int value="3" label="Declined"/>
   <int value="4" label="EditAccepted"/>
   <int value="5" label="EditDeclined"/>
@@ -5003,6 +5003,8 @@ Called by update_autofill_enums.py.-->
   <int value="55" label="Fill prediction improvements"/>
   <int value="56" label="Prediction improvements feedback"/>
   <int value="57" label="Plus address error"/>
+  <int value="58" label="Prediction improvements details"/>
+  <int value="59" label="Prediction improvements error"/>
 </enum>
 
 <enum name="TouchToFill.CreditCard.Outcome">

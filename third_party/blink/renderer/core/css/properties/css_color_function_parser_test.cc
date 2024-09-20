@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
@@ -14,7 +15,47 @@
 
 namespace blink {
 
-TEST(ColorFunctionParserTest, RelativeColorWithKeywordBase) {
+TEST(ColorFunctionParserTest, RelativeColorWithKeywordBase_LateResolveEnabled) {
+  ScopedCSSRelativeColorLateResolveAlwaysForTest scoped_feature_for_test(true);
+
+  const String test_case = "rgb(from red r g b)";
+  CSSParserTokenStream stream(test_case);
+
+  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  ColorFunctionParser parser;
+  const CSSValue* result =
+      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  EXPECT_TRUE(result->IsRelativeColorValue());
+  const cssvalue::CSSRelativeColorValue* color =
+      To<cssvalue::CSSRelativeColorValue>(result);
+
+  const CSSValue& origin = color->OriginColor();
+  EXPECT_TRUE(origin.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(origin).GetValueID(), CSSValueID::kRed);
+
+  EXPECT_EQ(color->ColorInterpolationSpace(), Color::ColorSpace::kSRGBLegacy);
+
+  const CSSValue& channel0 = color->Channel0();
+  EXPECT_TRUE(channel0.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel0).GetValueID(), CSSValueID::kR);
+
+  const CSSValue& channel1 = color->Channel1();
+  EXPECT_TRUE(channel1.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel1).GetValueID(), CSSValueID::kG);
+
+  const CSSValue& channel2 = color->Channel2();
+  EXPECT_TRUE(channel2.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel2).GetValueID(), CSSValueID::kB);
+
+  EXPECT_EQ(color->Alpha(), nullptr);
+}
+
+TEST(ColorFunctionParserTest,
+     RelativeColorWithKeywordBase_LateResolveDisabled) {
+  ScopedCSSRelativeColorLateResolveAlwaysForTest scoped_feature_for_test(false);
+
   const String test_case = "rgb(from red r g b)";
   CSSParserTokenStream stream(test_case);
 
@@ -179,6 +220,36 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoneKeyword) {
   const CSSValue* alpha = color->Alpha();
   EXPECT_TRUE(alpha->IsIdentifierValue());
   EXPECT_EQ(To<CSSIdentifierValue>(alpha)->GetValueID(), CSSValueID::kNone);
+}
+
+TEST(ColorFunctionParserTest, RelativeColorWithColorMixWithCurrentColorBase) {
+  ScopedCSSRelativeColorSupportsCurrentcolorForTest scoped_feature_for_test(
+      true);
+
+  const String test_case =
+      "rgb(from color-mix(in srgb, currentColor 50%, green) r g b)";
+  CSSParserTokenStream stream(test_case);
+
+  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  ColorFunctionParser parser;
+  const CSSValue* result =
+      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  EXPECT_TRUE(result->IsRelativeColorValue());
+  const cssvalue::CSSRelativeColorValue* color =
+      To<cssvalue::CSSRelativeColorValue>(result);
+
+  const CSSValue& origin = color->OriginColor();
+  EXPECT_TRUE(origin.IsColorMixValue());
+  const cssvalue::CSSColorMixValue& origin_color =
+      To<cssvalue::CSSColorMixValue>(origin);
+  EXPECT_TRUE(origin_color.Color1().IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(origin_color.Color1()).GetValueID(),
+            CSSValueID::kCurrentcolor);
+  EXPECT_TRUE(origin_color.Color2().IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(origin_color.Color2()).GetValueID(),
+            CSSValueID::kGreen);
 }
 
 }  // namespace blink

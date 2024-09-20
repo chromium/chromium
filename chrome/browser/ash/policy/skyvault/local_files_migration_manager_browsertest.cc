@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/ash/policy/skyvault/test/skyvault_test_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -42,8 +43,6 @@ namespace policy::local_user_files {
 namespace {
 constexpr char kReadOnly[] = "read_only";
 
-constexpr char kEmail[] = "stub-user@example.com";
-
 constexpr char kTestDeviceSerialNumber[] = "12345689";
 
 constexpr base::TimeDelta kMaxDelta = base::Seconds(1);
@@ -54,96 +53,11 @@ MATCHER_P(TimeNear, expected_time, "") {
   return delta <= kMaxDelta;
 }
 
-// Matcher for `SetUserDataStorageWriteEnabledRequest`.
-MATCHER_P(WithEnabled, enabled, "") {
-  return arg.account_id().account_id() == kEmail && arg.enabled() == enabled;
-}
-
-// GMock action that runs the callback (which is expected to be the second
-// argument in the mocked function) with the given reply.
-template <typename ReplyType>
-auto ReplyWith(const ReplyType& reply) {
-  return base::test::RunOnceCallbackRepeatedly<1>(reply);
-}
-
 // Constructs the expected destination directory name.
 std::string ExpectedDestinationDirName() {
   return std::string(kDestinationDirName) + " " +
          std::string(kTestDeviceSerialNumber);
 }
-
-class MockMigrationObserver : public LocalFilesMigrationManager::Observer {
- public:
-  MockMigrationObserver() = default;
-  ~MockMigrationObserver() = default;
-
-  MOCK_METHOD(void, OnMigrationSucceeded, (), (override));
-};
-
-// Mock implementation of MigrationNotificationManager.
-class MockMigrationNotificationManager : public MigrationNotificationManager {
- public:
-  explicit MockMigrationNotificationManager(content::BrowserContext* context)
-      : MigrationNotificationManager(context) {}
-
-  MOCK_METHOD(void,
-              ShowMigrationInfoDialog,
-              (CloudProvider, base::Time, base::OnceClosure),
-              (override));
-};
-
-// Mock implementation of MigrationUploadHandler.
-class MockMigrationCoordinator : public MigrationCoordinator {
- public:
-  explicit MockMigrationCoordinator(Profile* profile)
-      : MigrationCoordinator(profile) {
-    ON_CALL(*this, Run)
-        .WillByDefault([this](CloudProvider cloud_provider,
-                              std::vector<base::FilePath> file_paths,
-                              const std::string& destination_dir,
-                              MigrationDoneCallback callback) {
-          is_running_ = true;
-          // Simulate upload lasting a while.
-          base::SequencedTaskRunner::GetCurrentDefault()
-              ->GetCurrentDefault()
-              ->PostDelayedTask(
-                  FROM_HERE,
-                  base::BindOnce(
-                      &MockMigrationCoordinator::OnMigrationDone,
-                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                      std::map<base::FilePath, MigrationUploadError>()),
-                  base::Minutes(5));  // Delay 5 minutes
-        });
-
-    ON_CALL(*this, Stop).WillByDefault([this]() { is_running_ = false; });
-  }
-  ~MockMigrationCoordinator() override = default;
-
-  bool IsRunning() const override { return is_running_; }
-
-  void OnMigrationDone(
-      MigrationDoneCallback callback,
-      std::map<base::FilePath, MigrationUploadError> errors) override {
-    if (is_running_) {
-      std::move(callback).Run(std::move(errors));
-      is_running_ = false;
-    }
-  }
-
-  MOCK_METHOD(void,
-              Run,
-              (CloudProvider cloud_provider,
-               std::vector<base::FilePath> file_paths,
-               const std::string& destination_dir,
-               MigrationDoneCallback callback),
-              (override));
-  MOCK_METHOD(void, Stop, (), (override));
-
- private:
-  bool is_running_ = false;
-
-  base::WeakPtrFactory<MockMigrationCoordinator> weak_ptr_factory_{this};
-};
 
 }  // namespace
 
@@ -211,7 +125,8 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
 
 class LocalFilesMigrationManagerLocationTest
     : public LocalFilesMigrationManagerTest,
-      public ::testing::WithParamInterface</*default_location*/ std::string> {
+      public ::testing::WithParamInterface<
+          /*migration_destination*/ std::string> {
  public:
   static std::string ParamToName(const testing::TestParamInfo<ParamType> info) {
     return info.param;

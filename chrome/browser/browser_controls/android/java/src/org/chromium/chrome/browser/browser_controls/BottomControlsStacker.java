@@ -409,8 +409,10 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             // Record the current yOffset in case the offset will be used for future animated
             // height adjustment.
             int yOffset = yOffsetOfLayers.get(layerType, layer.getHeight());
-            if (!mLayerVisibilities.get(layerType)) {
+            if (!mLayerVisibilities.get(layerType)
+                    && layer.getLayerVisibility() != LayerVisibility.HIDING) {
                 mLayerYOffsets.delete(layerType);
+                yOffset = layer.getHeight();
             } else {
                 mLayerYOffsets.put(layerType, yOffset);
             }

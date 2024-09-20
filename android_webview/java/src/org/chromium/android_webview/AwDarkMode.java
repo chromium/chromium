@@ -17,7 +17,6 @@ import org.chromium.content_public.browser.WebContents;
 @Lifetime.WebView
 @JNINamespace("android_webview")
 public class AwDarkMode {
-    private static Boolean sAppTargetsTForTesting;
     private Context mContext;
     private long mNativeAwDarkMode;
 

@@ -46,6 +46,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ipc/ipc_message.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/range/range.h"
 
 namespace chrome {
@@ -78,8 +79,8 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
   // Create an empty new browser window the same size as the old one.
   Browser::CreateParams params(browser_->profile(), true);
   params.initial_bounds = window_bounds;
-  params.initial_show_state =
-      maximize ? ui::SHOW_STATE_MAXIMIZED : ui::SHOW_STATE_NORMAL;
+  params.initial_show_state = maximize ? ui::mojom::WindowShowState::kMaximized
+                                       : ui::mojom::WindowShowState::kNormal;
   Browser* browser = Browser::Create(params);
   TabStripModel* new_model = browser->tab_strip_model();
 
@@ -308,7 +309,7 @@ bool BrowserTabStripModelDelegate::IsForWebApp() {
 }
 
 void BrowserTabStripModelDelegate::CopyURL(content::WebContents* web_contents) {
-  chrome::CopyURL(web_contents);
+  chrome::CopyURL(browser_, web_contents);
 }
 
 void BrowserTabStripModelDelegate::GoBack(content::WebContents* web_contents) {

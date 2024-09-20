@@ -31,50 +31,33 @@ android_library("java") {
     "java/src/org/chromium/components/language/AndroidLanguageMetricsBridge.java",
     "java/src/org/chromium/components/language/GeoLanguageProviderBridge.java",
     "java/src/org/chromium/components/language/LanguageProfileController.java",
+    "java/src/org/chromium/components/language/LanguageProfileDelegate.java",
     "java/src/org/chromium/components/language/LanguageProfileMetricsLogger.java",
+    "java/src/org/chromium/components/language/LocaleManagerDelegate.java",
   ]
 
   deps = [
-    ":ulp_delegate_java",
     "//base:base_java",
+    "//base:service_loader_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
-android_library("ulp_delegate_java") {
-  sources = [
-    "java/src/org/chromium/components/language/LanguageProfileDelegate.java",
-    "java/src/org/chromium/components/language/LanguageProfileDelegateImpl.java",
-    "java/src/org/chromium/components/language/LocaleManagerDelegate.java",
-    "java/src/org/chromium/components/language/LocaleManagerDelegateImpl.java",
-  ]
-
-  # Allow downstream targets to provide their own implementations.
-  jar_excluded_patterns = [
-    "*/LanguageProfileDelegateImpl.class",
-    "*/LocaleManagerDelegateImpl.class",
-  ]
-}
-
-android_library("ulp_delegate_public_java") {
-  sources = [
-    "java/src/org/chromium/components/language/LanguageProfileDelegateImpl.java",
-    "java/src/org/chromium/components/language/LocaleManagerDelegateImpl.java",
-  ]
-
-  deps = [ ":ulp_delegate_java" ]
+# TODO(agrieve): Delete once unused internally.
+java_group("ulp_delegate_java") {
+  public_deps = [ ":java" ]
 }
 
 robolectric_library("junit") {
   sources = [ "java/src/org/chromium/components/language/LanguageProfileControllerUnitTest.java" ]
   deps = [
     ":java",
-    ":ulp_delegate_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:service_loader_java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",

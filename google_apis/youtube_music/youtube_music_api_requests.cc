@@ -26,9 +26,11 @@ constexpr char kContentTypeJson[] = "application/json; charset=utf-8";
 namespace google_apis::youtube_music {
 
 GetMusicSectionRequest::GetMusicSectionRequest(RequestSender* sender,
+                                               const std::string& device_info,
                                                Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      device_info_(device_info) {
   CHECK(!callback_.is_null());
 }
 
@@ -49,6 +51,11 @@ ApiErrorCode GetMusicSectionRequest::MapReasonToError(
 
 bool GetMusicSectionRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
   return error == HTTP_SUCCESS;
+}
+
+std::vector<std::string> GetMusicSectionRequest::GetExtraRequestHeaders()
+    const {
+  return {device_info_};
 }
 
 void GetMusicSectionRequest::ProcessURLFetchResults(
@@ -93,9 +100,11 @@ void GetMusicSectionRequest::OnDataParsed(
 }
 
 GetPlaylistRequest::GetPlaylistRequest(RequestSender* sender,
+                                       const std::string& device_info,
                                        const std::string& playlist_name,
                                        Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
+      device_info_(device_info),
       playlist_name_(playlist_name),
       callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
@@ -117,6 +126,10 @@ ApiErrorCode GetPlaylistRequest::MapReasonToError(ApiErrorCode code,
 
 bool GetPlaylistRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
   return error == HTTP_SUCCESS;
+}
+
+std::vector<std::string> GetPlaylistRequest::GetExtraRequestHeaders() const {
+  return {device_info_};
 }
 
 void GetPlaylistRequest::ProcessURLFetchResults(
@@ -162,9 +175,7 @@ PlaybackQueuePrepareRequest::PlaybackQueuePrepareRequest(
     RequestSender* sender,
     const PlaybackQueuePrepareRequestPayload& payload,
     Callback callback)
-    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      payload_(payload),
-      callback_(std::move(callback)) {
+    : SignedRequest(sender), payload_(payload), callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
 }
 
@@ -186,10 +197,6 @@ ApiErrorCode PlaybackQueuePrepareRequest::MapReasonToError(
 
 bool PlaybackQueuePrepareRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
   return error == HTTP_SUCCESS;
-}
-
-HttpRequestMethod PlaybackQueuePrepareRequest::GetRequestType() const {
-  return HttpRequestMethod::kPost;
 }
 
 bool PlaybackQueuePrepareRequest::GetContentData(
@@ -243,10 +250,10 @@ void PlaybackQueuePrepareRequest::OnDataParsed(std::unique_ptr<Queue> queue) {
 
 PlaybackQueueNextRequest::PlaybackQueueNextRequest(
     RequestSender* sender,
+    const PlaybackQueueNextRequestPayload& payload,
     Callback callback,
     const std::string& playback_queue_name)
-    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(std::move(callback)) {
+    : SignedRequest(sender), payload_(payload), callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
   playback_queue_name_ = playback_queue_name;
 }
@@ -270,8 +277,11 @@ bool PlaybackQueueNextRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
   return error == HTTP_SUCCESS;
 }
 
-HttpRequestMethod PlaybackQueueNextRequest::GetRequestType() const {
-  return HttpRequestMethod::kPost;
+bool PlaybackQueueNextRequest::GetContentData(std::string* upload_content_type,
+                                              std::string* upload_content) {
+  *upload_content_type = kContentTypeJson;
+  *upload_content = payload_.ToJson();
+  return true;
 }
 
 void PlaybackQueueNextRequest::ProcessURLFetchResults(
@@ -320,7 +330,7 @@ ReportPlaybackRequest::ReportPlaybackRequest(
     RequestSender* sender,
     std::unique_ptr<ReportPlaybackRequestPayload> payload,
     Callback callback)
-    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
+    : SignedRequest(sender),
       payload_(std::move(payload)),
       callback_(std::move(callback)) {
   CHECK(payload_);
@@ -342,10 +352,6 @@ ApiErrorCode ReportPlaybackRequest::MapReasonToError(
 
 bool ReportPlaybackRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
   return error == HTTP_SUCCESS;
-}
-
-HttpRequestMethod ReportPlaybackRequest::GetRequestType() const {
-  return HttpRequestMethod::kPost;
 }
 
 bool ReportPlaybackRequest::GetContentData(std::string* upload_content_type,

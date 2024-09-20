@@ -28,9 +28,9 @@ class AXInspectScenario;
 // implemented.
 class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
  public:
-  using AXTreeSelector = AXTreeSelector;
-  using AXPropertyFilter = AXPropertyFilter;
-  using AXNodeFilter = AXNodeFilter;
+  using AXTreeSelector = ui::AXTreeSelector;
+  using AXPropertyFilter = ui::AXPropertyFilter;
+  using AXNodeFilter = ui::AXNodeFilter;
 
   virtual ~AXTreeFormatter() = default;
 

@@ -30,8 +30,9 @@ UserScriptManager::UserScriptManager(content::BrowserContext* browser_context)
 
   StateStore* store =
       ExtensionSystem::Get(browser_context_)->dynamic_user_scripts_store();
-  if (store)
+  if (store) {
     store->RegisterKey(scripting::kRegisteredScriptsStorageKey);
+  }
 }
 
 UserScriptManager::~UserScriptManager() = default;
@@ -128,8 +129,9 @@ void UserScriptManager::OnInitialExtensionLoadComplete(
 void UserScriptManager::RemovePendingExtensionLoadAndSignal(
     const ExtensionId& extension_id) {
   int erased = pending_initial_extension_loads_.erase(extension_id);
-  if (!erased || !pending_initial_extension_loads_.empty())
+  if (!erased || !pending_initial_extension_loads_.empty()) {
     return;  // Not a relevant extension, or still waiting on more.
+  }
 
   // All our extensions are loaded!
   ExtensionsBrowserClient::Get()->SignalContentScriptsLoaded(browser_context_);

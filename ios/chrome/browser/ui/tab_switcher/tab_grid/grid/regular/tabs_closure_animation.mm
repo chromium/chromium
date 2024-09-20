@@ -113,14 +113,7 @@ CAGradientLayer* GetAnimatedGridCellDisappearingGradient(
   opacity_animation.beginTime =
       start_time + kGridCellDisappearingAnimationDelay;
   opacity_animation.duration = kGridCellDisappearingOpacityDuration;
-
-  opacity_animation.byValue = @[
-    (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
-    (id)[UIColor colorWithWhite:1.0 alpha:0.25].CGColor,
-    (id)[UIColor colorWithWhite:1.0 alpha:0.6].CGColor,
-    (id)[UIColor colorWithWhite:1.0 alpha:0.85].CGColor,
-    (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
-  ];
+  opacity_animation.fromValue = gradient_layer.colors;
   opacity_animation.toValue = @[
     (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
     (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
@@ -230,9 +223,12 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
   CAGradientLayer* gradient_layer = [CAGradientLayer layer];
   gradient_layer.type = kCAGradientLayerRadial;
   gradient_layer.colors = @[
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.0].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.0].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.0].CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.6]
+        .CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.4]
+        .CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.0]
+        .CGColor,
   ];
 
   // The gradient shouldn't be visible at the start.
@@ -271,15 +267,14 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
   // should be mostly opaque before it stops growing.
   colors_animation.beginTime = startTime;
   colors_animation.duration = kColorGradientOpacityDuration;
-  colors_animation.byValue = @[
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.1].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.05].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.0].CGColor,
-  ];
+  colors_animation.byValue = gradient_layer.colors;
   colors_animation.toValue = @[
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.7].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.45].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.0].CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.7]
+        .CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.45]
+        .CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.0]
+        .CGColor,
   ];
 
   // Prolong the end state of the animation, so the window continues to be blue.

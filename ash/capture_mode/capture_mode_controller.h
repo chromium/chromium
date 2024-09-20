@@ -154,6 +154,10 @@ class ASH_EXPORT CaptureModeController
   // Returns true if the camera preview is visible, false otherwise.
   bool IsShowingCameraPreview() const;
 
+  // Returns true if this supports the new behavior provided by
+  // `new_entry_type`.
+  bool SupportsBehaviorChange(CaptureModeEntryType new_entry_type) const;
+
   // Sets the capture source/type, and recording type, which will be applied to
   // an ongoing capture session (if any), or to a future capture session when
   // Start() is called.
@@ -491,7 +495,7 @@ class ASH_EXPORT CaptureModeController
   // Called back after the image file was saved to the final location.
   // Parameters are same as for `OnImageFileSaved()` with `success` indicating
   // the result of finalizing the file.
-  void OnImageFileFinalized(scoped_refptr<base::RefCountedMemory> png_bytes,
+  void OnImageFileFinalized(const gfx::Image& image,
                             const CaptureModeBehavior* behavior,
                             bool success,
                             const base::FilePath& file_saved_path);

@@ -54,7 +54,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
             browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForBrowserStateIfExists(browser_state_);
+        SyncServiceFactory::GetForProfileIfExists(browser_state_);
     password_manager::PasswordReuseManager* password_reuse_manager =
         IOSChromePasswordReuseManagerFactory::GetForBrowserState(
             browser_state_);

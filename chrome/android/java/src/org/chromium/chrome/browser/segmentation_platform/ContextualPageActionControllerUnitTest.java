@@ -86,6 +86,7 @@ public class ContextualPageActionControllerUnitTest {
                                     signalAccumulator.setHasReaderMode(true);
                                     signalAccumulator.setHasPriceTracking(true);
                                     signalAccumulator.setHasPriceInsights(true);
+                                    signalAccumulator.setHasDiscounts(true);
                                     signalAccumulator.notifySignalAvailable();
                                 });
                     }

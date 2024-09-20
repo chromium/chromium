@@ -39,7 +39,7 @@ static_library("internet") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",

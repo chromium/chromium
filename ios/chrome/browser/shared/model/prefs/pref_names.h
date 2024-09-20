@@ -331,6 +331,16 @@ inline constexpr char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
 inline constexpr char kIosSafetyCheckManagerInsecurePasswordCounts[] =
     "ios.safety_check_manager.insecure_password_counts";
 
+// Integer preference containing which Safety Check notification type was sent
+// last.
+inline constexpr char kIosSafetyCheckNotificationsLastSent[] =
+    "ios.safety_check_notifications.last_sent";
+
+// Integer preference containing which Safety Check notification type was
+// triggered last.
+inline constexpr char kIosSafetyCheckNotificationsLastTriggered[] =
+    "ios.safety_check_notifications.last_triggered";
+
 // String preference containing the default account to use for saving files to
 // Google Drive.
 inline constexpr char kIosSaveToDriveDefaultGaiaId[] =
@@ -486,6 +496,9 @@ inline constexpr char kTrackPricesOnTabsEnabled[] =
 inline constexpr char kLensCameraAssistedSearchPolicyAllowed[] =
     "ios.lens_camera_assited_search_policy.allowed";
 
+// Date of the last time the user opened the Lens UI.
+inline constexpr char kLensLastOpened[] = "ios.lens.last_opened";
+
 // Number of times the NTP Lens button "new" IPH badge has been shown.
 // This is set to INT_MAX when the user taps the button.
 inline constexpr char kNTPLensEntryPointNewBadgeShownCount[] =
@@ -506,6 +519,11 @@ inline constexpr char kDetectUnitsEnabled[] =
 inline constexpr char kNetworkPredictionSetting[] =
     "ios.prerender.network_prediction_settings";
 
+// True if user has ever explicitly disabled Send Tab push notifications. Does
+// not reflect the current permission state of Send Tab push notifications.
+inline constexpr char kSendTabNotificationsPreviouslyDisabled[] =
+    "push_notifications.send_tab_push_notifications_disabled";
+
 // True if the memory debugging tools should be visible.
 inline constexpr char kShowMemoryDebuggingTools[] =
     "ios.memory.show_debugging_tools";
@@ -514,6 +532,11 @@ inline constexpr char kShowMemoryDebuggingTools[] =
 // when a new tab is created.
 inline constexpr char kSigninShouldPromptForSigninAgain[] =
     "ios.signin.should_prompt_for_signin_again";
+
+// Per-account pref. True if the user has accepted the management dialog during
+// signin.
+inline constexpr char kSigninHasAcceptedManagementDialog[] =
+    "ios.signin.has_accepted_management_dialog";
 
 // Number of times the user dismissed the web sign-in dialog. This value is
 // reset to zero when the user signs in (using the web sign-in dialog).
@@ -632,6 +655,11 @@ inline constexpr char kHomeCustomizationMagicStackTabResumptionEnabled[] =
     "ios.home_customization.magic_stack.tab_resumption.enabled";
 inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
     "ios.home_customization.magic_stack.parcel_tracking.enabled";
+
+// List preference that stores the positions in the Magic Stack where the Safety
+// Check module with the notifications opt-in button is shown.
+inline constexpr char kMagicStackSafetyCheckNotificationsShown[] =
+    "ios.home_customization.magic_stack.safety_check.notifications_shown";
 
 // Integer preference that stores the most recent count of Safety Check issues
 // presented to the user in the Safety Check module (part of the Magic Stack).

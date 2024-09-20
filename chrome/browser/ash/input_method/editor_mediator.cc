@@ -26,7 +26,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "chromeos/components/editor_menu/public/cpp/editor_helpers.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -237,26 +237,30 @@ void EditorMediator::HandleTrigger(
     case EditorMode::kConsentNeeded:
       query_context_ = EditorQueryContext(/*preset_query_id=*/preset_query_id,
                                           /*freeform_text=*/freeform_text);
-      if (chromeos::features::IsMagicBoostEnabled()) {
-        crosapi::CrosapiManager::Get()
-            ->crosapi_ash()
-            ->magic_boost_controller_ash()
-            ->ShowDisclaimerUi(
-                /*display_id=*/display::Screen::GetScreen()
-                    ->GetPrimaryDisplay()
-                    .id(),
-                /*action=*/
-                crosapi::mojom::MagicBoostController::TransitionAction::
-                    kShowEditorPanel,
-                /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
-      } else {
-        mako_bubble_coordinator_.LoadConsentUI(profile_);
-      }
+      ShowNotice();
       metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
     case EditorMode::kHardBlocked:
     case EditorMode::kSoftBlocked:
       mako_bubble_coordinator_.CloseUI();
+  }
+}
+
+void EditorMediator::ShowNotice() {
+  if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->magic_boost_controller_ash()
+        ->ShowDisclaimerUi(
+            /*display_id=*/display::Screen::GetScreen()
+                ->GetPrimaryDisplay()
+                .id(),
+            /*action=*/
+            crosapi::mojom::MagicBoostController::TransitionAction::
+                kShowEditorPanel,
+            /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+  } else {
+    mako_bubble_coordinator_.LoadConsentUI(profile_);
   }
 }
 
@@ -347,6 +351,10 @@ void EditorMediator::OnTextFieldContextualInfoChanged(
 
 bool EditorMediator::IsAllowedForUse() {
   return editor_switch_->IsAllowedForUse();
+}
+
+bool EditorMediator::CanShowNoticeBanner() const {
+  return editor_switch_->CanShowNoticeBanner();
 }
 
 EditorMode EditorMediator::GetEditorMode() const {

@@ -176,7 +176,9 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GPUInfo::GPUDevice& gpu_device,
-    std::unique_ptr<MediaLog> media_log) {
+    std::unique_ptr<MediaLog> media_log,
+    GetCommandBufferHelperCB get_command_buffer_helper_cb,
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
   // NullMediaLog silently and safely does nothing.
   if (!media_log)
     media_log = std::make_unique<media::NullMediaLog>();
@@ -186,6 +188,10 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
     std::unique_ptr<VideoEncodeAccelerator> vea = create_vea.Run();
     if (!vea)
       continue;
+    if (!get_command_buffer_helper_cb.is_null()) {
+      vea->SetCommandBufferHelperCB(get_command_buffer_helper_cb,
+                                    gpu_task_runner);
+    }
     if (!vea->Initialize(config, client, media_log->Clone())) {
       DLOG(ERROR) << "VEA initialize failed (" << config.AsHumanReadableString()
                   << ")";

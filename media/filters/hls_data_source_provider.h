@@ -50,6 +50,7 @@ class MEDIA_EXPORT HlsDataSourceProvider {
   struct UrlDataSegment {
     const GURL uri;
     const std::optional<hls::types::ByteRange> range;
+    const bool bypass_cache;
   };
   using SegmentQueue = base::queue<UrlDataSegment>;
 
@@ -125,9 +126,15 @@ class MEDIA_EXPORT HlsDataSourceStream {
   bool RequiresNextDataSource() const;
 
   // Gets the next segment URI from the queue of segments. It is invalid to call
-  // this method if `RequiresResetForNewSegment` does not return true. This
-  // method will also update the internal range if the segment has one set.
+  // this method if `RequiresNextDataSource` does not return true. This
+  // method will also update the internal range if the segment has one.
   GURL GetNextSegmentURI();
+
+  // Gets the next segment URI and its cache bypass option from the queue of
+  // segments. It is invalid to call this method if `RequiresNextDataSource`
+  // does not return true. This method will also update the internal range if
+  // the segment has one.
+  std::pair<GURL, bool> GetNextSegmentURIAndCacheStatus();
 
   // Has the stream read all possible data?
   bool CanReadMore() const;

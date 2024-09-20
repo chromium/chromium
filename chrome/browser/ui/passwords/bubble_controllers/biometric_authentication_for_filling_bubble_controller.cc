@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/biometric_authentication_for_filling_bubble_controller.h"
 
+#include <string>
+
 #include "base/notreached.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
@@ -73,6 +75,9 @@ std::u16string BiometricAuthenticationForFillingBubbleController::GetBody()
 #elif BUILDFLAG(IS_WIN)
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_FOR_FILLING_PROMO_MESSAGE_WIN);
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_FOR_FILLING_PROMO_MESSAGE_CHROMEOS);
 #else
   NOTIMPLEMENTED();
 #endif
@@ -102,15 +107,17 @@ void BiometricAuthenticationForFillingBubbleController::OnAccepted() {
   base::OnceCallback<void(bool)> on_reauth_completed =
       base::BindOnce(OnReauthCompleted, prefs_, delegate_);
   accept_clicked_ = true;
-
-  delegate_->AuthenticateUserWithMessage(
-      l10n_util::GetStringUTF16(
+  std::u16string message;
 #if BUILDFLAG(IS_MAC)
-          IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_MAC),
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_MAC);
 #elif BUILDFLAG(IS_WIN)
-          IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_WIN),
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_WIN);
 #endif
-      std::move(on_reauth_completed));
+  // TODO(crbug.com/367336383): Add ChromeOS specific string.
+  delegate_->AuthenticateUserWithMessage(message,
+                                         std::move(on_reauth_completed));
 }
 
 void BiometricAuthenticationForFillingBubbleController::OnCanceled() {
@@ -127,6 +134,9 @@ std::u16string BiometricAuthenticationForFillingBubbleController::GetTitle()
 #elif BUILDFLAG(IS_WIN)
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_FOR_FILLING_PROMO_TITLE_WIN);
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_FOR_FILLING_PROMO_TITLE_CHROMEOS);
 #else
   NOTIMPLEMENTED();
 #endif

@@ -46,7 +46,10 @@
 
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 #include <pthread.h>
-#endif
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+#include <sys/mman.h>
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+#endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 
 namespace partition_alloc::internal {
 
@@ -1957,6 +1960,16 @@ PA_NOINLINE void PartitionRoot::QuarantineForBrp(
 // static
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
 void PartitionRoot::EnableShadowMetadata(internal::PoolHandleMask mask) {
+#if PA_BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/40238514): implement ModuleCache() or something to
+  // load required shared libraries in advance.
+  // Since memfd_create() causes dlsym(), it is not possible to invoke
+  // memfd_create() while PartitionRoot-s are locked.
+  // So invoke memfd_create() here and invoke dysym() in advance.
+  // This is required to enable ShadowMetadata on utility processes.
+  { close(memfd_create("module_cache", MFD_CLOEXEC)); }
+#endif
+
   internal::ScopedGuard guard(g_root_enumerator_lock);
   // Must lock all PartitionRoot-s and ThreadCache.
   internal::PartitionRootEnumerator::Instance().Enumerate(
@@ -2006,7 +2019,7 @@ static_assert(offsetof(PartitionRoot, sentinel_bucket) ==
               "sentinel_bucket must be just after the regular buckets.");
 
 static_assert(
-    offsetof(PartitionRoot, lock_) >= 64,
+    offsetof(PartitionRoot, lock_) >= internal::kPartitionCachelineSize,
     "The lock should not be on the same cacheline as the read-mostly flags");
 #if defined(__clang__)
 #pragma clang diagnostic pop

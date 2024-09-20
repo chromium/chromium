@@ -346,57 +346,6 @@ public class SingleActionMessageTest {
         fullyVisible.assertExpected("Messages should have been fully visible before");
     }
 
-    @Test
-    @MediumTest
-    public void testOnFullyVisibleNotCalled() {
-        MessageContainer container = new MessageContainer(sActivity, null);
-        PropertyModel m1 = createBasicSingleActionMessageModel(MessageIdentifier.SYNC_ERROR);
-        m1.set(MessageBannerProperties.ON_FULLY_VISIBLE, (unused) -> {});
-
-        final var fullyVisible =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                "Android.Messages.FullyVisible", MessageIdentifier.SYNC_ERROR)
-                        .build();
-
-        final var dismissal =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Android.Messages.TimeToFullyShow.SyncError", 1000)
-                        .expectIntRecord(
-                                "Android.Messages.Error.FullyVisibleNotInformed",
-                                MessageIdentifier.SYNC_ERROR)
-                        .build();
-
-        final MessageBannerView view1 = createMessageBannerView(container);
-        var sam1 =
-                new SingleActionMessage(
-                        container,
-                        m1,
-                        mEmptyDismissCallback,
-                        () -> 0,
-                        () -> 0,
-                        new MockDurationProvider(0L),
-                        mSwipeAnimationHandler) {
-                    @Override
-                    void notifyVisibilityChange(boolean fullyVisible) {
-                        // Do nothing
-                    }
-                };
-        view1.setId(R.id.message_banner);
-        PropertyModelChangeProcessor.create(m1, view1, MessageBannerViewBinder::bind);
-        sam1.setMessageBannerForTesting(mMessageBanner);
-        sam1.setViewForTesting(view1);
-
-        mFakeTime.advanceMillis(1000);
-        sam1.show(Position.INVISIBLE, Position.FRONT);
-
-        mFakeTime.advanceMillis(500);
-        sam1.dismiss(DismissReason.GESTURE);
-
-        fullyVisible.assertExpected("Messages should have been fully visible before");
-        dismissal.assertExpected("Incorrect histograms on dismiss");
-    }
-
     private void executeAndVerifyRepeatedButtonClicks(
             boolean isPrimaryButtonClickedFirst,
             PropertyModel model,

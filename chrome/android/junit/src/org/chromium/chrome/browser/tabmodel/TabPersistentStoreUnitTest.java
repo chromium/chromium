@@ -39,6 +39,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -87,6 +88,7 @@ public class TabPersistentStoreUnitTest {
     private TabModelFilter mNormalTabModelFilter;
     private TabModelFilter mIncognitoTabModelFilter;
     private TabPersistentStore mPersistentStore;
+    private CipherFactory mCipherFactory;
 
     @Before
     public void setUp() {
@@ -107,6 +109,8 @@ public class TabPersistentStoreUnitTest {
         mIncognitoTabModelFilter = new TabGroupModelFilter(mIncognitoTabModel);
         when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mNormalTabModelFilter);
         when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mIncognitoTabModelFilter);
+
+        mCipherFactory = new CipherFactory();
     }
 
     @After
@@ -114,7 +118,7 @@ public class TabPersistentStoreUnitTest {
         // Flush pending PersistentStore tasks.
         final AtomicBoolean flushed = new AtomicBoolean(false);
         if (mPersistentStore != null) {
-            mPersistentStore.getTaskRunnerForTests().postTask(() -> flushed.set(true));
+            mPersistentStore.getTaskRunnerForTests().execute(() -> flushed.set(true));
             CriteriaHelper.pollUiThreadForJUnit(() -> flushed.get());
         }
     }
@@ -132,7 +136,8 @@ public class TabPersistentStoreUnitTest {
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
-                        mTabWindowManager) {
+                        mTabWindowManager,
+                        mCipherFactory) {
                     @Override
                     protected void saveNextTab() {
                         // Intentionally ignore to avoid triggering async task creation.
@@ -161,7 +166,8 @@ public class TabPersistentStoreUnitTest {
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
-                        mTabWindowManager);
+                        mTabWindowManager,
+                        mCipherFactory);
         mPersistentStore.initializeRestoreVars(false);
 
         TabRestoreDetails emptyNtpDetails =
@@ -189,7 +195,8 @@ public class TabPersistentStoreUnitTest {
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
-                        mTabWindowManager);
+                        mTabWindowManager,
+                        mCipherFactory);
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
@@ -223,7 +230,8 @@ public class TabPersistentStoreUnitTest {
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
-                        mTabWindowManager);
+                        mTabWindowManager,
+                        mCipherFactory);
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
@@ -263,7 +271,8 @@ public class TabPersistentStoreUnitTest {
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
-                        mTabWindowManager);
+                        mTabWindowManager,
+                        mCipherFactory);
         mPersistentStore.initializeRestoreVars(false);
 
         TabRestoreDetails ntpDetails =
@@ -287,7 +296,8 @@ public class TabPersistentStoreUnitTest {
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
-                        mTabWindowManager);
+                        mTabWindowManager,
+                        mCipherFactory);
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
@@ -318,7 +328,8 @@ public class TabPersistentStoreUnitTest {
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
-                        mTabWindowManager);
+                        mTabWindowManager,
+                        mCipherFactory);
         mPersistentStore.initializeRestoreVars(false);
 
         TabRestoreDetails emptyNtpDetails =
@@ -338,7 +349,8 @@ public class TabPersistentStoreUnitTest {
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
-                        mTabWindowManager);
+                        mTabWindowManager,
+                        mCipherFactory);
         mPersistentStore.initializeRestoreVars(true);
 
         TabRestoreDetails emptyNtpDetails =
@@ -359,7 +371,8 @@ public class TabPersistentStoreUnitTest {
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
-                        mTabWindowManager);
+                        mTabWindowManager,
+                        mCipherFactory);
         mPersistentStore.initializeRestoreVars(false);
 
         TabRestoreDetails regularTabRestoreDetails =

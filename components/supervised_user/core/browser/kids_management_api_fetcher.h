@@ -42,11 +42,11 @@ FetchListFamilyMembers(
 
 // Creates a disposable instance of an access token consumer that will classify
 // the URL for supervised user.
-std::unique_ptr<ProtoFetcher<kidsmanagement::ClassifyUrlResponse>>
-CreateClassifyURLFetcher(
+std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kidsmanagement::ClassifyUrlRequest& request,
+    ClassifyUrlFetcher::Callback callback,
     const FetcherConfig& config = kClassifyUrlConfig,
     version_info::Channel channel = version_info::Channel::UNKNOWN);
 
@@ -57,11 +57,11 @@ CreateClassifyURLFetcher(
 // which is mapped to the body of the `CreatePermissionRequestRequest`
 // message by the http to gRPC mapping on the server side.
 // See go/rpc-create-permission-request.
-std::unique_ptr<ProtoFetcher<kidsmanagement::CreatePermissionRequestResponse>>
-CreatePermissionRequestFetcher(
+std::unique_ptr<PermissionRequestFetcher> CreatePermissionRequestFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kidsmanagement::PermissionRequest& request,
+    PermissionRequestFetcher::Callback callback,
     const FetcherConfig& config = kCreatePermissionRequestConfig);
 }  // namespace supervised_user
 

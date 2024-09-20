@@ -434,9 +434,11 @@ QuickAnswersView::QuickAnswersView(
                       IDS_QUICK_ANSWERS_DOGFOOD_FEEDBACK_BUTTON_TOOLTIP_TEXT))
                   .SetImageModel(
                       views::Button::STATE_NORMAL,
-                      ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon,
-                                                     ui::kColorIconSecondary,
-                                                     kDogfoodButtonSizeDip)))
+                      ui::ImageModel::FromVectorIcon(
+                          vector_icons::kDogfoodIcon,
+                          design_ == Design::kCurrent ? ui::kColorIconSecondary
+                                                      : ui::kColorSysSecondary,
+                          kDogfoodButtonSizeDip)))
           .AddChild(
               views::Builder<views::ImageButton>()
                   .CopyAddressTo(&settings_button_)
@@ -449,7 +451,9 @@ QuickAnswersView::QuickAnswersView(
                       views::Button::ButtonState::STATE_NORMAL,
                       ui::ImageModel::FromVectorIcon(
                           vector_icons::kSettingsOutlineIcon,
-                          ui::kColorIconSecondary, kSettingsButtonSizeDip))
+                          design_ == Design::kCurrent ? ui::kColorIconSecondary
+                                                      : ui::kColorSysSecondary,
+                          kSettingsButtonSizeDip))
                   .SetProperty(views::kMarginsKey,
                                gfx::Insets(kSettingsButtonBorderDip)))
           .Build());

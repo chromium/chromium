@@ -6,15 +6,25 @@
 
 import json
 import mock
+import os
 import re
+import sys
 import unittest
 
 import run
+import result_sink_util
 from test_runner import SimulatorNotFoundError, TestRunner
 from xcodebuild_runner import SimulatorParallelTestRunner
 import test_runner_errors
 import test_runner_test
 
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.extend([
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')),
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/'))
+])
+import exception_recorder
 
 class UnitTest(unittest.TestCase):
 
@@ -657,12 +667,9 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
   @mock.patch(
       'xcode_util.install_xcode', autospec=True, return_value=(False, True))
   @mock.patch('xcode_util.move_runtime', autospec=True)
-  @mock.patch('run.ResultSinkClient')
-  def test_report_exception(self, mock_result_client, mock_move_runtime,
-                            mock_install, mock_construct_runtime_cache_folder,
-                            mock_tr, _1, _2, _3, _4):
-    mock_post_exceptions = mock.MagicMock()
-    mock_result_client.return_value.post_exceptions = mock_post_exceptions
+  def test_report_extended_properties(self, mock_move_runtime, mock_install,
+                                      mock_construct_runtime_cache_folder,
+                                      mock_tr, _1, _2, _3, _4):
     self.runner.args.version = None
     test_runner = mock_tr.return_value
     test_runner.launch.return_value = True
@@ -671,12 +678,12 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     with mock.patch('run.open', mock.mock_open()):
       self.runner.run(None)
 
-    expected_exception_str = str(
-        test_runner_errors.XcodeInstallFailedError(
-            self.runner.args.xcode_build_version))
-    actual_exceptions = mock_post_exceptions.call_args[0][0]
+    expected_exception_str = 'test_runner_errors.XcodeInstallFailedError: ' + \
+      str(test_runner_errors.XcodeInstallFailedError(
+        self.runner.args.xcode_build_version))
+    actual_exceptions = exception_recorder._records
     for exception in actual_exceptions:
-      exception_str = str(exception)
+      exception_str = str(exception.stacktrace[-1]).rstrip()
       if 'Xcode' in exception_str:
         self.assertEqual(expected_exception_str, exception_str)
 

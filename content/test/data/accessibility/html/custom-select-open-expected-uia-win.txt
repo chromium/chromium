@@ -1,0 +1,29 @@
+Document
+++Group IsControlElement=false
+++++ComboBox Name='Currency for purchase' ExpandCollapse.ExpandCollapseState='Expanded' Value.Value='USD United States Dollar $'
+++++++List IsControlElement=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++ListItem Name='EUR Euro' SelectionItem.IsSelected=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='EUR' IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='Euro' IsControlElement=false
+++++++++ListItem Name='GBP Great British Pound' SelectionItem.IsSelected=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='GBP' IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='Great British Pound' IsControlElement=false
+++++++++ListItem Name='USD United States Dollar' SelectionItem.IsSelected=true
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='USD' IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='United States Dollar' IsControlElement=false
+++++++++ListItem Name='JPY Japanese Yen' SelectionItem.IsSelected=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='JPY' IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='Japanese Yen' IsControlElement=false
+++++++++ListItem Name='BTC Bitcoin' SelectionItem.IsSelected=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='BTC' IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='Bitcoin' IsControlElement=false

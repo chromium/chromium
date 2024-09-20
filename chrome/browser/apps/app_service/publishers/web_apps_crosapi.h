@@ -170,8 +170,6 @@ class WebAppsCrosapi : public KeyedService,
   const raw_ptr<AppServiceProxy> proxy_;
   bool should_notify_initialized_ = true;
 
-  DeviceInfoManager device_info_manager_;
-
   base::WeakPtrFactory<WebAppsCrosapi> weak_factory_{this};
 };
 

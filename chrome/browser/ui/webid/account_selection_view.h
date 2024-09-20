@@ -12,6 +12,9 @@
 #include "ui/gfx/native_widget_types.h"
 
 using Account = content::IdentityRequestAccount;
+using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+using IdentityRequestAccountPtr =
+    scoped_refptr<content::IdentityRequestAccount>;
 using LinkType = content::IdentityRequestDialogController::LinkType;
 using TokenError = content::IdentityCredentialTokenError;
 
@@ -19,6 +22,21 @@ using TokenError = content::IdentityCredentialTokenError;
 // identity dialog controller with the Android frontend.
 class AccountSelectionView {
  public:
+  // This enum is used for histograms. Do not remove or modify existing values,
+  // but you may add new values at the end and increase COUNT. This enum should
+  // be kept in sync with SheetType in
+  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
+  // with FedCmSheetType in tools/metrics/histograms/enums.xml.
+  enum SheetType {
+    ACCOUNT_SELECTION = 0,
+    VERIFYING = 1,
+    AUTO_REAUTHN = 2,
+    SIGN_IN_TO_IDP_STATIC = 3,
+    SIGN_IN_ERROR = 4,
+    LOADING = 5,
+    COUNT = 6
+  };
+
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -58,19 +76,20 @@ class AccountSelectionView {
 
   // Instructs the view to show the provided accounts to the user.
   // `rp_for_display` is the relying party's URL. All IDP-specific information,
-  // including user accounts, is stored in `idps_for_display`. `sign_in_mode`
+  // is stored in `idp_list`. `sign_in_mode`
   // represents whether this is an auto re-authn flow. If it is the auto
-  // re-authn flow, `idps_for_display` will only include the single returning
-  // account and its IDP. `new_accounts_idp` represents the account information
-  // of a newly logged in account that ought to be prioritized in the UI.
+  // re-authn flow, `idp_list` will only include the single
+  // returning account and its IDP. `new_accounts` is a vector where each member
+  // is a newly logged in account that ought to be prioritized in the UI.
   // Returns true if it was possible to show UI. If this method could not show
   // UI and called Dismiss, returns false.
   virtual bool Show(
       const std::string& rp_for_display,
-      const std::vector<content::IdentityProviderData>& identity_provider_data,
+      const std::vector<IdentityProviderDataPtr>& idp_list,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
       Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      const std::optional<content::IdentityProviderData>& new_accounts_idp) = 0;
+      const std::vector<IdentityRequestAccountPtr>& new_accounts) = 0;
 
   // Shows a failure UI when the accounts fetch is failed such that it is
   // observable by users. This could happen when an IDP claims that the user is

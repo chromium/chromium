@@ -1284,7 +1284,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 
 // Tests that the History Sync Opt-In screen contains the avatar of the
 // signed-in user, and the correct background image for the avatar.
-- (void)testHistorySyncLayout {
+// TODO(crbug.com/365786558): Test flaky on simulator
+- (void)DISABLED_testHistorySyncLayout {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1312,7 +1313,9 @@ id<GREYMatcher> ManageUMALinkMatcher() {
               grey_accessibilityID(
                   kPromoStyleHeaderViewBackgroundAccessibilityIdentifier),
               chrome_test_util::ImageViewWithImageNamed(
-                  @"history_sync_opt_in_background"),
+                  IsNewSyncOptInIllustration()
+                      ? @"sync_opt_in_background"
+                      : @"history_sync_opt_in_background"),
               grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 }

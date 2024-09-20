@@ -250,6 +250,7 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveUserWorker) {
   // Setup a user mock worker.
   ash::cert_provisioning::CertProfile user_cert_profile(
       kUserCertProfileId, kUserCertProfileName, kCertProfileVersion,
+      ash::cert_provisioning::KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ash::cert_provisioning::ProtocolVersion::kStatic);
   // Any time should work. Any time in the past is a realistic value.
@@ -292,6 +293,7 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveDeviceWorker) {
   // Setup a device mock worker.
   ash::cert_provisioning::CertProfile device_cert_profile(
       kDeviceCertProfileId, kDeviceCertProfileName, kCertProfileVersion,
+      ash::cert_provisioning::KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ash::cert_provisioning::ProtocolVersion::kStatic);
   base::Time last_update_time = base::Time::Now() - base::Hours(2);

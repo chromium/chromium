@@ -58,9 +58,12 @@
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
+#endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #endif
 
@@ -377,7 +380,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"save", IDS_SAVE},
       {"savePasswordsLabel",
        IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
       {"screenlockReauthPromoConfirmation",
        IDS_PASSWORD_MANAGER_UI_SCREENLOCK_REAUTH_PROMO_CARD_CONFIRMATION},
 #endif
@@ -450,15 +453,20 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"weakPasswordsTitle", IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS},
       {"websiteLabel", IDS_PASSWORD_MANAGER_UI_WEBSITE_LABEL},
 #if BUILDFLAG(IS_MAC)
-      {"biometricAuthenticaionForFillingLabel",
+      {"biometricAuthenticationForFillingLabel",
        IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC},
-      {"biometricAuthenticaionForFillingSublabel",
+      {"biometricAuthenticationForFillingSubLabel",
        IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_MAC},
 #elif BUILDFLAG(IS_WIN)
-      {"biometricAuthenticaionForFillingLabel",
+      {"biometricAuthenticationForFillingLabel",
        IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_WIN},
-      {"biometricAuthenticaionForFillingSublabel",
+      {"biometricAuthenticationForFillingSubLabel",
        IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_WIN},
+#elif BUILDFLAG(IS_CHROMEOS)
+      {"biometricAuthenticationForFillingLabel",
+       IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_CHROMEOS},
+      {"biometricAuthenticationForFillingSubLabel",
+       IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_CHROMEOS},
 #endif
   };
   for (const auto& str : kStrings) {
@@ -491,7 +499,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
               password_manager::PasswordCheckupReferrer::kPasswordCheck)
               .spec()));
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("biometricAuthenticationForFillingToggleVisible",
                      password_manager_util::
                          ShouldBiometricAuthenticationForFillingToggleBeVisible(

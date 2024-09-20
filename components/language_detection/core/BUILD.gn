@@ -2,14 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 # We need a component because this gives access to a per-process
 # singleton instance of the model. Without a component, we end up an
 # instance in each component that uses the library.
 component("language_detection") {
   sources = [
-    "language_detection_provider.cc",
-    "language_detection_provider.h",
+    "features.cc",
+    "features.h",
   ]
+  if (use_blink) {
+    sources += [
+      "language_detection_provider.cc",
+      "language_detection_provider.h",
+    ]
+  }
   public_deps = [ ":core" ]
   deps = [ "//base" ]
   defines = [ "IS_LANGUAGE_DETECTION_IMPL" ]
@@ -17,6 +25,8 @@ component("language_detection") {
 
 static_library("core") {
   sources = [
+    "background_file.cc",
+    "background_file.h",
     "embedding_lookup.cc",
     "embedding_lookup.h",
     "language_detection_model.cc",
@@ -45,11 +55,14 @@ static_library("core") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "background_file_unittest.cc",
     "language_detection_model_unittest.cc",
-    "language_detection_provider_unittest.cc",
     "ngram_hash_ops_utils_unittest.cc",
     "quantization_utils_unittest.cc",
   ]
+  if (use_blink) {
+    sources += [ "language_detection_provider_unittest.cc" ]
+  }
 
   deps = [
     ":language_detection",

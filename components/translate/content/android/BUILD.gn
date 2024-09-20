@@ -30,8 +30,6 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/translate/TranslateFeatureMap.java",
-    "java/src/org/chromium/components/translate/TranslateMenu.java",
-    "java/src/org/chromium/components/translate/TranslateMenuHelper.java",
     "java/src/org/chromium/components/translate/TranslateMessage.java",
     "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenu.java",
     "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenuAdapter.java",
@@ -61,8 +59,6 @@ static_library("android") {
     "translate_feature_map.cc",
     "translate_message.cc",
     "translate_message.h",
-    "translate_utils.cc",
-    "translate_utils.h",
   ]
 
   deps = [
@@ -84,16 +80,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/translate/TranslateFeatureMap.java",
     "java/src/org/chromium/components/translate/TranslateMessage.java",
   ]
-}
-
-java_cpp_enum("translate_android_enums") {
-  sources = [ "translate_utils.h" ]
-}
-
-android_library("translate_android_enums_java") {
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-
-  srcjar_deps = [ ":translate_android_enums" ]
 }
 
 robolectric_library("junit") {
@@ -148,10 +134,7 @@ android_library("unit_device_javatests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "translate_message_unittest.cc",
-    "translate_utils_unittest.cc",
-  ]
+  sources = [ "translate_message_unittest.cc" ]
   deps = [
     ":android",
     "//base",

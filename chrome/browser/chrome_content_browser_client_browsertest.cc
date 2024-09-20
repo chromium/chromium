@@ -153,79 +153,6 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
   EXPECT_EQ(url, entry->GetVirtualURL());
 }
 
-class TopChromeChromeContentBrowserClientTest
-    : public ChromeContentBrowserClientBrowserTest {
- public:
-  TopChromeChromeContentBrowserClientTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kTopChromeWebUIUsesSpareRenderer);
-  }
-
-  // ChromeContentBrowserClientBrowserTest:
-  void SetUpOnMainThread() override {
-    ChromeContentBrowserClientBrowserTest::SetUpOnMainThread();
-    client_ = static_cast<ChromeContentBrowserClient*>(
-        content::SetBrowserClientForTesting(nullptr));
-    content::SetBrowserClientForTesting(client_);
-  }
-
-  ChromeContentBrowserClient* client() { return client_; }
-
- private:
-  raw_ptr<ChromeContentBrowserClient> client_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/40938936) Flaky on Mac.
-#define MAYBE_ShouldUseSpareRendererWhenNoTopChromePagesPresent \
-  DISABLED_ShouldUseSpareRendererWhenNoTopChromePagesPresent
-#else
-#define MAYBE_ShouldUseSpareRendererWhenNoTopChromePagesPresent \
-  ShouldUseSpareRendererWhenNoTopChromePagesPresent
-#endif
-IN_PROC_BROWSER_TEST_F(
-    TopChromeChromeContentBrowserClientTest,
-    MAYBE_ShouldUseSpareRendererWhenNoTopChromePagesPresent) {
-  const GURL top_chrome_url(chrome::kChromeUITabSearchURL);
-  const GURL non_top_chrome_url(chrome::kChromeUINewTabPageURL);
-
-  const auto navigate_browser = [&](const GURL& url) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    content::NavigationEntry* entry = browser()
-                                          ->tab_strip_model()
-                                          ->GetWebContentsAt(0)
-                                          ->GetController()
-                                          .GetLastCommittedEntry();
-    ASSERT_NE(nullptr, entry);
-    EXPECT_EQ(url, entry->GetURL());
-    EXPECT_EQ(url, entry->GetVirtualURL());
-  };
-
-  // Initially there will be no top chrome pages and the client should return
-  // true for using the spare renderer.
-  EXPECT_FALSE(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
-                                                         top_chrome_url));
-
-  // Navigate to a top chrome URL.
-  navigate_browser(top_chrome_url);
-
-  // The browser now hosts a top chrome page and the client should return false
-  // for using the spare renderer.
-  EXPECT_EQ(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
-                                                      top_chrome_url),
-            content::ContentBrowserClient::SpareProcessRefusedByEmbedderReason::
-                TopFrameChromeWebUI);
-
-  // Navigate away from the top chrome page.
-  navigate_browser(non_top_chrome_url);
-
-  // There will no longer be any top chrome pages hosted by the browser and the
-  // client should return true for using the spare renderer.
-  EXPECT_FALSE(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
-                                                         top_chrome_url));
-}
-
 // Helper class to mark "https://ntp.com/" as an isolated origin.
 class IsolatedOriginNTPBrowserTest : public InProcessBrowserTest,
                                      public InstantTestBase {
@@ -2017,6 +1944,24 @@ IN_PROC_BROWSER_TEST_F(AutomaticBeaconCredentialsBrowserTest,
   EXPECT_EQ(0U, second_response.http_request()->headers.count("Cookie"));
 }
 
+class TopChromeChromeContentBrowserClientTest
+    : public ChromeContentBrowserClientBrowserTest {
+ public:
+  // ChromeContentBrowserClientBrowserTest:
+  void SetUpOnMainThread() override {
+    ChromeContentBrowserClientBrowserTest::SetUpOnMainThread();
+    client_ = static_cast<ChromeContentBrowserClient*>(
+        content::SetBrowserClientForTesting(nullptr));
+    content::SetBrowserClientForTesting(client_);
+  }
+
+  ChromeContentBrowserClient* client() { return client_; }
+
+ private:
+  raw_ptr<ChromeContentBrowserClient> client_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
                        UnboundRequestDoesNothing) {
 #if BUILDFLAG(IS_ANDROID)
@@ -2104,6 +2049,38 @@ IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
 #else   // !BUILDFLAG(IS_ANDROID)
   GTEST_SKIP() << "proxying bound requests is supported only on Android";
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
+                       ShouldReuseRendererWhenTopChromePagesPresent) {
+  const GURL top_chrome_url(chrome::kChromeUITabSearchURL);
+  const GURL top_chrome_url2(chrome::kChromeUIReadLaterURL);
+  const GURL random_url(GURL("www.google.com"));
+
+  const auto navigate_browser = [&](const GURL& url, int index) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::NavigationEntry* entry = browser()
+                                          ->tab_strip_model()
+                                          ->GetWebContentsAt(index)
+                                          ->GetController()
+                                          .GetLastCommittedEntry();
+    ASSERT_NE(nullptr, entry);
+    EXPECT_EQ(url, entry->GetURL());
+    EXPECT_EQ(url, entry->GetVirtualURL());
+  };
+
+  // Navigate to a top chrome URL.
+  navigate_browser(top_chrome_url, 0);
+
+  // The browser now hosts a top chrome page and the client should return true
+  // to reuse the current renderer Host for the other Top Chrome UI pages.
+  EXPECT_TRUE(client()->ShouldTryToUseExistingProcessHost(browser()->profile(),
+                                                          top_chrome_url2));
+
+  // Should not reuse existing process host for pages that are not Top Chrome
+  // UI.
+  EXPECT_FALSE(client()->ShouldTryToUseExistingProcessHost(browser()->profile(),
+                                                           random_url));
 }
 
 }  // namespace

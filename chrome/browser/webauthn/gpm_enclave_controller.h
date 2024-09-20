@@ -229,6 +229,10 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // PIN UV, and the request succeeded or a PIN validation error occurred.
   void HandlePINValidationResult(device::enclave::PINValidationResult type);
 
+  // BrowserIsApp returns true if the current `Browser` is `TYPE_APP`. (I.e. a
+  // PWA.)
+  bool BrowserIsApp() const;
+
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const std::string rp_id_;
   const device::FidoRequestType request_type_;

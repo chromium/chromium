@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/sync/engine/data_type_processor_metrics.h"
+
 #include <string>
 
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "components/sync/engine/data_type_processor_metrics.h"
 
 namespace syncer {
 

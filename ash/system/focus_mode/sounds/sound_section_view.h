@@ -47,6 +47,7 @@ class ASH_EXPORT SoundSectionView : public views::View {
   // instead.
   void ShowAlternateView(bool show_alternate_view);
   void SetAlternateView(std::unique_ptr<views::BoxLayoutView> alternate_view);
+  bool IsAlternateViewVisible() const;
 
   // Updates the state of `PlaylistView` for the newly `selected_playlist` and
   // reset the state of `PlaylistView` for unselected playlists.

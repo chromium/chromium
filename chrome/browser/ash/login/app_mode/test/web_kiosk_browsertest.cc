@@ -32,10 +32,10 @@
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
-#include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
@@ -80,12 +80,7 @@ Profile& CurrentProfile() {
 }
 
 bool IsWebAppInstalled(Profile& profile, const GURL& install_url) {
-  auto installer = chromeos::WebKioskAppInstaller(profile, install_url);
-  TestFuture<crosapi::mojom::WebKioskInstallState,
-             const std::optional<std::string>&>
-      future;
-  installer.GetInstallState(future.GetCallback());
-  auto [state, __] = future.Take();
+  auto [state, __] = chromeos::GetKioskWebAppInstallState(profile, install_url);
   return crosapi::mojom::WebKioskInstallState::kInstalled == state;
 }
 

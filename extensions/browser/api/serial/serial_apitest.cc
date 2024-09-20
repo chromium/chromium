@@ -106,8 +106,9 @@ class FakeSerialPort : public device::mojom::SerialPort {
  private:
   // device::mojom::SerialPort methods:
   void StartWriting(mojo::ScopedDataPipeConsumerHandle consumer) override {
-    if (in_stream_)
+    if (in_stream_) {
       return;
+    }
 
     in_stream_ = std::move(consumer);
     in_stream_watcher_.Watch(
@@ -119,8 +120,9 @@ class FakeSerialPort : public device::mojom::SerialPort {
   }
 
   void StartReading(mojo::ScopedDataPipeProducerHandle producer) override {
-    if (out_stream_)
+    if (out_stream_) {
       return;
+    }
 
     out_stream_ = std::move(producer);
     out_stream_watcher_.Watch(

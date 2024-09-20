@@ -11,6 +11,9 @@ def _script_test_spec_init(node, settings):
     return dict(
         name = node.key.id,
         script = node.props.details.script,
+        args = list(node.props.details.args or []),
+        precommit_args = list(node.props.details.precommit_args or []),
+        non_precommit_args = list(node.props.details.non_precommit_args or []),
     )
 
 _script_test_spec_handler = _targets_common.spec_handler(
@@ -19,7 +22,7 @@ _script_test_spec_handler = _targets_common.spec_handler(
     finalize = (lambda name, settings, spec_value: ("scripts", name, spec_value)),
 )
 
-def script_test(*, name, script):
+def script_test(*, name, script, args = None, precommit_args = None, non_precommit_args = None):
     """Define a script test.
 
     A script test is a test that runs a python script wihin the
@@ -37,6 +40,9 @@ def script_test(*, name, script):
         name = name,
         basic_suite_test_config = _targets_common.basic_suite_test_config(
             script = script,
+            args = args,
+            precommit_args = precommit_args,
+            non_precommit_args = non_precommit_args,
         ),
     )
 
@@ -45,5 +51,8 @@ def script_test(*, name, script):
         spec_handler = _script_test_spec_handler,
         details = struct(
             script = script,
+            args = args,
+            precommit_args = precommit_args,
+            non_precommit_args = non_precommit_args,
         ),
     )

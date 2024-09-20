@@ -79,6 +79,7 @@ source_set("impl") {
       "//chrome/browser/favicon",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:browser_list",
       "//components/bookmarks/browser",
       "//components/favicon/content",
       "//components/favicon/core",

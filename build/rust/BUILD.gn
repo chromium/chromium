@@ -18,10 +18,11 @@ if (toolchain_has_rust) {
   }
 
   if (enable_rust_cxx) {
-    # The version of cxx under //third_party/rust/chromium_crates_io/vendor.
-    # Update this whenever cxx is rolled. Also update the version number in the
-    # //third_party/rust/cxx/v1/cxx.h header.
-    cxx_version = "1.0.128"
+    import("//build/rust/cxx_version.gni")
+
+    config("cxx_include_path") {
+      defines = [ "CR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-${cxx_version}/include/cxx.h\"" ]
+    }
 
     # The required dependencies for cxx-generated bindings, that must be included
     # on the C++ side.
@@ -36,6 +37,7 @@ if (toolchain_has_rust) {
       ]
 
       defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
+      public_configs = [ ":cxx_include_path" ]
 
       # We cannot depend on base/base_export.h because base depends on us.
       if (is_component_build) {

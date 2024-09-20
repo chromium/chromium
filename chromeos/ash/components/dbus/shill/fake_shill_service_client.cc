@@ -281,6 +281,15 @@ void FakeShillServiceClient::Connect(const dbus::ObjectPath& service_path,
     return;
   }
 
+  // This should be a no-op if it's already connecting or connected.
+  const std::string* state =
+      service_properties->FindString(shill::kStateProperty);
+  if (state &&
+      (*state == shill::kStateAssociation || *state == shill::kStateOnline)) {
+    std::move(callback).Run();
+    return;
+  }
+
   if (connect_error_name_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

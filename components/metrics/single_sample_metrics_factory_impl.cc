@@ -9,7 +9,6 @@
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace metrics {
 
@@ -37,7 +36,7 @@ class SingleSampleMetricImpl : public base::SingleSampleMetric {
   mojo::Remote<mojom::SingleSampleMetric> metric_;
 };
 
-ABSL_CONST_INIT thread_local mojo::Remote<mojom::SingleSampleMetricsProvider>*
+constinit thread_local mojo::Remote<mojom::SingleSampleMetricsProvider>*
     provider = nullptr;
 
 }  // namespace

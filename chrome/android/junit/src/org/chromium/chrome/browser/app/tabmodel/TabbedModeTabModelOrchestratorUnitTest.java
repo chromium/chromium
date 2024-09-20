@@ -24,6 +24,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -47,12 +48,13 @@ public class TabbedModeTabModelOrchestratorUnitTest {
 
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
+    private CipherFactory mCipherFactory;
 
     // TabbedModeTabModelOrchestrator running on Android S where tab merging into other instance
     // is not performed.
     private class TabbedModeTabModelOrchestratorApi31 extends TabbedModeTabModelOrchestrator {
         public TabbedModeTabModelOrchestratorApi31() {
-            super(/* tabMergingEnabled= */ false, mActivityLifecycleDispatcher);
+            super(/* tabMergingEnabled= */ false, mActivityLifecycleDispatcher, mCipherFactory);
         }
 
         @Override
@@ -65,6 +67,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mProfileProviderSupplier.set(mProfileProvider);
+        mCipherFactory = new CipherFactory();
     }
 
     @After

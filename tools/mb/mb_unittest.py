@@ -229,7 +229,12 @@ TEST_GN_ARGS_JSON = """\
   "gn_args": {
     "string_arg": "has double quotes",
     "bool_arg_lower_case": true,
-    "string_list_arg": ["foo", "bar", "baz"]
+    "string_list_arg": ["foo", "bar", "baz"],
+    "dict_arg": {
+      "string": "foo",
+      "bool": true,
+      "list": ["foo", "bar", "baz"]
+    }
   }
 }
 """
@@ -1022,6 +1027,9 @@ class UnitTest(unittest.TestCase):
     expected_out = ('\n'
                     'Writing """\\\n'
                     'bool_arg_lower_case = true\n'
+                    'dict_arg = { bool = true\n'
+                    'list = [ "foo", "bar", "baz" ]\n'
+                    'string = "foo" }\n'
                     'string_arg = "has double quotes"\n'
                     'string_list_arg = [ "foo", "bar", "baz" ]\n'
                     '""" to _path_/args.gn.\n\n')

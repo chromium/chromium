@@ -68,8 +68,7 @@ String TextRun::NormalizedUTF16() const {
   const UChar* source;
   String string_for8_bit_run;
   if (Is8Bit()) {
-    string_for8_bit_run =
-        String::Make16BitFrom8BitSource(Characters8(), length());
+    string_for8_bit_run = String::Make16BitFrom8BitSource(Span8());
     source = string_for8_bit_run.Characters16();
   } else {
     source = Characters16();

@@ -13,21 +13,22 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/android/webapk/proto/webapk_database.pb.h"
-#include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
 #include "chrome/browser/android/webapk/webapk_sync_bridge.h"
 #include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
 
 namespace webapk {
-WebApkDatabase::WebApkDatabase(AbstractWebApkDatabaseFactory* database_factory,
-                               ReportErrorCallback error_callback)
-    : database_factory_(database_factory),
+WebApkDatabase::WebApkDatabase(
+    syncer::DataTypeStoreService* data_type_store_service,
+    ReportErrorCallback error_callback)
+    : data_type_store_service_(data_type_store_service),
       error_callback_(std::move(error_callback)) {
-  CHECK(database_factory_);
+  CHECK(data_type_store_service_);
 }
 
 WebApkDatabase::~WebApkDatabase() {
@@ -39,7 +40,7 @@ void WebApkDatabase::OpenDatabase(RegistryOpenedCallback callback) {
   CHECK(!store_);
 
   syncer::OnceDataTypeStoreFactory store_factory =
-      database_factory_->GetStoreFactory();
+      data_type_store_service_->GetStoreFactory();
 
   std::move(store_factory)
       .Run(syncer::WEB_APPS,

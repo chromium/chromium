@@ -77,6 +77,8 @@ constexpr char kIsSharedStorageAllowedHistogram[] =
     "PrivacySandbox.IsSharedStorageAllowed";
 constexpr char kIsSharedStorageSelectURLAllowedHistogram[] =
     "PrivacySandbox.IsSharedStorageSelectURLAllowed";
+constexpr char kIsLocalUnpartitionedDataAccessAllowedHistogram[] =
+    "PrivacySandbox.IsLocalUnpartitionedDataAccessAllowed";
 constexpr char kIsPrivateAggregationAllowedHistogram[] =
     "PrivacySandbox.IsPrivateAggregationAllowed";
 
@@ -579,6 +581,19 @@ PrivacySandboxSettingsImpl::GetM1FledgeAllowedStatus(
   return GetSiteAccessAllowedStatus(top_frame_origin, auction_party.GetURL());
 }
 
+PrivacySandboxSettingsImpl::Status
+PrivacySandboxSettingsImpl::GetLocalUnpartitionedDataAccessEnabledStatus()
+    const {
+  // User has turned on the setting to block all third party cookies.
+  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
+      !cookie_settings_->AreThirdPartyCookiesLimited()) {
+    return Status::kApisDisabled;
+  }
+
+  // This feature is default enabled when 3PCs are not blocked.
+  return Status::kAllowed;
+}
+
 bool PrivacySandboxSettingsImpl::IsEventReportingDestinationAttested(
     const url::Origin& destination_origin,
     privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api) const {
@@ -709,6 +724,49 @@ bool PrivacySandboxSettingsImpl::IsSharedStorageSelectURLAllowed(
          "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/",
          "components/privacy_sandbox/privacy_sandbox_settings_impl.h."});
   }
+  return IsAllowed(status);
+}
+
+bool PrivacySandboxSettingsImpl::IsLocalUnpartitionedDataAccessAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin,
+    content::RenderFrameHost* console_frame) const {
+  if (Status status = GetLocalUnpartitionedDataAccessEnabledStatus();
+      !IsAllowed(status)) {
+    JoinHistogram(kIsLocalUnpartitionedDataAccessAllowedHistogram, status);
+    if (console_frame) {
+      console_frame->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Fenced frame local unpartitioned data access is disabled because "
+          "all third-party cookies are blocked.");
+    }
+    return false;
+  }
+
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(accessing_origin),
+          PrivacySandboxAttestationsGatedAPI::kLocalUnpartitionedDataAccess);
+  if (!IsAllowed(attestation_status)) {
+    JoinHistogram(kIsLocalUnpartitionedDataAccessAllowedHistogram,
+                  attestation_status);
+    if (console_frame) {
+      console_frame->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          base::StrCat(
+              {"Attestation check for local unpartitioned data access on ",
+               accessing_origin.Serialize(), " failed."}));
+    }
+    return false;
+  }
+
+  Status status = GetPrivacySandboxAllowedStatus();
+  if (IsAllowed(status)) {
+    status =
+        GetSiteAccessAllowedStatus(top_frame_origin, accessing_origin.GetURL());
+  }
+  JoinHistogram(kIsLocalUnpartitionedDataAccessAllowedHistogram, status);
+
   return IsAllowed(status);
 }
 

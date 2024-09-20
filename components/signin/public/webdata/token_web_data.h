@@ -38,6 +38,7 @@ struct TokenResult {
   TokenServiceTable::Result db_result =
       TokenServiceTable::TOKEN_DB_RESULT_SQL_INVALID_STATEMENT;
   std::map<std::string, TokenServiceTable::TokenWithBindingKey> tokens;
+  bool should_reencrypt = false;
 };
 
 // TokenWebData is a data repository for storage of authentication tokens.

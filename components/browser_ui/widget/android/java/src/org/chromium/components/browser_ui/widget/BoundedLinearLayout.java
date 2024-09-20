@@ -16,21 +16,19 @@ import org.chromium.ui.base.ViewUtils;
 /**
  * A LinearLayout that can be constrained to a maximum size or percentage of the screen size.
  *
- * Example:
- *   <org.chromium.components.browser_ui.widget.BoundedLinearLayout
- *       xmlns:android="http://schemas.android.com/apk/res/android"
- *       xmlns:app="http://schemas.android.com/apk/res-auto"
- *       android:layout_width="match_parent"
- *       android:layout_height="match_parent"
- *       app:maxWidthLandscape="@dimen/modal_dialog_landscape_max_width"
- * app:maxWidthPortrait="@dimen/modal_dialog_portrait_max_width">
- *     ...
+ * <p>Example: <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+ * xmlns:android="http://schemas.android.com/apk/res/android"
+ * xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
+ * android:layout_height="match_parent"
+ * app:maxWidthLandscape="@dimen/modal_dialog_landscape_max_width"
+ * app:maxWidthPortrait="@dimen/modal_dialog_portrait_max_width"> ...
  */
 public class BoundedLinearLayout extends LinearLayout {
     private static final int NOT_SPECIFIED = -1;
 
-    private TypedValue mMaxWidthLandscape = new TypedValue();
-    private TypedValue mMaxWidthPortrait = new TypedValue();
+    // TODO (crbug/359976267): Change to private once this bug is addressed.
+    protected TypedValue mMaxWidthLandscape = new TypedValue();
+    protected TypedValue mMaxWidthPortrait = new TypedValue();
 
     private final int mMaxHeight;
 

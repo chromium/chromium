@@ -614,6 +614,7 @@ class SharedStorageWorkletTest : public PageTestBase {
             /*devtools_worker_token=*/base::UnguessableToken(),
             std::move(pending_devtools_host_remote),
             std::move(pending_code_cache_host_remote),
+            mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>(),
             /*wait_for_debugger=*/false),
         worklet_terminated_future_.GetCallback());
 

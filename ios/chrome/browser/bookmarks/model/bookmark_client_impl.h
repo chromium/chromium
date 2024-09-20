@@ -29,7 +29,7 @@ class BookmarkSyncService;
 class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
  public:
   BookmarkClientImpl(
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
       sync_bookmarks::BookmarkSyncService*
           local_or_syncable_bookmark_sync_service,
@@ -73,9 +73,9 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
       std::unique_ptr<bookmarks::BookmarkNode> node) override;
 
  private:
-  // Pointer to the associated ChromeBrowserState. Must outlive
+  // Pointer to the associated ProfileIOS. Must outlive
   // BookmarkClientImpl.
-  const raw_ptr<ChromeBrowserState> browser_state_;
+  const raw_ptr<ProfileIOS> profile_;
 
   // Pointer to the ManagedBookmarkService responsible for bookmark policy. May
   // be null during testing.

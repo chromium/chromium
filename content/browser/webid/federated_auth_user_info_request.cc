@@ -215,7 +215,7 @@ void FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched(
 
 void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
     IdpNetworkRequestManager::FetchStatus fetch_status,
-    IdpNetworkRequestManager::AccountList accounts) {
+    std::vector<IdentityRequestAccountPtr> accounts) {
   webid::UpdateIdpSigninStatusForAccountsEndpointResponse(
       *render_frame_host_, idp_config_url_, fetch_status,
       does_idp_have_failing_signin_status_, permission_delegate_);
@@ -236,7 +236,7 @@ void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
     // We set the login state based on the IDP response if it sends
     // back an approved_clients list. If it does not, we need to set
     // it here based on browser state.
-    if (account.login_state) {
+    if (account->login_state) {
       continue;
     }
 
@@ -245,22 +245,22 @@ void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
     // this account before.
     if (permission_delegate_->GetLastUsedTimestamp(
             parent_frame_origin_, embedding_origin_,
-            url::Origin::Create(idp_config_url_), account.id)) {
+            url::Origin::Create(idp_config_url_), account->id)) {
       login_state = LoginState::kSignIn;
     }
-    account.login_state = login_state;
+    account->login_state = login_state;
   }
 
   MaybeReturnAccounts(std::move(accounts));
 }
 
 void FederatedAuthUserInfoRequest::MaybeReturnAccounts(
-    const IdpNetworkRequestManager::AccountList& accounts) {
+    const std::vector<IdentityRequestAccountPtr>& accounts) {
   DCHECK(!accounts.empty());
 
   bool has_returning_accounts = false;
   for (const auto& account : accounts) {
-    if (IsReturningAccount(account)) {
+    if (IsReturningAccount(*account)) {
       has_returning_accounts = true;
       break;
     }
@@ -286,14 +286,14 @@ void FederatedAuthUserInfoRequest::MaybeReturnAccounts(
   std::vector<blink::mojom::IdentityUserInfoPtr> user_info;
   std::vector<blink::mojom::IdentityUserInfoPtr> not_returning_accounts;
   for (const auto& account : accounts) {
-    if (IsReturningAccount(account)) {
+    if (IsReturningAccount(*account)) {
       user_info.push_back(blink::mojom::IdentityUserInfo::New(
-          account.email, account.given_name, account.name,
-          account.picture.spec()));
+          account->email, account->given_name, account->name,
+          account->picture.spec()));
     } else {
       not_returning_accounts.push_back(blink::mojom::IdentityUserInfo::New(
-          account.email, account.given_name, account.name,
-          account.picture.spec()));
+          account->email, account->given_name, account->name,
+          account->picture.spec()));
     }
   }
   user_info.insert(user_info.end(),

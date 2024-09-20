@@ -139,6 +139,7 @@ CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
     SendCredentialCallback callback,
     CredentialMediationRequirement mediation,
     bool include_passwords,
+    int requested_credential_type_flags,
     const std::vector<GURL>& request_federations,
     PasswordFormDigest form_digest)
     : delegate_(delegate),
@@ -146,6 +147,7 @@ CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
       mediation_(mediation),
       origin_(delegate_->GetOrigin()),
       include_passwords_(include_passwords),
+      requested_credential_type_flags_(requested_credential_type_flags),
       form_fetcher_(std::make_unique<FormFetcherImpl>(
           std::move(form_digest),
           delegate_->client(),
@@ -267,7 +269,7 @@ void CredentialManagerPendingRequestTask::ProcessForms(
   // Initially this is only supported on desktop Chrome.
   if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin)) {
     delegate_->client()->ShowCredentialsInAmbientBubble(
-        std::move(results),
+        std::move(results), requested_credential_type_flags_,
         base::BindOnce(
             &CredentialManagerPendingRequestTaskDelegate::SendPasswordForm,
             base::Unretained(delegate_), std::move(send_callback_),

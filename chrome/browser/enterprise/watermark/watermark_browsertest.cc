@@ -79,7 +79,9 @@ class WatermarkBrowserTest : public UiBrowserTest,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkShownAfterNavigation) {
+// TODO(crbug.com/40261456): Fix and re-enable the test.
+IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest,
+                       DISABLED_WatermarkShownAfterNavigation) {
   NavigateToTestPage();
   ASSERT_TRUE(SetWatermark(GetParam()));
   ShowAndVerifyUi();

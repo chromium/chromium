@@ -39,7 +39,7 @@ CrossUserSharingPublicPrivateKeyPair::CreateByImport(
   if (private_key.size() != X25519_PRIVATE_KEY_LEN) {
     return std::nullopt;
   }
-  return CrossUserSharingPublicPrivateKeyPair(std::move(private_key));
+  return CrossUserSharingPublicPrivateKeyPair(private_key);
 }
 
 CrossUserSharingPublicPrivateKeyPair::CrossUserSharingPublicPrivateKeyPair(

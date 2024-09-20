@@ -648,7 +648,8 @@ void ListedElement::UpdateAncestorDisabledState() const {
   ancestor_disabled_state_ = disabled_fieldset_ancestor
                                  ? AncestorDisabledState::kDisabled
                                  : AncestorDisabledState::kEnabled;
-  if (!disabled_fieldset_ancestor && RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (!disabled_fieldset_ancestor &&
+      RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     if (auto* button = DynamicTo<HTMLButtonElement>(ToHTMLElement())) {
       if (auto* select = button->OwnerSelect()) {
         ancestor_disabled_state_ = select->is_element_disabled_

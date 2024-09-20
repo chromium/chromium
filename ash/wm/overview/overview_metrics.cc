@@ -26,8 +26,12 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kPresentationTimeMinLatency = base::Milliseconds(1);
-constexpr int kPresentationTimeNumBuckets = 50;
+const ui::PresentationTimeRecorder::BucketParams&
+GetLegacyPresentationTimeBucketParams() {
+  static const ui::PresentationTimeRecorder::BucketParams kParams(
+      base::Milliseconds(1), base::Seconds(2), 50);
+  return kParams;
+}
 
 int GetNumWindowsOnAllDesks() {
   int num_windows_found = 0;
@@ -72,10 +76,11 @@ void RecordPresentationTimeMetricsWithDeskBar(
     const std::optional<base::TimeDelta> enter_latency =
         enter_recorder->GetAverageLatency();
     if (enter_latency) {
-      base::UmaHistogramCustomTimes(enter_metric_name, *enter_latency,
-                                    kPresentationTimeMinLatency,
-                                    kOverviewEnterExitPresentationMaxLatency,
-                                    kPresentationTimeNumBuckets);
+      base::UmaHistogramCustomTimes(
+          enter_metric_name, *enter_latency,
+          GetLegacyPresentationTimeBucketParams().min_latency,
+          GetLegacyPresentationTimeBucketParams().max_latency,
+          GetLegacyPresentationTimeBucketParams().num_buckets);
     }
   }
 
@@ -86,10 +91,11 @@ void RecordPresentationTimeMetricsWithDeskBar(
     const std::optional<base::TimeDelta> exit_latency =
         exit_recorder->GetAverageLatency();
     if (exit_latency) {
-      base::UmaHistogramCustomTimes(exit_metric_name, *exit_latency,
-                                    kPresentationTimeMinLatency,
-                                    kOverviewEnterExitPresentationMaxLatency,
-                                    kPresentationTimeNumBuckets);
+      base::UmaHistogramCustomTimes(
+          exit_metric_name, *exit_latency,
+          GetLegacyPresentationTimeBucketParams().min_latency,
+          GetLegacyPresentationTimeBucketParams().max_latency,
+          GetLegacyPresentationTimeBucketParams().num_buckets);
     }
   }
 }
@@ -105,6 +111,13 @@ void RecordOverviewStartAction(OverviewStartAction type) {
 
 void RecordOverviewEndAction(OverviewEndAction type) {
   UMA_HISTOGRAM_ENUMERATION(kOverviewEndActionHistogram, type);
+}
+
+const ui::PresentationTimeRecorder::BucketParams&
+GetOverviewPresentationTimeBucketParams() {
+  static const ui::PresentationTimeRecorder::BucketParams kParams(
+      base::Milliseconds(20), base::Seconds(30), 100);
+  return kParams;
 }
 
 void SchedulePresentationTimeMetricsWithDeskBar(
@@ -128,7 +141,7 @@ void SchedulePresentationTimeMetricsWithDeskBar(
       // measurement. Anything longer than
       // `kOverviewEnterExitPresentationMaxLatency` goes in the overflow bucket
       // anyways.
-      kOverviewEnterExitPresentationMaxLatency * 2);
+      GetLegacyPresentationTimeBucketParams().max_latency * 2);
 }
 
 void RecordOverviewEnterPresentationTimeWithReason(
@@ -162,8 +175,9 @@ void RecordOverviewEnterPresentationTimeWithReason(
   }
   base::UmaHistogramCustomTimes(
       base::StrCat({kEnterOverviewPresentationHistogram, ".", suffix}),
-      presentation_time, kPresentationTimeMinLatency,
-      kOverviewEnterExitPresentationMaxLatency, kPresentationTimeNumBuckets);
+      presentation_time, GetOverviewPresentationTimeBucketParams().min_latency,
+      GetOverviewPresentationTimeBucketParams().max_latency,
+      GetOverviewPresentationTimeBucketParams().num_buckets);
 }
 
 }  // namespace ash

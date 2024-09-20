@@ -10,17 +10,8 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/common/extensions/api/side_panel.h"
-#include "extensions/common/extension_features.h"
 
 namespace extensions {
-namespace {
-
-bool IsSidePanelApiAvailable() {
-  return base::FeatureList::IsEnabled(
-      extensions_features::kExtensionSidePanelIntegration);
-}
-
-}  // namespace
 
 SidePanelApiFunction::SidePanelApiFunction() = default;
 SidePanelApiFunction::~SidePanelApiFunction() = default;
@@ -29,8 +20,6 @@ SidePanelService* SidePanelApiFunction::GetService() {
 }
 
 ExtensionFunction::ResponseAction SidePanelApiFunction::Run() {
-  if (!IsSidePanelApiAvailable())
-    return RespondNow(Error("API Unavailable"));
   return RunFunction();
 }
 

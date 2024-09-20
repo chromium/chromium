@@ -29,19 +29,31 @@ namespace base {
 struct UniquePtrComparator {
   using is_transparent = int;
 
-  template <typename T, class Deleter = std::default_delete<T>>
+  template <typename T, class Deleter>
   bool operator()(const std::unique_ptr<T, Deleter>& lhs,
                   const std::unique_ptr<T, Deleter>& rhs) const {
     return lhs < rhs;
   }
 
-  template <typename T, class Deleter = std::default_delete<T>>
+  template <typename T, class Deleter>
   bool operator()(const T* lhs, const std::unique_ptr<T, Deleter>& rhs) const {
     return lhs < rhs.get();
   }
 
-  template <typename T, class Deleter = std::default_delete<T>>
+  template <typename T, class Deleter, base::RawPtrTraits Traits>
+  bool operator()(const raw_ptr<T, Traits>& lhs,
+                  const std::unique_ptr<T, Deleter>& rhs) const {
+    return lhs < rhs.get();
+  }
+
+  template <typename T, class Deleter>
   bool operator()(const std::unique_ptr<T, Deleter>& lhs, const T* rhs) const {
+    return lhs.get() < rhs;
+  }
+
+  template <typename T, class Deleter, base::RawPtrTraits Traits>
+  bool operator()(const std::unique_ptr<T, Deleter>& lhs,
+                  const raw_ptr<T, Traits>& rhs) const {
     return lhs.get() < rhs;
   }
 };
@@ -72,6 +84,13 @@ struct UniquePtrMatcher {
 template <class T, class Deleter = std::default_delete<T>>
 UniquePtrMatcher<T, Deleter> MatchesUniquePtr(T* t) {
   return UniquePtrMatcher<T, Deleter>(t);
+}
+
+template <class T,
+          class Deleter = std::default_delete<T>,
+          base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+UniquePtrMatcher<T, Deleter> MatchesUniquePtr(const raw_ptr<T, Traits>& t) {
+  return UniquePtrMatcher<T, Deleter>(t.get());
 }
 
 }  // namespace base

@@ -745,8 +745,9 @@ ExtensionFunction::ResponseAction SocketSetKeepAliveFunction::Work() {
                            kSocketNotFoundError));
   }
   int delay = 0;
-  if (params->delay)
+  if (params->delay) {
     delay = *params->delay;
+  }
   socket->SetKeepAlive(
       params->enable, delay,
       base::BindOnce(&SocketSetKeepAliveFunction::OnCompleted, this));
@@ -797,10 +798,11 @@ ExtensionFunction::ResponseAction SocketGetInfoFunction::Work() {
   api::socket::SocketInfo info;
   // This represents what we know about the socket, and does not call through
   // to the system.
-  if (socket->GetSocketType() == Socket::TYPE_TCP)
+  if (socket->GetSocketType() == Socket::TYPE_TCP) {
     info.socket_type = extensions::api::socket::SocketType::kTcp;
-  else
+  } else {
     info.socket_type = extensions::api::socket::SocketType::kUdp;
+  }
   info.connected = socket->IsConnected();
 
   // Grab the peer address as known by the OS. This and the call below will

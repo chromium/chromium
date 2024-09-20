@@ -246,6 +246,7 @@ if (!is_cronet_build || is_ios) {
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
       "//components/flags_ui:switches",
+      "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings",
       "//components/network_time",
       "//components/prefs",
@@ -254,6 +255,7 @@ if (!is_cronet_build || is_ios) {
       "//components/version_info:version_info",
       "//crypto",
       "//extensions/buildflags",
+      "//mojo/public/cpp/base:protobuf_support",
       "//third_party/icu",
       "//url",
     ]
@@ -483,6 +485,7 @@ if (!is_cronet_build) {
     deps = [
       "//base",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
+      "//mojo/public/cpp/base:protobuf_support",
       "//third_party/metrics_proto",
     ]
 
@@ -590,6 +593,7 @@ if (!is_cronet_build) {
       "//components/variations",
       "//components/variations:test_support",
       "//extensions/buildflags",
+      "//mojo/public/cpp/base:protobuf_support",
       "//mojo/public/cpp/bindings",
       "//net:test_support",
       "//services/network:test_support",

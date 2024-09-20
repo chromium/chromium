@@ -10,10 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/picker_shortcuts.h"
 #include "ash/picker/views/picker_strings.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "chromeos/ash/components/string_matching/prefix_matcher.h"

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -11,6 +12,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder_fuzzer_utils.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -18,27 +20,10 @@
 
 namespace blink {
 
-std::unique_ptr<ImageDecoder> CreateJPEGDecoder() {
-  // TODO(crbug.com/323934468): Initialize decoder settings dynamically using
-  // fuzzer input.
-  return std::make_unique<JPEGImageDecoder>(
-      ImageDecoder::kAlphaPremultiplied, ColorBehavior::kTransformToSRGB,
-      cc::AuxImage::kDefault, ImageDecoder::kNoDecodedImageByteLimit);
-}
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support;
-  test::TaskEnvironment task_environment;
-  auto buffer = SharedBuffer::Create(data, size);
-  auto decoder = CreateJPEGDecoder();
-  const bool kAllDataReceived = true;
-  decoder->SetData(buffer.get(), kAllDataReceived);
-  for (wtf_size_t frame = 0; frame < decoder->FrameCount(); ++frame) {
-    decoder->DecodeFrameBufferAtIndex(frame);
-    if (decoder->Failed()) {
-      return 0;
-    }
-  }
+  FuzzedDataProvider fdp(data, size);
+  FuzzDecoder(DecoderType::kJpegDecoder, fdp);
   return 0;
 }
 

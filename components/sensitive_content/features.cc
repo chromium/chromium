@@ -9,9 +9,16 @@ namespace sensitive_content::features {
 // When enabled, the content view will be redacted if sensitive fields (such as
 // passwords or credit cards) are present on the page. The feature works only on
 // Android API level >= 35.
-// TODO(crbug.com/343119998): Remove once launched.
+// TODO(crbug.com/343119998): Clean up when launched.
 BASE_FEATURE(kSensitiveContent,
              "SensitiveContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This param controls whether the feature should use password manager
+// heuristics to provide more accurate password form predictions, at the cost of
+// a potential performance impact.
+// TODO(crbug.com/343119998): Clean up when launched.
+const base::FeatureParam<bool> kSensitiveContentUsePwmHeuristicsParam{
+    &kSensitiveContent, "sensitive_content_use_pwm_heuristics", false};
 
 }  // namespace sensitive_content::features

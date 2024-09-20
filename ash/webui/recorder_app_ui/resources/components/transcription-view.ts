@@ -150,8 +150,9 @@ export class TranscriptionView extends ReactiveLitElement {
         .seekable & {
           cursor: pointer;
 
-          &:hover {
+          &:hover, &:focus {
             background: var(--cros-sys-highlight_shape);
+            outline: none;
           }
         }
 
@@ -395,6 +396,8 @@ export class TranscriptionView extends ReactiveLitElement {
         return html`${leadingSpace ? ' ' : ''}<span
             class="sentence"
             data-start-ms=${ifDefined(sentence[0]?.timeRange?.startMs)}
+            tabindex=${this.seekable ? 0 : -1}
+            role="button"
             >${this.renderSentence(sentence)}</span
           >`;
       },
@@ -461,6 +464,7 @@ export class TranscriptionView extends ReactiveLitElement {
               class="timestamp"
               tabindex=${this.seekable ? 0 : -1}
               data-start-ms=${ifDefined(startTimeRange?.startMs)}
+              role="button"
             >
               ${startTimeDisplay}
               ${this.seekable ? html`<md-focus-ring></md-focus-ring>` : nothing}

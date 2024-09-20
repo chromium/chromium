@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
@@ -26,7 +27,7 @@
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -66,7 +67,7 @@ void BrowserWindowFeatures::ReplaceBrowserWindowFeaturesForTesting(
   f = std::move(factory);
 }
 
-void BrowserWindowFeatures::Init(Browser* browser) {
+void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // Avoid passing `browser` directly to features. Instead, pass the minimum
   // necessary state or controllers necessary.
   // Ping erikchen for assistance. This comment will be deleted after there are
@@ -75,25 +76,25 @@ void BrowserWindowFeatures::Init(Browser* browser) {
   // Features that are only enabled for normal browser windows (e.g. a window
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
-  if (browser->is_type_normal()) {
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     product_specifications_entry_point_controller_ =
         std::make_unique<commerce::ProductSpecificationsEntryPointController>(
             browser);
 
-    if (browser->profile()->IsRegularProfile() &&
+    if (browser->GetProfile()->IsRegularProfile() &&
         tab_groups::IsTabGroupsSaveV2Enabled() &&
-        browser->tab_strip_model()->SupportsTabGroups()) {
+        browser->GetTabStripModel()->SupportsTabGroups()) {
       session_service_tab_group_sync_observer_ =
           std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(
-              browser->profile(), browser->tab_strip_model(),
-              browser->session_id());
+              browser->GetProfile(), browser->GetTabStripModel(),
+              browser->GetSessionID());
     }
 
     if (features::IsTabstripDeclutterEnabled() &&
-        browser->profile()->IsRegularProfile()) {
+        browser->GetProfile()->IsRegularProfile()) {
       tab_declutter_controller_ =
           std::make_unique<tabs::TabDeclutterController>(
-              browser->tab_strip_model());
+              browser->GetTabStripModel());
     }
   }
 
@@ -103,11 +104,7 @@ void BrowserWindowFeatures::Init(Browser* browser) {
   lens_overlay_entry_point_controller_ =
       std::make_unique<lens::LensOverlayEntryPointController>();
 
-  // TODO(https://crbug.com/355485153): Move this into the normal window block.
-  read_anything_coordinator_ =
-      std::make_unique<ReadAnythingCoordinator>(browser);
-
-  tab_strip_model_ = browser->tab_strip_model();
+  tab_strip_model_ = browser->GetTabStripModel();
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
@@ -119,6 +116,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       chrome_labs_coordinator_ =
           std::make_unique<ChromeLabsCoordinator>(browser);
     }
+
+    send_tab_to_self_toolbar_bubble_controller_ = std::make_unique<
+        send_tab_to_self::SendTabToSelfToolbarBubbleController>(browser);
 
     // TODO(b/350508658): Ideally, we don't pass in a reference to browser as
     // per the guidance in the comment above. However, currently, we need
@@ -138,13 +138,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       mv2_disabled_dialog_controller_ =
           std::make_unique<extensions::Mv2DisabledDialogController>(browser);
     }
-
-    if (base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
-      toast_service_ = std::make_unique<ToastService>(browser);
-    }
   }
 
-  read_anything_coordinator_->Initialize();
+  if ((browser->is_type_normal() || browser->is_type_app()) &&
+      base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
+    toast_service_ = std::make_unique<ToastService>(browser);
+  }
 }
 
 void BrowserWindowFeatures::InitPostBrowserViewConstruction(

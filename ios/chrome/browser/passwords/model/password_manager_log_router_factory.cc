@@ -18,9 +18,14 @@ using autofill::LogRouter;
 
 // static
 LogRouter* PasswordManagerLogRouterFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+LogRouter* PasswordManagerLogRouterFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<LogRouter*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

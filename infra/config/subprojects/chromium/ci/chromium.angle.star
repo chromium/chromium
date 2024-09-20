@@ -390,7 +390,9 @@ ci.gpu.mac_builder(
             "xctest",
         ],
     ),
+    cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|Builder|ANGLE",
         short_name = "x64",

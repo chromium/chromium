@@ -41,7 +41,6 @@ final class AccountCapabilitiesFetcherTestUtil {
     /** Restores the global state after the test completes. */
     @CalledByNative
     public void destroy() {
-        AccountManagerFacadeProvider.resetInstanceForTests();
         mMockFacade = null;
     }
 

@@ -43,6 +43,9 @@ class UploadTokenRequest : public google_apis::UrlFetchRequestBase {
 
   UploadTokenCallback callback() { return std::move(callback_); }
 
+  std::string gaia_id() { return gaia_id_; }
+  std::string token() { return token_; }
+
  protected:
   // UrlFetchRequestBase:
   google_apis::HttpRequestMethod GetRequestType() const override;

@@ -575,7 +575,7 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
   if (IsInSubresourceFilterRoot(navigation_handle) && database_manager_) {
     throttles->push_back(std::make_unique<SafeBrowsingPageActivationThrottle>(
         navigation_handle, profile_interaction_manager_.get(),
-        content::GetIOThreadTaskRunner({}), database_manager_));
+        database_manager_));
   }
 
   if (!dealer_handle_)
@@ -647,6 +647,7 @@ ContentSubresourceFilterThrottleManager::MaybeCreateChildNavigationThrottle(
   return parent_filter
              ? std::make_unique<SafeBrowsingChildNavigationThrottle>(
                    navigation_handle, parent_filter,
+                   profile_interaction_manager_->AsWeakPtr(),
                    base::BindRepeating([](const GURL& url) {
                      return base::StringPrintf(
                          kDisallowChildFrameConsoleMessageFormat,

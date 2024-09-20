@@ -47,7 +47,6 @@ constexpr int kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown = 3;
 }
 
 class AccountChooserPrompt;
-struct AccountInfo;
 class AutoSigninFirstRunPrompt;
 class CredentialLeakPrompt;
 class ManagePasswordsIconView;
@@ -186,6 +185,10 @@ class ManagePasswordsUIController
       override;
   void DiscardUnsyncedCredentials() override;
   void MovePasswordToAccountStore() override;
+  void MovePendingPasswordToAccountStoreUsingHelper(
+      const password_manager::PasswordForm& form,
+      password_manager::metrics_util::MoveToAccountStoreTrigger trigger)
+      override;
   void BlockMovingPasswordToAccountStore() override;
   void PromptSaveBubbleAfterDefaultStoreChanged() override;
   void ChooseCredential(
@@ -198,8 +201,6 @@ class ManagePasswordsUIController
       password_manager::ManagePasswordsReferrer referrer) override;
   void NavigateToPasswordManagerSettingsAccountStoreToggle(
       password_manager::ManagePasswordsReferrer referrer) override;
-  void SignIn(const AccountInfo& account,
-              const password_manager::PasswordForm& password_to_move) override;
   void OnDialogHidden() override;
   void AuthenticateUserWithMessage(const std::u16string& message,
                                    AvailabilityCallback callback) override;
@@ -352,11 +353,6 @@ class ManagePasswordsUIController
   // phished.
   bool IsPendingPasswordPhished() const;
 
-  // Moves pending password to the account storage.
-  void MovePendingPasswordToAccountStoreUsingHelper(
-      const password_manager::PasswordForm& form,
-      password_manager::metrics_util::MoveToAccountStoreTrigger trigger);
-
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;
 
@@ -388,7 +384,7 @@ class ManagePasswordsUIController
   // Used to bypass user authentication in integration tests.
   bool bypass_user_auth_for_testing_ = false;
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   bool was_biometric_authentication_for_filling_promo_shown_ = false;
 #endif
 

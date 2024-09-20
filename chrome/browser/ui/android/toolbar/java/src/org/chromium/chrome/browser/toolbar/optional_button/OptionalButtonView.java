@@ -344,10 +344,14 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         mState = State.HIDDEN;
 
-        // TODO(salg): Move these dimensions to an XML file.
-        float density = getResources().getDisplayMetrics().density;
-        mCollapsedStateWidthPx = (int) (52 * density);
-        mExpandedStatePaddingPx = (int) (8 * density);
+        mCollapsedStateWidthPx =
+                getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.toolbar_phone_optional_button_collapsed_state_width);
+        mExpandedStatePaddingPx =
+                getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.toolbar_phone_optional_button_expanded_state_extra_width);
     }
 
     /**

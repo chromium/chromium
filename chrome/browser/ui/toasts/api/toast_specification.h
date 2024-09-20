@@ -40,6 +40,12 @@ class ToastSpecification {
     // allowed to have menu because they must have an "X" close button instead.
     Builder& AddMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model);
 
+    // Toasts by default are scoped to the active tab when they are triggered.
+    // Globally scoped toasts will not immediately dismiss when the user
+    // switches tabs or navigates to another site and will rely on timing out to
+    // dismiss.
+    Builder& AddGlobalScoped();
+
     // Toast should only dismiss when explicitly instructed to by feature.
     // There can only be one persistent toast shown at a time.
     Builder& AddPersistance();
@@ -67,11 +73,13 @@ class ToastSpecification {
     return action_button_closure_;
   }
   ui::SimpleMenuModel* menu_model() const { return menu_model_.get(); }
+  bool is_global_scope() const { return is_global_scope_; }
   bool is_persistent_toast() const { return is_persistent_toast_; }
 
   void AddCloseButton();
   void AddActionButton(int string_id, base::RepeatingClosure closure);
   void AddMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model);
+  void AddGlobalScope();
   void AddPersistance();
 
  private:
@@ -81,6 +89,7 @@ class ToastSpecification {
   std::optional<int> action_button_string_id_;
   base::RepeatingClosure action_button_closure_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  bool is_global_scope_ = false;
   bool is_persistent_toast_ = false;
 };
 

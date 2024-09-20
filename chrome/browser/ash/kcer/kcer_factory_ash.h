@@ -5,15 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_KCER_KCER_FACTORY_ASH_H_
 #define CHROME_BROWSER_ASH_KCER_KCER_FACTORY_ASH_H_
 
+#include "ash/components/kcer/chaps/session_chaps_client.h"
+#include "ash/components/kcer/kcer.h"
+#include "ash/components/kcer/kcer_token.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/kcer/nssdb_migration/kcer_rollback_helper.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
-#include "chromeos/components/kcer/chaps/session_chaps_client.h"
-#include "chromeos/components/kcer/kcer.h"
-#include "chromeos/components/kcer/kcer_token.h"
 
 class Profile;
 class PrefService;
@@ -71,6 +71,11 @@ class KcerFactoryAsh : public ProfileKeyedServiceFactory, ash::SessionObserver {
   // dual-written. This will be used in case a rollback for the related
   // experiment is needed.
   static void RecordPkcs12CertDualWritten();
+
+  // Clears cached NSS state. Useful for unittests using Kcer with a test NSS
+  // database, the test should clear the Kcer state when finished to avoid
+  // leaking into the next test. This must be called on the IO thread.
+  static void ClearNssTokenMapForTesting();
 
  private:
   friend base::NoDestructor<KcerFactoryAsh>;
@@ -152,6 +157,7 @@ class KcerFactoryAsh : public ProfileKeyedServiceFactory, ash::SessionObserver {
 
   base::WeakPtr<Kcer> GetKcerImpl(Profile* profile);
   void RecordPkcs12CertDualWrittenImpl();
+  void ClearNssTokenMapForTestingImpl();
 
   // Implements ash::SessionObserver.
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;

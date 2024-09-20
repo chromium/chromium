@@ -48,7 +48,7 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr int kSeaPenImageThumbnailSizeDip = 512;
-constexpr int kMaxTextQueryHistoryItemNum = 2;
+constexpr int kMaxTextQueryHistoryItemNum = 3;
 
 void AppendTextQueryHistory(
     std::map<uint32_t, const SeaPenImage> images,

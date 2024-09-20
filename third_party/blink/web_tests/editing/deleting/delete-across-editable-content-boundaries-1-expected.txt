@@ -1,2 +1,2 @@
 This tests the deletion of non-editable content that both starts and ends in editable roots - it should successfully be removed. There should be no visible content in the markup below. <radr://problem/5026848>
-| 
+| <br>

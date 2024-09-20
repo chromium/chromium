@@ -27,6 +27,7 @@ import {
   ModelResponse,
   ModelState,
 } from '../../core/on_device_model/types.js';
+import {PerfLogger} from '../../core/perf.js';
 import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
@@ -51,6 +52,7 @@ import {
 import {sleep} from '../../core/utils/utils.js';
 
 import {ErrorView} from './error-view.js';
+import {EventsSender} from './metrics.js';
 import {ColorTheme, devSettings, init as settingsInit} from './settings.js';
 import {strings} from './strings.js';
 
@@ -106,6 +108,15 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
       }
     }
     return this.model;
+  }
+
+  override async loadAndExecute(content: string): Promise<ModelResponse<T>> {
+    const model = await this.load();
+    try {
+      return await model.execute(content);
+    } finally {
+      model.close();
+    }
   }
 }
 
@@ -342,6 +353,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     return substituteI18nString(label, ...args);
   }
 
+  override readonly canCaptureSystemAudioWithLoopback = computed(
+    () => devSettings.value.canCaptureSystemAudioWithLoopback,
+  );
+
   override async init(): Promise<void> {
     document.body.appendChild(this.errorView);
     settingsInit();
@@ -356,6 +371,10 @@ export class PlatformHandler extends PlatformHandlerBase {
   override titleSuggestionModelLoader = new ModelLoaderDev(
     new TitleSuggestionModelDev(),
   );
+
+  override eventsSender = new EventsSender();
+
+  override perfLogger = new PerfLogger(this.eventsSender);
 
   override installSoda(): void {
     console.log('SODA installation requested');
@@ -408,6 +427,12 @@ export class PlatformHandler extends PlatformHandlerBase {
         s.canUseSpeakerLabel = target.selected;
       });
     }
+    function handleCanCaptureSystemAudioWithLoopbackChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.canCaptureSystemAudioWithLoopback = target.selected;
+      });
+    }
     // TODO(pihsun): Move the dev toggle to a separate component, so we don't
     // need to inline the styles.
     const labelStyle = {
@@ -449,6 +474,20 @@ export class PlatformHandler extends PlatformHandlerBase {
           Toggle can use speaker label
         </label>
       </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(hsuanling): cros-switch doesn't automatically makes clicking
+            the surrounding label toggles the switch, unlike md-switch.
+          -->
+          <cros-switch
+            @change=${handleCanCaptureSystemAudioWithLoopbackChange}
+            .selected=${this.canCaptureSystemAudioWithLoopback.value}
+          >
+          </cros-switch>
+          Toggle can capture system audio via getDisplayMedia
+        </label>
+      </div>
     `;
   }
 
@@ -468,6 +507,8 @@ export class PlatformHandler extends PlatformHandlerBase {
     const stream = await navigator.mediaDevices.getDisplayMedia({
       audio: {
         autoGainControl: {ideal: false},
+        echoCancellation: {ideal: false},
+        noiseSuppression: {ideal: false},
       },
       systemAudio: 'include',
     });

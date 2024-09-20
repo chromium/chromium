@@ -5,8 +5,8 @@
 source_set("webapk_test_support") {
   testonly = true
   sources = [
-    "fake_webapk_database_factory.cc",
-    "fake_webapk_database_factory.h",
+    "fake_data_type_store_service.cc",
+    "fake_data_type_store_service.h",
   ]
   deps = [
     "//base/test:test_support",

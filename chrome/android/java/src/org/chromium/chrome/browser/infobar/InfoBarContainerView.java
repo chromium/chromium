@@ -273,21 +273,23 @@ public class InfoBarContainerView extends SwipableOverlayView
         View infoBarView = infoBar.createView();
         mLayout.addInfoBar(infoBar);
 
-        if (mEdgeToEdgeSupplier != null && mEdgeToEdgeSupplier.get() != null) {
-            mEdgeToEdgePadAdjuster = EdgeToEdgeControllerFactory.createForView(infoBarView);
-            mEdgeToEdgeSupplier.get().registerAdjuster(mEdgeToEdgePadAdjuster);
+        if (mEdgeToEdgeSupplier != null) {
+            mEdgeToEdgePadAdjuster =
+                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                            infoBarView, mEdgeToEdgeSupplier);
         }
     }
 
     /**
      * Removes an {@link InfoBar} from the layout.
+     *
      * @param infoBar The {@link InfoBar} to be removed.
      */
     void removeInfoBar(InfoBar infoBar) {
         mLayout.removeInfoBar(infoBar);
-        if (mEdgeToEdgeSupplier != null && mEdgeToEdgeSupplier.get() != null) {
+        if (mEdgeToEdgeSupplier != null) {
             assert (mEdgeToEdgePadAdjuster != null);
-            mEdgeToEdgeSupplier.get().unregisterAdjuster(mEdgeToEdgePadAdjuster);
+            mEdgeToEdgePadAdjuster.destroy();
         }
     }
 

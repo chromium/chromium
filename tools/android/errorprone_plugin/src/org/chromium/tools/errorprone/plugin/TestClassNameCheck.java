@@ -4,7 +4,6 @@
 
 package org.chromium.tools.errorprone.plugin;
 
-import com.google.auto.service.AutoService;
 import com.google.errorprone.BugPattern;
 import com.google.errorprone.VisitorState;
 import com.google.errorprone.bugpatterns.BugChecker;
@@ -13,13 +12,15 @@ import com.google.errorprone.matchers.Matcher;
 import com.google.errorprone.matchers.Matchers;
 import com.sun.source.tree.AnnotationTree;
 
+import org.chromium.build.annotations.ServiceImpl;
+
 /**
  * Assert class names of classes with Java tests in them end with "Test".
  *
  * <p>Test classes are identified as those that are annotated with {@link org.junit.runner.RunWith}.
  * This works for both JUnit and Instrumentation tests.
  */
-@AutoService(BugChecker.class)
+@ServiceImpl(BugChecker.class)
 @BugPattern(
         name = "TestClassNameCheck",
         summary = "Class names of classes with tests in them should end with \"Test\".",

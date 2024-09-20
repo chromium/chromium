@@ -136,6 +136,9 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "args": [
+          "--ui-test-action-timeout=30000"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -384,6 +387,9 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "args": [
+          "--ui-test-action-timeout=30000"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -635,6 +641,9 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "args": [
+          "--ui-test-action-timeout=30000"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -858,6 +867,9 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "args": [
+          "--ui-test-action-timeout=30000"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -875,6 +887,9 @@
         "variant_id": "AMD Radeon RX 5500 XT"
       },
       {
+        "args": [
+          "--ui-test-action-timeout=30000"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -892,6 +907,9 @@
         "variant_id": "Intel UHD 630 or 770"
       },
       {
+        "args": [
+          "--ui-test-action-timeout=30000"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1269,6 +1287,7 @@
       },
       {
         "args": [
+          "--ui-test-action-timeout=30000",
           "-use-xvfb"
         ],
         "merge": {
@@ -1289,6 +1308,7 @@
       },
       {
         "args": [
+          "--ui-test-action-timeout=30000",
           "-use-xvfb"
         ],
         "merge": {
@@ -1599,6 +1619,9 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "args": [
+          "--ui-test-action-timeout=30000"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1616,6 +1639,9 @@
         "variant_id": "AMD Radeon RX 5500 XT"
       },
       {
+        "args": [
+          "--ui-test-action-timeout=30000"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1633,6 +1659,9 @@
         "variant_id": "Intel UHD 630 or 770"
       },
       {
+        "args": [
+          "--ui-test-action-timeout=30000"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

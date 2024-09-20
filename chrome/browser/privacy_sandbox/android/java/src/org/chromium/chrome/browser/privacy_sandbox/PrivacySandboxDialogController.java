@@ -6,8 +6,19 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.ViewGroup;
 
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewConstraints;
+import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.ViewAndroidDelegate;
 
 import java.lang.ref.WeakReference;
 
@@ -33,9 +44,42 @@ public class PrivacySandboxDialogController {
         return true;
     }
 
+    public static ThinWebView createThinWebView(
+            WebContents webContents,
+            Profile profile,
+            ActivityWindowAndroid activityWindowAndroid,
+            String url) {
+        ContentView contentView =
+                ContentView.createContentView(
+                        activityWindowAndroid.getContext().get(), webContents);
+        webContents.setDelegates(
+                VersionInfo.getProductVersion(),
+                ViewAndroidDelegate.createBasicDelegate(contentView),
+                contentView,
+                activityWindowAndroid,
+                WebContents.createDefaultInternalsHolder());
+        webContents.getNavigationController().loadUrl(new LoadUrlParams(url));
+        ThinWebView thinWebView =
+                ThinWebViewFactory.create(
+                        activityWindowAndroid.getContext().get(),
+                        new ThinWebViewConstraints(),
+                        activityWindowAndroid.getIntentRequestTracker());
+        thinWebView.attachWebContents(webContents, contentView, new WebContentsDelegateAndroid());
+        thinWebView
+                .getView()
+                .setLayoutParams(
+                        new ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT));
+        return thinWebView;
+    }
+
     /** Launches an appropriate dialog if necessary and returns whether that happened. */
     public static boolean maybeLaunchPrivacySandboxDialog(
-            Context context, Profile profile, int surfaceType) {
+            Context context,
+            Profile profile,
+            int surfaceType,
+            ActivityWindowAndroid activityWindowAndroid) {
         assert profile != null;
         if (profile.isOffTheRecord()) {
             return false;
@@ -49,7 +93,12 @@ public class PrivacySandboxDialogController {
             case PromptType.M1_CONSENT:
                 dialog =
                         new PrivacySandboxDialogConsentEEA(
-                                context, privacySandboxBridge, sDisableAnimations, surfaceType);
+                                context,
+                                privacySandboxBridge,
+                                sDisableAnimations,
+                                surfaceType,
+                                profile,
+                                activityWindowAndroid);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;

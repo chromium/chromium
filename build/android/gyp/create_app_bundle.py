@@ -428,7 +428,10 @@ def _GetManifestForModule(bundle_path, module_name):
 
 def _GetComponentNames(manifest, tag_name):
   android_name = '{%s}name' % manifest_utils.ANDROID_NAMESPACE
-  return [s.attrib.get(android_name) for s in manifest.iter(tag_name)]
+  return [
+      s.attrib.get(android_name)
+      for s in manifest.iterfind(f'application/{tag_name}')
+  ]
 
 
 def _ClassesFromZip(module_zip):

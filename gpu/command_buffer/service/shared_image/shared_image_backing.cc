@@ -250,6 +250,14 @@ std::unique_ptr<DawnImageRepresentation> SharedImageBacking::ProduceDawn(
   return nullptr;
 }
 
+std::unique_ptr<DawnBufferRepresentation> SharedImageBacking::ProduceDawnBuffer(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type) {
+  return nullptr;
+}
+
 std::unique_ptr<OverlayImageRepresentation> SharedImageBacking::ProduceOverlay(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {

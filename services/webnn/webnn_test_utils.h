@@ -127,6 +127,12 @@ class GraphInfoBuilder final {
         mojom::Operation::NewConv2d(std::move(conv2d)));
   }
 
+  void BuildCumulativeSum(uint64_t input_operand_id,
+                          uint64_t output_operand_id,
+                          uint32_t axis,
+                          std::optional<bool> exclusive,
+                          std::optional<bool> reversed);
+
   void BuildDequantizeLinear(uint64_t input_operand_id,
                              uint64_t scale_operand_id,
                              uint64_t zero_point_operand_id,
@@ -156,6 +162,10 @@ class GraphInfoBuilder final {
                            uint64_t indices_operand_id,
                            uint64_t output_operand_id,
                            uint32_t axis);
+
+  void BuildGatherND(uint64_t input_operand_id,
+                     uint64_t indices_operand_id,
+                     uint64_t output_operand_id);
 
   void BuildGelu(uint64_t input_operand_id, uint64_t output_operand_id);
 
@@ -485,6 +495,11 @@ class GraphInfoBuilder final {
 
   void BuildReshape(uint64_t input_operand_id, uint64_t output_operand_id);
 
+  void BuildScatterND(uint64_t input_operand_id,
+                      uint64_t indices_operand_id,
+                      uint64_t updates_operand_id,
+                      uint64_t output_operand_id);
+
   void BuildSigmoid(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildSoftmax(uint64_t input_operand_id,
@@ -526,16 +541,10 @@ class GraphInfoBuilder final {
 
   const mojom::GraphInfo& GetGraphInfo() const { return *graph_info_; }
 
-  // Get a clone of internal graph info. This is used by
-  // `WebNNContextDMLImplTest` because mojom::WebNNContext::CreateGraph()` needs
-  // to take the ownership of graph info.
-  //
-  // Notice cloning of graph info could be expensive and should only be used in
-  // tests.
+  // Prefer `TakeGraphInfo()` when possible. Cloning can be expensive and should
+  // only be used in tests.
   mojom::GraphInfoPtr CloneGraphInfo() const;
 
-  // TODO(crbug.com/354724062): Consider deprecating `CloneGraphInfo()` in favor
-  // of this method.
   mojom::GraphInfoPtr TakeGraphInfo();
 
  private:

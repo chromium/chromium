@@ -72,43 +72,49 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
 TEST_F(TabSearchContainerTest, OrdersButtonsCorrectly) {
   ASSERT_EQ(container_before_tab_strip_->tab_search_button(),
             container_before_tab_strip_->children()[0]);
-  ASSERT_EQ(container_before_tab_strip_->tab_organization_button(),
+  ASSERT_EQ(container_before_tab_strip_->tab_declutter_button(),
             container_before_tab_strip_->children()[1]);
+  ASSERT_EQ(container_before_tab_strip_->auto_tab_group_button(),
+            container_before_tab_strip_->children()[2]);
 
-  ASSERT_EQ(container_after_tab_strip_->tab_organization_button(),
+  ASSERT_EQ(container_after_tab_strip_->tab_declutter_button(),
             container_after_tab_strip_->children()[0]);
-  ASSERT_EQ(container_after_tab_strip_->tab_search_button(),
+  ASSERT_EQ(container_after_tab_strip_->auto_tab_group_button(),
             container_after_tab_strip_->children()[1]);
+  ASSERT_EQ(container_after_tab_strip_->tab_search_button(),
+            container_after_tab_strip_->children()[2]);
 }
 
 TEST_F(TabSearchContainerTest, ButtonsHaveFlatEdges) {
   ASSERT_EQ(Edge::kRight,
             container_before_tab_strip_->tab_search_button()->flat_edge());
-  ASSERT_EQ(
-      Edge::kLeft,
-      container_before_tab_strip_->tab_organization_button()->flat_edge());
+  ASSERT_EQ(Edge::kLeft,
+            container_before_tab_strip_->auto_tab_group_button()->flat_edge());
 
   ASSERT_EQ(Edge::kLeft,
             container_after_tab_strip_->tab_search_button()->flat_edge());
   ASSERT_EQ(Edge::kRight,
-            container_after_tab_strip_->tab_organization_button()->flat_edge());
+            container_after_tab_strip_->auto_tab_group_button()->flat_edge());
 }
 
 TEST_F(TabSearchContainerTest, AnimatesToExpanded) {
   // Should be collapsed by default
-  ASSERT_EQ(0, container_before_tab_strip_->expansion_animation_for_testing()
-                   ->GetCurrentValue());
+  ASSERT_EQ(nullptr,
+            container_before_tab_strip_->animation_session_for_testing());
 
-  ASSERT_EQ(0, container_before_tab_strip_->tab_organization_button()
+  ASSERT_EQ(0, container_before_tab_strip_->auto_tab_group_button()
                    ->width_factor_for_testing());
 
-  container_before_tab_strip_->ShowTabOrganization();
+  container_before_tab_strip_->ShowTabOrganization(
+      container_before_tab_strip_->auto_tab_group_button());
 
-  ASSERT_TRUE(container_before_tab_strip_->expansion_animation_for_testing()
+  ASSERT_TRUE(container_before_tab_strip_->animation_session_for_testing()
+                  ->expansion_animation()
                   ->IsShowing());
 
-  container_before_tab_strip_->expansion_animation_for_testing()->Reset(1);
+  container_before_tab_strip_->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
 
-  ASSERT_EQ(1, container_before_tab_strip_->tab_organization_button()
+  ASSERT_EQ(1, container_before_tab_strip_->auto_tab_group_button()
                    ->width_factor_for_testing());
 }

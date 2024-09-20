@@ -75,13 +75,13 @@ class DIPSServiceTest : public testing::Test {
       const GURL& final_url,
       base::Time time,
       bool stateful,
-      base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
+      base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
     DIPSServiceImpl::Get(browser_context)
         ->RecordBounceForTesting(url,
                                  Has3pcException(browser_context, nullptr, url,
                                                  initial_url, final_url),
                                  final_url, time, stateful,
-                                 content_settings_callback);
+                                 stateful_bounce_callback);
   }
 
  private:
@@ -313,11 +313,11 @@ class DIPSServiceStateRemovalTest : public testing::Test {
       const GURL& final_url,
       base::Time time,
       bool stateful,
-      base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
+      base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
     GetService()->RecordBounceForTesting(
         url,
         Has3pcException(GetProfile(), nullptr, url, initial_url, final_url),
-        final_url, time, stateful, content_settings_callback);
+        final_url, time, stateful, stateful_bounce_callback);
   }
 
  private:

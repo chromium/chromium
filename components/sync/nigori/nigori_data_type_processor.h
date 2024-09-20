@@ -21,8 +21,8 @@ class NigoriSyncBridge;
 class ProcessorEntity;
 
 class NigoriDataTypeProcessor : public DataTypeProcessor,
-                                 public DataTypeControllerDelegate,
-                                 public NigoriLocalChangeProcessor {
+                                public DataTypeControllerDelegate,
+                                public NigoriLocalChangeProcessor {
  public:
   NigoriDataTypeProcessor();
 

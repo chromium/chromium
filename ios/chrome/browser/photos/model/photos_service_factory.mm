@@ -15,10 +15,14 @@
 #import "ios/public/provider/chrome/browser/photos/photos_api.h"
 
 // static
-PhotosService* PhotosServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+PhotosService* PhotosServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+PhotosService* PhotosServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<PhotosService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

@@ -56,7 +56,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
@@ -140,6 +139,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display.h"
@@ -2048,7 +2048,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
 
   // Create a new browser - without activating it - and load an "app" into it.
   Browser::CreateParams params = Browser::CreateParams(profile(), true);
-  params.initial_show_state = ui::SHOW_STATE_INACTIVE;
+  params.initial_show_state = ui::mojom::WindowShowState::kInactive;
   Browser* browser2 = Browser::Create(params);
   SetRefocusURL(shortcut_id, GURL("http://www.example.com/path/*"));
   std::string url = "http://www.example.com/path/bla";

@@ -65,6 +65,7 @@ build_webui("build") {
     "about_page/about_page.ts",
     "ai_page/ai_info_card.ts",
     "ai_page/ai_page.ts",
+    "ai_page/ai_tab_organization_subpage.ts",
     "appearance_page/appearance_fonts_page.ts",
     "appearance_page/appearance_page.ts",
     "appearance_page/home_url_input.ts",
@@ -204,6 +205,7 @@ build_webui("build") {
     "site_settings_page/site_settings_page.ts",
     "site_settings_page/unused_site_permissions.ts",
     "site_settings/offer_writing_help_page.ts",
+    "site_settings/smart_card_readers_page.ts",
     "site_settings/pdf_documents.ts",
     "site_settings/protocol_handlers.ts",
     "site_settings/settings_category_default_radio_group.ts",
@@ -265,26 +267,6 @@ build_webui("build") {
   if (is_win || is_mac || is_linux) {
     web_component_files += [ "a11y_page/ax_annotations_section.ts" ]
   }
-  if (is_chrome_branded) {
-    static_files += [
-      "images/gtmooc_computer_dark.svg",
-      "images/gtmooc_computer.svg",
-      "images/gtmooc_cookie_dark.svg",
-      "images/gtmooc_cookie.svg",
-      "images/gtmooc_diagram_cookie_dark.svg",
-      "images/gtmooc_diagram_cookie.svg",
-      "images/gtmooc_diagram_history_dark.svg",
-      "images/gtmooc_diagram_history.svg",
-      "images/gtmooc_diagram_search_dark.svg",
-      "images/gtmooc_diagram_search.svg",
-      "images/gtmooc_search_dark.svg",
-      "images/gtmooc_search.svg",
-    ]
-    web_component_files += [
-      "about_page/get_most_chrome_section.ts",
-      "get_most_chrome_page/get_most_chrome_page.ts",
-    ]
-  }
 
   # -----------------web_component_files end ----------------------------------
 
@@ -293,6 +275,7 @@ build_webui("build") {
   non_web_component_files = [
     "a11y_page/a11y_browser_proxy.ts",
     "about_page/about_page_browser_proxy.ts",
+    "ai_page/constants.ts",
     "appearance_page/appearance_browser_proxy.ts",
     "autofill_page/address_edit_dialog_components.ts",
     "autofill_page/autofill_manager_proxy.ts",
@@ -380,6 +363,8 @@ build_webui("build") {
     "privacy_sandbox/privacy_sandbox_icons.html",
     "site_settings/all_sites_icons.html",
   ]
+
+  html_to_wrapper_template = "detect"
 
   if (is_chrome_branded) {
     icons_html_files += [ "internal/icons.html" ]

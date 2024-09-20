@@ -451,6 +451,9 @@
   <message name="IDS_PRICE_INSIGHTS_ACCESSIBILITY" desc="Accessibility string for the price insights entry point when the confidence is low.">
     Price Insights
   </message>
+  <message name="IDS_PRICE_INSIGHTS_GRAPH_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility string for the price insights graph readout.">
+      These are <ph name="CURRENCY">$1<ex>USD</ex></ph> prices for product <ph name="PRODUCT">$2<ex>iPhone 15.</ex></ph>
+    </message>
   <message name="IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE" desc="The snackbar button title for Price Insights when the user has notification enabled.">
     View
   </message>
@@ -522,22 +525,34 @@
       Copy
   </message>
   <if expr="use_titlecase">
-    <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
+    <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product." formatter_data="android_java">
       Discount Found
     </message>
   </if> <!-- use_titlecase -->
   <if expr="not use_titlecase">
-    <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
+    <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product." formatter_data="android_java">
       Discount found
     </message>
   </if> <!-- not use_titlecase -->
     <!-- Discounts Android only -->
   <if expr="is_android">
-    <message name="IDS_DISCOUNT_CODE_COPIED_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout. This text will show on the button after user has clicked on the copy button to indicate that the discount code has been copied.">
+    <message name="IDS_DISCOUNT_CODE_COPIED_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout. This text will show on the button after user has clicked on the copy button to indicate that the discount code has been copied." formatter_data="android_java">
       Copied
     </message>
-    <message name="IDS_DISCOUNT_EXPIRATION_DATE_ANDROID" desc="Text shown in the discount dialog to tell users the discount expiration date.">
+    <message name="IDS_DISCOUNT_EXPIRATION_DATE_ANDROID" desc="Text shown in the discount dialog to tell users the discount expiration date." formatter_data="android_java">
       Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the commerce bottom sheet." formatter_data="android_java">
+      Commerce bottom sheet
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_OPENED_FULL" desc="Accessibility string that describes fully opening the commerce bottom sheet." formatter_data="android_java">
+      Commerce bottom sheet opened at full height
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_CLOSED" desc="Accessibility string that describes closing the commerce bottom sheet." formatter_data="android_java">
+      Commerce bottom sheet closed
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_OPENED_HALF" desc="Accessibility string that describes half opening the commerce bottom sheet." formatter_data="android_java">
+      Commerce bottom sheet opened at half height
     </message>
     </if> <!-- is_android -->
 
@@ -669,10 +684,20 @@
   <message name="IDS_COMPARE_DISCLOSURE_DATA_ITEM" desc="The text for the Compare disclosure item that states who might see the data.">
     Data may be seen by trained reviewers to improve this feature
   </message>
-  <message name="IDS_COMPARE_DISCLOSURE_ACCEPT" desc="The text for the accept button on the Compare first-run experience disclosure.">
-    Let's go
-  </message>
-  <message name="IDS_COMPARE_DISCLOSURE_DECLINE" desc="The text for the decline button on the Compare first-run experience disclosure.">
-    No thanks
-  </message>
+  <if expr="use_titlecase">
+    <message name="IDS_COMPARE_DISCLOSURE_ACCEPT" desc="The text for the accept button on the Compare first-run experience disclosure.">
+      Let's Go
+    </message>
+    <message name="IDS_COMPARE_DISCLOSURE_DECLINE" desc="The text for the decline button on the Compare first-run experience disclosure.">
+      No Thanks
+    </message>
+  </if> <!-- use_titlecase -->
+  <if expr="not use_titlecase">
+    <message name="IDS_COMPARE_DISCLOSURE_ACCEPT" desc="The text for the accept button on the Compare first-run experience disclosure.">
+      Let's go
+    </message>
+    <message name="IDS_COMPARE_DISCLOSURE_DECLINE" desc="The text for the decline button on the Compare first-run experience disclosure.">
+      No thanks
+    </message>
+  </if> <!-- not use_titlecase -->
 </grit-part>

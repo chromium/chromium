@@ -24,7 +24,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
-#include "ui/base/ui_base_types.h"  // WindowShowState
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/gfx/image/image.h"
 
 class GURL;
@@ -175,7 +175,7 @@ class AppWindow : public content::WebContentsDelegate,
     int32_t creator_process_id;
 
     // Initial state of the window.
-    ui::WindowShowState state;
+    ui::mojom::WindowShowState state;
 
     // If true, don't show the window after creation.
     bool hidden;

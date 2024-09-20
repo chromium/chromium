@@ -12,16 +12,10 @@
 
 namespace autofill::bad_message {
 
-bool CheckFrameNotPrerendering(content::RenderFrameHost* frame) {
-  if (frame->IsInLifecycleState(
-          content::RenderFrameHost::LifecycleState::kPrerendering)) {
-    mojo::ReportBadMessage("Autofill is not allowed in a prerendering frame");
-    return false;
-  }
-  return true;
-}
+namespace internal {
 
-bool CheckValidTriggerSource(AutofillSuggestionTriggerSource trigger_source) {
+bool CheckSingleValidTriggerSource(
+    AutofillSuggestionTriggerSource trigger_source) {
   if (trigger_source ==
       AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess) {
     mojo::ReportBadMessage(
@@ -35,6 +29,17 @@ bool CheckValidTriggerSource(AutofillSuggestionTriggerSource trigger_source) {
 bool CheckFieldInForm(const FormData& form, FieldRendererId field_id) {
   if (!base::Contains(form.fields(), field_id, &FormFieldData::renderer_id)) {
     mojo::ReportBadMessage("Unexpected FormData/FieldRendererId pair received");
+    return false;
+  }
+  return true;
+}
+
+}  // namespace internal
+
+bool CheckFrameNotPrerendering(content::RenderFrameHost* frame) {
+  if (frame->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    mojo::ReportBadMessage("Autofill is not allowed in a prerendering frame");
     return false;
   }
   return true;

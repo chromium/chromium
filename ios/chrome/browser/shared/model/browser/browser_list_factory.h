@@ -15,9 +15,10 @@ class BrowserList;
 // This factory returns the same instance for regular and OTR browser states.
 class BrowserListFactory final : public BrowserStateKeyedServiceFactory {
  public:
-  // Convenience getter that typecasts the value returned to a
-  // BrowserList.
+  // TODO(crbug.com/358301380): remove this method.
   static BrowserList* GetForBrowserState(ChromeBrowserState* browser_state);
+
+  static BrowserList* GetForProfile(ProfileIOS* profile);
 
   // Getter for singleton instance.
   static BrowserListFactory* GetInstance();

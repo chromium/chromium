@@ -17,4 +17,7 @@ found in the LICENSE file.
     <dimen name="button_group_button_inset">2dp</dimen>
     <dimen name="button_group_small_radius">8dp</dimen>
     <dimen name="button_group_large_radius">16dp</dimen>
+    <dimen name="modal_dialog_view_external_margin">16dp</dimen>
+    <dimen name="modal_dialog_min_width">280dp</dimen>
+    <dimen name="modal_dialog_max_width">600dp</dimen>
 </resources>

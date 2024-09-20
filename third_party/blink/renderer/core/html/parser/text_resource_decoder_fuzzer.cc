@@ -17,7 +17,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider fuzzed_data(data, size);
   TextResourceDecoderForFuzzing decoder(fuzzed_data);
   std::string bytes = fuzzed_data.ConsumeRemainingBytes();
-  decoder.Decode(bytes.data(), bytes.length());
+  decoder.Decode(bytes);
   decoder.Flush();
   return 0;
 }

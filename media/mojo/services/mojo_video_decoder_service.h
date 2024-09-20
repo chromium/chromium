@@ -75,7 +75,8 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   // |this| is deleted. It's not safe to run the callbacks after a connection
   // error.
   void OnDecoderInitialized(DecoderStatus status);
-  void OnReaderRead(DecodeCallback callback,
+  void OnReaderRead(mojo::ReportBadMessageCallback bad_message_callback,
+                    DecodeCallback callback,
                     std::unique_ptr<ScopedDecodeTrace> trace_event,
                     scoped_refptr<DecoderBuffer> buffer);
   void OnDecoderDecoded(DecodeCallback callback,

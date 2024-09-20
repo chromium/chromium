@@ -322,6 +322,9 @@ class ContentSettingSimpleBubbleModel : public ContentSettingBubbleModel {
   // ContentSettingBubbleModel implementation.
   ContentSettingSimpleBubbleModel* AsSimpleBubbleModel() override;
 
+ protected:
+  bool IsContentAllowed();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FramebustBlockBrowserTest, ManageButtonClicked);
 

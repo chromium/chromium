@@ -957,7 +957,8 @@ public class ReadAloudController
         }
 
         // If there is a background playback from another instance, stop it.
-        stopExternalBackgroundPlayback();
+        stopExternalBackgroundPlayback(
+                /* shouldSave= */ ReadAloudFeatures.isBackgroundPlaybackEnabled());
         // Stop ongoing playback in this activity.
         resetCurrentPlayback(ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
         mActivePlaybackTabSupplier.set(tab);
@@ -1033,7 +1034,7 @@ public class ReadAloudController
      * highlighting.
      */
     public boolean timepointsSupported(Tab tab) {
-        if (isAvailable() && !GURL.isEmptyOrInvalid(tab.getUrl())) {
+        if (!GURL.isEmptyOrInvalid(tab.getUrl())) {
             int urlHash = urlToHash(stripUserData(tab.getUrl()).getSpec());
             if (sReadabilityInfoMap.get(urlHash) == null) {
                 return false;
@@ -1343,7 +1344,7 @@ public class ReadAloudController
         // If there is a background playback from another instance, stop it. (The voice selection UI
         // should not be visible in this case, so it should not be possible to preview a voice, but
         // this ensures the preview still works anyway.)
-        stopExternalBackgroundPlayback();
+        stopExternalBackgroundPlayback(/* shouldSave= */ false);
 
         Log.d(
                 TAG,
@@ -1373,6 +1374,15 @@ public class ReadAloudController
                     Log.e(TAG, "Failed to create voice preview: %s", exception.getMessage());
                 });
         return promise;
+    }
+
+    @Override
+    public void restorePlayback() {
+        if (mStateToRestoreOnBringingToForeground != null
+                && mStateToRestoreOnBringingToForeground.getTab()
+                        == mTabModel.getCurrentTabSupplier().get()) {
+            restoreStateOnForeground();
+        }
     }
 
     private void destroyVoicePreview() {
@@ -1682,10 +1692,13 @@ public class ReadAloudController
         mStateToRestoreOnBringingToForeground = null;
     }
 
-    private void stopExternalBackgroundPlayback() {
+    private void stopExternalBackgroundPlayback(boolean shouldSave) {
         for (ReadAloudController controller : sInstances) {
             if (controller != this && controller.mPlayback != null) {
                 controller.saveStateToRestoreOnForeground();
+                if (shouldSave) {
+                    mPlayerCoordinator.setPlayerRestorable(true);
+                }
                 controller.maybeStopPlayback(
                         null, ReasonForStoppingPlayback.EXTERNAL_PLAYBACK_REQUEST);
             }

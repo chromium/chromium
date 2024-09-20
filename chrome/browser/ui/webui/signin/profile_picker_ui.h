@@ -13,6 +13,7 @@
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
 class ProfilePickerHandler;
+class ForceSigninUIError;
 
 // The WebUI controller for chrome://profile-picker/.
 class ProfilePickerUI : public TopChromeWebUIController,
@@ -27,6 +28,9 @@ class ProfilePickerUI : public TopChromeWebUIController,
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
+
+  // Shows a signin error dialog on top of the ProfilePicker.
+  void ShowForceSigninErrorDialog(const ForceSigninUIError& error);
 
   // Get the minimum size for the picker UI.
   static gfx::Size GetMinimumSize();

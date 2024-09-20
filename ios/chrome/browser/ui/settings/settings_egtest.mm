@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -33,9 +34,10 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
+using chrome_test_util::BrowsingDataButtonMatcher;
+using chrome_test_util::BrowsingDataConfirmButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ClearBrowsingDataButton;
-using chrome_test_util::ClearBrowsingDataView;
 using chrome_test_util::ClearBrowsingHistoryButton;
 using chrome_test_util::ClearCacheButton;
 using chrome_test_util::ClearCookiesButton;
@@ -100,26 +102,24 @@ id<GREYMatcher> ClearBrowsingDataCell() {
   [super tearDown];
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kIOSQuickDelete);
+
+  return config;
+}
+
 // Performs the steps to clear browsing data. Must be called on the
 // Clear Browsing Data settings screen, after having selected the data types
 // scheduled for removal.
 - (void)clearBrowsingData {
   [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          ConfirmClearBrowsingDataButton()]
-      performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
-  WaitForActivityOverlayToDisappear();
 
-  // Before returning, make sure that the top of the Clear Browsing Data
-  // settings screen is visible to match the state at the start of the method.
-  // TODO(crbug.com/40631911): On iOS 13 the settings menu appears as a card
-  // that can be dismissed with a downward swipe.  This make it difficult to use
-  // a gesture to return to the top of the Clear Browsing Data screen, so scroll
-  // programatically instead. Remove this custom action if we switch back to a
-  // fullscreen presentation.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      performAction:[ChromeActionsAppInterface scrollToTop]];
+  // Wait for the browsing data button to disappear.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:BrowsingDataButtonMatcher()];
 }
 
 // From the NTP, clears the cookies and site data via the UI.
@@ -128,6 +128,9 @@ id<GREYMatcher> ClearBrowsingDataCell() {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
   [ChromeEarlGreyUI tapPrivacyMenuButton:ClearBrowsingDataCell()];
 
+  // Tap on the browsing data subpage.
+  [ChromeEarlGreyUI tapPrivacyMenuButton:BrowsingDataButtonMatcher()];
+
   // "Browsing history", "Cookies, Site Data" and "Cached Images and Files"
   // are the default checked options when the prefs are registered. Uncheck
   // "Browsing history" and "Cached Images and Files".
@@ -135,6 +138,10 @@ id<GREYMatcher> ClearBrowsingDataCell() {
   [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
+      performAction:grey_tap()];
+
+  // Tap the confirm button to save the prefs.
+  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
       performAction:grey_tap()];
 
   [self clearBrowsingData];

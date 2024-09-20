@@ -10,6 +10,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/tribool.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -27,8 +28,12 @@
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.headerImageType = PromoStyleImageType::kAvatar;
-  self.headerBackgroundImage =
-      [UIImage imageNamed:@"history_sync_opt_in_background"];
+  if (IsNewSyncOptInIllustration()) {
+    self.headerBackgroundImage = [UIImage imageNamed:@"sync_opt_in_background"];
+  } else {
+    self.headerBackgroundImage =
+        [UIImage imageNamed:@"history_sync_opt_in_background"];
+  }
   self.titleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_TITLE);
   self.subtitleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_SUBTITLE);
   self.primaryActionString =

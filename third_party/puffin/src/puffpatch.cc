@@ -152,12 +152,12 @@ Status ApplyZucchiniPatch(UniqueStreamPtr src_stream,
       result = Status::P_INPUT_NOT_RECOGNIZED;
       break;
     case zucchini::status::kStatusFileReadError:
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case zucchini::status::kStatusPatchReadError:
       result = Status::P_READ_ERROR;
       break;
     case zucchini::status::kStatusFileWriteError:
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case zucchini::status::kStatusPatchWriteError:
       result = Status::P_WRITE_ERROR;
       break;
@@ -168,7 +168,7 @@ Status ApplyZucchiniPatch(UniqueStreamPtr src_stream,
       result = Status::P_BAD_ZUCC_NEW_IMAGE;
       break;
     case zucchini::status::kStatusFatal:
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     default:
       result = Status::P_UNKNOWN_ERROR;
   }

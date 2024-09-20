@@ -124,6 +124,7 @@ source_set("webrtc") {
     "//chrome/browser/media/prefs",
     "//chrome/browser/permissions/system",
     "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile_attributes",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
@@ -195,6 +196,7 @@ source_set("webrtc") {
       "//extensions/buildflags",
     ]
     deps += [
+      "//chrome/browser/ui:browser_list",
       "//extensions/browser",
       "//extensions/browser/kiosk",
       "//extensions/common",
@@ -229,7 +231,6 @@ source_set("webrtc") {
       "//ash",
       "//ash/public/cpp",
       "//chrome/browser/ash/arc/screen_capture",
-      "//chrome/browser/ash/login/ui",
       "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/policy/handlers",
       "//chrome/browser/ash/policy/multi_screen_capture",
@@ -244,7 +245,6 @@ source_set("webrtc") {
     ]
     allow_circular_includes_from = [
       "//chrome/browser/ash/policy/handlers",
-      "//chrome/browser/ash/login/ui",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/arc/screen_capture",

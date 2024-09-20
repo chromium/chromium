@@ -71,6 +71,8 @@ import java.util.concurrent.TimeoutException;
 })
 @DoNotBatch(reason = "Affect nav settings")
 @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+@DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/337886037")
+@DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/337886037")
 public class ScreenshotCaptureTest {
     @Rule
     public final SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
@@ -178,6 +180,46 @@ public class ScreenshotCaptureTest {
 
         callbackHelper.waitForOnly();
         mRenderTestRule.compareForResult(mCapturedBitmap, "navigate_away_from_ntp_to_normal_page");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testNavigatingAwayFromNativeBookmarkToNormalPage(boolean nightModeEnabled)
+            throws IOException, TimeoutException, InterruptedException {
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.BOOKMARKS_URL);
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        int currentNavIndex =
+                mActivityTestRule
+                        .getActivity()
+                        .getCurrentWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getCurrentEntryIndex();
+
+        mScreenshotCaptureTestHelper.setNavScreenshotCallbackForTesting(
+                new ScreenshotCaptureTestHelper.NavScreenshotCallback() {
+                    @Override
+                    public Bitmap onAvailable(int navIndex, Bitmap bitmap, boolean requested) {
+                        Assert.assertEquals(
+                                "Should capture the screenshot of the previous page.",
+                                currentNavIndex,
+                                navIndex);
+                        Assert.assertTrue(requested);
+                        mCapturedBitmap = bitmap;
+                        callbackHelper.notifyCalled();
+                        return null;
+                    }
+                });
+
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
+
+        callbackHelper.waitForOnly();
+        mRenderTestRule.compareForResult(
+                mCapturedBitmap, "navigate_away_from_native_bookmark_to_normal_page");
     }
 
     @Test

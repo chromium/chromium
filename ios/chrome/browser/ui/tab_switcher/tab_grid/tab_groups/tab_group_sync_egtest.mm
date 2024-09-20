@@ -2,25 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/strings/sys_string_conversions.h"
+#import <Foundation/Foundation.h>
+
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_sync_earl_grey.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
-#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/testing/earl_grey/matchers.h"
-#import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::AlertAction;
 using chrome_test_util::CloseGroupButton;
-using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
+using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::CreateTabGroupCreateButton;
-using chrome_test_util::CreateTabGroupTextField;
 using chrome_test_util::DeleteGroupButton;
 using chrome_test_util::DeleteGroupConfirmationButton;
 using chrome_test_util::RenameGroupButton;
@@ -51,45 +47,11 @@ NSString* const kSavedGroup1Name = @"1RemoteGroup";
 NSString* const kSavedGroup2Name = @"2RemoteGroup";
 NSString* const kSavedGroup3Name = @"3RemoteGroup";
 
-// Opens the tab group creation view using the long press context menu for the
-// tab at `index`.
-void OpenTabGroupCreationViewUsingLongPressForCellAtIndex(int index) {
-  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(index)]
-      performAction:grey_longPress()];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
-                                   IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,
-                                   1))] performAction:grey_tap()];
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
-}
-
-// Sets the tab group name in the tab group creation view.
-void SetTabGroupCreationName(NSString* group_name) {
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupTextField()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:group_name flags:0];
-}
-
 // Displays the group cell context menu by long pressing at the group cell at
 // `group_cell_index`.
 void DisplayContextMenuForGroupCellAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
       performAction:grey_longPress()];
-}
-
-// Creates a tab group `group_name` with an item at `index`.
-void CreateTabGroupAtIndex(int index, NSString* group_name) {
-  // Open the creation view.
-  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(index);
-  SetTabGroupCreationName(group_name);
-
-  // Valid the creation.
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
 }
 
 // Renames the group cell at index `group_cell_index` with `new_title`.
@@ -155,7 +117,6 @@ void CloseGroupAtIndex(int group_cell_index) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsInGrid);
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
   config.features_enabled.push_back(kTabGroupSync);
@@ -208,7 +169,7 @@ void CloseGroupAtIndex(int group_cell_index) {
                   @"The number of saved tab groups should be 0.");
 }
 
-// Tests that a group is deleted in the tab groups panel.
+// Tests that a group is deleted in the Tab Groups panel.
 - (void)testDeleteTabGroupInThirdPanel {
   [ChromeEarlGreyUI openTabGrid];
 
@@ -258,8 +219,8 @@ void CloseGroupAtIndex(int group_cell_index) {
                   @"The number of saved tab groups should be 0.");
 }
 
-// Tests that renaming a group in the tab grid reflects the change in the tab
-// groups panel.
+// Tests that renaming a group in the tab grid reflects the change in the
+// Tab Groups panel.
 - (void)testRenameGroupInTabGrid {
   [ChromeEarlGreyUI openTabGrid];
 
@@ -300,8 +261,8 @@ void CloseGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that ungrouping a group in the tab grid reflects the change in the tab
-// groups panel.
+// Tests that ungrouping a group in the tab grid reflects the change in the
+// Tab Groups panel.
 - (void)testUngroupGroupInTabGrid {
   [ChromeEarlGreyUI openTabGrid];
 
@@ -340,8 +301,8 @@ void CloseGroupAtIndex(int group_cell_index) {
                   @"The number of saved tab groups should be 0.");
 }
 
-// Tests that closing a group in the tab grid reflects the change in the tab
-// groups panel.
+// Tests that closing a group in the tab grid reflects the change in the
+// Tab Groups panel.
 - (void)testCloseGroupInTabGrid {
   [ChromeEarlGreyUI openTabGrid];
 

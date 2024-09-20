@@ -1272,6 +1272,7 @@ void NetworkStateHandler::RequestUpdateForNetwork(
   }
   shill_property_handler_->RequestProperties(ManagedState::MANAGED_TYPE_NETWORK,
                                              service_path);
+  network_service_paths_with_stale_properties_.erase(service_path);
 }
 
 void NetworkStateHandler::RequestUpdateForDevice(
@@ -1426,7 +1427,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   CHECK(!notifying_network_observers_);
 
   ManagedStateList* managed_list = GetManagedList(type);
-  NET_LOG(DEBUG) << "UpdateManagedList: " << ManagedState::TypeToString(type)
+  NET_LOG(EVENT) << "UpdateManagedList: " << ManagedState::TypeToString(type)
                  << ": " << entries.size();
   // Create a map of existing entries. Assumes all entries in |managed_list|
   // are unique.
@@ -1560,6 +1561,10 @@ void NetworkStateHandler::UpdateManagedStateProperties(
   if (type == ManagedState::MANAGED_TYPE_NETWORK) {
     UpdateNetworkStateProperties(managed->AsNetworkState(), properties);
     managed->set_update_requested(false);
+    if (network_service_paths_with_stale_properties_.find(path) !=
+        network_service_paths_with_stale_properties_.end()) {
+      RequestUpdateForNetwork(path);
+    }
     return;
   }
 
@@ -1635,12 +1640,17 @@ void NetworkStateHandler::UpdateNetworkServiceProperty(
   SCOPED_NET_LOG_IF_SLOW();
   bool changed = false;
   NetworkState* network = GetModifiableNetworkState(service_path);
-  if (!network || !network->update_received()) {
-    // Shill may send a service property update before processing Chrome's
-    // initial GetProperties request. If this occurs, the initial request will
-    // include the changed property value so we can ignore this update.
+  if (!network) {
     return;
   }
+
+  // When shill::kProfileProperty is updated, the `ProfileListChanged` already
+  // requests the latest network properties, so we don't need to request again.
+  if (!network->update_received() && key != shill::kProfileProperty) {
+    network_service_paths_with_stale_properties_.insert(service_path);
+    return;
+  }
+
   std::string prev_connection_state = network->connection_state();
   std::string prev_profile_path = network->profile_path();
   bool had_icccid_before_update = !network->iccid().empty();

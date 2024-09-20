@@ -177,4 +177,11 @@ BASE_FEATURE(kSegmentationPlatformEphemeralCardRanker,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kSegmentationSurveyPage,
+             "SegmentationSurveyPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<bool> kSegmentationSurveyInternalsPage{
+    &kSegmentationSurveyPage, "survey_internals_page", /*default_value=*/true};
+
 }  // namespace segmentation_platform::features

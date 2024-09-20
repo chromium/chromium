@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 
 // Some standard primary monitor sizes (no task bar).
@@ -55,26 +56,28 @@ class TestStateProvider : public WindowSizer::StateProvider {
 
   void SetPersistentState(const gfx::Rect& bounds,
                           const gfx::Rect& work_area,
-                          ui::WindowShowState show_state);
+                          ui::mojom::WindowShowState show_state);
   void SetLastActiveState(const gfx::Rect& bounds,
-                          ui::WindowShowState show_state);
+                          ui::mojom::WindowShowState show_state);
 
   // Overridden from WindowSizer::StateProvider:
-  bool GetPersistentState(gfx::Rect* bounds,
-                          gfx::Rect* saved_work_area,
-                          ui::WindowShowState* show_state) const override;
-  bool GetLastActiveWindowState(gfx::Rect* bounds,
-                                ui::WindowShowState* show_state) const override;
+  bool GetPersistentState(
+      gfx::Rect* bounds,
+      gfx::Rect* saved_work_area,
+      ui::mojom::WindowShowState* show_state) const override;
+  bool GetLastActiveWindowState(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
 
  private:
   gfx::Rect persistent_bounds_;
   gfx::Rect persistent_work_area_;
   bool has_persistent_data_;
-  ui::WindowShowState persistent_show_state_;
+  ui::mojom::WindowShowState persistent_show_state_;
 
   gfx::Rect last_active_bounds_;
   bool has_last_active_data_;
-  ui::WindowShowState last_active_show_state_;
+  ui::mojom::WindowShowState last_active_show_state_;
 };
 
 // Builder class for setting up window sizer test state with a single statement.

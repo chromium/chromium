@@ -40,6 +40,7 @@ static_library("reporting") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/chromeos/reporting/websites",
     "//chrome/browser/profiles:profile",
     "//components/content_settings/core/common",
     "//components/pref_registry",
@@ -53,6 +54,9 @@ static_library("reporting") {
     "//components/reporting/util:rate_limiter_slide_window",
     "//url",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/chromeos/reporting/websites" ]
 
   if (is_chromeos_lacros) {
     deps += [

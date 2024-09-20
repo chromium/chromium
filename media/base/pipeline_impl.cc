@@ -92,7 +92,8 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   void SetVolume(float volume);
   void SetLatencyHint(std::optional<base::TimeDelta> latency_hint);
   void SetPreservesPitch(bool preserves_pitch);
-  void SetWasPlayedWithUserActivation(bool was_played_with_user_activation);
+  void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement);
   base::TimeDelta GetMediaTime() const;
   Ranges<base::TimeDelta> GetBufferedTimeRanges() const;
   bool DidLoadingProgress();
@@ -165,8 +166,8 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   base::TimeDelta GetCurrentTimestamp();
 
   void OnDemuxerCompletedTrackChange(
-      base::OnceClosure change_completed_cb,
       DemuxerStream::Type stream_type,
+      base::OnceClosure change_completed_cb,
       const std::vector<DemuxerStream*>& streams);
 
   // DemuxerHost implementation.
@@ -236,7 +237,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   // By default, apply pitch adjustments.
   bool preserves_pitch_ = true;
 
-  bool was_played_with_user_activation_ = false;
+  bool was_played_with_user_activation_and_high_media_engagement_ = false;
 
   // Lock used to serialize |shared_state_|.
   // TODO(crbug.com/41419817): Add GUARDED_BY annotations.
@@ -544,14 +545,17 @@ void PipelineImpl::RendererWrapper::SetPreservesPitch(bool preserves_pitch) {
     shared_state_.renderer->SetPreservesPitch(preserves_pitch_);
 }
 
-void PipelineImpl::RendererWrapper::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
+void PipelineImpl::RendererWrapper::
+    SetWasPlayedWithUserActivationAndHighMediaEngagement(
+        bool was_played_with_user_activation_and_high_media_engagement) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  was_played_with_user_activation_ = was_played_with_user_activation;
+  was_played_with_user_activation_and_high_media_engagement_ =
+      was_played_with_user_activation_and_high_media_engagement;
   if (shared_state_.renderer) {
-    shared_state_.renderer->SetWasPlayedWithUserActivation(
-        was_played_with_user_activation_);
+    shared_state_.renderer
+        ->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+            was_played_with_user_activation_and_high_media_engagement_);
   }
 }
 
@@ -780,7 +784,7 @@ void PipelineImpl::RendererWrapper::OnEnabledAudioTracksChanged(
   demuxer_->OnEnabledAudioTracksChanged(
       enabled_track_ids, GetCurrentTimestamp(),
       base::BindOnce(&RendererWrapper::OnDemuxerCompletedTrackChange,
-                     weak_factory_.GetWeakPtr(),
+                     weak_factory_.GetWeakPtr(), DemuxerStream::AUDIO,
                      std::move(change_completed_cb)));
 }
 
@@ -820,7 +824,7 @@ void PipelineImpl::RendererWrapper::OnSelectedVideoTrackChanged(
   demuxer_->OnSelectedVideoTrackChanged(
       tracks, GetCurrentTimestamp(),
       base::BindOnce(&RendererWrapper::OnDemuxerCompletedTrackChange,
-                     weak_factory_.GetWeakPtr(),
+                     weak_factory_.GetWeakPtr(), DemuxerStream::VIDEO,
                      std::move(change_completed_cb)));
 }
 
@@ -846,8 +850,8 @@ void PipelineImpl::RendererWrapper::OnExternalVideoFrameRequest() {
 }
 
 void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
-    base::OnceClosure change_completed_cb,
     DemuxerStream::Type stream_type,
+    base::OnceClosure change_completed_cb,
     const std::vector<DemuxerStream*>& streams) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   if (!shared_state_.renderer) {
@@ -1190,8 +1194,8 @@ void PipelineImpl::RendererWrapper::InitializeRenderer(
   // power by avoiding initialization of audio output until necessary.
   shared_state_.renderer->SetVolume(volume_);
 
-  shared_state_.renderer->SetWasPlayedWithUserActivation(
-      was_played_with_user_activation_);
+  shared_state_.renderer->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      was_played_with_user_activation_and_high_media_engagement_);
 
   // Initialize Renderer and report timeout UMA.
   std::string uma_name = "Media.InitializeRendererTimeout";
@@ -1527,15 +1531,17 @@ void PipelineImpl::SetPreservesPitch(bool preserves_pitch) {
                                 preserves_pitch));
 }
 
-void PipelineImpl::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
+void PipelineImpl::SetWasPlayedWithUserActivationAndHighMediaEngagement(
+    bool was_played_with_user_activation_and_high_media_engagement) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   media_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&RendererWrapper::SetWasPlayedWithUserActivation,
-                     base::Unretained(renderer_wrapper_.get()),
-                     was_played_with_user_activation));
+      base::BindOnce(
+          &RendererWrapper::
+              SetWasPlayedWithUserActivationAndHighMediaEngagement,
+          base::Unretained(renderer_wrapper_.get()),
+          was_played_with_user_activation_and_high_media_engagement));
 }
 
 base::TimeDelta PipelineImpl::GetMediaTime() const {

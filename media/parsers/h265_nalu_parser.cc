@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/parsers/h265_nalu_parser.h"
 
 #include <stddef.h>
@@ -153,6 +158,7 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
   READ_BITS_OR_RETURN(6, &nalu->nal_unit_type);
   READ_BITS_OR_RETURN(6, &nalu->nuh_layer_id);
   READ_BITS_OR_RETURN(3, &nalu->nuh_temporal_id_plus1);
+  TRUE_OR_RETURN(nalu->nuh_temporal_id_plus1 != 0);
 
   DVLOG(4) << "NALU type: " << static_cast<int>(nalu->nal_unit_type)
            << " at: " << reinterpret_cast<const void*>(nalu->data.get())

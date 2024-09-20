@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 
 @class AccountMenuMediator;
@@ -14,18 +15,37 @@
 
 @protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>
 
+// Requests to dismiss the account menu.
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator;
 
-- (void)triggerSignoutWithTargetRect:(CGRect)targetRect
-                          completion:(void (^)(BOOL success))completion;
+// Start managed account switch.
+- (void)triggerAccountSwitchWithTargetRect:(CGRect)targetRect
+                               newIdentity:(id<SystemIdentity>)newIdentity
+           viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
+                          signInCompletion:(ShowSigninCommandCompletionCallback)
+                                               signInCompletion;
 
-- (void)triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
-                             completion:
-                                 (void (^)(id<SystemIdentity> systemIdentity))
-                                     completion;
+// Sign out, display a toast, and call `callback` with argument stating whether
+// it’s a success.
+- (void)signOutFromTargetRect:(CGRect)targetRect
+                     callback:(void (^)(BOOL))callback;
 
-- (void)triggerAccountSwitchSnackbarWithIdentity:
-    (id<SystemIdentity>)systemIdentity;
+// Shows https://myaccount.google.com/ for the account currently signed-in
+// to Chrome. The content is displayed in a new view in the stack, i.e.
+// it doesn't close the current view.
+- (void)didTapManageYourGoogleAccount;
+
+// The user tapped on "Edit account list".
+- (void)didTapEditAccountList;
+
+// The user tapped on "Add account…".
+- (void)didTapAddAccount:(ShowSigninCommandCompletionCallback)callback;
+
+// Blocks the user from using Chromium.
+- (void)blockScene;
+
+// Stops the `blockScene`.
+- (void)unblockScene;
 
 @end
 

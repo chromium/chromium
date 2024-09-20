@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -35,14 +36,18 @@ constexpr base::FilePath::CharType kSyncDataFolderName[] =
 constexpr base::FilePath::CharType kLevelDBFolderName[] =
     FILE_PATH_LITERAL("LevelDB");
 
+constexpr const char kLegacyWebApkPrefix[] = "web_apks";
+
 // Initializes DataTypeStoreBackend, on the backend sequence.
 std::optional<ModelError> InitOnBackendSequence(
     const base::FilePath& level_db_path,
     scoped_refptr<DataTypeStoreBackend> store_backend,
-    bool migrate_rl_from_local_to_account) {
-  std::vector<std::pair<std::string, std::string>> prefixes_to_migrate;
+    bool migrate_rl_from_local_to_account,
+    bool wipe_legacy_webapks) {
+  base::flat_map<std::string, std::optional<std::string>>
+      prefixes_to_update_or_delete;
   if (migrate_rl_from_local_to_account) {
-    prefixes_to_migrate.emplace_back(
+    prefixes_to_update_or_delete.emplace(
         BlockingDataTypeStoreImpl::FormatPrefixForDataTypeAndStorageType(
             READING_LIST, StorageType::kUnspecified),
         BlockingDataTypeStoreImpl::FormatPrefixForDataTypeAndStorageType(
@@ -50,7 +55,15 @@ std::optional<ModelError> InitOnBackendSequence(
     RecordSyncToSigninMigrationReadingListStep(
         ReadingListMigrationStep::kMigrationStarted);
   }
-  return store_backend->Init(level_db_path, prefixes_to_migrate);
+  if (wipe_legacy_webapks) {
+    // Wipe all WEB_APK data to fix crbug.com/361771496. This won't cause any
+    // apps to be uninstalled, such data is only a mirror of the source of
+    // truth.
+    // std::nullopt in the map below means a deletion.
+    // TODO(crbug.com/365978267): Remove migration after enough time.
+    prefixes_to_update_or_delete.emplace(kLegacyWebApkPrefix, std::nullopt);
+  }
+  return store_backend->Init(level_db_path, prefixes_to_update_or_delete);
 }
 
 std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
@@ -123,11 +136,17 @@ DataTypeStoreServiceImpl::DataTypeStoreServiceImpl(
       store_backend_(DataTypeStoreBackend::CreateUninitialized()) {
   DCHECK(backend_task_runner_);
   bool migrate_rl_from_local_to_account = pref_service_->GetBoolean(
-      syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+      prefs::internal::kMigrateReadingListFromLocalToAccount);
+  bool wipe_legacy_webapks =
+#if BUILDFLAG(IS_ANDROID)
+      !pref_service_->GetBoolean(prefs::internal::kWipedWebAPkDataForMigration);
+#else
+      false;
+#endif  // BUILDFLAG(IS_ANDROID)
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&InitOnBackendSequence, leveldb_path_, store_backend_,
-                     migrate_rl_from_local_to_account),
+                     migrate_rl_from_local_to_account, wipe_legacy_webapks),
       base::BindOnce(&DataTypeStoreServiceImpl::BackendInitializationDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -143,15 +162,21 @@ void DataTypeStoreServiceImpl::BackendInitializationDone(
   // If the ReadingList local-to-account migration was performed (or attempted)
   // as part of this initialization, record the outcome.
   if (pref_service_->GetBoolean(
-          syncer::prefs::internal::kMigrateReadingListFromLocalToAccount)) {
+          prefs::internal::kMigrateReadingListFromLocalToAccount)) {
     if (!error) {
       pref_service_->ClearPref(
-          syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+          prefs::internal::kMigrateReadingListFromLocalToAccount);
     }
     RecordSyncToSigninMigrationReadingListStep(
         error ? ReadingListMigrationStep::kMigrationFailed
               : ReadingListMigrationStep::kMigrationFinishedAndPrefCleared);
   }
+#if BUILDFLAG(IS_ANDROID)
+  if (!error) {
+    pref_service_->SetBoolean(prefs::internal::kWipedWebAPkDataForMigration,
+                              true);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   base::UmaHistogramBoolean("Sync.DataTypeStoreBackendInitializationSuccess",
                             !error.has_value());

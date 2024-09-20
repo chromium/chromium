@@ -39,15 +39,13 @@ void InvalidationRegion::FinalizePendingRects() {
   if (pending_rects_.empty())
     return;
 
+  gfx::Rect pending_bounds = gfx::UnionRects(pending_rects_);
   if (region_.GetRegionComplexity() + pending_rects_.size() >
       kMaxInvalidationRectCount) {
-    gfx::Rect pending_bounds = region_.bounds();
-    for (auto& rect : pending_rects_)
-      pending_bounds.Union(rect);
+    pending_bounds.Union(region_.bounds());
     region_ = pending_bounds;
   } else {
-    for (auto& rect : pending_rects_)
-      region_.Union(rect);
+    region_.Union(pending_bounds);
   }
 
   pending_rects_.clear();

@@ -26,6 +26,8 @@ source_set("core") {
     ":tab_group_sync_bridge",
     "//base",
     "//components/keyed_service/core",
+    "//components/optimization_guide/core",
+    "//components/saved_tab_groups/proto",
     "//components/sync",
     "//components/tab_groups",
     "//ui/gfx",
@@ -48,12 +50,32 @@ source_set("core") {
   public_deps = [ ":model" ]
 }
 
-source_set("model") {
+source_set("features") {
   sources = [
     "features.cc",
     "features.h",
+  ]
+  deps = [ "//base" ]
+  public_deps = []
+}
+
+source_set("prefs") {
+  sources = [
     "pref_names.cc",
     "pref_names.h",
+  ]
+  deps = [
+    ":features",
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/public/base",
+  ]
+  public_deps = []
+}
+
+source_set("model") {
+  sources = [
     "saved_tab_group.cc",
     "saved_tab_group.h",
     "saved_tab_group_model.cc",
@@ -72,14 +94,16 @@ source_set("model") {
   ]
   deps = [
     "//base",
-    "//components/pref_registry",
     "//components/sync",
     "//components/sync_device_info",
     "//components/tab_groups",
     "//ui/gfx",
     "//url",
   ]
-  public_deps = []
+  public_deps = [
+    ":features",
+    ":prefs",
+  ]
 }
 
 source_set("string_utils") {
@@ -183,8 +207,10 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/optimization_guide/core",
     "//components/pref_registry:pref_registry",
     "//components/prefs:test_support",
+    "//components/saved_tab_groups/proto",
     "//components/sync",
     "//components/sync:test_support",
     "//components/sync_device_info",
@@ -236,6 +262,7 @@ source_set("fake_tab_group_sync_service") {
     ":core",
     ":model",
     "//base",
+    "//components/saved_tab_groups/proto",
   ]
 }
 
@@ -259,6 +286,8 @@ source_set("tab_group_sync_bridge") {
     "saved_tab_group_sync_bridge.h",
     "shared_tab_group_data_sync_bridge.cc",
     "shared_tab_group_data_sync_bridge.h",
+    "sync_bridge_tab_group_model_wrapper.cc",
+    "sync_bridge_tab_group_model_wrapper.h",
     "sync_data_type_configuration.cc",
     "sync_data_type_configuration.h",
     "tab_group_sync_bridge_mediator.cc",

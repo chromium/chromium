@@ -106,6 +106,7 @@ static_library("service") {
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/prefs",
+    "//components/saved_tab_groups:prefs",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
     "//components/sync/invalidations",

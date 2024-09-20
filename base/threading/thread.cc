@@ -26,7 +26,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
@@ -48,7 +47,7 @@ namespace {
 // because its Stop method was called.  This allows us to catch cases where
 // MessageLoop::QuitWhenIdle() is called directly, which is unexpected when
 // using a Thread to setup and run a MessageLoop.
-ABSL_CONST_INIT thread_local bool was_quit_properly = false;
+constinit thread_local bool was_quit_properly = false;
 
 }  // namespace
 #endif

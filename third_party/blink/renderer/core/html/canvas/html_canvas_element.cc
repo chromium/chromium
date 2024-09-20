@@ -242,8 +242,10 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
 }
 
 HTMLCanvasElement::~HTMLCanvasElement() {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      -externally_allocated_memory_);
+  if (externally_allocated_memory_ > 0) {
+    external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
+                                        externally_allocated_memory_);
+  }
 }
 
 void HTMLCanvasElement::Dispose() {
@@ -267,7 +269,6 @@ void HTMLCanvasElement::Dispose() {
   }
 
   if (canvas2d_bridge_) {
-    canvas2d_bridge_->SetCanvasResourceHost(nullptr);
     canvas2d_bridge_ = nullptr;
   }
 
@@ -1382,7 +1383,7 @@ bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
 }
 
 std::unique_ptr<Canvas2DLayerBridge> HTMLCanvasElement::Create2DLayerBridge() {
-  return std::make_unique<Canvas2DLayerBridge>();
+  return std::make_unique<Canvas2DLayerBridge>(this);
 }
 
 void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
@@ -1421,8 +1422,6 @@ void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
 
   if (!canvas2d_bridge_)
     return;
-
-  canvas2d_bridge_->SetCanvasResourceHost(this);
 
   did_fail_to_create_resource_provider_ = false;
   UpdateMemoryUsage();
@@ -1517,7 +1516,7 @@ void HTMLCanvasElement::StyleDidChange(const ComputedStyle* old_style,
   if (new_style.ImageRendering() == EImageRendering::kPixelated)
     filter_quality = cc::PaintFlags::FilterQuality::kNone;
   SetFilterQuality(filter_quality);
-  style_is_visible_ = new_style.Visibility() == EVisibility::kVisible;
+  style_is_visible_ = new_style.UsedVisibility() == EVisibility::kVisible;
   bool is_displayed = GetLayoutObject() && style_is_visible_;
   SetIsDisplayed(is_displayed);
   if (context_) {
@@ -1803,8 +1802,7 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
     // AdjustAmountOfExternalAllocatedMemory is safe, hence the
     // 'diposing_' condition in the DCHECK below.
     DCHECK(ThreadState::Current()->IsAllocationAllowed() || disposing_);
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        delta_bytes);
+    external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
     externally_allocated_memory_ = externally_allocated_memory;
   }
 }
@@ -1832,17 +1830,12 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
     if (!image)
       return;
     old_layer_bridge = std::move(canvas2d_bridge_);
-    // Removing connection between old_layer_bridge and CanvasResourceHost;
-    // otherwise, the CanvasResourceHost checks for the old one before
-    // assigning the new canvas layer bridge.
-    old_layer_bridge->SetCanvasResourceHost(nullptr);
   }
   std::unique_ptr<MemoryManagedPaintRecorder> recorder =
       old_provider->ReleaseRecorder();
   ResetLayer();
   ReplaceResourceProvider(nullptr);
   canvas2d_bridge_ = std::move(new_layer_bridge);
-  canvas2d_bridge_->SetCanvasResourceHost(this);
 
   if (new_provider_for_testing) {
     ReplaceResourceProvider(std::move(new_provider_for_testing));
@@ -1855,7 +1848,6 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   if (!new_provider) {
     if (old_layer_bridge) {
       canvas2d_bridge_ = std::move(old_layer_bridge);
-      canvas2d_bridge_->SetCanvasResourceHost(this);
     }
     return;
   }
@@ -1928,6 +1920,16 @@ bool HTMLCanvasElement::IsHibernating() const {
 
 bool HTMLCanvasElement::IsAccelerated() const {
   return GetRasterMode() == RasterMode::kGPU;
+}
+
+void HTMLCanvasElement::SetHasPlacedElements() {
+  // If this is the first time placeElement() is called, its possible that the
+  // canvas contains fallback content that has been ignored and needs to be
+  // laid out.
+  if (!has_placed_elements_) {
+    has_placed_elements_ = true;
+    SetForceReattachLayoutTree();
+  }
 }
 
 }  // namespace blink

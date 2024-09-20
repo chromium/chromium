@@ -8,7 +8,7 @@
  * security settings.
  */
 import '/shared/settings/prefs/prefs.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -23,6 +23,7 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../site_settings/offer_writing_help_page.js';
 import '../site_settings/settings_category_default_radio_group.js';
+import '../site_settings/smart_card_readers_page.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -159,6 +160,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      enableSmartCardReadersContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableSmartCardReadersContentSetting');
+        },
+      },
+
       enableWebBluetoothNewPermissionsBackend_: {
         type: Boolean,
         value: () =>
@@ -188,8 +197,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
       is3pcdRedesignEnabled_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
+        value() {
+            return loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')
+             && loadTimeData.getBoolean('isTrackingProtectionUxEnabled');
+        },
       },
 
       privateStateTokensEnabled_: {
@@ -340,6 +351,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
       },
 
+      enableWebAppInstallation_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
+      },
+
       isNotificationAllowed_: Boolean,
       isLocationAllowed_: Boolean,
       notificationPermissionsReviewHeader_: String,
@@ -359,6 +375,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableHandTrackingContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableSecurityKeysSubpage_: boolean;
+  private enableSmartCardReadersContentSetting_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private enableWebPrintingContentSetting_: boolean;
   private showNotificationPermissionsReview_: boolean;
@@ -372,6 +389,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private capturedSurfaceControlEnabled_: boolean;
   private enableComposeProactiveNudge_: boolean;
   private enableSafetyHub_: boolean;
+  private enableWebAppInstallation_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
   private notificationPermissionsReviewHeader_: string;

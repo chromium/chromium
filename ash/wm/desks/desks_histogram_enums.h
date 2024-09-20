@@ -25,7 +25,8 @@ enum class DesksCreationRemovalSource {
   kEnsureDefaultDesk = 7,
   kFloatingWorkspace = 8,
   kDeskButtonDeskBarButton = 9,
-  kMaxValue = kDeskButtonDeskBarButton,
+  kCoral = 10,
+  kMaxValue = kCoral,
 };
 
 // Please keep in sync with the matching enum in
@@ -60,7 +61,8 @@ enum class DesksSwitchSource {
   kDeskButtonDeskRemoved = 14,
   kDeskButtonMiniViewButton = 15,
   kDeskRestored = 16,
-  kMaxValue = kDeskRestored,
+  kCoral = 17,
+  kMaxValue = kCoral,
 };
 
 // Please keep in sync with the matching enum in

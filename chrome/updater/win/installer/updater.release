@@ -1,3 +1,6 @@
 [GENERAL]
 updater.exe: %(UpdaterDir)s\
 gen\chrome\updater\win\uninstall.cmd: %(UpdaterDir)s\
+
+[ENTERPRISE_COMPANION]
+enterprise_companion.exe: %(UpdaterDir)s\

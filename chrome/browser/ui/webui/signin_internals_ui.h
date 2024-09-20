@@ -6,9 +6,22 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_INTERNALS_UI_H_
 
 #include "base/values.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/browser/webui_config.h"
+
+class SignInInternalsUI;
+
+class SignInInternalsUIConfig
+    : public content::DefaultWebUIConfig<SignInInternalsUI> {
+ public:
+  SignInInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISignInInternalsHost) {}
+};
 
 // The implementation for the chrome://signin-internals page.
 class SignInInternalsUI : public content::WebUIController {

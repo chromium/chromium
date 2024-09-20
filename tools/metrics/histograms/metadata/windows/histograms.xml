@@ -33,16 +33,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.AppCompatLayersRemoved" enum="Boolean"
-    expires_after="2024-10-31">
-  <owner>grt@chromium.org</owner>
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    True if tokens were removed from the user's AppCompatFlags Layers value; see
-    http://crbug.com/581499. Recorded once shortly after browser startup.
-  </summary>
-</histogram>
-
 <histogram name="Windows.CetAvailable" enum="BooleanAvailable"
     expires_after="2024-12-01">
   <owner>ajgo@chromium.org</owner>
@@ -55,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.CetEnabled" enum="BooleanEnabled"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -123,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>brucedawson@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

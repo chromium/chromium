@@ -35,28 +35,28 @@ class ParallelFetchManagerTest : public testing::Test {
     identity_test_env_.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
   }
 
-  // Flips order of arguments so that the sole unbound argument will be the
-  // request.
-  static std::unique_ptr<ProtoFetcher<ClassifyUrlResponse>> ClassifyURL(
+  // Flips order of arguments so that the unbound arguments will be the
+  // request and callback.
+  static std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
       signin::IdentityManager* identity_manager,
       network::TestURLLoaderFactory& url_loader_factory,
-      const FetcherConfig& config,
-      const ClassifyUrlRequest& request) {
+      const ClassifyUrlRequest& request,
+      ClassifyUrlFetcher::Callback callback) {
     return supervised_user::CreateClassifyURLFetcher(
         *identity_manager, url_loader_factory.GetSafeWeakWrapper(), request,
-        config);
+        std::move(callback), kClassifyUrlConfig);
   }
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
 
-  base::RepeatingCallback<std::unique_ptr<ProtoFetcher<ClassifyUrlResponse>>(
-      const ClassifyUrlRequest&)>
+  base::RepeatingCallback<std::unique_ptr<ClassifyUrlFetcher>(
+      const ClassifyUrlRequest&,
+      ClassifyUrlFetcher::Callback)>
       factory_{base::BindRepeating(&ParallelFetchManagerTest::ClassifyURL,
                                    identity_test_env_.identity_manager(),
-                                   std::ref(test_url_loader_factory_),
-                                   kClassifyUrlConfig)};
+                                   std::ref(test_url_loader_factory_))};
   ClassifyUrlRequest request_;
   ClassifyUrlResponse response_;
 };

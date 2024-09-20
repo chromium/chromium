@@ -12,6 +12,13 @@
 #include "sql/statement.h"
 
 namespace segmentation_platform {
+namespace {
+
+std::string UmaHashToDBString(uint64_t metric_hash) {
+  return base::StringPrintf("%" PRIX64, metric_hash);
+}
+
+}  // namespace
 
 UmaMetricsTable::UmaMetricsTable(sql::Database* db) : db_(db) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -79,7 +86,7 @@ bool UmaMetricsTable::AddUmaMetric(const std::string& profile_id,
   statement.BindTime(0, row.time);
   statement.BindString(1, profile_id);
   statement.BindInt64(2, row.type);
-  statement.BindString(3, base::StringPrintf("%" PRIX64, row.name_hash));
+  statement.BindString(3, UmaHashToDBString(row.name_hash));
   statement.BindInt64(4, row.value);
   return statement.Run();
 }
@@ -92,6 +99,28 @@ bool UmaMetricsTable::DeleteEventsBeforeTimestamp(base::Time time) {
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteoldEntries));
   statement.BindTime(0, time);
   return statement.Run();
+}
+
+bool UmaMetricsTable::CleanupItems(
+    const std::string& profile_id,
+    const std::vector<CleanupItem>& cleanup_items) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kDeleteOldEntry[] =
+      "DELETE FROM uma_metrics "
+      "WHERE profile_id=? AND metric_hash=? AND type=? AND event_timestamp<=?";
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteOldEntry));
+  for (const auto& item : cleanup_items) {
+    statement.Reset(/*clear_bound_vars=*/false);
+    statement.BindString(0, profile_id);
+    statement.BindString(1, UmaHashToDBString(item.name_hash));
+    statement.BindInt64(2, item.signal_type);
+    statement.BindTime(3, item.timestamp);
+    if (!statement.Run()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace segmentation_platform

@@ -17,5 +17,9 @@ enum MLOperandDataType {
 
 dictionary MLOperandDescriptor {
   required MLOperandDataType dataType;
-  sequence<[EnforceRange] unsigned long> dimensions = [];
+
+  // TODO(crbug.com/365813262): Remove this field in favor of `shape`.
+  sequence<[EnforceRange] unsigned long> dimensions;
+  // TODO(crbug.com/365813262): Make this field required and remove its default.
+  sequence<[EnforceRange] unsigned long> shape = [];
 };

@@ -104,7 +104,7 @@ struct MEDIA_EXPORT H265NALU {
 
   int nal_unit_type = 0;
   int nuh_layer_id = 0;
-  int nuh_temporal_id_plus1 = 0;
+  int nuh_temporal_id_plus1 = 1;
 };
 
 // Class to parse an Annex-B H.265 stream NALUs.

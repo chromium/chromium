@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/apps",
   "+chrome/browser/ash/arc",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps/apps/calculator_app",

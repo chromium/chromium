@@ -108,12 +108,9 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return *physical_fragment_;
   }
 
-  int LinesUntilClamp() const {
-    return rare_data_ ? rare_data_->lines_until_clamp : 0;
-  }
-
-  bool HasContentAfterLineClamp() const {
-    return rare_data_ && rare_data_->has_content_after_line_clamp();
+  std::optional<LineClampData::UntilClamp> StateUntilClamp() const {
+    return rare_data_ ? rare_data_->state_until_clamp
+                      : std::optional<LineClampData::UntilClamp>();
   }
 
   // Returns true if the block-start/-end is trimmed by the `text-box-trim`
@@ -659,8 +656,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
         DataUnionTypeValue::DefineNextValue<bool, 1>;
     using IsBlockEndTrimmedFlag =
         IsBlockStartTrimmedFlag::DefineNextValue<bool, 1>;
-    using HasContentAfterLineClampFlag =
-        IsBlockEndTrimmedFlag::DefineNextValue<bool, 1>;
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
@@ -779,14 +774,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       bit_field.set<IsBlockEndTrimmedFlag>(true);
     }
 
-    bool has_content_after_line_clamp() const {
-      return bit_field.get<HasContentAfterLineClampFlag>();
-    }
-
-    void set_has_content_after_line_clamp() {
-      bit_field.set<HasContentAfterLineClampFlag>(true);
-    }
-
     template <typename DataType>
     DataType* EnsureData(DataType* address, DataUnionType data_type) {
       DataUnionType old_data_type = data_union_type();
@@ -872,7 +859,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           custom_layout_data(rare_data.custom_layout_data),
           annotation_overflow(rare_data.annotation_overflow),
           block_end_annotation_space(rare_data.block_end_annotation_space),
-          lines_until_clamp(rare_data.lines_until_clamp),
+          state_until_clamp(rare_data.state_until_clamp),
           line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
           non_overflowing_scroll_ranges(
               rare_data.non_overflowing_scroll_ranges),
@@ -1001,7 +988,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
-    int lines_until_clamp = 0;
+    std::optional<LineClampData::UntilClamp> state_until_clamp;
     Member<HeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
 
    private:

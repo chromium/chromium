@@ -78,14 +78,12 @@ bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,
     NOTREACHED_IN_MIGRATION();
     return true;  // true to be consistent with `exception_state`.
   }
-  wtf_size_t checked_length;
-  if (!base::CheckedNumeric<wtf_size_t>(array_piece.ByteLength())
-           .AssignIfValid(&checked_length)) {
+  if (!base::CheckedNumeric<wtf_size_t>(array_piece.ByteLength()).IsValid()) {
     exception_state.ThrowRangeError(
         "The provided buffer source exceeds the maximum supported length");
     return false;
   }
-  target->Append(array_piece.Bytes(), checked_length);
+  target->AppendSpan(array_piece.ByteSpan());
   return true;
 }
 

@@ -54,8 +54,6 @@ const int kPrivacyIndicatorsViewExpandedLongerSideSize = 50;
 const int kPrivacyIndicatorsViewExpandedWithScreenShareSize = 68;
 const int kPrivacyIndicatorsViewSize = 8;
 
-constexpr auto kRepeatedShowTimerInterval = base::Milliseconds(100);
-
 constexpr auto kDwellInExpandDuration = base::Milliseconds(3000);
 constexpr auto kShorterSizeShrinkAnimationDelay =
     kDwellInExpandDuration + base::Milliseconds(133);
@@ -151,12 +149,7 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
       shorter_side_shrink_animation_(std::make_unique<gfx::LinearAnimation>(
           kSizeChangeAnimationDuration,
           gfx::LinearAnimation::kDefaultFrameRate,
-          this)),
-      repeated_shows_timer_(
-          FROM_HERE,
-          kRepeatedShowTimerInterval,
-          this,
-          &PrivacyIndicatorsTrayItemView::RecordRepeatedShows) {
+          this)) {
   SetVisible(false);
 
   auto container_view = std::make_unique<views::View>();
@@ -324,12 +317,6 @@ void PrivacyIndicatorsTrayItemView::UpdateVisibility() {
   }
 
   ++count_visible_per_session_;
-
-  // Keep incrementing the count to track the number of times the view flickers.
-  // When the delay of `kRepeatedShowTimerInterval` has reached, record that
-  // count.
-  ++count_repeated_shows_;
-  repeated_shows_timer_.Reset();
 }
 
 void PrivacyIndicatorsTrayItemView::PerformVisibilityAnimation(bool visible) {
@@ -607,20 +594,6 @@ void PrivacyIndicatorsTrayItemView::RecordPrivacyIndicatorsType() {
         "Ash.PrivacyIndicators.NumberOfAppsAccessingMicrophone",
         controller->apps_using_microphone().size());
   }
-}
-
-void PrivacyIndicatorsTrayItemView::RecordRepeatedShows() {
-  // Only records in primary display. Note that we also record the metric when
-  // `count_repeated_shows_` is one even though this is not a bad signal. This
-  // is because we want to record proper shows so we can analyze the repeated
-  // shows in context.
-  if (count_repeated_shows_ == 0 || !IsInPrimaryDisplay(GetWidget())) {
-    return;
-  }
-
-  base::UmaHistogramCounts100("Ash.PrivacyIndicators.NumberOfRepeatedShows",
-                              count_repeated_shows_);
-  count_repeated_shows_ = 0;
 }
 
 BEGIN_METADATA(PrivacyIndicatorsTrayItemView)

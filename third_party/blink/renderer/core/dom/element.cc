@@ -4133,6 +4133,17 @@ StyleRecalcChange Element::RecalcOwnStyle(
     }
   }
 
+  // If element doesn't have ::column::scroll-marker rules anymore,
+  // clear column scroll markers.
+  if (old_style &&
+      old_style->CanGeneratePseudoElement(kPseudoIdColumnScrollMarker) &&
+      new_style &&
+      !new_style->CanGeneratePseudoElement(kPseudoIdColumnScrollMarker)) {
+    if (ElementRareDataVector* data = GetElementRareData()) {
+      data->ClearColumnScrollMarkers();
+    }
+  }
+
   ProcessContainIntrinsicSizeChanges();
 
   if (!child_change.ReattachLayoutTree() &&
@@ -6038,7 +6049,7 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
 
   AtomicString trusted_value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(*parsed_name), std::move(value),
-      GetExecutionContext(), exception_state));
+      GetExecutionContext(), "Element", "setAttributeNS", exception_state));
   if (exception_state.HadException()) {
     return;
   }
@@ -6058,7 +6069,7 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
 
   AtomicString value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(*parsed_name), trusted_string,
-      GetExecutionContext(), exception_state));
+      GetExecutionContext(), "Element", "setAttributeNS", exception_state));
   if (exception_state.HadException()) {
     return;
   }
@@ -6746,7 +6757,7 @@ FocusableState Element::SupportsFocus(UpdateBehavior update_behavior) const {
   }
   if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
       IsRootEditableElementWithCounting(*this) ||
-      IsScrollMarkerPseudoElement() || SupportsSpatialNavigationFocus()) {
+      IsScrollControlPseudoElement() || SupportsSpatialNavigationFocus()) {
     return FocusableState::kFocusable;
   }
   if (CanBeKeyboardFocusableScroller(update_behavior)) {
@@ -6934,6 +6945,39 @@ void Element::SetHasUndoStack(bool value) {
 
 void Element::SetPseudoElementStylesChangeCounters(bool value) {
   EnsureElementRareData().SetPseudoElementStylesChangeCounters(value);
+}
+
+ScrollMarkerPseudoElement* Element::CreateColumnScrollMarker() {
+  const ComputedStyle* style =
+      CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker);
+  if (!style) {
+    return nullptr;
+  }
+  auto* scroll_marker = MakeGarbageCollected<ScrollMarkerPseudoElement>(
+      /*originating_element=*/this);
+  scroll_marker->SetComputedStyle(style);
+  ElementRareDataVector& data = EnsureElementRareData();
+  data.AddColumnScrollMarker(*scroll_marker);
+  scroll_marker->InsertedInto(*this);
+  probe::PseudoElementCreated(scroll_marker);
+  return scroll_marker;
+}
+
+const PseudoElementData::ColumnScrollMarkersVector*
+Element::GetColumnScrollMarkers() const {
+  ElementRareDataVector* data = GetElementRareData();
+  if (!data) {
+    return nullptr;
+  }
+  return data->GetColumnScrollMarkers();
+}
+
+void Element::ClearColumnScrollMarkers() {
+  ElementRareDataVector* data = GetElementRareData();
+  if (!data) {
+    return;
+  }
+  data->ClearColumnScrollMarkers();
 }
 
 void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
@@ -7566,8 +7610,6 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
            type == CSSSelector::kPseudoDetailsContent ||
-           type == CSSSelector::kPseudoSelectFallbackButton ||
-           type == CSSSelector::kPseudoSelectFallbackButtonText ||
            id == shadow_element_names::kPickerSelect)
         << "type: " << type << ", id: " << id;
   }
@@ -8171,10 +8213,6 @@ const AtomicString& StringForPseudoId(PseudoId pseudo_id) {
       return shadow_element_names::kPseudoFileUploadButton;
     case kPseudoIdDetailsContent:
       return shadow_element_names::kIdDetailsContent;
-    case kPseudoIdSelectFallbackButton:
-      return shadow_element_names::kSelectFallbackButton;
-    case kPseudoIdSelectFallbackButtonText:
-      return shadow_element_names::kSelectFallbackButtonText;
     case kPseudoIdPickerSelect:
       return shadow_element_names::kPickerSelect;
     default:
@@ -8719,24 +8757,23 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
   }
 }
 
-ScriptValue Element::requestPointerLock(ScriptState* script_state,
-                                        const PointerLockOptions* options,
-                                        ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> Element::requestPointerLock(
+    ScriptState* script_state,
+    const PointerLockOptions* options,
+    ExceptionState& exception_state) {
   if (!GetDocument().GetPage()) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
-               script_state, MakeGarbageCollected<DOMException>(
-                                 DOMExceptionCode::kWrongDocumentError,
-                                 "PointerLock cannot be request when there "
-                                 "is no frame or that frame has no page."))
-        .AsScriptValue();
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kWrongDocumentError,
+                          "PointerLock cannot be requested when there "
+                          "is no frame or that frame has no page."));
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
   GetDocument().GetPage()->GetPointerLockController().RequestPointerLock(
       resolver, this, options);
-  return promise.AsScriptValue();
+  return resolver->Promise();
 }
 
 SpellcheckAttributeState Element::GetSpellcheckAttributeState() const {
@@ -10056,7 +10093,7 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
   if ((options->checkVisibilityCSS() ||
        (RuntimeEnabledFeatures::CheckVisibilityExtraPropertiesEnabled() &&
         options->visibilityProperty())) &&
-      style->Visibility() != EVisibility::kVisible) {
+      style->UsedVisibility() != EVisibility::kVisible) {
     return false;
   }
 
@@ -10205,9 +10242,9 @@ void Element::setAttribute(const QualifiedName& name,
                            ExceptionState& exception_state) {
   SynchronizeAttribute(name);
 
-  AtomicString trusted_value(
-      TrustedTypesCheckFor(ExpectedTrustedTypeForAttribute(name), value,
-                           GetExecutionContext(), exception_state));
+  AtomicString trusted_value(TrustedTypesCheckFor(
+      ExpectedTrustedTypeForAttribute(name), value, GetExecutionContext(),
+      "Element", "setAttribute", exception_state));
   if (exception_state.HadException()) {
     return;
   }
@@ -10240,7 +10277,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
 
   AtomicString trusted_value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(q_name), std::move(value),
-      GetExecutionContext(), exception_state));
+      GetExecutionContext(), "Element", "setAttribute", exception_state));
   if (exception_state.HadException()) {
     return;
   }
@@ -10269,7 +10306,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
       LookupAttributeQNameHinted(std::move(local_name), hint);
   AtomicString value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(q_name), trusted_string,
-      GetExecutionContext(), exception_state));
+      GetExecutionContext(), "Element", "setAttribute", exception_state));
   if (exception_state.HadException()) {
     return;
   }
@@ -10364,7 +10401,8 @@ Attr* Element::setAttributeNode(Attr* attr_node,
 
   AtomicString value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(attr_node->GetQualifiedName()),
-      attr_node->value(), GetExecutionContext(), exception_state));
+      attr_node->value(), GetExecutionContext(), "Element", "setAttributeNode",
+      exception_state));
   if (exception_state.HadException()) {
     return nullptr;
   }

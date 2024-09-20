@@ -26,14 +26,9 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
     return v8::Local<v8::Value>();
   }
 
-  // Verify that COOP: restrict-properties does not prevent this access.
-  // TODO(https://crbug.com/1467216): This will block all same-origin only
-  // properties accesses with a "Named property" access failure, because the
-  // properties will be tried here as part of the algorithm. See if we need to
-  // have a custom message in that case, possibly by actually printing the
-  // passed name.
   v8::Isolate* isolate = frame->GetWindowProxyManager()->GetIsolate();
-  if (window->IsAccessBlockedByCoopRestrictProperties(isolate)) [[unlikely]] {
+
+  if (auto reason = window->GetProxyAccessBlockedReason(isolate)) [[unlikely]] {
     // We need to not throw an exception if we're dealing with the special
     // "then" property but return undefined instead. See
     // https://html.spec.whatwg.org/#crossoriginpropertyfallback-(-p-). This
@@ -46,9 +41,7 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
                                    "Window", name,
                                    ExceptionState::kForInterceptor);
     exception_state.ThrowSecurityError(
-        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
-        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the "
-        "access.");
+        DOMWindow::GetProxyAccessBlockedExceptionMessage(*reason));
     return v8::Null(isolate);
   }
 

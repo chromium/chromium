@@ -8,8 +8,8 @@
 
 namespace blink {
 
-WTF::String StringFromASCIIAndUTF8(const char* message) {
-  return WTF::String::FromUTF8WithLatin1Fallback(message, strlen(message));
+WTF::String StringFromASCIIAndUTF8(std::string_view message) {
+  return WTF::String::FromUTF8WithLatin1Fallback(message);
 }
 
 std::string UTF8StringFromUSVStringWithNullReplacedByReplacementCodePoint(

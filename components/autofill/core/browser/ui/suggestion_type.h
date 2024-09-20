@@ -70,21 +70,39 @@ enum class SuggestionType {
   // Datalist suggestions.
   kDatalistEntry = 20,
 
-  // Password suggestions.
+  // Password related suggestion. Fills a password credential.
   kPasswordEntry = 21,
+  // Password related suggestion. Opens management UI for passwords and/or
+  // passkeys.
   kAllSavedPasswordsEntry = 22,
+  // Password related suggestion. Generates a password for the field.
   kGeneratePasswordEntry = 23,
-  kShowAccountCards = 24,
+  // Password related suggestion. Displays the option to enable credentials from
+  // the account storage.
   kPasswordAccountStorageOptIn = 25,
+  // Password related suggestion. Displays the option to enable password
+  // generation and saving in the account storage.
   kPasswordAccountStorageOptInAndGenerate = 26,
+  // Password related suggestion. Displays a password from the account storage.
   kAccountStoragePasswordEntry = 27,
+  // Password related suggestion. Displays the option to re-signin to enable the
+  // account storage.
   kPasswordAccountStorageReSignin = 28,
+  // Password related suggestion. Displays that there is no fillable credentials
+  // after opting into the account storage.
   kPasswordAccountStorageEmpty = 29,
+  // Password sub-popup suggestion. Fills the username from the manual fallback
+  // entry.
   kPasswordFieldByFieldFilling = 30,
+  // Password sub-popup suggestion. Fills the password from the manual fallback
+  // entry.
   kFillPassword = 31,
+  // Password sub-popup suggestion. Triggers the password details view from the
+  // manual fallback entry.
   kViewPasswordDetails = 32,
 
   // Payment suggestions.
+  kShowAccountCards = 24,
   kCreditCardEntry = 33,
   kInsecureContextPaymentDisabledMessage = 34,
   kScanCreditCard = 35,
@@ -110,8 +128,7 @@ enum class SuggestionType {
   kTitle = 45,
   kSeparator = 46,
   // TODO(crbug.com/40266549): Rename to Undo once iOS implements it - it still
-  // works
-  // as clear form there.
+  // works as clear form there.
   kUndoOrClear = 47,
   kMixedFormMessage = 48,
 
@@ -131,12 +148,15 @@ enum class SuggestionType {
   kPredictionImprovementsLoadingState = 54,
   // Fill prediction improvements.
   kFillPredictionImprovements = 55,
-
   // Suggestion that provides users the possibility to give feedback about
   // predictions improvements.
   kPredictionImprovementsFeedback = 56,
+  // Allows the users to navigate to more details about improved predictions.
+  kPredictionImprovementsDetails = 58,
+  // Suggestion displayed when there is an error with prediction improvements.
+  kPredictionImprovementsError = 59,
 
-  kMaxValue = kPlusAddressError
+  kMaxValue = kPredictionImprovementsError
 };
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);

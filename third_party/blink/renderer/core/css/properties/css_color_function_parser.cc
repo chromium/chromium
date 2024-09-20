@@ -142,6 +142,21 @@ std::optional<Color> TryResolveAtParseTime(const CSSValue& value) {
                                   CSSToLengthConversionData());
     }
   }
+  if (auto* relative_color_value =
+          DynamicTo<cssvalue::CSSRelativeColorValue>(value)) {
+    auto origin_color =
+        TryResolveAtParseTime(relative_color_value->OriginColor());
+    if (!origin_color) {
+      return std::nullopt;
+    }
+    StyleColor::UnresolvedRelativeColor* unresolved_relative_color =
+        MakeGarbageCollected<StyleColor::UnresolvedRelativeColor>(
+            StyleColor(origin_color.value()),
+            relative_color_value->ColorInterpolationSpace(),
+            relative_color_value->Channel0(), relative_color_value->Channel1(),
+            relative_color_value->Channel2(), relative_color_value->Alpha());
+    return unresolved_relative_color->Resolve(Color());
+  }
   return std::nullopt;
 }
 
@@ -231,16 +246,12 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     color_space_ = ColorSpaceFromFunctionName(function_id);
   }
 
-  auto function_entry = ColorFunction::kColorSpaceMap.find(color_space_);
-  CHECK(function_entry != ColorFunction::kColorSpaceMap.end());
-  auto function_metadata_entry =
-      ColorFunction::kMetadataMap.find(function_entry->second);
-  CHECK(function_metadata_entry != ColorFunction::kMetadataMap.end());
-  function_metadata_ = &function_metadata_entry->second;
+  function_metadata_ = &ColorFunction::MetadataForColorSpace(color_space_);
 
   if (unresolved_origin_color_) {
     origin_color_ = TryResolveAtParseTime(*unresolved_origin_color_);
-    if (origin_color_.has_value()) {
+    if (origin_color_.has_value() &&
+        !RuntimeEnabledFeatures::CSSRelativeColorLateResolveAlwaysEnabled()) {
       origin_color_->ConvertToColorSpace(color_space_);
       // Relative color syntax requires "channel keyword" substitutions for
       // color channels. Each color space has three "channel keywords", plus
@@ -270,15 +281,9 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
           {CSSValueID::kAlpha, origin_color_->Alpha()},
       };
     } else {
-      if (!RuntimeEnabledFeatures::
+      if (!origin_color_.has_value() &&
+          !RuntimeEnabledFeatures::
               CSSRelativeColorSupportsCurrentcolorEnabled()) {
-        return false;
-      }
-      // TODO(crbug.com/325309578, crbug.com/41492196): expand to all colors
-      // that aren't resolvable at parse time.
-      if (!unresolved_origin_color_->IsIdentifierValue() ||
-          To<CSSIdentifierValue>(unresolved_origin_color_)->GetValueID() !=
-              CSSValueID::kCurrentcolor) {
         return false;
       }
       // If the origin color is not resolvable at parse time, fill out the map
@@ -628,10 +633,14 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   }
   stream.ConsumeWhitespace();
 
-  // We should be able to resolve channel values for all non-relative colors
-  // and all relative colors where the origin color is resolvable at parse
-  // time.
-  if (!IsRelativeColor() || origin_color_.has_value()) {
+  // For non-relative colors, resolve channel values at parse time.
+  // For relative colors:
+  // - (Legacy behavior) Resolve channel values at parse time if the origin
+  //   color is resolvable at parse time.
+  // - (WPT-compliant behavior) Always defer resolution until used-value time.
+  if (!IsRelativeColor() ||
+      (origin_color_.has_value() &&
+       !RuntimeEnabledFeatures::CSSRelativeColorLateResolveAlwaysEnabled())) {
     // Resolve channel values.
     for (int i = 0; i < 3; i++) {
       if (channel_types_[i] != ChannelType::kNone) {

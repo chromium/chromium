@@ -5,11 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_MULTI_IDENTITY_SWITCH_PROFILE_SETTINGS_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_MULTI_IDENTITY_SWITCH_PROFILE_SETTINGS_DELEGATE_H_
 
+@class SwitchProfileSettingsItem;
+
 // Delegate to handle Switch Profile Settings actions.
 @protocol SwitchProfileSettingsDelegate
 
 // Opens a new window with the selected profile.
-- (void)openProfileInNewWindow:(NSString*)browserStateName;
+- (void)openProfileInNewWindowWithSwitchProfileSettingsItem:
+    (SwitchProfileSettingsItem*)switchProfileSettingsItem;
 
 @end
 

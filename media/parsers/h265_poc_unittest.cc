@@ -32,7 +32,7 @@ class H265POCTest : public testing::Test {
 
 TEST_F(H265POCTest, PicOrderCnt) {
   sps_.log2_max_pic_order_cnt_lsb_minus4 = 7;
-  pps_.temporal_id = 0;
+  slice_hdr_.temporal_id = 0;
 
   // Initial I frame with POC 0.
   slice_hdr_.nal_unit_type = H265NALU::IDR_N_LP;
@@ -157,7 +157,7 @@ TEST_F(H265POCTest, PicOrderCnt) {
 
 TEST_F(H265POCTest, PicOrderCntInOrder) {
   sps_.log2_max_pic_order_cnt_lsb_minus4 = 12;
-  pps_.temporal_id = 0;
+  slice_hdr_.temporal_id = 0;
 
   // Initial I frame with POC 0.
   slice_hdr_.nal_unit_type = H265NALU::IDR_W_RADL;

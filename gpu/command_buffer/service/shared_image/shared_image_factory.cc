@@ -549,14 +549,6 @@ bool SharedImageFactory::CreateSharedImage(
     SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
-  if (format.IsLegacyMultiplanar()) {
-    // Use this for multi-planar and real single-planar formats. All legacy
-    // multi-planar GMBs must go through CreateSharedImage() that takes
-    // BufferPlane parameter.
-    LOG(ERROR) << "Invalid format " << format.ToString();
-    return false;
-  }
-
   gfx::GpuMemoryBufferType gmb_type = buffer_handle.type;
 
   bool use_compound = false;
@@ -961,6 +953,15 @@ SharedImageRepresentationFactory::ProduceDawn(
     scoped_refptr<SharedContextState> context_state) {
   return manager_->ProduceDawn(mailbox, tracker_.get(), device, backend_type,
                                std::move(view_formats), context_state);
+}
+
+std::unique_ptr<DawnBufferRepresentation>
+SharedImageRepresentationFactory::ProduceDawnBuffer(
+    const Mailbox& mailbox,
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type) {
+  return manager_->ProduceDawnBuffer(mailbox, tracker_.get(), device,
+                                     backend_type);
 }
 
 std::unique_ptr<OverlayImageRepresentation>

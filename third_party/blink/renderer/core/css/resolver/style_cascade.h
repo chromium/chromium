@@ -415,6 +415,8 @@ class CORE_EXPORT StyleCascade {
                        const CSSParserContext&,
                        TokenSequence&);
 
+  void AppendTaintToken(TokenSequence& out);
+
   // Check if <declaration-value> type is equal to <attr-type>.
   bool ValidateAttrFallback(TokenSequence& sequence,
                             CSSAttrType attr_type,

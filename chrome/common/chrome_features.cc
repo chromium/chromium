@@ -141,6 +141,10 @@ BASE_FEATURE(kEnableCertManagementUIV2,
              "EnableCertManagementUIV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableCertManagementUIV2Write,
+             "EnableCertManagementUIV2Write",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables "usm" service in the list of user services returned by
 // userInfo Gaia message.
@@ -554,19 +558,6 @@ extern const base::FeatureParam<bool>
     kHappinessTrackingSurveysForSecurityPageRequireInteraction{
         &kHappinessTrackingSurveysForSecurityPage,
         "security-page-require-interaction", false};
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Enables or disables the Happiness Tracking System for the Get the most out of
-// Chrome page.
-BASE_FEATURE(kHappinessTrackingSurveysGetMostChrome,
-             "HappinessTrackingSurveysGetMostChrome",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysGetMostChromeTime{
-        &kHappinessTrackingSurveysGetMostChrome, "get-most-chrome-time",
-        base::Seconds(15)};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -734,7 +725,7 @@ BASE_FEATURE(kHttpsUpgrades, "HttpsUpgrades", base::FEATURE_ENABLED_BY_DEFAULT);
 // are available for opting out of this default behavior.)
 BASE_FEATURE(kHttpsFirstModeIncognito,
              "HttpsFirstModeIncognito",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Changes the binary opt-in to HTTPS-First Mode with a tri-state setting (HFM
 // everywhere, HFM in Incognito, or no HFM) with HFM-in-Incognito the new
@@ -763,6 +754,13 @@ BASE_FEATURE(kImmersiveFullscreenTabs,
 BASE_FEATURE(kImmersiveFullscreenPWAs,
              "ImmersiveFullscreenPWAs",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Slide tabs out of the way during the reveal of the close, minimize and
+// maximize (traffic lights) buttons. kImmersiveFullscreenTabs must be enabled
+// for this feature to have an effect.
+BASE_FEATURE(kFullscreenAnimateTabs,
+             "FullscreenAnimateTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1079,7 +1077,7 @@ BASE_FEATURE(kSafetyHubExtensionsUwSTrigger,
 // Safety Hub Extension Reivew Panel.
 BASE_FEATURE(kSafetyHubExtensionsNoPrivacyPracticesTrigger,
              "SafetyHubExtensionsNoPrivacyPracticesTrigger",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables offstore extensions to be shown in the Safety Hub Extension
 // review panel.
 BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
@@ -1119,10 +1117,28 @@ constexpr base::FeatureParam<std::string> kSafetyHubAndroidTriggerId(
     /*default_value=*/"");
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
 // Enables or disables the Trust Safety Sentiment Survey for Safety Hub.
 BASE_FEATURE(kSafetyHubTrustSafetySentimentSurvey,
              "TrustSafetySentimentSurveyForSafetyHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the A/B Experiment Survey for Safety Hub.
+BASE_FEATURE(kSafetyHubHaTSOneOffSurvey,
+             "SafetyHubHaTSOneOffSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string>
+    kHatsSurveyTriggerSafetyHubOneOffExperimentControlTriggerId{
+        &kSafetyHubHaTSOneOffSurvey, "safety-hub-ab-control-trigger-id", ""};
+const base::FeatureParam<std::string>
+    kHatsSurveyTriggerSafetyHubOneOffExperimentNotificationTriggerId{
+        &kSafetyHubHaTSOneOffSurvey, "safety-hub-ab-notification-trigger-id",
+        ""};
+const base::FeatureParam<std::string>
+    kHatsSurveyTriggerSafetyHubOneOffExperimentInteractionTriggerId{
+        &kSafetyHubHaTSOneOffSurvey, "safety-hub-ab-interaction-trigger-id",
+        ""};
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Time between automated runs of the password check.
 const base::FeatureParam<base::TimeDelta> kBackgroundPasswordCheckInterval{

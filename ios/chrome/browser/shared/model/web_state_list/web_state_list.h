@@ -128,6 +128,8 @@ class WebStateList {
     InsertionParams();
   };
 
+  // TODO(crbug.com/365701685): Refactor WebStateList::ClosingFlags to use an
+  // enum for the reason why a WebState is being closed.
   // Constants used when closing WebStates.
   enum ClosingFlags {
     // Used to indicate that nothing special should happen to the closed
@@ -136,6 +138,9 @@ class WebStateList {
 
     // Used to indicate that the WebState was closed due to user action.
     CLOSE_USER_ACTION = 1 << 0,
+
+    // Used tp indicate that the WebState was closed in a tabs clean-up.
+    CLOSE_TABS_CLEANUP = 1 << 1,
   };
 
   // Scoped type representing a batch operation in progress.

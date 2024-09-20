@@ -9,5 +9,6 @@ include_rules = [
   "+chrome/browser/preferences",
   "+chrome/test/android",
   "+components/browser_ui/widget/android",
+  "+components/feature_engagement/public",
   "+ui/android",
 ]

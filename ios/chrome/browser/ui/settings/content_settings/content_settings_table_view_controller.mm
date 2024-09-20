@@ -230,10 +230,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  if (IsDiscoverFeedPreviewEnabled()) {
-    [model addItem:[self linkPreviewItem]
-        toSectionWithIdentifier:SectionIdentifierSettings];
-  }
+  [model addItem:[self linkPreviewItem]
+      toSectionWithIdentifier:SectionIdentifierSettings];
 
   self.defaultModeItem = [self defaultSiteMode];
   [model addItem:self.defaultModeItem

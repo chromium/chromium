@@ -15,58 +15,6 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
-namespace {
-// Helper function for managing a blocking page request for `resource`.  For the
-// committed interstitial flow, this function does not actually display the
-// blocking page.  Instead, it updates the allow list and stores a copy of the
-// unsafe resource before calling `resource`'s callback.  The blocking page is
-// displayed later when the do-not-proceed signal triggers an error page.  Must
-// be called on the UI thread.
-void HandleBlockingPageRequestOnUIThread(
-    const security_interstitials::UnsafeResource resource,
-    base::WeakPtr<SafeBrowsingClient> client) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-
-  // Send do-not-proceed signal if the WebState has been destroyed.
-  web::WebState* web_state = resource.weak_web_state.get();
-  if (!web_state) {
-    RunUnsafeResourceCallback(resource, /*proceed=*/false,
-                              /*showed_interstitial=*/false);
-    return;
-  }
-
-  if (client && client->ShouldBlockUnsafeResource(resource)) {
-    RunUnsafeResourceCallback(resource, /*proceed=*/false,
-                              /*showed_interstitial=*/false);
-    return;
-  }
-
-  // Check if navigations to `resource`'s URL have already been allowed for the
-  // given threat type.
-  std::set<safe_browsing::SBThreatType> allowed_threats;
-  const GURL url = resource.url;
-  safe_browsing::SBThreatType threat_type = resource.threat_type;
-  SafeBrowsingUrlAllowList* allow_list =
-      SafeBrowsingUrlAllowList::FromWebState(web_state);
-  if (allow_list->AreUnsafeNavigationsAllowed(url, &allowed_threats)) {
-    if (base::Contains(allowed_threats, threat_type)) {
-      RunUnsafeResourceCallback(resource, /*proceed=*/true,
-                                /*showed_interstitial=*/false);
-      return;
-    }
-  }
-
-  // Store the unsafe resource in the query manager.
-  SafeBrowsingQueryManager::FromWebState(web_state)->StoreUnsafeResource(
-      resource);
-
-  // Send the do-not-proceed signal to cancel the navigation.  This will cause
-  // the error page to be displayed using the stored UnsafeResource copy.
-  RunUnsafeResourceCallback(resource, /*proceed=*/false,
-                            /*showed_interstitial=*/true);
-}
-}  // namespace
-
 #pragma mark - UrlCheckerDelegateImpl
 
 UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
@@ -90,11 +38,57 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
     const std::string& method,
     const net::HttpRequestHeaders& headers,
     bool has_user_gesture) {
-  // Query the allow list on the UI thread to determine whether the navigation
-  // can proceed.
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HandleBlockingPageRequestOnUIThread, resource, client_));
+  // Helper function for managing a blocking page request for `resource`.  For
+  // the committed interstitial flow, this function does not actually display
+  // the blocking page.  Instead, it updates the allow list and stores a copy of
+  // the unsafe resource before calling `resource`'s callback.  The blocking
+  // page is displayed later when the do-not-proceed signal triggers an error
+  // page.  Must be called on the UI thread.
+
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+
+  // Send do-not-proceed signal if the WebState has been destroyed.
+  web::WebState* web_state = resource.weak_web_state.get();
+  if (!web_state) {
+    resource.DispatchCallback(FROM_HERE, /*proceed=*/false,
+                              /*showed_interstitial=*/false,
+                              /*has_post_commit_interstitial_skipped=*/false);
+    return;
+  }
+
+  if (client_ && client_->ShouldBlockUnsafeResource(resource)) {
+    resource.DispatchCallback(FROM_HERE, /*proceed=*/false,
+                              /*showed_interstitial=*/false,
+                              /*has_post_commit_interstitial_skipped=*/false);
+    return;
+  }
+
+  // Check if navigations to `resource`'s URL have already been allowed for the
+  // given threat type.
+  std::set<safe_browsing::SBThreatType> allowed_threats;
+  const GURL url = resource.url;
+  safe_browsing::SBThreatType threat_type = resource.threat_type;
+  SafeBrowsingUrlAllowList* allow_list =
+      SafeBrowsingUrlAllowList::FromWebState(web_state);
+  if (allow_list->AreUnsafeNavigationsAllowed(url, &allowed_threats)) {
+    if (base::Contains(allowed_threats, threat_type)) {
+      resource.DispatchCallback(FROM_HERE, /*proceed=*/true,
+                                /*showed_interstitial=*/false,
+                                /*has_post_commit_interstitial_skipped=*/false);
+
+      return;
+    }
+  }
+
+  // Store the unsafe resource in the query manager.
+  SafeBrowsingQueryManager::FromWebState(web_state)->StoreUnsafeResource(
+      resource);
+
+  // Send the do-not-proceed signal to cancel the navigation.  This will cause
+  // the error page to be displayed using the stored UnsafeResource copy.
+  resource.DispatchCallback(FROM_HERE, /*proceed=*/false,
+                            /*showed_interstitial=*/true,
+                            /*has_post_commit_interstitial_skipped=*/false);
 }
 
 void UrlCheckerDelegateImpl::
@@ -124,6 +118,11 @@ void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
         web_contents_getter) {
   // TODO(crbug.com/40817491): Implement reporting for suspicious sites.
 }
+
+void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+    std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {}
 
 const safe_browsing::SBThreatTypeSet& UrlCheckerDelegateImpl::GetThreatTypes() {
   return threat_types_;

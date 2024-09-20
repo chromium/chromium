@@ -303,12 +303,12 @@ TEST_P(PlusAddressCreationRequests, HandlesConcurrentRequests) {
   // The first callback should be run once the server responds to its request.
   url_loader_factory().SimulateResponseForPendingRequest(
       Endpoint(), test::MakeCreationResponse(profile));
-  EXPECT_TRUE(first_request.IsReady());
+  EXPECT_TRUE(first_request.Wait());
 
   // Same for the second callback.
   url_loader_factory().SimulateResponseForPendingRequest(
       Endpoint(), test::MakeCreationResponse(profile));
-  EXPECT_TRUE(second_request.IsReady());
+  EXPECT_TRUE(second_request.Wait());
 }
 
 TEST_P(PlusAddressCreationRequests, RequestsOauthToken) {
@@ -332,7 +332,7 @@ TEST_P(PlusAddressCreationRequests, RequestsOauthToken) {
   ASSERT_FALSE(future.IsReady());
   url_loader_factory().SimulateResponseForPendingRequest(
       Endpoint(), test::MakeCreationResponse(profile));
-  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get()->plus_address, profile.plus_address);
 }
 
@@ -349,7 +349,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnSuccess) {
   const std::string json = test::MakeCreationResponse(profile);
   url_loader_factory().SimulateResponseForPendingRequest(Endpoint(), json);
 
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->plus_address, profile.plus_address);
 
@@ -376,7 +376,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnNetworkError) {
       Endpoint(), "", net::HTTP_NOT_FOUND));
 
   // The request fails and the appropriate callback is run.
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(),
             PlusAddressRequestError::AsNetworkError(net::HTTP_NOT_FOUND));
@@ -401,7 +401,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnClientError) {
   url_loader_factory().SimulateResponseForPendingRequest(Endpoint(), json);
 
   // The request fails and the appropriate callback is run.
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error().type(),
             PlusAddressRequestErrorType::kParsingError);
@@ -424,7 +424,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnOauthError) {
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
 
   // The callback is still run with an OAuth error.
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error().type(),
             PlusAddressRequestErrorType::kOAuthError);
@@ -482,7 +482,7 @@ TEST_F(PlusAddressHttpClientRequests,
   const std::string json = test::MakePreallocateResponse({address1, address2});
   EXPECT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kFullPreallocateEndpoint, json));
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), std::vector({address1, address2}));
 
   histogram_tester.ExpectTotalCount(
@@ -506,7 +506,7 @@ TEST_F(PlusAddressHttpClientRequests, PreallocatePlusAddresses_ParsingError) {
 
   EXPECT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kFullPreallocateEndpoint, "[]"));
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
                               PlusAddressRequestErrorType::kParsingError)));
 }
@@ -522,7 +522,7 @@ TEST_F(PlusAddressHttpClientRequests, PreallocatePlusAddresses_NetworkError) {
 
   EXPECT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kFullPreallocateEndpoint, "", net::HTTP_NOT_FOUND));
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(),
             base::unexpected(
                 PlusAddressRequestError::AsNetworkError(net::HTTP_NOT_FOUND)));
@@ -540,7 +540,7 @@ TEST_F(PlusAddressHttpClientRequests, PreallocatePlusAddresses_SignoutError) {
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
   client().Reset();
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
                               PlusAddressRequestErrorType::kUserSignedOut)));
 }
@@ -559,7 +559,7 @@ TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForNetwork) {
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
   client().Reset();
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
                               PlusAddressRequestErrorType::kUserSignedOut)));
 }
@@ -574,7 +574,7 @@ TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForOAuth) {
   client().ReservePlusAddress(origin, /*refresh=*/false, future.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
   client().Reset();
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
                               PlusAddressRequestErrorType::kUserSignedOut)));
 }
@@ -663,7 +663,7 @@ TEST_F(PlusAddressAuthToken, RequestedBeforeSignin) {
   SignIn();
   WaitAndRespondToTokenRequest(base::Time::Now() + kTestTokenLifetime);
 
-  EXPECT_TRUE(callback.IsReady());
+  EXPECT_TRUE(callback.Wait());
   EXPECT_THAT(histogram_tester.GetAllSamples(kPlusAddressOauthErrorHistogram),
               BucketsAre(base::Bucket(GoogleServiceAuthError::State::NONE, 1)));
 }
@@ -685,7 +685,7 @@ TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
   // Sign in, get a token, and fast-forward to after it is expired.
   SignIn();
   WaitAndRespondToTokenRequest(base::Time::Now() + kTestTokenLifetime);
-  EXPECT_TRUE(first_callback.IsReady());
+  EXPECT_TRUE(first_callback.Wait());
   EXPECT_THAT(histogram_tester.GetAllSamples(kPlusAddressOauthErrorHistogram),
               BucketsAre(base::Bucket(GoogleServiceAuthError::State::NONE, 1)));
   task_environment().FastForwardBy(kTestTokenLifetime + base::Seconds(1));
@@ -697,7 +697,7 @@ TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
   // Callback is only run once the new OAuth token request has completed.
   EXPECT_FALSE(second_callback.IsReady());
   WaitAndRespondToTokenRequest(base::Time::Now() + kTestTokenLifetime);
-  EXPECT_TRUE(second_callback.IsReady());
+  EXPECT_TRUE(second_callback.Wait());
   EXPECT_THAT(histogram_tester.GetAllSamples(kPlusAddressOauthErrorHistogram),
               BucketsAre(base::Bucket(GoogleServiceAuthError::State::NONE, 2)));
 }

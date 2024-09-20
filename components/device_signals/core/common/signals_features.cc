@@ -6,6 +6,10 @@
 
 namespace enterprise_signals::features {
 
+BASE_FEATURE(kAllowClientCertificateReportingForUsers,
+             "AllowClientCertificateReportingForUsers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNewEvSignalsEnabled,
              "NewEvSignalsEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);

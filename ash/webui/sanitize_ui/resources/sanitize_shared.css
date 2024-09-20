@@ -155,7 +155,6 @@ h2.first {
 }
 
 :host {
-  padding: 12px;
   position: absolute;
   background-color: var(--cros-sys-base_elevated);
   height: 640px;

@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.CompoundButton;
 
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -57,7 +56,7 @@ public class ImprovedBookmarkSaveFlowProperties {
     public static final WritableObjectPropertyKey<CompoundButton.OnCheckedChangeListener>
             PRICE_TRACKING_SWITCH_LISTENER = new WritableObjectPropertyKey<>();
 
-    private static final PropertyKey[] NEW_KEYS = {
+    public static final PropertyKey[] ALL_KEYS = {
         BOOKMARK_ROW_CLICK_LISTENER,
         BOOKMARK_ROW_ICON,
         TITLE,
@@ -67,6 +66,4 @@ public class ImprovedBookmarkSaveFlowProperties {
         PRICE_TRACKING_SWITCH_CHECKED,
         PRICE_TRACKING_SWITCH_LISTENER
     };
-    public static final PropertyKey[] ALL_KEYS =
-            PropertyModel.concatKeys(BookmarkSaveFlowProperties.ALL_KEYS, NEW_KEYS);
 }

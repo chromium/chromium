@@ -312,7 +312,8 @@ class ReauthFlowStepController : public ProfileManagementStepController {
 std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
-    base::OnceCallback<void(bool, ReauthUIError)> on_reauth_completed) {
+    base::OnceCallback<void(bool, const ForceSigninUIError&)>
+        on_reauth_completed) {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -374,7 +375,7 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
 
 void ProfilePickerFlowController::SwitchToReauth(
     Profile* profile,
-    base::OnceCallback<void(ReauthUIError)> on_error_callback) {
+    base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
 
   // if the step was already initialized, unregister to make sure the new
@@ -403,11 +404,11 @@ void ProfilePickerFlowController::SwitchToReauth(
 
 void ProfilePickerFlowController::OnReauthCompleted(
     Profile* profile,
-    base::OnceCallback<void(ReauthUIError)> on_error_callback,
+    base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback,
     bool success,
-    ReauthUIError error) {
+    const ForceSigninUIError& error) {
   if (!success) {
-    CHECK_NE(error, ReauthUIError::kNone);
+    CHECK_NE(error.type(), ForceSigninUIError::Type::kNone);
 
     SwitchToStep(
         Step::kProfilePicker, /*reset_state=*/true,
@@ -426,8 +427,8 @@ void ProfilePickerFlowController::OnReauthCompleted(
 }
 
 void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
-    base::OnceCallback<void(ReauthUIError)> on_error_callback,
-    ReauthUIError error,
+    base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback,
+    const ForceSigninUIError& error,
     bool switch_step_success) {
   // If the step switch to the profile picker was not successful, do not proceed
   // with displaying the error dialog.

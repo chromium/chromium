@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
       on_device_model::mojom::InputOptionsPtr input,
       mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
       base::OnceClosure on_complete);
-  void SizeInTokens(const std::string& text,
+  void SizeInTokens(on_device_model::mojom::InputPtr input,
                     base::OnceCallback<void(uint32_t)> callback);
   void Score(const std::string& text, base::OnceCallback<void(float)> callback);
   std::unique_ptr<SessionImpl> Clone();
@@ -86,13 +86,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
   // on_device_model::OnDeviceModel:
   std::unique_ptr<SessionImpl> CreateSession(
       std::optional<uint32_t> adaptation_id);
-  void ClassifyTextSafety(
-      const std::string& text,
-      on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback
-          callback);
-  void DetectLanguage(
-      const std::string& text,
-      on_device_model::mojom::OnDeviceModel::DetectLanguageCallback callback);
   base::expected<uint32_t, on_device_model::mojom::LoadModelResult>
   LoadAdaptation(on_device_model::mojom::LoadAdaptationParamsPtr params,
                  base::OnceClosure on_complete);
@@ -106,8 +99,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
 
   const raw_ref<const ChromeML> chrome_ml_;
 
-  base::SequenceBound<std::unique_ptr<TsModel>> ts_model_;
-
   // TODO(b/323572952): Allow disposing of adaptation weights.
   std::vector<std::unique_ptr<base::MemoryMappedFile>> adaptation_data_;
 
@@ -115,7 +106,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
   std::map<std::optional<uint32_t>, SessionAccessor::Ptr> base_sessions_;
 
   ChromeMLModel model_ = 0;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<base::SequencedTaskRunner> model_task_runner_;
   uint32_t max_tokens_ = 0;
 };

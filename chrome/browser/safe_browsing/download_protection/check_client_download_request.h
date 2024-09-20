@@ -68,12 +68,11 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
       const std::string& token,
       const ClientDownloadResponse::Verdict& verdict,
       const ClientDownloadResponse::TailoredVerdict& tailored_verdict) override;
-  void MaybeStorePingsForDownload(DownloadCheckResult result,
-                                  bool upload_requested,
-                                  const std::string& request_data,
-                                  const std::string& response_body) override;
-  bool ShouldImmediatelyDeepScan(bool server_requests_prompt,
-                                 bool log_metrics) const override;
+  void MaybeBeginFeedbackForDownload(DownloadCheckResult result,
+                                     bool upload_requested,
+                                     const std::string& request_data,
+                                     const std::string& response_body) override;
+  bool ShouldImmediatelyDeepScan(bool server_requests_prompt) const override;
   bool ShouldPromptForDeepScanning(bool server_requests_prompt) const override;
   bool ShouldPromptForLocalDecryption(
       bool server_requests_prompt) const override;

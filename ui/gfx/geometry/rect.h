@@ -16,7 +16,7 @@
 #include <iosfwd>
 #include <string>
 
-#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -292,6 +292,7 @@ inline Rect operator+(const Vector2d& lhs, const Rect& rhs) {
 
 GEOMETRY_EXPORT Rect IntersectRects(const Rect& a, const Rect& b);
 GEOMETRY_EXPORT Rect UnionRects(const Rect& a, const Rect& b);
+GEOMETRY_EXPORT Rect UnionRects(base::span<const Rect> rects);
 GEOMETRY_EXPORT Rect UnionRectsEvenIfEmpty(const Rect& a, const Rect& b);
 GEOMETRY_EXPORT Rect SubtractRects(const Rect& a, const Rect& b);
 

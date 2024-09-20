@@ -10,10 +10,10 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/login/ui",
   "+chrome/browser/ash/multidevice_setup",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/browser_dialogs.h",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/webui/ash/system_web_dialog",

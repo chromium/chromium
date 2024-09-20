@@ -12,6 +12,7 @@
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/quic/quic_chromium_client_session.h"
@@ -90,6 +91,8 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
 
   QuicChromiumClientSession* session() const { return session_.get(); }
 
+  void PolulateNetErrorDetails(NetErrorDetails* details) const;
+
  private:
   enum class State {
     kNone,
@@ -112,6 +115,8 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
 
   void OnCreateSessionComplete(int rv);
   void OnCryptoConnectComplete(int rv);
+
+  void ResetSession();
 
   const raw_ptr<Delegate> delegate_;
 
@@ -138,6 +143,10 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   raw_ptr<QuicChromiumClientSession> session_ = nullptr;
   bool session_creation_finished_ = false;
   bool connection_retried_ = false;
+
+  // Used to populate NetErrorDetails after we reset `session_`.
+  HttpConnectionInfo connection_info_;
+  quic::QuicErrorCode quic_connection_error_ = quic::QUIC_NO_ERROR;
 
   base::TimeTicks quic_connection_start_time_;
 

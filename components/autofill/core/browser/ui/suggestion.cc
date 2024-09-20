@@ -85,6 +85,24 @@ Suggestion::PredictionImprovementsPayload::operator=(
 Suggestion::PredictionImprovementsPayload::~PredictionImprovementsPayload() =
     default;
 
+Suggestion::PaymentsPayload::PaymentsPayload() = default;
+
+Suggestion::PaymentsPayload::PaymentsPayload(
+    bool should_display_terms_available)
+    : should_display_terms_available(should_display_terms_available) {}
+
+Suggestion::PaymentsPayload::PaymentsPayload(const PaymentsPayload&) = default;
+
+Suggestion::PaymentsPayload::PaymentsPayload(PaymentsPayload&&) = default;
+
+Suggestion::PaymentsPayload& Suggestion::PaymentsPayload::operator=(
+    const PaymentsPayload&) = default;
+
+Suggestion::PaymentsPayload& Suggestion::PaymentsPayload::operator=(
+    PaymentsPayload&&) = default;
+
+Suggestion::PaymentsPayload::~PaymentsPayload() = default;
+
 Suggestion::Text::Text() = default;
 
 Suggestion::Text::Text(std::u16string value,

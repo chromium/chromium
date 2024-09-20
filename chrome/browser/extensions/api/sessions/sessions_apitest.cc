@@ -66,7 +66,8 @@ const char kTestCacheGuid[] = "TestCacheGuid";
 // (used to construct arbitrary tab info) to use in all tests.
 const char* const kSessionTags[] = {"tag0", "tag1", "tag2", "tag3", "tag4"};
 const SessionID::id_type kTabIDs[] = {5, 10, 13, 17};
-
+const int kActiveTabIndex = 2;
+const int kActiveTabId = kTabIDs[kActiveTabIndex];
 void BuildSessionSpecifics(const std::string& tag,
                            sync_pb::SessionSpecifics* meta) {
   meta->set_session_tag(tag);
@@ -81,7 +82,7 @@ void BuildWindowSpecifics(int window_id,
   sync_pb::SessionHeader* header = meta->mutable_header();
   sync_pb::SessionWindow* window = header->add_window();
   window->set_window_id(window_id);
-  window->set_selected_tab_index(0);
+  window->set_selected_tab_index(kActiveTabIndex);
   window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
   for (int tab : tab_list) {
     window->add_tab(tab);
@@ -134,11 +135,7 @@ testing::AssertionResult CheckSessionModels(const base::Value::List& devices,
       EXPECT_FALSE(tab.contains("id"));  // sessions API does not give tab IDs
       EXPECT_EQ(static_cast<int>(j), api_test_utils::GetInteger(tab, "index"));
       EXPECT_EQ(0, api_test_utils::GetInteger(tab, "windowId"));
-      // Test setup code always sets tab 0 to selected (which means active in
-      // extension terminology).
-      EXPECT_EQ(j == 0, api_test_utils::GetBoolean(tab, "active"));
-      // While selected/highlighted are different to active, and should always
-      // be false.
+      // Selected/highlighted tabs should always be false.
       EXPECT_FALSE(api_test_utils::GetBoolean(tab, "selected"));
       EXPECT_FALSE(api_test_utils::GetBoolean(tab, "highlighted"));
       EXPECT_FALSE(api_test_utils::GetBoolean(tab, "incognito"));
@@ -413,6 +410,71 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DISABLED_SessionsApis) {
   ASSERT_TRUE(RunExtensionTest("sessions", {.extension_url = "sessions.html"}))
       << message_;
+}
+
+// Verify that the correct tab is active based on its tab ID (instead of relying
+// on tab index, since the tabs list might be filtered or sorted).
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, CheckActiveTabStatus) {
+  CreateSessionModels();
+
+  const base::Value::List result =
+      utils::ToList(utils::RunFunctionAndReturnSingleResult(
+          CreateFunction<SessionsGetDevicesFunction>(true).get(), "[]",
+          browser()->profile()));
+
+  ASSERT_FALSE(result.empty()) << "No devices found.";
+
+  const base::Value::Dict* device_dict = result[0].GetIfDict();
+  ASSERT_TRUE(device_dict) << "Failed to retrieve device information.";
+
+  const base::Value::List* sessions = device_dict->FindList("sessions");
+  ASSERT_TRUE(sessions) << "No sessions found in the device.";
+  ASSERT_FALSE(sessions->empty()) << "No session data found in the device.";
+
+  const base::Value::Dict* session_dict = (*sessions)[0].GetIfDict();
+  ASSERT_TRUE(session_dict) << "Failed to retrieve session information.";
+
+  const base::Value::Dict* window_dict = session_dict->FindDict("window");
+  ASSERT_TRUE(window_dict) << "Window information is missing from the session.";
+
+  const base::Value::List* tabs = window_dict->FindList("tabs");
+  ASSERT_TRUE(tabs) << "No tabs found in the session window.";
+  ASSERT_FALSE(tabs->empty()) << "Tabs list is empty.";
+
+  const base::Value::Dict* active_tab = nullptr;
+  for (const auto& tab_value : *tabs) {
+    const base::Value::Dict* tab_dict = tab_value.GetIfDict();
+    ASSERT_TRUE(tab_dict) << "Failed to retrieve tab information.";
+
+    // Extract the sessionId as a string
+    const std::string* session_id = tab_dict->FindString("sessionId");
+    ASSERT_TRUE(session_id) << "Session ID is missing.";
+
+    // Find the position of the '.' in the sessionId to separate the prefix and
+    // tabId
+    size_t dot_pos = session_id->find('.');
+    ASSERT_TRUE(dot_pos != std::string::npos) << "Invalid sessionId format.";
+
+    // Extract the tabId part from the sessionId (after the '.')
+    std::string tab_id_str = session_id->substr(dot_pos + 1);
+    // Convert string tabId to int using base::StringToInt
+    int tab_id;
+    ASSERT_TRUE(base::StringToInt(tab_id_str, &tab_id))
+        << "Failed to convert tabId to int.";
+
+    // Compare the extracted tabId with the activeTabId
+    if (tab_id == kActiveTabId) {
+      active_tab = tab_dict;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(active_tab) << "Failed to retrieve active tab information.";
+
+  std::optional<bool> tab_active_status = active_tab->FindBool("active");
+  ASSERT_TRUE(tab_active_status) << "Active state for the tab is missing.";
+
+  EXPECT_TRUE(*tab_active_status) << "The selected tab should be active.";
 }
 
 }  // namespace extensions

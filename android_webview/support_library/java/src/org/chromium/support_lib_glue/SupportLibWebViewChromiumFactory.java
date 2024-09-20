@@ -93,7 +93,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.ATTRIBUTION_BEHAVIOR,
                 Features.WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
                 Features.MUTE_AUDIO,
-                Features.WEB_AUTHENTICATION,
+                Features.WEB_AUTHENTICATION + Features.DEV_SUFFIX,
                 Features.SPECULATIVE_LOADING,
                 Features.BACK_FORWARD_CACHE,
                 Features.PREFETCH_WITH_URL + Features.DEV_SUFFIX,
@@ -214,7 +214,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.SET_BACK_FORWARD_CACHE_ENABLED,
         ApiCall.GET_BACK_FORWARD_CACHE_ENABLED,
         ApiCall.PREFETCH_URL,
-        ApiCall.CLEAR_PREFETCH_CACHE,
+        ApiCall.PREFETCH_URL_WITH_PARAMS,
+        ApiCall.CLEAR_PREFETCH,
+        ApiCall.CANCEL_PREFETCH,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -330,10 +332,12 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int SET_BACK_FORWARD_CACHE_ENABLED = 106;
         int GET_BACK_FORWARD_CACHE_ENABLED = 107;
         int PREFETCH_URL = 108;
-        int CLEAR_PREFETCH_CACHE = 109;
+        int PREFETCH_URL_WITH_PARAMS = 109;
+        int CLEAR_PREFETCH = 110;
+        int CANCEL_PREFETCH = 111;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 110;
+        int COUNT = 112;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

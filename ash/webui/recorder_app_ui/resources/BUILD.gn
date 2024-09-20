@@ -50,12 +50,10 @@ static_grdp_file = "$target_gen_dir/static.grdp"
 # Static files without any processing. Note that we don't use the static_files
 # in build_webui, since that would run preprocess step on anything that is not
 # .jpg, .png or .svg.
-# TODO(pihsun): We likely would want to move index.html to files that needs
-# preprocess, to use the i18n for title.
 generate_grd("build_static_grdp") {
   grd_prefix = "static"
   input_files_base_dir = rebase_path(".", "//")
-  input_files = [ "index.html" ]
+  input_files = []
   foreach(file, static_files) {
     input_files += [ "static/$file" ]
   }
@@ -65,7 +63,10 @@ generate_grd("build_static_grdp") {
 build_webui("build") {
   grd_prefix = "recorder_app"
 
+  # The name collide with static_files from static.gni, so we need to set to []
+  # first before assigning new value...
   static_files = []
+  static_files = [ "index.html" ]
   non_web_component_files = [ "init.ts" ]
 
   # Note that since we don't use separate .html/.css file for template in
@@ -94,6 +95,7 @@ build_webui("build") {
   ]
 
   ts_deps = [
+    "//ash/webui/common/resources:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/material_web_components:bundle_lit_ts",
     "//third_party/material_web_components:library",

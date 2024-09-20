@@ -53,9 +53,8 @@ class CORE_EXPORT HTMLPermissionElement final
 
   void Trace(Visitor*) const override;
 
-  InsertionNotificationRequest InsertedInto(ContainerNode&) override;
-  void RemovedFrom(ContainerNode&) override;
-  void DidNotifySubtreeInsertionsToDocument() override;
+  void AttachLayoutTree(AttachContext& context) override;
+  void DetachLayoutTree(bool performing_reattach) override;
   void Focus(const FocusParams& params) override;
   FocusableState SupportsFocus(UpdateBehavior) const override;
   int DefaultTabIndex() const override;
@@ -97,7 +96,7 @@ class CORE_EXPORT HTMLPermissionElement final
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
                            ContainerDivClipPath);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
-                           IntersectionVisibleOverlapsRecentInsertedInterval);
+                           IntersectionVisibleOverlapsRecentAttachedInterval);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementFencedFrameTest,
                            NotAllowedInFencedFrame);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
@@ -106,8 +105,6 @@ class CORE_EXPORT HTMLPermissionElement final
                            EnableClickingAfterDelay);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
                            FontSizeCanDisableElement);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
-                           MovePEPCToAnotherDocument);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
                            InvalidatePEPCAfterMove);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
@@ -129,8 +126,8 @@ class CORE_EXPORT HTMLPermissionElement final
     kUnknown,
 
     // This element is temporarily disabled for a short period
-    // (`kDefaultDisableTimeout`) after being inserted into DOM.
-    kRecentlyInsertedIntoDOM,
+    // (`kDefaultDisableTimeout`) after being attached to the layout tree.
+    kRecentlyAttachedToLayoutTree,
 
     // This element is temporarily disabled for a short period
     // (`kDefaultDisableTimeout`) after its intersection status changed from
@@ -161,7 +158,7 @@ class CORE_EXPORT HTMLPermissionElement final
   enum class UserInteractionDeniedReason {
     kInvalidType = 0,
     kFailedOrHasNotBeenRegistered = 1,
-    kRecentlyInsertedIntoDOM = 2,
+    kRecentlyAttachedToLayoutTree = 2,
     kIntersectionRecentlyFullyVisible = 3,
     kInvalidStyle = 4,
     kUntrustedEvent = 5,
@@ -410,13 +407,12 @@ class CORE_EXPORT HTMLPermissionElement final
   // Computes the intersection rect of the element with the viewport.
   gfx::Rect ComputeIntersectionRectWithViewport(const Page* page);
 
-  // When the element is first inserted into DOM and rendered on the page,
+  // When the element is first attached to layout and rendered on the page,
   // there would be events causing an extra unresponsive delay that we don't
   // want, for example: the IntersectionObserver will trigger a series of events
   // from invisible to visible, with delays. We will throttle the cooldown
-  // time of the events to match the recently_inserted_into_dom cooldown time.
-  std::optional<base::TimeDelta> GetRecentlyInsertedIntoDOMTimeoutRemaining()
-      const;
+  // time of the events to match the recently_attached cooldown time.
+  std::optional<base::TimeDelta> GetRecentlyAttachedTimeoutRemaining() const;
 
   IntersectionVisibility IntersectionVisibilityForTesting() const {
     return intersection_visibility_;

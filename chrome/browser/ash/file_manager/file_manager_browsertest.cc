@@ -384,26 +384,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayCheckReadOnlyIconOnFakeDirectory"),
         TestCase("fileDisplayCheckNoReadOnlyIconOnDownloads"),
         TestCase("fileDisplayCheckNoReadOnlyIconOnLinuxFiles"),
-        TestCase("fileDisplayCheckNoReadOnlyIconOnGuestOs"),
-        TestCase("fileDisplayLocalFilesDisabledUnmountRemovable")
-            .DontMountVolumes()
-            .EnableSkyVault(),
-        // TODO(b/347643334): Enable.
-        // TestCase("fileDisplayLocalFilesDisableInMyFiles")
-        //     .DontMountVolumes()
-        //     .EnableSkyVault(),
-        // TestCase("fileDisplayOneDrivePlaceholder")
-        //     .DontMountVolumes()
-        //     .EnableSkyVault(),
-        TestCase("fileDisplayFileSystemDisabled")
-            .DontMountVolumes()
-            .EnableSkyVault(),
-        TestCase("fileDisplaySkyVaultMigrationToGoogleDrive")
-            .DontMountVolumes()
-            .EnableSkyVault(),
-        TestCase("fileDisplaySkyVaultMigrationToOneDrive")
-            .DontMountVolumes()
-            .EnableSkyVault()));
+        TestCase("fileDisplayCheckNoReadOnlyIconOnGuestOs")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenVideoMediaApp, /* open_video_media_app.ts */

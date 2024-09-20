@@ -84,6 +84,8 @@ crbug.com/349397104 external/wpt/pointerevents/pointerevent_contextmenu_is_a_poi
 crbug.com/349397104 external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure ]
 crbug.com/349397104 external/wpt/pointerevents/pointerevent_touch-action-modified_touch.html [ Failure Pass ]
 crbug.com/349397104 external/wpt/pointerevents/pointerevent_touch-action-span-none-test_touch.html [ Skip Timeout ]
+crbug.com/349397104 external/wpt/pointerevents/pointerlock/pointerevent_getCoalescedEvents_when_pointerlocked.https.html [ Failure Pass ]
+crbug.com/349397104 external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_after_pointercapture.html [ Failure Pass ]
 
 
 # Incompatible with both Chrome Android and Webview

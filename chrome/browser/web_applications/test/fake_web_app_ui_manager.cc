@@ -118,6 +118,15 @@ Browser* FakeWebAppUiManager::ReparentAppTabToWindow(
   return nullptr;
 }
 
+Browser* FakeWebAppUiManager::ReparentAppTabToWindow(
+    content::WebContents* contents,
+    const webapps::AppId& app_id,
+    base::OnceCallback<void(content::WebContents*)> completion_callback) {
+  ++num_reparent_tab_calls_;
+  std::move(completion_callback).Run(contents);
+  return nullptr;
+}
+
 void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(
     const std::string& app_id,
     bool title_change,
@@ -236,7 +245,7 @@ void FakeWebAppUiManager::MaybeCreateEnableSupportedLinksInfobar(
     const std::string& launch_name) {}
 
 void FakeWebAppUiManager::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-    content::WebContents* web_contents,
+    Browser* browser,
     Profile* profile,
     const std::string& app_id) {}
 

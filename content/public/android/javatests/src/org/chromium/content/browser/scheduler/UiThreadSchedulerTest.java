@@ -91,7 +91,7 @@ public class UiThreadSchedulerTest {
         TaskRunner uiThreadTaskRunner = PostTask.createTaskRunner(TaskTraits.UI_DEFAULT);
         startContentMainOnUiThread();
 
-        uiThreadTaskRunner.postTask(
+        uiThreadTaskRunner.execute(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -109,7 +109,7 @@ public class UiThreadSchedulerTest {
         UiThreadSchedulerTestUtils.postBrowserMainLoopStartupTasks(true);
         startContentMainOnUiThread();
 
-        uiThreadTaskRunner.postTask(
+        uiThreadTaskRunner.execute(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -214,7 +214,7 @@ public class UiThreadSchedulerTest {
 
         // Post a task that reposts itself until nativeSchedulerStarted is set to true.  This tests
         // that tasks posted before the native library is loaded still run afterwards.
-        taskQueue.postTask(
+        taskQueue.execute(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -225,7 +225,7 @@ public class UiThreadSchedulerTest {
                                 lock.notify();
                             }
                         } else {
-                            taskQueue.postTask(this);
+                            taskQueue.execute(this);
                         }
                     }
                 });

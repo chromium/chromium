@@ -129,8 +129,7 @@ void BlobBytesProvider::AppendData(base::span<const char> data) {
       data_.back()->size() + data.size() > kMaxConsolidatedItemSizeInBytes) {
     AppendData(RawData::Create());
   }
-  data_.back()->MutableData()->Append(
-      data.data(), base::checked_cast<wtf_size_t>(data.size()));
+  data_.back()->MutableData()->AppendSpan(data);
 }
 
 // static
@@ -163,7 +162,7 @@ void BlobBytesProvider::RequestAsReply(RequestAsReplyCallback callback) {
   // to reduce the number of copies of data that are made here.
   Vector<uint8_t> result;
   for (const auto& d : data_)
-    result.Append(d->data(), base::checked_cast<wtf_size_t>(d->size()));
+    result.AppendSpan(base::span(*d));
   std::move(callback).Run(result);
 }
 

@@ -108,6 +108,9 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
     if (PermitCrossOriginTrustedSignals()) {
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kFledgePermitCrossOriginTrustedSignals);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kFledgePermitCrossOriginTrustedSignals);
     }
 
     // Other defaults are all reasonable, but this should always be true for

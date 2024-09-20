@@ -127,16 +127,25 @@ public class ToolbarTabControllerImplTest {
     @Test
     public void stopOrReloadCurrentTab() {
         doReturn(false).when(mTab).isLoading();
-        mToolbarTabController.stopOrReloadCurrentTab();
+        mToolbarTabController.stopOrReloadCurrentTab(/* ignoreCache= */ false);
 
         verify(mTab).reload();
         verify(mRunnable).run();
 
         doReturn(true).when(mTab).isLoading();
-        mToolbarTabController.stopOrReloadCurrentTab();
+        mToolbarTabController.stopOrReloadCurrentTab(/* ignoreCache= */ false);
 
         verify(mTab).stopLoading();
         verify(mRunnable, times(2)).run();
+    }
+
+    @Test
+    public void stopOrReloadCurrentTab_ignoreCache() {
+        doReturn(false).when(mTab).isLoading();
+
+        mToolbarTabController.stopOrReloadCurrentTab(/* ignoreCache= */ true);
+
+        verify(mTab).reloadIgnoringCache();
     }
 
     @Test

@@ -1,0 +1,12 @@
+error[E0277]: the trait bound `UnsafeCell<u32>: FromBytes` is not satisfied
+  --> tests/ui-msrv/include_value_not_from_bytes.rs:12:5
+   |
+12 |     include_value!("../../testdata/include_value/data");
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `FromBytes` is not implemented for `UnsafeCell<u32>`
+   |
+note: required by a bound in `AssertIsFromBytes`
+  --> tests/ui-msrv/include_value_not_from_bytes.rs:12:5
+   |
+12 |     include_value!("../../testdata/include_value/data");
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertIsFromBytes`
+   = note: this error originates in the macro `$crate::transmute` (in Nightly builds, run with -Z macro-backtrace for more info)

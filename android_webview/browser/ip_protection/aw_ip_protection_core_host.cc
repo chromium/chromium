@@ -29,11 +29,12 @@
 #include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -71,19 +72,21 @@ void AwIpProtectionCoreHost::SetUp() {
   if (!ip_protection_proxy_config_fetcher_) {
     CHECK(aw_browser_context_);
     ip_protection_proxy_config_fetcher_ =
-        std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
+        std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
             aw_browser_context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess()
                 .get(),
             ip_protection::IpProtectionCoreHostHelper::kWebViewIpBlinding,
-            google_apis::GetAPIKey(version_info::android::GetChannel()));
+            base::BindRepeating(&AwIpProtectionCoreHost::AuthenticateCallback,
+                                weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
 void AwIpProtectionCoreHost::SetUpForTesting(
-    std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
-        ip_protection_proxy_config_retriever,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<quiche::BlindSignAuthInterface> bsa) {
+  for_testing_ = true;
+
   // Carefully destroy any existing values in the correct order.
   ip_protection_token_ipc_fetcher_.Reset();
   ip_protection_proxy_config_fetcher_ = nullptr;
@@ -92,8 +95,11 @@ void AwIpProtectionCoreHost::SetUpForTesting(
       base::SequenceBound<ip_protection::IpProtectionTokenIpcFetcher>(
           token_fetcher_task_runner_, std::move(bsa));
   ip_protection_proxy_config_fetcher_ =
-      std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
-          std::move(ip_protection_proxy_config_retriever));
+      std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
+          std::move(url_loader_factory),
+          ip_protection::IpProtectionCoreHostHelper::kWebViewIpBlinding,
+          base::BindRepeating(&AwIpProtectionCoreHost::AuthenticateCallback,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AwIpProtectionCoreHost::GetProxyList(GetProxyListCallback callback) {
@@ -108,8 +114,17 @@ void AwIpProtectionCoreHost::GetProxyList(GetProxyListCallback callback) {
     return;
   }
 
-  ip_protection_proxy_config_fetcher_->CallGetProxyConfig(
-      std::move(callback), /*oauth_token=*/std::nullopt);
+  ip_protection_proxy_config_fetcher_->GetProxyConfig(std::move(callback));
+}
+
+void AwIpProtectionCoreHost::AuthenticateCallback(
+    std::unique_ptr<network::ResourceRequest> resource_request,
+    ip_protection::IpProtectionProxyConfigDirectFetcher::
+        AuthenticateDoneCallback callback) {
+  google_apis::AddAPIKeyToRequest(
+      *resource_request,
+      google_apis::GetAPIKey(version_info::android::GetChannel()));
+  std::move(callback).Run(true, std::move(resource_request));
 }
 
 void AwIpProtectionCoreHost::TryGetAuthTokens(

@@ -27,7 +27,8 @@ void SVGAnimatedString::setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
       string = value->GetAsString();
       if (ContextElement()->IsScriptElement()) {
         string = TrustedTypesCheckForScriptURL(
-            string, ContextElement()->GetExecutionContext(), exception_state);
+            string, ContextElement()->GetExecutionContext(),
+            "SVGAnimatedString", "baseVal", exception_state);
         if (exception_state.HadException())
           return;
       }

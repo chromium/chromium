@@ -39,6 +39,11 @@ PlusAddressCreationControllerDesktop::~PlusAddressCreationControllerDesktop() {
   }
 }
 
+void PlusAddressCreationControllerDesktop::TryAgainToReservePlusAddress() {
+  NOTIMPLEMENTED() << "Retrying to reserve a plus address is only supported on "
+                      "mobile platforms.";
+}
+
 void PlusAddressCreationControllerDesktop::OnRefreshClicked() {
   PlusAddressService* plus_address_service = GetPlusAddressService();
   if (!plus_address_service) {

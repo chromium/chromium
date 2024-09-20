@@ -19,21 +19,6 @@
 
 namespace remoting {
 
-// Grab/release the X server within a scope. This can help avoid race
-// conditions that would otherwise lead to X errors.
-class ScopedXGrabServer {
- public:
-  explicit ScopedXGrabServer(x11::Connection* connection);
-
-  ScopedXGrabServer(const ScopedXGrabServer&) = delete;
-  ScopedXGrabServer& operator=(const ScopedXGrabServer&) = delete;
-
-  ~ScopedXGrabServer();
-
- private:
-  raw_ptr<x11::Connection> connection_;
-};
-
 // Make a connection to the X Server impervious to X Server grabs. Returns
 // true if successful or false if the required XTEST extension is not present.
 bool IgnoreXServerGrabs(x11::Connection* connection, bool ignore);

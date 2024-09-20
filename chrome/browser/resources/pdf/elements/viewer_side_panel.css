@@ -79,7 +79,7 @@ cr-icon-button[data-selected="true"] {
 .color-chip {
   -webkit-appearance: none;
   background: var(--item-color, magenta);
-  border: 1px solid rgba(32, 33, 36, 0.5);
+  border: 1px solid rgb(143, 143, 143);
   border-radius: 50%;
   cursor: pointer;
   margin: 0;

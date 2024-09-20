@@ -43,8 +43,9 @@ class CSSValuePair;
 class StylePropertyShorthand;
 
 // "Consume" functions, when successful, should consume all the relevant tokens
-// as well as any trailing whitespace. When the start of the range doesn't
-// match the type we're looking for, the range should not be modified.
+// as well as any trailing whitespace. When the start of the stream doesn't
+// match the type we're looking for, the position in the stream should
+// not be modified.
 namespace css_parsing_utils {
 
 enum class AllowInsetAndSpread { kAllow, kForbid };
@@ -387,7 +388,7 @@ bool ParseBackgroundOrMask(bool,
 
 CSSValue* ConsumeCoordBoxOrNoClip(CSSParserTokenStream&);
 
-CSSRepeatStyleValue* ConsumeRepeatStyleValue(CSSParserTokenStream& range);
+CSSRepeatStyleValue* ConsumeRepeatStyleValue(CSSParserTokenStream& stream);
 CSSValueList* ParseRepeatStyle(CSSParserTokenStream& stream);
 
 CSSValue* ConsumeWebkitBorderImage(CSSParserTokenStream&,
@@ -488,6 +489,8 @@ bool ConsumeGridTemplateShorthand(bool important,
                                   const CSSValue*& template_rows,
                                   const CSSValue*& template_columns,
                                   const CSSValue*& template_areas);
+
+CSSValue* ConsumeMasonrySlack(CSSParserTokenStream&, const CSSParserContext&);
 
 CSSValue* ConsumeHyphenateLimitChars(CSSParserTokenStream&,
                                      const CSSParserContext&);
@@ -660,10 +663,10 @@ CSSValueList* ConsumeSpaceSeparatedList(Func callback,
 }
 
 template <CSSValueID start, CSSValueID end>
-CSSValue* ConsumePositionLonghand(CSSParserTokenStream& range,
+CSSValue* ConsumePositionLonghand(CSSParserTokenStream& stream,
                                   const CSSParserContext& context) {
-  if (range.Peek().GetType() == kIdentToken) {
-    CSSValueID id = range.Peek().Id();
+  if (stream.Peek().GetType() == kIdentToken) {
+    CSSValueID id = stream.Peek().Id();
     int percent;
     if (id == start) {
       percent = 0;
@@ -674,11 +677,11 @@ CSSValue* ConsumePositionLonghand(CSSParserTokenStream& range,
     } else {
       return nullptr;
     }
-    range.ConsumeIncludingWhitespace();
+    stream.ConsumeIncludingWhitespace();
     return CSSNumericLiteralValue::Create(
         percent, CSSPrimitiveValue::UnitType::kPercentage);
   }
-  return ConsumeLengthOrPercent(range, context,
+  return ConsumeLengthOrPercent(stream, context,
                                 CSSPrimitiveValue::ValueRange::kAll);
 }
 

@@ -1361,7 +1361,12 @@ void WebAppPublisherHelper::OnWebAppFileHandlerApprovalStateChanged(
 void WebAppPublisherHelper::OnWebAppInstalled(const webapps::AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
-    delegate_->PublishWebApp(CreateWebApp(web_app));
+    auto app = CreateWebApp(web_app);
+    // If the installation was a force reinstallation on top of an existing app,
+    // the raw icon might have changed. Notify App Service to invalidate the
+    // icon disk cache.
+    app->icon_key->update_version = true;
+    delegate_->PublishWebApp(std::move(app));
   }
 }
 

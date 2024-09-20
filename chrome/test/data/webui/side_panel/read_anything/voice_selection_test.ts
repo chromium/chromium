@@ -18,13 +18,13 @@ suite('Automatic voice selection', () => {
 
   const firstVoiceWithLang = createSpeechSynthesisVoice({
     lang: defaultLang,
-    name: 'Kristi',
+    name: 'Google Kristi',
   });
   const secondVoiceWithLang =
-      createSpeechSynthesisVoice({lang: defaultLang, name: 'Lauren'});
+      createSpeechSynthesisVoice({lang: defaultLang, name: 'Google Lauren'});
   const defaultVoiceForDifferentLang = createSpeechSynthesisVoice({
     lang: differentLang,
-    name: 'Eitan',
+    name: 'Google Eitan',
     default: true,
   });
   const voices = [
@@ -69,14 +69,15 @@ suite('Automatic voice selection', () => {
     app.synth.getVoices = () => {
       return voices.concat(
           createSpeechSynthesisVoice(
-              {lang: defaultLang, name: 'Wall-e (Natural)'}),
+              {lang: defaultLang, name: 'Google Wall-e (Natural)'}),
           createSpeechSynthesisVoice(
-              {lang: defaultLang, name: 'Andy (Natural)'}),
+              {lang: defaultLang, name: 'Google Andy (Natural)'}),
       );
     };
     app.onVoicesChanged();
 
-    assertEquals('Wall-e (Natural)', app.getSpeechSynthesisVoice()?.name);
+    assertEquals(
+        'Google Wall-e (Natural)', app.getSpeechSynthesisVoice()?.name);
   });
 
   test('with a user selected voices', () => {
@@ -91,9 +92,9 @@ suite('Automatic voice selection', () => {
     app.synth.getVoices = () => {
       return voices.concat(
           createSpeechSynthesisVoice(
-              {lang: defaultLang, name: 'Wall-e (Natural)'}),
+              {lang: defaultLang, name: 'Google Wall-e (Natural)'}),
           createSpeechSynthesisVoice(
-              {lang: defaultLang, name: 'Andy (Natural)'}),
+              {lang: defaultLang, name: 'Google Andy (Natural)'}),
       );
     };
     app.onVoicesChanged();

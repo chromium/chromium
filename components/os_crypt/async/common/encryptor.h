@@ -101,6 +101,16 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
     kEncryptSyncCompat = 1,
   };
 
+  // Flags that can be set by the Encryptor during a Decrypt call. Pass to a
+  // Decrypt operation to obtain these flags.
+  struct DecryptFlags {
+    // Set by the Encryptor to indicate to the caller that the data that has
+    // just been returned from the Decrypt operation should be re-encrypted with
+    // a call to Encrypt, as the key has been rotated or a new key is available
+    // that provides a different security level.
+    bool should_reencrypt = false;
+  };
+
   using KeyRing = std::map</*tag=*/std::string, Key>;
 
   // Mojo uses this public constructor for serialization.
@@ -120,20 +130,25 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
       const std::string& data) const;
 
   // Decrypt data previously encrypted using `EncryptData`. This can be called
-  // on any thread.
+  // on any thread. If a non-null `flags` is passed, then a set of flags is
+  // returned to indicate additional information for the caller. See
+  // `DecryptFlags` struct above.
   [[nodiscard]] std::optional<std::string> DecryptData(
-      base::span<const uint8_t> data) const;
+      base::span<const uint8_t> data,
+      DecryptFlags* flags = nullptr) const;
 
   // These four APIs are provided for backwards compatibility with OSCrypt. They
-  // just call the above functions.
+  // just call the above functions. For these functions, `flags` is optional.
   [[nodiscard]] bool EncryptString(const std::string& plaintext,
                                    std::string* ciphertext) const;
   [[nodiscard]] bool DecryptString(const std::string& ciphertext,
-                                   std::string* plaintext) const;
+                                   std::string* plaintext,
+                                   DecryptFlags* flags = nullptr) const;
   [[nodiscard]] bool EncryptString16(const std::u16string& plaintext,
                                      std::string* ciphertext) const;
   [[nodiscard]] bool DecryptString16(const std::string& ciphertext,
-                                     std::u16string* plaintext) const;
+                                     std::u16string* plaintext,
+                                     DecryptFlags* flags = nullptr) const;
 
   // Returns true if there is at least one key contained within the encryptor
   // that could be used for encryption, otherwise, it will return the value of

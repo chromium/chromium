@@ -15,9 +15,15 @@
 
 // static
 power_bookmarks::PowerBookmarkService*
-PowerBookmarkServiceFactory::GetForBrowserState(web::BrowserState* state) {
+PowerBookmarkServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<power_bookmarks::PowerBookmarkService*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+power_bookmarks::PowerBookmarkService*
+PowerBookmarkServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static

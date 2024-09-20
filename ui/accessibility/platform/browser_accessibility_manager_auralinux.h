@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerAuraLinux
   FRIEND_TEST_ALL_PREFIXES(BrowserAccessibilityManagerAuraLinuxTest,
                            TestEmitChildrenChanged);
   // AXTreeObserver methods.
-  void OnNodeDeleted(AXTree* tree, int32_t node_id) override;
+  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
   void OnIgnoredWillChange(
       AXTree* tree,
       AXNode* node,

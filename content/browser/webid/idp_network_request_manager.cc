@@ -42,21 +42,19 @@
 namespace content {
 
 namespace {
-using LoginState = IdentityRequestAccount::LoginState;
 
-using AccountList = IdpNetworkRequestManager::AccountList;
+using AccountsResponseInvalidReason =
+    IdpNetworkRequestManager::AccountsResponseInvalidReason;
 using ClientMetadata = IdpNetworkRequestManager::ClientMetadata;
 using Endpoints = IdpNetworkRequestManager::Endpoints;
-using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
-using TokenResult = content::IdpNetworkRequestManager::TokenResult;
-using TokenError = content::IdentityCredentialTokenError;
-using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
-using AccountsResponseInvalidReason =
-    content::IdpNetworkRequestManager::AccountsResponseInvalidReason;
-using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
-using TokenResponseType =
-    content::IdpNetworkRequestManager::FedCmTokenResponseType;
-using ErrorUrlType = content::IdpNetworkRequestManager::FedCmErrorUrlType;
+using ErrorDialogType = IdpNetworkRequestManager::FedCmErrorDialogType;
+using ErrorUrlType = IdpNetworkRequestManager::FedCmErrorUrlType;
+using FetchStatus = IdpNetworkRequestManager::FetchStatus;
+using LoginState = IdentityRequestAccount::LoginState;
+using ParseStatus = IdpNetworkRequestManager::ParseStatus;
+using TokenError = IdentityCredentialTokenError;
+using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
+using TokenResult = IdpNetworkRequestManager::TokenResult;
 
 // TODO(kenrb): These need to be defined in the explainer or draft spec and
 // referenced here.
@@ -210,9 +208,8 @@ std::string ExtractString(const base::Value::Dict& response, const char* key) {
   return *str;
 }
 
-std::optional<content::IdentityRequestAccount> ParseAccount(
-    const base::Value::Dict& account,
-    const std::string& client_id) {
+IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
+                                       const std::string& client_id) {
   auto* id = account.FindString(kAccountIdKey);
   auto* email = account.FindString(kAccountEmailKey);
   auto* name = account.FindString(kAccountNameKey);
@@ -249,8 +246,9 @@ std::optional<content::IdentityRequestAccount> ParseAccount(
   }
 
   // required fields
-  if (!(id && email && name))
-    return std::nullopt;
+  if (!(id && email && name)) {
+    return nullptr;
+  }
 
   auto trimmed_email =
       base::TrimWhitespace(base::UTF8ToUTF16(*email), base::TRIM_ALL);
@@ -258,7 +256,7 @@ std::optional<content::IdentityRequestAccount> ParseAccount(
       base::TrimWhitespace(base::UTF8ToUTF16(*name), base::TRIM_ALL);
   // TODO(crbug.com/40849405): validate email address.
   if (trimmed_email.empty() || trimmed_name.empty()) {
-    return std::nullopt;
+    return nullptr;
   }
 
   RecordApprovedClientsExistence(approved_clients != nullptr);
@@ -280,7 +278,7 @@ std::optional<content::IdentityRequestAccount> ParseAccount(
     RecordApprovedClientsSize(approved_clients->size());
   }
 
-  return content::IdentityRequestAccount(
+  return base::MakeRefCounted<IdentityRequestAccount>(
       *id, *email, *name, given_name ? *given_name : "",
       picture ? GURL(*picture) : GURL(), std::move(account_hints),
       std::move(domain_hints), std::move(labels), approved_value,
@@ -290,7 +288,7 @@ std::optional<content::IdentityRequestAccount> ParseAccount(
 // Parses accounts from given Value. Returns true if parse is successful and
 // adds parsed accounts to the |account_list|.
 bool ParseAccounts(const base::Value::List& accounts,
-                   AccountList& account_list,
+                   std::vector<IdentityRequestAccountPtr>& account_list,
                    const std::string& client_id,
                    AccountsResponseInvalidReason& parsing_error) {
   DCHECK(account_list.empty());
@@ -303,14 +301,15 @@ bool ParseAccounts(const base::Value::List& accounts,
       return false;
     }
 
-    auto parsed_account = ParseAccount(*account_dict, client_id);
+    IdentityRequestAccountPtr parsed_account =
+        ParseAccount(*account_dict, client_id);
     if (parsed_account) {
       if (account_ids.count(parsed_account->id)) {
         parsing_error = AccountsResponseInvalidReason::kAccountsShareSameId;
         return false;
       }
-      account_list.push_back(parsed_account.value());
       account_ids.insert(parsed_account->id);
+      account_list.push_back(std::move(parsed_account));
     } else {
       parsing_error =
           AccountsResponseInvalidReason::kAccountMissesRequiredField;
@@ -327,8 +326,9 @@ std::optional<SkColor> ParseCssColor(const std::string* value) {
     return std::nullopt;
 
   SkColor color;
-  if (!content::ParseCssColorString(*value, &color))
+  if (!ParseCssColorString(*value, &color)) {
     return std::nullopt;
+  }
 
   return SkColorSetA(color, 0xff);
 }
@@ -640,14 +640,14 @@ void OnAccountsRequestParsed(
     IdpNetworkRequestManager::AccountsRequestCallback callback,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
+  std::vector<IdentityRequestAccountPtr> account_list;
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     RecordAccountsResponseInvalidReason(
         AccountsResponseInvalidReason::kResponseIsNotJsonOrDict);
-    std::move(callback).Run(fetch_status, AccountList());
+    std::move(callback).Run(fetch_status, account_list);
     return;
   }
 
-  AccountList account_list;
   const base::Value::Dict& response = result->GetDict();
   const base::Value::List* accounts = response.FindList(kAccountsKey);
 
@@ -656,7 +656,7 @@ void OnAccountsRequestParsed(
         AccountsResponseInvalidReason::kNoAccountsKey);
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-        AccountList());
+        account_list);
     return;
   }
 
@@ -665,7 +665,7 @@ void OnAccountsRequestParsed(
         AccountsResponseInvalidReason::kAccountListIsEmpty);
     std::move(callback).Run(
         {ParseStatus::kEmptyListError, fetch_status.response_code},
-        AccountList());
+        account_list);
     return;
   }
 
@@ -680,7 +680,7 @@ void OnAccountsRequestParsed(
     RecordAccountsResponseInvalidReason(parsing_error);
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-        AccountList());
+        std::vector<IdentityRequestAccountPtr>());
     return;
   }
 

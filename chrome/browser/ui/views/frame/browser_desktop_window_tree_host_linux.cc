@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -316,8 +317,9 @@ void BrowserDesktopWindowTreeHostLinux::CloseNow() {
   DesktopWindowTreeHostLinux::CloseNow();
 }
 
-void BrowserDesktopWindowTreeHostLinux::Show(ui::WindowShowState show_state,
-                                             const gfx::Rect& restore_bounds) {
+void BrowserDesktopWindowTreeHostLinux::Show(
+    ui::mojom::WindowShowState show_state,
+    const gfx::Rect& restore_bounds) {
   DesktopWindowTreeHostLinux::Show(show_state, restore_bounds);
 
   const std::string& startup_id =

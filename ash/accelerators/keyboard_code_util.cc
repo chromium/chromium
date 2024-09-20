@@ -14,6 +14,7 @@
 #include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chromeos/ash/resources/internal/icons/vector_icons.h"
@@ -94,12 +95,16 @@ std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
 
 const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
   switch (key_code) {
+    case ui::VKEY_APPS:
+      return &ash::kKsContextMenuIcon;
     case ui::VKEY_BROWSER_BACK:
       return &ash::kKsvBrowserBackIcon;
     case ui::VKEY_BROWSER_FORWARD:
       return &ash::kKsvBrowserForwardIcon;
     case ui::VKEY_BROWSER_REFRESH:
       return &ash::kKsvReloadIcon;
+    case ui::VKEY_BROWSER_HOME:
+      return &ash::kKsvBrowserHomeIcon;
     case ui::VKEY_ZOOM:
       return &ash::kKsvFullscreenIcon;
     case ui::VKEY_MEDIA_LAUNCH_APP1:
@@ -110,6 +115,8 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
 #else
       return &ash::kKsvOverviewIcon;
 #endif
+    case ui::VKEY_MEDIA_LAUNCH_MAIL:
+      return &ash::kKsMediaLaunchMailIcon;
     case ui::VKEY_BRIGHTNESS_DOWN:
       return &ash::kKsvBrightnessDownIcon;
     case ui::VKEY_BRIGHTNESS_UP:
@@ -140,6 +147,8 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
       return &ash::kKsvArrowLeftIcon;
     case ui::VKEY_RIGHT:
       return &ash::kKsvArrowRightIcon;
+    case ui::VKEY_ACCESSIBILITY:
+      return &ash::kKsAccessibilityIcon;
     case ui::VKEY_PRIVACY_SCREEN_TOGGLE:
       return &ash::kKsvPrivacyScreenToggleIcon;
     case ui::VKEY_SNAPSHOT:

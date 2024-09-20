@@ -73,7 +73,7 @@ void ScriptDecoder::DidReceiveData(Vector<char> data) {
   CHECK(decoding_task_runner_->RunsTasksInCurrentSequence());
   CHECK(!client_task_runner_->RunsTasksInCurrentSequence());
 
-  AppendData(decoder_->Decode(data.data(), data.size()));
+  AppendData(decoder_->Decode(data));
   raw_data_.Append(std::move(data));
 }
 
@@ -110,8 +110,7 @@ void ScriptDecoder::Delete() const {
 }
 
 void ScriptDecoder::AppendData(const String& data) {
-  digestor_.Update(base::as_bytes(base::make_span(
-      static_cast<const char*>(data.Bytes()), data.CharactersSizeInBytes())));
+  digestor_.Update(data.RawByteSpan());
   builder_.Append(data);
 }
 
@@ -156,8 +155,7 @@ void DataPipeScriptDecoder::Start(mojo::ScopedDataPipeConsumerHandle source) {
 }
 
 void DataPipeScriptDecoder::OnDataAvailable(base::span<const uint8_t> data) {
-  AppendData(decoder_->Decode(reinterpret_cast<const char*>(data.data()),
-                              data.size()));
+  AppendData(decoder_->Decode(data));
   raw_data_.Append(data);
 }
 
@@ -175,8 +173,7 @@ void DataPipeScriptDecoder::OnDataComplete() {
 }
 
 void DataPipeScriptDecoder::AppendData(const String& data) {
-  digestor_.Update(base::as_bytes(base::make_span(
-      static_cast<const char*>(data.Bytes()), data.CharactersSizeInBytes())));
+  digestor_.Update(data.RawByteSpan());
   builder_.Append(data);
 }
 
@@ -229,7 +226,7 @@ void ScriptDecoderWithClient::DidReceiveData(Vector<char> data,
   CHECK(decoding_task_runner_->RunsTasksInCurrentSequence());
   CHECK(!client_task_runner_->RunsTasksInCurrentSequence());
 
-  AppendData(decoder_->Decode(data.data(), data.size()));
+  AppendData(decoder_->Decode(data));
 
   if (!send_to_client) {
     return;
@@ -285,8 +282,7 @@ void ScriptDecoderWithClient::Delete() const {
 }
 
 void ScriptDecoderWithClient::AppendData(const String& data) {
-  digestor_.Update(base::as_bytes(base::make_span(
-      static_cast<const char*>(data.Bytes()), data.CharactersSizeInBytes())));
+  digestor_.Update(data.RawByteSpan());
   builder_.Append(data);
 }
 

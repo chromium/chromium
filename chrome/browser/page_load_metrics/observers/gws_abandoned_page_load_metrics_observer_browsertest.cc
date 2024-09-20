@@ -115,8 +115,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     };
   }
   std::vector<NavigationMilestone> all_testable_milestones() {
-    return {NavigationMilestone::kNavigationStart,
-            NavigationMilestone::kLoaderStart,
+    return {NavigationMilestone::kLoaderStart,
             NavigationMilestone::kFirstRedirectResponseLoaderCallback,
             NavigationMilestone::kNonRedirectResponseLoaderCallback};
   }
@@ -253,6 +252,17 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
            suffix;
   }
 
+  std::string GetNavigationTypeToAbandonHistogramName(
+      std::string_view navigation_type,
+      std::optional<AbandonReason> abandon_reason = std::nullopt,
+      std::string suffix = "") {
+    return internal::kGWSAbandonedPageLoadMetricsHistogramPrefix +
+           GWSAbandonedPageLoadMetricsObserver::
+               GetNavigationTypeToAbandonWithoutPrefixSuffix(navigation_type,
+                                                             abandon_reason) +
+           suffix;
+  }
+
   void ExpectTotalCountForAllNavigationMilestones(
       bool include_redirect,
       int count,
@@ -294,8 +304,9 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     std::vector<std::string> with_incognito;
     for (std::string& histogram_name : histogram_names) {
       with_incognito.push_back(histogram_name);
-      with_incognito.push_back(histogram_name +
-                               (is_incognito ? ".Incognito" : ".NoIncognito"));
+      if (is_incognito) {
+        with_incognito.push_back(histogram_name + ".Incognito");
+      }
     }
     std::vector<std::pair<std::string, int>> histogram_names_expanded;
     for (std::string& histogram_name : with_incognito) {
@@ -408,8 +419,9 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     // navigation is first abandoned by hiding, then abandoned again by
     // `abandon_after_hiding_reason` which is not kHidden.
 
-    // Check that the last milestone before abandonment due to `abandon_reason`
-    // and `abandon_after_hiding_reason` (if set) is correctly recorded.
+    // Check that the navigation type and last milestone before abandonment due
+    // to `abandon_reason` and `abandon_after_hiding_reason` (if set) is
+    // correctly recorded.
     if (!abandon_after_hiding_reason.has_value() ||
         abandon_after_hiding_reason == AbandonReason::kHidden) {
       EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
@@ -419,20 +431,41 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                            abandon_reason, histogram_suffix),
                        GetLastMilestoneBeforeAbandonHistogramName(
                            std::nullopt, histogram_suffix)})));
-    } else {
       EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                      GetLastMilestoneBeforeAbandonHistogramName()),
-                  testing::UnorderedElementsAreArray(ExpandHistograms(
-                      {GetLastMilestoneBeforeAbandonHistogramName(
-                           abandon_reason, histogram_suffix),
-                       GetLastMilestoneBeforeAbandonHistogramName(
-                           abandon_after_hiding_reason,
-                           internal::kSuffixWasHidden + histogram_suffix),
-                       GetLastMilestoneBeforeAbandonHistogramName(
-                           std::nullopt, histogram_suffix),
-                       GetLastMilestoneBeforeAbandonHistogramName(
-                           std::nullopt,
-                           internal::kSuffixWasHidden + histogram_suffix)})));
+                      GetNavigationTypeToAbandonHistogramName(
+                          internal::kNavigationTypeBrowserNav)),
+                  testing::UnorderedElementsAreArray(
+                      ExpandHistograms({GetNavigationTypeToAbandonHistogramName(
+                          internal::kNavigationTypeBrowserNav, abandon_reason,
+                          histogram_suffix)})));
+    } else {
+      EXPECT_THAT(
+          histogram_tester.GetTotalCountsForPrefix(
+              GetLastMilestoneBeforeAbandonHistogramName()),
+          testing::UnorderedElementsAreArray(ExpandHistograms(
+              {GetLastMilestoneBeforeAbandonHistogramName(abandon_reason,
+                                                          histogram_suffix),
+               GetLastMilestoneBeforeAbandonHistogramName(
+                   abandon_after_hiding_reason,
+                   internal::kSuffixTabWasHiddenStaysHidden + histogram_suffix),
+               GetLastMilestoneBeforeAbandonHistogramName(std::nullopt,
+                                                          histogram_suffix),
+               GetLastMilestoneBeforeAbandonHistogramName(
+                   std::nullopt, internal::kSuffixTabWasHiddenStaysHidden +
+                                     histogram_suffix)})));
+      EXPECT_THAT(
+          histogram_tester.GetTotalCountsForPrefix(
+              GetNavigationTypeToAbandonHistogramName(
+                  internal::kNavigationTypeBrowserNav)),
+          testing::UnorderedElementsAreArray(ExpandHistograms({
+              GetNavigationTypeToAbandonHistogramName(
+                  internal::kNavigationTypeBrowserNav, abandon_reason,
+                  histogram_suffix),
+              GetNavigationTypeToAbandonHistogramName(
+                  internal::kNavigationTypeBrowserNav,
+                  abandon_after_hiding_reason,
+                  internal::kSuffixTabWasHiddenStaysHidden + histogram_suffix),
+          })));
     }
 
     for (auto milestone : all_milestones()) {
@@ -468,20 +501,24 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                     testing::UnorderedElementsAreArray(ExpandHistograms(
                         {GetMilestoneToAbandonHistogramName(
                              milestone, abandon_after_hiding_reason,
-                             internal::kSuffixWasHidden + histogram_suffix),
+                             internal::kSuffixTabWasHiddenStaysHidden +
+                                 histogram_suffix),
                          GetMilestoneToAbandonHistogramName(
                              milestone, std::nullopt,
-                             internal::kSuffixWasHidden + histogram_suffix)})));
-        EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                        GetAbandonReasonAtMilestoneHistogramName(milestone)),
-                    testing::UnorderedElementsAreArray(ExpandHistograms(
-                        {GetAbandonReasonAtMilestoneHistogramName(
-                            milestone,
-                            internal::kSuffixWasHidden + histogram_suffix)})));
+                             internal::kSuffixTabWasHiddenStaysHidden +
+                                 histogram_suffix)})));
+        EXPECT_THAT(
+            histogram_tester.GetTotalCountsForPrefix(
+                GetAbandonReasonAtMilestoneHistogramName(milestone)),
+            testing::UnorderedElementsAreArray(
+                ExpandHistograms({GetAbandonReasonAtMilestoneHistogramName(
+                    milestone, internal::kSuffixTabWasHiddenStaysHidden +
+                                   histogram_suffix)})));
 
         histogram_tester.ExpectUniqueSample(
             GetAbandonReasonAtMilestoneHistogramName(
-                milestone, internal::kSuffixWasHidden + histogram_suffix),
+                milestone,
+                internal::kSuffixTabWasHiddenStaysHidden + histogram_suffix),
             abandon_after_hiding_reason.value(), 1);
       } else {
         EXPECT_TRUE(histogram_tester
@@ -499,17 +536,18 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     // recording the milestones after the hiding abandonment, but will add
     // the "WasHidden" suffix.
     if (abandon_reason == AbandonReason::kHidden) {
-      histogram_suffix = internal::kSuffixWasHidden + histogram_suffix;
+      std::string histogram_suffix_after_hiding =
+          internal::kSuffixTabWasHiddenStaysHidden + histogram_suffix;
       // Only expect entries for milestones after the hiding takes place.
       bool already_hidden =
           (abandon_milestone == NavigationMilestone::kNavigationStart);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(NavigationMilestone::kNavigationStart,
-                                    histogram_suffix),
+                                    histogram_suffix_after_hiding),
           0);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(NavigationMilestone::kLoaderStart,
-                                    histogram_suffix),
+                                    histogram_suffix_after_hiding),
           already_hidden ? 1 : 0);
 
       already_hidden |=
@@ -518,12 +556,12 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
               NavigationMilestone::kFirstRedirectedRequestStart,
-              histogram_suffix),
+              histogram_suffix_after_hiding),
           (has_redirect && already_hidden) ? 1 : 0);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
               NavigationMilestone::kFirstRedirectResponseLoaderCallback,
-              histogram_suffix),
+              histogram_suffix_after_hiding),
           (has_redirect && already_hidden) ? 1 : 0);
 
       already_hidden |=
@@ -532,26 +570,33 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
               NavigationMilestone::kNonRedirectedRequestStart,
-              histogram_suffix),
+              histogram_suffix_after_hiding),
           already_hidden ? 1 : 0);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
               NavigationMilestone::kNonRedirectResponseLoaderCallback,
-              histogram_suffix),
+              histogram_suffix_after_hiding),
           already_hidden ? 1 : 0);
       // The navigation might be abandoned for a second time after hiding. In
       // that case, the milestones after the second abandonment won't be logged,
       // except if it was another hiding.
+      if (abandon_after_hiding_reason.has_value() &&
+          abandon_after_hiding_reason == AbandonReason::kHidden) {
+        // If the second abandonment is also hiding, that means the tab was
+        // shown after the first hiding (before getting hidden again).
+        histogram_suffix_after_hiding =
+            internal::kSuffixTabWasHiddenLaterShown + histogram_suffix;
+      }
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(NavigationMilestone::kCommitSent,
-                                    histogram_suffix),
+                                    histogram_suffix_after_hiding),
           (!abandon_after_hiding_reason.has_value() ||
            abandon_after_hiding_reason == AbandonReason::kHidden)
               ? 1
               : 0);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(NavigationMilestone::kDidCommit,
-                                    histogram_suffix),
+                                    histogram_suffix_after_hiding),
           (!abandon_after_hiding_reason.has_value() ||
            abandon_after_hiding_reason == AbandonReason::kHidden)
               ? 1
@@ -1220,6 +1265,136 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   // There should be a new entry for all the navigation and loading milestones
   // metrics achieved before abandonment.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       DuplicateNavigation_BrowserInitiated) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  // 1. Start browser-initiated navigation to `url_srp()`
+  content::TestNavigationManager nav_manager(web_contents(), url_srp());
+  web_contents()->GetController().LoadURL(
+      url_srp(), content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+  // Pause the navigation at request start.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+
+  // 2. Navigate again, also to `url_srp()`.
+  web_contents()->GetController().LoadURL(
+      url_srp(), content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+  // Wait for the first navigation to finish.
+  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
+  // Ensure that the first_navigation didn't commit.
+  EXPECT_FALSE(nav_manager.was_committed());
+
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(url_srp(),
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+
+  // Expect that the first navigation didn't get to LoaderStart.
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kNavigationStart), 2);
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kLoaderStart), 1);
+
+  // Check that the abandonment reason is set correctly.
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix(
+                  GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)),
+              testing::UnorderedElementsAreArray(
+                  ExpandHistograms({GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)})));
+  histogram_tester().ExpectUniqueSample(
+      GetAbandonReasonAtMilestoneHistogramName(
+          NavigationMilestone::kNavigationStart),
+      AbandonReason::kNewDuplicateNavigation, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       DuplicateNavigation_RendererInitiated) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  // 1. Start renderer-initiated navigation to `url_srp()`
+  content::TestNavigationManager nav_manager(web_contents(), url_srp());
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     content::JsReplace("location.href = $1;", url_srp())));
+  // Pause the navigation at request start.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+
+  // 2. Navigate again, also to `url_srp()`.
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     content::JsReplace("location.href = $1;", url_srp())));
+  // Wait for the first navigation to finish.
+  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
+  // Ensure that the first_navigation didn't commit.
+  EXPECT_FALSE(nav_manager.was_committed());
+
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(url_srp(),
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+
+  // Expect that the first navigation didn't get to LoaderStart.
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kNavigationStart), 2);
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kLoaderStart), 1);
+
+  // Check that the abandonment reason is set correctly.
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix(
+                  GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)),
+              testing::UnorderedElementsAreArray(
+                  ExpandHistograms({GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)})));
+  histogram_tester().ExpectUniqueSample(
+      GetAbandonReasonAtMilestoneHistogramName(
+          NavigationMilestone::kNavigationStart),
+      AbandonReason::kNewDuplicateNavigation, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       MultipleDifferentRendererInitiatedNavigations) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  // 1. Start renderer-initiated navigation to `url_srp_redirect()`
+  content::TestNavigationManager nav_manager(web_contents(),
+                                             url_srp_redirect());
+  EXPECT_TRUE(ExecJs(web_contents(), content::JsReplace("location.href = $1;",
+                                                        url_srp_redirect())));
+  // Pause the navigation at request start.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+
+  // 2. Navigate again but to `url_srp()`.
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     content::JsReplace("location.href = $1;", url_srp())));
+  // Run script to ensure that the second link click is already processed.
+  EXPECT_TRUE(ExecJs(web_contents(), "console.log('Success');"));
+
+  // Wait for the first navigation to finish.
+  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
+  // Ensure that the first_navigationdidn't commit.
+  EXPECT_FALSE(nav_manager.was_committed());
+
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(url_srp(),
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+
+  // Expect that the first navigation didn't get to LoaderStart.
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kNavigationStart), 2);
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kLoaderStart), 1);
+
+  // Check that the abandonment reason is setcorrectly.
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix(
+                  GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)),
+              testing::UnorderedElementsAreArray(
+                  ExpandHistograms({GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)})));
+  histogram_tester().ExpectUniqueSample(
+      GetAbandonReasonAtMilestoneHistogramName(
+          NavigationMilestone::kNavigationStart),
+      AbandonReason::kNewOtherNavigationRendererInitiated, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,

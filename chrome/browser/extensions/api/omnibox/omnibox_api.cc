@@ -155,6 +155,7 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_ENTERED,
                                        omnibox::OnInputEntered::kEventName,
                                        std::move(args), profile);
+  event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 

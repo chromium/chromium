@@ -25,6 +25,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/content_relationship_verification/digital_asset_links_handler.h"
 #include "components/js_injection/browser/js_communication_host.h"
@@ -103,6 +104,7 @@ class AwContents : public FindHelper::Listener,
       const base::android::JavaParamRef<jobject>&
           intercept_navigation_delegate);
   void InitializeAndroidAutofill(JNIEnv* env);
+  void InitSensitiveContentClient(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetWebContents(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetBrowserContext(JNIEnv* env);
   void SetCompositorFrameConsumer(JNIEnv* env, jlong compositor_frame_consumer);
@@ -343,11 +345,11 @@ class AwContents : public FindHelper::Listener,
 
   // Callback for RequestStorageAccess to continue once the app_domain_list has
   // been loaded.
-  void RequestStorageAccessWithAppDomainList(
-      const url::Origin& top_level_origin,
+  void GrantRequestStorageAccessIfOriginIsAppDefined(
+      const url::Origin top_level_origin,
       base::TimeTicks time_requested,
       PermissionCallback callback,
-      const std::vector<std::string>& app_domain_list);
+      bool is_app_defined);
 
   JavaObjectWeakGlobalRef java_ref_;
   BrowserViewRenderer browser_view_renderer_;  // Must outlive |web_contents_|.
@@ -363,6 +365,8 @@ class AwContents : public FindHelper::Listener,
   std::unique_ptr<AwPdfExporter> pdf_exporter_;
   std::unique_ptr<PermissionRequestHandler> permission_request_handler_;
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
+  scoped_refptr<network::SharedURLLoaderFactory>
+      storage_access_url_loader_factory_;
   std::unique_ptr<content_relationship_verification::DigitalAssetLinksHandler>
       asset_link_handler_;
 

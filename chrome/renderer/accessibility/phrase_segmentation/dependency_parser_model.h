@@ -57,6 +57,13 @@ class DependencyParserModel {
   std::vector<unsigned int> GetDependencyHeads(std::vector<std::string> input);
 
  private:
+  // Returns the dependency head of each node in a dependency graph. The input
+  // is the the matrix of probabilities where input[i][j] signals the
+  // probability that node i is the dependency head of node j. The i-th element
+  // in the returned array signals the dependency head of the node.
+  std::vector<unsigned int> SolveDependencies(
+      base::span<const std::vector<float>> input);
+
   // The tflite model for dependency parsing.
   std::unique_ptr<tflite::task::core::TfLiteEngine> dependency_parser_model_;
 

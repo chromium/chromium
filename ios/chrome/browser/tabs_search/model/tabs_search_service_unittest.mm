@@ -56,32 +56,31 @@ const char16_t kWebState2Title[] = u"Web State 2";
 class TabsSearchServiceTest : public PlatformTest {
  public:
   TabsSearchServiceTest() {
-    TestChromeBrowserState::Builder test_browser_state_builder;
-    test_browser_state_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
-    test_browser_state_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
 
     browser_list_->AddBrowser(browser_.get());
 
-    other_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    other_browser_ = std::make_unique<TestBrowser>(profile_.get());
     browser_list_->AddBrowser(other_browser_.get());
 
-    incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+    incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
     browser_list_->AddBrowser(incognito_browser_.get());
 
-    other_incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+    other_incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
     browser_list_->AddBrowser(other_incognito_browser_.get());
   }
 
@@ -109,22 +108,21 @@ class TabsSearchServiceTest : public PlatformTest {
     return inserted_web_state;
   }
 
-  // Returns the associated search service for normal browser state.
+  // Returns the associated search service for normal profile.
   TabsSearchService* search_service() {
-    return TabsSearchServiceFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    return TabsSearchServiceFactory::GetForProfile(profile_.get());
   }
 
-  // Returns the associated search service for off the record browser state.
+  // Returns the associated search service for off the record profile.
   TabsSearchService* incognito_search_service() {
-    return TabsSearchServiceFactory::GetForBrowserState(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+    return TabsSearchServiceFactory::GetForProfile(
+        profile_->GetOffTheRecordProfile());
   }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> other_browser_;
   std::unique_ptr<Browser> incognito_browser_;
@@ -273,7 +271,7 @@ TEST_F(TabsSearchServiceTest, NoIncognitoResults) {
 }
 
 // Tests that only incognito tabs are returned when searching off the record
-// browser state.
+// profile.
 TEST_F(TabsSearchServiceTest, IncognitoResults) {
   AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
   web::WebState* expected_web_state = AppendNewWebState(

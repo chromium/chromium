@@ -19,7 +19,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 #if DCHECK_IS_ON()
@@ -453,4 +453,4 @@ bool LevelDBScope::IsInDeferredDeletionRange(const leveldb::Slice& key) {
 }
 #endif
 
-}  // namespace content
+}  // namespace content::indexed_db

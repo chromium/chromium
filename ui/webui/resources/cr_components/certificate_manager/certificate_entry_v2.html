@@ -25,8 +25,12 @@
         on-click="onCopyHash_">
     </cr-icon-button>
   </cr-input>
+  <cr-icon-button id="delete" class="icon-picture-delete" hidden$="[[!isDeletable]]"
+      aria-label="[[i18n('certificateManagerV2CertEntryDeleteAriaLabel', displayName)]]"
+      on-click="onDeleteCertificate_">
+  </cr-icon-button>
   <cr-icon-button id="view" class="icon-visibility"
       aria-label="[[i18n('certificateManagerV2CertEntryViewAriaLabel', displayName)]]"
-      on-click="onViewCertificate_" aria-label="View certificate details">
+      on-click="onViewCertificate_">
   </cr-icon-button>
 </div>

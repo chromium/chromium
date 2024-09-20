@@ -26,9 +26,11 @@
 namespace quarantine {
 namespace {
 
-void CheckQuarantineResult(QuarantineFileResult result,
+void CheckQuarantineResult(base::OnceClosure quit_closure,
+                           QuarantineFileResult result,
                            QuarantineFileResult expected_result) {
   EXPECT_EQ(expected_result, result);
+  std::move(quit_closure).Run();
 }
 
 class QuarantineMacTest : public testing::Test {
@@ -69,23 +71,37 @@ class QuarantineMacTest : public testing::Test {
 };
 
 TEST_F(QuarantineMacTest, CheckMetadataSetCorrectly) {
-  QuarantineFile(
-      test_file_, source_url_, referrer_url_, "",
-      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  QuarantineFile(test_file_, source_url_, referrer_url_,
+                 /*request_initiator=*/std::nullopt, "",
+                 base::BindOnce(&CheckQuarantineResult, run_loop.QuitClosure(),
+                                QuarantineFileResult::OK));
+  run_loop.Run();
   EXPECT_TRUE(IsFileQuarantined(test_file_, source_url_, referrer_url_));
 }
 
 TEST_F(QuarantineMacTest, SetMetadataMultipleTimes) {
-  GURL dummy_url("http://www.dummy.example.com");
-  QuarantineFile(
-      test_file_, source_url_, referrer_url_, "",
-      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
-  QuarantineFile(
-      test_file_, dummy_url, dummy_url, "",
-      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsFileQuarantined(test_file_, source_url_, referrer_url_));
+  {
+    base::RunLoop run_loop;
+    QuarantineFile(
+        test_file_, source_url_, referrer_url_,
+        /*request_initiator=*/std::nullopt, "",
+        base::BindOnce(&CheckQuarantineResult, run_loop.QuitClosure(),
+                       QuarantineFileResult::OK));
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    GURL dummy_url("http://www.dummy.example.com");
+    QuarantineFile(
+        test_file_, dummy_url, dummy_url,
+        /*request_initiator=*/std::nullopt, "",
+        base::BindOnce(&CheckQuarantineResult, run_loop.QuitClosure(),
+                       QuarantineFileResult::OK));
+    run_loop.Run();
+    EXPECT_TRUE(IsFileQuarantined(test_file_, source_url_, referrer_url_));
+  }
 }
 
 TEST_F(QuarantineMacTest, IsFileQuarantined_NoFile) {
@@ -99,20 +115,24 @@ TEST_F(QuarantineMacTest, IsFileQuarantined_NoAnnotationsOnFile) {
 }
 
 TEST_F(QuarantineMacTest, IsFileQuarantined_SourceUrlOnly) {
-  QuarantineFile(
-      test_file_, source_url_, GURL(), std::string(),
-      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  QuarantineFile(test_file_, source_url_, GURL(),
+                 /*request_initiator=*/std::nullopt, std::string(),
+                 base::BindOnce(&CheckQuarantineResult, run_loop.QuitClosure(),
+                                QuarantineFileResult::OK));
+  run_loop.Run();
   EXPECT_TRUE(IsFileQuarantined(test_file_, source_url_, GURL()));
   EXPECT_TRUE(IsFileQuarantined(test_file_, GURL(), GURL()));
   EXPECT_TRUE(IsFileQuarantined(test_file_, GURL(), referrer_url_));
 }
 
 TEST_F(QuarantineMacTest, IsFileQuarantined_FullMetadata) {
-  QuarantineFile(
-      test_file_, source_url_, referrer_url_, std::string(),
-      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  QuarantineFile(test_file_, source_url_, referrer_url_,
+                 /*request_initiator=*/std::nullopt, std::string(),
+                 base::BindOnce(&CheckQuarantineResult, run_loop.QuitClosure(),
+                                QuarantineFileResult::OK));
+  run_loop.Run();
   EXPECT_TRUE(IsFileQuarantined(test_file_, GURL(), GURL()));
   EXPECT_TRUE(IsFileQuarantined(test_file_, source_url_, GURL()));
   EXPECT_TRUE(IsFileQuarantined(test_file_, source_url_, referrer_url_));
@@ -120,24 +140,28 @@ TEST_F(QuarantineMacTest, IsFileQuarantined_FullMetadata) {
 }
 
 TEST_F(QuarantineMacTest, IsFileQuarantined_Sanitize) {
+  base::RunLoop run_loop;
   GURL host_url{"https://user:pass@example.com/foo/bar?x#y"};
   GURL host_url_clean{"https://example.com/foo/bar?x#y"};
   GURL referrer_url{"https://user:pass@example.com/foo/index?x#y"};
   GURL referrer_url_clean{"https://example.com/foo/index?x#y"};
 
-  QuarantineFile(
-      test_file_, host_url, referrer_url, std::string(),
-      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
-  base::RunLoop().RunUntilIdle();
+  QuarantineFile(test_file_, host_url, referrer_url,
+                 /*request_initiator=*/std::nullopt, std::string(),
+                 base::BindOnce(&CheckQuarantineResult, run_loop.QuitClosure(),
+                                QuarantineFileResult::OK));
+  run_loop.Run();
   EXPECT_TRUE(
       IsFileQuarantined(test_file_, host_url_clean, referrer_url_clean));
 }
 
 TEST_F(QuarantineMacTest, IsFileQuarantined_AgentBundleIdentifier) {
-  QuarantineFile(
-      test_file_, source_url_, referrer_url_, "",
-      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  QuarantineFile(test_file_, source_url_, referrer_url_,
+                 /*request_initiator=*/std::nullopt, "",
+                 base::BindOnce(&CheckQuarantineResult, run_loop.QuitClosure(),
+                                QuarantineFileResult::OK));
+  run_loop.Run();
 
   NSDictionary* properties = GetQuarantineProperties(test_file_);
   ASSERT_TRUE(properties);
@@ -157,10 +181,12 @@ TEST_F(QuarantineMacTest, IsFileQuarantined_AgentBundleIdentifier) {
 }
 
 TEST_F(QuarantineMacTest, NoWhereFromsKeyIfNoURLs) {
-  QuarantineFile(
-      test_file_, GURL(), GURL(), std::string(),
-      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  QuarantineFile(test_file_, GURL(), GURL(), /*request_initiator=*/std::nullopt,
+                 std::string(),
+                 base::BindOnce(&CheckQuarantineResult, run_loop.QuitClosure(),
+                                QuarantineFileResult::OK));
+  run_loop.Run();
 
   NSString* file_path = base::apple::FilePathToNSString(test_file_);
   ASSERT_NE(nullptr, file_path);
@@ -176,6 +202,19 @@ TEST_F(QuarantineMacTest, NoWhereFromsKeyIfNoURLs) {
   base::apple::ScopedCFTypeRef<CFTypeRef> attr(
       MDItemCopyAttribute(md_item.get(), kMDItemWhereFroms));
   EXPECT_FALSE(attr);
+}
+
+TEST_F(QuarantineMacTest, RequestInitiatorReplacesSourceUrl) {
+  base::RunLoop run_loop;
+  QuarantineFile(test_file_, GURL("data://text/html,payload"), referrer_url_,
+                 /*request_initiator=*/
+                 url::Origin::Create(GURL("http://www.source.example.com/")),
+                 "",
+                 base::BindOnce(&CheckQuarantineResult, run_loop.QuitClosure(),
+                                QuarantineFileResult::OK));
+  run_loop.Run();
+  EXPECT_TRUE(IsFileQuarantined(
+      test_file_, GURL("http://www.source.example.com/"), referrer_url_));
 }
 
 }  // namespace

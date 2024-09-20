@@ -1213,8 +1213,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                     ReauthenticationResult::kSuccess];
   // Delay the auth result to be able to validate that the passwords are not
   // visible until the result is emitted.
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Tap on the save button.
   [[EarlGrey
@@ -1379,8 +1378,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                     ReauthenticationResult::kSuccess];
   // Delay the auth result to be able to validate that the passwords are not
   // visible until the result is emitted.
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Tap on the save button.
   [[EarlGrey

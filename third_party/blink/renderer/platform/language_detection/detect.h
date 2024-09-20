@@ -22,6 +22,8 @@ enum class DetectLanguageError {
 };
 
 using LanguagePrediction = language_detection::Prediction;
+using DetectLanguageCallback = base::OnceCallback<void(
+    base::expected<WTF::Vector<LanguagePrediction>, DetectLanguageError>)>;
 // This uses the TFLite model to detect the languages contained in `text`.
 // The model operates on a limited number characters at a time. This function
 // splits `text` into chunks of characters within the limit and averages the
@@ -31,14 +33,8 @@ using LanguagePrediction = language_detection::Prediction;
 //
 // This is an asynchronous operation. The result will be passed to the
 // `on_complete` callback.
-//
-// TODO(https://crbug.com/354069716): This will not cause the model to be loaded
-// so if it's called before Chrome's translate feature makes the model
-// available, it will fail.
-PLATFORM_EXPORT void DetectLanguage(
-    const WTF::String& text,
-    base::OnceCallback<void(base::expected<WTF::Vector<LanguagePrediction>,
-                                           DetectLanguageError>)> on_complete);
+PLATFORM_EXPORT void DetectLanguage(const WTF::String& text,
+                                    DetectLanguageCallback on_complete);
 
 }  // namespace blink
 

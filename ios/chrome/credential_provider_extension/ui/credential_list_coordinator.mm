@@ -142,22 +142,11 @@
         // TODO(crbug.com/330355124): Handle
         // self.requestParameters.userVerificationPreference.
 
-        __weak __typeof(self) weakSelf = self;
-        FetchKeyCompletionBlock completion = ^(NSData* securityDomainSecret) {
-          CredentialListCoordinator* strongSelf = weakSelf;
-          if (!strongSelf) {
-            return;
-          }
-
-          ASPasskeyAssertionCredential* passkeyCredential =
-              PerformPasskeyAssertion(
-                  credential, strongSelf.requestParameters.clientDataHash,
-                  strongSelf.allowedCredentials, securityDomainSecret);
-          [strongSelf.credentialResponseHandler
-              userSelectedPasskey:passkeyCredential];
-        };
-
-        FetchSecurityDomainSecret(completion);
+        [self.credentialResponseHandler
+            userSelectedPasskey:credential
+                 clientDataHash:self.requestParameters.clientDataHash
+             allowedCredentials:self.allowedCredentials
+                     allowRetry:YES];
       }
     }
   }];

@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <d3d11.h>
+#include <d3d12.h>
 #include <dxgi1_2.h>
 #include <wrl/client.h>
 
@@ -81,6 +82,13 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
                                     GrSurfaceOrigin surface_origin,
                                     SkAlphaType alpha_type,
                                     gpu::SharedImageUsageSet usage);
+
+  std::unique_ptr<SharedImageBacking> CreateFromD3D12Resource(
+      const Mailbox& mailbox,
+      uint32_t size,
+      SharedImageUsageSet usage,
+      std::string debug_label,
+      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
 
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,

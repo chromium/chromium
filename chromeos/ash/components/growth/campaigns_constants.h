@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_CONSTANTS_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_CONSTANTS_H_
 
+#include "base/component_export.h"
+
 namespace growth {
 
 // List of events growth campaign supports.
@@ -17,6 +19,10 @@ enum class CampaignEvent {
   kGroupImpression,
   kGroupDismissed
 };
+
+// The name of an event which is triggered when hovering over the hotseat area.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
+inline const char kGrowthCampaignsEventHotseatHover[] = "hotseat_hover";
 
 }  // namespace growth
 

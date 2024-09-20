@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "net/base/load_timing_info.h"
@@ -73,12 +74,15 @@ class HttpStreamPool::Group {
   // properly manage the lifetime of the Job, even when StartJob() synchronously
   // calls one of the delegate's methods.
   std::unique_ptr<Job> CreateJob(Job::Delegate* delegate,
-                                 NextProto expected_protocol);
+                                 NextProto expected_protocol,
+                                 bool is_http1_allowed,
+                                 ProxyInfo proxy_info);
 
   // Starts a Job. Will call one of Job::Delegate methods to notify results.
   void StartJob(Job* job,
                 RequestPriority priority,
                 const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+                RespectLimits respect_limits,
                 bool enable_ip_based_pooling,
                 bool enable_alternative_services,
                 quic::ParsedQuicVersion quic_version,
@@ -215,6 +219,8 @@ class HttpStreamPool::Group {
   std::list<IdleStreamSocket> idle_stream_sockets_;
 
   std::unique_ptr<AttemptManager> attempt_manager_;
+
+  base::WeakPtrFactory<Group> weak_ptr_factory_{this};
 };
 
 }  // namespace net

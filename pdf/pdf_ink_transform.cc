@@ -5,6 +5,7 @@
 #include "pdf/pdf_ink_transform.h"
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
@@ -39,7 +40,7 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
   return page_position;
 }
 
-InkAffineTransform GetInkRenderTransform(
+ink::AffineTransform GetInkRenderTransform(
     const gfx::Vector2dF& viewport_origin_offset,
     PageOrientation orientation,
     const gfx::Rect& page_content_rect,
@@ -48,45 +49,26 @@ InkAffineTransform GetInkRenderTransform(
   CHECK_GE(viewport_origin_offset.y(), 0.0f);
   CHECK_GT(scale_factor, 0.0f);
   CHECK(!page_content_rect.IsEmpty());
-  float dx = viewport_origin_offset.x() + page_content_rect.x();
-  float dy = viewport_origin_offset.y() + page_content_rect.y();
-  InkAffineTransform transform;
+
+  const float dx = viewport_origin_offset.x() + page_content_rect.x();
+  const float dy = viewport_origin_offset.y() + page_content_rect.y();
 
   switch (orientation) {
     case PageOrientation::kOriginal:
-      transform.a = scale_factor;
-      transform.b = 0;
-      transform.c = dx;
-      transform.d = 0;
-      transform.e = scale_factor;
-      transform.f = dy;
-      break;
+      return ink::AffineTransform(scale_factor, 0, dx, 0, scale_factor, dy);
     case PageOrientation::kClockwise90:
-      transform.a = 0;
-      transform.b = -scale_factor;
-      transform.c = dx + page_content_rect.width() - 1;
-      transform.d = scale_factor;
-      transform.e = 0;
-      transform.f = dy;
-      break;
+      return ink::AffineTransform(0, -scale_factor,
+                                  dx + page_content_rect.width() - 1,
+                                  scale_factor, 0, dy);
     case PageOrientation::kClockwise180:
-      transform.a = -scale_factor;
-      transform.b = 0;
-      transform.c = dx + page_content_rect.width() - 1;
-      transform.d = 0;
-      transform.e = -scale_factor;
-      transform.f = dy + page_content_rect.height() - 1;
-      break;
+      return ink::AffineTransform(
+          -scale_factor, 0, dx + page_content_rect.width() - 1, 0,
+          -scale_factor, dy + page_content_rect.height() - 1);
     case PageOrientation::kClockwise270:
-      transform.a = 0;
-      transform.b = scale_factor;
-      transform.c = dx;
-      transform.d = -scale_factor;
-      transform.e = 0;
-      transform.f = dy + page_content_rect.height() - 1;
-      break;
+      return ink::AffineTransform(0, scale_factor, dx, -scale_factor, 0,
+                                  dy + page_content_rect.height() - 1);
   }
-  return transform;
+  NOTREACHED();
 }
 
 }  // namespace chrome_pdf

@@ -45,11 +45,6 @@ class SVGCircleElement final : public SVGGeometryElement {
  private:
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
-  void CollectStyleForPresentationAttribute(
-      const QualifiedName&,
-      const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
-
   bool SelfHasRelativeLengths() const override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;

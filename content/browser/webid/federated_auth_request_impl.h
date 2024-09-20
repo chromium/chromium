@@ -12,6 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/federated_provider_fetcher.h"
@@ -42,9 +43,12 @@ class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
 
+using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+using IdentityRequestAccountPtr =
+    scoped_refptr<content::IdentityRequestAccount>;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
-using TokenError = IdentityCredentialTokenError;
 using RpMode = blink::mojom::RpMode;
+using TokenError = IdentityCredentialTokenError;
 
 // FederatedAuthRequestImpl handles mojo connections from the renderer to
 // fulfill WebID-related requests.
@@ -156,7 +160,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     bool has_failing_idp_signin_status{false};
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
     blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kWidget};
-    std::optional<IdentityProviderData> data;
+    IdentityProviderDataPtr data;
   };
 
   struct IdentityProviderLoginUrlInfo {
@@ -169,8 +173,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     return request_dialog_controller_.get();
   }
 
-  const std::vector<IdentityProviderData>& GetSortedIdpData() const {
+  const std::vector<IdentityProviderDataPtr>& GetSortedIdpData() const {
     return idp_data_for_display_;
+  }
+
+  const std::vector<IdentityRequestAccountPtr>& GetAccounts() const {
+    return accounts_;
   }
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -253,7 +261,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
   void OnClientMetadataResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      const IdpNetworkRequestManager::AccountList& accounts,
+      std::vector<IdentityRequestAccountPtr>&& accounts,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata client_metadata);
 
@@ -261,7 +269,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // fetched for `idp_info`.
   void OnFetchDataForIdpSucceeded(
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      const IdpNetworkRequestManager::AccountList& accounts,
+      std::vector<IdentityRequestAccountPtr>&& accounts,
       const IdpNetworkRequestManager::ClientMetadata& client_metadata);
 
   // Called when there is an error in fetching information to show the prompt
@@ -305,19 +313,19 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnAccountsResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       IdpNetworkRequestManager::FetchStatus status,
-      IdpNetworkRequestManager::AccountList accounts);
+      std::vector<IdentityRequestAccountPtr> accounts);
   // Fetches the account pictures for |accounts| and calls
   // OnFetchDataForIdpSucceeded when done.
   void FetchAccountPictures(
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      const IdpNetworkRequestManager::AccountList& accounts,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
       const IdpNetworkRequestManager::ClientMetadata& client_metadata);
   void OnAccountPictureReceived(base::RepeatingClosure cb,
                                 GURL url,
                                 const gfx::Image& image);
   void OnAllAccountPicturesReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      IdpNetworkRequestManager::AccountList accounts,
+      std::vector<IdentityRequestAccountPtr>&& accounts,
       const IdpNetworkRequestManager::ClientMetadata& client_metadata);
   void OnAccountSelected(const GURL& idp_config_url,
                          const std::string& account_id,
@@ -397,20 +405,17 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Computes the login state of accounts. It uses the IDP-provided signal, if
   // it had been populated. Otherwise, it uses the browser knowledge on which
-  // accounts are returning and which are not. In either case, this method also
-  // reorders accounts so that those that are considered returning users are
-  // before users that are not returning.
-  void ComputeLoginStateAndReorderAccounts(
-      const GURL& idp_config_url,
-      IdpNetworkRequestManager::AccountList& accounts);
+  // accounts are returning and which are not.
+  void ComputeLoginStates(const GURL& idp_config_url,
+                          std::vector<IdentityRequestAccountPtr>& accounts);
 
   url::Origin GetEmbeddingOrigin() const;
 
   // Returns true and the `IdentityProviderData` + `IdentityRequestAccount` for
   // the only returning account. Returns false if there are multiple returning
   // accounts or no returning account.
-  bool GetAccountForAutoReauthn(const IdentityProviderData** out_idp_data,
-                                const IdentityRequestAccount** out_account);
+  bool GetAccountForAutoReauthn(IdentityProviderDataPtr* out_idp_data,
+                                IdentityRequestAccountPtr* out_account);
 
   // Check if auto re-authn is available so we can skip fetching accounts if the
   // auto re-authn flow is guaranteed to fail.
@@ -448,6 +453,24 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                                        bool accepted);
   void MaybeCreateFedCmMetrics();
 
+  bool IsNewlyLoggedIn(const IdentityRequestAccount& account);
+
+  // Returns whether there are accounts remaining after applying the account
+  // label filter.
+  bool FilterAccountsWithLabel(
+      const std::string& label,
+      std::vector<IdentityRequestAccountPtr>& accounts);
+  // Returns whether there are accounts remaining after applying the login hint
+  // filter.
+  bool FilterAccountsWithLoginHint(
+      const std::string& login_hint,
+      std::vector<IdentityRequestAccountPtr>& accounts);
+  // Returns whether there are accounts remaining after applying the domain hint
+  // filter.
+  bool FilterAccountsWithDomainHint(
+      const std::string& domain_hint,
+      std::vector<IdentityRequestAccountPtr>& accounts);
+
   RpMode GetRpMode() const { return rp_mode_; }
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
@@ -467,7 +490,17 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Populated by OnFetchDataForIdpSucceeded() and OnIdpMismatch().
   base::flat_map<GURL, std::unique_ptr<IdentityProviderInfo>> idp_infos_;
   // Populated by MaybeShowAccountsDialog().
-  std::vector<IdentityProviderData> idp_data_for_display_;
+  std::vector<IdentityProviderDataPtr> idp_data_for_display_;
+
+  // Populated by OnFetchDataForIdpSucceeded(). Contains the accounts of each
+  // IDP. Used to later set accounts_ in the order in which the IDPs are
+  // requested.
+  base::flat_map<GURL, std::vector<IdentityRequestAccountPtr>> idp_accounts_;
+  // The accounts to be displayed by the UI.
+  std::vector<IdentityRequestAccountPtr> accounts_;
+  // The newly logged in accounts, to be prioritized by the UI. Subset of
+  // `accounts_`.
+  std::vector<IdentityRequestAccountPtr> new_accounts_;
 
   // Contains the set of account IDs of an IDP before a login URL is displayed
   // to the user. Used to compute the account ID of the account that the user

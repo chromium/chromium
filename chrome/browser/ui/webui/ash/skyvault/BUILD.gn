@@ -32,9 +32,10 @@ static_library("skyvault") {
   deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/skyvault:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//content/public/browser",
@@ -44,6 +45,8 @@ static_library("skyvault") {
     "//ui/webui",
     "//url",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/skyvault" ]
 }
 
 source_set("browser_tests") {

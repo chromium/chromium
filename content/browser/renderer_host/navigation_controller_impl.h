@@ -854,6 +854,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   std::unique_ptr<PolicyContainerPolicies>
   ComputePolicyContainerPoliciesForFrameEntry(RenderFrameHostImpl* rfh,
                                               bool is_same_document,
+                                              bool navigation_encountered_error,
                                               const GURL& url);
 
   // Adds details from a committed navigation to `entry` and the

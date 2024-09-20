@@ -63,16 +63,16 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
           browser_policy_connector_.get(), /*supervised_user_prefs=*/nullptr,
           /*async=*/false);
 
-  TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder builder;
   builder.SetName(kProfileName);
   builder.SetPrefService(std::move(pref_service));
-  browser_state_ = std::move(builder).Build(data_dir);
+  profile_ = std::move(builder).Build(data_dir);
 }
 
 EnterprisePolicyTestHelper::~EnterprisePolicyTestHelper() = default;
 
-TestChromeBrowserState* EnterprisePolicyTestHelper::GetBrowserState() const {
-  return browser_state_.get();
+TestProfileIOS* EnterprisePolicyTestHelper::GetProfile() const {
+  return profile_.get();
 }
 
 PrefService* EnterprisePolicyTestHelper::GetLocalState() {

@@ -109,6 +109,18 @@ suite('<app-management-app-details-item>', () => {
     assertEquals('Chrome App', typeAndSource.textContent!.trim());
   });
 
+  test('Unknown type', async () => {
+    await addApp({
+      type: AppType.kUnknown,
+      installSource: InstallSource.kUnknown,
+    });
+
+    const typeAndSource =
+        appDetailsItem.shadowRoot!.querySelector('#typeAndSource');
+    assertTrue(!!typeAndSource);
+    assertEquals('', typeAndSource.textContent!.trim());
+  });
+
   test('Chrome App from web store', async () => {
     await addApp({
       type: AppType.kChromeApp,
@@ -171,6 +183,60 @@ suite('<app-management-app-details-item>', () => {
     assertEquals(
         'ChromeOS System App preinstalled on your Chromebook',
         typeAndSourceText.textContent!.trim());
+  });
+
+  test('Android App Install reason policy', async function() {
+    await addApp({
+      installReason: InstallReason.kPolicy,
+      type: AppType.kArc,
+    });
+
+    const typeAndSourceText =
+        appDetailsItem.shadowRoot!.querySelector('#typeAndSourceText');
+    assertTrue(!!typeAndSourceText);
+    assertEquals(
+        'Android app installed by your device administrator.',
+        typeAndSourceText.textContent!.trim());
+  });
+
+  test('Chrome App Install reason policy', async function() {
+    await addApp({
+      installReason: InstallReason.kPolicy,
+      type: AppType.kChromeApp,
+    });
+
+    const typeAndSourceText =
+        appDetailsItem.shadowRoot!.querySelector('#typeAndSourceText');
+    assertTrue(!!typeAndSourceText);
+    assertEquals(
+        'Chrome app installed by your device administrator.',
+        typeAndSourceText.textContent!.trim());
+  });
+
+  test('Web App Install reason policy', async function() {
+    await addApp({
+      installReason: InstallReason.kPolicy,
+      type: AppType.kWeb,
+    });
+
+    const typeAndSourceText =
+        appDetailsItem.shadowRoot!.querySelector('#typeAndSourceText');
+    assertTrue(!!typeAndSourceText);
+    assertEquals(
+        'Web app installed by your device administrator.',
+        typeAndSourceText.textContent!.trim());
+  });
+
+  test('No app type Install reason policy', async function() {
+    await addApp({
+      installReason: InstallReason.kPolicy,
+      type: AppType.kUnknown,
+    });
+
+    const typeAndSourceText =
+        appDetailsItem.shadowRoot!.querySelector('#typeAndSourceText');
+    assertTrue(!!typeAndSourceText);
+    assertEquals('', typeAndSourceText.textContent!.trim());
   });
 
   test('Chrome app version', async () => {

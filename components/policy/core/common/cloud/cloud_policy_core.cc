@@ -96,7 +96,7 @@ void CloudPolicyCore::StartRefreshScheduler() {
   if (!refresh_scheduler_) {
     refresh_scheduler_ = std::make_unique<CloudPolicyRefreshScheduler>(
         client_.get(), store_, service_.get(), task_runner_,
-        network_connection_tracker_getter_, skip_first_policy_fetch());
+        network_connection_tracker_getter_);
     UpdateRefreshDelayFromPref();
     for (auto& observer : observers_)
       observer.OnRefreshSchedulerStarted(this);
@@ -121,12 +121,6 @@ void CloudPolicyCore::AddObserver(CloudPolicyCore::Observer* observer) {
 void CloudPolicyCore::RemoveObserver(CloudPolicyCore::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void CloudPolicyCore::SetSkipFirstPolicyFetch(bool skip_first_policy_fetch) {
-  skip_first_policy_fetch_ = skip_first_policy_fetch;
-}
-#endif
 
 void CloudPolicyCore::ConnectForTesting(
     std::unique_ptr<CloudPolicyService> service,

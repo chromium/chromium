@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 
 #include "base/path_service.h"
+#include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -22,6 +23,8 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -47,6 +50,7 @@ class BrowserCommandsTest : public InProcessBrowserTest {
             features::kTabOrganization,
             toast_features::kToastFramework,
             toast_features::kReadingListToast,
+            toast_features::kLinkCopiedToast,
         },
         {});
   }
@@ -421,6 +425,26 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, AddingToReadingListOpensToast) {
   GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       AddingToReadingListWithSidePanelShowsNoToast) {
+  GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  auto* side_panel_coordinator =
+      browser()->GetFeatures().side_panel_coordinator();
+  side_panel_coordinator->Show(SidePanelEntryId::kReadingList);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_coordinator->IsSidePanelShowing(); }));
+  chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
+  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, CopyingUrlOpensToast) {
+  GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  chrome::ExecuteCommand(browser(), IDC_COPY_URL);
   EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
 

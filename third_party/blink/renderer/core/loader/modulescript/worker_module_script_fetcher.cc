@@ -211,7 +211,7 @@ void WorkerModuleScriptFetcher::DidReceiveDataWorkerMainScript(
   if (!span.size()) {
     return;
   }
-  source_text_.Append(decoder_->Decode(span.data(), span.size()));
+  source_text_.Append(decoder_->Decode(span));
 }
 
 void WorkerModuleScriptFetcher::OnStartLoadingBodyWorkerMainScript(

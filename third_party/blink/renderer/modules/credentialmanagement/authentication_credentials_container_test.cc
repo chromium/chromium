@@ -92,7 +92,7 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
              StoreCallback callback) override {}
   void PreventSilentAccess(PreventSilentAccessCallback callback) override {}
   void Get(blink::mojom::blink::CredentialMediationRequirement mediation,
-           bool include_passwords,
+           int requested_credential_types,
            const WTF::Vector<::blink::KURL>& federations,
            GetCallback callback) override {
     get_callback_ = std::move(callback);
@@ -206,6 +206,110 @@ TEST(AuthenticationCredentialsContainerTest, RejectPublicKeyCredentialStoreOpera
                              IGNORE_EXCEPTION_FOR_TESTING);
 
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
+}
+
+TEST(AuthenticationCredentialsContainerTest,
+     GetPasswordAndFederatedCredentialUseCounters) {
+  test::TaskEnvironment task_environment;
+  {
+    // Password only.
+    MockCredentialManager mock_credential_manager;
+    CredentialManagerTestingContext context(&mock_credential_manager);
+    context.DomWindow().document()->ClearUseCounterForTesting(
+        WebFeature::kCredentialManagerGetPasswordCredential);
+    context.DomWindow().document()->ClearUseCounterForTesting(
+        WebFeature::kCredentialManagerGetLegacyFederatedCredential);
+    auto* request_options = CredentialRequestOptions::Create();
+    request_options->setPassword(true);
+    auto promise = AuthenticationCredentialsContainer::credentials(
+                       *context.DomWindow().navigator())
+                       ->get(context.GetScriptState(), request_options,
+                             IGNORE_EXCEPTION_FOR_TESTING);
+    mock_credential_manager.WaitForCallToGet();
+    EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
+        WebFeature::kCredentialManagerGetPasswordCredential));
+    EXPECT_FALSE(context.DomWindow().document()->IsUseCounted(
+        WebFeature::kCredentialManagerGetLegacyFederatedCredential));
+
+    mock_credential_manager.InvokeGetCallback();
+  }
+
+  {
+    // Federated only.
+    MockCredentialManager mock_credential_manager;
+    CredentialManagerTestingContext context(&mock_credential_manager);
+    context.DomWindow().document()->ClearUseCounterForTesting(
+        WebFeature::kCredentialManagerGetPasswordCredential);
+    context.DomWindow().document()->ClearUseCounterForTesting(
+        WebFeature::kCredentialManagerGetLegacyFederatedCredential);
+    auto* request_options = CredentialRequestOptions::Create();
+    auto* federated_cred_options = FederatedCredentialRequestOptions::Create();
+    federated_cred_options->setProviders({"idp.example"});
+    request_options->setFederated(federated_cred_options);
+    auto promise = AuthenticationCredentialsContainer::credentials(
+                       *context.DomWindow().navigator())
+                       ->get(context.GetScriptState(), request_options,
+                             IGNORE_EXCEPTION_FOR_TESTING);
+    mock_credential_manager.WaitForCallToGet();
+    EXPECT_FALSE(context.DomWindow().document()->IsUseCounted(
+        WebFeature::kCredentialManagerGetPasswordCredential));
+    EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
+        WebFeature::kCredentialManagerGetLegacyFederatedCredential));
+
+    mock_credential_manager.InvokeGetCallback();
+  }
+
+  {
+    // Federated and Password.
+    MockCredentialManager mock_credential_manager;
+    CredentialManagerTestingContext context(&mock_credential_manager);
+    context.DomWindow().document()->ClearUseCounterForTesting(
+        WebFeature::kCredentialManagerGetPasswordCredential);
+    context.DomWindow().document()->ClearUseCounterForTesting(
+        WebFeature::kCredentialManagerGetLegacyFederatedCredential);
+    auto* request_options = CredentialRequestOptions::Create();
+    auto* federated_cred_options = FederatedCredentialRequestOptions::Create();
+    federated_cred_options->setProviders({"idp.example"});
+    request_options->setFederated(federated_cred_options);
+    request_options->setPassword(true);
+    auto promise = AuthenticationCredentialsContainer::credentials(
+                       *context.DomWindow().navigator())
+                       ->get(context.GetScriptState(), request_options,
+                             IGNORE_EXCEPTION_FOR_TESTING);
+    mock_credential_manager.WaitForCallToGet();
+    EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
+        WebFeature::kCredentialManagerGetPasswordCredential));
+    EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
+        WebFeature::kCredentialManagerGetLegacyFederatedCredential));
+
+    mock_credential_manager.InvokeGetCallback();
+  }
+
+  {
+    // Federated and Password but empty federated providers.
+    MockCredentialManager mock_credential_manager;
+    CredentialManagerTestingContext context(&mock_credential_manager);
+    context.DomWindow().document()->ClearUseCounterForTesting(
+        WebFeature::kCredentialManagerGetPasswordCredential);
+    context.DomWindow().document()->ClearUseCounterForTesting(
+        WebFeature::kCredentialManagerGetLegacyFederatedCredential);
+    auto* request_options = CredentialRequestOptions::Create();
+    auto* federated_cred_options = FederatedCredentialRequestOptions::Create();
+    federated_cred_options->setProviders({});
+    request_options->setFederated(federated_cred_options);
+    request_options->setPassword(true);
+    auto promise = AuthenticationCredentialsContainer::credentials(
+                       *context.DomWindow().navigator())
+                       ->get(context.GetScriptState(), request_options,
+                             IGNORE_EXCEPTION_FOR_TESTING);
+    mock_credential_manager.WaitForCallToGet();
+    EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
+        WebFeature::kCredentialManagerGetPasswordCredential));
+    EXPECT_FALSE(context.DomWindow().document()->IsUseCounted(
+        WebFeature::kCredentialManagerGetLegacyFederatedCredential));
+
+    mock_credential_manager.InvokeGetCallback();
+  }
 }
 
 class AuthenticationCredentialsContainerButtonModeMultiIdpTest

@@ -101,7 +101,15 @@ void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env) {
 }
 
 void TabOnBackGestureHandler::Destroy(JNIEnv* env) {
-  if (is_in_progress_) {
+  using AnimationStage =
+      content::BackForwardTransitionAnimationManager::AnimationStage;
+  auto* web_contents = tab_android_->web_contents();
+  if (is_in_progress_ && web_contents &&
+      web_contents->GetBackForwardTransitionAnimationManager()
+              ->GetCurrentAnimationStage() != AnimationStage::kNone) {
+    // When the Java's Tab is destroyed, the compositor might already be
+    // detached from the Window. No need to call `OnBackCancelled()` because the
+    // animation is already aborted (thus `AnimationStage::kNone`).
     OnBackCancelled(env);
   }
   delete this;

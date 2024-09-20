@@ -20,8 +20,8 @@
 class StoreKitCoordinatorTest : public PlatformTest {
  protected:
   StoreKitCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     root_view_controller_ = [[UIViewController alloc] init];
     base_view_controller_ = [[UIViewController alloc] init];
     coordinator_ = [[StoreKitCoordinator alloc]
@@ -45,7 +45,7 @@ class StoreKitCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* root_view_controller_;
   UIViewController* base_view_controller_;

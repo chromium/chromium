@@ -25,6 +25,7 @@ import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -48,6 +49,7 @@ public class MultiInstanceMigrationTest {
     @Mock private Profile mIncognitoProfile;
 
     private Context mAppContext;
+    private CipherFactory mCipherFactory;
 
     @Before
     public void setUp() {
@@ -61,6 +63,8 @@ public class MultiInstanceMigrationTest {
                                 .getTargetContext()
                                 .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
+
+        mCipherFactory = new CipherFactory();
 
         // Set the shared pref stating that the legacy file migration has occurred. The
         // multi-instance migration won't happen if the legacy path is taken.
@@ -96,7 +100,8 @@ public class MultiInstanceMigrationTest {
                                     persistencePolicy,
                                     selector,
                                     null,
-                                    TabWindowManagerSingleton.getInstance());
+                                    TabWindowManagerSingleton.getInstance(),
+                                    mCipherFactory);
                     store.waitForMigrationToFinish();
                 });
     }

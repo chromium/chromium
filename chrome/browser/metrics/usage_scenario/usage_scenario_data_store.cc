@@ -184,7 +184,7 @@ void UsageScenarioDataStoreImpl::OnAudioStarts() {
   // Grab the current timestamp if there's no other tabs playing audio.
   if (tabs_playing_audio_ == 0) {
     DCHECK(playing_audio_since_.is_null());
-    playing_audio_since_ = base::TimeTicks::Now();
+    playing_audio_since_ = tick_clock_->NowTicks();
   }
   ++tabs_playing_audio_;
   DCHECK_GE(current_tab_count_, tabs_playing_audio_);
@@ -201,7 +201,7 @@ void UsageScenarioDataStoreImpl::OnAudioStops() {
   if (tabs_playing_audio_ == 0) {
     DCHECK(!playing_audio_since_.is_null());
     interval_data_.time_playing_audio +=
-        base::TimeTicks::Now() - playing_audio_since_;
+        tick_clock_->NowTicks() - playing_audio_since_;
     playing_audio_since_ = base::TimeTicks();
   }
 }
@@ -223,8 +223,15 @@ void UsageScenarioDataStoreImpl::OnVideoStopsInVisibleTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(visible_tabs_playing_video_, 0U);
   --visible_tabs_playing_video_;
-  if (visible_tabs_playing_video_ == 0)
+
+  // If this was the last visible tab playing video then the interval data
+  // should be updated.
+  if (visible_tabs_playing_video_ == 0) {
+    DCHECK(!playing_video_in_active_tab_since_.is_null());
+    interval_data_.time_playing_video_in_visible_tab +=
+        tick_clock_->NowTicks() - playing_video_in_active_tab_since_;
     playing_video_in_active_tab_since_ = base::TimeTicks();
+  }
 }
 
 void UsageScenarioDataStoreImpl::OnUkmSourceBecameVisible(
@@ -266,6 +273,16 @@ UsageScenarioDataStoreImpl::GetVisibleSourceIdsForTesting() {
     }
   }
   return ret;
+}
+
+bool UsageScenarioDataStoreImpl::TrackingPlayingVideoInActiveTabForTesting()
+    const {
+  return !playing_video_in_active_tab_since_.is_null();
+}
+
+bool UsageScenarioDataStoreImpl::
+    TrackingPlayingFullScreenVideoSingleMonitorForTesting() const {
+  return !is_playing_full_screen_video_single_monitor_since_.is_null();
 }
 
 void UsageScenarioDataStoreImpl::FinalizeIntervalData(base::TimeTicks now) {

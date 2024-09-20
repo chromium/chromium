@@ -6,6 +6,7 @@
 #define PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_POSIX_H_
 
 #include <sys/mman.h>
+#include <sys/syscall.h>
 
 #include <algorithm>
 #include <atomic>
@@ -427,6 +428,17 @@ void DiscardSystemPagesInternal(uintptr_t address, size_t length) {
   // Therefore, we just do the simple thing: MADV_DONTNEED.
   PA_PCHECK(0 == madvise(ptr, length, MADV_DONTNEED));
 #endif  // PA_BUILDFLAG(IS_APPLE)
+}
+
+bool SealSystemPagesInternal(uintptr_t address, size_t length) {
+  // TODO(sroettger): we either need to ensure that __NR_mseal is defined in the
+  // headers used by builders or define it ourselves.
+#if PA_BUILDFLAG(IS_LINUX) && defined(__NR_mseal)
+  long ret = syscall(__NR_mseal, address, length, 0);
+  return ret == 0;
+#else
+  return false;
+#endif
 }
 
 }  // namespace partition_alloc::internal

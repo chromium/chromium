@@ -62,12 +62,6 @@ BASE_FEATURE(kRemoteOptimizationGuideFetchingAnonymousDataConsent,
              "OptimizationHintsFetchingAnonymousDataConsent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables performance info in the context menu and fetching from a remote
-// Optimization Guide Service.
-BASE_FEATURE(kContextMenuPerformanceInfoAndRemoteHintFetching,
-             "ContextMenuPerformanceInfoAndRemoteHintFetching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the prediction of optimization targets.
 BASE_FEATURE(kOptimizationTargetPrediction,
              "OptimizationTargetPrediction",
@@ -317,11 +311,6 @@ bool IsRemoteFetchingForAnonymousDataConsentEnabled() {
       kRemoteOptimizationGuideFetchingAnonymousDataConsent);
 }
 
-bool IsRemoteFetchingExplicitlyAllowedForPerformanceInfo() {
-  return base::FeatureList::IsEnabled(
-      kContextMenuPerformanceInfoAndRemoteHintFetching);
-}
-
 int MaxServerBloomFilterByteSize() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kOptimizationHints, "max_bloom_filter_byte_size", 250 * 1024 /* 250KB */);
@@ -416,7 +405,7 @@ size_t MaxHostKeyedHintCacheSize() {
 
 size_t MaxURLKeyedHintCacheSize() {
   size_t max_url_keyed_hint_cache_size = GetFieldTrialParamByFeatureAsInt(
-      kOptimizationHints, "max_url_keyed_hint_cache_size", 30);
+      kOptimizationHints, "max_url_keyed_hint_cache_size", 50);
   DCHECK_GE(max_url_keyed_hint_cache_size,
             MaxUrlsForOptimizationGuideServiceHintsFetch());
   return max_url_keyed_hint_cache_size;

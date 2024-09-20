@@ -91,9 +91,11 @@ class InteractiveTestApi {
   // such as SetMustBeVisibleAtStart(), SetTransitionOnlyOnEvent(),
   // SetContext(), etc.
   //
-  // TODO(dfried): in the future, these will be supplanted/supplemented by more
-  // flexible primitives that allow multiple actions in the same step in the
-  // future.
+  // Note that `ActivateSurface()`, `SelectMenuItem()` and
+  // `SelectDropdownItem()` are not outside of interactive tests (e.g.
+  // interactive_ui_tests); the exception is `SelectDropdownItem()` with the
+  // default `input_type`, which programmatically sets the value rather than
+  // using the actual drop-down.
   [[nodiscard]] StepBuilder PressButton(
       ElementSpecifier button,
       InputType input_type = InputType::kDontCare);
@@ -532,6 +534,14 @@ class InteractiveTestApi {
 
   // Equivalent to calling FormatDescription(format) on every step in `steps`.
   static void AddDescription(MultiStep& steps, std::string_view format);
+
+  // Call this from any test verb which requires an environment suitable for
+  // interactive testing. Typically, this means the test must be in an
+  // environment where it can control mouse input, window activation, etc.
+  //
+  // Will crash a test which uses an inappropriate verb, with a description of
+  // why the verb was disallowed.
+  void RequireInteractiveTest();
 
  private:
   // Implementation for RunTestSequenceInContext().

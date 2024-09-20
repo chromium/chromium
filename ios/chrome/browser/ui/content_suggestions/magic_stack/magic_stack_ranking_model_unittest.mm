@@ -338,7 +338,10 @@ class MagicStackRankingModelTest : public PlatformTest {
 
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::
-                                    GetForBrowserState(GetBrowserState())];
+                                    GetForBrowserState(GetBrowserState())
+                    prefService:GetBrowserState()->GetPrefs()
+        pushNotificationService:nil
+          authenticationService:nil];
 
     _magicStackRankingModel = [[MagicStackRankingModel alloc]
         initWithSegmentationService:segmentation_platform::

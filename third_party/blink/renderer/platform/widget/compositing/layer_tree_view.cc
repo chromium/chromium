@@ -30,7 +30,6 @@
 #include "cc/input/layer_selection_bound.h"
 #include "cc/layers/layer.h"
 #include "cc/metrics/ukm_manager.h"
-#include "cc/metrics/web_vital_metrics.h"
 #include "cc/tiles/raster_dark_mode_filter.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_mutator.h"
@@ -473,12 +472,6 @@ LayerTreeView::GetBeginMainFrameMetrics() {
   if (!delegate_)
     return nullptr;
   return delegate_->GetBeginMainFrameMetrics();
-}
-
-std::unique_ptr<cc::WebVitalMetrics> LayerTreeView::GetWebVitalMetrics() {
-  if (!delegate_)
-    return nullptr;
-  return delegate_->GetWebVitalMetrics();
 }
 
 void LayerTreeView::NotifyThroughputTrackerResults(

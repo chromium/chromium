@@ -28,7 +28,7 @@ using LocalFile = PickerFileSuggester::LocalFile;
 using DriveFile = PickerFileSuggester::DriveFile;
 namespace fmp = extensions::api::file_manager_private;
 
-constexpr base::TimeDelta kMaxFileRecencyDelta = base::Days(30);
+constexpr base::TimeDelta kMaxDriveFileRecencyDelta = base::Days(30);
 constexpr base::TimeDelta kScanTimeout = base::Seconds(1);
 
 storage::FileSystemContext* GetFileSystemContextForProfile(Profile* profile) {
@@ -40,6 +40,7 @@ void GetRecentFiles(Profile* profile,
                     ash::RecentSource::FileType file_type,
                     fmp::VolumeType volume_type,
                     size_t max_files,
+                    base::TimeDelta now_delta,
                     ash::RecentModel::GetRecentFilesCallback callback) {
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       GetFileSystemContextForProfile(profile);
@@ -52,7 +53,7 @@ void GetRecentFiles(Profile* profile,
     return;
   }
   ash::RecentModelOptions options;
-  options.now_delta = kMaxFileRecencyDelta;
+  options.now_delta = now_delta;
   options.file_type = file_type;
   options.scan_timeout = kScanTimeout;
   options.max_files = max_files;
@@ -131,10 +132,11 @@ PickerFileSuggester::~PickerFileSuggester() = default;
 
 void PickerFileSuggester::GetRecentLocalImages(
     size_t max_files,
+    base::TimeDelta now_delta,
     RecentLocalImagesCallback callback) {
   GetRecentFiles(
       profile_, ash::RecentSource::FileType::kImage,
-      fmp::VolumeType::kDownloads, max_files,
+      fmp::VolumeType::kDownloads, max_files, now_delta,
       base::BindOnce(&PickerFileSuggester::OnGetRecentLocalImages,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -144,7 +146,7 @@ void PickerFileSuggester::GetRecentDriveFiles(
     RecentDriveFilesCallback callback) {
   GetRecentFiles(
       profile_, ash::RecentSource::FileType::kAll, fmp::VolumeType::kDrive,
-      max_files,
+      max_files, kMaxDriveFileRecencyDelta,
       base::BindOnce(&PickerFileSuggester::OnGetRecentDriveFiles,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

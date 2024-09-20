@@ -50,10 +50,17 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   void SendQualityLog(const std::vector<uint32_t>& selected_indices,
                       uint32_t num_chars_for_query) override;
 
+  void PublishResultToPageForTesting(
+      const history_embeddings::SearchResult& native_search_result);
+
+ private:
+  // Builds mojom result and publishes it to the browser page UI.
+  void PublishResultToPage(
+      const history_embeddings::SearchResult& native_search_result);
+
   // Callback for querying `HistoryEmbeddingsService::Search()`.
   void OnReceivedSearchResult(history_embeddings::SearchResult result);
 
- private:
   mojo::Receiver<history_embeddings::mojom::PageHandler> page_handler_;
   mojo::Remote<history_embeddings::mojom::Page> page_;
 

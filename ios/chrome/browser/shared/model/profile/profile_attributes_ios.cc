@@ -12,6 +12,7 @@ namespace {
 const char kActiveTimeKey[] = "active_time";
 const char kGaiaIdKey[] = "gaia_id";
 const char kIsAuthErrorKey[] = "is_auth_error";
+const char kAttachedGaiaIdsKey[] = "attached_gaia_ids";
 const char kUserNameKey[] = "user_name";
 }  // namespace
 
@@ -52,6 +53,21 @@ bool ProfileAttributesIOS::HasAuthenticationError() const {
   return storage_.FindBool(kIsAuthErrorKey).value_or(false);
 }
 
+ProfileAttributesIOS::GaiaIdSet ProfileAttributesIOS::GetAttachedGaiaIds()
+    const {
+  GaiaIdSet gaia_id_set;
+  if (const base::Value::List* gaia_ids =
+          storage_.FindList(kAttachedGaiaIdsKey)) {
+    for (const auto& gaia_id_value : *gaia_ids) {
+      if (!gaia_id_value.is_string()) {
+        continue;
+      }
+      gaia_id_set.insert(gaia_id_value.GetString());
+    }
+  }
+  return gaia_id_set;
+}
+
 base::Time ProfileAttributesIOS::GetLastActiveTime() const {
   return base::ValueToTime(storage_.Find(kActiveTimeKey))
       .value_or(base::Time());
@@ -72,6 +88,14 @@ void ProfileAttributesIOS::SetAuthenticationInfo(std::string_view gaia_id,
 
 void ProfileAttributesIOS::SetHasAuthenticationError(bool value) {
   storage_.Set(kIsAuthErrorKey, value);
+}
+
+void ProfileAttributesIOS::SetAttachedGaiaIds(const GaiaIdSet& gaia_ids) {
+  base::Value::List gaia_id_list;
+  for (auto const& iterator : gaia_ids) {
+    gaia_id_list.Append(iterator);
+  }
+  storage_.Set(kAttachedGaiaIdsKey, std::move(gaia_id_list));
 }
 
 void ProfileAttributesIOS::SetLastActiveTime(base::Time time) {

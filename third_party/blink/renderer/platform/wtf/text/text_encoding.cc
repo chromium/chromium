@@ -28,7 +28,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 #include <memory>
+
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -36,25 +38,22 @@
 namespace WTF {
 
 TextEncoding::TextEncoding(const char* name)
-    : name_(AtomicCanonicalTextEncodingName(name)) {
-}
+    : name_(AtomicString(AtomicCanonicalTextEncodingName(name))) {}
 
 TextEncoding::TextEncoding(const String& name)
-    : name_(AtomicCanonicalTextEncodingName(name)) {
-}
+    : name_(AtomicString(AtomicCanonicalTextEncodingName(name))) {}
 
-String TextEncoding::Decode(const char* data,
-                            wtf_size_t length,
+String TextEncoding::Decode(base::span<const uint8_t> data,
                             bool stop_on_error,
                             bool& saw_error) const {
   if (!name_)
     return String();
 
-  return NewTextCodec(*this)->Decode(data, length, FlushBehavior::kDataEOF,
+  return NewTextCodec(*this)->Decode(data, FlushBehavior::kDataEOF,
                                      stop_on_error, saw_error);
 }
 
-std::string TextEncoding::Encode(const String& string,
+std::string TextEncoding::Encode(const StringView& string,
                                  UnencodableHandling handling) const {
   if (!name_)
     return std::string();
@@ -63,14 +62,9 @@ std::string TextEncoding::Encode(const String& string,
     return std::string();
 
   std::unique_ptr<TextCodec> text_codec = NewTextCodec(*this);
-  std::string encoded_string;
-  if (string.Is8Bit())
-    encoded_string =
-        text_codec->Encode(string.Characters8(), string.length(), handling);
-  else
-    encoded_string =
-        text_codec->Encode(string.Characters16(), string.length(), handling);
-  return encoded_string;
+  return WTF::VisitCharacters(string, [&text_codec, handling](auto chars) {
+    return text_codec->Encode(chars, handling);
+  });
 }
 
 bool TextEncoding::UsesVisualOrdering() const {

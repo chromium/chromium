@@ -324,7 +324,7 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
   ScriptPromiseUntyped Start(ScriptState* script_state,
                              ExceptionState&) override {
     if (generator_) {
-      return ScriptPromiseUntyped::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
     resolver_ =
         MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
@@ -334,17 +334,17 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
   ScriptPromiseUntyped Pull(ScriptState* script_state,
                             ExceptionState&) override {
     if (!generator_) {
-      return ScriptPromiseUntyped::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
 
     const auto result = generator_->Generate();
     if (!result) {
       Controller()->Close();
-      return ScriptPromiseUntyped::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
     Controller()->Enqueue(
         v8::Integer::New(script_state->GetIsolate(), *result));
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   std::unique_ptr<ReadableStreamTransferringOptimizer>
@@ -720,10 +720,6 @@ Internals::Internals(ExecutionContext* context)
     : runtime_flags_(InternalRuntimeFlags::create()),
       document_(To<LocalDOMWindow>(context)->document()) {
   document_->Fetcher()->EnableIsPreloadedForTest();
-}
-
-Internals::~Internals() {
-  ResetMockOverlayScrollbars();
 }
 
 LocalFrame* Internals::GetFrame() const {
@@ -3288,7 +3284,7 @@ String Internals::selectMenuListText(HTMLSelectElement* select) {
   DCHECK(select);
   if (!select->UsesMenuList())
     return String();
-  return select->InnerElementForAppearanceAuto().innerText();
+  return select->InnerElement().innerText();
 }
 
 bool Internals::isSelectPopupVisible(Node* node) {

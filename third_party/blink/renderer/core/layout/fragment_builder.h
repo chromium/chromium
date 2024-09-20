@@ -140,14 +140,10 @@ class CORE_EXPORT FragmentBuilder {
     exclusion_space_ = exclusion_space;
   }
 
-  void SetLinesUntilClamp(const std::optional<int>& value) {
-    lines_until_clamp_ = value;
+  void SetStateUntilClamp(
+      const std::optional<LineClampData::UntilClamp>& value) {
+    state_until_clamp_ = value;
   }
-
-  bool HasContentAfterLineClamp() const {
-    return has_content_after_line_clamp_;
-  }
-  void SetHasContentAfterLineClamp() { has_content_after_line_clamp_ = true; }
 
   bool IsBlockStartTrimmed() const { return is_block_start_trimmed_; }
   void SetIsBlockStartTrimmed() { is_block_start_trimmed_ = true; }
@@ -574,7 +570,7 @@ class CORE_EXPORT FragmentBuilder {
   std::optional<LayoutUnit> bfc_block_offset_;
   MarginStrut end_margin_strut_;
   ExclusionSpace exclusion_space_;
-  std::optional<int> lines_until_clamp_;
+  std::optional<LineClampData::UntilClamp> state_until_clamp_;
 
   ScrollStartTargetCandidates* scroll_start_targets_ = nullptr;
 
@@ -639,7 +635,6 @@ class CORE_EXPORT FragmentBuilder {
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
   bool is_block_start_trimmed_ = false;
   bool is_block_end_trimmed_ = false;
-  bool has_content_after_line_clamp_ = false;
 
   bool oof_candidates_may_have_anchor_queries_ = false;
   bool oof_fragmentainer_descendants_may_have_anchor_queries_ = false;

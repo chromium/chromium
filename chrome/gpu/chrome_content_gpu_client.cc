@@ -15,10 +15,13 @@
 #include "base/token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/profiler/chrome_thread_profiler_client.h"
+#include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/profiler/unwind_util.h"
 #include "chrome/gpu/browser_exposed_gpu_interfaces.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
+#include "components/sampling_profiler/thread_profiler.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "media/media_buildflags.h"
@@ -35,17 +38,17 @@
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-ChromeContentGpuClient::ChromeContentGpuClient()
-    : main_thread_profiler_(
-#if BUILDFLAG(IS_CHROMEOS)
-          // The profiler can't start before the sandbox is initialized on
-          // ChromeOS due to ChromeOS's sandbox initialization code's use of
-          // AssertSingleThreaded().
-          nullptr
-#else
-          ThreadProfiler::CreateAndStartOnMainThread()
+ChromeContentGpuClient::ChromeContentGpuClient() {
+  sampling_profiler::ThreadProfiler::SetClient(
+      std::make_unique<ChromeThreadProfilerClient>());
+
+  // The profiler can't start before the sandbox is initialized on
+  // ChromeOS due to ChromeOS's sandbox initialization code's use of
+  // AssertSingleThreaded().
+#if !BUILDFLAG(IS_CHROMEOS)
+  main_thread_profiler_ =
+      sampling_profiler::ThreadProfiler::CreateAndStartOnMainThread();
 #endif
-      ) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
 #endif
@@ -77,9 +80,10 @@ void ChromeContentGpuClient::GpuServiceInitialized() {
     // The HeapProfilerController should have been created in
     // ChromeMainDelegate::PostEarlyInitialization.
     CHECK(heap_profiler_controller);
-    if (ThreadProfiler::ShouldCollectProfilesForChildProcess() ||
+    if (ThreadProfilerConfiguration::Get()
+            ->IsProfilerEnabledForCurrentProcess() ||
         heap_profiler_controller->IsEnabled()) {
-      ThreadProfiler::SetMainThreadTaskRunner(
+      sampling_profiler::ThreadProfiler::SetMainThreadTaskRunner(
           base::SingleThreadTaskRunner::GetCurrentDefault());
 
       mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
@@ -105,22 +109,25 @@ void ChromeContentGpuClient::ExposeInterfacesToBrowser(
 void ChromeContentGpuClient::PostSandboxInitialized() {
 #if BUILDFLAG(IS_CHROMEOS)
   DCHECK(!main_thread_profiler_);
-  main_thread_profiler_ = ThreadProfiler::CreateAndStartOnMainThread();
+  main_thread_profiler_ =
+      sampling_profiler::ThreadProfiler::CreateAndStartOnMainThread();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeContentGpuClient::PostIOThreadCreated(
     base::SingleThreadTaskRunner* io_task_runner) {
-  io_task_runner->PostTask(FROM_HERE,
-                           base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                          base::ProfilerThreadType::kIo));
+  io_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
+                     base::ProfilerThreadType::kIo));
 }
 
 void ChromeContentGpuClient::PostCompositorThreadCreated(
     base::SingleThreadTaskRunner* task_runner) {
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                       base::ProfilerThreadType::kCompositor));
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
+                     base::ProfilerThreadType::kCompositor));
   // Enable stack sampling for tracing.
   // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
   // layer while TracingSamplerProfiler is outside of chrome/.

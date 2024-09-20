@@ -396,7 +396,10 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
   void OnHighConfidenceAllowlistCheckDone(
       PreClassificationCheckResult phishing_reason,
       base::TimeTicks check_start_time,
-      bool did_match_high_confidence_allowlist) {
+      bool did_match_high_confidence_allowlist,
+      std::optional<SafeBrowsingDatabaseManager::
+                        HighConfidenceAllowlistCheckLoggingDetails>
+          logging_details) {
     did_match_high_confidence_allowlist_ = did_match_high_confidence_allowlist;
     UmaHistogramMediumTimes(
         "SBClientPhishing.HighConfidenceAllowlistCheckDuration",

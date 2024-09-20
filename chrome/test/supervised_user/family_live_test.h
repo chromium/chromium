@@ -14,7 +14,7 @@
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/family_member.h"
-#include "chrome/test/supervised_user/test_state_seeded_observer.h"
+#include "components/supervised_user/test_support/browser_state_management.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/base/interaction/state_observer.h"
@@ -72,6 +72,7 @@ class FamilyLiveTest : public signin::test::LiveTest {
   void SetUp() override;
   void SetUpOnMainThread() override;
   void SetUpInProcessBrowserTestFixture() override;
+  void TearDownOnMainThread() override;
 
   // Creates the GURL from the `url_spec` and ensures that the host part was
   // explicitly added to `extra_enabled_hosts`.
@@ -117,6 +118,9 @@ std::string ToString(FamilyLiveTest::RpcMode rpc_mode);
 class InteractiveFamilyLiveTest
     : public InteractiveBrowserTestT<FamilyLiveTest> {
  public:
+  // Observes if the browser has reached the intended state.
+  using InIntendedStateObserver = ui::test::PollingStateObserver<bool>;
+
   explicit InteractiveFamilyLiveTest(FamilyLiveTest::RpcMode rpc_mode);
   InteractiveFamilyLiveTest(
       FamilyLiveTest::RpcMode rpc_mode,
@@ -125,9 +129,9 @@ class InteractiveFamilyLiveTest
  protected:
   // After completion, supervised user settings are in `state`.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForStateSeeding(
-      ui::test::StateIdentifier<BrowserState::Observer> id,
+      ui::test::StateIdentifier<InIntendedStateObserver> id,
       const FamilyMember& browser_user,
-      const BrowserState& state);
+      const BrowserState& state_manager);
 };
 
 }  // namespace supervised_user

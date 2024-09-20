@@ -104,9 +104,7 @@ DesktopSessionAgent::DesktopSessionAgent(
 
 bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  NOTREACHED_IN_MIGRATION()
-      << "Received unexpected IPC type: " << message.type();
-  return false;
+  NOTREACHED() << "Received unexpected IPC type: " << message.type();
 }
 
 void DesktopSessionAgent::OnChannelConnected(int32_t peer_pid) {
@@ -186,7 +184,7 @@ void DesktopSessionAgent::SetDisableInputs(bool disable_inputs) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   // Do not expect this method to be called because it is only used by It2Me.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DesktopSessionAgent::OnDesktopDisplayChanged(
@@ -596,8 +594,7 @@ void DesktopSessionAgent::OnUrlForwarderSetUpStateChanged(
       mojo_state = mojom::UrlForwarderState::kSetupPendingUserIntervention;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown state: " << state;
-      mojo_state = mojom::UrlForwarderState::kUnknown;
+      NOTREACHED() << "Unknown state: " << state;
   }
   desktop_session_event_handler_->OnUrlForwarderStateChange(mojo_state);
 }

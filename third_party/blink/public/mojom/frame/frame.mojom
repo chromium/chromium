@@ -769,8 +769,10 @@ interface LocalFrameHost {
   // Can be called when a DOM event named `event_type` fires within a fenced
   // frame's DOM tree. Propagates a censored version of the event to the
   // embedder that omits privacy-sensitive information like mouse coordinates or
-  // timestamps.
-  ForwardFencedFrameEventToEmbedder(string event_type);
+  // timestamps. User activation is also consumed in the fenced frame tree and
+  // notified to the embedder's DOM tree, if this method determines that
+  // `event_type` should result in the embedder receiving user activation.
+  ForwardFencedFrameEventAndUserActivationToEmbedder(string event_type);
 
   // Notifies when the ViewTransition opt-in state for the current Document
   // changes.

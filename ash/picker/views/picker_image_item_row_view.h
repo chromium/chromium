@@ -55,7 +55,10 @@ class ASH_EXPORT PickerImageItemRowView
   views::View* GetItemRightOf(views::View* item) override;
   bool ContainsItem(views::View* item) override;
 
-  views::View::Views GetItemsForTesting() const;
+  views::View::Views GetItems() const;
+  [[nodiscard]] base::CallbackListSubscription AddItemsChangedCallback(
+      views::PropertyChangedCallback callback);
+
   views::ImageButton* GetMoreItemsButtonForTesting() {
     return more_items_button_;
   }
@@ -66,6 +69,7 @@ class ASH_EXPORT PickerImageItemRowView
   raw_ptr<views::ImageView> leading_icon_view_ = nullptr;
   raw_ptr<views::View> items_container_ = nullptr;
   raw_ptr<views::ImageButton> more_items_button_ = nullptr;
+  base::RepeatingClosureList on_items_changed_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerImageItemRowView, views::BoxLayoutView)

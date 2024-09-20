@@ -81,35 +81,35 @@ COMPONENT_EXPORT(GOOGLE_APIS) bool HasAPIKeyConfigured();
 // `AddDefaultAPIKeyToRequest()` rather than calling this method and manually
 // adding the key.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string GetAPIKey(version_info::Channel channel);
+const std::string& GetAPIKey(version_info::Channel channel);
 
 // Retrieves the API key, for the stable channel.
 //
 // DEPRECATED: Use `GetAPIKey(channel)` to get the right key for your
 // distribution channel instead of calling this function directly.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetAPIKey();
 
 // Retrieves the Chrome Remote Desktop API key.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetRemotingAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetRemotingAPIKey();
 
 // Retrieves the Speech On-Device API (SODA) API Key.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetSodaAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetSodaAPIKey();
 
 #if !BUILDFLAG(IS_ANDROID)
 // Retrieves the HaTS API Key. This key is only used for desktop HaTS
 // and the internal API Key is only defined in non-Android builds.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetHatsAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetHatsAPIKey();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Retrieves the Sharing API Key.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetSharingAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetSharingAPIKey();
 
 // Retrieves the ReadAloud API Key.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetReadAloudAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetReadAloudAPIKey();
 
 // Retrieves the Fresnel API Key.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetFresnelAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetFresnelAPIKey();
 #endif
 
 #if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
@@ -121,7 +121,7 @@ void SetAPIKey(const std::string& api_key);
 #endif
 
 // Retrieves the key used to sign metrics (UMA/UKM) uploads.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetMetricsKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetMetricsKey();
 
 // Represents the different sets of client IDs and secrets in use.
 enum OAuth2Client {
@@ -141,7 +141,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) bool HasOAuthClientConfigured();
 // Note that the ID should be escaped for the context you use it in,
 // e.g. URL-escaped if you use it in a URL.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string GetOAuth2ClientID(OAuth2Client client);
+const std::string& GetOAuth2ClientID(OAuth2Client client);
 
 // Retrieves the OAuth2 client secret for the specified client, or the
 // empty string if not set.
@@ -149,7 +149,7 @@ std::string GetOAuth2ClientID(OAuth2Client client);
 // Note that the secret should be escaped for the context you use it
 // in, e.g. URL-escaped if you use it in a URL.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string GetOAuth2ClientSecret(OAuth2Client client);
+const std::string& GetOAuth2ClientSecret(OAuth2Client client);
 
 #if BUILDFLAG(IS_IOS)
 // Sets the client id for the specified client. Should be called as early as

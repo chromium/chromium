@@ -93,18 +93,18 @@ std::string ConvertPrefValueToValueInSpecifics(const base::Value& value);
 }  // namespace preferences_helper
 
 // Checker that blocks until pref has the specified value.
-class BooleanPrefValueChecker : public StatusChangeChecker {
+class PrefValueChecker : public StatusChangeChecker {
  public:
-  BooleanPrefValueChecker(PrefService* pref_service,
-                          const char* path,
-                          bool expected_value);
-  ~BooleanPrefValueChecker() override;
+  PrefValueChecker(PrefService* pref_service,
+                   const char* path,
+                   base::Value expected_value);
+  ~PrefValueChecker() override;
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   const char* path_;
-  const bool expected_value_;
+  const base::Value expected_value_;
 
   const raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;

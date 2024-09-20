@@ -92,8 +92,8 @@ class ElementRuleCollectorTest : public PageTestBase {
     DCHECK(vector.size() == 1 || vector.size() == 2);
 
     unsigned link_match_type = 0;
-    for (const auto& matched_propeties : vector) {
-      link_match_type |= matched_propeties.types_.link_match_type;
+    for (const auto& matched_properties : vector) {
+      link_match_type |= matched_properties.data_.link_match_type;
     }
     return link_match_type;
   }

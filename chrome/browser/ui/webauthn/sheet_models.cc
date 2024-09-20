@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -75,6 +76,31 @@ std::u16string PossibleResidentKeyWarning(
   }
   NOTREACHED_IN_MIGRATION();
   return std::u16string();
+}
+
+// Return a warning about attestation if attestation was requested, otherwise
+// return an empty string.
+std::u16string PossibleAttestationWarning(
+    AuthenticatorRequestDialogModel* dialog_model) {
+  if (!dialog_model->attestation_conveyance_preference) {
+    return std::u16string();
+  }
+
+  switch (*dialog_model->attestation_conveyance_preference) {
+    case device::AttestationConveyancePreference::kNone:
+      return std::u16string();
+    case device::AttestationConveyancePreference::kIndirect:
+    case device::AttestationConveyancePreference::kDirect:
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_ATTESTATION_WARNING,
+          AuthenticatorSheetModelBase::GetRelyingPartyIdString(dialog_model));
+    case device::AttestationConveyancePreference::
+        kEnterpriseIfRPListedOnAuthenticator:
+    case device::AttestationConveyancePreference::kEnterpriseApprovedByBrowser:
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_ENTERPRISE_ATTESTATION_WARNING,
+          AuthenticatorSheetModelBase::GetRelyingPartyIdString(dialog_model));
+  }
 }
 
 }  // namespace
@@ -226,9 +252,10 @@ std::u16string AuthenticatorInsertAndActivateUsbSheetModel::GetStepDescription()
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USB_ACTIVATE_DESCRIPTION);
 }
 
-std::u16string
-AuthenticatorInsertAndActivateUsbSheetModel::GetAdditionalDescription() const {
-  return PossibleResidentKeyWarning(dialog_model());
+std::vector<std::u16string>
+AuthenticatorInsertAndActivateUsbSheetModel::GetAdditionalDescriptions() const {
+  return {PossibleAttestationWarning(dialog_model()),
+          PossibleResidentKeyWarning(dialog_model())};
 }
 
 // AuthenticatorTimeoutErrorModel ---------------------------------------------
@@ -859,9 +886,10 @@ std::u16string AuthenticatorClientPinTapAgainSheetModel::GetStepDescription()
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_TAP_AGAIN_DESCRIPTION);
 }
 
-std::u16string
-AuthenticatorClientPinTapAgainSheetModel::GetAdditionalDescription() const {
-  return PossibleResidentKeyWarning(dialog_model());
+std::vector<std::u16string>
+AuthenticatorClientPinTapAgainSheetModel::GetAdditionalDescriptions() const {
+  return {PossibleAttestationWarning(dialog_model()),
+          PossibleResidentKeyWarning(dialog_model())};
 }
 
 // AuthenticatorBioEnrollmentSheetModel ----------------------------------
@@ -1176,76 +1204,6 @@ std::u16string AuthenticatorSelectAccountSheetModel::GetAcceptButtonLabel()
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
 }
 
-// AttestationPermissionRequestSheetModel -------------------------------------
-
-// TODO(crbug.com/40237082): Add more specific illustration once available.
-AttestationPermissionRequestSheetModel::AttestationPermissionRequestSheetModel(
-    AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model) {
-  vector_illustrations_.emplace(kPasskeyUsbIcon, kPasskeyUsbDarkIcon);
-}
-
-AttestationPermissionRequestSheetModel::
-    ~AttestationPermissionRequestSheetModel() = default;
-
-void AttestationPermissionRequestSheetModel::OnAccept() {
-  dialog_model()->OnAttestationPermissionResponse(true);
-}
-
-void AttestationPermissionRequestSheetModel::OnCancel() {
-  dialog_model()->OnAttestationPermissionResponse(false);
-}
-
-std::u16string AttestationPermissionRequestSheetModel::GetStepTitle() const {
-  return l10n_util::GetStringUTF16(
-      IDS_WEBAUTHN_REQUEST_ATTESTATION_PERMISSION_TITLE);
-}
-
-std::u16string AttestationPermissionRequestSheetModel::GetStepDescription()
-    const {
-  return l10n_util::GetStringFUTF16(
-      IDS_WEBAUTHN_REQUEST_ATTESTATION_PERMISSION_DESC,
-      GetRelyingPartyIdString(dialog_model()));
-}
-
-bool AttestationPermissionRequestSheetModel::IsAcceptButtonVisible() const {
-  return true;
-}
-
-std::u16string AttestationPermissionRequestSheetModel::GetAcceptButtonLabel()
-    const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_ALLOW_ATTESTATION);
-}
-
-bool AttestationPermissionRequestSheetModel::IsCancelButtonVisible() const {
-  return true;
-}
-
-std::u16string AttestationPermissionRequestSheetModel::GetCancelButtonLabel()
-    const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_DENY_ATTESTATION);
-}
-
-// EnterpriseAttestationPermissionRequestSheetModel ---------------------------
-
-EnterpriseAttestationPermissionRequestSheetModel::
-    EnterpriseAttestationPermissionRequestSheetModel(
-        AuthenticatorRequestDialogModel* dialog_model)
-    : AttestationPermissionRequestSheetModel(dialog_model) {}
-
-std::u16string EnterpriseAttestationPermissionRequestSheetModel::GetStepTitle()
-    const {
-  return l10n_util::GetStringUTF16(
-      IDS_WEBAUTHN_REQUEST_ENTERPRISE_ATTESTATION_PERMISSION_TITLE);
-}
-
-std::u16string
-EnterpriseAttestationPermissionRequestSheetModel::GetStepDescription() const {
-  return l10n_util::GetStringFUTF16(
-      IDS_WEBAUTHN_REQUEST_ENTERPRISE_ATTESTATION_PERMISSION_DESC,
-      GetRelyingPartyIdString(dialog_model()));
-}
-
 // AuthenticatorQRSheetModel --------------------------------------------------
 
 // No illustration since there already is the QR code.
@@ -1278,20 +1236,29 @@ std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
   }
 }
 
-bool AuthenticatorQRSheetModel::ShowSecurityKeyLabel() const {
-  return dialog_model()->security_key_is_possible;
-}
+std::vector<std::u16string> AuthenticatorQRSheetModel::GetSecurityKeyLabels()
+    const {
+  if (!dialog_model()->show_security_key_on_qr_sheet) {
+    return {};
+  }
 
-std::u16string AuthenticatorQRSheetModel::GetSecurityKeyLabel() const {
   switch (dialog_model()->request_type) {
-    case device::FidoRequestType::kMakeCredential:
-      return l10n_util::GetStringFUTF16(
+    case device::FidoRequestType::kMakeCredential: {
+      std::u16string body_text = l10n_util::GetStringFUTF16(
           IDS_WEBAUTHN_QR_CREATE_PASSKEY_ON_SECURITY_KEY_LABEL,
           GetRelyingPartyIdString(dialog_model()));
+      std::u16string attestation_warning =
+          PossibleAttestationWarning(dialog_model());
+      if (attestation_warning.empty()) {
+        return {body_text};
+      } else {
+        return {body_text, attestation_warning};
+      }
+    }
     case device::FidoRequestType::kGetAssertion:
-      return l10n_util::GetStringFUTF16(
+      return {l10n_util::GetStringFUTF16(
           IDS_WEBAUTHN_QR_USE_PASSKEY_ON_SECURITY_KEY_LABEL,
-          GetRelyingPartyIdString(dialog_model()));
+          GetRelyingPartyIdString(dialog_model()))};
   }
 }
 

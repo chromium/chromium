@@ -58,17 +58,11 @@ class WebMouseEvent;
 class WebMouseWheelEvent;
 }
 
-namespace input {
-class CursorManager;
-class RenderWidgetHostViewInputObserver;
-}  // namespace input
-
 namespace ui {
 class Compositor;
 class Cursor;
 class LatencyInfo;
 enum class DomCode : uint32_t;
-struct DidOverscrollParams;
 }  // namespace ui
 
 namespace content {
@@ -149,59 +143,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
                          const ui::LatencyInfo& latency) override;
   void ProcessGestureEvent(const blink::WebGestureEvent& event,
                            const ui::LatencyInfo& latency) override;
-  void ProcessAckedTouchEvent(
-      const input::TouchEventWithLatencyInfo& touch,
-      blink::mojom::InputEventResultState ack_result) override;
-  void DidOverscroll(const ui::DidOverscrollParams& params) override {}
-  void DidStopFlinging() override {}
   RenderWidgetHostViewBase* GetRootView() override;
-  viz::FrameSinkId GetRootFrameSinkId() override;
-  void NotifyHitTestRegionUpdated(
-      const viz::AggregatedHitTestRegion& region) override {}
-  bool ScreenRectIsUnstableFor(const blink::WebInputEvent& event) override;
-  bool ScreenRectIsUnstableForIOv2For(
-      const blink::WebInputEvent& event) override;
-  void PreProcessTouchEvent(const blink::WebTouchEvent& event) override {}
-  void PreProcessMouseEvent(const blink::WebMouseEvent& event) override {}
-  gfx::PointF TransformRootPointToViewCoordSpace(
-      const gfx::PointF& point) override;
-  bool TransformPointToLocalCoordSpace(const gfx::PointF& point,
-                                       const viz::SurfaceId& original_surface,
-                                       gfx::PointF* transformed_point) override;
-  bool TransformPointToCoordSpaceForView(
-      const gfx::PointF& point,
-      input::RenderWidgetHostViewInput* target_view,
-      gfx::PointF* transformed_point) override;
-  bool GetTransformToViewCoordSpace(
-      input::RenderWidgetHostViewInput* target_view,
-      gfx::Transform* transform) override;
-  void TransformPointToRootSurface(gfx::PointF* point) override;
-  input::RenderWidgetHostViewInput* GetParentViewInput() override;
-  blink::mojom::InputEventResultState FilterInputEvent(
-      const blink::WebInputEvent& input_event) override;
-  void GestureEventAck(const blink::WebGestureEvent& event,
-                       blink::mojom::InputEventResultSource ack_source,
-                       blink::mojom::InputEventResultState ack_result) override;
-  void WheelEventAck(const blink::WebMouseWheelEvent& event,
-                     blink::mojom::InputEventResultState ack_result) override;
-  void ChildDidAckGestureEvent(
-      const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result) override;
-  void SetLastPointerType(ui::EventPointerType last_pointer_type) override {}
-  void DisplayCursor(const ui::Cursor& cursor) override;
-  input::CursorManager* GetCursorManager() override;
-  void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override {}
-  void UpdateTooltip(const std::u16string& tooltip_text) override {}
-  int GetMouseWheelMinimumGranularity() const override;
-  void OnStartStylusWriting() override {}
-  void OnEditElementFocusedForStylusWriting(
-      const gfx::Rect& focused_edit_bounds,
-      const gfx::Rect& caret_bounds) override {}
-  void OnEditElementFocusClearedForStylusWriting() override {}
   void OnAutoscrollStart() override;
-  void AddObserver(input::RenderWidgetHostViewInputObserver* observer) override;
-  void RemoveObserver(
-      input::RenderWidgetHostViewInputObserver* observer) override;
+  const viz::DisplayHitTestQueryMap& GetDisplayHitTestQuery() const override;
 
   float GetDeviceScaleFactor() const final;
   bool IsPointerLocked() override;
@@ -497,8 +441,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // |text_input_manager_|.
   TextInputManager* GetTextInputManager();
 
-  void StopFling();
-
   virtual void DidNavigate();
 
   // Called when the RenderWidgetHostImpl establishes a connection to the
@@ -546,20 +488,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);
   ~RenderWidgetHostViewBase() override;
 
-  void NotifyObserversAboutShutdown();
-
   bool is_frame_sink_id_owner() const { return is_frame_sink_id_owner_; }
 
   virtual MouseWheelPhaseHandler* GetMouseWheelPhaseHandler();
 
   // RenderWidgetHostViewInput implementations.
   void UpdateFrameSinkIdRegistration() override;
-  void StopFlingingIfNecessary(
-      const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result) override;
-  void ForwardTouchpadZoomEventIfNecessary(
-      const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result) override;
 
   // Applies background color without notifying the RenderWidget about
   // opaqueness changes. This allows us to, when navigating to a new page,
@@ -684,30 +618,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // LocalSurfaceId.
   virtual void OnSynchronizedDisplayPropertiesChanged(bool rotation = false) {}
 
-  // Transforms |point| from |original_view| coord space to |target_view| coord
-  // space. Result is stored in |transformed_point|. Returns true if the
-  // transform is successful, false otherwise.
-  bool TransformPointToTargetCoordSpace(
-      input::RenderWidgetHostViewInput* original_view,
-      input::RenderWidgetHostViewInput* target_view,
-      const gfx::PointF& point,
-      gfx::PointF* transformed_point) const;
-
   // Helper function to return whether the current background color is fully
   // opaque.
   bool IsBackgroundColorOpaque();
-
-  bool view_stopped_flinging_for_test() const {
-    return view_stopped_flinging_for_test_;
-  }
-
-  base::ObserverList<input::RenderWidgetHostViewInputObserver>::Unchecked
-      observers_;
-
-  std::optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
-
-  // True when StopFlingingIfNecessary() calls StopFling().
-  bool view_stopped_flinging_for_test_ = false;
 
   bool is_evicted_ = false;
 

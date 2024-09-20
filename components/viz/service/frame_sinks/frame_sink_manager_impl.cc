@@ -192,6 +192,8 @@ void FrameSinkManagerImpl::InvalidateFrameSinkId(
   if (video_detector_)
     video_detector_->OnFrameSinkIdInvalidated(frame_sink_id);
 
+  MaybeEraseHitTestQuery(frame_sink_id);
+
   // Destroy the [Root]CompositorFrameSinkImpl if there is one.
   sink_map_.erase(frame_sink_id);
   root_sink_map_.erase(frame_sink_id);
@@ -227,14 +229,30 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
     root_frame_sink_id_ = frame_sink_id;
   }
 
+  bool create_input_receiver = false;
+#if BUILDFLAG(IS_ANDROID)
+  create_input_receiver = params->create_input_receiver;
+#endif
+  gpu::SurfaceHandle widget = params->widget;
+
   // Creating RootCompositorFrameSinkImpl can fail and return null.
   auto root_compositor_frame_sink = RootCompositorFrameSinkImpl::Create(
       std::move(params), this, output_surface_provider_, restart_id_,
       run_all_compositor_stages_before_draw_, &debug_settings_,
       hint_session_factory_);
 
-  if (root_compositor_frame_sink)
+  if (root_compositor_frame_sink) {
     root_sink_map_[frame_sink_id] = std::move(root_compositor_frame_sink);
+    if (GetInputManager()) {
+      GetInputManager()->OnCreateCompositorFrameSink(
+          frame_sink_id,
+          /*is_root=*/true,
+          /*render_input_router_config=*/nullptr, create_input_receiver,
+          widget);
+    }
+  }
+
+  MaybeAddHitTestQuery(frame_sink_id);
 }
 
 void FrameSinkManagerImpl::CreateFrameSinkBundle(
@@ -279,8 +297,9 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
 
   if (GetInputManager()) {
     GetInputManager()->OnCreateCompositorFrameSink(
-        frame_sink_id, /*is_root=*/false,
-        std::move(render_input_router_config));
+        frame_sink_id,
+        /*is_root=*/false, std::move(render_input_router_config),
+        /*create_input_receiver=*/false, gpu::SurfaceHandle());
   }
 }
 
@@ -475,10 +494,29 @@ void FrameSinkManagerImpl::OnFirstSurfaceActivation(
     client_->OnFirstSurfaceActivation(surface_info);
 }
 
+void FrameSinkManagerImpl::UpdateHitTestRegionData(
+    const FrameSinkId& frame_sink_id,
+    const std::vector<AggregatedHitTestRegion>& hit_test_data) {
+  auto iter = display_hit_test_query_.find(frame_sink_id);
+  // The corresponding HitTestQuery has already been deleted, so drop the
+  // in-flight hit-test data.
+  if (iter == display_hit_test_query_.end()) {
+    return;
+  }
+
+  // Notify observers of the updated hit test data.
+  for (HitTestRegionObserver& observer : hit_test_region_observers_) {
+    observer.OnAggregatedHitTestRegionListUpdated(frame_sink_id, hit_test_data);
+  }
+}
+
 void FrameSinkManagerImpl::OnAggregatedHitTestRegionListUpdated(
     const FrameSinkId& frame_sink_id,
     const std::vector<AggregatedHitTestRegion>& hit_test_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  UpdateHitTestRegionData(frame_sink_id, hit_test_data);
+
   if (client_) {
     client_->OnAggregatedHitTestRegionListUpdated(frame_sink_id, hit_test_data);
   }
@@ -494,6 +532,21 @@ std::string_view FrameSinkManagerImpl::GetFrameSinkDebugLabel(
 
 void FrameSinkManagerImpl::AggregatedFrameSinksChanged() {
   hit_test_manager_.SetNeedsSubmit();
+}
+
+void FrameSinkManagerImpl::AddHitTestRegionObserver(
+    HitTestRegionObserver* observer) {
+  hit_test_region_observers_.AddObserver(observer);
+}
+
+void FrameSinkManagerImpl::RemoveHitTestRegionObserver(
+    HitTestRegionObserver* observer) {
+  hit_test_region_observers_.RemoveObserver(observer);
+}
+
+const DisplayHitTestQueryMap& FrameSinkManagerImpl::GetDisplayHitTestQuery()
+    const {
+  return display_hit_test_query_;
 }
 
 void FrameSinkManagerImpl::RegisterCompositorFrameSinkSupport(
@@ -917,6 +970,29 @@ void FrameSinkManagerImpl::UpdateThrottling() {
 
 void FrameSinkManagerImpl::ClearThrottling(const FrameSinkId& id) {
   UpdateThrottlingRecursively(id, base::TimeDelta());
+}
+
+void FrameSinkManagerImpl::MaybeEraseHitTestQuery(
+    const FrameSinkId& frame_sink_id) {
+  if (!input::TransferInputToViz()) {
+    return;
+  }
+  display_hit_test_query_.erase(frame_sink_id);
+}
+
+void FrameSinkManagerImpl::MaybeAddHitTestQuery(
+    const FrameSinkId& frame_sink_id) {
+  if (!input::TransferInputToViz()) {
+    return;
+  }
+  auto it = support_map_.find(frame_sink_id);
+  // Only create a HitTestQuery for `frame_sink_id` if `InputOnViz` flag is
+  // enabled and a corresponding CompositorFrameSinkSupport* has been created
+  // for this RootCompositorFrameSink.
+  if (it != support_map_.end()) {
+    display_hit_test_query_[frame_sink_id] = std::make_unique<HitTestQuery>(
+        it->second->GetHitTestAggregator()->GetDataProviderSafeRef());
+  }
 }
 
 void FrameSinkManagerImpl::CacheSurfaceAnimationManager(

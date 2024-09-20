@@ -79,7 +79,7 @@ TEST_F(SupervisedUserVerificationPageTest, TestHistograms) {
 
   auto test_page = std::make_unique<SupervisedUserVerificationPageForTest>(
       web_contents(), profile_->GetProfileUserName(), request_url,
-      SupervisedUserVerificationPage::VerificationPurpose::BLOCKED_SITE,
+      SupervisedUserVerificationPage::VerificationPurpose::DEFAULT_BLOCKED_SITE,
       child_account_service, ukm::kInvalidSourceId,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents(), profile_->GetPrefs(),

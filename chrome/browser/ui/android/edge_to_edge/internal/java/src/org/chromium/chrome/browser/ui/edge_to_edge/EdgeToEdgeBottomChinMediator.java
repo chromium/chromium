@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.CAN_SHOW;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
-import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isBottomChinAllowed;
 
@@ -41,6 +41,12 @@ class EdgeToEdgeBottomChinMediator
     private int mEdgeToEdgeBottomInsetPx;
     private boolean mIsDrawingToEdge;
     private boolean mIsPagedOptedIntoEdgeToEdge;
+
+    /**
+     * Tracks the latest value for layer visibility to watch for any changes to communicate to the
+     * {@link BottomControlsStacker}.
+     */
+    private @LayerVisibility int mLatestLayerVisibility;
 
     private boolean mIsKeyboardVisible;
 
@@ -94,6 +100,7 @@ class EdgeToEdgeBottomChinMediator
         // Initialize model with appropriate values.
         mModel.set(Y_OFFSET, 0);
         mModel.set(COLOR, mNavigationBarColorProvider.getNavigationBarColor());
+        mLatestLayerVisibility = getLayerVisibility();
 
         // Call observer methods to trigger initial value.
         onToEdgeChange(
@@ -129,18 +136,21 @@ class EdgeToEdgeBottomChinMediator
         int newHeight = mEdgeToEdgeBottomInsetPx;
         boolean newVisibility =
                 mIsDrawingToEdge
-                        && !mIsPagedOptedIntoEdgeToEdge
                         && isBottomChinAllowed(
                                 mLayoutManager.getActiveLayoutType(), mEdgeToEdgeBottomInsetDp)
                         && !mFullscreenManager.getPersistentFullscreenMode()
                         && !mIsKeyboardVisible;
 
         boolean heightChanged = mModel.get(HEIGHT) != newHeight;
-        boolean visibilityChanged = mModel.get(IS_VISIBLE) != newVisibility;
+        boolean visibilityChanged = mModel.get(CAN_SHOW) != newVisibility;
 
         if (heightChanged) mModel.set(HEIGHT, newHeight);
-        if (visibilityChanged) mModel.set(IS_VISIBLE, newVisibility);
-        if (heightChanged || visibilityChanged) {
+        if (visibilityChanged) mModel.set(CAN_SHOW, newVisibility);
+
+        boolean layerVisibilityChanged = mLatestLayerVisibility != getLayerVisibility();
+        mLatestLayerVisibility = getLayerVisibility();
+
+        if (heightChanged || visibilityChanged || layerVisibilityChanged) {
             mBottomControlsStacker.requestLayerUpdate(false);
         }
     }
@@ -164,7 +174,7 @@ class EdgeToEdgeBottomChinMediator
         }
 
         mEdgeToEdgeBottomInsetDp = bottomInset;
-        mEdgeToEdgeBottomInsetPx = mEdgeToEdgeController.getBottomInsetPx();
+        mEdgeToEdgeBottomInsetPx = mEdgeToEdgeController.getSystemBottomInsetPx();
         mIsDrawingToEdge = isDrawingToEdge;
         mIsPagedOptedIntoEdgeToEdge = isPageOptInToEdge;
         updateHeightAndVisibility();
@@ -220,7 +230,7 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public @LayerVisibility int getLayerVisibility() {
-        return mModel.get(IS_VISIBLE)
+        return (mModel.get(CAN_SHOW) && !mIsPagedOptedIntoEdgeToEdge)
                 ? LayerVisibility.VISIBLE
                 : LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE;
     }

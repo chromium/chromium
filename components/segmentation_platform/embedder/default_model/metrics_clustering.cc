@@ -9,15 +9,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
-namespace features {
-BASE_FEATURE(kSegmentationPlatformMetricsClustering,
-             "SegmentationPlatformMetricsClustering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}
 
 namespace {
 using proto::SegmentId;
@@ -40,8 +36,7 @@ constexpr std::array<MetadataWriter::UMAFeature, 0> kUMAFeatures = {};
 
 // static
 std::unique_ptr<Config> MetricsClustering::GetConfig() {
-  if (!base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformMetricsClustering)) {
+  if (!base::FeatureList::IsEnabled(features::kSegmentationSurveyPage)) {
     return nullptr;
   }
   auto config = std::make_unique<Config>();

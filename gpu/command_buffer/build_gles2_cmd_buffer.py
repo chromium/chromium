@@ -3996,26 +3996,6 @@ _FUNCTION_INFO = {
   # Raster Decoder.
   # TODO(hitawala): Remove these methods once OOP-C is launched and we prefer
   # Raster Decoder over Passthrough Command Decoder everywhere.
-  'ConvertRGBAToYUVAMailboxesINTERNAL': {
-    'decoder_func': 'DoConvertRGBAToYUVAMailboxesINTERNAL',
-    'extension': 'CHROMIUM_shared_image',
-    'internal': False,
-    'type': 'PUT',
-    'count': 80, #GL_MAILBOX_SIZE_CHROMIUM x5
-    'impl_func': True,
-    'unit_test': False,
-    'trace_level': 2,
-  },
-  'ConvertYUVAMailboxesToRGBINTERNAL': {
-    'decoder_func': 'DoConvertYUVAMailboxesToRGBINTERNAL',
-    'extension': 'CHROMIUM_shared_image',
-    'internal': False,
-    'type': 'PUT',
-    'count': 144, #GL_MAILBOX_SIZE_CHROMIUM x5 + 16 floats
-    'impl_func': True,
-    'unit_test': False,
-    'trace_level': 2,
-  },
   'ConvertYUVAMailboxesToTextureINTERNAL': {
     'decoder_func': 'DoConvertYUVAMailboxesToTextureINTERNAL',
     'extension': 'CHROMIUM_shared_image',

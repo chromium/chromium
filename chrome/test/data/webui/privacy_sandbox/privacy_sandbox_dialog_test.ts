@@ -27,7 +27,12 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxDialogBrowserProxy {
   constructor() {
-    super(['promptActionOccurred', 'resizeDialog', 'showDialog']);
+    super([
+      'promptActionOccurred',
+      'resizeDialog',
+      'showDialog',
+      'recordPrivacyPolicyLoadTime',
+    ]);
   }
 
   promptActionOccurred() {
@@ -41,6 +46,10 @@ class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
 
   showDialog() {
     this.methodCalled('showDialog');
+  }
+
+  recordPrivacyPolicyLoadTime() {
+    this.methodCalled('recordPrivacyPolicyLoadTime', arguments);
   }
 }
 
@@ -482,8 +491,9 @@ suite('Combined', function() {
         browserProxy, PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
     assertTrue(collapseElement!.opened);
 
-    // After clicking the privacy policy link, the privacy policy page should be
-    // opened.
+    // TODO(crbug.com/358087159): Add metrics testing for privacy policy page
+    // loading. After clicking the privacy policy link, the privacy policy page
+    // should be opened.
     const privacyPolicyDiv =
         learnMore!.querySelector<HTMLElement>('#privacyPolicyDiv');
     const privacyPolicyLink =
@@ -492,9 +502,21 @@ suite('Combined', function() {
         !!privacyPolicyLink,
         `the link isn\'t found, selector: ${privacyPolicyDiv}`);
     privacyPolicyLink.click();
-
     assertEquals(
-        getActiveStep()!.id, PrivacySandboxCombinedDialogStep.PRIVACYPOLICY);
+        isChildVisible(consentStep, '.iframe'), true,
+        `privacy policy page should be visible when the link is clicked`);
+    assertEquals(
+        isChildVisible(consentStep, '#consentNotice'), false,
+        `if the privacy policy page is visible,
+        the consent notice should not be visible.`);
+
+
+    // After clicking the back button, the content area should display the
+    // consent screen again.
+    testClickButton('#backButton', consentStep);
+    assertEquals(
+        isChildVisible(consentStep, '#confirmButton'), true,
+        `buttons should be shown on the consent notice again`);
   });
 });
 

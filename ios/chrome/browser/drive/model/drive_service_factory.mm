@@ -20,10 +20,14 @@
 namespace drive {
 
 // static
-DriveService* DriveServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
+DriveService* DriveServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<DriveService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+DriveService* DriveServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static

@@ -28,7 +28,7 @@ namespace blink {
 namespace {
 
 float ExpansionRatio(const LayoutObject& object) {
-  static const int dpr_coef = features::kCullRectExpansionDPRCoef.Get();
+  const int dpr_coef = features::kCullRectExpansionDPRCoef.Get();
   float device_pixel_ratio =
       object.GetFrame()->LocalFrameRoot().GetDocument()->DevicePixelRatio();
   return 1 + (device_pixel_ratio - 1) * dpr_coef;

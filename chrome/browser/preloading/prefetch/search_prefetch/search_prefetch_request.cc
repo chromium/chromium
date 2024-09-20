@@ -11,9 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
-#include "base/containers/fixed_flat_set.h"
-#include "base/debug/dump_without_crashing.h"
+#include "base/state_transitions.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -452,7 +450,6 @@ void SearchPrefetchRequest::StartPrefetchRequestInternal(
     base::OnceCallback<void(bool)> report_error_callback) {
   TRACE_EVENT0("loading",
                "SearchPrefetchRequest::StartPrefetchRequestInternal");
-  profile_ = profile;
   prefetch_url_ = resource_request->url;
   streaming_url_loader_ =
       base::MakeRefCounted<StreamingSearchPrefetchURLLoader>(

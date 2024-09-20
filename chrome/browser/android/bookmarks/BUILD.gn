@@ -1,0 +1,37 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+source_set("bookmarks") {
+  sources = [
+    "partner_bookmarks_reader.h",
+    "partner_bookmarks_shim.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/favicon_base",
+    "//components/url_formatter",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "partner_bookmarks_reader.cc",
+    "partner_bookmarks_shim.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":bookmarks",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/favicon:favicon",
+    "//chrome/browser/profiles:profile",
+    "//components/favicon/core:core",
+    "//components/pref_registry:pref_registry",
+  ]
+}

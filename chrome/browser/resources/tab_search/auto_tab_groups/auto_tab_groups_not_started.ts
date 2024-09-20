@@ -68,11 +68,6 @@ export class AutoTabGroupsNotStartedElement extends
     this.addWebUiListener('account-info-changed', this.setSignedIn_.bind(this));
   }
 
-  getTitle(): string {
-    return loadTimeData.getString(
-        this.showFre ? 'notStartedTitleFRE' : 'notStartedTitle');
-  }
-
   private setSignedIn_(signedIn: boolean) {
     this.signedIn_ = signedIn;
   }

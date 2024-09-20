@@ -173,8 +173,8 @@ class ComponentInstaller final : public update_client::CrxInstaller {
                ProgressCallback progress_callback,
                Callback callback) override;
 
-  bool GetInstalledFile(const std::string& file,
-                        base::FilePath* installed_file) override;
+  std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) override;
   // Components bundled with installations of Chrome cannot be uninstalled.
   bool Uninstall() override;
 

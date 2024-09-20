@@ -24,18 +24,18 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/chrome_dips_delegate.h"
-#include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/dips/persistent_repeating_timer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -265,7 +265,8 @@ DIPSService* DIPSService::Get(content::BrowserContext* context) {
   return DIPSServiceImpl::Get(context);
 }
 
-DIPSServiceImpl::DIPSServiceImpl(content::BrowserContext* context)
+DIPSServiceImpl::DIPSServiceImpl(base::PassKey<DIPSServiceFactory>,
+                                 content::BrowserContext* context)
     : browser_context_(context), dips_delegate_(ChromeDipsDelegate::Create()) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
   std::optional<base::FilePath> path_to_use;
@@ -294,11 +295,6 @@ DIPSServiceImpl::DIPSServiceImpl(content::BrowserContext* context)
 
   repeating_timer_ = CreateTimer();
   repeating_timer_->Start();
-
-  if (auto* identity_manager = IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(context))) {
-    dips_browser_signin_detector_.emplace(this, identity_manager);
-  }
 }
 
 std::unique_ptr<dips::PersistentRepeatingTimer> DIPSServiceImpl::CreateTimer() {
@@ -344,7 +340,7 @@ void DIPSServiceImpl::RemoveEvents(const base::Time& delete_begin,
 void DIPSServiceImpl::HandleRedirectChain(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain,
-    base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
+    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
   DCHECK_LE(redirects.size(), chain->length);
 
   if (redirects.empty()) {
@@ -378,7 +374,7 @@ void DIPSServiceImpl::HandleRedirectChain(
       .WithArgs(url)
       .Then(base::BindOnce(&DIPSServiceImpl::GotState,
                            weak_factory_.GetWeakPtr(), std::move(redirects),
-                           std::move(chain), 0, content_settings_callback));
+                           std::move(chain), 0, stateful_bounce_callback));
 }
 
 void DIPSServiceImpl::RecordInteractionForTesting(const GURL& url) {
@@ -399,7 +395,7 @@ void DIPSServiceImpl::GotState(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain,
     size_t index,
-    base::RepeatingCallback<void(const GURL&)> content_settings_callback,
+    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback,
     const DIPSState url_state) {
   DCHECK_LT(index, redirects.size());
 
@@ -419,7 +415,7 @@ void DIPSServiceImpl::GotState(
   HandleRedirect(*redirect, *chain,
                  base::BindRepeating(&DIPSServiceImpl::RecordBounce,
                                      base::Unretained(this)),
-                 content_settings_callback);
+                 stateful_bounce_callback);
 
   if (index + 1 >= redirects.size()) {
     // All redirects handled.
@@ -438,7 +434,7 @@ void DIPSServiceImpl::GotState(
       .Then(base::BindOnce(&DIPSServiceImpl::GotState,
                            weak_factory_.GetWeakPtr(), std::move(redirects),
                            std::move(chain), index + 1,
-                           content_settings_callback));
+                           stateful_bounce_callback));
 }
 
 void DIPSServiceImpl::RecordBounce(
@@ -447,7 +443,7 @@ void DIPSServiceImpl::RecordBounce(
     const GURL& final_url,
     base::Time time,
     bool stateful,
-    base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
+    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
   // If the bounced URL has a 3PC exception when embedded under the initial or
   // final URL in the redirect,then clear the tracking site from the DIPS DB, to
   // avoid deleting its storage. The exception overrides any bounces from
@@ -495,10 +491,10 @@ void DIPSServiceImpl::RecordBounce(
     return;
   }
 
-  // If the bounce is stateful and not excepted by cookie settings, increment
-  // the bounce counter in PageSpecificContentSettings.
+  // If the bounce is stateful and not excepted by cookie settings, run the
+  // callback.
   if (stateful) {
-    content_settings_callback.Run(final_url);
+    stateful_bounce_callback.Run(final_url);
   }
 
   storage_.AsyncCall(&DIPSStorage::RecordBounce).WithArgs(url, time, stateful);
@@ -509,7 +505,7 @@ void DIPSServiceImpl::HandleRedirect(
     const DIPSRedirectInfo& redirect,
     const DIPSRedirectChainInfo& chain,
     RecordBounceCallback record_bounce,
-    base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
+    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
   bool initial_site_same = (redirect.site == chain.initial_site);
   bool final_site_same = (redirect.site == chain.final_site);
   DCHECK_LT(redirect.chain_index.value(), chain.length);
@@ -545,7 +541,7 @@ void DIPSServiceImpl::HandleRedirect(
         redirect.url.url, redirect.has_3pc_exception.value(),
         chain.final_url.url, redirect.time,
         /*stateful=*/redirect.access_type > SiteDataAccessType::kRead,
-        content_settings_callback);
+        stateful_bounce_callback);
   }
 
   RedirectCategory category =
@@ -677,4 +673,13 @@ void DIPSServiceImpl::RecordBrowserSignIn(std::string_view domain) {
       ->AsyncCall(&DIPSStorage::RecordInteraction)
       .WithArgs(url::SchemeHostPort("http", domain, 80).GetURL(),
                 base::Time::Now(), GetCookieMode());
+}
+
+void DIPSServiceImpl::MaybeNotifyCreated(base::PassKey<DIPSServiceFactory>) {
+  if (delegate_notified_) {
+    return;
+  }
+
+  delegate_notified_ = true;  // Set this first to prevent infinite recursion.
+  ChromeDipsDelegate::Create()->OnDipsServiceCreated(browser_context_, this);
 }

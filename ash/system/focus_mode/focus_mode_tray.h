@@ -53,7 +53,7 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   void OnAnimationEnded() override;
 
   // FocusModeController::Observer:
-  void OnFocusModeChanged(bool in_focus_session) override;
+  void OnFocusModeChanged(FocusModeSession::State session_state) override;
   void OnTimerTick(const FocusModeSession::Snapshot& session_snapshot) override;
   void OnActiveSessionDurationChanged(
       const FocusModeSession::Snapshot& session_snapshot) override;
@@ -67,6 +67,11 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   void Layout(PassKey) override;
 
   views::ImageView* image_view() { return image_view_; }
+
+  // Triggers the tray bounce in animation. This is used during the ending
+  // moment to notify the user that their session is over. When the animation
+  // finishes, the ending moment nudge is then shown.
+  void MaybePlayBounceInAnimation();
 
   FocusModeCountdownView* countdown_view_for_testing() {
     return countdown_view_;

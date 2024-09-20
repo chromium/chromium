@@ -144,9 +144,11 @@ class MarkupAccumulator::ElementSerializationData final {
 MarkupAccumulator::MarkupAccumulator(
     AbsoluteURLs resolve_urls_method,
     SerializationType serialization_type,
-    const ShadowRootInclusion& shadow_root_inclusion)
+    const ShadowRootInclusion& shadow_root_inclusion,
+    AttributesMode attributes_mode)
     : formatter_(resolve_urls_method, serialization_type),
-      shadow_root_inclusion_(shadow_root_inclusion) {}
+      shadow_root_inclusion_(shadow_root_inclusion),
+      attributes_mode_(attributes_mode) {}
 
 MarkupAccumulator::~MarkupAccumulator() = default;
 
@@ -181,22 +183,26 @@ void MarkupAccumulator::AppendStartMarkup(const Node& node) {
 
 void MarkupAccumulator::AppendCustomAttributes(const Element&) {}
 
-bool MarkupAccumulator::ShouldIgnoreAttribute(
+MarkupAccumulator::EmitChoice MarkupAccumulator::WillProcessAttribute(
     const Element& element,
     const Attribute& attribute) const {
-  return false;
+  return EmitChoice::kEmit;
 }
 
-bool MarkupAccumulator::ShouldIgnoreElement(const Element& element) const {
-  return false;
+MarkupAccumulator::EmitChoice MarkupAccumulator::WillProcessElement(
+    const Element& element) {
+  return EmitChoice::kEmit;
 }
 
 AtomicString MarkupAccumulator::AppendElement(const Element& element) {
   const ElementSerializationData data = AppendStartTagOpen(element);
+  AttributeCollection attributes =
+      attributes_mode_ == AttributesMode::kSynchronized
+          ? element.Attributes()
+          : element.AttributesWithoutUpdate();
   if (SerializeAsHTML()) {
     // https://html.spec.whatwg.org/C/#html-fragment-serialisation-algorithm
 
-    AttributeCollection attributes = element.Attributes();
     // 3.2. Element: If current node's is value is not null, and the
     // element does not have an is attribute in its attribute list, ...
     const AtomicString& is_value = element.IsValue();
@@ -204,13 +210,14 @@ AtomicString MarkupAccumulator::AppendElement(const Element& element) {
       AppendAttribute(element, Attribute(html_names::kIsAttr, is_value));
     }
     for (const auto& attribute : attributes) {
-      if (!ShouldIgnoreAttribute(element, attribute))
+      if (EmitChoice::kEmit == WillProcessAttribute(element, attribute)) {
         AppendAttribute(element, attribute);
+      }
     }
   } else {
     // https://w3c.github.io/DOM-Parsing/#xml-serializing-an-element-node
 
-    for (const auto& attribute : element.Attributes()) {
+    for (const auto& attribute : attributes) {
       if (data.ignore_namespace_definition_attribute_ &&
           attribute.NamespaceURI() == xmlns_names::kNamespaceURI &&
           attribute.Prefix().empty()) {
@@ -219,8 +226,9 @@ AtomicString MarkupAccumulator::AppendElement(const Element& element) {
         if (!EqualIgnoringNullity(attribute.Value(), element.namespaceURI()))
           continue;
       }
-      if (!ShouldIgnoreAttribute(element, attribute))
+      if (EmitChoice::kEmit == WillProcessAttribute(element, attribute)) {
         AppendAttribute(element, attribute);
+      }
     }
   }
 
@@ -623,8 +631,9 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
   }
 
   const auto& target_element = To<Element>(target_node);
-  if (ShouldIgnoreElement(target_element))
+  if (WillProcessElement(target_element) == EmitChoice::kIgnore) {
     return;
+  }
 
   PushNamespaces(target_element);
 
@@ -644,16 +653,19 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
     }
 
     // Traverses the shadow tree.
-    std::pair<Node*, Element*> auxiliary_pair = GetShadowTree(target_element);
-    if (Node* auxiliary_tree = auxiliary_pair.first) {
+    std::pair<ShadowRoot*, Element*> auxiliary_pair =
+        GetShadowTree(target_element);
+    if (ShadowRoot* auxiliary_tree = auxiliary_pair.first) {
       Element* enclosing_element = auxiliary_pair.second;
       AtomicString enclosing_element_prefix;
       if (enclosing_element)
         enclosing_element_prefix = AppendElement(*enclosing_element);
       for (const Node& child : Strategy::ChildrenOf(*auxiliary_tree))
         SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
-      if (enclosing_element)
+      if (enclosing_element) {
+        WillCloseSyntheticTemplateElement(*auxiliary_tree);
         AppendEndTag(*enclosing_element, enclosing_element_prefix);
+      }
     }
 
     if (parent) {

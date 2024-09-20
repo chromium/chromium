@@ -12,12 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -447,8 +447,11 @@ bool GaiaScreen::MaybeLoginWithCachedCredentials() {
   CHECK(wizard_context);
 
   UserContext* user_context = wizard_context->user_context.get();
-  if (!user_context || user_context->GetAccountId().empty() ||
-      !user_context->GetPassword() || user_context->GetRefreshToken().empty()) {
+  const bool user_context_available =
+      user_context && !user_context->GetAccountId().empty() &&
+      user_context->GetPassword() && !user_context->GetRefreshToken().empty();
+  if (!wizard_context->add_user_from_cached_credentials ||
+      !user_context_available) {
     return false;
   }
 
@@ -458,6 +461,8 @@ bool GaiaScreen::MaybeLoginWithCachedCredentials() {
     view_->ToggleLoadingUI(true);
     view_->Show();
   }
+
+  wizard_context->add_user_from_cached_credentials = false;
   LoginDisplayHost::default_host()->CompleteLogin(
       *std::move(wizard_context->user_context));
 

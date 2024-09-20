@@ -10,6 +10,7 @@
 
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 class Browser;
@@ -55,7 +56,7 @@ bool SavedBoundsAreContentBounds(const Browser* browser);
 
 void SaveWindowPlacement(const Browser* browser,
                          const gfx::Rect& bounds,
-                         ui::WindowShowState show_state);
+                         ui::mojom::WindowShowState show_state);
 
 void SaveWindowWorkspace(const Browser* browser, const std::string& workspace);
 
@@ -67,7 +68,7 @@ void SaveWindowVisibleOnAllWorkspaces(const Browser* browser,
 // the window.
 void GetSavedWindowBoundsAndShowState(const Browser* browser,
                                       gfx::Rect* bounds,
-                                      ui::WindowShowState* show_state);
+                                      ui::mojom::WindowShowState* show_state);
 
 namespace internal {
 
@@ -76,7 +77,7 @@ namespace internal {
 void UpdateWindowBoundsAndShowStateFromCommandLine(
     const base::CommandLine& command_line,
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state);
+    ui::mojom::WindowShowState* show_state);
 
 }  // namespace internal
 

@@ -664,6 +664,17 @@ targets.legacy_compound_suite(
     ],
 )
 
+# TODO(crbug.com/364675466): Remove this when Tint IR is launched on macOS.
+targets.legacy_compound_suite(
+    name = "gpu_dawn_integration_gtests_passthrough_macos",
+    basic_suites = [
+        "gpu_dawn_gtests",
+        "gpu_dawn_gtests_with_validation",
+        "gpu_dawn_gtests_use_tint_ir",
+        "gpu_common_gtests_passthrough",
+    ],
+)
+
 targets.legacy_compound_suite(
     name = "gpu_dawn_isolated_scripts",
     basic_suites = [

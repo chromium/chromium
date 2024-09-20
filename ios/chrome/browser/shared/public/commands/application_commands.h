@@ -5,14 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_APPLICATION_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_APPLICATION_COMMANDS_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #include "base/ios/block_types.h"
+#include "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
 class GURL;
 @class OpenNewTabCommand;
 @class ShowSigninCommand;
+@protocol SystemIdentity;
 @class UIViewController;
 namespace password_manager {
 enum class PasswordCheckReferrer;
@@ -67,6 +69,9 @@ enum class TabGridOpeningMode {
 // for default browser settings if specified.
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController
               hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot;
+
+// Shows the settings UI for price tracking notifications.
+- (void)showPriceTrackingNotificationsSettings;
 
 // Presents the Trusted Vault reauth dialog.
 // `baseViewController` presents the sign-in.
@@ -158,6 +163,16 @@ enum class TabGridOpeningMode {
 // Shows the signin UI, presenting from `baseViewController`.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController;
+
+// Switch from managed account.
+- (void)
+    switchAccountWithBaseViewController:(UIViewController*)baseViewController
+                            newIdentity:(id<SystemIdentity>)newIdentity
+                                   rect:(CGRect)rect
+                         rectAnchorView:(UIView*)rectAnchorView
+        viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
+                       signInCompletion:(ShowSigninCommandCompletionCallback)
+                                            signInCompletion;
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the consistency promo UI that allows users to sign in to Chrome using

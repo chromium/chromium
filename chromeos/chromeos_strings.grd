@@ -684,6 +684,12 @@
         <message name="IDS_GRADUATION_APP_TITLE" desc="Name of the Graduation app in the app shelf. Graduation allows user to transfer data from their EDU account to their consumer account.">
           Graduation
         </message>
+        <message name="IDS_GRADUATION_APP_BACK_BUTTON_LABEL" desc="Text for a button that navigates to the previous step of the Graduation flow.">
+          Back
+        </message>
+        <message name="IDS_GRADUATION_APP_DONE_BUTTON_LABEL" desc="Text for a button that is clicked to indicate that the Graduation flow is complete.">
+          Done
+        </message>
         <message name="IDS_GRADUATION_APP_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the Takeout webview is loading.">
           Please wait...
         </message>
@@ -2589,6 +2595,9 @@
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed for displaying local weather info">
           OFF - To display local weather <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on system location access<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_MANAGED_TEXT_FOR_WEATHER" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed (but is managed by the admin) for displaying local weather info">
+          OFF - This setting is managed by your administrator.
+        </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_DIALOG_BODY" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
           Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph>-<ph name="SUNSET">$2<ex>6pm</ex></ph>. To automatically update the sunset and sunrise schedule, turn on system location access.
         </message>
@@ -2789,7 +2798,7 @@
           Please connect to a network and reload the page to view screen saver.
         </message>
         <message name="IDS_PERSONALIZATION_APP_MANAGED_FEATURE" desc="Message to show in the personalization hub for a feature which is enterprise managed by administrators.">
-          This feature is managed by your administrators
+          This feature is managed by your administrator
         </message>
         <message name="IDS_PERSONALIZATION_APP_MANAGED_SETTING" desc="Message to show in the personalization hub for a setting which is enterprise managed by administrators.">
           This setting is managed by your administrators
@@ -2817,6 +2826,9 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_ERROR_TOOLTIP_AUTO_COLOR_MODE" desc="Tooltip for the button to enable auto color mode.">
           Time based changes may not be accurate. Turn on system location access in settings.
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_MANAGED_ERROR_TOOLTIP_AUTO_COLOR_MODE" desc="Tooltip text for auto color mode, when geolocation is disabled by the admin.">
+          Time based changes may not be accurate. This setting is managed by your administrator.
         </message>
         <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_GO_TO_ACCOUNT_SETTINGS" desc="Aria label for the link to account settings.">
           Go to account settings
@@ -3178,85 +3190,86 @@
         </message>
 
         <!-- Sanitize UI -->
-        <message name="IDS_SANITIZE" desc="Name of the Sanitize web app" translateable="false">
-          Sanitize
+        <message name="IDS_SANITIZE" desc="Name of the Safety reset web app">
+          Safety reset
         </message>
-        <message name="IDS_SANITIZE_DONE_HEADING" desc="Name of the 'Safety reset done' window" translateable="false">
-          Your device is sanitized
+        <message name="IDS_SANITIZE_DONE_HEADING" desc="Name of the 'Safety reset done' window">
+          Safety reset has been completed
         </message>
-        <message name="IDS_SANITIZE_DONE_DESCRIPTION" desc="Description of the safety reset done dialog" translateable="false">
-          Your ChromeOS device was reset to safe defaults.
+        <message name="IDS_SANITIZE_DONE_DESCRIPTION" desc="Description of the safety reset done dialog">
+          Your Chromebook was reset to safe defaults. You can adjust these changes anytime in Settings.
         </message>
-        <message name="IDS_SANITIZE_DONE_ROLLBACK" desc="Description of how the user can roll back changes" translateable="false">
-          We made changes to make your device more secure, you can undo some of our changes below.
+        <message name="IDS_SANITIZE_DONE_ROLLBACK" desc="Summary title">
+          Summary
         </message>
-        <message name="IDS_SANITIZE_DONE" desc="Name of the button that will close the sanitize done dialog" translateable="false">
+        <message name="IDS_SANITIZE_DONE" desc="Name of the button that will close the safety reset done dialog">
           Done
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_TITLE" translateable="false">
-          Your Extensions
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE" translateable="false">
-          Re-enable extensions you trust
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_TITLE" translateable="false">
-          Your ChromeOS Settings
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" translateable="false">
-          Verify your input method
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" translateable="false">
-          Check your current network
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_TITLE" translateable="false">
-          Your Chrome Settings
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" translateable="false">
-          Verify your site content settings
-        </message>
-        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" translateable="false">
-          Check your Chrome startup preferences
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" translateable="false">
-          Verify the status of your homepage
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" translateable="false">
-          Verify your language settings
-        </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_EXTENSIONS" translateable="false">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_TITLE" desc="Accordion title for extension resets">
           Extensions
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_INPUT" translateable="false">
-          ChromeOS Input
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE" desc="Instructions to re-enable extensions">
+          Only turn on extensions you trust
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_NETWORK" translateable="false">
-          ChromeOS Network
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_TITLE" desc="Accordion title for ChromeOS resets">
+          ChromeOS Settings
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_STARTUP" translateable="false">
-          Chrome Startup
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" desc="Instructions to adjust ChromeOS Inputs">
+          Input method
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_HOMEPAGE" translateable="false">
-          Chrome Homepage
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" desc="Instructions to adjust ChromeOS Network">
+          Network
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_LANGUAGES" translateable="false">
-          Chrome Languages
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_TITLE" desc="Accordion title for Chrome resets">
+          Chrome Settings
         </message>
-        <message name="IDS_SANITIZE_HEADING" translateable="false" desc="Name of the 'Safety reset' window">
-          Sanitize your device
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" desc="Instructions to adjust Chrome site content settings">
+          Site content
         </message>
-        <message name="IDS_SANITIZE_DESCRIPTION" translateable="false" desc="Description of the sanitization feature on the sanitize window">
-          Getting unwanted pop-ups, or other unexpected behavior? Sometimes,
-          apps and extensions that you install can change your ChromeOS settings
-          without you knowing.
+        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" desc="Instruction to adjust Chrome startup settings">
+          Startup preferences
         </message>
-        <message name="IDS_SANITIZE_WARNING" translateable="false" desc="Warning text in the 'Sanitize' window">
-          This will disable extensions and reset your settings to safe defaults.
-          Tabs, files, and cookies will be preserved.
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" desc="Instructions to adjust Chrome homepage settings">
+          Homepage
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" desc="Instruction to adjust Chrome language settings">
+          Language
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_EXTENSIONS" desc="Button label to redirect to Chrome Extensions page">
+          Extensions
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_INPUT" desc="Button label to redirect to ChromeOS Input Settings">
+          Input settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_NETWORK" desc="Button label to redirect to ChromeOS Network Settings">
+          Network settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_SITE_CONTENT" desc="Button label to redirect to Chrome Site Content Settings">
+          Site content settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_STARTUP" desc="Button label to redirect to Chrome Startup Settings">
+          Startup settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_HOMEPAGE" desc="Button label to redirect to Chrome Homepage Settings">
+          Homepage settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_LANGUAGES" desc="Button label to redirecto to Chrome Language Settings">
+          Language settings
+        </message>
+        <message name="IDS_SANITIZE_HEADING" desc="Name of the 'Safety reset' window">
+          Safety reset
+        </message>
+        <message name="IDS_SANITIZE_DESCRIPTION" desc="Description of the safety reset feature">
+          Safety reset can help remove unwanted pop-ups, fix network issues, and address other unexpected issues.
+        </message>
+        <message name="IDS_SANITIZE_WARNING" desc="Warning text in the safety reset">
+          Safety reset turns off Chrome browser extensions and resets network and other settings to safe defaults.
+          Your tabs, files, cookies, and history won’t be changed.
         </message>
         <message name="IDS_SANITIZE_FEEDBACK" translateable="false" desc="Feedback label in the Reset Profile Settings dialog">
           Help make ChromeOS better by reporting the current settings
         </message>
-        <message name="IDS_SANITIZE_CANCEL" translateable="false" desc="Button label to cancel proceeding with sanitize">
+        <message name="IDS_SANITIZE_CANCEL" desc="Button label to cancel proceeding with the safety reset">
           Cancel
         </message>
 
@@ -3399,8 +3412,11 @@
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_TITLE" desc="The title of the introduction dialog displayed on the first time the user enters Sea Pen subpage.">
           How to create with AI and a few things to keep in mind
         </message>
-        <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT" desc="The content of the introduction dialog.">
+        <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_FIRST_PARAGRAPH" desc="Option to fill in the SEA_PEN_INTRO_FIRST_PARAGRAPH of the IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT.">
           Choose a theme and then select the underlined words to personalize your AI images.
+        </message>
+        <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT" desc="The content of the introduction dialog.">
+          <ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH">$1<ex>Choose a theme and then select the underlined words to personalize your AI images.</ex></ph>
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           Select "Inspire me" to get more unique and varied AI images options.
@@ -3447,16 +3463,19 @@
           Previous prompts
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS_TOOLTIP" desc="Tooltip for IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS">
-          Your 2 most recent prompts. You can only use these prompts while you're on this page.
+          Your 3 most recent prompts and outputs. You can only access these while you're using Wallpaper &amp; style.
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_MORE_SUGGESTIONS_BUTTON" desc="Description for a button that will show more options">
           More
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_PROMPTING_GUIDE" desc="A link to a guide with instructions on how to write a prompt to generate AI images.">
-          Try one of these prompts or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE">&lt;a target="_blank" href="https://cloud.google.com/vertex-ai/generative-ai/docs/image/img-gen-prompt-guide"&gt;</ph>prompting guide<ph name="END_LINK_PROMPTING_GUIDE">&lt;/a&gt;</ph>
+          Select prompt to create or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE">&lt;a target="_blank" href="https://cloud.google.com/vertex-ai/generative-ai/docs/image/img-gen-prompt-guide"&gt;</ph>prompt guide<ph name="END_LINK_PROMPTING_GUIDE">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_NAVIGATION_DESCRIPTION" desc="Description shown in each template page to help users navigate to freeform page.">
           You can also <ph name="BEGIN_LINK_FREEFORM_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/sea-pen/freeform"&gt;</ph>write your own prompt<ph name="END_LINK_FREEFORM_SUBPAGE">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG_FIRST_PARAGRAPH" desc="Option to fill in the SEA_PEN_INTRO_FIRST_PARAGRAPH of the IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT.">
+          When you select “Create with AI,” write a custom prompt. Or you can select “AI wallpapers,” to choose a theme and then select the underlined words to personalize your AI wallpaper.
         </message>
 
         <!-- Sea Pen Templates (AUTOGENERATED - contact assistive-eng@google.com before editing) -->
@@ -6755,6 +6774,19 @@
       <message name="IDS_DEEP_SCANNING_PROMPT_REMOVAL_NOTIFICATION"
                desc="Notification text shown on Lacros indicating to the users that future suspicious downloads will scan automatically">
         Suspicious files will be scanned automatically by Google Safe Browsing as part of the enhanced protection you chose
+      </message>
+
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_UPCOMING_LOGOUT_NOTIFICATION_TITLE" desc="Title of the notification telling the user they will be signed out soon.">
+        You will be signed out at <ph name="TIME">$1<ex>7:30 PM</ex></ph>
+      </message>
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_UPCOMING_LOGOUT_NOTIFICATION_BODY" desc="Body of the notification telling the user they will be signed out soon.">
+        Make sure to save any work
+      </message>
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_POST_LOGOUT_NOTIFICATION_TITLE" desc="Title of the notification telling the user that they were logged out.">
+        You've been signed out
+      </message>
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_POST_LOGOUT_NOTIFICATION_BODY" desc="Body of the notification telling the user that they were logged out.">
+        The <ph name="MANAGER">$1<ex>google.com</ex></ph> administrator has set when this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> can be used
       </message>
 
     </messages>

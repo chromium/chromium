@@ -15,6 +15,7 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -50,6 +51,7 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              bool nearest,
                              bool secure_output,
                              gfx::ProtectedVideoType video_type) {
+  CHECK_NE(resource_id, kInvalidResourceId);
   this->needs_blending = needs_blending;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
@@ -79,6 +81,7 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              bool nearest,
                              bool secure_output,
                              gfx::ProtectedVideoType video_type) {
+  CHECK_NE(resource_id, kInvalidResourceId);
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
   resources.ids[kResourceIdIndex] = resource_id;

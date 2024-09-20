@@ -163,8 +163,7 @@ Node* RetargetInput(Node* node) {
       possible_select = NodeTraversal::Parent(*node);
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(possible_select)) {
-      if (select->IsAppearanceBaseButton() &&
-          node == select->DisplayedButton()) {
+      if (select->IsAppearanceBaseButton() && node == select->SlottedButton()) {
         return select;
       }
     }
@@ -1467,21 +1466,14 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   AssociateAXID(new_obj, axid);
   new_obj->Init(parent);
 
-  // Process new relations.
-  // Only elements (non-pseudo ones) can have relations.
+#if DCHECK_IS_ON()
   Element* element = DynamicTo<Element>(node);
   if (element && !element->IsPseudoElement()) {
-    CHECK(relation_cache_);
-    // Register incomplete relations with the relation cache, so that when the
-    // target id shows up at a later time, the source node can be reserialized
-    // with the completed relation.
-    relation_cache_->RegisterIncompleteRelations(new_obj);
-#if DCHECK_IS_ON()
     // Ensure that the relation cache is properly initialized with information
     // from this element.
     relation_cache_->CheckRelationsCached(*element);
-#endif
   }
+#endif
 
   // Eagerly fill out new subtrees.
   new_obj->UpdateChildrenIfNecessary();
@@ -2460,6 +2452,9 @@ void AXObjectCacheImpl::NodeIsConnected(Node* node) {
     if (AXObject::HasARIAOwns(element)) {
       DeferTreeUpdate(TreeUpdateReason::kUpdateAriaOwns, element);
     }
+    if (element->HasID()) {
+      DeferTreeUpdate(TreeUpdateReason::kIdChanged, element);
+    }
   }
 }
 
@@ -2467,7 +2462,7 @@ void AXObjectCacheImpl::UpdateAriaOwnsWithCleanLayout(Node* node) {
   // Process any relation attributes that can affect ax objects already created.
   // Force computation of aria-owns, so that original parents that already
   // computed their children get the aria-owned children removed.
-  if (AXObject::HasARIAOwns(To<Element>(node))) {
+  if (IsA<Element>(node) && AXObject::HasARIAOwns(To<Element>(node))) {
     if (AXObject* obj = Get(node)) {
       CHECK(relation_cache_);
       relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
@@ -2567,7 +2562,8 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       RemoveSubtree(node);
       return;
     }
-    if ((IsA<HTMLTableElement>(node) || IsA<HTMLSelectElement>(node)) &&
+    if ((IsA<HTMLTableElement>(node) || IsA<HTMLSelectElement>(node) ||
+         node->GetLayoutObject()->IsAtomicInlineLevel()) &&
         !node->IsFinishedParsingChildren() &&
         !node_to_parse_before_more_tree_updates_) {
       // * Tables must be fully parsed before building, because many of the
@@ -2578,6 +2574,8 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       //   vs. natural DOM tree.
       // TODO(accessibility) Fix root select issue, while still passing
       // All/YieldingParserDumpAccessibilityTreeTest.AccessibilityCustomSelect/blink.
+      // * Inline text boxes must know their children in order to determine
+      //   whether they can be ignored;
       node_to_parse_before_more_tree_updates_ = node;
     }
 
@@ -2634,7 +2632,9 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
   CHECK(obj);
   CHECK(obj->ParentObject());
 
-  MaybeNewRelationTarget(*node, obj);
+  if (element && element->HasID()) {
+    MaybeNewRelationTarget(*node, obj);
+  }
 
   if (IsA<HTMLAreaElement>(node)) {
     ChildrenChangedWithCleanLayout(obj);
@@ -3714,7 +3714,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
       HandleEditableTextContentChangedWithCleanLayout(node);
       break;
     case TreeUpdateReason::kIdChanged:
-      IdChangedWithCleanLayout(node);
+      // When the id attribute changes, the relations its in may also change.
+      MaybeNewRelationTarget(*node, ax_object);
       break;
     case TreeUpdateReason::kMarkDirtyFromHandleScroll:
       MarkAXObjectDirtyWithCleanLayout(Get(node));
@@ -3884,8 +3885,8 @@ void AXObjectCacheImpl::SetMenuListOptionsBounds(
 
 const WTF::Vector<gfx::Rect>* AXObjectCacheImpl::GetOptionsBounds(
     const AXObject& ax_menu_list) const {
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    // Stylable select does not render in a special popup document and does
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    // Customizable select does not render in a special popup document and does
     // not need to supply bounding boxes via options_bounds_.
     HTMLSelectElement* select = To<HTMLSelectElement>(ax_menu_list.GetNode());
     if (select->IsAppearanceBasePicker()) {
@@ -4071,36 +4072,8 @@ void AXObjectCacheImpl::MaybeNewRelationTarget(Node& node, AXObject* obj) {
   // Track reverse relations
   CHECK(relation_cache_);
   relation_cache_->UpdateRelatedTree(&node, obj);
-
-  // |obj| can become detached in UpdateRelatedTree(), while processing
-  // aria_owns relations, if it is determined that |obj| is part of a pruned
-  // subtree.
-  if (!obj || obj->IsDetached()) {
-    return;
-  }
-
-  CHECK_EQ(obj->GetNode(), &node) << "\nMismatched object and node: " << obj;
-
-  // Process completed relations for new ids. These are relations where
-  // the target AXObject didn't exist when the relation was initially cached.
   if (Element* element = DynamicTo<Element>(node)) {
-    const AtomicString& id = element->GetIdAttribute();
-    if (!id.IsNull()) {
-      relation_cache_->ProcessCompletedRelationsForNewId(id);
-    }
-  }
-
-  // Check whether aria-activedescendant on the focused object points to
-  // |obj|. If so, fire activedescendantchanged event now. This is only for
-  // ARIA active descendants, not in a native control like a listbox, which
-  // has its own initial active descendant handling.
-  Node* focused_node = document_->FocusedElement();
-  if (focused_node) {
-    AXObject* focus = Get(focused_node);
-    if (focus && focus->GetAOMPropertyOrARIAAttribute(
-                     AOMRelationProperty::kActiveDescendant) == &node) {
-      focus->HandleActiveDescendantChanged();
-    }
+    relation_cache_->UpdateRelatedTreeForIdChange(*element);
   }
 }
 
@@ -4288,9 +4261,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
                attr_name == html_names::kAriaFlowtoAttr) {
       MarkElementDirty(element);
       if (relation_cache_) {
-        if (AXObject* obj = Get(element)) {
-          relation_cache_->RegisterIncompleteRelation(obj, attr_name);
-        }
+        relation_cache_->UpdateReverseOtherRelations(*element);
       }
     } else {
       MarkElementDirty(element);
@@ -4568,11 +4539,6 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
                       &node);
     }
   }
-}
-
-void AXObjectCacheImpl::IdChangedWithCleanLayout(Node* node) {
-  // When the id attribute changes, the relations its in may also change.
-  MaybeNewRelationTarget(*node, Get(node));
 }
 
 void AXObjectCacheImpl::AriaOwnsChangedWithCleanLayout(Node* node) {

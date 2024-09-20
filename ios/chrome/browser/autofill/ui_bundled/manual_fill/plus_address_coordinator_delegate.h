@@ -14,6 +14,9 @@
 // Opens the all plus addresses picker.
 - (void)openAllPlusAddressesPicker;
 
+// Opens the manage page address page in a new tab.
+- (void)openManagePlusAddress;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_PLUS_ADDRESS_COORDINATOR_DELEGATE_H_

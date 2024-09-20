@@ -323,20 +323,7 @@ TabGroupId SavedTabGroupKeyedService::AddOpenedTabsToGroup(
   UpdateGroupVisualData(saved_group.saved_guid(),
                         saved_group.local_group_id().value());
 
-  std::map<content::WebContents*, base::Uuid> contents_guid_mapping;
-
-  std::transform(
-      tab_guid_mapping.begin(), tab_guid_mapping.end(),
-      std::inserter(contents_guid_mapping, contents_guid_mapping.end()),
-      [](const std::pair<tabs::TabModel*, base::Uuid>& pair) {
-        // Transform the TabModel* to WebContents*
-        content::WebContents* web_contents = pair.first->contents();
-
-        // Return a pair with the transformed key and the same UUID value
-        return std::make_pair(web_contents, pair.second);
-      });
-
-  listener_->ConnectToLocalTabGroup(saved_group, contents_guid_mapping);
+  listener_->ConnectToLocalTabGroup(saved_group, tab_guid_mapping);
 
   return tab_group_id;
 }
@@ -367,17 +354,16 @@ base::Uuid SavedTabGroupKeyedService::SaveGroup(const TabGroupId& group_id,
   // Build the SavedTabGroupTabs and add them to the SavedTabGroup.
   const gfx::Range tab_range = tab_group->ListTabs();
 
-  std::map<content::WebContents*, base::Uuid> opened_web_contents_to_uuid;
+  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping;
   for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
-    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
-    CHECK(web_contents);
+    tabs::TabModel* tab = tab_strip_model->GetTabAtIndex(i);
+    CHECK(tab);
 
     SavedTabGroupTab saved_tab_group_tab =
         SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
-            web_contents, saved_tab_group.saved_guid());
+            tab->contents(), saved_tab_group.saved_guid());
 
-    opened_web_contents_to_uuid.emplace(web_contents,
-                                        saved_tab_group_tab.saved_tab_guid());
+    tab_guid_mapping.emplace(tab, saved_tab_group_tab.saved_tab_guid());
 
     saved_tab_group.AddTabLocally(std::move(saved_tab_group_tab));
   }
@@ -387,7 +373,7 @@ base::Uuid SavedTabGroupKeyedService::SaveGroup(const TabGroupId& group_id,
 
   // Link the local group to the saved group in the listener.
   listener_->ConnectToLocalTabGroup(*model_->Get(saved_group_guid),
-                                    opened_web_contents_to_uuid);
+                                    tab_guid_mapping);
 
   LogEvent(TabGroupEvent::kTabGroupCreated, saved_group_guid);
   return saved_group_guid;
@@ -469,23 +455,9 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
   model_->OnGroupOpenedInTabStrip(saved_guid, local_group_id);
   UpdateGroupVisualData(saved_guid, local_group_id);
 
-  auto tab_guid_mapping =
-      GetTabToGuidMappingForSavedGroup(tab_strip_model, saved_group, tab_range);
-
-  std::map<content::WebContents*, base::Uuid> contents_guid_mapping;
-  std::transform(
-      tab_guid_mapping.begin(), tab_guid_mapping.end(),
-      std::inserter(contents_guid_mapping, contents_guid_mapping.end()),
-      [](const std::pair<tabs::TabModel*, base::Uuid>& pair) {
-        // Transform the TabModel* to WebContents*
-        content::WebContents* web_contents = pair.first->contents();
-
-        // Return a pair with the transformed key and the same UUID value
-        return std::make_pair(web_contents, pair.second);
-      });
-
-  listener_->ConnectToLocalTabGroup(*model_->Get(saved_guid),
-                                    contents_guid_mapping);
+  listener_->ConnectToLocalTabGroup(
+      *model_->Get(saved_guid), GetTabToGuidMappingForSavedGroup(
+                                    tab_strip_model, saved_group, tab_range));
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {

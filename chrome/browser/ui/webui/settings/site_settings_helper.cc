@@ -81,6 +81,7 @@
 #include "extensions/common/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -168,6 +169,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::TRACKING_PROTECTION, "tracking-protection"},
     {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, "top-level-storage-access"},
     {ContentSettingsType::WEB_APP_INSTALLATION, "web-app-installation"},
+    {ContentSettingsType::SMART_CARD_GUARD, "smart-card-readers"},
+    {ContentSettingsType::SMART_CARD_DATA, "smart-card-readers-data"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -235,9 +238,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, nullptr},
     {ContentSettingsType::TPCD_HEURISTICS_GRANTS, nullptr},
     {ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, nullptr},
-    // TODO(crbug.com/40275778): Update name once UI design is done.
-    {ContentSettingsType::SMART_CARD_GUARD, nullptr},
-    {ContentSettingsType::SMART_CARD_DATA, nullptr},
     {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, nullptr},
     {ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS, nullptr},
     {ContentSettingsType::DIRECT_SOCKETS, nullptr},
@@ -259,6 +259,25 @@ struct SiteSettingSourceStringMapping {
   SiteSettingSource source;
   const char* source_str;
 };
+
+// Determines whether an IWA-specific `content_setting` should be shown for a
+// particular `origin`.
+bool ShouldShowIwaContentSettingForOrigin(Profile* profile,
+                                          std::string_view origin,
+                                          ContentSettingsType content_setting) {
+  // Show for non-origin-specific lists, IWAs, and non-default values.
+  if (origin.empty() || GURL(origin).SchemeIs(chrome::kIsolatedAppScheme)) {
+    return true;
+  }
+  if (!profile) {
+    return false;
+  }
+  SiteSettingSource source;
+  GetContentSettingForOrigin(
+      profile, HostContentSettingsMapFactory::GetForProfile(profile),
+      GURL(origin), content_setting, &source);
+  return source != SiteSettingSource::kDefault;
+}
 
 // Retrieves the corresponding string, according to the following precedence
 // order from highest to lowest priority:
@@ -595,10 +614,6 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
       base_types->push_back(ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
     }
 
-    if (base::FeatureList::IsEnabled(blink::features::kWebPrinting)) {
-      base_types->push_back(ContentSettingsType::WEB_PRINTING);
-    }
-
     if (base::FeatureList::IsEnabled(blink::features::kSpeakerSelection)) {
       base_types->push_back(ContentSettingsType::SPEAKER_SELECTION);
     }
@@ -621,26 +636,29 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
     }
 #endif
 
+    if (base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
+      base_types->push_back(ContentSettingsType::WEB_APP_INSTALLATION);
+    }
+
     initialized = true;
   }
 
   // The permission categories below are only shown for certain origins.
   std::vector<ContentSettingsType> types_for_origin = *base_types;
   if (base::FeatureList::IsEnabled(
-          features::kAutomaticFullscreenContentSetting)) {
-    // Show for non-origin-specific lists, IWAs, and non-default values.
-    if (origin.empty() || GURL(origin).SchemeIs(chrome::kIsolatedAppScheme)) {
-      types_for_origin.push_back(ContentSettingsType::AUTOMATIC_FULLSCREEN);
-    } else if (profile) {
-      SiteSettingSource source;
-      GetContentSettingForOrigin(
-          profile, HostContentSettingsMapFactory::GetForProfile(profile),
-          GURL(origin), ContentSettingsType::AUTOMATIC_FULLSCREEN, &source);
-      if (source != SiteSettingSource::kDefault) {
-        types_for_origin.push_back(ContentSettingsType::AUTOMATIC_FULLSCREEN);
-      }
-    }
+          features::kAutomaticFullscreenContentSetting) &&
+      ShouldShowIwaContentSettingForOrigin(
+          profile, origin, ContentSettingsType::AUTOMATIC_FULLSCREEN)) {
+    types_for_origin.push_back(ContentSettingsType::AUTOMATIC_FULLSCREEN);
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(blink::features::kWebPrinting) &&
+      ShouldShowIwaContentSettingForOrigin(profile, origin,
+                                           ContentSettingsType::WEB_PRINTING)) {
+    types_for_origin.push_back(ContentSettingsType::WEB_PRINTING);
+  }
+#endif
 
   return types_for_origin;
 }

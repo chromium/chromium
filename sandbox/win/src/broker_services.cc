@@ -454,6 +454,9 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   AppContainer* container = config_base->GetAppContainer();
   if (container) {
+    CHECK(config_base->is_csrss_connected() ||
+          config_base->GetLockdownTokenLevel() == USER_LOCKDOWN)
+        << "CSRSS must be connected to use a privileged AppContainer sandbox.";
     startup_info->SetAppContainer(container);
   }
 

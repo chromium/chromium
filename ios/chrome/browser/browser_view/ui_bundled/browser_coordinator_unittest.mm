@@ -78,46 +78,46 @@ class BrowserCoordinatorTest : public PlatformTest {
     base_view_controller_ = [[UIViewController alloc] init];
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         IOSChromeFaviconLoaderFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         PrerenderServiceFactory::GetInstance(),
         PrerenderServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::BookmarkModelFactory::GetInstance(),
         ios::BookmarkModelFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return std::make_unique<commerce::MockShoppingService>();
             }));
-    browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
 
-    browser_ = std::make_unique<TestBrowser>(GetBrowserState(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(GetProfile(), scene_state_);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
     LensBrowserAgent::CreateForBrowser(browser_.get());
@@ -135,8 +135,7 @@ class BrowserCoordinatorTest : public PlatformTest {
     enabler->SetWebUsageEnabled(true);
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        GetBrowserState(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        GetProfile(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];
@@ -165,11 +164,11 @@ class BrowserCoordinatorTest : public PlatformTest {
                            browser:browser_.get()];
   }
 
-  ChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
+  ProfileIOS* GetProfile() { return profile_.get(); }
 
   // Creates and inserts a new WebState.
   int InsertWebState() {
-    web::WebState::CreateParams params(GetBrowserState());
+    web::WebState::CreateParams params(GetProfile());
     std::unique_ptr<web::WebState> web_state = web::WebState::Create(params);
     AttachTabHelpers(web_state.get());
 
@@ -207,7 +206,7 @@ class BrowserCoordinatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   UIViewController* base_view_controller_;
   std::unique_ptr<TestBrowser> browser_;
   SceneState* scene_state_;
@@ -334,7 +333,7 @@ TEST_F(BrowserCoordinatorTest, ShareChromeApp) {
 TEST_F(BrowserCoordinatorTest, NewTabPageTabHelperDelegate) {
   // This test is wrapped in an @autoreleasepool because some arguments passed
   // to methods on some of the mock objects need to be freed before
-  // TestChromeBrowserState is destroyed. Without the @autoreleasepool the
+  // TestProfileIOS is destroyed. Without the @autoreleasepool the
   // NSInvocation objects which keep these arguments alive aren't destroyed
   // until the parent PlatformTest class itself is destroyed.
   @autoreleasepool {

@@ -60,6 +60,10 @@ class ProfilePickerSignedInFlowController
   // By default does not do anything, in the flow it will be as if the dialog
   // was closed.
   virtual void Cancel();
+  // Resets the host by redirecting to the main profile picker screen and
+  // canceling the ongoing signed in flow. Shows an error dialog when the reset
+  // is done.
+  void ResetHostAndShowErrorDialog(const ForceSigninUIError& error);
 
   // Finishes the creation flow for `profile_`: marks it fully created,
   // transitions from `host_` to a new browser window and calls `callback` if

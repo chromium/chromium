@@ -18,11 +18,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
 #endif
+
+enum class BrowserClosingStatus;
 
 class Browser;
 class Profile;

@@ -24,7 +24,6 @@ export class FaceGaze {
   private prefsListener_: (prefs: PrefObject[]) => void;
   private metricsUtils_: MetricsUtils;
   private webCamFaceLandmarker_: WebCamFaceLandmarker;
-  private skipInitializeWebCamFaceLandmarkerForTesting_ = false;
   private weightsWindowId_ = -1;
 
   constructor() {
@@ -95,20 +94,6 @@ export class FaceGaze {
     this.openWeightsPanel_();
     chrome.accessibilityPrivate.openSettingsSubpage(
         FaceGaze.SETTINGS_PAGE_ROUTE);
-
-    // Use a timeout to defer the initialization of the WebCamFaceLandmarker.
-    // For tests, we can guard the initialization using a testing-specific
-    // variable. For production, this will initialize the WebCamFaceLandmarker
-    // after the timeout has elapsed.
-    setTimeout(() => {
-      this.maybeInitializeWebCamFaceLandmarker_();
-    }, FaceGaze.INITIALIZE_WEB_CAM_FACE_LANDMARKER_TIMEOUT);
-  }
-
-  private maybeInitializeWebCamFaceLandmarker_(): void {
-    if (this.skipInitializeWebCamFaceLandmarkerForTesting_) {
-      return;
-    }
 
     this.webCamFaceLandmarker_.init();
   }
@@ -190,6 +175,7 @@ export class FaceGaze {
   onFaceGazeDisabled(): void {
     this.mouseController_.reset();
     this.gestureHandler_.stop();
+    this.webCamFaceLandmarker_.stop();
     if (this.weightsWindowId_ !== -1) {
       chrome.windows.remove(this.weightsWindowId_);
     }
@@ -203,16 +189,6 @@ export class FaceGaze {
     }
 
     callback();
-  }
-
-  /**
-   * Used to set the value of `skipInitializeWebCamFaceLandmarkerForTesting_`.
-   * We want to use this method in tests because tests will want to avoid
-   * initializing the WebCamFaceLandmarker, since it starts the webcam stream
-   * and causes errors.
-   */
-  setSkipInitializeWebCamFaceLandmarkerForTesting(skip: boolean): void {
-    this.skipInitializeWebCamFaceLandmarkerForTesting_ = skip;
   }
 
   private openWeightsPanel_(): void {
@@ -239,7 +215,6 @@ export class FaceGaze {
 }
 
 export namespace FaceGaze {
-  export const INITIALIZE_WEB_CAM_FACE_LANDMARKER_TIMEOUT = 5 * 1000;
   // Pref names. Should be in sync with with values at ash_pref_names.h.
   export const PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED =
       'settings.a11y.face_gaze.accelerator_dialog_has_been_accepted';

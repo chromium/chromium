@@ -58,7 +58,6 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual bool HasValidTilePriorities() const = 0;
   virtual bool RequiresHighResToDraw() const = 0;
   virtual const PaintWorkletRecordMap& GetPaintWorkletRecords() const = 0;
-  virtual void OnAllTilesDoneCleared() = 0;
   virtual std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const = 0;
   virtual ScrollOffsetMap GetRasterInducingScrollOffsets() const = 0;

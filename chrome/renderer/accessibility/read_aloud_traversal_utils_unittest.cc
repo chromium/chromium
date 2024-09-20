@@ -218,3 +218,95 @@ TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
       current_granularity.GetSegmentsForRange(38, 45);
   EXPECT_THAT(out, IsEmpty());
 }
+
+TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
+       CalculatePhrases_EmptyText_ReturnsEmptyResult) {
+  a11y::ReadAloudCurrentGranularity empty_sentence;
+
+  EXPECT_THAT(empty_sentence.phrase_boundaries, IsEmpty());
+
+  // CalculatePhrases should do nothing with an empty sentence.
+  empty_sentence.CalculatePhrases();
+
+  EXPECT_THAT(empty_sentence.phrase_boundaries, IsEmpty());
+}
+
+TEST_F(
+    ReadAnythingReadAloudTraversalUtilsTest,
+    CalculatePhrases_DifferentKindsOfText_ReturnsPhraseBoundariesEvery3Words) {
+  a11y::ReadAloudCurrentGranularity normal_sentence;
+  // Sentence and indices:
+  // Ice-cream candy and cake
+  // 012345678901234567890123
+  normal_sentence.AddText(101, 12, 36, u"Ice cream candy and cake");
+  // Before calculating phrases, phrase_boundaries is empty.
+  EXPECT_THAT(normal_sentence.phrase_boundaries, IsEmpty());
+
+  normal_sentence.CalculatePhrases();
+  // Boundaries at "I" of Ice and 'c' of cake.
+  EXPECT_THAT(normal_sentence.phrase_boundaries, ElementsAre(0, 16, 24));
+
+  a11y::ReadAloudCurrentGranularity sentence_with_hyphen;
+  // Sentence and indices:
+  // Ice-cream candy and cake
+  // 012345678901234567890123
+  sentence_with_hyphen.AddText(101, 12, 36, u"Ice-cream candy and cake");
+  sentence_with_hyphen.CalculatePhrases();
+  // Boundaries at "I" of Ice-cream and 'a' of and
+  EXPECT_THAT(sentence_with_hyphen.phrase_boundaries, ElementsAre(0, 16, 24));
+
+  // Length is a multiple of three.
+  a11y::ReadAloudCurrentGranularity sixword_sentence;
+  sixword_sentence.AddText(101, 41, 65, u"He is going to the mall.");
+  sixword_sentence.CalculatePhrases();
+  // Boundary every 3 words.
+  EXPECT_THAT(sixword_sentence.phrase_boundaries, ElementsAre(0, 12, 24));
+
+  // Short sentences.
+  a11y::ReadAloudCurrentGranularity short_sentence;
+  short_sentence.AddText(101, 12, 27, u"Ice-cream candy");
+  short_sentence.CalculatePhrases();
+  // Boundary only at "I" of Ice-cream
+  EXPECT_THAT(short_sentence.phrase_boundaries, ElementsAre(0, 15));
+
+  // Very short sentences.
+  a11y::ReadAloudCurrentGranularity oneword_sentence;
+  oneword_sentence.AddText(101, 12, 15, u"Yes");
+  oneword_sentence.CalculatePhrases();
+  EXPECT_THAT(oneword_sentence.phrase_boundaries, ElementsAre(0, 3));
+}
+
+TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
+       GetPhraseIndex_ReturnsCorrectIndexes) {
+  a11y::ReadAloudCurrentGranularity current_granularity;
+  // Sentence and indices:
+  // Ice-cream candy and cakes and yummy treats for all of us, except you!
+  // 0123456789012345678901234567890123456789012345678901234567890123456789
+  current_granularity.AddText(101, 12, 22, u"Ice-cream ");
+  current_granularity.AddText(102, 40, 56, u"candy and cakes ");
+  current_granularity.AddText(103, 7, 28, u"and yummy treats for ");
+  current_granularity.AddText(104, 16, 26, u"all of us,");
+  current_granularity.AddText(105, 20, 31, u"except you!");
+
+  current_granularity.phrase_boundaries = {0, 26, 43, 58, 69};
+  // Before the start of the string returns -1.
+  EXPECT_THAT(current_granularity.GetPhraseIndex(-1), -1);
+
+  // Within the string, returns the closest phrase start.
+  EXPECT_THAT(current_granularity.GetPhraseIndex(0), 0);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(1), 0);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(10), 0);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(25), 0);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(26), 1);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(30), 1);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(42), 1);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(43), 2);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(57), 2);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(58), 3);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(68), 3);
+
+  // Past the end of the string returns the last index.
+  EXPECT_THAT(current_granularity.GetPhraseIndex(69), 4);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(79), 4);
+  EXPECT_THAT(current_granularity.GetPhraseIndex(109), 4);
+}

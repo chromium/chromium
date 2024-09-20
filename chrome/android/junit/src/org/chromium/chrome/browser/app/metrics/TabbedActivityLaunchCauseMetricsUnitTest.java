@@ -11,7 +11,6 @@ import android.nfc.NfcAdapter;
 import android.provider.Browser;
 import android.speech.RecognizerResultsIntent;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,12 +42,8 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
 
     @Before
     public void setUp() {
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-    }
-
-    @After
-    public void tearDown() {
         LaunchCauseMetrics.resetForTests();
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
     }
 
     private static int histogramCountForValue(int value) {

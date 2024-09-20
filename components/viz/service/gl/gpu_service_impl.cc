@@ -67,6 +67,7 @@
 #include "media/mojo/services/gpu_mojo_media_client.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_provider.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/webnn/webnn_context_provider_impl.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLAssembleInterface.h"
@@ -109,10 +110,6 @@
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "services/webnn/webnn_context_provider_impl.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "components/viz/common/overlay_state/win/overlay_state_service.h"
@@ -582,15 +579,11 @@ void GpuServiceImpl::InitializeWithHost(
     // corresponding to a mailbox.
     const bool display_context_on_another_thread =
         features::IsDrDcEnabled() && !gpu_driver_bug_workarounds_.disable_drdc;
-    bool thread_safe_manager = display_context_on_another_thread;
-    // Raw draw needs to access shared image backing on the compositor thread.
-    thread_safe_manager |= features::IsUsingRawDraw();
-#if BUILDFLAG(IS_OZONE)
-    constexpr bool kAlwaysUseRealBufferTestingOnOzone = true;
-    thread_safe_manager |= kAlwaysUseRealBufferTestingOnOzone;
-#endif
-    thread_safe_manager |=
-        base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
+
+    // |display_context_on_another_thread|, features::IsUsingRawDraw(),
+    // kAlwaysUseRealBufferTestingOnOzone, and kSharedBitmapToSharedImage
+    // requires |thread_safe_manager| to be true.
+    bool thread_safe_manager = true;
     owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
         thread_safe_manager, display_context_on_another_thread);
     shared_image_manager = owned_shared_image_manager_.get();
@@ -880,7 +873,8 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
       std::move(vea_provider_receiver),
       base::BindRepeating(&media::GpuVideoEncodeAcceleratorFactory::CreateVEA),
       gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds(),
-      gpu_info_.active_gpu(), std::move(runner));
+      gpu_info_.active_gpu(), std::move(runner),
+      media_gpu_channel_manager_->AsWeakPtr(), main_runner_);
 }
 
 void GpuServiceImpl::BindClientGmbInterface(
@@ -900,7 +894,6 @@ void GpuServiceImpl::BindClientGmbInterface(
       client_id, std::move(pending_receiver), this, io_runner_);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 void GpuServiceImpl::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> pending_receiver,
     int client_id) {
@@ -922,7 +915,6 @@ void GpuServiceImpl::BindWebNNContextProvider(
   webnn_context_provider_->BindWebNNContextProvider(
       std::move(pending_receiver));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void GpuServiceImpl::CreateGpuMemoryBuffer(
     gfx::GpuMemoryBufferId id,

@@ -17,6 +17,7 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -74,7 +75,9 @@ public class WebContentsStateBridgeTest {
                 });
 
         File tabStateFile = new File(mTestTabModelDirectory.getBaseDirectory(), "tab0");
-        TabState tabState = TabStateFileManager.restoreTabStateInternal(tabStateFile, false);
+        TabState tabState =
+                TabStateFileManager.restoreTabStateInternal(
+                        tabStateFile, false, new CipherFactory());
         // Garbage-in, garbage out. Client code must be tolerant to null TabState
         Assert.assertNotNull(tabState);
         Assert.assertNotNull(tabState.contentsState);

@@ -24,16 +24,6 @@ void Append(std::vector<uint8_t>& container, NSData* data) {
   container.insert(container.end(), span.begin(), span.end());
 }
 
-// Returns the security domain secret by fetching it from the vault.
-NSData* GetSecurityDomainSecret() {
-  // TODO(crbug.com/330355124): Replace this placeholder function with a real
-  // vault access.
-  std::vector<uint8_t> sds;
-  base::HexStringToBytes(
-      "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
-  return [NSData dataWithBytes:sds.data() length:sds.size()];
-}
-
 // Wrapper around passkey_model_utils's MakeAuthenticatorDataForAssertion
 // function.
 NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
@@ -74,6 +64,8 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
   sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
   if (!webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
           trusted_vault_key, credential_specifics, &credential_secrets)) {
+    // TODO(crbug.com/355047427): On the first failed attempt, mark keys as
+    // stale, re-fetch the keys and try to decrypt again.
     return nil;
   }
 
@@ -95,11 +87,6 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
 }
 
 }  // namespace
-
-void FetchSecurityDomainSecret(FetchKeyCompletionBlock completion) {
-  NSData* security_domain_secret = GetSecurityDomainSecret();
-  completion(security_domain_secret);
-}
 
 ASPasskeyRegistrationCredential* PerformPasskeyCreation(
     NSData* client_data_hash,
@@ -157,6 +144,10 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
     NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
+  if (!security_domain_secret) {
+    return nil;
+  }
+
   // If the array is empty, then the relying party accepts any passkey
   // credential.
   if (allowed_credentials.count > 0 &&
@@ -173,7 +164,7 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
   // Update the credential's last used time.
   credential.lastUsedTime =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  // TODO(crbug.com/330355124): Save the last used time of the credential to
+  // TODO(crbug.com/355047898): Save the last used time of the credential to
   //                            update it the next time Chrome syncs.
 
   return [ASPasskeyAssertionCredential

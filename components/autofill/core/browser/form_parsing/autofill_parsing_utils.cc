@@ -18,6 +18,8 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
   switch (feature) {
     case RegexFeature::kUnusedDummyFeature:
       return nullptr;
+    case RegexFeature::kAutofillGreekRegexes:
+      return &features::kAutofillGreekRegexes;
   }
   NOTREACHED();
 }

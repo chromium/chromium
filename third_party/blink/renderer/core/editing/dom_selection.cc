@@ -180,6 +180,13 @@ bool DOMSelection::isCollapsed() const {
         Selection().ComputeVisibleSelectionInDOMTree().Anchor().AnchorNode();
     if (node && node->IsInShadowTree() &&
         DomWindow()->document()->AncestorInThisScope(node)) {
+      // Count if range is not collapsed, but we are returning true because
+      // feature is disabled and anchor node is in shadow tree.
+      TemporaryRange temp_range(this, PrimaryRangeOrNull());
+      if (temp_range.GetRange() && !temp_range.GetRange()->collapsed()) {
+        UseCounter::Count(DomWindow(),
+                          WebFeature::kSelectionIsCollapsedBehaviorChange);
+      }
       return true;
     }
   }

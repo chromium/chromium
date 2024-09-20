@@ -99,8 +99,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAnchorElementInteraction);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAnchorElementMouseMotionEstimator);
-
 // Extended physical keyboard shortcuts for Android.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidExtendedKeyboardShortcuts);
 
@@ -168,10 +166,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBiddingAndScoringDebugReportingAPI);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics);
 
-// If enabled, navigation IPCs are prioritized in blink.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kBlinkSchedulerPrioritizeNavigationIPCs);
-
 // Block all MIDI access with the MIDI_SYSEX permission
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlockMidiByDefault);
 
@@ -215,6 +209,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kBrowsingTopicsMaxEpochIntroductionDelay);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kBrowsingTopicsEpochRetentionDuration);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering);
@@ -321,8 +318,8 @@ enum class TaskDeferralPolicy {
   // All per-frame task types are deferrable.
   kAllTypes,
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<TaskDeferralPolicy>
-    kTaskDeferralPolicyParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(TaskDeferralPolicy,
+                                               kTaskDeferralPolicyParam);
 // Constants to expose the policy in about:flags.
 BLINK_COMMON_EXPORT extern const char
     kDeferRendererTasksAfterInputPolicyParamName[];
@@ -415,8 +412,8 @@ extern const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode;
 // The HTTP RTT threshold: decide whether the
 // `kDelayLowPriorityRequestsAccordingToNetworkState` feature can take effect
 // practically according to the network connection state.
-BLINK_COMMON_EXPORT
-extern const base::FeatureParam<base::TimeDelta> kHttpRttThreshold;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                               kHttpRttThreshold);
 // The cost reduction for the multiplexed requests when
 // `kDelayLowPriorityRequestsAccordingToNetworkState` is enabled.
 BLINK_COMMON_EXPORT
@@ -460,11 +457,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDropInputEventsBeforeFirstPaint);
 // layer tree frame sink.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEstablishGpuChannelAsync);
 
-// Exposes Event Timing interactionId of keypress/keyboard events under
-// composition.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kEventTimingKeypressAndCompositionInteractionId);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnload);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnloadByAllowList);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
@@ -472,9 +464,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kDeprecateUnloadBucket;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kDeprecateUnloadAllowlist;
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kEventTimingFallbackToModalDialogStart);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEventTimingHandleOrphanPointerup);
 
@@ -1131,28 +1120,20 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryCacheStrongReference);
 // The threshold for the total decoded size of resources that keep strong
 // references.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMemoryCacheStrongReferenceTotalSizeThresholdParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kMemoryCacheStrongReferenceTotalSizeThresholdParam);
 // The threshold for the decoded size of a resource that can keep a strong
 // reference.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMemoryCacheStrongReferenceResourceSizeThresholdParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kMemoryCacheStrongReferenceResourceSizeThresholdParam);
 // Whether the ResourceFetcher should store strong references too.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kResourceFetcherStoresStrongReferences);
-// Exclude images from the saved strong references for resources.
-// See https://crbug.com/1409349.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kMemoryCacheStrongReferenceFilterImages);
-// Exclude scripts from the saved strong references for resources.
-// See https://crbug.com/1409349.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kMemoryCacheStrongReferenceFilterScripts);
-// Exclude cross origin scripts from the saved strong references for resources.
-// See https://crbug.com/1409349.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kMemoryCacheStrongReferenceFilterCrossOriginScripts);
 
+// Improvements to MHTML for more accurate snapshots.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMHTML_Improvements);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMixedContentAutoupgrade);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNavigationPredictor);
@@ -1170,11 +1151,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBFCacheOpenBroadcastChannel);
 // If enabled, an absent Origin-Agent-Cluster: header is interpreted as
 // requesting an origin agent cluster, but in the same process.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultEnabled);
-// This flag enables a console warning in cases where document.domain is set
-// without origin agent clustering being explicitly disabled.
-// (This is a transitory behaviour on the road to perma-enabling
-// kOriginAgentClusterDefaultEnabled above.)
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultWarning);
 
 // Kill-switch for any calls to the mojo interface OriginTrialStateHost
 // in the RuntimeFeatureStateOverrideContext class. If
@@ -1459,8 +1435,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSaveDataImgSrcset);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kScopeMemoryCachePerContext);
-
 // When enabled, only pages that belong to a certain browsing context group are
 // paused instead of all pages.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPausePagesPerBrowsingContextGroup);
@@ -1469,6 +1443,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPausePagesPerBrowsingContextGroup);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kShowHudDisplayForPausedPages);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kScriptStreaming);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kScriptStreamingForNonHTTP);
 
 // If enabled, parser-blocking scripts are loaded asynchronously. The target
 // scripts are selectively applied via the allowlist provided from the feature
@@ -1671,14 +1646,16 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedPreloadScanner);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleInstallingServiceWorker);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kInstallingServiceWorkerOutstandingThrottledLimit;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kInstallingServiceWorkerOutstandingThrottledLimit);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleUnimportantFrameTimers);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kUnimportantFrameTimersThrottledWakeUpIntervalMills;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLargeFrameSizePercentThreshold;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kUnimportantFrameTimersThrottledWakeUpIntervalMills);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kLargeFrameSizePercentThreshold);
 
 // If enabled, the HTMLDocumentParser will use a budget based on elapsed time
 // rather than token count.
@@ -1701,7 +1678,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUsePageViewportInLCP);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSnappyForParkableStrings);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseZstdForParkableStrings);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kZstdCompressionLevel;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kZstdCompressionLevel);
 
 // Causes MediaStreamVideoSource video frames to be transported on a
 // SequencedTaskRunner backed by the threadpool instead of the normal IO thread.
@@ -1719,8 +1696,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableFileBackedBlobFactory);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncDecoding);
 // Feature parameter controlling WebRTC VSyncDecoding tick durations during
 // occluded tabs.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kVSyncDecodingHiddenOccludedTickDuration;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kVSyncDecodingHiddenOccludedTickDuration);
 
 // Feature flag for driving encoding with the Metronome by VSyncs.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncEncoding);
@@ -1740,8 +1718,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableUrlHandlers);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppManifestLockScreen);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAudioBypassOutputBuffering);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kWebAudioContextConstructorEchoCancellation);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebFontsCacheAwareTimeoutAdaption);
 
@@ -1821,14 +1797,14 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // If kCullRectExpansionDPRCoef equals 1, the expansion will be
 // kCullRectPixelDistanceToExpand in device coordinates.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExpandCompositedCullRect);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kCullRectPixelDistanceToExpand;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kCullRectExpansionDPRCoef;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kCullRectPixelDistanceToExpand);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
+                                               kCullRectExpansionDPRCoef);
 // If this is enabled, a non-root scroller with an area below a threshold will
 // use a minimal cull rect expansion instead of the above expansion.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kSmallScrollersUseMinCullRect;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kSmallScrollersUseMinCullRect);
 
 // Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
 // RFC 9111.

@@ -557,8 +557,14 @@ class AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin
   bool is_explicit_browser_signin() const { return IsParamFeatureEnabled(); }
 };
 
+// TODO(b/331746545): Check flaky test issue on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowNameOnSigninThenSync DISABLED_ShowNameOnSigninThenSync
+#else
+#define MAYBE_ShowNameOnSigninThenSync ShowNameOnSigninThenSync
+#endif
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin,
-                       ShowNameOnSigninThenSync) {
+                       MAYBE_ShowNameOnSigninThenSync) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
@@ -585,8 +591,14 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin,
   EXPECT_EQ(avatar->GetText(), std::u16string());
 }
 
+// TODO(b/331746545): Check flaky test issue on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowNameOnSync DISABLED_ShowNameOnSync
+#else
+#define MAYBE_ShowNameOnSync ShowNameOnSync
+#endif
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin,
-                       ShowNameOnSync) {
+                       MAYBE_ShowNameOnSync) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
@@ -654,8 +666,16 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin,
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin);
 
+// TODO(b/331746545): Check flaky test issue on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowNameDoesNotAppearOnNewBrowserIfNotShowing \
+  DISABLED_ShowNameDoesNotAppearOnNewBrowserIfNotShowing
+#else
+#define MAYBE_ShowNameDoesNotAppearOnNewBrowserIfNotShowing \
+  ShowNameDoesNotAppearOnNewBrowserIfNotShowing
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       ShowNameDoesNotAppearOnNewBrowserIfNotShowing) {
+                       MAYBE_ShowNameDoesNotAppearOnNewBrowserIfNotShowing) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Name is shown and force clearing.
   SigninWithImageAndClearGreeting(avatar, u"test@gmail.com", u"account_name");
@@ -872,8 +892,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, TooltipText) {
   EXPECT_EQ(avatar->GetTooltipText(gfx::Point()), account_name);
 }
 
+// TODO(b/331746545): Check flaky test issue on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_EnableSyncWithSyncDisabled DISABLED_EnableSyncWithSyncDisabled
+#else
+#define MAYBE_EnableSyncWithSyncDisabled EnableSyncWithSyncDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       EnableSyncWithSyncDisabled) {
+                       MAYBE_EnableSyncWithSyncDisabled) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(), std::u16string());
 
@@ -1302,8 +1328,16 @@ class AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest
       switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
+// TODO(b/331746545): Check flaky test issue on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SigninPausedFromExternalErrorThenReauth \
+  DISABLED_SigninPausedFromExternalErrorThenReauth
+#else
+#define MAYBE_SigninPausedFromExternalErrorThenReauth \
+  SigninPausedFromExternalErrorThenReauth
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
-                       SigninPausedFromExternalErrorThenReauth) {
+                       MAYBE_SigninPausedFromExternalErrorThenReauth) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   SigninWithImageAndClearGreeting(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
@@ -1333,8 +1367,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
   EXPECT_EQ(new_browser_avatar_button->GetText(), std::u16string());
 }
 
+// TODO(b/331746545): Check flaky test issue on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SigninPausedFromWebSignout DISABLED_SigninPausedFromWebSignout
+#else
+#define MAYBE_SigninPausedFromWebSignout SigninPausedFromWebSignout
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
-                       SigninPausedFromWebSignout) {
+                       MAYBE_SigninPausedFromWebSignout) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
 
   SigninWithImageAndClearGreeting(avatar, u"test@gmail.com");
@@ -1439,8 +1479,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
 }
 
+// TODO(b/331746545): Check flaky test issue on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SigninPausedThenSignout DISABLED_SigninPausedThenSignout
+#else
+#define MAYBE_SigninPausedThenSignout SigninPausedThenSignout
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
-                       SigninPausedThenSignout) {
+                       MAYBE_SigninPausedThenSignout) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   SigninWithImageAndClearGreeting(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());

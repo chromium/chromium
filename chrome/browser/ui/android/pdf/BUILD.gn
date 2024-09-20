@@ -15,7 +15,6 @@ android_library("pdf_provider_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
-  resources_package = "com.google.android.material"
 }
 
 generate_jni("pdf_jni_headers") {
@@ -35,7 +34,6 @@ android_library("java") {
     "//base:base_java",
     "//base:content_uri_utils_java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/ui/android/fakepdf:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/styles/android:java",
@@ -75,7 +73,6 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/ui/android/fakepdf:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/util:java",
     "//components/embedder_support/android:util_java",

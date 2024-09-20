@@ -26,6 +26,7 @@
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace attribution_reporting {
@@ -35,13 +36,23 @@ using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::MaxEventLevelReports;
 using ::attribution_reporting::TriggerSpecs;
 using ::attribution_reporting::mojom::SourceType;
+using ::base::test::ErrorIs;
+
+MATCHER_P(IsValidAndHolds, v, "") {
+  if (!arg.IsValid()) {
+    *result_listener << "which is invalid";
+    return false;
+  }
+
+  return ExplainMatchResult(v, arg.ValueOrDie(), result_listener);
+}
 
 TEST(PrivacyMathTest, BinomialCoefficient) {
   // Test cases generated via a python program using scipy.special.comb.
   struct {
-    int n;
-    int k;
-    int expected;
+    uint32_t n;
+    uint32_t k;
+    uint32_t expected;
   } kTestCases[]{
       // All cases for n and k in [0, 10).
       // clang-format off
@@ -70,10 +81,8 @@ TEST(PrivacyMathTest, BinomialCoefficient) {
       {100, 5, 75287520},
   };
   for (const auto& test_case : kTestCases) {
-    auto binomial_coefficient =
-        internal::BinomialCoefficient(test_case.n, test_case.k);
-    ASSERT_TRUE(binomial_coefficient.IsValid());
-    EXPECT_EQ(binomial_coefficient.ValueOrDie(), test_case.expected)
+    EXPECT_THAT(internal::BinomialCoefficient(test_case.n, test_case.k),
+                IsValidAndHolds(test_case.expected))
         << "n=" << test_case.n << ", k=" << test_case.k;
   }
 }
@@ -83,8 +92,8 @@ TEST(PrivacyMathTest, GetKCombinationAtIndex) {
   // https://planetcalc.com/8592/
   struct {
     uint32_t index;
-    int k;
-    std::vector<int> expected;
+    uint32_t k;
+    std::vector<uint32_t> expected;
   } kTestCases[]{
       {0, 0, {}},
 
@@ -127,11 +136,12 @@ TEST(PrivacyMathTest, GetKCombinationAtIndex) {
 // combinations uniquely indexed by the given index, i.e. there are never any
 // repeats.
 TEST(PrivacyMathTest, GetKCombination_NoRepeats) {
-  for (int k = 1; k < 5; k++) {
-    std::set<std::vector<int>> seen_combinations;
+  for (uint32_t k = 1u; k < 5u; k++) {
+    std::set<std::vector<uint32_t>> seen_combinations;
     for (uint32_t index = 0; index < 3000; index++) {
-      const auto& combination = internal::GetKCombinationAtIndex(index, k);
-      EXPECT_TRUE(seen_combinations.insert(combination).second)
+      std::vector<uint32_t> combination =
+          internal::GetKCombinationAtIndex(index, k);
+      EXPECT_TRUE(seen_combinations.insert(std::move(combination)).second)
           << "index=" << index << ", k=" << k;
     }
   }
@@ -141,37 +151,35 @@ TEST(PrivacyMathTest, GetKCombination_NoRepeats) {
 // a_k > a_{k-1} > ... > a_2 > a_1 >= 0 such that
 // `index` = \sum_{i=1}^k {a_i}\choose{i}
 TEST(PrivacyMathTest, GetKCombination_MatchesDefinition) {
-  for (int k = 1; k < 5; k++) {
+  for (uint32_t k = 1; k < 5; k++) {
     for (uint32_t index = 0; index < 3000; index++) {
-      const auto& combination = internal::GetKCombinationAtIndex(index, k);
+      const std::vector<uint32_t> combination =
+          internal::GetKCombinationAtIndex(index, k);
       base::CheckedNumeric<uint32_t> sum = 0;
-      for (int i = 0; i < k; i++) {
-        sum += internal::BinomialCoefficient((combination)[i], k - i);
+      for (uint32_t i = 0; i < k; i++) {
+        sum += internal::BinomialCoefficient(combination[i], k - i);
       }
-      ASSERT_TRUE(sum.IsValid());
-      EXPECT_TRUE(index == sum.ValueOrDie());
+      EXPECT_THAT(sum, IsValidAndHolds(index));
     }
   }
 }
 
 TEST(PrivacyMathTest, GetNumberOfStarsAndBarsSequences) {
-  auto case_1 = internal::GetNumberOfStarsAndBarsSequences(/*num_stars=*/1,
-                                                           /*num_bars=*/2);
-  ASSERT_TRUE(case_1.IsValid());
-  EXPECT_EQ(3, case_1.ValueOrDie());
+  EXPECT_THAT(internal::GetNumberOfStarsAndBarsSequences(/*num_stars=*/1u,
+                                                         /*num_bars=*/2u),
+              IsValidAndHolds(3u));
 
-  auto case_2 = internal::GetNumberOfStarsAndBarsSequences(/*num_stars=*/3,
-                                                           /*num_bars=*/24);
-  ASSERT_TRUE(case_2.IsValid());
-  EXPECT_EQ(2925, case_2.ValueOrDie());
+  EXPECT_THAT(internal::GetNumberOfStarsAndBarsSequences(/*num_stars=*/3u,
+                                                         /*num_bars=*/24u),
+              IsValidAndHolds(2925u));
 }
 
 TEST(PrivacyMathTest, GetStarIndices) {
   const struct {
-    int num_stars;
-    int num_bars;
+    uint32_t num_stars;
+    uint32_t num_bars;
     uint32_t sequence_index;
-    std::vector<int> expected;
+    std::vector<uint32_t> expected;
   } kTestCases[] = {
       {1, 2, 2, {2}},
       {3, 24, 23, {6, 3, 0}},
@@ -186,8 +194,8 @@ TEST(PrivacyMathTest, GetStarIndices) {
 
 TEST(PrivacyMathTest, GetBarsPrecedingEachStar) {
   const struct {
-    std::vector<int> star_indices;
-    std::vector<int> expected;
+    std::vector<uint32_t> star_indices;
+    std::vector<uint32_t> expected;
   } kTestCases[] = {
       {{2}, {2}},
       {{6, 3, 0}, {4, 2, 0}},
@@ -375,6 +383,14 @@ TEST(PrivacyMathTest, ComputeChannelCapacityWithScopes) {
           .attribution_scopes_limit = 5,
           .expected = 4.3923174227787607,
       },
+      // Regression test for multiplication overflow in
+      // https://crbug.com/366998247
+      {
+          .num_states = 1,
+          .max_event_states = std::numeric_limits<uint32_t>::max(),
+          .attribution_scopes_limit = std::numeric_limits<uint32_t>::max(),
+          .expected = 63.999999998992287,
+      },
   };
 
   for (const auto& test_case : kTestCases) {
@@ -464,17 +480,17 @@ void RunRandomFakeReportsTest(const TriggerSpecs& specs,
                               const int num_samples,
                               const double tolerance) {
   std::map<std::vector<FakeEventLevelReport>, int> output_counts;
-  const auto num_states = GetNumStates(specs);
-  ASSERT_TRUE(num_states.has_value());
+  ASSERT_OK_AND_ASSIGN(const uint32_t num_states, GetNumStates(specs));
   internal::StateMap map;
   for (int i = 0; i < num_samples; i++) {
     // Use epsilon = 0 to ensure that random data is always sampled from the RR
     // mechanism.
-    ASSERT_OK_AND_ASSIGN(auto response,
-                         internal::DoRandomizedResponseWithCache(
-                             specs,
-                             /*epsilon=*/0, map, SourceType::kNavigation,
-                             /*scopes_data=*/std::nullopt));
+    ASSERT_OK_AND_ASSIGN(
+        RandomizedResponseData response,
+        internal::DoRandomizedResponseWithCache(
+            specs,
+            /*epsilon=*/0, map, SourceType::kNavigation,
+            /*scopes_data=*/std::nullopt, PrivacyMathConfig()));
     ASSERT_TRUE(response.response().has_value());
     auto [it, _] =
         output_counts.try_emplace(std::move(*response.response()), 0);
@@ -512,10 +528,10 @@ void RunRandomFakeReportsTest(const TriggerSpecs& specs,
   // Thus, the probability that the number of occurrences of one of the results
   // deviates from its expectation by alpha*t/n is at most
   // n * (p_high + p_low).
-  const int expected_counts = num_samples / static_cast<double>(*num_states);
+  const int expected_counts = num_samples / static_cast<double>(num_states);
   const double abs_error = expected_counts * tolerance;
-  for (const auto& output_count : output_counts) {
-    EXPECT_NEAR(output_count.second, expected_counts, abs_error);
+  for (const auto& [_, output_count] : output_counts) {
+    EXPECT_NEAR(output_count, expected_counts, abs_error);
   }
 }
 
@@ -577,9 +593,8 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Custom_MatchesExpectedDistribution) {
       kSpecList, MaxEventLevelReports(2));
 
   // The distribution check will fail with probability 6e-7.
-  auto num_states = GetNumStates(kSpecs);
-  ASSERT_TRUE(num_states.has_value());
-  EXPECT_EQ(28u, *num_states);
+  ASSERT_OK_AND_ASSIGN(const uint32_t num_states, GetNumStates(kSpecs));
+  EXPECT_EQ(28u, num_states);
   RunRandomFakeReportsTest(kSpecs,
                            /*num_samples=*/100'000,
                            /*tolerance=*/0.1);
@@ -640,10 +655,9 @@ TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
     std::set<std::vector<FakeEventLevelReport>> seen_outputs;
     internal::StateMap map;
     for (uint32_t i = 0; i < *test_case.expected_num_states; i++) {
-      if (const auto output =
-              internal::GetFakeReportsForSequenceIndex(specs, i, map);
+      if (auto output = internal::GetFakeReportsForSequenceIndex(specs, i, map);
           output.has_value()) {
-        seen_outputs.insert(*output);
+        seen_outputs.insert(*std::move(output));
       }
     }
     EXPECT_EQ(static_cast<size_t>(*test_case.expected_num_states),
@@ -669,30 +683,29 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
   do {
     internal::StateMap map;
 
-    ASSERT_OK_AND_ASSIGN(auto response_data,
-                         internal::DoRandomizedResponseWithCache(
-                             kSpecs,
-                             /*epsilon=*/0, map, SourceType::kNavigation,
-                             /*scopes_data=*/std::nullopt));
-    response = response_data.response();
+    ASSERT_OK_AND_ASSIGN(
+        RandomizedResponseData response_data,
+        internal::DoRandomizedResponseWithCache(
+            kSpecs,
+            /*epsilon=*/0, map, SourceType::kNavigation,
+            /*scopes_data=*/std::nullopt, PrivacyMathConfig()));
+    response = std::move(response_data.response());
   } while (!response.has_value() || response->empty());
 
   ASSERT_EQ(uint64_t{123u}, response->front().trigger_data);
 }
 
 TEST(PrivacyMathTest, RandomizedResponse_ExceedsChannelCapacity) {
-  attribution_reporting::ScopedMaxNavigationChannelCapacityForTesting
-      scoped_max_navigation_channel_capacity(1u);
+  constexpr PrivacyMathConfig kConfig{.max_channel_capacity_navigation = 1};
 
   auto channel_capacity_response = DoRandomizedResponse(
       TriggerSpecs(SourceType::kNavigation, EventReportWindows(),
                    /*max_reports=*/MaxEventLevelReports(1)),
       /*epsilon=*/14, SourceType::kNavigation,
-      /*scopes_data=*/std::nullopt);
+      /*scopes_data=*/std::nullopt, kConfig);
 
   EXPECT_THAT(channel_capacity_response,
-              base::test::ErrorIs(
-                  RandomizedResponseError::kExceedsChannelCapacityLimit));
+              ErrorIs(RandomizedResponseError::kExceedsChannelCapacityLimit));
 }
 
 TEST(PrivacyMathTest, RandomizedResponse_ExceedsScopesChannelCapacity) {
@@ -703,11 +716,12 @@ TEST(PrivacyMathTest, RandomizedResponse_ExceedsScopesChannelCapacity) {
       /*epsilon=*/14, SourceType::kNavigation,
       AttributionScopesData::Create(AttributionScopesSet({"1"}),
                                     /*attribution_scope_limit=*/100u,
-                                    /*max_event_states=*/100u));
+                                    /*max_event_states=*/100u),
+      PrivacyMathConfig());
 
-  EXPECT_THAT(channel_capacity_response,
-              base::test::ErrorIs(
-                  RandomizedResponseError::kExceedsScopesChannelCapacityLimit));
+  EXPECT_THAT(
+      channel_capacity_response,
+      ErrorIs(RandomizedResponseError::kExceedsScopesChannelCapacityLimit));
 
   // Event
   channel_capacity_response = DoRandomizedResponse(
@@ -716,11 +730,12 @@ TEST(PrivacyMathTest, RandomizedResponse_ExceedsScopesChannelCapacity) {
       /*epsilon=*/14, SourceType::kEvent,
       AttributionScopesData::Create(AttributionScopesSet({"1"}),
                                     /*attribution_scope_limit=*/100u,
-                                    /*max_event_states=*/3u));
+                                    /*max_event_states=*/3u),
+      PrivacyMathConfig());
 
-  EXPECT_THAT(channel_capacity_response,
-              base::test::ErrorIs(
-                  RandomizedResponseError::kExceedsScopesChannelCapacityLimit));
+  EXPECT_THAT(
+      channel_capacity_response,
+      ErrorIs(RandomizedResponseError::kExceedsScopesChannelCapacityLimit));
 }
 
 // Regression test for http://crbug.com/1504144 in which empty specs cause an
@@ -747,16 +762,17 @@ TEST(PrivacyMathTest, UnaryChannel) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
-    auto num_states = GetNumStates(test_case.trigger_specs);
-    ASSERT_TRUE(num_states.has_value());
-    EXPECT_EQ(1u, *num_states);
+    ASSERT_OK_AND_ASSIGN(const uint32_t num_states,
+                         GetNumStates(test_case.trigger_specs));
+    EXPECT_EQ(1u, num_states);
 
     EXPECT_EQ(RandomizedResponseData(
                   /*rate=*/1,
                   /*response=*/std::vector<FakeEventLevelReport>()),
               DoRandomizedResponse(test_case.trigger_specs,
                                    /*epsilon=*/0, SourceType::kNavigation,
-                                   /*scopes_data=*/std::nullopt));
+                                   /*scopes_data=*/std::nullopt,
+                                   PrivacyMathConfig()));
   }
 }
 

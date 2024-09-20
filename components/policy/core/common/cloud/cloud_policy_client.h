@@ -33,10 +33,6 @@
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
-namespace content {
-class BrowserContext;
-}
-
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -416,12 +412,11 @@ class POLICY_EXPORT CloudPolicyClient {
       ResultCallback callback);
 
   // Uploads a report containing enterprise connectors real-time security
-  // events for |context|. As above, the client must be in a registered state.
+  // events to the server. As above, the client must be in a registered state.
   // If |include_device_info| is true, information specific to the device such
   // as the device name, user, id and OS will be included in the report. The
   // |callback| will be called when the operation completes.
-  virtual void UploadSecurityEventReport(content::BrowserContext* context,
-                                         bool include_device_info,
+  virtual void UploadSecurityEventReport(bool include_device_info,
                                          base::Value::Dict report,
                                          ResultCallback callback);
 

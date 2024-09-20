@@ -177,8 +177,9 @@ void WebRequestProxyingWebSocket::ContinueToHeadersReceived() {
   }
 
   PauseIncomingMethodCallProcessing();
-  if (result == net::ERR_IO_PENDING)
+  if (result == net::ERR_IO_PENDING) {
     return;
+  }
 
   DCHECK_EQ(net::OK, result);
   OnHeadersReceivedComplete(net::OK);
@@ -214,8 +215,9 @@ void WebRequestProxyingWebSocket::OnConnectionEstablished(
           handshake_response_->http_version.minor_value(),
           handshake_response_->status_code,
           handshake_response_->status_text.c_str()));
-  for (const auto& header : handshake_response_->headers)
+  for (const auto& header : handshake_response_->headers) {
     response_->headers->AddHeader(header->name, header->value);
+  }
 
   ContinueToHeadersReceived();
 }
@@ -268,8 +270,9 @@ void WebRequestProxyingWebSocket::OnAuthRequired(
   }
 
   PauseIncomingMethodCallProcessing();
-  if (result == net::ERR_IO_PENDING)
+  if (result == net::ERR_IO_PENDING) {
     return;
+  }
 
   DCHECK_EQ(net::OK, result);
   OnHeadersReceivedCompleteForAuth(auth_info, net::OK);
@@ -357,8 +360,9 @@ void WebRequestProxyingWebSocket::OnBeforeRequestComplete(int error_code) {
     return;
   }
 
-  if (result == net::ERR_IO_PENDING)
+  if (result == net::ERR_IO_PENDING) {
     return;
+  }
 
   DCHECK_EQ(net::OK, result);
   OnBeforeSendHeadersComplete(std::set<std::string>(), std::set<std::string>(),
@@ -385,8 +389,9 @@ void WebRequestProxyingWebSocket::OnBeforeSendHeadersComplete(
   WebRequestEventRouter::Get(browser_context_)
       ->OnSendHeaders(browser_context_, &info_, request_headers_);
 
-  if (!receiver_as_header_client_.is_bound())
+  if (!receiver_as_header_client_.is_bound()) {
     ContinueToStartRequest(net::OK);
+  }
 }
 
 void WebRequestProxyingWebSocket::ContinueToStartRequest(int error_code) {
@@ -442,8 +447,9 @@ void WebRequestProxyingWebSocket::OnHeadersReceivedComplete(int error_code) {
 
   if (on_headers_received_callback_) {
     std::optional<std::string> headers;
-    if (override_headers_)
+    if (override_headers_) {
       headers = override_headers_->raw_headers();
+    }
     std::move(on_headers_received_callback_)
         .Run(net::OK, headers, std::nullopt);
   }
@@ -458,8 +464,9 @@ void WebRequestProxyingWebSocket::OnHeadersReceivedComplete(int error_code) {
   WebRequestEventRouter::Get(browser_context_)
       ->OnResponseStarted(browser_context_, &info_, net::OK);
 
-  if (!receiver_as_header_client_.is_bound())
+  if (!receiver_as_header_client_.is_bound()) {
     ContinueToCompleted();
+  }
 }
 
 void WebRequestProxyingWebSocket::OnAuthRequiredComplete(
@@ -514,15 +521,17 @@ void WebRequestProxyingWebSocket::OnHeadersReceivedCompleteForAuth(
 void WebRequestProxyingWebSocket::PauseIncomingMethodCallProcessing() {
   receiver_as_handshake_client_.Pause();
   receiver_as_auth_handler_.Pause();
-  if (receiver_as_header_client_.is_bound())
+  if (receiver_as_header_client_.is_bound()) {
     receiver_as_header_client_.Pause();
+  }
 }
 
 void WebRequestProxyingWebSocket::ResumeIncomingMethodCallProcessing() {
   receiver_as_handshake_client_.Resume();
   receiver_as_auth_handler_.Resume();
-  if (receiver_as_header_client_.is_bound())
+  if (receiver_as_header_client_.is_bound()) {
     receiver_as_header_client_.Resume();
+  }
 }
 
 void WebRequestProxyingWebSocket::OnError(int error_code) {

@@ -234,6 +234,7 @@ OmniboxEditModel::State::State(
     bool user_input_in_progress,
     const std::u16string& user_text,
     const std::u16string& keyword,
+    const std::u16string& keyword_placeholder,
     bool is_keyword_hint,
     OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method,
     OmniboxFocusState focus_state,
@@ -241,6 +242,7 @@ OmniboxEditModel::State::State(
     : user_input_in_progress(user_input_in_progress),
       user_text(user_text),
       keyword(keyword),
+      keyword_placeholder(keyword_placeholder),
       is_keyword_hint(is_keyword_hint),
       keyword_mode_entry_method(keyword_mode_entry_method),
       focus_state(focus_state),
@@ -307,7 +309,8 @@ OmniboxEditModel::State OmniboxEditModel::GetStateForTabSwitch() const {
   } else {
     user_text = user_text_;
   }
-  return State(user_input_in_progress_, user_text, keyword_, is_keyword_hint_,
+  return State(user_input_in_progress_, user_text, keyword_,
+               keyword_placeholder_, is_keyword_hint_,
                keyword_mode_entry_method_, focus_state_, input_);
 }
 
@@ -349,8 +352,12 @@ void OmniboxEditModel::RestoreState(const State* state) {
       view_->SetUserText(state->user_text, false);
     }
     keyword_ = state->keyword;
+    keyword_placeholder_ = state->keyword_placeholder;
     is_keyword_hint_ = state->is_keyword_hint;
     keyword_mode_entry_method_ = state->keyword_mode_entry_method;
+    if (view_) {
+      view_->OnKeywordPlaceholderTextChange();
+    }
   } else if (!state->user_text.empty()) {
     // If the |user_input_in_progress| is false but we have |user_text|,
     // restore the |user_text| to the model and the view. It's likely unelided
@@ -411,8 +418,12 @@ std::u16string OmniboxEditModel::GetPermanentDisplayText() const {
 void OmniboxEditModel::SetUserText(const std::u16string& text) {
   SetInputInProgress(true);
   keyword_.clear();
+  keyword_placeholder_.clear();
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
+  if (view_) {
+    view_->OnKeywordPlaceholderTextChange();
+  }
   InternalSetUserText(text);
   GetInfoForCurrentText(&current_match_, nullptr);
   paste_state_ = NONE;
@@ -656,8 +667,12 @@ void OmniboxEditModel::Revert() {
   paste_state_ = NONE;
   InternalSetUserText(std::u16string());
   keyword_.clear();
+  keyword_placeholder_.clear();
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
+  if (view_) {
+    view_->OnKeywordPlaceholderTextChange();
+  }
   has_temporary_text_ = false;
   size_t start, end;
   if (view_) {
@@ -782,8 +797,12 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
                                                    ->GetDefaultSearchProvider();
   DCHECK(default_search_provider);
   keyword_ = default_search_provider->keyword();
+  keyword_placeholder_ = u"";
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = entry_method;
+  if (view_) {
+    view_->OnKeywordPlaceholderTextChange();
+  }
 
   std::u16string display_text =
       user_input_in_progress_ ? GetText() : std::u16string();
@@ -1017,8 +1036,12 @@ void OmniboxEditModel::ClearKeyword() {
       prefix = keyword_ + u" ";
 
     keyword_.clear();
+    keyword_placeholder_.clear();
     is_keyword_hint_ = false;
     keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
+    if (view_) {
+      view_->OnKeywordPlaceholderTextChange();
+    }
 
     view_->SetWindowTextAndCaretPos(prefix + view_->GetText(), prefix.length(),
                                     false, false);
@@ -1305,6 +1328,7 @@ void OmniboxEditModel::OnPopupDataChanged(
     const std::u16string& inline_autocompletion,
     const std::u16string& prefix_autocompletion,
     const std::u16string& keyword,
+    const std::u16string& keyword_placeholder,
     bool is_keyword_hint,
     const std::u16string& additional_text,
     const AutocompleteMatch& new_match) {
@@ -1322,6 +1346,7 @@ void OmniboxEditModel::OnPopupDataChanged(
   if (keyword_state_changed) {
     bool keyword_was_selected = is_keyword_selected();
     keyword_ = keyword;
+    keyword_placeholder_ = keyword_placeholder;
     is_keyword_hint_ = is_keyword_hint;
     if (!keyword_was_selected && is_keyword_selected()) {
       // Since we entered keyword mode, record the reason. Note that we
@@ -1331,6 +1356,9 @@ void OmniboxEditModel::OnPopupDataChanged(
     } else if (!is_keyword_selected()) {
       // We've left keyword mode, so align the entry method field with that.
       keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
+    }
+    if (view_) {
+      view_->OnKeywordPlaceholderTextChange();
     }
 
     // |is_keyword_hint_| should always be false if |keyword_| is empty.
@@ -1537,9 +1565,12 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   // We store |keyword| and |is_keyword_hint| in temporary variables since
   // OnPopupDataChanged use their previous state to detect changes.
   std::u16string keyword;
+  std::u16string keyword_placeholder;
   bool is_keyword_hint;
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  match.GetKeywordUIState(service, &keyword, &is_keyword_hint);
+  match.GetKeywordUIState(service,
+                          controller_->client()->IsHistoryEmbeddingsEnabled(),
+                          &keyword, &keyword_placeholder, &is_keyword_hint);
   OnPopupResultChanged();
 
   if (!is_keyword_selected() && !is_keyword_hint && !keyword.empty()) {
@@ -1556,8 +1587,8 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   // its value across the entire call.
   OnPopupDataChanged(std::u16string(),
                      /*is_temporary_text=*/false, match.inline_autocompletion,
-                     match.prefix_autocompletion, keyword, is_keyword_hint,
-                     match.additional_text, match);
+                     match.prefix_autocompletion, keyword, keyword_placeholder,
+                     is_keyword_hint, match.additional_text, match);
 }
 
 // static
@@ -1802,16 +1833,19 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   }
 
   std::u16string keyword;
+  std::u16string keyword_placeholder;
   bool is_keyword_hint;
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  match.GetKeywordUIState(service, &keyword, &is_keyword_hint);
+  match.GetKeywordUIState(service,
+                          controller_->client()->IsHistoryEmbeddingsEnabled(),
+                          &keyword, &keyword_placeholder, &is_keyword_hint);
 
   if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
     // If the new selection is a Header, the temporary text is an empty string.
     OnPopupDataChanged(std::u16string(),
                        /*is_temporary_text=*/true, std::u16string(),
-                       std::u16string(), keyword, is_keyword_hint,
-                       std::u16string(), AutocompleteMatch());
+                       std::u16string(), keyword, keyword_placeholder,
+                       is_keyword_hint, std::u16string(), AutocompleteMatch());
   } else if (old_selection.line != popup_selection_.line ||
              (old_selection.state != OmniboxPopupSelection::KEYWORD_MODE &&
               new_selection.state != OmniboxPopupSelection::KEYWORD_MODE)) {
@@ -1821,16 +1855,16 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
     // a) Moving down from a header row.
     // b) Focusing other states; e.g. the switch-to-tab chip.
     if (reset_to_default) {
-      OnPopupDataChanged(std::u16string(),
-                         /*is_temporary_text=*/false,
-                         match.inline_autocompletion,
-                         match.prefix_autocompletion, keyword, is_keyword_hint,
-                         match.additional_text, match);
+      OnPopupDataChanged(
+          std::u16string(),
+          /*is_temporary_text=*/false, match.inline_autocompletion,
+          match.prefix_autocompletion, keyword, keyword_placeholder,
+          is_keyword_hint, match.additional_text, match);
     } else {
       OnPopupDataChanged(match.fill_into_edit,
                          /*is_temporary_text=*/true, std::u16string(),
-                         std::u16string(), keyword, is_keyword_hint,
-                         std::u16string(), match);
+                         std::u16string(), keyword, keyword_placeholder,
+                         is_keyword_hint, std::u16string(), match);
     }
   }
   // Without this, focus indicators may appear stale (see crbug.com/1369229).

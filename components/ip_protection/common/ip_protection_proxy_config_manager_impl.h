@@ -12,8 +12,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/ip_protection/common/ip_protection_config_cache.h"
 #include "components/ip_protection/common/ip_protection_config_getter.h"
+#include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "net/base/proxy_chain.h"
@@ -26,7 +26,7 @@ class IpProtectionProxyConfigManagerImpl
     : public IpProtectionProxyConfigManager {
  public:
   explicit IpProtectionProxyConfigManagerImpl(
-      IpProtectionConfigCache* config_cache,
+      IpProtectionCore* core,
       IpProtectionConfigGetter& config_getter,
       bool disable_proxy_refreshing_for_testing = false);
   ~IpProtectionProxyConfigManagerImpl() override;
@@ -88,12 +88,12 @@ class IpProtectionProxyConfigManagerImpl
   // True if the proxy list has been fetched at least once.
   bool have_fetched_proxy_list_ = false;
 
-  // Pointer to the `IpProtectionConfigCache` that holds the proxy list and
+  // Pointer to the `IpProtectionCore` that holds the proxy list and
   // tokens. Required to observe geo changes from refreshed proxy lists.
-  // The lifetime of the `IpProtectionConfigCache` object WILL ALWAYS outlive
-  // this class b/c `ip_protection_config_cache_` owns this (at least outside of
+  // The lifetime of the `IpProtectionCore` object WILL ALWAYS outlive
+  // this class b/c `ip_protection_core_` owns this (at least outside of
   // testing).
-  const raw_ptr<IpProtectionConfigCache> ip_protection_config_cache_;
+  const raw_ptr<IpProtectionCore> ip_protection_core_;
 
   // Source of proxy list, when needed.
   raw_ref<IpProtectionConfigGetter> config_getter_;

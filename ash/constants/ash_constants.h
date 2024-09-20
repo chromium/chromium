@@ -199,6 +199,9 @@ constexpr int kDefaultFaceGazeCursorSmoothing = 6;
 // Whether to use cursor acceleration.
 constexpr bool kDefaultFaceGazeCursorUseAcceleration = true;
 
+// How much FaceGaze should threshold velocity, e.g. to implement deadzone.
+constexpr int kDefaultFaceGazeVelocityThreshold = 6;
+
 }  // namespace ash
 
 #endif  // ASH_CONSTANTS_ASH_CONSTANTS_H_

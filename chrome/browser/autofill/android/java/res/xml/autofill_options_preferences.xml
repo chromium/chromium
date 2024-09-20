@@ -18,10 +18,4 @@ found in the LICENSE file.
         android:key="third_party_toggle_hint"
         android:order="2"
         app:allowDividerBelow="false" />
-
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:key="third_party_toggle_incognito_note"
-        android:order="3"
-        android:summary="@string/autofill_options_hint_3p_in_incognito"
-        app:allowDividerBelow="false" />
 </PreferenceScreen>

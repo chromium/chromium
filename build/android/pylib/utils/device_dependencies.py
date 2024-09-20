@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import glob
 import os
+import posixpath
 import re
 
 from pylib import constants
@@ -143,3 +145,29 @@ def GetDataDependencies(runtime_deps_path):
   # whether other files could be filtered as well.
   return [(f, DevicePathComponentsFor(f, output_directory))
           for f in filtered_abs_host_files]
+
+
+def SubstituteDeviceRootSingle(device_path, device_root):
+  if not device_path:
+    return device_root
+  if isinstance(device_path, list):
+    return posixpath.join(*(p if p else device_root for p in device_path))
+  return device_path
+
+
+def SubstituteDeviceRoot(host_device_tuples, device_root):
+  return [(h, SubstituteDeviceRootSingle(d, device_root))
+          for h, d in host_device_tuples]
+
+
+def ExpandDataDependencies(host_device_tuples):
+  ret = []
+  for h, d in host_device_tuples:
+    if os.path.isdir(h):
+      for subpath in glob.glob(f'{h}/**', recursive=True):
+        if not os.path.isdir(subpath):
+          new_part = subpath[len(h):]
+          ret.append((subpath, d + new_part))
+    else:
+      ret.append((h, d))
+  return ret

@@ -6,7 +6,6 @@ package org.chromium.tools.errorprone.plugin;
 
 import static com.google.errorprone.matchers.Matchers.instanceMethod;
 
-import com.google.auto.service.AutoService;
 import com.google.errorprone.BugPattern;
 import com.google.errorprone.VisitorState;
 import com.google.errorprone.bugpatterns.BugChecker;
@@ -18,12 +17,14 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.tools.javac.code.Type;
 
+import org.chromium.build.annotations.ServiceImpl;
+
 /**
- * Checks for calls to getApplicationContext from {@link android.content.Context}.
- * These calls should be replaced with the static getApplicationContext method in
- * {@link org.chromium.base.ContextUtils}.
+ * Checks for calls to getApplicationContext from {@link android.content.Context}. These calls
+ * should be replaced with the static getApplicationContext method in {@link
+ * org.chromium.base.ContextUtils}.
  */
-@AutoService(BugChecker.class)
+@ServiceImpl(BugChecker.class)
 @BugPattern(
         name = "NoContextGetApplicationContext",
         summary = "Do not use Context#getApplicationContext",

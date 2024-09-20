@@ -117,12 +117,10 @@ const char* GetSnapshotFileName(const V8SnapshotFileType file_type) {
 #if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
       return kV8ContextSnapshotFileName;
 #else
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
 #endif
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void GetV8FilePath(const char* file_name, base::FilePath* path_out) {
@@ -271,6 +269,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
       features::kV8ExperimentalRegexpEngine,
       "--enable-experimental-regexp-engine-on-excessive-backtracks",
       "--no-enable-experimental-regexp-engine-on-excessive-backtracks");
+  SetV8FlagsIfOverridden(features::kV8ExternalMemoryAccountedInGlobalLimit,
+                         "--external-memory-accounted-in-global-limit",
+                         "--no-external-memory-accounted-in-global-limit");
   SetV8FlagsIfOverridden(features::kV8TurboFastApiCalls,
                          "--turbo-fast-api-calls", "--no-turbo-fast-api-calls");
   SetV8FlagsIfOverridden(features::kV8MegaDomIC, "--mega-dom-ic",
@@ -294,6 +295,8 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     SetV8FlagsFormatted("--scavenger-max-new-space-capacity-mb=%i",
                         features::kV8ScavengerMaxCapacity.Get());
   }
+  SetV8FlagsIfOverridden(features::kV8SeparateGCPhases, "--separate-gc-phases",
+                         "--no-separate-gc-phases");
   SetV8FlagsIfOverridden(features::kV8Sparkplug, "--sparkplug",
                          "--no-sparkplug");
   SetV8FlagsIfOverridden(features::kV8Turbofan, "--turbofan", "--no-turbofan");
@@ -456,9 +459,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-wasm-inlining-call-indirect");
   SetV8FlagsIfOverridden(features::kWebAssemblyLiftoffCodeFlushing,
                          "--flush-liftoff-code", "--no-flush-liftoff-code");
-  SetV8FlagsIfOverridden(features::kWebAssemblyGenericWrapper,
-                         "--wasm-to-js-generic-wrapper",
-                         "--no-wasm-to-js-generic-wrapper");
   SetV8FlagsIfOverridden(features::kWebAssemblyMultipleMemories,
                          "--experimental-wasm-multi-memory",
                          "--no-experimental-wasm-multi-memory");

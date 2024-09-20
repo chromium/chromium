@@ -17,6 +17,7 @@ import glob
 import logging
 import os
 import pathlib
+import re
 import shlex
 import subprocess
 import sys
@@ -210,10 +211,12 @@ class BaseTest(unittest.TestCase):
 
   def _TestEndToEndRegistration(self,
                                 input_files,
+                                golden_name=None,
                                 src_files_for_asserts_and_stubs=None,
                                 priority_java_files=None,
+                                inspection_func=None,
                                 **kwargs):
-    golden_name = self._testMethodName
+    golden_name = golden_name or self._testMethodName
     options = CliOptions(is_final=True, **kwargs)
     dir_prefix, file_prefix = _MakePrefixes(options)
     name_to_goldens = {
@@ -273,6 +276,8 @@ class BaseTest(unittest.TestCase):
           contents = f.read().replace(
               tdir.replace('/', '_').upper(), 'TEMP_DIR')
           self.AssertGoldenTextEquals(contents, header_golden)
+      if inspection_func:
+        inspection_func(tdir)
 
   def _TestParseError(self, error_snippet, input_data):
     with tempfile.TemporaryDirectory() as tdir:
@@ -416,10 +421,30 @@ class Tests(BaseTest):
     input_java_files = [
         'TinySample2.java', 'TinySample.java', 'SampleProxyEdgeCases.java'
     ]
-    priority_java_files = ['TinySample2.java']
+    # Add an entry not in input_java_files to simulate one that is in native
+    # sources but not java source (e.g. contains only @CalledByNative)
+    priority_java_files = ['TinySample2.java', 'SampleModule.java']
+
+    hash_holder = []
+
+    def inspection_func(tdir):
+      header_path = os.path.join(tdir, 'header.h')
+      header_text = pathlib.Path(header_path).read_text()
+      whole = re.findall(r'HashWhole.*?= (.*?);', header_text)[0]
+      priority = re.findall(r'HashPriority.*?= (.*?);', header_text)[0]
+      hash_holder.append((whole, priority))
+
     self._TestEndToEndRegistration(input_java_files,
                                    priority_java_files=priority_java_files,
+                                   inspection_func=inspection_func,
                                    enable_jni_multiplexing=True)
+
+    self._TestEndToEndRegistration(priority_java_files,
+                                   golden_name='testPriorityRegistrationPart2',
+                                   priority_java_files=[],
+                                   inspection_func=inspection_func,
+                                   enable_jni_multiplexing=True)
+    self.assertEqual(hash_holder[0][1], hash_holder[1][0])
 
   def testFullStubs(self):
     self._TestEndToEndRegistration(

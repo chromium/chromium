@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -42,6 +43,7 @@
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
@@ -60,6 +62,10 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+
+namespace optimization_guide::proto {
+class UserAnnotationsEntry;
+}
 
 namespace autofill {
 
@@ -465,8 +471,30 @@ class BrowserAutofillManager : public AutofillManager {
   };
 
   // Triggers the possible import of submitted data at submission time.
-  void MaybeImportFromSubmittedForm(const FormData& form,
-                                    const FormStructure* const form_structure);
+  void MaybeImportFromSubmittedForm(
+      const FormData& form,
+      const FormStructure* const form_structure,
+      bool attempt_to_import_into_form_data_importer);
+
+  // Event handler for
+  // `AutofillPredictionImprovementsDelegate::MaybeImportForm()` which is bound
+  // on form submission if the delegate exists.
+  void OnUserAnnotationsMaybeImportableFormFound(
+      const FormData& form,
+      mojom::SubmissionSource source,
+      base::TimeTicks form_submitted_timestamp,
+      std::unique_ptr<FormStructure> submitted_form,
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>
+          to_be_upserted_entries,
+      base::OnceCallback<void(bool prompt_was_accepted)>
+          prompt_acceptance_callback);
+
+  // Method containing logic to be run in `OnFormSubmittedImpl()` after any
+  // import attempts of the submitted form occurred.
+  void OnFormSubmittedAfterImport(const FormData& form,
+                                  std::unique_ptr<FormStructure> submitted_form,
+                                  mojom::SubmissionSource source,
+                                  base::TimeTicks form_submitted_timestamp);
 
   // Emits all metrics that should be recorded at submission time.
   void LogSubmissionMetrics(const FormStructure* submitted_form,
@@ -534,13 +562,6 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
-  // Returns a mapping of credit card guid values to virtual card last fours for
-  // standalone CVC field. Cards will only be added to the returned map if they
-  // have usage data on the webpage and the VCN last four was found on webpage
-  // DOM.
-  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-  GetVirtualCreditCardsForStandaloneCvcField(const url::Origin& origin) const;
-
   // If `metrics_->initial_interaction_timestamp` is unset or is set to a later
   // time than `interaction_timestamp`, updates the cached timestamp.  The
   // latter check is needed because IPC messages can arrive out of order.
@@ -572,6 +593,13 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       const AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source);
+
+  // Evaluates the specifics of the ablation study, updates `context`, and
+  // returns whether the study is enabled/disabled.
+  bool EvaluateAblationStudy(
+      const std::vector<Suggestion>& address_and_credit_card_suggestions,
+      const AutofillField* autofill_field,
+      SuggestionsContext& context);
 
   // Returns a list with the suggestions available for `field`. Which fields of
   // the `form` are filled depends on the `trigger_source`. `context` could
@@ -609,13 +637,32 @@ class BrowserAutofillManager : public AutofillManager {
       SuggestionsContext& context,
       OnGenerateSuggestionsCallback callback);
 
+  // This method
+  // 1) is an event handler called when the
+  // `AutofillPredictionImprovementsDelegate` is checking user annotations for
+  // readiness.
+  // 2) continues Autofill's regular flow by calling
+  // `GenerateSuggestionsAndMaybeShowUI()` if user annotations isn't ready or
+  // `AutofillPredictionImprovementsDelegate` doesn't exist.
+  //
+  // To be clear, only one branch for showing suggestions in the UI will be
+  // followed eventually: either the one for Autofill or the one for prediction
+  // improvements (the latter might also show Autofill suggestions).
+  void GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      SuggestionsContext& context,
+      OnGenerateSuggestionsCallback callback,
+      AutofillPredictionImprovementsDelegate::HasData has_data);
+
   // Receives the lists of plus address and single field form fill suggestions
   // and combines them. It gives priority to the plus address suggestions,
   // ensuring they appear first in the final combined list that's sent to
   // `OnGenerateSuggestionsCallback`.
   void OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-      AutofillClient::PasswordFormClassification::Type password_form_type,
+      PasswordFormClassification::Type password_form_type,
       const FormData& form,
       const FormFieldData& field,
       OnGenerateSuggestionsCallback callback,
@@ -647,7 +694,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   void OnGetPlusAddressSuggestions(
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-      AutofillClient::PasswordFormClassification::Type password_form_type,
+      PasswordFormClassification::Type password_form_type,
       const FormData& form,
       const FormFieldData& field,
       std::vector<Suggestion> address_suggestions,

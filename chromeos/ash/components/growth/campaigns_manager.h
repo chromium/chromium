@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MANAGER_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -43,6 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   ~CampaignsManager();
 
   // Static.
+  // Returns nullptr if no CampaignsManager has been created (e.g. in tests).
   static CampaignsManager* Get();
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -74,7 +77,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Set the current opened app. Used in `CampaignsMatcher` for matching
   // opened app targeting.
-  void SetOpenedApp(const std::string& app_id);
+  void SetOpenedApp(std::string app_id);
 
   // Get latest trigger.
   const Trigger& GetTrigger() const;
@@ -101,8 +104,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
                      const base::Value::Dict* params);
 
   // Clear event stored in the Feature Engagement framework.
-  void ClearEvent(CampaignEvent event, const std::string& id);
-  void ClearEvent(const std::string& event);
+  void ClearEvent(CampaignEvent event, std::string_view id);
+  void ClearEvent(std::string_view event);
 
   // Record event to the Feature Engagement framework. Event will be stored and
   // could be used for targeting.

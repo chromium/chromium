@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 import("//components/metrics/generate_allowlist_from_histograms_file.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 generate_allowlist_from_histograms_file("webui_url_hashes") {
   namespace = "webui_metrics"
@@ -25,10 +26,11 @@ source_set("configs") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    ":webui",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/webui",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
+    "//components/security_interstitials/content:security_interstitial_page",
     "//content/public/browser",
     "//extensions/buildflags:buildflags",
     "//printing/buildflags",
@@ -53,24 +55,49 @@ source_set("configs") {
   }
 }
 
-source_set("webui") {
+source_set("webui_util") {
   sources = [
     "webui_util.cc",
     "webui_util.h",
   ]
 
-  sources += get_target_outputs(":webui_url_hashes")
+  public_deps = [
+    "//base",
+    "//ui/base",
+  ]
 
   deps = [
-    ":webui_url_hashes",
-    "//base",
+    "//build:chromeos_buildflags",
     "//content/public/browser",
     "//content/public/common",
     "//services/network/public/mojom",
-    "//ui/base",
     "//ui/resources",
   ]
+
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/startup" ]
+  }
+}
+
+source_set("webui") {
+  sources = [
+    "constrained_web_dialog_ui.cc",
+    "constrained_web_dialog_ui.h",
+  ]
+
+  sources += get_target_outputs(":webui_url_hashes")
+
+  public_deps = [ "//content/public/browser" ]
+
+  deps = [
+    ":webui_url_hashes",
+    "//chrome/common",
+    "//extensions/buildflags",
+  ]
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
+  if (!is_android) {
+    deps += [ "//ui/web_dialogs" ]
   }
 }

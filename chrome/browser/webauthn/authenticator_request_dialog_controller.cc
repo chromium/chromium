@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
+#include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
@@ -464,6 +465,10 @@ void AuthenticatorRequestDialogController::StartFlow(
     bool use_conditional_mediation) {
   DCHECK(!started_);
   DCHECK_EQ(model_->step(), Step::kNotStarted);
+  DCHECK_EQ(
+      transport_availability.attestation_conveyance_preference.has_value(),
+      transport_availability.request_type ==
+          device::FidoRequestType::kMakeCredential);
 
   started_ = true;
   transport_availability_ = std::move(transport_availability);
@@ -752,6 +757,11 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
       });
 
   if (mech_it != model_->mechanisms.end()) {
+    if (transport == AuthenticatorTransport::kHybrid) {
+      // If the site sent a "hybrid" hint, focus the UI exclusively on the
+      // hybrid case and don't suggest security keys.
+      model_->show_security_key_on_qr_sheet = false;
+    }
     mech_it->callback.Run();
     return true;
   }
@@ -1235,14 +1245,6 @@ void AuthenticatorRequestDialogController::OnResidentCredentialConfirmed() {
   HideDialogAndDispatchToPlatformAuthenticator(AuthenticatorType::kWinNative);
 }
 
-void AuthenticatorRequestDialogController::OnAttestationPermissionResponse(
-    bool attestation_permission_granted) {
-  if (!attestation_callback_) {
-    return;
-  }
-  std::move(attestation_callback_).Run(attestation_permission_granted);
-}
-
 void AuthenticatorRequestDialogController::AddAuthenticator(
     const device::FidoAuthenticator& authenticator) {
   // Only the webauthn.dll authenticator omits a transport completely. This
@@ -1444,16 +1446,6 @@ void AuthenticatorRequestDialogController::OnBioEnrollmentDone() {
   std::move(bio_enrollment_callback_).Run();
 }
 
-void AuthenticatorRequestDialogController::RequestAttestationPermission(
-    bool is_enterprise_attestation,
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK(model_->step() != Step::kClosed);
-  attestation_callback_ = std::move(callback);
-  SetCurrentStep(is_enterprise_attestation
-                     ? Step::kEnterpriseAttestationPermissionRequest
-                     : Step::kAttestationPermissionRequest);
-}
-
 void AuthenticatorRequestDialogController::set_cable_transport_info(
     std::optional<bool> extension_is_v2,
     std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones,
@@ -1631,6 +1623,11 @@ void AuthenticatorRequestDialogController::set_has_icloud_drive_enabled(
 }
 
 #endif
+
+void AuthenticatorRequestDialogController::set_ambient_credential_types(
+    int types) {
+  ambient_credential_types_ = types;
+}
 
 base::WeakPtr<AuthenticatorRequestDialogController>
 AuthenticatorRequestDialogController::GetWeakPtr() {
@@ -1834,7 +1831,7 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
         ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
             render_frame_host);
     controller->AddAndShowWebAuthnMethods(
-        model(), credentials,
+        model(), credentials, ambient_credential_types_,
         base::BindOnce(
             [](base::WeakPtr<AuthenticatorRequestDialogController> controller,
                std::vector<uint8_t> credential_id) {
@@ -2170,13 +2167,14 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
 
   // If the new UI is enabled, only show USB as an option if the QR code is
   // not available, if tapping it would trigger a prompt to enable BLE, or if
-  // hints will cause us to jump to USB UI.
+  // hints suggest that hybrid and USB should be separate options.
   const bool include_usb_option =
       base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kUsbHumanInterfaceDevice) &&
       (!include_add_phone_option ||
        transport_availability_.ble_status != BleStatus::kOn ||
-       hints_.transport == AuthenticatorTransport::kUsbHumanInterfaceDevice);
+       hints_.transport == AuthenticatorTransport::kUsbHumanInterfaceDevice ||
+       hints_.transport == AuthenticatorTransport::kHybrid);
 
   if (include_add_phone_option) {
     std::u16string label = l10n_util::GetStringUTF16(
@@ -2399,9 +2397,11 @@ void AuthenticatorRequestDialogController::
   model_->request_type = transport_availability_.request_type;
   model_->resident_key_requirement =
       transport_availability_.resident_key_requirement;
+  model_->attestation_conveyance_preference =
+      transport_availability_.attestation_conveyance_preference;
   model_->ble_adapter_is_powered =
       transport_availability_.ble_status == BleStatus::kOn;
-  model_->security_key_is_possible =
+  model_->show_security_key_on_qr_sheet =
       base::Contains(transport_availability_.available_transports,
                      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
   model_->is_off_the_record = transport_availability_.is_off_the_record_context;

@@ -48,7 +48,6 @@ class SavedTabGroupButton : public views::MenuButton,
 
   // views::MenuButton:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
@@ -80,9 +79,12 @@ class SavedTabGroupButton : public views::MenuButton,
   const base::Uuid guid() const { return guid_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SavedTabGroupBarUnitTest, AccessibleName);
   std::u16string GetAccessibleNameForButton() const;
   void SetTextProperties(const SavedTabGroup& group);
   void UpdateButtonLayout();
+  void UpdateAccessibleName();
+  void SetText(const std::u16string& text) override;
 
   // The animations for button movement.
   std::unique_ptr<gfx::SlideAnimation> show_animation_;

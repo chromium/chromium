@@ -26,6 +26,7 @@ class WebContents;
 }  // namespace content
 
 class Profile;
+class PasswordAccessLossWarningBridge;
 
 namespace autofill {
 
@@ -171,6 +172,10 @@ class AutofillKeyboardAccessoryControllerImpl
   // The first `IsStandaloneSuggestionType()` is used to define what the
   // `FillingProduct` is.
   FillingProduct suggestions_filling_product_ = FillingProduct::kNone;
+
+  // Bridge used to show the data loss warning (expected to be shown after
+  // filling user's credentials).
+  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryControllerImpl>
       self_deletion_weak_ptr_factory_{this};

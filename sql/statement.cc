@@ -533,7 +533,7 @@ base::TimeDelta Statement::ColumnTimeDelta(int column_index) {
   return base::Microseconds(int_value);
 }
 
-std::string Statement::ColumnString(int column_index) {
+std::string_view Statement::ColumnStringView(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if DCHECK_IS_ON()
@@ -542,7 +542,7 @@ std::string Statement::ColumnString(int column_index) {
 #endif  // DCHECK_IS_ON()
 
   if (!CheckValid())
-    return std::string();
+    return std::string_view();
   DCHECK_GE(column_index, 0);
   DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
       << "Invalid column index";
@@ -550,29 +550,18 @@ std::string Statement::ColumnString(int column_index) {
   const char* string_buffer = reinterpret_cast<const char*>(
       sqlite3_column_text(ref_->stmt(), column_index));
   int size = sqlite3_column_bytes(ref_->stmt(), column_index);
+  DCHECK(size == 0 || string_buffer != nullptr)
+      << "sqlite3_column_text() returned a null buffer for a non-empty string";
 
-  std::string result;
-  if (string_buffer && size > 0)
-    result.assign(string_buffer, size);
-  return result;
+  return std::string_view(string_buffer, base::checked_cast<size_t>(size));
+}
+
+std::string Statement::ColumnString(int column_index) {
+  return std::string(ColumnStringView(column_index));
 }
 
 std::u16string Statement::ColumnString16(int column_index) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return std::u16string();
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
-
-  std::string string = ColumnString(column_index);
-  return string.empty() ? std::u16string() : base::UTF8ToUTF16(string);
+  return base::UTF8ToUTF16(ColumnStringView(column_index));
 }
 
 base::span<const uint8_t> Statement::ColumnBlob(int column_index) {

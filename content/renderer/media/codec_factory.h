@@ -109,6 +109,11 @@ class CONTENT_EXPORT CodecFactory {
   // WeakPtr if you need this feature.
   void NotifyEncoderSupportKnown(base::OnceClosure callback);
 
+  // Provides this instance with the gpu channel token for the
+  // associated gpu channel.
+  void OnChannelTokenReady(const base::UnguessableToken& token,
+                           int32_t route_id);
+
  protected:
   class Notifier {
    public:
@@ -132,6 +137,7 @@ class CONTENT_EXPORT CodecFactory {
   void OnGetVideoEncodeAcceleratorSupportedProfiles(
       const media::VideoEncodeAccelerator::SupportedProfiles&
           supported_profiles);
+  bool IsEncoderReady() EXCLUSIVE_LOCKS_REQUIRED(supported_profiles_lock_);
 
   // Task runner on the Media thread for running multi-media operations
   // (e.g., creating a video decoder).
@@ -168,6 +174,8 @@ class CONTENT_EXPORT CodecFactory {
           pending_vea_provider_remote);
 
   mojo::Remote<media::mojom::VideoEncodeAcceleratorProvider> vea_provider_;
+  base::UnguessableToken channel_token_;
+  int32_t route_id_;
 };
 
 // CodecFactoryDefault is the default derived class, which has no

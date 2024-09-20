@@ -46,27 +46,32 @@ views::View* AccountSelectionViewTestBase::GetHoverButtonSecondaryView(
   return account->secondary_view();
 }
 
-content::IdentityRequestAccount
+IdentityRequestAccountPtr
 AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
     const std::string& account_suffix,
+    IdentityProviderDataPtr idp,
     content::IdentityRequestAccount::LoginState login_state,
     std::optional<base::Time> last_used_timestamp) {
-  return content::IdentityRequestAccount(
-      std::string(kIdBase) + account_suffix,
-      std::string(kEmailBase) + account_suffix,
-      std::string(kNameBase) + account_suffix,
-      std::string(kGivenNameBase) + account_suffix, GURL(),
-      /*login_hints=*/std::vector<std::string>(),
-      /*domain_hints=*/std::vector<std::string>(),
-      /*labels=*/std::vector<std::string>(), login_state,
-      /*browser_trusted_login_state=*/
-      content::IdentityRequestAccount::LoginState::kSignUp,
-      last_used_timestamp);
+  IdentityRequestAccountPtr account =
+      base::MakeRefCounted<content::IdentityRequestAccount>(
+          std::string(kIdBase) + account_suffix,
+          std::string(kEmailBase) + account_suffix,
+          std::string(kNameBase) + account_suffix,
+          std::string(kGivenNameBase) + account_suffix, GURL(),
+          /*login_hints=*/std::vector<std::string>(),
+          /*domain_hints=*/std::vector<std::string>(),
+          /*labels=*/std::vector<std::string>(), login_state,
+          /*browser_trusted_login_state=*/
+          content::IdentityRequestAccount::LoginState::kSignUp,
+          last_used_timestamp);
+  account->identity_provider = std::move(idp);
+  return account;
 }
 
-std::vector<content::IdentityRequestAccount>
+std::vector<IdentityRequestAccountPtr>
 AccountSelectionViewTestBase::CreateTestIdentityRequestAccounts(
     const std::vector<std::string>& account_suffixes,
+    IdentityProviderDataPtr idp,
     const std::vector<content::IdentityRequestAccount::LoginState>&
         login_states,
     const std::vector<std::optional<base::Time>>& last_used_timestamps) {
@@ -76,7 +81,7 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccounts(
   if (!last_used_timestamps.empty()) {
     CHECK_EQ(account_suffixes.size(), last_used_timestamps.size());
   }
-  std::vector<content::IdentityRequestAccount> accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   size_t idx = 0;
   for (const std::string& account_suffix : account_suffixes) {
     content::IdentityRequestAccount::LoginState login_state =
@@ -86,7 +91,7 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccounts(
     std::optional<base::Time> last_used_timestamp =
         last_used_timestamps.empty() ? std::nullopt : last_used_timestamps[idx];
     accounts.push_back(CreateTestIdentityRequestAccount(
-        account_suffix, login_state, last_used_timestamp));
+        account_suffix, idp, login_state, last_used_timestamp));
     ++idx;
   }
   return accounts;

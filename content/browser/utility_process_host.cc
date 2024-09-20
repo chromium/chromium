@@ -329,7 +329,6 @@ bool UtilityProcessHost::StartProcess() {
         switches::kIgnoreCertificateErrors,
         switches::kOverrideUseSoftwareGLForTests,
         switches::kOverrideEnabledCdmInterfaceVersion,
-        switches::kProxyServer,
         switches::kDisableAcceleratedMjpegDecode,
         switches::kUseFakeDeviceForMediaStream,
         switches::kUseFakeMjpegDecodeAccelerator,

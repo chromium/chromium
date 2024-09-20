@@ -44,7 +44,7 @@ static_library("manage_mirrorsync") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/manage_mirrorsync:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//ui/aura",
     "//ui/base:types",
     "//ui/webui",

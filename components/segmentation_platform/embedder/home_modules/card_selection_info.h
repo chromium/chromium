@@ -22,6 +22,13 @@ class CardSelectionInfo {
 
   struct ShowResult {
     ShowResult();
+
+    // Select position for the default label (card_name).
+    explicit ShowResult(EphemeralHomeModuleRank position);
+    // Select position with the card label variation.
+    ShowResult(EphemeralHomeModuleRank position,
+               const std::string& result_label);
+
     ShowResult(const ShowResult& result);
     ~ShowResult();
 

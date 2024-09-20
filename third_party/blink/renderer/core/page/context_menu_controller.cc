@@ -734,10 +734,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     if (misspelled_word.length()) {
       auto to_u16string = [](const String& s) -> std::u16string {
         return s.empty() ? std::u16string()
-                         : WTF::VisitCharacters(
-                               s, [](const auto* chars, wtf_size_t length) {
-                                 return std::u16string(chars, chars + length);
-                               });
+                         : WTF::VisitCharacters(s, [](auto chars) {
+                             return std::u16string(chars.begin(), chars.end());
+                           });
       };
       data.misspelled_word = to_u16string(misspelled_word);
       const String& description = misspelled_word_and_description.second;

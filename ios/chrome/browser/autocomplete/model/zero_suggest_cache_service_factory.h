@@ -14,11 +14,13 @@
 
 namespace ios {
 // Singleton that owns all ZeroSuggestCacheServices and associates them with
-// ChromeBrowserState
+// profiles.
 class ZeroSuggestCacheServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static ZeroSuggestCacheService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static ZeroSuggestCacheService* GetForBrowserState(ProfileIOS* profile);
+
+  static ZeroSuggestCacheService* GetForProfile(ProfileIOS* profile);
   static ZeroSuggestCacheServiceFactory* GetInstance();
   // Returns the default factory used to build ZeroSuggestCacheService. Can be
   // registered with SetTestingFactory to use real instances during testing.

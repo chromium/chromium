@@ -37,19 +37,94 @@
 #include "net/dns/public/secure_dns_mode.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
+namespace {
+void MigratePrefIfNecessary(const std::string& pref_name,
+                            PrefService* from_local_state,
+                            PrefService* to_profile_prefs) {
+  const base::Value* user_pref_value =
+      to_profile_prefs->GetUserPrefValue(pref_name);
+  // If there's already a user-set value in the profile prefs, do not override
+  // it.
+  if (user_pref_value) {
+    return;
+  }
+  const base::Value* pref_value = from_local_state->GetUserPrefValue(pref_name);
+  if (!pref_value) {
+    return;
+  }
+  to_profile_prefs->Set(pref_name, *pref_value);
+
+  // TODO(b/323547098): Clear the DoH user-set local state pref once the
+  // migration code has ran for a couple of milestones.
+  //  from_local_state->ClearPref(pref_name);
+}
+
+bool IsUserSetSecureDnsConfigInvalid(const PrefService* local_state) {
+  const base::Value* secure_dns_mode =
+      local_state->GetUserPrefValue(::prefs::kDnsOverHttpsMode);
+
+  // Can be missing in tests.
+  if (!secure_dns_mode) {
+    return false;
+  }
+  if (*secure_dns_mode != base::Value(SecureDnsConfig::kModeSecure)) {
+    return false;
+  }
+
+  const base::Value* secure_dns_template =
+      local_state->GetUserPrefValue(::prefs::kDnsOverHttpsTemplates);
+  if (!secure_dns_template || *secure_dns_template == base::Value()) {
+    return true;
+  }
+
+  return false;
+}
+
+// Although DNS configurations are user specific, the initial implementation
+// stored the secure DNS config to local_state, making it available to all users
+// of the device. Part of restricting the user-set secure DNS preference to the
+// user session is migrating the related preferences from local_state to profile
+// prefs. See b/323547098 for details.
+void MigrateDnsOverHttpsPrefs(PrefService* from_local_state,
+                              PrefService* to_profile_prefs) {
+  if (IsUserSetSecureDnsConfigInvalid(from_local_state)) {
+    // Remove the invalid config. See b/335400734.
+    from_local_state->ClearPref(::prefs::kDnsOverHttpsMode);
+    return;
+  }
+  // Migrate local state to user pref.
+  MigratePrefIfNecessary(::prefs::kDnsOverHttpsTemplates, from_local_state,
+                         to_profile_prefs);
+  MigratePrefIfNecessary(::prefs::kDnsOverHttpsMode, from_local_state,
+                         to_profile_prefs);
+}
+}  // namespace
 namespace ash {
 
 SecureDnsManager::SecureDnsManager(PrefService* local_state,
+                                   PrefService* profile_prefs,
                                    bool is_profile_managed)
-    : local_state_(local_state) {
+    : local_state_(local_state),
+      profile_prefs_(profile_prefs),
+      is_profile_managed_(is_profile_managed) {
+  if (!is_profile_managed) {
+    CHECK(profile_prefs) << "Profile prefs cannot be empty for unmanaged users";
+    MigrateDnsOverHttpsPrefs(local_state, profile_prefs);
+  }
   doh_templates_uri_resolver_ =
       std::make_unique<dns_over_https::TemplatesUriResolverImpl>();
 
-  MonitorPolicyPrefs();
   LoadProviders();
-  OnPolicyPrefChanged();
-  OnDoHIncludedDomainsPrefChanged();
-  OnDoHExcludedDomainsPrefChanged();
+
+  if (is_profile_managed) {
+    MonitorLocalStatePrefs();
+    OnLocalStatePrefsChanged();
+    OnDoHIncludedDomainsPrefChanged();
+    OnDoHExcludedDomainsPrefChanged();
+  } else {
+    MonitorUserPrefs();
+    OnPrefChanged();
+  }
 
   // The DNS-over-HTTPS config source is reset in the destructor of the
   // `SecureDnsManager`. This means the `SecureDnsManager` instance should
@@ -60,7 +135,40 @@ SecureDnsManager::SecureDnsManager(PrefService* local_state,
           std::make_unique<AshDnsOverHttpsConfigSource>(this, local_state));
 }
 
-void SecureDnsManager::MonitorPolicyPrefs() {
+void SecureDnsManager::SetPrimaryProfilePropertiesForTesting(
+    PrefService* profile_prefs,
+    bool is_profile_managed) {
+  profile_prefs_registrar_.Reset();
+  local_state_registrar_.Reset();
+  is_profile_managed_ = is_profile_managed;
+
+  if (is_profile_managed) {
+    MonitorLocalStatePrefs();
+    OnLocalStatePrefsChanged();
+    OnDoHIncludedDomainsPrefChanged();
+    OnDoHExcludedDomainsPrefChanged();
+  } else {
+    MonitorUserPrefs();
+    OnPrefChanged();
+  }
+}
+
+void SecureDnsManager::MonitorUserPrefs() {
+  profile_prefs_->SetDefaultPrefValue(
+      ::prefs::kDnsOverHttpsMode,
+      local_state_->GetDefaultPrefValue(::prefs::kDnsOverHttpsMode)->Clone());
+
+  profile_prefs_registrar_.Init(profile_prefs_);
+  profile_prefs_registrar_.Add(
+      ::prefs::kDnsOverHttpsMode,
+      base::BindRepeating(&SecureDnsManager::OnPrefChanged,
+                          base::Unretained(this)));
+  profile_prefs_registrar_.Add(
+      ::prefs::kDnsOverHttpsTemplates,
+      base::BindRepeating(&SecureDnsManager::OnPrefChanged,
+                          base::Unretained(this)));
+}
+void SecureDnsManager::MonitorLocalStatePrefs() {
   local_state_registrar_.Init(local_state_);
   static constexpr std::array<const char*, 4> secure_dns_pref_names = {
       ::prefs::kDnsOverHttpsMode, ::prefs::kDnsOverHttpsTemplates,
@@ -68,8 +176,9 @@ void SecureDnsManager::MonitorPolicyPrefs() {
       ::prefs::kDnsOverHttpsSalt};
   for (auto* const pref_name : secure_dns_pref_names) {
     local_state_registrar_.Add(
-        pref_name, base::BindRepeating(&SecureDnsManager::OnPolicyPrefChanged,
-                                       base::Unretained(this)));
+        pref_name,
+        base::BindRepeating(&SecureDnsManager::OnLocalStatePrefsChanged,
+                            base::Unretained(this)));
   }
   local_state_registrar_.Add(
       prefs::kDnsOverHttpsIncludedDomains,
@@ -192,7 +301,22 @@ void SecureDnsManager::DefaultNetworkChanged(const NetworkState* network) {
   UpdateTemplateUri();
 }
 
-void SecureDnsManager::OnPolicyPrefChanged() {
+void SecureDnsManager::OnPrefChanged() {
+  CHECK(profile_prefs_);
+  bool template_uris_changed =
+      profile_prefs_->GetString(::prefs::kDnsOverHttpsTemplates) !=
+      cached_template_uris_;
+  bool mode_changed =
+      profile_prefs_->GetString(::prefs::kDnsOverHttpsMode) != cached_mode_;
+
+  cached_template_uris_ =
+      profile_prefs_->GetString(::prefs::kDnsOverHttpsTemplates);
+  cached_mode_ = profile_prefs_->GetString(::prefs::kDnsOverHttpsMode);
+
+  BroadcastUpdates(template_uris_changed, mode_changed);
+}
+
+void SecureDnsManager::OnLocalStatePrefsChanged() {
   UpdateTemplateUri();
   ToggleNetworkMonitoring();
 }
@@ -287,10 +411,16 @@ void SecureDnsManager::BroadcastUpdates(bool template_uris_changed,
 void SecureDnsManager::UpdateTemplateUri() {
   doh_templates_uri_resolver_->Update(local_state_);
 
-  const std::string new_templates =
+  std::string new_templates =
       doh_templates_uri_resolver_->GetEffectiveTemplates();
-  const std::string new_mode =
-      local_state_->GetString(::prefs::kDnsOverHttpsMode);
+  std::string new_mode = local_state_->GetString(::prefs::kDnsOverHttpsMode);
+
+  // The DoH config is stored in the local_state only when controlled by policy.
+  // If the local_state DoH pref is user-set, it should be ignored.
+  if (!local_state_->IsManagedPreference(::prefs::kDnsOverHttpsMode)) {
+    new_mode = SecureDnsConfig::kModeOff;
+    new_templates = std::string();
+  }
 
   bool template_uris_changed = new_templates != cached_template_uris_;
   bool mode_changed = new_mode != cached_mode_;
@@ -305,13 +435,22 @@ void SecureDnsManager::UpdateTemplateUri() {
 
   // May be missing in tests.
   if (NetworkHandler::Get()->network_metadata_store()) {
+    // TODO(b/323547098): Remove the pref management check. In older OS
+    // versions, user DoH settings were in local_state, but DoH with identifiers
+    // is enterprise-only feature.
     NetworkHandler::Get()
         ->network_metadata_store()
         ->SetSecureDnsTemplatesWithIdentifiersActive(
-            doh_templates_uri_resolver_->GetDohWithIdentifiersActive());
+            doh_templates_uri_resolver_->GetDohWithIdentifiersActive() &&
+            local_state_->IsManagedPreference(::prefs::kDnsOverHttpsMode));
   }
 }
 
+// static
+void SecureDnsManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(::prefs::kDnsOverHttpsMode, std::string());
+  registry->RegisterStringPref(::prefs::kDnsOverHttpsTemplates, std::string());
+}
 // static
 void SecureDnsManager::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(::prefs::kDnsOverHttpsSalt, std::string());

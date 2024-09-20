@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
  public:
   using AXPosition = AXNodePosition::AXPositionInstance;
   using SerializedPosition = AXNodePosition::SerializedPosition;
-  using AXRange = AXRange<AXPosition::element_type>;
+  using AXRange = ui::AXRange<AXPosition::element_type>;
 
   AXPlatformNodeDelegate();
 
@@ -86,6 +86,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   const AXNode* node() const { return node_; }
   AXNode* node() { return node_; }
   void SetNode(AXNode& node);
+  void reset_node() { node_ = nullptr; }
   AXTreeManager* GetTreeManager() const;
 
   // Returns the AXNodeID of the AXNode that this delegate encapsulates (if
@@ -141,10 +142,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetStringAttribute(
       ax::mojom::StringAttribute attribute) const;
+  // TODO(accessibility): Deprecate. This version is likely less efficient than
+  // calling has followed by get since it creates a copy of the string rather
+  // than returning a const ref.
   bool GetStringAttribute(ax::mojom::StringAttribute attribute,
                           std::string* value) const;
   std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
+  // TODO(accessibility): Deprecate in favor of using a has check if distinction
+  // between empty string and missing value is important.
   bool GetString16Attribute(ax::mojom::StringAttribute attribute,
                             std::u16string* value) const;
   const std::string& GetInheritedStringAttribute(
@@ -162,6 +168,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const;
   const std::vector<std::string>& GetStringListAttribute(
       ax::mojom::StringListAttribute attribute) const;
+  // TODO(accessibility): Deprecate this method in favor of separate calls to
+  // Has and Get. This version forces a copy of the list, which is inefficient
+  // in cases where a const reference would suffice.
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
   bool HasHtmlAttribute(const char* attribute) const;
@@ -185,7 +194,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // attributes that is either not displayed on screen, or outside this node,
   // e.g. aria-label and HTML title, is not returned.
   virtual std::u16string GetTextContentUTF16() const;
-  std::u16string GetTextContentUTF16WithInvisibles() const;
   virtual int GetTextContentLengthUTF16() const;
 
   // Returns the value of a control such as a text field, a slider, a <select>
@@ -670,7 +678,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // however reuse the same `AXNodeID`.
   //
   // Weak, `AXTree` owns this.
-  raw_ptr<AXNode, DanglingUntriaged> node_;
+  raw_ptr<AXNode> node_;
 };
 
 }  // namespace ui

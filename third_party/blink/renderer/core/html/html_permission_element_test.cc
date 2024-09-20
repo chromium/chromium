@@ -222,18 +222,10 @@ class TestPermissionService : public PermissionService {
             ? Vector<MojoPermissionStatus>(permissions.size(),
                                            MojoPermissionStatus::ASK)
             : initial_statuses_;
-    client_ = mojo::Remote<mojom::blink::EmbeddedPermissionControlClient>(
+    mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client(
         std::move(pending_client));
-    client_.set_disconnect_handler(base::BindOnce(
-        &TestPermissionService::OnMojoDisconnect, base::Unretained(this)));
-    client_->OnEmbeddedPermissionControlRegistered(/*allowed=*/true,
-                                                   std::move(statuses));
-  }
-
-  void OnMojoDisconnect() {
-    if (client_disconnect_run_loop_) {
-      client_disconnect_run_loop_->Quit();
-    }
+    client->OnEmbeddedPermissionControlRegistered(/*allowed=*/true,
+                                                  std::move(statuses));
   }
 
   void RequestPageEmbeddedPermission(
@@ -288,11 +280,6 @@ class TestPermissionService : public PermissionService {
     run_loop_->Run();
   }
 
-  void WaitForClientDisconnected() {
-    client_disconnect_run_loop_ = std::make_unique<base::RunLoop>();
-    client_disconnect_run_loop_->Run();
-  }
-
   void set_initial_statuses(const Vector<MojoPermissionStatus>& statuses) {
     initial_statuses_ = statuses;
   }
@@ -316,8 +303,6 @@ class TestPermissionService : public PermissionService {
   Vector<MojoPermissionStatus> initial_statuses_;
   bool should_defer_registered_callback_ = false;
   base::OnceClosure pepc_registered_callback_;
-  mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client_;
-  std::unique_ptr<base::RunLoop> client_disconnect_run_loop_;
 };
 
 class RegistrationWaiter {
@@ -391,6 +376,7 @@ class HTMLPemissionElementTest : public HTMLPemissionElementTestBase {
     permission_element->setAttribute(html_names::kTypeAttr,
                                      AtomicString(permission));
     GetDocument().body()->AppendChild(permission_element);
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     return permission_element;
   }
 
@@ -487,10 +473,22 @@ TEST_F(HTMLPemissionElementTest, InitializeInnerText) {
     permission_element->setAttribute(html_names::kStyleAttr,
                                      AtomicString("width: auto; height: auto"));
     GetDocument().body()->AppendChild(permission_element);
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     DOMRect* rect = permission_element->GetBoundingClientRect();
     EXPECT_NE(0, rect->width());
     EXPECT_NE(0, rect->height());
   }
+}
+
+// Regression test for crbug.com/341875650, check that a detached layout tree
+// permission element doesn't crash the renderer process.
+TEST_F(HTMLPemissionElementTest, AfterDetachLayoutTreeCrashTest) {
+  auto* permission_element = CreatePermissionElement("camera");
+  RegistrationWaiter(permission_element).Wait();
+  permission_element->SetForceReattachLayoutTree();
+  UpdateAllLifecyclePhasesForTest();
+  RegistrationWaiter(permission_element).Wait();
+  // We end up here if the renderer process did not crash.
 }
 
 TEST_F(HTMLPemissionElementTest, SetInnerTextAfterRegistrationSingleElement) {
@@ -651,7 +649,7 @@ TEST_F(HTMLPemissionElementClickingEnabledTest, UnclickableBeforeRegistered) {
     permission_service()->set_should_defer_registered_callback(
         /*should_defer*/ true);
     // Check if the element is still unclickable even after the default timeout
-    // of `kRecentlyInsertedIntoDOM`.
+    // of `kRecentlyAttachedToLayoutTree`.
     FastForwardBy(base::Milliseconds(600));
     EXPECT_FALSE(permission_element->IsClickingEnabled());
     std::move(permission_service()->TakePEPCRegisteredCallback()).Run();
@@ -700,6 +698,7 @@ class HTMLPemissionElementSimTest : public SimTest {
     permission_element->setAttribute(html_names::kTypeAttr,
                                      AtomicString(permission));
     document.body()->AppendChild(permission_element);
+    document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     return permission_element;
   }
 
@@ -862,7 +861,7 @@ TEST_F(HTMLPemissionElementSimTest, FontSizeCanDisableElement) {
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     checker.CheckClickingEnabledAfterDelay(kDefaultTimeout, test.enabled);
     permission_element->EnableClicking(
-        HTMLPermissionElement::DisableReason::kRecentlyInsertedIntoDOM);
+        HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree);
     permission_element->EnableClicking(HTMLPermissionElement::DisableReason::
                                            kIntersectionRecentlyFullyVisible);
     permission_element->EnableClicking(
@@ -889,6 +888,7 @@ class HTMLPemissionElementDispatchValidationEventTest
         html_names::kOnvalidationstatuschangeAttr,
         AtomicString("console.log('event dispatched')"));
     document.body()->AppendChild(permission_element);
+    document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     DeferredChecker checker(permission_element, &MainFrame());
     checker.CheckConsoleMessage(/*expected_count*/ 1u, "event dispatched");
     EXPECT_FALSE(permission_element->isValid());
@@ -930,8 +930,8 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest, DisableEnableClicking) {
   } kTestData[] = {
       {HTMLPermissionElement::DisableReason::kIntersectionRecentlyFullyVisible,
        String("intersection_visible")},
-      {HTMLPermissionElement::DisableReason::kRecentlyInsertedIntoDOM,
-       String("recently_inserted_into_dom")},
+      {HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree,
+       String("recently_attached")},
       {HTMLPermissionElement::DisableReason::kInvalidStyle,
        String("style_invalid")}};
   for (const auto& data : kTestData) {
@@ -1001,13 +1001,13 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest,
       /*expected_count*/ 2u, "event dispatched");
   EXPECT_TRUE(permission_element->isValid());
   permission_element->DisableClickingTemporarily(
-      HTMLPermissionElement::DisableReason::kRecentlyInsertedIntoDOM,
+      HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree,
       kSmallTimeout);
   base::RunLoop().RunUntilIdle();
   checker.CheckConsoleMessage(
       /*expected_count*/ 3u, "event dispatched");
   EXPECT_FALSE(permission_element->isValid());
-  EXPECT_EQ(permission_element->invalidReason(), "recently_inserted_into_dom");
+  EXPECT_EQ(permission_element->invalidReason(), "recently_attached");
   permission_element->DisableClickingTemporarily(
       HTMLPermissionElement::DisableReason::kInvalidStyle, kDefaultTimeout);
   // Reason change to the "longest alive" reason, in this case is
@@ -1017,7 +1017,7 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest,
   EXPECT_FALSE(permission_element->isValid());
   EXPECT_EQ(permission_element->invalidReason(), "style_invalid");
   permission_element->DisableClickingTemporarily(
-      HTMLPermissionElement::DisableReason::kRecentlyInsertedIntoDOM,
+      HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree,
       base::Milliseconds(100));
   EXPECT_FALSE(permission_element->isValid());
   EXPECT_EQ(permission_element->invalidReason(), "style_invalid");
@@ -1026,7 +1026,7 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest,
   checker.CheckConsoleMessageAfterDelay(kSmallTimeout,
                                         /*expected_count*/ 5u);
   EXPECT_FALSE(permission_element->isValid());
-  EXPECT_EQ(permission_element->invalidReason(), "recently_inserted_into_dom");
+  EXPECT_EQ(permission_element->invalidReason(), "recently_attached");
   checker.CheckConsoleMessageAfterDelay(kSmallTimeout,
                                         /*expected_count*/ 6u,
                                         "event dispatched");
@@ -1174,35 +1174,6 @@ TEST_F(HTMLPemissionElementSimTest, BlockedByMissingFrameAncestorsCSP) {
   }
 }
 
-TEST_F(HTMLPemissionElementSimTest, MovePEPCToAnotherDocument) {
-  SimRequest main_resource("https://example.test/", "text/html");
-  SimRequest iframe_resource("https://example.test/foo.html", "text/html");
-  LoadURL("https://example.test/");
-  main_resource.Complete(R"HTML(
-  <body>
-      <iframe src='https://example.test/foo.html'
-        allow="camera *">
-      </iframe>
-  </body>
-  )HTML");
-  iframe_resource.Finish();
-
-  Compositor().BeginFrame();
-  auto* permission_element =
-      CreatePermissionElement(*MainFrame().GetFrame()->GetDocument(), "camera");
-  EXPECT_FALSE(permission_element->IsClickingEnabled());
-  DeferredChecker checker(permission_element);
-  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
-                                         /*expected_enabled*/ true);
-  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
-  auto& new_document = *child_frame->GetFrame()->GetDocument();
-  new_document.body()->AppendChild(permission_element);
-  permission_service()->WaitForClientDisconnected();
-  EXPECT_FALSE(permission_element->IsClickingEnabled());
-  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
-                                         /*expected_enabled*/ true);
-}
-
 class HTMLPemissionElementIntersectionTest
     : public HTMLPemissionElementSimTest {
  public:
@@ -1307,7 +1278,7 @@ TEST_F(HTMLPemissionElementIntersectionTest, IntersectionChanged) {
 }
 
 TEST_F(HTMLPemissionElementIntersectionTest,
-       IntersectionVisibleOverlapsRecentInsertedInterval) {
+       IntersectionVisibleOverlapsRecentAttachedInterval) {
   SimRequest main_resource("https://example.test/", "text/html");
   LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
@@ -1322,14 +1293,14 @@ TEST_F(HTMLPemissionElementIntersectionTest,
       permission_element,
       HTMLPermissionElement::IntersectionVisibility::kOutOfViewportOrClipped);
   permission_element->DisableClickingTemporarily(
-      HTMLPermissionElement::DisableReason::kRecentlyInsertedIntoDOM,
+      HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree,
       base::Milliseconds(600));
   DeferredChecker checker(permission_element);
 
   checker.CheckClickingEnabledAfterDelay(base::Milliseconds(300),
                                          /*expected_enabled*/ false);
   // The `kIntersectionRecentlyFullyVisible` cooldown time which is overlapping
-  // `kRecentlyInsertedIntoDOM` will not extend the cooldown time, just
+  // `kRecentlyAttachedToLayoutTree` will not extend the cooldown time, just
   // change the disable reason.
   GetDocument().View()->LayoutViewport()->ScrollBy(
       ScrollOffset(0, kViewportHeight), mojom::blink::ScrollType::kUser);

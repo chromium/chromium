@@ -1,0 +1,4 @@
+include_rules = [
+  "+content/public/browser",
+  "+services/on_device_model/ml/chrome_ml.h",
+]

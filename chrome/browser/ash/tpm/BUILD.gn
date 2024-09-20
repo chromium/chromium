@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("tpm") {
+  sources = [
+    "tpm_firmware_update.cc",
+    "tpm_firmware_update.h",
+    "tpm_firmware_update_notification.cc",
+    "tpm_firmware_update_notification.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//components/prefs",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "tpm_firmware_update_unittest.cc" ]
+
+  deps = [
+    ":tpm",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/common",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

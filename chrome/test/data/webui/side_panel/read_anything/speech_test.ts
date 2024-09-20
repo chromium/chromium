@@ -530,7 +530,7 @@ suite('Speech', () => {
             emitEvent(app, 'select-voice', {
               detail: {
                 selectedVoice: createSpeechSynthesisVoice(
-                    {lang: 'en', name: 'Lauren', default: true}),
+                    {lang: 'en', name: 'Google Lauren', default: true}),
               },
             });
 
@@ -552,8 +552,8 @@ suite('Speech', () => {
 
             emitEvent(app, 'select-voice', {
               detail: {
-                selectedVoice:
-                    createSpeechSynthesisVoice({lang: 'en', name: 'Lauren'}),
+                selectedVoice: createSpeechSynthesisVoice(
+                    {lang: 'en', name: 'Google Lauren'}),
               },
             });
 
@@ -579,7 +579,7 @@ suite('Speech', () => {
         emitEvent(app, 'select-voice', {
           detail: {
             selectedVoice:
-                createSpeechSynthesisVoice({lang: 'en', name: 'Lisie'}),
+                createSpeechSynthesisVoice({lang: 'en', name: 'Google Lisie'}),
           },
         });
 

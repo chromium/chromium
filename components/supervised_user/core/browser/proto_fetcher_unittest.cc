@@ -44,6 +44,9 @@ bool operator==(const ProtoFetcherStatus& a, const ProtoFetcherStatus& b) {
 
 namespace {
 
+static const char* kMockEndpointDomain = "example.com";
+static const char* kExampleURL = "https://example.com/";
+
 using ::base::BindOnce;
 using ::base::Time;
 using ::kidsmanagement::ClassifyUrlRequest;
@@ -202,7 +205,7 @@ class ProtoFetcherTestBase {
  public:
   ProtoFetcherTestBase() = delete;
   explicit ProtoFetcherTestBase(const FetcherConfig& config) : config_(config) {
-    SetHttpEndpointsForKidsManagementApis(feature_list_, "example.com");
+    SetHttpEndpointsForKidsManagementApis(feature_list_, kMockEndpointDomain);
   }
 
  protected:
@@ -215,12 +218,14 @@ class ProtoFetcherTestBase {
     return std::make_unique<Receiver>();
   }
   std::unique_ptr<Fetcher> MakeFetcher(Receiver& receiver) {
-    std::unique_ptr<Fetcher> fetcher =
-        CreateClassifyURLFetcher(*identity_test_env_.identity_manager(),
-                                 test_url_loader_factory_.GetSafeWeakWrapper(),
-                                 ClassifyUrlRequest(), GetConfig());
-    fetcher->Start(BindOnce(&Receiver::Receive, base::Unretained(&receiver)));
-    return fetcher;
+    ClassifyUrlRequest request;
+    if (GetConfig().method == FetcherConfig::Method::kPost) {
+      request.set_url(kExampleURL);
+    }
+    return CreateClassifyURLFetcher(
+        *identity_test_env_.identity_manager(),
+        test_url_loader_factory_.GetSafeWeakWrapper(), request,
+        BindOnce(&Receiver::Receive, base::Unretained(&receiver)), GetConfig());
   }
 
   // Url loader helpers
@@ -304,8 +309,8 @@ TEST_P(ProtoFetcherTest, ConfiguresEndpoint) {
       test_url_loader_factory_.GetPendingRequest(0);
 
   GURL expected_url =
-      GURL("http://example.com" + std::string(GetConfig().StaticServicePath()) +
-           "?alt=proto");
+      GURL("http://" + std::string(kMockEndpointDomain) +
+           std::string(GetConfig().StaticServicePath()) + "?alt=proto");
   EXPECT_EQ(pending_request->request.url, expected_url);
   EXPECT_EQ(pending_request->request.method, GetConfig().GetHttpMethod());
 }
@@ -372,8 +377,6 @@ TEST_P(ProtoFetcherTest, NoAccessTokenStrict) {
     histogram_tester.ExpectUniqueSample(
         base::StrCat({*GetConfig().histogram_basename, ".AuthError"}),
         GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS, 1);
-  } else {
-    EXPECT_FALSE(fetcher->IsMetricsRecordingEnabled());
   }
 }
 
@@ -494,9 +497,6 @@ TEST_P(ProtoFetcherTest, RecordsMetrics) {
             base::Bucket(ProtoFetcherStatus::State::OK, /*count=*/1),
             base::Bucket(ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR,
                          /*count=*/0)));
-
-  } else {
-    EXPECT_FALSE(fetcher->IsMetricsRecordingEnabled());
   }
 }
 
@@ -579,8 +579,6 @@ TEST_P(ProtoFetcherTest, RetryingFetcherTerminatesOnOkStatusAndRecordsMetrics) {
             base::Bucket(ProtoFetcherStatus::State::OK, /*count=*/1),
             base::Bucket(ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR,
                          /*count=*/2)));
-  } else {
-    EXPECT_FALSE(fetcher->IsMetricsRecordingEnabled());
   }
 }
 
@@ -661,8 +659,6 @@ TEST_P(ProtoFetcherTest,
                          /*count=*/1),
             base::Bucket(ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR,
                          /*count=*/1)));
-  } else {
-    EXPECT_FALSE(fetcher->IsMetricsRecordingEnabled());
   }
 }
 
@@ -723,41 +719,7 @@ TEST_P(ProtoFetcherTest, RetryingFetcherContinuesOnTransientError) {
             base::StrCat({*GetConfig().histogram_basename, ".Status"})),
         base::BucketsInclude(base::Bucket(
             ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR, /*count=*/2)));
-  } else {
-    EXPECT_FALSE(fetcher->IsMetricsRecordingEnabled());
   }
-}
-
-// Test whether fetcher forbids being started twice.
-TEST_P(ProtoFetcherTest, MustBeStoppedBeforeRestarting) {
-  MakePrimaryAccountAvailable();
-  SetAutomaticIssueOfAccessTokens();
-  std::unique_ptr<Receiver> receiver = MakeReceiver();
-
-  std::unique_ptr<Fetcher> fetcher =
-      CreateClassifyURLFetcher(*identity_test_env_.identity_manager(),
-                               test_url_loader_factory_.GetSafeWeakWrapper(),
-                               ClassifyUrlRequest(), GetConfig());
-
-  // This fetch won't finish anytime soon because there's an unmocked HTTP
-  // response pending.
-  fetcher->Start(
-      BindOnce(&Receiver::Receive, base::Unretained(receiver.get())));
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-
-  // Subsequent call should not be allowed.
-  EXPECT_DEATH_IF_SUPPORTED(
-      fetcher->Start(
-          BindOnce(&Receiver::Receive, base::Unretained(&*receiver))),
-      "");
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-
-  // But a restart is allowed (which erases HTTP mock queue):
-  fetcher->Stop();
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
-
-  fetcher->Start(BindOnce(&Receiver::Receive, base::Unretained(&*receiver)));
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
 }
 
 // Instead of /0, /1... print human-readable description of the test: status of
@@ -819,90 +781,18 @@ TEST_F(BestEffortProtoFetcherTest, NoAccessToken) {
 
   // Check that both the overall Status, and the detailed AuthError metrics
   // are recorded.
-  histogram_tester.ExpectUniqueSample(
-      base::StrCat({*GetConfig().histogram_basename, ".Status"}),
-      ProtoFetcherStatus::State::OK, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          base::StrCat({*GetConfig().histogram_basename, ".Status"})),
+      base::BucketsInclude(
+          base::Bucket(ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR,
+                       /*count=*/1),
+          base::Bucket(ProtoFetcherStatus::State::OK,
+                       /*count=*/1)));
+
   histogram_tester.ExpectUniqueSample(
       base::StrCat({*GetConfig().histogram_basename, ".AuthError"}),
       GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS, 1);
 }
-
-class DeferredFetcherTest : public ::testing::Test {
- protected:
-  using CallbackType = void(const ProtoFetcherStatus&,
-                            std::unique_ptr<CreatePermissionRequestResponse>);
-
- public:
-  MOCK_METHOD2(Done, CallbackType);
-
- protected:
-  void SetUp() override {
-    // Fetch process is two-phase (access token and then rpc). The test flow
-    // will be controlled by releasing pending requests.
-    identity_test_env_.MakePrimaryAccountAvailable("bob@gmail.com",
-                                                   ConsentLevel::kSignin);
-    identity_test_env_.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
-  }
-
-  // Used to demonstrate deferred ProtoFetcher anit-pattern.
-  static void OnResponse(
-      std::unique_ptr<ProtoFetcher<CreatePermissionRequestResponse>> fetcher,
-      base::OnceCallback<CallbackType> callback,
-      const ProtoFetcherStatus& status,
-      std::unique_ptr<CreatePermissionRequestResponse> response) {
-    std::move(callback).Run(status, std::move(response));
-  }
-
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  base::test::TaskEnvironment task_environment_;
-  IdentityTestEnvironment identity_test_env_;
-};
-
-// This test demonstrates possible misusage of proto fetchers (antipattern) and
-// its behavior. A fetcher bound to its own callback will be executed even when
-// all *visible* references will be gone (because the one remaining reference is
-// inside the callback). Such usage strips the caller from any control over the
-// fetch process and makes cancel or termination impossible. Use
-// ParallelFetchManager instead.
-TEST_F(DeferredFetcherTest, IsCreatedAndStarted) {
-  // Receiver's callbacks will be executed despite the fact that after calling
-  // Fetcher::Start, all references in the test body to the fetcher are gone.
-  EXPECT_CALL(*this, Done(::testing::_, ::testing::_)).Times(1);
-
-  {
-    // Putting the following code in separate scope demonstrates that this
-    // fetcher survives going out-of-scope, because it is bound to the callback
-    // which is in turn referenced in the task environment. Outside of this
-    // scope, there is no way to cancel this fetcher.
-    std::unique_ptr<ProtoFetcher<CreatePermissionRequestResponse>> fetcher =
-        CreatePermissionRequestFetcher(
-            *identity_test_env_.identity_manager(),
-            test_url_loader_factory_.GetSafeWeakWrapper(),
-            // Payload does not matter, not validated on client side.
-            PermissionRequest());
-
-    base::OnceCallback<CallbackType> callback =
-        base::BindOnce(&DeferredFetcherTest::Done, base::Unretained(this));
-
-    // Self-bind pattern. An std::unique_ptr<*Fetcher> will be passed on the
-    // stack until the actual callback is executed.
-    auto* fetcher_ptr = fetcher.get();
-    fetcher_ptr->Start(
-        base::BindOnce(&OnResponse, std::move(fetcher), std::move(callback)));
-
-    // Reference to the fetcher is already lost (last chance in fetcher_ptr
-    // which will soon go out-of-scope without destroying the fetcher).
-    ASSERT_TRUE(!fetcher);
-  }
-
-  // Callbacks are pending on blocked network traffic.
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1L);
-
-  // Unblock the network traffic.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
-      CreatePermissionRequestResponse().SerializeAsString());
-}
-
 }  // namespace
 }  // namespace supervised_user

@@ -12,37 +12,15 @@ namespace user_annotations {
 
 namespace {
 
-TEST(UserAnnotationsFeaturesTest, ShouldAddFormSubmissionForURL) {
-  // Feature enabled with host not in allowlist
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kUserAnnotations,
-        {{"allowed_hosts_for_form_submissions", "example.com,otherhost.com"}});
-    EXPECT_FALSE(
-        ShouldAddFormSubmissionForURL(GURL("https://notinlist.com/whatever")));
-  }
+using ::testing::UnorderedElementsAre;
 
-  // Feature enabled with host explicitly in allowlist
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kUserAnnotations,
-        {{"allowed_hosts_for_form_submissions", "example.com,otherhost.com"}});
-    EXPECT_TRUE(
-        ShouldAddFormSubmissionForURL(GURL("https://example.com/whatever")));
-  }
-
-  // Feature enabled with wildcard param.
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kUserAnnotations, {{"allowed_hosts_for_form_submissions", "*"}});
-    EXPECT_TRUE(ShouldAddFormSubmissionForURL(GURL("https://example.com")));
-  }
-
-  // Feature enablement not specified - param not specified.
-  { EXPECT_TRUE(ShouldAddFormSubmissionForURL(GURL("https://example.com"))); }
+TEST(UserAnnotationsFeaturesTest, GetAllowedHostsForFormsAnnotations) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kUserAnnotations,
+      {{"allowed_hosts_for_form_submissions", "example.com,otherhost.com"}});
+  EXPECT_THAT(GetAllowedHostsForFormsAnnotations(),
+              UnorderedElementsAre("example.com", "otherhost.com"));
 }
 
 }  // namespace

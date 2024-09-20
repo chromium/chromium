@@ -139,7 +139,6 @@ public class ChromeCachedFlags {
                         TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG,
                         TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND,
-                        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER,
                         TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON,
                         TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_SEE_MORE,

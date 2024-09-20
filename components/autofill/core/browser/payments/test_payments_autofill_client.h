@@ -153,6 +153,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     return offer_to_save_iban_bubble_was_shown_;
   }
 
+  bool risk_data_loaded() const { return risk_data_loaded_; }
+
   bool ConfirmUploadIbanToCloudWasCalled() const {
     return confirm_upload_iban_to_cloud_called_ &&
            !legal_message_lines_.empty();
@@ -210,6 +212,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   // Populated if IBAN save was offered. True if bubble was shown, false
   // otherwise.
   bool offer_to_save_iban_bubble_was_shown_ = false;
+
+  // True if LoadRiskData() was called, false otherwise.
+  bool risk_data_loaded_ = false;
 
   LegalMessageLines legal_message_lines_;
 

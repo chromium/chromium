@@ -633,7 +633,12 @@ public class TileGroup implements MostVisitedSites.Observer {
 
                 if (mSuggestion == null) return false;
                 Tile tile = findTile(mSuggestion);
-                if (tile == null) return false;
+                // Avoid prerendering the tile if it is search related, since parameters are not
+                // handled for prerendering cases. This will cause problems for default search
+                // engines.
+                // TODO(crbug.com/40282403): Move the logic to `PrerenderManager` if the issue
+                // is fixed by the check.
+                if (tile == null || mTileRenderer.isSearchTile(tile)) return false;
                 maybePrerender(tile.getUrl());
             }
             if (event.getAction() == MotionEvent.ACTION_CANCEL) {

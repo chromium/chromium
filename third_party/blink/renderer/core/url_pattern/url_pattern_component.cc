@@ -203,8 +203,7 @@ Component* Component::Compile(v8::Isolate* isolate,
   if (!parse_result.ok()) {
     exception_state.ThrowTypeError(
         "Invalid " + TypeToString(type) + " pattern '" + final_pattern + "'. " +
-        String::FromUTF8(parse_result.status().message().data(),
-                         parse_result.status().message().size()));
+        String::FromUTF8(parse_result.status().message()));
     return nullptr;
   }
 
@@ -258,7 +257,7 @@ Component* Component::Compile(v8::Isolate* isolate,
     wtf_name_list.ReserveInitialCapacity(
         static_cast<wtf_size_t>(name_list.size()));
     for (const auto& name : name_list) {
-      wtf_name_list.push_back(String::FromUTF8(name.data(), name.size()));
+      wtf_name_list.push_back(String::FromUTF8(name));
     }
   }
 
@@ -354,12 +353,10 @@ bool Component::Match(StringView input,
         if (pair.second->empty()) {
           value = g_empty_string;
         } else {
-          value = String::FromUTF8(pair.second->data(), pair.second->length());
+          value = String::FromUTF8(*pair.second);
         }
       }
-      group_list->emplace_back(
-          String::FromUTF8(pair.first.data(), pair.first.length()),
-          std::move(value));
+      group_list->emplace_back(String::FromUTF8(pair.first), std::move(value));
     }
   }
   return result;

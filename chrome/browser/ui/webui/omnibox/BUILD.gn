@@ -5,6 +5,6 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [ "omnibox.mojom" ]
+  sources = [ "omnibox_internals.mojom" ]
   webui_module_path = "/chrome/browser/ui/webui/omnibox"
 }

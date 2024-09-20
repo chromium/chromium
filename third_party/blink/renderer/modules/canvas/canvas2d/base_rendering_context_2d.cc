@@ -973,9 +973,13 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
         window ? window->document()->GetTextLinkColors()
                : kDefaultTextLinkColors;
     // TODO(40946458): Don't use default length resolver here!
-    const StyleColor style_color = ResolveColorValue(
-        CSSToLengthConversionData(), *color_mix_value, text_link_colors,
-        color_scheme_, GetColorProvider(), IsInWebAppScope());
+    const ResolveColorValueContext context{
+        .length_resolver = CSSToLengthConversionData(),
+        .text_link_colors = text_link_colors,
+        .used_color_scheme = color_scheme_,
+        .color_provider = GetColorProvider(),
+        .is_in_web_app_scope = IsInWebAppScope()};
+    const StyleColor style_color = ResolveColorValue(*color_mix_value, context);
     color = style_color.Resolve(GetCurrentColor(), color_scheme_);
     return ColorParseResult::kColor;
   }
@@ -2336,6 +2340,22 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
       image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
                                : CanvasRenderingContext2DState::kNonOpaqueImage,
       CanvasPerformanceMonitor::DrawType::kImage);
+}
+
+// TODO(b/349835587): This is just a stub for now.
+void BaseRenderingContext2D::placeElement(Element* element,
+                                          double x,
+                                          double y,
+                                          ExceptionState& exception_state) {
+  HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
+  if (!element->IsDescendantOf(canvas)) {
+    exception_state.ThrowTypeError(
+        "Only elements that are part of the canvas fallback content subtree "
+        "(i.e. children of the <canvas> element) can be used with "
+        "placeElement().");
+  }
+
+  canvas->SetHasPlacedElements();
 }
 
 bool BaseRenderingContext2D::RectContainsTransformedRect(

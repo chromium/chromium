@@ -44,6 +44,10 @@ class SchedulerTest : public base::test::WithFeatureOverride,
 
   Scheduler* scheduler() { return &scheduler_; }
 
+  const scoped_refptr<base::SingleThreadTaskRunner>& task_runner() {
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
+  }
+
   bool graph_validation_enabled() const {
     return sync_point_manager_.graph_validation_enabled();
   }
@@ -51,7 +55,7 @@ class SchedulerTest : public base::test::WithFeatureOverride,
   void RunAllPendingTasks() {
     base::RunLoop run_loop;
     SequenceId sequence_id =
-        scheduler()->CreateSequenceForTesting(SchedulingPriority::kLow);
+        scheduler()->CreateSequence(SchedulingPriority::kLow, task_runner());
     scheduler()->ScheduleTask(Scheduler::Task(
         sequence_id, run_loop.QuitClosure(), std::vector<SyncToken>()));
     run_loop.Run();
@@ -67,7 +71,7 @@ class SchedulerTest : public base::test::WithFeatureOverride,
 
 TEST_P(SchedulerTest, ScheduledTasksRunInOrder) {
   SequenceId sequence_id =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
+      scheduler()->CreateSequence(SchedulingPriority::kNormal, task_runner());
 
   int count = 0;
   int ran1 = 0;
@@ -93,7 +97,7 @@ TEST_P(SchedulerTest, ScheduledTasksRunInOrder) {
 
 TEST_P(SchedulerTest, ScheduledTasksRunAfterReporting) {
   SequenceId sequence_id =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
+      scheduler()->CreateSequence(SchedulingPriority::kNormal, task_runner());
 
   bool ran = false;
   bool reported = false;
@@ -120,7 +124,7 @@ TEST_P(SchedulerTest, ScheduledTasksRunAfterReporting) {
 
 TEST_P(SchedulerTest, ContinuedTasksRunFirst) {
   SequenceId sequence_id =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
+      scheduler()->CreateSequence(SchedulingPriority::kNormal, task_runner());
 
   int count = 0;
   int ran1 = 0;
@@ -161,11 +165,10 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
 
  protected:
   void CreateSequence(int sequence_key, SchedulingPriority priority) {
-    SequenceId sequence_id = scheduler()->CreateSequenceForTesting(priority);
     CommandBufferId command_buffer_id =
         CommandBufferId::FromUnsafeValue(sequence_key);
-    scheduler()->CreateSyncPointClientState(sequence_id, kNamespaceId,
-                                            command_buffer_id);
+    SequenceId sequence_id = scheduler()->CreateSequence(
+        priority, task_runner(), kNamespaceId, command_buffer_id);
 
     sequence_info_.emplace(sequence_key,
                            SequenceInfo(sequence_id, command_buffer_id));
@@ -559,12 +562,11 @@ TEST_P(SchedulerTaskRunOrderTest, WaitOnSelfShouldNotBlockSequence) {
 }
 
 TEST_P(SchedulerTest, ShouldNotYieldWhenNoTasksToRun) {
-  SequenceId sequence_id1 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
   CommandBufferNamespace namespace_id = CommandBufferNamespace::GPU_IO;
   CommandBufferId command_buffer_id = CommandBufferId::FromUnsafeValue(1);
-  scheduler()->CreateSyncPointClientState(sequence_id1, namespace_id,
-                                          command_buffer_id);
+  SequenceId sequence_id1 =
+      scheduler()->CreateSequence(SchedulingPriority::kNormal, task_runner(),
+                                  namespace_id, command_buffer_id);
 
   SyncToken sync_token(namespace_id, command_buffer_id, 1);
 
@@ -577,7 +579,7 @@ TEST_P(SchedulerTest, ShouldNotYieldWhenNoTasksToRun) {
   // ShouldYield should return false because the sequence below isn't runnable
   // until the above task completes.
   SequenceId sequence_id2 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
+      scheduler()->CreateSequence(SchedulingPriority::kNormal, task_runner());
   scheduler()->ScheduleTask(
       Scheduler::Task(sequence_id2, GetClosure([] {}), {sync_token}));
   RunAllPendingTasks();
@@ -587,12 +589,10 @@ TEST_P(SchedulerTest, ShouldNotYieldWhenNoTasksToRun) {
 }
 
 TEST_P(SchedulerTest, ReleaseSequenceShouldYield) {
-  SequenceId sequence_id1 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kLow);
   CommandBufferNamespace namespace_id = CommandBufferNamespace::GPU_IO;
   CommandBufferId command_buffer_id = CommandBufferId::FromUnsafeValue(1);
-  scheduler()->CreateSyncPointClientState(sequence_id1, namespace_id,
-                                          command_buffer_id);
+  SequenceId sequence_id1 = scheduler()->CreateSequence(
+      SchedulingPriority::kLow, task_runner(), namespace_id, command_buffer_id);
 
   SyncToken sync_token(namespace_id, command_buffer_id, 1);
   int count = 0;
@@ -610,7 +610,7 @@ TEST_P(SchedulerTest, ReleaseSequenceShouldYield) {
 
   int ran2 = 0;
   SequenceId sequence_id2 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kHigh);
+      scheduler()->CreateSequence(SchedulingPriority::kHigh, task_runner());
   scheduler()->ScheduleTask(Scheduler::Task(
       sequence_id2, GetClosure([&] { ran2 = ++count; }), {sync_token}));
 
@@ -628,18 +628,16 @@ TEST_P(SchedulerTest, ReleaseSequenceShouldYield) {
 // the sequence's first order number, because the sequence is currently running,
 // and called ShouldYield before release the WaitFence.
 TEST_P(SchedulerTest, ShouldYieldIsValidWhenSequenceReleaseIsPending) {
-  SequenceId sequence_id1 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kHigh);
   CommandBufferNamespace namespace_id = CommandBufferNamespace::GPU_IO;
   CommandBufferId command_buffer_id1 = CommandBufferId::FromUnsafeValue(1);
-  scheduler()->CreateSyncPointClientState(sequence_id1, namespace_id,
-                                          command_buffer_id1);
+  SequenceId sequence_id1 =
+      scheduler()->CreateSequence(SchedulingPriority::kHigh, task_runner(),
+                                  namespace_id, command_buffer_id1);
 
-  SequenceId sequence_id2 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
   CommandBufferId command_buffer_id2 = CommandBufferId::FromUnsafeValue(2);
-  scheduler()->CreateSyncPointClientState(sequence_id2, namespace_id,
-                                          command_buffer_id2);
+  SequenceId sequence_id2 =
+      scheduler()->CreateSequence(SchedulingPriority::kNormal, task_runner(),
+                                  namespace_id, command_buffer_id2);
 
   SyncToken sync_token1(namespace_id, command_buffer_id1, 1);
   SyncToken sync_token2(namespace_id, command_buffer_id2, 2);
@@ -666,7 +664,7 @@ TEST_P(SchedulerTest, ShouldYieldIsValidWhenSequenceReleaseIsPending) {
 
 TEST_P(SchedulerTest, ReentrantEnableSequenceShouldNotDeadlock) {
   SequenceId sequence_id1 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kHigh);
+      scheduler()->CreateSequence(SchedulingPriority::kHigh, task_runner());
   CommandBufferNamespace namespace_id = CommandBufferNamespace::GPU_IO;
   CommandBufferId command_buffer_id1 = CommandBufferId::FromUnsafeValue(1);
   scoped_refptr<SyncPointClientState> release_state1 =
@@ -674,11 +672,10 @@ TEST_P(SchedulerTest, ReentrantEnableSequenceShouldNotDeadlock) {
           namespace_id, command_buffer_id1, sequence_id1);
 
   SequenceId sequence_id2 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
+      scheduler()->CreateSequence(SchedulingPriority::kNormal, task_runner());
   CommandBufferId command_buffer_id2 = CommandBufferId::FromUnsafeValue(2);
-  scoped_refptr<SyncPointClientState> release_state2 =
-      sync_point_manager()->CreateSyncPointClientState(
-          namespace_id, command_buffer_id2, sequence_id2);
+  auto scoped_release_state2 = scheduler()->CreateSyncPointClientState(
+      sequence_id2, namespace_id, command_buffer_id2);
 
   uint64_t release = 1;
   SyncToken sync_token(namespace_id, command_buffer_id2, release);
@@ -713,7 +710,7 @@ TEST_P(SchedulerTest, ReentrantEnableSequenceShouldNotDeadlock) {
   EXPECT_FALSE(sync_point_manager()->IsSyncTokenReleased(sync_token));
 
   release_state1->Destroy();
-  release_state2->Destroy();
+  scoped_release_state2.Reset();
 
   scheduler()->DestroySequence(sequence_id1);
   scheduler()->DestroySequence(sequence_id2);
@@ -721,11 +718,11 @@ TEST_P(SchedulerTest, ReentrantEnableSequenceShouldNotDeadlock) {
 
 TEST_P(SchedulerTest, CanSetSequencePriority) {
   SequenceId sequence_id1 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
+      scheduler()->CreateSequence(SchedulingPriority::kNormal, task_runner());
   SequenceId sequence_id2 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kLow);
+      scheduler()->CreateSequence(SchedulingPriority::kLow, task_runner());
   SequenceId sequence_id3 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kHigh);
+      scheduler()->CreateSequence(SchedulingPriority::kHigh, task_runner());
 
   int count = 0;
   int ran1 = 0, ran2 = 0, ran3 = 0;
@@ -777,11 +774,11 @@ TEST_P(SchedulerTest, CanSetSequencePriority) {
 
 TEST_P(SchedulerTest, StreamPriorities) {
   SequenceId seq_id1 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kLow);
+      scheduler()->CreateSequence(SchedulingPriority::kLow, task_runner());
   SequenceId seq_id2 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
+      scheduler()->CreateSequence(SchedulingPriority::kNormal, task_runner());
   SequenceId seq_id3 =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kHigh);
+      scheduler()->CreateSequence(SchedulingPriority::kHigh, task_runner());
 
   CommandBufferNamespace namespace_id = CommandBufferNamespace::GPU_IO;
   CommandBufferId command_buffer_id1 = CommandBufferId::FromUnsafeValue(1);

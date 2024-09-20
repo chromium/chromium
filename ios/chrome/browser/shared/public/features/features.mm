@@ -56,6 +56,12 @@ BASE_FEATURE(kOmahaServiceRefactor,
 const char kSafetyCheckNotificationsExperimentType[] =
     "SafetyCheckNotificationsExperimentType";
 
+const char kSafetyCheckNotificationsImpressionTrigger[] =
+    "SafetyCheckNotificationsImpressionTrigger";
+
+const char kSafetyCheckNotificationsImpressionLimit[] =
+    "SafetyCheckNotificationsImpressionLimit";
+
 const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
     "SafetyCheckMagicStackAutorunHoursThreshold";
 
@@ -290,10 +296,6 @@ BASE_FEATURE(kNotificationSettingsMenuItem,
              "NotificationSettingsMenuItem",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewNTPOmniboxLayout,
-             "kNewNTPOmniboxLayout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kBottomOmniboxDefaultSettingParam[] =
     "BottomOmniboxDefaultSettingParam";
 const char kBottomOmniboxDefaultSettingParamTop[] = "Top";
@@ -336,6 +338,22 @@ SafetyCheckNotificationsExperimentTypeEnabled() {
           kSafetyCheckNotifications, kSafetyCheckNotificationsExperimentType,
           /*default_value=*/
           (int)SafetyCheckNotificationsExperimentalArm::kVerbose));
+}
+
+SafetyCheckNotificationsImpressionTrigger
+SafetyCheckNotificationsImpressionTriggerEnabled() {
+  return static_cast<SafetyCheckNotificationsImpressionTrigger>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kSafetyCheckNotifications, kSafetyCheckNotificationsImpressionTrigger,
+          /*default_value=*/
+          (int)SafetyCheckNotificationsImpressionTrigger::kAlways));
+}
+
+int SafetyCheckNotificationsImpressionLimit() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kSafetyCheckNotifications, kSafetyCheckNotificationsImpressionLimit,
+      /*default_value=*/
+      3);
 }
 
 BASE_FEATURE(kIOSChooseFromDrive,
@@ -412,10 +430,6 @@ BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGroupsInGrid,
-             "TabGroupsInGrid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabGroupsIPad,
              "TabGroupsIPad",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -425,7 +439,7 @@ bool IsTabGroupInGridEnabled() {
     return base::FeatureList::IsEnabled(kTabGroupsIPad) &&
            base::FeatureList::IsEnabled(kModernTabStrip);
   }
-  return base::FeatureList::IsEnabled(kTabGroupsInGrid);
+  return true;
 }
 
 BASE_FEATURE(kTabGroupSync, "TabGroupSync", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -451,6 +465,14 @@ BASE_FEATURE(kTabGroupIndicator,
 bool IsTabGroupIndicatorEnabled() {
   return IsTabGroupInGridEnabled() &&
          base::FeatureList::IsEnabled(kTabGroupIndicator);
+}
+
+BASE_FEATURE(kNewSyncOptInIllustration,
+             "NewSyncOptInIllustration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNewSyncOptInIllustration() {
+  return base::FeatureList::IsEnabled(kNewSyncOptInIllustration);
 }
 
 BASE_FEATURE(kDisableLensCamera,
@@ -855,6 +877,9 @@ const char kIOSTipsNotificationsActiveSeekerTriggerTimeParam[] =
 const char kIOSTipsNotificationsLessEngagedTriggerTimeParam[] =
     "less_engaged_trigger_time";
 const char kIOSTipsNotificationsEnabledParam[] = "enabled";
+const char kIOSTipsNotificationsOrderParam[] = "tips_notifications_order";
+const char kIOSTipsNotificationsDismissLimitParam[] =
+    "tips_notifications_dismiss_limit";
 
 bool IsIOSTipsNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSTipsNotifications);
@@ -870,11 +895,11 @@ bool IsPinnedTabsEnabled() {
 
 BASE_FEATURE(kPrefetchSystemCapabilitiesOnFirstRun,
              "PrefetchSystemCapabilitiesOnFirstRun",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchSystemCapabilitiesOnAppStartup,
              "PrefetchSystemCapabilitiesOnAppStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPrefetchingSystemCapabilitiesOnFirstRun() {
   return base::FeatureList::IsEnabled(kPrefetchSystemCapabilitiesOnFirstRun);
@@ -996,3 +1021,11 @@ constexpr base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kEnableTraitCollectionRegistration,
              "EnableTraitCollectionRegistration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBlueDotOnToolsMenuButton,
+             "BlueDotOnToolsMenuButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsBlueDotOnToolsMenuButtoneEnabled() {
+  return base::FeatureList::IsEnabled(kBlueDotOnToolsMenuButton);
+}

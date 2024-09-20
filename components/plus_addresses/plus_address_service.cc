@@ -13,14 +13,16 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -34,6 +36,7 @@
 #include "components/plus_addresses/plus_address_preallocator.h"
 #include "components/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/plus_address_ui_utils.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
@@ -56,8 +59,7 @@ using autofill::AutofillSuggestionTriggerSource;
 using autofill::FormFieldData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
-using PasswordFormClassification =
-    autofill::AutofillClient::PasswordFormClassification;
+using PasswordFormClassification = autofill::PasswordFormClassification;
 
 // Get the ETLD+1 of `origin`, which means any subdomain is treated
 // equivalently. See `GetDomainAndRegistry` for concrete examples.
@@ -307,11 +309,6 @@ Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
   return PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion();
 }
 
-bool PlusAddressService::ShouldMixWithSingleFieldFormFillSuggestions() const {
-  return base::FeatureList::IsEnabled(
-      features::kPlusAddressAndSingleFieldFormFill);
-}
-
 void PlusAddressService::OnGetAffiliatedPlusProfiles(
     url::Origin origin,
     const PasswordFormClassification& focused_form_classification,
@@ -323,9 +320,9 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
   const bool is_creation_enabled =
       IsPlusAddressCreationEnabled(origin, is_off_the_record);
   std::vector<Suggestion> suggestions =
-      PlusAddressSuggestionGenerator(&setting_service_.get(),
-                                     plus_address_allocator_.get(),
-                                     std::move(origin))
+      PlusAddressSuggestionGenerator(
+          &setting_service_.get(), plus_address_allocator_.get(),
+          std::move(origin), GetPrimaryEmail().value_or(""))
           .GetSuggestions(is_creation_enabled, focused_form_classification,
                           focused_field, trigger_source,
                           std::move(affiliated_profiles));
@@ -348,6 +345,11 @@ void PlusAddressService::ReservePlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
+    // TODO(crbug.com/366206137): Differentiate better between reasons why the
+    // service is not enabled.
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kUserSignedOut)));
     return;
   }
   plus_address_allocator_->AllocatePlusAddress(
@@ -360,6 +362,11 @@ void PlusAddressService::RefreshPlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
+    // TODO(crbug.com/366206137): Differentiate better between reasons why the
+    // service is not enabled.
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kUserSignedOut)));
     return;
   }
   plus_address_allocator_->AllocatePlusAddress(
@@ -377,6 +384,11 @@ void PlusAddressService::ConfirmPlusAddress(
     const PlusAddress& plus_address,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
+    // TODO(crbug.com/366206137): Differentiate better between reasons why the
+    // service is not enabled.
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kUserSignedOut)));
     return;
   }
   // Check the local mapping before attempting to confirm plus_address.
@@ -563,7 +575,7 @@ void PlusAddressService::OnPlusAddressSuggestionShown(
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,
     SuggestionContext suggestion_context,
-    autofill::AutofillClient::PasswordFormClassification::Type form_type,
+    autofill::PasswordFormClassification::Type form_type,
     autofill::SuggestionType suggestion_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   submission_logger_.OnPlusAddressSuggestionShown(
@@ -578,11 +590,13 @@ void PlusAddressService::OnClickedRefreshInlineSuggestion(
     base::OnceCallback<void(std::vector<autofill::Suggestion>,
                             AutofillSuggestionTriggerSource)>
         update_suggestions_callback) {
+  RecordAutofillSuggestionEvent(
+      SuggestionEvent::kRefreshPlusAddressInlineClicked);
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
-  PlusAddressSuggestionGenerator(&setting_service_.get(),
-                                 plus_address_allocator_.get(),
-                                 last_committed_primary_main_frame_origin)
+  PlusAddressSuggestionGenerator(
+      &setting_service_.get(), plus_address_allocator_.get(),
+      last_committed_primary_main_frame_origin, GetPrimaryEmail().value_or(""))
       .RefreshPlusAddressForSuggestion(
           updated_suggestions[current_suggestion_index]);
   std::move(update_suggestions_callback)
@@ -599,21 +613,30 @@ void PlusAddressService::OnShowedInlineSuggestion(
                               SuggestionType::kCreateNewPlusAddressInline,
                               &Suggestion::type);
   CHECK(it != current_suggestions.end());
-
-  // TODO(crbug.com/362445807): Consider adding metrics.
-
   if (it->GetPayload<Suggestion::PlusAddressPayload>().address.has_value()) {
+    // Only record if this is not in a loading state - otherwise it represents
+    // a state in which we are waiting for a response from a create call.
+    if (!it->is_loading) {
+      RecordAutofillSuggestionEvent(
+          SuggestionEvent::kCreateNewPlusAddressInlineSuggested);
+    }
+
     // The suggestion already has a plus address - there is nothing to do.
     return;
   }
 
+  RecordAutofillSuggestionEvent(
+      SuggestionEvent::kCreateNewPlusAddressInlineReserveLoadingStateShown);
   PlusAddressRequestCallback callback = base::BindOnce(
       [](std::vector<Suggestion> suggestions, size_t suggestion_index,
          UpdateSuggestionsCallback update_callback,
          const PlusProfileOrError& profile_or_error) {
         if (!profile_or_error.has_value()) {
           suggestions[suggestion_index] =
-              PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion();
+              PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
+                  profile_or_error.error());
+          metrics::RecordAutofillSuggestionEvent(
+              SuggestionEvent::kErrorDuringReserve);
           std::move(update_callback)
               .Run(std::move(suggestions),
                    AutofillSuggestionTriggerSource::
@@ -631,6 +654,83 @@ void PlusAddressService::OnShowedInlineSuggestion(
                               current_suggestions.end()),
       it - current_suggestions.begin(), std::move(update_suggestions_callback));
   RefreshPlusAddress(primary_main_frame_origin, std::move(callback));
+}
+
+void PlusAddressService::OnAcceptedInlineSuggestion(
+    const url::Origin& primary_main_frame_origin,
+    base::span<const Suggestion> current_suggestions,
+    size_t current_suggestion_index,
+    UpdateSuggestionsCallback update_suggestions_callback,
+    HideSuggestionsCallback hide_suggestions_callback,
+    PlusAddressCallback fill_field_callback,
+    ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
+    ShowErrorDialogCallback show_error_dialog,
+    base::OnceClosure reshow_suggestions) {
+  RecordAutofillSuggestionEvent(
+      SuggestionEvent::kCreateNewPlusAddressInlineChosen);
+  const std::u16string suggested_address =
+      current_suggestions[current_suggestion_index]
+          .GetPayload<Suggestion::PlusAddressPayload>()
+          .address.value();
+  PlusAddress requested_plus_address(base::UTF16ToUTF8(suggested_address));
+
+  // First, update the suggestions to show a loading state.
+  std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
+                                              current_suggestions.end());
+  updated_suggestions[current_suggestion_index].is_loading =
+      Suggestion::IsLoading(true);
+  std::move(update_suggestions_callback)
+      .Run(
+          std::move(updated_suggestions),
+          AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+
+  ConfirmPlusAddress(
+      primary_main_frame_origin, std::move(requested_plus_address),
+      base::BindOnce(
+          &PlusAddressService::OnConfirmInlineCreation, base::Unretained(this),
+          std::move(hide_suggestions_callback), std::move(fill_field_callback),
+          std::move(show_affiliation_error_dialog),
+          std::move(show_error_dialog), std::move(reshow_suggestions),
+          requested_plus_address));
+}
+
+void PlusAddressService::OnConfirmInlineCreation(
+    HideSuggestionsCallback hide_callback,
+    PlusAddressCallback fill_callback,
+    ShowAffiliationErrorDialogCallback show_affiliation_error,
+    ShowErrorDialogCallback show_error,
+    base::OnceClosure reshow_suggestions,
+    const PlusAddress& requested_address,
+    const PlusProfileOrError& profile_or_error) {
+  // Always hide the popup.
+  std::move(hide_callback)
+      .Run(autofill::SuggestionHidingReason::kAcceptSuggestion);
+
+  if (profile_or_error.has_value()) {
+    // The returned address was not the requested one. This means that there
+    // must already exist an address for an affiliated domain.
+    if (requested_address != profile_or_error->plus_address) {
+      std::move(show_affiliation_error)
+          .Run(GetOriginForDisplay(*profile_or_error),
+               base::UTF8ToUTF16(profile_or_error->plus_address.value()));
+      return;
+    }
+    std::move(fill_callback).Run(profile_or_error->plus_address.value());
+    return;
+  }
+
+  if (profile_or_error.error().IsQuotaError()) {
+    std::move(show_error)
+        .Run(PlusAddressErrorDialogType::kQuotaExhausted,
+             /*on_accepted=*/base::DoNothing());
+    return;
+  }
+  std::move(show_error)
+      .Run(profile_or_error.error().IsTimeoutError()
+               ? PlusAddressErrorDialogType::kTimeout
+               : PlusAddressErrorDialogType::kGenericError,
+           /*on_accepted=*/std::move(reshow_suggestions));
+  return;
 }
 
 }  // namespace plus_addresses

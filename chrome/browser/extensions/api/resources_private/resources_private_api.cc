@@ -9,9 +9,9 @@
 
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/extensions/api/resources_private.h"
 #include "chrome/grit/generated_resources.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -94,7 +94,8 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
       NOTREACHED_IN_MIGRATION();
   }
 
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &dict);
 
   return RespondNow(WithArguments(std::move(dict)));

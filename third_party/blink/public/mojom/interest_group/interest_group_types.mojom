@@ -189,6 +189,48 @@ struct InterestGroup {
   url.mojom.Origin? aggregation_coordinator_origin;
 };
 
+struct PreviousWin {
+  // Approximate time a particular group won an auction.
+  //
+  // TODO(mmenke): Provide this as an integer time since an auction was won, in
+  // seconds, to reduce time resolution of cross-site information provided to an
+  // untrusted service.
+  //
+  // TODO(crbug.com/40765411): Decide what to do when wins are
+  // "in the future" due to clock changes.
+  mojo_base.mojom.Time time;
+
+  // A JSON serialized object corresponding to the ad that won the auction.
+  // This field is kept serialized to avoid deserializing unless we actually
+  // need the data inside. The internal message has the following structure:
+  // struct AdJSON {
+  //   string renderURL;
+  //   string adRenderId;
+  //   string metadata;  // JSON encoded metadata object
+  // };
+  string ad_json;
+};
+
+// Browser signals passed to the BidderWorklet's generateBid() method that are
+// stored on disk and updated by the browser, as opposed to coming from the
+// frame running the auction, or from the definition of the InterestGroup taking
+// part in an auction.
+struct BiddingBrowserSignals {
+  // How many times this interest group has been joined in the period history
+  // is maintained.
+  int32 join_count;
+
+  // How many times this interest group has made bids in auctions.
+  int32 bid_count;
+
+  // Previous times the group won auctions.
+  array<PreviousWin> prev_wins;
+
+  // Whether the browser is under lockout or the buyer's origin is under
+  // cooldown for sending forDebuggingOnly reports.
+  bool for_debugging_only_in_cooldown_or_lockout;
+};
+
 // Packages the details necessary for the browser process to retrieve a
 // DirectFromSellerSignals resource of a subresource bundle -- the actual
 // subresource URL is constructed by the browser process from the

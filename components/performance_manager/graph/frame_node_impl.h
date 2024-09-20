@@ -25,6 +25,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -140,7 +142,10 @@ class FrameNodeImpl
   void SetIsAudible(bool is_audible);
   void SetIsCapturingMediaStream(bool is_capturing_media_stream);
   void SetViewportIntersectionState(
-      ViewportIntersectionState viewport_intersection_state);
+      const blink::mojom::ViewportIntersectionState&
+          viewport_intersection_state);
+  void SetViewportIntersectionState(
+      blink::mojom::FrameVisibility frame_visibility);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
   void SetResidentSetKbEstimate(uint64_t rss_estimate);
@@ -180,6 +185,11 @@ class FrameNodeImpl
                        PageNodeImpl* page_node);
   void RemoveEmbeddedPage(base::PassKey<PageNodeImpl> key,
                           PageNodeImpl* page_node);
+
+  void SetViewportIntersectionStateForTesting(
+      ViewportIntersectionState viewport_intersection_state) {
+    SetViewportIntersectionStateImpl(viewport_intersection_state);
+  }
 
  private:
   friend class FrameNodeImplDescriber;
@@ -270,6 +280,8 @@ class FrameNodeImpl
   // Sets the `is_current_` property. Returns true if its value changed as a
   // result of this call.
   bool SetIsCurrent(bool is_current);
+  void SetViewportIntersectionStateImpl(
+      ViewportIntersectionState viewport_intersection_state);
 
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
@@ -392,6 +404,12 @@ class FrameNodeImpl
       Visibility,
       &FrameNodeObserver::OnFrameVisibilityChanged>
       visibility_{Visibility::kUnknown};
+
+  // Indicates that SetViewportIntersectionState() was called with a
+  // blink::mojom::ViewportIntersectionState instance. This is only called for
+  // remote frames and take precedence over frame visibility updates. When true,
+  // frame visibility updates are ignored.
+  bool has_viewport_intersection_updates_ = false;
 
   base::WeakPtr<FrameNodeImpl> weak_this_;
   base::WeakPtrFactory<FrameNodeImpl> weak_factory_

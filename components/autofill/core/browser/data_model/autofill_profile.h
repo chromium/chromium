@@ -114,7 +114,8 @@ class AutofillProfile : public AutofillDataModel {
   void GetMatchingTypesWithProfileSources(
       const std::u16string& text,
       const std::string& app_locale,
-      FieldTypeSet* matching_types) const override;
+      FieldTypeSet* matching_types,
+      PossibleProfileValueSources* profile_value_sources) const override;
 
   std::u16string GetRawInfo(FieldType type) const override;
 

@@ -107,8 +107,9 @@ static_assert(std::size(kNormalSuffix) == UniquePosition::kSuffixLength,
                                     const char* n_expr,
                                     const UniquePosition& m,
                                     const UniquePosition& n) {
-  if (m.LessThan(n))
+  if (m.LessThan(n)) {
     return ::testing::AssertionSuccess();
+  }
 
   return ::testing::AssertionFailure()
          << m_expr << " is not less than " << n_expr << " ("
@@ -119,8 +120,9 @@ static_assert(std::size(kNormalSuffix) == UniquePosition::kSuffixLength,
                                   const char* n_expr,
                                   const UniquePosition& m,
                                   const UniquePosition& n) {
-  if (m.Equals(n))
+  if (m.Equals(n)) {
     return ::testing::AssertionSuccess();
+  }
 
   return ::testing::AssertionFailure()
          << m_expr << " is not equal to " << n_expr << " (" << m.ToDebugString()
@@ -249,15 +251,17 @@ TEST_P(PositionInsertTest, InsertBetween) {
   for (size_t i = 0; i < kSortedPositionArray.size(); ++i) {
     const UniquePosition& predecessor = kSortedPositionArray[i];
     // Verify our suffixes are unique before we continue.
-    if (IsSuffixInUse(predecessor, suffix))
+    if (IsSuffixInUse(predecessor, suffix)) {
       continue;
+    }
 
     for (size_t j = i + 1; j < kSortedPositionArray.size(); ++j) {
       const UniquePosition& successor = kSortedPositionArray[j];
 
       // Another guard against non-unique suffixes.
-      if (IsSuffixInUse(successor, suffix))
+      if (IsSuffixInUse(successor, suffix)) {
         continue;
+      }
 
       UniquePosition midpoint =
           UniquePosition::Between(predecessor, successor, suffix);
@@ -273,8 +277,9 @@ TEST_P(PositionInsertTest, InsertBefore) {
   for (size_t i = 0; i < kSortedPositionArray.size(); ++i) {
     const UniquePosition& successor = kSortedPositionArray[i];
     // Verify our suffixes are unique before we continue.
-    if (IsSuffixInUse(successor, suffix))
+    if (IsSuffixInUse(successor, suffix)) {
       continue;
+    }
 
     UniquePosition before = UniquePosition::Before(successor, suffix);
 
@@ -287,8 +292,9 @@ TEST_P(PositionInsertTest, InsertAfter) {
   for (size_t i = 0; i < kSortedPositionArray.size(); ++i) {
     const UniquePosition& predecessor = kSortedPositionArray[i];
     // Verify our suffixes are unique before we continue.
-    if (IsSuffixInUse(predecessor, suffix))
+    if (IsSuffixInUse(predecessor, suffix)) {
       continue;
+    }
 
     UniquePosition after = UniquePosition::After(predecessor, suffix);
 

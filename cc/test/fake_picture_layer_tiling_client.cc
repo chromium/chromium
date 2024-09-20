@@ -116,6 +116,4 @@ FakePictureLayerTilingClient::global_tile_state() const {
   return global_tile_state_;
 }
 
-void FakePictureLayerTilingClient::OnAllTilesDoneCleared() {}
-
 }  // namespace cc

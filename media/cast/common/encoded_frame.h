@@ -13,7 +13,7 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/common/frame_id.h"
 #include "media/cast/common/rtp_time.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
 namespace media {
 namespace cast {

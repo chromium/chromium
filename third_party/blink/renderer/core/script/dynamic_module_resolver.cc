@@ -222,8 +222,8 @@ void DynamicModuleResolver::ResolveDynamically(
 
   // <spec label="fetch-an-import()-module-script-graph" step="1">Let url be the
   // result of resolving a module specifier given base URL and specifier.</spec>
-  KURL url =
-      modulator_->ResolveModuleSpecifier(module_request.specifier, base_url);
+  KURL url = modulator_->ResolveModuleSpecifier(
+      module_request.specifier, base_url, /*failure_reason=*/nullptr);
 
   ModuleType module_type = modulator_->ModuleTypeFromRequest(module_request);
 

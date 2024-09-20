@@ -50,7 +50,7 @@ std::unique_ptr<KeyedService> PageImageServiceFactory::BuildServiceInstanceFor(
   TemplateURLService* template_url_service =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
   RemoteSuggestionsService* remote_suggestions_service =
-      RemoteSuggestionsServiceFactory::GetForBrowserState(browser_state, true);
+      RemoteSuggestionsServiceFactory::GetForProfile(browser_state, true);
   OptimizationGuideService* optimization_guide_service =
       OptimizationGuideServiceFactory::GetForProfile(browser_state);
   syncer::SyncService* sync_service =

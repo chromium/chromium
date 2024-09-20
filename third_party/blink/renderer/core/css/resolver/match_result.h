@@ -44,16 +44,8 @@ struct CORE_EXPORT MatchedProperties {
   DISALLOW_NEW();
 
  public:
-  MatchedProperties();
-
-  void Trace(Visitor*) const;
-
-  Member<CSSPropertyValueSet> properties;
-
+  // NOTE: tree_order is filled by AddMatchedProperties().
   struct Data {
-    unsigned link_match_type : 2;
-    unsigned valid_property_filter : 4;
-    CascadeOrigin origin;
     // This is approximately equivalent to the 'shadow-including tree order'.
     // It can be used to evaluate the 'Shadow Tree' criteria. Note that the
     // number stored here is 'local' to each origin (user, author), and is
@@ -61,19 +53,36 @@ struct CORE_EXPORT MatchedProperties {
     // tree_orders from two different origins.
     //
     // https://drafts.csswg.org/css-scoping/#shadow-cascading
-    uint16_t tree_order;
-    // https://drafts.csswg.org/css-cascade-5/#layer-ordering
-    uint16_t layer_order;
-    bool is_inline_style;
+    uint16_t tree_order = 0;
+    uint8_t link_match_type : 2 = CSSSelector::kMatchAll;
+    uint8_t valid_property_filter : 4 =
+        static_cast<std::underlying_type_t<ValidPropertyFilter>>(
+            ValidPropertyFilter::kNoFilter);
+    uint8_t is_inline_style : 1 = false;
     // Try styles come from position-try-fallbacks.
     // https://drafts.csswg.org/css-anchor-position-1/#fallback
-    bool is_try_style;
+    uint8_t is_try_style : 1 = false;
+    CascadeOrigin origin = CascadeOrigin::kNone;
+    // https://drafts.csswg.org/css-cascade-5/#layer-ordering
+    uint16_t layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
     // Try-tactics style come from <try-tactic>.
     // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
-    bool is_try_tactics_style;
+    bool is_try_tactics_style = false;
+    // 15 free bits after this, but since the MPC hashes this as raw bytes,
+    // we cannot have undefined padding.
+    uint8_t padding = 0;
   };
-  Data types_;
+
+  MatchedProperties(CSSPropertyValueSet* properties_arg, const Data& data_arg)
+      : properties(properties_arg), data_(data_arg) {}
+
+  void Trace(Visitor*) const;
+
+  Member<CSSPropertyValueSet> properties;
+  Data data_;
 };
+static_assert(sizeof(MatchedProperties) <= 12,
+              "MatchedProperties should not grow without thinking");
 
 }  // namespace blink
 
@@ -83,18 +92,6 @@ namespace blink {
 
 using MatchedPropertiesVector = HeapVector<MatchedProperties, 64>;
 
-struct AddMatchedPropertiesOptions {
-  STACK_ALLOCATED();
-
- public:
-  unsigned link_match_type = CSSSelector::kMatchAll;
-  ValidPropertyFilter valid_property_filter = ValidPropertyFilter::kNoFilter;
-  unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
-  bool is_inline_style = false;
-  bool is_try_style = false;
-  bool is_try_tactics_style = false;
-};
-
 class CORE_EXPORT MatchResult {
   STACK_ALLOCATED();
 
@@ -103,10 +100,8 @@ class CORE_EXPORT MatchResult {
   MatchResult(const MatchResult&) = delete;
   MatchResult& operator=(const MatchResult&) = delete;
 
-  void AddMatchedProperties(
-      const CSSPropertyValueSet* properties,
-      CascadeOrigin origin,
-      const AddMatchedPropertiesOptions& = AddMatchedPropertiesOptions());
+  void AddMatchedProperties(const CSSPropertyValueSet* properties,
+                            const MatchedProperties::Data& types);
   bool HasMatchedProperties() const { return matched_properties_.size(); }
 
   void BeginAddingAuthorRulesForTreeScope(const TreeScope&);
@@ -245,7 +240,7 @@ class CORE_EXPORT MatchResult {
 
 inline bool operator==(const MatchedProperties& a, const MatchedProperties& b) {
   return a.properties == b.properties &&
-         a.types_.link_match_type == b.types_.link_match_type;
+         a.data_.link_match_type == b.data_.link_match_type;
 }
 
 inline bool operator!=(const MatchedProperties& a, const MatchedProperties& b) {

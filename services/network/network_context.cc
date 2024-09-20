@@ -45,8 +45,8 @@
 #include "build/chromeos_buildflags.h"
 #include "components/cookie_config/cookie_store_util.h"
 #include "components/domain_reliability/monitor.h"
-#include "components/ip_protection/common/ip_protection_config_cache_impl.h"
 #include "components/ip_protection/common/ip_protection_config_getter_mojo_impl.h"
+#include "components/ip_protection/common/ip_protection_core_impl.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -2537,26 +2537,21 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // disabled).
   auto* nspal = network_service_->masked_domain_list_manager();
   if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
-    auto ipp_config_cache =
-        std::make_unique<ip_protection::IpProtectionConfigCacheImpl>(
-            std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
-                std::move(params_->ip_protection_config_getter)));
+    auto ipp_core = std::make_unique<ip_protection::IpProtectionCoreImpl>(
+        std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
+            std::move(params_->ip_protection_config_getter)));
     std::unique_ptr<IpProtectionProxyDelegate> proxy_delegate =
         std::make_unique<IpProtectionProxyDelegate>(
-            nspal, std::move(ipp_config_cache), params_->enable_ip_protection);
+            nspal, std::move(ipp_core), params_->enable_ip_protection);
     proxy_delegate->SetReceiver(
         std::move(params_->ip_protection_proxy_delegate));
-    proxy_delegate_ = proxy_delegate.get();
     builder.set_proxy_delegate(std::move(proxy_delegate));
   } else if (params_->initial_custom_proxy_config ||
              params_->custom_proxy_config_client_receiver) {
-    std::unique_ptr<NetworkServiceProxyDelegate> proxy_delegate =
-        std::make_unique<NetworkServiceProxyDelegate>(
-            std::move(params_->initial_custom_proxy_config),
-            std::move(params_->custom_proxy_config_client_receiver),
-            std::move(params_->custom_proxy_connection_observer_remote));
-    proxy_delegate_ = proxy_delegate.get();
-    builder.set_proxy_delegate(std::move(proxy_delegate));
+    builder.set_proxy_delegate(std::make_unique<NetworkServiceProxyDelegate>(
+        std::move(params_->initial_custom_proxy_config),
+        std::move(params_->custom_proxy_config_client_receiver),
+        std::move(params_->custom_proxy_connection_observer_remote)));
   }
 
   net::NetLog* net_log = nullptr;

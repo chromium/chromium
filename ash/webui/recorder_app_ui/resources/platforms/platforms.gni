@@ -9,10 +9,12 @@
 platform_files = [
   "dev/error-view.ts",
   "dev/handler.ts",
+  "dev/metrics.ts",
   "dev/settings.ts",
   "dev/strings.ts",
   "index.ts",
   "swa/handler.ts",
+  "swa/metrics.ts",
   "swa/on_device_model.ts",
   "swa/soda_session.ts",
   "swa/types.ts",

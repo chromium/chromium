@@ -1068,15 +1068,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ],
     ),
     BanRule(
-        r'/\babsl::StrFormat\b',
-        (
-            'absl::StrFormat() is not allowed yet (https://crbug.com/1371963). ',
-            'Use base::StringPrintf() instead.',
-        ),
-        True,
-        [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
-    ),
-    BanRule(
         r'/\babsl::(StrSplit|StrJoin|StrCat|StrAppend|Substitute|StrContains)\b',
         ('Abseil string utilities are banned. Use base/strings instead.', ),
         True,
@@ -2216,7 +2207,6 @@ _LONG_PATH_ERROR = (
 )
 
 _JAVA_MULTIPLE_DEFINITION_EXCLUDED_PATHS = [
-    r".*/AppHooksImpl\.java",
     r".*/BuildHooksAndroidImpl\.java",
     r".*/LicenseContentProvider\.java",
     r".*/PlatformServiceBridgeImpl.java",
@@ -2294,6 +2284,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/prepare_resources.pydeps',
     'build/android/gyp/process_native_prebuilt.pydeps',
     'build/android/gyp/proguard.pydeps',
+    'build/android/gyp/rename_java_classes.pydeps',
     'build/android/gyp/system_image_apks.pydeps',
     'build/android/gyp/trace_event_bytecode_rewriter.pydeps',
     'build/android/gyp/turbine.pydeps',

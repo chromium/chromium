@@ -588,7 +588,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types);
+      const base::flat_set<blink::mojom::StorageType>& storage_types);
 
   UsageTracker* GetUsageTracker(blink::mojom::StorageType type) const;
 

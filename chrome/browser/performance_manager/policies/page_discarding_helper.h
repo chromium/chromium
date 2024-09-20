@@ -114,6 +114,11 @@ class PageDiscardingHelper
 
   // Export discard reason in the public interface.
   using DiscardReason = ::mojom::LifecycleUnitDiscardReason;
+  // DiscardCallback passes the time of first discarding is done.
+  // If discarding fails or there is no candidate for discarding, this passes
+  // nullopt.
+  using DiscardCallback =
+      base::OnceCallback<void(std::optional<base::TimeTicks>)>;
 
   PageDiscardingHelper();
   ~PageDiscardingHelper() override;
@@ -125,7 +130,7 @@ class PageDiscardingHelper
   // there's no more discard candidate.
   // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
   // there about its usage.
-  void DiscardAPage(base::OnceCallback<void(bool)> post_discard_cb,
+  void DiscardAPage(DiscardCallback post_discard_cb,
                     DiscardReason discard_reason,
                     base::TimeDelta minimum_time_in_background =
                         kNonVisiblePagesUrgentProtectionTime);
@@ -140,7 +145,7 @@ class PageDiscardingHelper
   void DiscardMultiplePages(
       std::optional<memory_pressure::ReclaimTarget> reclaim_target,
       bool discard_protected_tabs,
-      base::OnceCallback<void(bool)> post_discard_cb,
+      DiscardCallback post_discard_cb,
       DiscardReason discard_reason,
       base::TimeDelta minimum_time_in_background =
           kNonVisiblePagesUrgentProtectionTime);
@@ -148,7 +153,7 @@ class PageDiscardingHelper
   void ImmediatelyDiscardMultiplePages(
       const std::vector<const PageNode*>& page_nodes,
       DiscardReason discard_reason,
-      base::OnceCallback<void(bool)> post_discard_cb = base::DoNothing());
+      DiscardCallback post_discard_cb = base::DoNothing());
 
   void SetNoDiscardPatternsForProfile(const std::string& browser_context_id,
                                       const std::vector<std::string>& patterns);
@@ -192,7 +197,7 @@ class PageDiscardingHelper
   void PostDiscardAttemptCallback(
       std::optional<memory_pressure::ReclaimTarget> reclaim_target,
       bool discard_protected_tabs,
-      base::OnceCallback<void(bool)> post_discard_cb,
+      DiscardCallback post_discard_cb,
       DiscardReason discard_reason,
       base::TimeDelta minimum_time_in_background,
       const std::vector<mechanism::PageDiscarder::DiscardEvent>&

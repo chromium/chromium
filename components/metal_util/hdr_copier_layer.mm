@@ -48,7 +48,11 @@ NSString* tonemapping_shader_source =
      "using metal::sampler;\n"
      "using metal::texture2d;\n"
      "using metal::abs;\n"
+     "using metal::dot;\n"
      "using metal::exp;\n"
+     "using metal::exp2;\n"
+     "using metal::log;\n"
+     "using metal::log2;\n"
      "using metal::max;\n"
      "using metal::pow;\n"
      "using metal::sign;\n"
@@ -83,8 +87,6 @@ NSString* tonemapping_shader_source =
      "  constexpr float c3 = (2392.0 / 4096.0) * 32.0;\n"
      "  float p = pow(v, 1.f / m2);\n"
      "  v = pow(max(p - c1, 0.f) / (c2 - c3 * p), 1.f / m1);\n"
-     "  float sdr_white_level = 203.f;\n"
-     "  v *= 10000.f / sdr_white_level;\n"
      "  return v;\n"
      "}\n"
      "\n"
@@ -94,8 +96,8 @@ NSString* tonemapping_shader_source =
      "  constexpr float c = 0.55991073;\n"
      "  v = max(0.f, v);\n"
      "  if (v <= 0.5f)\n"
-     "    return (v * 2.f) * (v * 2.f);\n"
-     "  return exp((v - c) / a) + b;\n"
+     "    return v * v / 3.f;\n"
+     "  return (exp((v - c) / a) + b) / 12.f;\n"
      "}\n"
      "\n"
      "vertex RasterizerData vertexShader(\n"
@@ -121,7 +123,8 @@ NSString* tonemapping_shader_source =
      "        constant float3x3& primaryMatrix [[buffer(1)]],\n"
      "        constant uint32_t& numPlanes [[buffer(2)]],\n"
      "        constant uint32_t& trfnId [[buffer(3)]],\n"
-     "        constant float* gabcdef [[buffer(4)]]) {\n"
+     "        constant float* gabcdef [[buffer(4)]],\n"
+     "        constant float& screenHdrHeadroom [[buffer(5)]]) {\n"
      "    constexpr sampler s(metal::mag_filter::nearest,\n"
      "                        metal::min_filter::nearest);\n"
      "    float4 color = plane0.sample(s, in.texcoord);\n"
@@ -152,7 +155,30 @@ NSString* tonemapping_shader_source =
      "      default:\n"
      "         break;\n"
      "    }\n"
-     "    color.xyz = ToneMap(primaryMatrix * color.xyz) * color.w;\n"
+     "    color.xyz = primaryMatrix * color.xyz;\n"
+     "    switch (trfnId) {\n"
+     "      case 2:\n"
+     "         // Scale to be relative to 203 nits.\n"
+     "         color.xyz *= 10000.f / 203.f;\n"
+     "         break;\n"
+     "      case 3: {\n"
+     "         // Compute the gain for the ITU-R BT.2100 Reference OOTF.\n"
+     "         const float3 Y = float3(0.2627f, 0.6780f, 0.0593f);\n"
+     "         float gain = max(pow(dot(Y, color.xyz), 0.2), 1.0);\n"
+     "         // Add the gain to scale to be relative to 203 nits.\n"
+     "         gain *= 1000.f / 203.f;\n"
+     "         // Compute the gain weight;\n"
+     "         const float contentHdrHeadroom = 1000.f/203.f;\n"
+     "         const float weight = log2(screenHdrHeadroom) /\n"
+     "                              log2(contentHdrHeadroom);\n"
+     "         // Apply the gain.\n"
+     "         color.xyz *= exp2(weight * log2(gain));\n"
+     "         break;\n"
+     "      }\n"
+     "      default:\n"
+     "         break;\n"
+     "    }\n"
+     "    color.xyz *= color.w;\n"
      "    return color;\n"
      "}\n";
 
@@ -293,8 +319,8 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
     return;
   }
 
+  // Set metadata for tone mapping.
   if (@available(iOS 16.0, *)) {
-    // Set metadata for tone mapping.
     if (_colorSpace != colorSpace || _hdrMetadata != hdrMetadata) {
       CAEDRMetadata* edrMetadata = nil;
       switch (colorSpace.GetTransferID()) {
@@ -312,7 +338,8 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
           break;
         }
         case gfx::ColorSpace::TransferID::HLG:
-          edrMetadata = [CAEDRMetadata HLGMetadata];
+          // HLG does not use the OS-provided tone mapping.
+          // https://crbug.com/343249142
           break;
         default:
           break;
@@ -452,6 +479,9 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
                        length:sizeof(transferFunctionIndex)
                       atIndex:3];
     [encoder setFragmentBytes:&fn length:sizeof(fn) atIndex:4];
+    [encoder setFragmentBytes:&screenHdrHeadroom
+                       length:sizeof(screenHdrHeadroom)
+                      atIndex:5];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangle
                 vertexStart:0
                 vertexCount:6];

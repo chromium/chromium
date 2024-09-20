@@ -341,8 +341,9 @@ net::HttpStatusCode FakeServer::SendToLoopbackServer(
 }
 
 bool FakeServer::GetLastCommitMessage(sync_pb::ClientToServerMessage* message) {
-  if (!last_commit_message_.has_commit())
+  if (!last_commit_message_.has_commit()) {
     return false;
+  }
 
   message->CopyFrom(last_commit_message_);
   return true;
@@ -350,8 +351,9 @@ bool FakeServer::GetLastCommitMessage(sync_pb::ClientToServerMessage* message) {
 
 bool FakeServer::GetLastGetUpdatesMessage(
     sync_pb::ClientToServerMessage* message) {
-  if (!last_getupdates_message_.has_get_updates())
+  if (!last_getupdates_message_.has_get_updates()) {
     return false;
+  }
 
   message->CopyFrom(last_getupdates_message_);
   return true;
@@ -610,8 +612,9 @@ void FakeServer::SetThrottledTypes(syncer::DataTypeSet types) {
 }
 
 bool FakeServer::ShouldSendTriggeredError() const {
-  if (!alternate_triggered_errors_)
+  if (!alternate_triggered_errors_) {
     return true;
+  }
 
   // Check that the counter is odd so that we trigger an error on the first
   // request after alternating is enabled.
@@ -635,12 +638,9 @@ void FakeServer::RemoveObserver(Observer* observer) {
 }
 
 void FakeServer::OnCommit(syncer::DataTypeSet committed_data_types) {
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnCommit(committed_data_types);
-}
-
-void FakeServer::OnHistoryCommit(const std::string& url) {
-  committed_history_urls_.insert(url);
+  }
 }
 
 void FakeServer::OnCommittedDeletionOrigin(
@@ -677,10 +677,6 @@ void FakeServer::AddCollaboration(const std::string& collaboration_id) {
 void FakeServer::RemoveCollaboration(const std::string& collaboration_id) {
   collaborations_.erase(collaboration_id);
   // TODO(b/325917757): update collaboration data type.
-}
-
-const std::set<std::string>& FakeServer::GetCommittedHistoryURLs() const {
-  return committed_history_urls_;
 }
 
 std::string FakeServer::GetStoreBirthday() const {

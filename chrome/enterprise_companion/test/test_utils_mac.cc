@@ -45,6 +45,11 @@ class TestMethodsMac : public TestMethods {
     InstallFakeKSAdmin(/*should_succeed=*/true);
     TestMethods::Install();
   }
+
+  void InstallIfNeeded() override {
+    InstallFakeKSAdmin(/*should_succeed=*/true);
+    TestMethods::InstallIfNeeded();
+  }
 };
 
 }  // namespace

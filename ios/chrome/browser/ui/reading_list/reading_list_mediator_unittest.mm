@@ -28,6 +28,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -138,9 +139,9 @@ TEST_P(ReadingListMediatorTest, fillItems) {
   EXPECT_EQ(2U, [readArray count]);
   NSArray<ReadingListTableViewItem*>* rlReadArray = [readArray copy];
   NSArray<ReadingListTableViewItem*>* rlUneadArray = [unreadArray copy];
-  EXPECT_TRUE([rlUneadArray[0].title isEqualToString:@""]);
-  EXPECT_TRUE([rlReadArray[0].title isEqualToString:@"read2"]);
-  EXPECT_TRUE([rlReadArray[1].title isEqualToString:@"read1"]);
+  EXPECT_NSEQ(rlUneadArray[0].title, @"");
+  EXPECT_NSEQ(rlReadArray[0].title, @"read2");
+  EXPECT_NSEQ(rlReadArray[1].title, @"read1");
 }
 
 INSTANTIATE_TEST_SUITE_P(

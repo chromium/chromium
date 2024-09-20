@@ -9,12 +9,14 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
+#include "base/observer_list.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/input/input_router_impl.h"
 #include "components/input/render_input_router.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
+#include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "base/component_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/event.h"
@@ -47,8 +49,8 @@ class RenderWidgetHostViewInputObserver;
 // The lifetime of RenderWidgetHostViewInput is tied to the lifetime of the
 // renderer process. If the render process dies, the RenderWidgetHostViewInput
 // goes away and all references to it must become nullptr.
-class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
-    public StylusInterface {
+class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
+    : public StylusInterface {
  public:
   virtual base::WeakPtr<RenderWidgetHostViewInput> GetInputWeakPtr() = 0;
 
@@ -76,11 +78,11 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   // was targeted.
   virtual void ProcessAckedTouchEvent(
       const TouchEventWithLatencyInfo& touch,
-      blink::mojom::InputEventResultState ack_result) = 0;
+      blink::mojom::InputEventResultState ack_result);
 
-  virtual void DidOverscroll(const ui::DidOverscrollParams& params) = 0;
+  virtual void DidOverscroll(const ui::DidOverscrollParams& params) {}
 
-  virtual void DidStopFlinging() = 0;
+  virtual void DidStopFlinging() {}
 
   // Returns the root-view associated with this view. For derived views that are
   // not embeddable, this method always returns a RenderWidgetHostViewBase
@@ -88,7 +90,7 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   virtual RenderWidgetHostViewInput* GetRootView() = 0;
 
   // Obtains the root window FrameSinkId.
-  virtual viz::FrameSinkId GetRootFrameSinkId() = 0;
+  virtual viz::FrameSinkId GetRootFrameSinkId();
 
   // Returns the ID associated with the CompositorFrameSink of this view.
   virtual const viz::FrameSinkId& GetFrameSinkId() const = 0;
@@ -102,18 +104,18 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
 
   // Called whenever the browser receives updated hit test data from viz.
   virtual void NotifyHitTestRegionUpdated(
-      const viz::AggregatedHitTestRegion& region) = 0;
+      const viz::AggregatedHitTestRegion& region) {}
 
   // Indicates whether the widget has resized or moved within its embedding
   // page during a feature-parameter-determined time interval.
-  virtual bool ScreenRectIsUnstableFor(const blink::WebInputEvent& event) = 0;
+  virtual bool ScreenRectIsUnstableFor(const blink::WebInputEvent& event);
 
   // See kTargetFrameMovedRecentlyForIOv2 in web_input_event.h.
   virtual bool ScreenRectIsUnstableForIOv2For(
-      const blink::WebInputEvent& event) = 0;
+      const blink::WebInputEvent& event);
 
-  virtual void PreProcessTouchEvent(const blink::WebTouchEvent& event) = 0;
-  virtual void PreProcessMouseEvent(const blink::WebMouseEvent& event) = 0;
+  virtual void PreProcessTouchEvent(const blink::WebTouchEvent& event) {}
+  virtual void PreProcessMouseEvent(const blink::WebMouseEvent& event) {}
 
   // Coordinate points received from a renderer process need to be transformed
   // to the top-level frame's coordinate space. For coordinates received from
@@ -126,7 +128,7 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   // Converts a point in the root view's coordinate space to the coordinate
   // space of whichever view is used to call this method.
   virtual gfx::PointF TransformRootPointToViewCoordSpace(
-      const gfx::PointF& point) = 0;
+      const gfx::PointF& point);
 
   // Transform a point that is in the coordinate space of a Surface that is
   // embedded within the RenderWidgetHostViewInput's Surface to the
@@ -141,8 +143,8 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   // coordinate space as an intermediate step.
   virtual bool TransformPointToLocalCoordSpace(
       const gfx::PointF& point,
-      const viz::SurfaceId& original_surface,
-      gfx::PointF* transformed_point) = 0;
+      const viz::FrameSinkId& original_frame_sink_id,
+      gfx::PointF* transformed_point);
 
   // Given a RenderWidgetHostViewInput that renders to a Surface that is
   // contained within this class' Surface, find the relative transform between
@@ -152,7 +154,7 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   virtual bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
       RenderWidgetHostViewInput* target_view,
-      gfx::PointF* transformed_point) = 0;
+      gfx::PointF* transformed_point);
 
   // On success, returns true and modifies |*transform| to represent the
   // transformation mapping a point in the coordinate space of this view
@@ -165,11 +167,11 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   // the same two views. |target_view| must be non-null.
   virtual bool GetTransformToViewCoordSpace(
       RenderWidgetHostViewInput* target_view,
-      gfx::Transform* transform) = 0;
+      gfx::Transform* transform);
 
   // Transforms |point| to be in the coordinate space of browser compositor's
   // surface. This is in DIP.
-  virtual void TransformPointToRootSurface(gfx::PointF* point) = 0;
+  virtual void TransformPointToRootSurface(gfx::PointF* point);
 
   // Retrieves the size of the viewport for the visible region in DIP. May be
   // smaller than the view size if a portion of the view is obstructed (e.g. by
@@ -179,54 +181,52 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   // Returns the view into which this view is directly embedded. This can
   // return nullptr when this view's associated child frame is not connected
   // to the frame tree or when view is the root view.
-  virtual RenderWidgetHostViewInput* GetParentViewInput() = 0;
+  virtual RenderWidgetHostViewInput* GetParentViewInput();
 
   // Called prior to forwarding input event messages to the renderer, giving
   // the view a chance to perform in-process event filtering or processing.
   // Return values of |NOT_CONSUMED| or |UNKNOWN| will result in |input_event|
   // being forwarded.
   virtual blink::mojom::InputEventResultState FilterInputEvent(
-      const blink::WebInputEvent& input_event) = 0;
+      const blink::WebInputEvent& input_event);
 
-  virtual void GestureEventAck(
-      const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result) = 0;
-  virtual void WheelEventAck(
-      const blink::WebMouseWheelEvent& event,
-      blink::mojom::InputEventResultState ack_result) = 0;
+  virtual void GestureEventAck(const blink::WebGestureEvent& event,
+                               blink::mojom::InputEventResultSource ack_source,
+                               blink::mojom::InputEventResultState ack_result);
+  virtual void WheelEventAck(const blink::WebMouseWheelEvent& event,
+                             blink::mojom::InputEventResultState ack_result);
 
   virtual void ChildDidAckGestureEvent(
       const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result) = 0;
+      blink::mojom::InputEventResultState ack_result);
 
-  virtual void SetLastPointerType(ui::EventPointerType last_pointer_type) = 0;
+  virtual void SetLastPointerType(ui::EventPointerType last_pointer_type) {}
 
   // Sets the cursor for this view to the one specified.
   virtual void UpdateCursor(const ui::Cursor& cursor) = 0;
 
   // Changes the cursor that is displayed on screen. This may or may not match
   // the current cursor's view which was set by UpdateCursor.
-  virtual void DisplayCursor(const ui::Cursor& cursor) = 0;
+  virtual void DisplayCursor(const ui::Cursor& cursor);
 
   // Views that manage cursors for window return a CursorManager. Other views
   // return nullptr.
-  virtual CursorManager* GetCursorManager() = 0;
+  virtual CursorManager* GetCursorManager();
 
   // Calls UpdateTooltip if the view is under the cursor.
-  virtual void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) = 0;
+  virtual void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) {}
 
   // Updates the tooltip text and displays the requested tooltip on the screen.
   // An empty string will clear a visible tooltip.
-  virtual void UpdateTooltip(const std::u16string& tooltip_text) = 0;
+  virtual void UpdateTooltip(const std::u16string& tooltip_text) {}
 
   // If mouse wheels can only specify the number of ticks of some static
   // multiplier constant, this method returns that constant (in DIPs). If mouse
   // wheels can specify an arbitrary delta this returns 0.
-  virtual int GetMouseWheelMinimumGranularity() const = 0;
+  virtual int GetMouseWheelMinimumGranularity() const;
 
   // Initiate stylus handwriting.
-  virtual void OnStartStylusWriting() = 0;
+  virtual void OnStartStylusWriting() {}
 
   // This is called after ensuring content eligible for handwriting in the
   // renderer has focus via mojom::blink::FrameWidget::OnStartStylusWriting.
@@ -234,37 +234,63 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   // needed for stylus writing service.
   virtual void OnEditElementFocusedForStylusWriting(
       const gfx::Rect& focused_edit_bounds,
-      const gfx::Rect& caret_bounds) = 0;
+      const gfx::Rect& caret_bounds) {}
 
   // This is called after failing to ensure content eligible for handwriting in
   // the renderer has focus via mojom::blink::FrameWidget::OnStartStylusWriting.
-  virtual void OnEditElementFocusClearedForStylusWriting() = 0;
+  virtual void OnEditElementFocusClearedForStylusWriting() {}
 
   virtual void OnAutoscrollStart() = 0;
 
   // Add and remove observers for lifetime event notifications. The order in
   // which notifications are sent to observers is undefined. Clients must be
   // sure to remove the observer before they go away.
-  virtual void AddObserver(
-      RenderWidgetHostViewInputObserver* observer) = 0;
-  virtual void RemoveObserver(
-      RenderWidgetHostViewInputObserver* observer) = 0;
+  virtual void AddObserver(RenderWidgetHostViewInputObserver* observer);
+  virtual void RemoveObserver(RenderWidgetHostViewInputObserver* observer);
+
+  virtual const viz::DisplayHitTestQueryMap& GetDisplayHitTestQuery() const = 0;
 
  protected:
+  RenderWidgetHostViewInput();
+  ~RenderWidgetHostViewInput() override;
+
   virtual void UpdateFrameSinkIdRegistration() = 0;
 
   // Stops flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.
   virtual void StopFlingingIfNecessary(
       const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result) = 0;
+      blink::mojom::InputEventResultState ack_result);
 
   // If |event| is a touchpad pinch or double tap event for which we've sent a
   // synthetic wheel event, forward the |event| to the renderer, subject to
   // |ack_result| which is the ACK result of the synthetic wheel.
   virtual void ForwardTouchpadZoomEventIfNecessary(
       const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result) = 0;
+      blink::mojom::InputEventResultState ack_result);
+
+  void NotifyObserversAboutShutdown();
+  void StopFling();
+
+  bool view_stopped_flinging_for_test() const {
+    return view_stopped_flinging_for_test_;
+  }
+
+ private:
+  // Transforms |point| from |original_view| coord space to |target_view| coord
+  // space. Result is stored in |transformed_point|. Returns true if the
+  // transform is successful, false otherwise.
+  bool TransformPointToTargetCoordSpace(
+      RenderWidgetHostViewInput* original_view,
+      RenderWidgetHostViewInput* target_view,
+      const gfx::PointF& point,
+      gfx::PointF* transformed_point) const;
+
+  // True when StopFlingingIfNecessary() calls StopFling().
+  bool view_stopped_flinging_for_test_ = false;
+
+  base::ObserverList<RenderWidgetHostViewInputObserver>::Unchecked observers_;
+  std::optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
 };
 }  // namespace input
 

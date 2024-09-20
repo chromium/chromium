@@ -1,4 +1,5 @@
 include_rules = {
+  "+ash/edusumer",
   "+base",
   "+chrome/browser",
   "+chrome/common/chromeos/extensions",

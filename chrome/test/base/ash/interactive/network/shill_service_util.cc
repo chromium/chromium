@@ -37,6 +37,11 @@ void ShillServiceInfo::ConfigureService(bool connected) const {
   ShillProfileClient::Get()->GetTestInterface()->AddService(
       ShillProfileClient::GetSharedProfilePath(), service_path_);
 
+  // Marking this service as connectable since networks other than Ethernet
+  // are not connectable by default.
+  ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
+      service_path_, shill::kConnectableProperty, base::Value(true));
+
   if (connected) {
     ConnectShillService(service_path_);
   }

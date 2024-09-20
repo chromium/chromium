@@ -181,7 +181,15 @@ bool ScoreLineBreaker::Optimize(const LineInfoList& line_info_list,
   if (candidates.size() >= 4) {
     // Increase penalties to minimize typographic orphans.
     constexpr float kOrphansPenalty = 10000;
-    candidates[candidates.size() - 2].penalty += kOrphansPenalty * zoom_;
+    const float orphans_penalty = kOrphansPenalty * zoom_;
+    const auto candidates_span =
+        base::span(candidates).first(candidates.size() - 1);
+    for (LineBreakCandidate& candidate : base::Reversed(candidates_span)) {
+      candidate.penalty += orphans_penalty;
+      if (!candidate.is_hyphenated) {
+        break;
+      }
+    }
   }
 
   ComputeLineWidths(line_info_list);

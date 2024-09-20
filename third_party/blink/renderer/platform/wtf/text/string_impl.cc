@@ -760,54 +760,54 @@ scoped_refptr<StringImpl> StringImpl::SimplifyWhiteSpace(
 
 int StringImpl::ToInt(NumberParsingOptions options, bool* ok) const {
   if (Is8Bit())
-    return CharactersToInt(Characters8(), length_, options, ok);
-  return CharactersToInt(Characters16(), length_, options, ok);
+    return CharactersToInt(Span8(), options, ok);
+  return CharactersToInt(Span16(), options, ok);
 }
 
 wtf_size_t StringImpl::ToUInt(NumberParsingOptions options, bool* ok) const {
   if (Is8Bit())
-    return CharactersToUInt(Characters8(), length_, options, ok);
-  return CharactersToUInt(Characters16(), length_, options, ok);
+    return CharactersToUInt(Span8(), options, ok);
+  return CharactersToUInt(Span16(), options, ok);
 }
 
 wtf_size_t StringImpl::HexToUIntStrict(bool* ok) {
   constexpr auto kStrict = NumberParsingOptions::Strict();
   if (Is8Bit()) {
-    return HexCharactersToUInt(Characters8(), length_, kStrict, ok);
+    return HexCharactersToUInt(Span8(), kStrict, ok);
   }
-  return HexCharactersToUInt(Characters16(), length_, kStrict, ok);
+  return HexCharactersToUInt(Span16(), kStrict, ok);
 }
 
 uint64_t StringImpl::HexToUInt64Strict(bool* ok) {
   constexpr auto kStrict = NumberParsingOptions::Strict();
   if (Is8Bit()) {
-    return HexCharactersToUInt64(Characters8(), length_, kStrict, ok);
+    return HexCharactersToUInt64(Span8(), kStrict, ok);
   }
-  return HexCharactersToUInt64(Characters16(), length_, kStrict, ok);
+  return HexCharactersToUInt64(Span16(), kStrict, ok);
 }
 
 int64_t StringImpl::ToInt64(NumberParsingOptions options, bool* ok) const {
   if (Is8Bit())
-    return CharactersToInt64(Characters8(), length_, options, ok);
-  return CharactersToInt64(Characters16(), length_, options, ok);
+    return CharactersToInt64(Span8(), options, ok);
+  return CharactersToInt64(Span16(), options, ok);
 }
 
 uint64_t StringImpl::ToUInt64(NumberParsingOptions options, bool* ok) const {
   if (Is8Bit())
-    return CharactersToUInt64(Characters8(), length_, options, ok);
-  return CharactersToUInt64(Characters16(), length_, options, ok);
+    return CharactersToUInt64(Span8(), options, ok);
+  return CharactersToUInt64(Span16(), options, ok);
 }
 
 double StringImpl::ToDouble(bool* ok) {
   if (Is8Bit())
-    return CharactersToDouble(Characters8(), length_, ok);
-  return CharactersToDouble(Characters16(), length_, ok);
+    return CharactersToDouble(Span8(), ok);
+  return CharactersToDouble(Span16(), ok);
 }
 
 float StringImpl::ToFloat(bool* ok) {
   if (Is8Bit())
-    return CharactersToFloat(Characters8(), length_, ok);
-  return CharactersToFloat(Characters16(), length_, ok);
+    return CharactersToFloat(Span8(), ok);
+  return CharactersToFloat(Span16(), ok);
 }
 
 // Table is based on ftp://ftp.unicode.org/Public/UNIDATA/CaseFolding.txt
@@ -1697,8 +1697,7 @@ scoped_refptr<StringImpl> StringImpl::Replace(const StringView& pattern,
 
 scoped_refptr<StringImpl> StringImpl::UpconvertedString() {
   if (Is8Bit())
-    return String::Make16BitFrom8BitSource(Characters8(), length_)
-        .ReleaseImpl();
+    return String::Make16BitFrom8BitSource(Span8()).ReleaseImpl();
   return this;
 }
 
@@ -1863,10 +1862,10 @@ int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
                                      const StringImpl* string2) {
   if (!string2)
     return string1 && string1->length() > 0 ? 1 : 0;
-  return VisitCharacters(
-      *string2, [string1](const auto* chars, wtf_size_t length) {
-        return CodeUnitCompareIgnoringASCIICase(string1, chars, length);
-      });
+  return VisitCharacters(*string2, [string1](auto chars) {
+    return CodeUnitCompareIgnoringASCIICase(string1, chars.data(),
+                                            chars.size());
+  });
 }
 
 }  // namespace WTF

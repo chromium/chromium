@@ -13,11 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController.SafeAreaInsetsTracker;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -31,6 +33,7 @@ import java.lang.annotation.RetentionPolicy;
  * when necessary.
  */
 public class EdgeToEdgeUtils {
+    private static boolean sAlwaysDrawWebEdgeToEdgeForTesting;
 
     private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible";
     private static final String INELIGIBLE_REASON_HISTOGRAM =
@@ -60,7 +63,7 @@ public class EdgeToEdgeUtils {
     public static boolean isEnabled() {
         return isLegacyWebsiteOptInEnabled()
                 || isEdgeToEdgeBottomChinEnabled()
-                || isFullWebEdgeToEdgeOptInEnabled();
+                || isEdgeToEdgeWebOptInEnabled();
     }
 
     /**
@@ -90,8 +93,13 @@ public class EdgeToEdgeUtils {
      * Whether drawing the website that has `viewport-fit=cover` fully edge to edge, removing the
      * bottom chin.
      */
-    public static boolean isFullWebEdgeToEdgeOptInEnabled() {
-        return ChromeFeatureList.sDrawWebEdgeToEdge.isEnabled();
+    public static boolean isEdgeToEdgeWebOptInEnabled() {
+        return ChromeFeatureList.sEdgeToEdgeWebOptIn.isEnabled();
+    }
+
+    /** Whether key native pages should draw to edge. */
+    public static boolean isDrawKeyNativePageToEdgeEnabled() {
+        return isEnabled() && ChromeFeatureList.sDrawKeyNativeEdgeToEdge.isEnabled();
     }
 
     /**
@@ -149,7 +157,7 @@ public class EdgeToEdgeUtils {
      */
     static boolean shouldDrawToEdge(
             boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
-        return (isLegacyWebsiteOptInEnabled() && isPageOptedIntoEdgeToEdge)
+        return (isEdgeToEdgeWebOptInEnabled() && isPageOptedIntoEdgeToEdge)
                 || (isEdgeToEdgeBottomChinEnabled()
                         && isBottomChinAllowed(layoutType, bottomInset));
     }
@@ -178,13 +186,12 @@ public class EdgeToEdgeUtils {
      */
     public static boolean isPageOptedIntoEdgeToEdge(Tab tab) {
         if (tab == null || tab.isNativePage()) {
-            return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
+            return isNativeTabDrawingToEdge(tab);
         }
-        if (ChromeFeatureList.sDrawWebEdgeToEdge.isEnabled()) {
+        if (sAlwaysDrawWebEdgeToEdgeForTesting) {
             return true;
         }
-        // TODO (crbug.com/353724310) Refactor flag check to the E2E web opt-in flag
-        return isLegacyWebsiteOptInEnabled() && getWasViewportFitCover(tab);
+        return isEdgeToEdgeWebOptInEnabled() && getWasViewportFitCover(tab);
     }
 
     /**
@@ -196,10 +203,24 @@ public class EdgeToEdgeUtils {
         if (tab == null || tab.isNativePage()) {
             return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
         }
-        if (!isLegacyWebsiteOptInEnabled()) {
+        if (!isEdgeToEdgeWebOptInEnabled()) {
             return false;
         }
         return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
+    }
+
+    /** Whether a native tab will be drawn edge to to edge. */
+    static boolean isNativeTabDrawingToEdge(Tab activeTab) {
+        // sDrawNativeEdgeToEdge will draw all native page to edge forcefully.
+        if (ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled()) return true;
+
+        if (!ChromeFeatureList.sDrawKeyNativeEdgeToEdge.isEnabled()) return false;
+
+        // TODO(crbug.com/339025702): Check if we are in tab switcher when activeTab is null.
+        if (activeTab == null) return false;
+
+        NativePage nativePage = activeTab.getNativePage();
+        return nativePage != null && nativePage.supportsEdgeToEdge();
     }
 
     /**
@@ -223,5 +244,10 @@ public class EdgeToEdgeUtils {
         SafeAreaInsetsTracker safeAreaInsetsTracker =
                 DisplayCutoutController.getSafeAreaInsetsTracker(tab);
         return safeAreaInsetsTracker == null ? false : safeAreaInsetsTracker.isViewportFitCover();
+    }
+
+    public static void setAlwaysDrawWebEdgeToEdgeForTesting(boolean drawWebEdgeToEdge) {
+        sAlwaysDrawWebEdgeToEdgeForTesting = drawWebEdgeToEdge;
+        ResettersForTesting.register(() -> sAlwaysDrawWebEdgeToEdgeForTesting = false);
     }
 }

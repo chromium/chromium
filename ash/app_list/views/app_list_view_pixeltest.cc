@@ -254,7 +254,7 @@ TEST_P(AppListViewPixelRTLTest, KeyboardShortcutSearchResult) {
 
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_ks_search_results", /*revision_number=*/3,
+      "bubble_launcher_ks_search_results", /*revision_number=*/4,
       GetAppListTestHelper()->GetBubbleView()));
 }
 

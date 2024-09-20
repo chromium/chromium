@@ -79,7 +79,9 @@ void FallbackNetFetcher::PostRequestDone(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const int should_fallback = net_error || (http_status_code_ != 200);
   if (should_fallback && next_) {
-    VLOG(1) << __func__ << " Falling back to next NetFetcher for " << url;
+    VLOG(1) << __func__ << " Falling back to next NetFetcher for " << url
+            << ", error: " << net_error
+            << ", HTTP status: " << http_status_code_;
     next_->PostRequest(url, post_data, content_type, post_additional_headers,
                        response_started_callback, progress_callback,
                        std::move(post_request_complete_callback));

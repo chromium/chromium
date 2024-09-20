@@ -584,7 +584,11 @@ OverviewGrid::OverviewGrid(
               ? std::make_unique<SplitViewDragIndicators>(root_window)
               : nullptr),
       bounds_(GetGridBoundsInScreen(root_window)),
-      window_occlusion_calculator_(window_occlusion_calculator) {
+      window_occlusion_calculator_(window_occlusion_calculator),
+      enter_animation_task_pool_(root_window_->layer()->GetCompositor(),
+                                 // A rough estimate for how long the UI thread
+                                 // is congested. Can be adjusted if needed.
+                                 /*initial_blackout_period=*/kTransition / 3) {
   TRACE_EVENT0("ui", "OverviewGrid::OverviewGrid");
 
   for (aura::Window* window : windows) {
@@ -607,6 +611,19 @@ OverviewGrid::OverviewGrid(
     UpdateNumSavedDeskUnsupportedWindows(overview_item_base->GetWindows(),
                                          /*increment=*/true);
     item_list_.push_back(std::move(overview_item_base));
+  }
+
+  if (split_view_drag_indicators_) {
+    if (chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
+      // Initializing the widget before it's visible is not required but can
+      // save a couple milliseconds when rendering the first frame of
+      // `SplitViewDragIndicators`.
+      enter_animation_task_pool_.AddTask(
+          base::BindOnce(&SplitViewDragIndicators::InitWidget,
+                         base::Unretained(split_view_drag_indicators_.get())));
+    } else {
+      split_view_drag_indicators_->InitWidget();
+    }
   }
 }
 
@@ -1383,11 +1400,14 @@ void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
   if (canceled)
     return;
 
+  enter_animation_task_pool_.Flush();
+
   if (ShouldInitDesksWidget()) {
     auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
         root_window_->layer()->GetCompositor(),
         kOverviewDelayedDeskBarPresentationHistogram, "",
-        kDeskBarEnterExitPresentationMaxLatency);
+        ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+            kDeskBarEnterExitPresentationMaxLatency));
     presentation_time_recorder->RequestNext();
     MaybeInitDesksWidget();
   }
@@ -2202,7 +2222,7 @@ void OverviewGrid::ShowSavedDeskLibrary() {
                                         /*expanding_bar_view=*/true);
   } else {
     desks_bar_view_->UpdateDeskIconButtonState(
-        desks_bar_view_->library_button(),
+        &desks_bar_view_->GetOrCreateLibraryButton(),
         /*target_state=*/DeskIconButton::State::kActive);
   }
 
@@ -2269,7 +2289,7 @@ void OverviewGrid::HideSavedDeskLibrary(bool exit_overview) {
   // saved desk. We have animation of adding a new desk for the library
   // button, thus to avoid the animation glitches, directly update the state
   // for the library button instead of applying the scale animation to it.
-  desks_bar_view_->library_button()->UpdateState(
+  desks_bar_view_->GetOrCreateLibraryButton().UpdateState(
       DeskIconButton::State::kExpanded);
 }
 

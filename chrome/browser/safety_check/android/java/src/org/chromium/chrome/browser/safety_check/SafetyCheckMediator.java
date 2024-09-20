@@ -29,6 +29,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
+import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
+import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -113,6 +115,12 @@ class SafetyCheckMediator {
     private PasswordCheckController mPasswordCheckController;
 
     private PasswordManagerHelper mPasswordManagerHelper;
+
+    /**
+     * Provides an intent used to open a p-link help center article in a custom tab. Needed by the
+     * password manager settings.
+     */
+    private CustomTabIntentHelper mCustomTabIntentHelper;
 
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
@@ -212,7 +220,8 @@ class SafetyCheckMediator {
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            CustomTabIntentHelper customTabIntentHelper) {
         this(
                 profile,
                 safetyCheckModel,
@@ -229,6 +238,7 @@ class SafetyCheckMediator {
                 new PasswordCheckControllerFactory(),
                 passwordManagerHelper);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mCustomTabIntentHelper = customTabIntentHelper;
     }
 
     @VisibleForTesting
@@ -585,7 +595,8 @@ class SafetyCheckMediator {
                                 ManagePasswordsReferrer.SAFETY_CHECK,
                                 mModalDialogManagerSupplier,
                                 /* managePasskeys= */ false,
-                                account);
+                                account,
+                                mCustomTabIntentHelper);
                         return true;
                     };
         } else if (state == PasswordsState.SIGNED_OUT) {
@@ -646,7 +657,7 @@ class SafetyCheckMediator {
         } else if (state == PasswordsState.BACKEND_VERSION_NOT_SUPPORTED) {
             listener =
                     (p) -> {
-                        PasswordManagerHelper.launchGmsUpdate(p.getContext());
+                        GmsUpdateLauncher.launch(p.getContext());
                         return true;
                     };
         }

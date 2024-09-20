@@ -364,9 +364,9 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
                       const std::string& cache_guid = kCacheGuid,
                       SyncMode sync_mode = SyncMode::kFull) {
     DataTypeActivationRequest request;
-    request.error_handler = base::BindRepeating(
-        &ClientTagBasedDataTypeProcessorTest::ErrorReceived,
-        base::Unretained(this));
+    request.error_handler =
+        base::BindRepeating(&ClientTagBasedDataTypeProcessorTest::ErrorReceived,
+                            base::Unretained(this));
     request.cache_guid = cache_guid;
     request.authenticated_account_id =
         CoreAccountId::FromString(authenticated_account_id);
@@ -460,8 +460,9 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
 
   // Return the number of entities the processor has metadata for.
   size_t ProcessorEntityCount() const {
-    if (type_processor()->entity_tracker_)
+    if (type_processor()->entity_tracker_) {
       return type_processor()->entity_tracker_->size();
+    }
     return 0;
   }
 
@@ -553,8 +554,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
   bool error_reported_ = false;
 };
 
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldExposeNewlyTrackedAccountId) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldExposeNewlyTrackedAccountId) {
   ModelReadyToSync();
   ASSERT_EQ("", type_processor()->TrackedAccountId());
   OnSyncStarting();
@@ -625,8 +625,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ(inv_2.version(), data_type_state.invalidations(1).version());
 }
 
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldExposeNewlyTrackedCacheGuid) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldExposeNewlyTrackedCacheGuid) {
   ModelReadyToSync();
   ASSERT_EQ("", type_processor()->TrackedCacheGuid());
   OnSyncStarting();
@@ -761,8 +760,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldApplyIncrementalUpdates) {
   EXPECT_EQ(2U, db()->metadata_count());
 }
 
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldReportErrorDuringActivation) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorDuringActivation) {
   InitializeToMetadataLoaded();
 
   std::optional<ModelError> received_error;
@@ -994,8 +992,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldCommitLocalCreation) {
 
 // Creates a new item locally while another item exists for the same client tag
 // hash.
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       CommitShouldOverwriteExistingItem) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, CommitShouldOverwriteExistingItem) {
   base::HistogramTester histogram_tester;
   // Provide custom client tags for this test.
   bridge()->SetSupportsGetClientTag(false);
@@ -1424,8 +1421,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
 // Tests that after committing entity fails, processor includes this entity in
 // consecutive commits.
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldRetryCommitAfterServerError) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldRetryCommitAfterServerError) {
   InitializeToReadyState();
   WritePrefItem(bridge(), kKey1, kValue1);
   worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
@@ -1972,8 +1968,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 }
 
 // Tests that a real remote change wins over a local encryption-only change.
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldIgnoreLocalEncryptionChange) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldIgnoreLocalEncryptionChange) {
   InitializeToReadyState();
   EntitySpecifics specifics = WriteItemAndAck(kKey1, kValue1);
   worker()->UpdateWithEncryptionKey("k1");

@@ -48,6 +48,7 @@ source_set("platform_apps") {
     "//apps",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/platform_apps/api:api_registration",
+    "//chrome/browser/profiles:profile_attributes",
     "//chrome/common/apps/platform_apps/api",
   ]
 
@@ -60,6 +61,7 @@ source_set("platform_apps") {
     "//chrome/browser/media/router/discovery",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/extensions",
     "//chrome/common",

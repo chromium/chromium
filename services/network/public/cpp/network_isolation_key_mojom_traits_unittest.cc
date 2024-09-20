@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/network_isolation_key.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -21,20 +22,18 @@ TEST(NetworkIsolationKeyMojomTraitsTest, SerializeAndDeserialize) {
   std::vector<net::NetworkIsolationKey> keys = {
       net::NetworkIsolationKey(),
       net::NetworkIsolationKey::CreateTransientForTesting(),
-      net::NetworkIsolationKey(url::Origin::Create(GURL("http://a.test/")),
-                               url::Origin()),
-      net::NetworkIsolationKey(url::Origin::Create(GURL("http://a.test/")),
-                               url::Origin::Create(GURL("http://b.test/"))),
-      net::NetworkIsolationKey(url::Origin::Create(GURL("http://foo.a.test/")),
-                               url::Origin::Create(GURL("http://bar.b.test/"))),
-      net::NetworkIsolationKey(
-          net::SchemefulSite(url::Origin::Create(GURL("http://a.test/"))),
-          net::SchemefulSite(url::Origin::Create(GURL("http://b.test/"))),
-          token),
-      net::NetworkIsolationKey(
-          net::SchemefulSite(url::Origin::Create(GURL("http://foo.a.test/"))),
-          net::SchemefulSite(url::Origin::Create(GURL("http://bar.b.test/"))),
-          token)};
+      net::NetworkIsolationKey(net::SchemefulSite(GURL("http://a.test/")),
+                               net::SchemefulSite()),
+      net::NetworkIsolationKey(net::SchemefulSite(GURL("http://a.test/")),
+                               net::SchemefulSite(GURL("http://b.test/"))),
+      net::NetworkIsolationKey(net::SchemefulSite(GURL("http://foo.a.test/")),
+                               net::SchemefulSite(GURL("http://bar.b.test/"))),
+      net::NetworkIsolationKey(net::SchemefulSite(GURL("http://a.test/")),
+                               net::SchemefulSite(GURL("http://b.test/")),
+                               token),
+      net::NetworkIsolationKey(net::SchemefulSite(GURL("http://foo.a.test/")),
+                               net::SchemefulSite(GURL("http://bar.b.test/")),
+                               token)};
 
   for (auto original : keys) {
     SCOPED_TRACE(original.ToDebugString());

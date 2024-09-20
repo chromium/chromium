@@ -11,9 +11,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_multi_source_observation.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -46,7 +46,7 @@ class PlusAddressSubmissionLogger final : autofill::AutofillManager::Observer {
       autofill::FieldGlobalId field,
       autofill::AutofillPlusAddressDelegate::SuggestionContext
           suggestion_context,
-      autofill::AutofillClient::PasswordFormClassification::Type form_type,
+      autofill::PasswordFormClassification::Type form_type,
       autofill::SuggestionType suggestion_type,
       size_t plus_address_count);
 

@@ -207,7 +207,7 @@ public class ActionConfirmationDialogUnitTest {
         Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
         controller.onDismiss(propertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         verify(mConfirmationDialogResult)
-                .onDismiss(/* isPositive= */ false, /* stopShowing= */ false);
+                .onDismiss(/* isPositive= */ false, /* stopShowing= */ true);
     }
 
     @Test
@@ -228,5 +228,34 @@ public class ActionConfirmationDialogUnitTest {
         View customView = propertyModel.get(ModalDialogProperties.CUSTOM_VIEW);
         CheckBox stopShowingCheckBox = customView.findViewById(R.id.stop_showing_check_box);
         assertEquals(View.GONE, stopShowingCheckBox.getVisibility());
+    }
+
+    @Test
+    public void testDefaultDismiss_DefaultDismissIsPositive_CustomNegativeAction() {
+        ActionConfirmationDialog dialog =
+                new ActionConfirmationDialog(mActivity, mModalDialogManager);
+        dialog.showWithCustomNegativeAction(
+                noSyncResolver(R.string.delete_tab_group_dialog_title),
+                noSyncResolver(R.string.delete_tab_group_no_sync_description),
+                R.string.tab_grid_dialog_toolbar_delete_group,
+                R.string.tab_grid_dialog_toolbar_close_group,
+                /* supportStopShowing= */ true,
+                /* defaultDismissIsPositive= */ true,
+                mConfirmationDialogResult);
+
+        verify(mModalDialogManager)
+                .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
+        PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
+
+        View customView = propertyModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        CheckBox stopShowingCheckBox = customView.findViewById(R.id.stop_showing_check_box);
+        stopShowingCheckBox.setChecked(true);
+
+        // Stop showing is ignored as default dismiss handler is used. However, positive is the
+        // safer default so use that.
+        Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
+        controller.onDismiss(propertyModel, DialogDismissalCause.TOUCH_OUTSIDE);
+        verify(mConfirmationDialogResult)
+                .onDismiss(/* isPositive= */ true, /* stopShowing= */ false);
     }
 }

@@ -57,6 +57,17 @@ export function parseNumber(val: string|null|undefined): number|null {
 }
 
 /**
+ * Returns the number of space-delimited words in a given string.
+ *
+ * TODO(hsuanling): Apply different logic so that it can work for languages like
+ * Chinese or Japanese.
+ */
+export function getWordCount(s: string): number {
+  const words = s.match(/\S+/g);
+  return words?.length ?? 0;
+}
+
+/**
  * Shorten the given string to at most `maxWords` space-delimited words by
  * snipping the middle of string as "(...)".
  */
@@ -165,4 +176,19 @@ export function isObjectEmpty(obj: Record<string, unknown>): boolean {
     }
   }
   return true;
+}
+
+/**
+ * Wrapper for the View Transition API for unsupported browser.
+ *
+ * @return Promise when the transition is finished.
+ */
+export function startViewTransition(fn: () => void): Promise<void> {
+  if (document.startViewTransition === undefined) {
+    fn();
+    return Promise.resolve();
+  } else {
+    const transition = document.startViewTransition(fn);
+    return transition.finished;
+  }
 }

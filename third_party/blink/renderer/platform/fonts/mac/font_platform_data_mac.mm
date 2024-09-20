@@ -245,7 +245,7 @@ SkFont FontPlatformData::CreateSkFont(
     should_antialias = false;
   }
 
-  SkFont skfont;
+  SkFont skfont(typeface_);
   if (should_antialias && should_smooth_fonts) {
     skfont.setEdging(SkFont::Edging::kSubpixelAntiAlias);
   } else if (should_antialias) {
@@ -256,7 +256,6 @@ SkFont FontPlatformData::CreateSkFont(
   skfont.setEmbeddedBitmaps(false);
   const float ts = text_size_ >= 0 ? text_size_ : 12;
   skfont.setSize(SkFloatToScalar(ts));
-  skfont.setTypeface(typeface_);
   skfont.setEmbolden(synthetic_bold_);
   skfont.setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
   skfont.setSubpixel(should_subpixel_position);

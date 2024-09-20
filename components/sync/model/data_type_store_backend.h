@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -49,13 +50,14 @@ class DataTypeStoreBackend
   // called from a sequence that is different to the constructing one, but from
   // this point on the backend is bound to the current sequence, and must be
   // used on it. It may be destructed on any sequence though.
-  // `prefixes_to_update` contains (from->to) pairs of record key prefixes that
-  // should be updated, e.g. ("old-" -> "new-") would result in a record
-  // [old-key, value] to be moved to [new-key, value].
+  // An ("old-" -> "new-") entry in `prefixes_to_update_or_delete` will cause
+  // all records [old-key, value] to be updated to [new-key, value].
+  // An ("old-" -> std::nullopt) entry in `prefixes_to_update_or_delete` will
+  // cause all records [old-key, value] to be deleted.
   std::optional<ModelError> Init(
       const base::FilePath& path,
-      const std::vector<std::pair<std::string, std::string>>&
-          prefixes_to_update);
+      const base::flat_map<std::string, std::optional<std::string>>&
+          prefixes_to_update_or_delete);
 
   // Can be called from any sequence.
   bool IsInitialized() const;
@@ -113,8 +115,9 @@ class DataTypeStoreBackend
     // For compatibility with std:: deleters.
     template <typename T>
     void operator()(const T* ptr) {
-      if (!ptr)
+      if (!ptr) {
         return;
+      }
 
       if (task_runner_->RunsTasksInCurrentSequence()) {
         delete ptr;
@@ -161,6 +164,9 @@ class DataTypeStoreBackend
   // StorageType::kUnspecified and StorageType::kAccount.
   std::optional<ModelError> UpdateDataPrefix(const std::string& old_prefix,
                                              const std::string& new_prefix);
+
+  // Removes all records starting with `prefix`.
+  std::optional<ModelError> RemoveDataPrefix(const std::string& prefix);
 
   // In some scenarios DataTypeStoreBackend holds ownership of env. Typical
   // example is when test creates in memory environment with CreateInMemoryEnv

@@ -21,12 +21,6 @@
 
 namespace memory_pressure {
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kUseWinOSMemoryPressureSignals,
-             "UseWinOSMemoryPressureSignals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 const base::TimeDelta SystemMemoryPressureEvaluator::kRenotifyVotePeriod =
     base::Seconds(5);
 
@@ -45,11 +39,6 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
   auto evaluator =
       std::make_unique<memory_pressure::win::SystemMemoryPressureEvaluator>(
           monitor->CreateVoter());
-  // Also subscribe to the OS signals if they're available and the feature is
-  // enabled.
-  if (base::FeatureList::IsEnabled(kUseWinOSMemoryPressureSignals)) {
-    evaluator->CreateOSSignalPressureEvaluator(monitor->CreateVoter());
-  }
   return evaluator;
 #else
   // Chrome OS and Chromecast evaluators are created in separate components.

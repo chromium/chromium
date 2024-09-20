@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "url/origin.h"
 
 namespace performance_manager {
@@ -326,6 +327,33 @@ void PerformanceManagerTabHelper::OnFrameAudioStateChanged(
                                 base::Unretained(frame_node), is_audible));
 }
 
+void PerformanceManagerTabHelper::
+    OnRemoteSubframeViewportIntersectionStateChanged(
+        content::RenderFrameHost* render_frame_host,
+        const blink::mojom::ViewportIntersectionState&
+            viewport_intersection_state) {
+  auto frame_it = frames_.find(render_frame_host);
+  // This can be invoked for a crashed RenderFrameHost, as its view still
+  // occupies space on the page. Just ignore it as clearly its content is not
+  // visible.
+  if (frame_it == frames_.end()) {
+    CHECK(!render_frame_host->IsRenderFrameLive());
+    return;
+  }
+  CHECK(render_frame_host->IsRenderFrameLive());
+
+  // Getting address of overloaded function.
+  void (FrameNodeImpl::*set_viewport_intersection_state_fn)(
+      const blink::mojom::ViewportIntersectionState&) =
+      &FrameNodeImpl::SetViewportIntersectionState;
+
+  auto* frame_node = frame_it->second.get();
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE, base::BindOnce(set_viewport_intersection_state_fn,
+                                base::Unretained(frame_node),
+                                viewport_intersection_state));
+}
+
 void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
     content::RenderFrameHost* render_frame_host,
     blink::mojom::FrameVisibility visibility) {
@@ -339,21 +367,15 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
   }
   CHECK(render_frame_host->IsRenderFrameLive());
 
-  ViewportIntersectionState viewport_intersection_change = [visibility]() {
-    switch (visibility) {
-      case blink::mojom::FrameVisibility::kNotRendered:
-      case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
-        return ViewportIntersectionState::kNotIntersecting;
-      case blink::mojom::FrameVisibility::kRenderedInViewport:
-        return ViewportIntersectionState::kIntersecting;
-    }
-  }();
+  // Getting address of overloaded function.
+  void (FrameNodeImpl::*set_viewport_intersection_state_fn)(
+      blink::mojom::FrameVisibility) =
+      &FrameNodeImpl::SetViewportIntersectionState;
 
   auto* frame_node = frame_it->second.get();
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&FrameNodeImpl::SetViewportIntersectionState,
-                                base::Unretained(frame_node),
-                                viewport_intersection_change));
+      FROM_HERE, base::BindOnce(set_viewport_intersection_state_fn,
+                                base::Unretained(frame_node), visibility));
 }
 
 void PerformanceManagerTabHelper::OnFrameIsCapturingMediaStreamChanged(
@@ -512,8 +534,7 @@ void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
 
 void PerformanceManagerTabHelper::InnerWebContentsAttached(
     content::WebContents* inner_web_contents,
-    content::RenderFrameHost* render_frame_host,
-    bool /* is_full_page */) {
+    content::RenderFrameHost* render_frame_host) {
   // Note that we sometimes learn of contents creation at this point (before
   // other helpers get a chance to attach), so we need to ensure our helper
   // exists.

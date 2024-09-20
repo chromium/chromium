@@ -6,40 +6,9 @@
     <link rel="stylesheet" href="//theme/colors.css?sets=chrome">
   </head>
   <body>
-      <!--
-        This UI for dev only.
-        TODO(b/353703768): Remove them later in development.
-      -->
-    <div id="debug-container">
-      <h1>Data Sharing Placeholder</h1>
-      <div>
-        <label for="group-id">GroupId (auto generated Id from create group):</label>
-        <input id="group-id" type="text">
-        <label for="token-secret">Token Secret</label>
-        <input id="token-secret" type="text">
-      </div>
-
-      <div>
-        <div>
-          <button id="create-group-button">Create Group</button>
-        </div>
-        <div>
-          <button id="read-group-button">Read Group</button>
-        </div>
-        <div>
-          <button id="create-join-flow-button">Create Join Flow</button>
-        </div>
-        <div>
-          <button id="create-invite-flow-button">Create Invite Flow</button>
-        </div>
-        <div>
-          <button id="create-manage-flow-button">Create Manage Flow</button>
-        </div>
-      </div>
-    </div>
-    <script type="module" src="data_sharing.js"></script>
+    <data-sharing-app></data-sharing-app>
+    <script type="module" src="data_sharing_app.js"></script>
     <link rel="stylesheet" href="data_sharing_sdk.css">
-    <!-- TODO(pengchaocai): This css only applies to dev ui. Remove once the dev ui is removed. -->
     <link rel="stylesheet" href="data_sharing_dev.css">
   </body>
 </html>

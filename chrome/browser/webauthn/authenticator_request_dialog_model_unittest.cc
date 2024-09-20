@@ -1102,10 +1102,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 
        // create(): Hybrid hint should show QR.
        {L, mc, {usb, internal, cable}, {rk, hint_hybrid}, {},
-        {add, t(internal)}, qr},
+        {add, t(internal), t(usb)}, qr},
        // ... even if there are paired phones.
        {L, mc, {usb, internal, cable}, {rk, hint_hybrid}, {psync("a")}, {p("a"),
-        add, t(internal)}, qr},
+        add, t(internal), t(usb)}, qr},
        // But not if Hybrid isn't a valid transport.
        {L, mc, {usb, internal}, {rk, hint_hybrid}, {}, {t(internal), t(usb)},
 #if BUILDFLAG(IS_MAC)
@@ -1154,10 +1154,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {L, ga, {cable}, {has_winapi, rk, hint_sk}, {}, {add, winapi}, plat_ui},
 
        // get(): Hybrid hint should show QR.
-       {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {}, {add}, qr},
+       {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {}, {add, t(usb)}, qr},
        // ... even if there are paired phones.
        {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {psync("a")},
-        {p("a"), add}, qr},
+        {p("a"), add, t(usb)}, qr},
        // But not if hybrid isn't available.
        {L, ga, {usb, internal}, {rk, hint_hybrid}, {}, {t(usb)}, usb_ui},
        // If older webauthn.dll is present, don't jump to it since it doesn't do
@@ -1171,7 +1171,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        // If credentials are found on a platform authenticator, they are still
        // shown.
        {L, ga, {usb, internal, cable}, {one_cred, rk, hint_hybrid}, {},
-        {c(cred1), add}, mss},
+        {c(cred1), add, t(usb)}, mss},
 
        // get(): Client device hint should trigger webauthn.dll, if it exists.
        {L, ga, {cable}, {rk, has_winapi, hint_plat}, {}, {add, winapi},
@@ -1269,6 +1269,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       transports_info.ble_status = BleStatus::kOn;
     }
     transports_info.request_type = test.request_type;
+    if (test.request_type == device::FidoRequestType::kMakeCredential) {
+      transports_info.attestation_conveyance_preference =
+          device::AttestationConveyancePreference::kNone;
+    }
     transports_info.available_transports = test.transports;
     transports_info.user_verification_requirement =
         base::Contains(test.params, TransportAvailabilityParam::kUVRequired)
@@ -1540,6 +1544,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
       tai.make_credential_attachment =
           device::AuthenticatorAttachment::kCrossPlatform;
       tai.request_type = device::FidoRequestType::kMakeCredential;
+      tai.attestation_conveyance_preference =
+          device::AttestationConveyancePreference::kNone;
       tai.has_win_native_api_authenticator = true;
       tai.win_native_ui_shows_resident_credential_notice = true;
       tai.available_transports.insert(device::FidoTransportProtocol::kHybrid);
@@ -1640,6 +1646,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 TEST_F(AuthenticatorRequestDialogControllerTest, WinNoPlatformAuthenticator) {
   TransportAvailabilityInfo tai;
   tai.request_type = device::FidoRequestType::kMakeCredential;
+  tai.attestation_conveyance_preference =
+      device::AttestationConveyancePreference::kNone;
   tai.make_credential_attachment = device::AuthenticatorAttachment::kAny;
   tai.request_is_internal_only = true;
   tai.win_is_uvpaa = false;
@@ -1661,7 +1669,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, NoAvailableTransports) {
   model->observers.AddObserver(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnStepTransition());
-  controller.StartFlow(TransportAvailabilityInfo(),
+  TransportAvailabilityInfo transports_info;
+  transports_info.attestation_conveyance_preference =
+      device::AttestationConveyancePreference::kNone;
+  controller.StartFlow(std::move(transports_info),
                        /*is_conditional_mediation=*/false);
   EXPECT_EQ(Step::kErrorNoAvailableTransports, model->step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -1732,6 +1743,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
     if (transports_info.request_type == RequestType::kMakeCredential) {
       transports_info.make_credential_attachment =
           device::AuthenticatorAttachment::kAny;
+      transports_info.attestation_conveyance_preference =
+          device::AttestationConveyancePreference::kNone;
     }
     transports_info.available_transports = {AuthenticatorTransport::kHybrid};
     transports_info.is_off_the_record_context =
@@ -1808,6 +1821,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, CrBug333592767) {
                                       std::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.request_type = RequestType::kMakeCredential;
+  transports_info.attestation_conveyance_preference =
+      device::AttestationConveyancePreference::kNone;
   transports_info.make_credential_attachment =
       device::AuthenticatorAttachment::kAny;
   transports_info.available_transports = kAllTransportsWithoutCable;
@@ -1837,6 +1852,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, AwaitingAcknowledgement) {
 
     TransportAvailabilityInfo transports_info;
     transports_info.request_type = RequestType::kMakeCredential;
+    transports_info.attestation_conveyance_preference =
+        device::AttestationConveyancePreference::kNone;
     transports_info.make_credential_attachment =
         device::AuthenticatorAttachment::kAny;
     transports_info.available_transports = kAllTransportsWithoutCable;
@@ -2053,6 +2070,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       device::AuthenticatorType::kOther));
 
   TransportAvailabilityInfo transports_info;
+  transports_info.attestation_conveyance_preference =
+      device::AttestationConveyancePreference::kNone;
   transports_info.available_transports = kAllTransports;
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
@@ -2092,6 +2111,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       device::AuthenticatorType::kOther));
 
   TransportAvailabilityInfo transports_info;
+  transports_info.attestation_conveyance_preference =
+      device::AttestationConveyancePreference::kNone;
   transports_info.available_transports = kAllTransports;
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
@@ -2123,7 +2144,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUICancelRequest) {
       device::AuthenticatorType::kOther));
 
   EXPECT_CALL(mock_observer, OnStepTransition());
-  controller.StartFlow(std::move(TransportAvailabilityInfo()),
+  TransportAvailabilityInfo transports_info;
+  transports_info.attestation_conveyance_preference =
+      device::AttestationConveyancePreference::kNone;
+  controller.StartFlow(std::move(transports_info),
                        /*is_conditional_mediation=*/true);
   EXPECT_EQ(model->step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -2253,7 +2277,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   auto controller = std::make_unique<AuthenticatorRequestDialogController>(
       model.get(), main_rfh());
-  controller->StartFlow(TransportAvailabilityInfo(),
+  TransportAvailabilityInfo transport_info;
+  transport_info.attestation_conveyance_preference =
+      device::AttestationConveyancePreference::kNone;
+  controller->StartFlow(std::move(transport_info),
                         /*is_conditional_mediation=*/true);
   ASSERT_EQ(model->step(), Step::kConditionalMediation);
   testing::NiceMock<MockDialogModelObserver> mock_observer;
@@ -2361,7 +2388,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIWindowsCancel) {
       device::AuthenticatorType::kOther));
 
   EXPECT_CALL(mock_observer, OnStepTransition());
-  controller.StartFlow(std::move(TransportAvailabilityInfo()),
+  TransportAvailabilityInfo transports_info;
+  transports_info.attestation_conveyance_preference =
+      device::AttestationConveyancePreference::kNone;
+  controller.StartFlow(std::move(transports_info),
                        /*is_conditional_mediation=*/true);
   EXPECT_EQ(model->step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -2769,6 +2799,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
                    << "platform_attachment: " << platform_attachment);
 
       TransportAvailabilityInfo transports_info;
+      transports_info.attestation_conveyance_preference =
+          device::AttestationConveyancePreference::kNone;
       transports_info.has_icloud_keychain = true;
       transports_info.available_transports = {
           AuthenticatorTransport::kInternal,
@@ -3221,6 +3253,8 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_MakeCredential) {
     TransportAvailabilityInfo transports_info;
     transports_info.has_win_native_api_authenticator = true;
     transports_info.request_type = device::FidoRequestType::kMakeCredential;
+    transports_info.attestation_conveyance_preference =
+        device::AttestationConveyancePreference::kNone;
     transports_info.make_credential_attachment = test_case.attachment;
     fake_win_webauthn_api.set_version(4);
     SCOPED_TRACE(testing::Message()

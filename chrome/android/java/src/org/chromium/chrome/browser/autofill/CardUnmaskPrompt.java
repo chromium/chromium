@@ -33,6 +33,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -193,7 +194,7 @@ public class CardUnmaskPrompt
                 cardExpiration,
                 cardArtUrl,
                 cardIconId,
-                AutofillUiUtils.CardIconSize.LARGE,
+                ImageSize.LARGE,
                 R.dimen.card_unmask_dialog_credit_card_icon_end_margin,
                 /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
                 /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,

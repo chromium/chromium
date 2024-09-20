@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
@@ -57,7 +56,9 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
@@ -90,7 +91,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     ContextualPanelEntrypointCoordinatorDelegate,
     LoadQueryCommands,
     LocationBarViewControllerDelegate,
-    LocationBarConsumer,
     LocationBarSteadyViewConsumer,
     OmniboxControllerDelegate,
     URLDragDataSource> {
@@ -177,12 +177,18 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // clean up.
   self.viewController.dispatcher =
       static_cast<id<ActivityServiceCommands, ApplicationCommands,
-                     LoadQueryCommands, OmniboxCommands>>(
+                     LoadQueryCommands, LensOverlayCommands, OmniboxCommands>>(
           self.browser->GetCommandDispatcher());
+  self.viewController.tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
   self.viewController.voiceSearchEnabled =
       ios::provider::IsVoiceSearchEnabled();
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
+  id<HelpCommands> helpHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+  [self.viewController setHelpCommandsHandler:helpHandler];
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self);
   _locationBar->SetURLLoader(self);
@@ -232,16 +238,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
         didMoveToParentViewController:self.viewController];
   }
 
-  if (!isIncognito && IsLensOverlayAvailable()) {
-    UIButton* lensOverlayEntrypoint = LensOverlay::NewEntrypointButton();
-
-    [lensOverlayEntrypoint addTarget:self
-                              action:@selector(openLensOverlay)
-                    forControlEvents:UIControlEventTouchUpInside];
-
-    [self.viewController setPlaceholderView:lensOverlayEntrypoint];
-  }
-
   // Create button factory that wil be used by the ViewController to get
   // BadgeButtons for a BadgeType.
   BadgeButtonFactory* buttonFactory = [[BadgeButtonFactory alloc] init];
@@ -272,10 +268,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _badgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.badgeViewController);
 
-  self.mediator = [[LocationBarMediator alloc] init];
+  self.mediator = [[LocationBarMediator alloc] initWithIsIncognito:isIncognito];
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
-  self.mediator.consumer = self;
+  self.mediator.consumer = self.viewController;
   self.mediator.webStateList = self.webStateList;
 
   self.steadyViewMediator = [[LocationBarSteadyViewMediator alloc]
@@ -525,20 +521,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self.viewController setLocationBarLabelCenteredBetweenContent:centered];
 }
 
-#pragma mark - LocationBarConsumer
-
-- (void)defocusOmnibox {
-  [self cancelOmniboxEdit];
-}
-
-- (void)updateSearchByImageSupported:(BOOL)searchByImageSupported {
-  self.viewController.searchByImageEnabled = searchByImageSupported;
-}
-
-- (void)updateLensImageSupported:(BOOL)lensImageSupported {
-  self.viewController.lensImageEnabled = lensImageSupported;
-}
-
 #pragma mark - LocationBarSteadyViewConsumer
 
 - (void)updateLocationText:(NSString*)text clipTail:(BOOL)clipTail {
@@ -653,13 +635,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   }
 
   [self cancelOmniboxEdit];
-}
-
-// Creates and shows the lens overlay UI.
-- (void)openLensOverlay {
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(), LensOverlayCommands)
-      createAndShowLensUI:YES
-               entrypoint:LensOverlayEntrypoint::kLocationBar];
 }
 
 @end

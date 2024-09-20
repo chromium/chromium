@@ -122,6 +122,12 @@ class TargetFrequencyTriggerPolicy final : public TriggerPolicy {
   bool has_triggered_ = false;
 };
 
+// Never trigger. Useful for disabling the trigger under certain conditions.
+class NeverTriggerPolicy final : public TriggerPolicy {
+ public:
+  bool ShouldTrigger(float score) override;
+};
+
 // Trigger every time. Very spammy, but suitable for testing or demoing.
 class DemoTriggerPolicy final : public TriggerPolicy {
  public:

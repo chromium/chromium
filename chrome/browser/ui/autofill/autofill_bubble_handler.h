@@ -16,6 +16,7 @@ class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class OfferNotificationBubbleController;
 class SaveAddressBubbleController;
+class SaveAutofillPredictionImprovementsController;
 class UpdateAddressBubbleController;
 class AddNewAddressBubbleController;
 class SaveCardBubbleController;
@@ -60,6 +61,10 @@ class AutofillBubbleHandler {
       content::WebContents* web_contents,
       OfferNotificationBubbleController* controller,
       bool is_user_gesture) = 0;
+
+  virtual AutofillBubbleBase* ShowSaveAutofillPredictionImprovementsBubble(
+      content::WebContents* web_contents,
+      SaveAutofillPredictionImprovementsController* controller) = 0;
 
   // Opens a save address bubble. The bubble's lifecycle is controlled by its
   // widget, and the controller must handle the widget closing to invalidate

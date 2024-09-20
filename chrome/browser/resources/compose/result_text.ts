@@ -7,7 +7,6 @@ import './strings.m.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './result_text.html.js';
@@ -78,10 +77,6 @@ export class ComposeResultTextElement extends PolymerElement {
         type: String,
         readOnly: true,
       },
-      editingEnabled_: {
-        type: Boolean,
-        reflectToAttribute: true,
-      },
     };
   }
 
@@ -97,13 +92,11 @@ export class ComposeResultTextElement extends PolymerElement {
   private wordStreamer_: WordStreamer;
   private displayedChunks_: StreamChunk[] = [];
   private displayedFullText_: string = '';
-  private editingEnabled_: boolean;
   private initialText_: string = '';
 
   constructor() {
     super();
     this.wordStreamer_ = new WordStreamer(this.setStreamedWords_.bind(this));
-    this.editingEnabled_ = loadTimeData.getBoolean('enableRefinedUi');
   }
 
   updateInputs() {
@@ -151,23 +144,15 @@ export class ComposeResultTextElement extends PolymerElement {
       return;
     }
     // Only dispatch event if the text has changed from its initial state.
-    if (this.editingEnabled_ && currentText !== this.initialText_) {
+    if (currentText !== this.initialText_) {
       this.dispatchEvent(new CustomEvent(
           'result-edit',
           {bubbles: true, composed: true, detail: this.$.root.innerText}));
     }
   }
 
-  private canEdit_() {
-    if (this.editingEnabled_) {
-      return 'plaintext-only';
-    } else {
-      return 'false';
-    }
-  }
-
   private partialTextCanEdit_() {
-    if (this.editingEnabled_ && this.hasOutput && this.isOutputComplete) {
+    if (this.hasOutput && this.isOutputComplete) {
       return 'plaintext-only';
     } else {
       return 'false';

@@ -19,11 +19,7 @@ rootWebArea
 ++++++++++inlineTextBox name='Password: '
 ++++++++textField editable protected name='Password:' placeholder='pwd'
 ++++++++++genericContainer ignored
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
-++++++++++++++genericContainer editable
-++++++++++++genericContainer ignored invisible
-++++++++++++++staticText ignored invisible
+++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '

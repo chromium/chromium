@@ -113,6 +113,14 @@ void PrintTo(const UpdateChannelId& id, std::ostream* os) {
 
 UpdateChannelId::UpdateChannelId(std::string id) : id_(std::move(id)) {}
 
+UpdateChannelId::UpdateChannelId(const UpdateChannelId&) = default;
+
+UpdateChannelId::UpdateChannelId(UpdateChannelId&&) = default;
+
+UpdateChannelId& UpdateChannelId::operator=(const UpdateChannelId&) = default;
+
+UpdateChannelId& UpdateChannelId::operator=(UpdateChannelId&&) = default;
+
 UpdateChannelId::~UpdateChannelId() = default;
 
 bool UpdateChannelId::operator==(const UpdateChannelId& other) const = default;

@@ -284,24 +284,14 @@ TEST(AppContainerTest, SecurityCapabilities) {
       ValidSecurityCapabilities(&two_capabilities, package_sid, capabilities));
 }
 
-// TODO(crbug/347547524): re-enable the tests once they are passing on
-// Windows ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_CreateAndDeleteAppContainerProfile \
-  DISABLED_CreateAndDeleteAppContainerProfile
-#else
-#define MAYBE_CreateAndDeleteAppContainerProfile \
-  CreateAndDeleteAppContainerProfile
-#endif
-TEST(AppContainerTest, MAYBE_CreateAndDeleteAppContainerProfile) {
+TEST(AppContainerTest, CreateAndDeleteAppContainerProfile) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
   EXPECT_FALSE(ProfileExist(package_name));
   std::unique_ptr<AppContainerBase> profile_container =
-      AppContainerBase::CreateProfile(package_name.c_str(), L"Name",
-                                      L"Description");
+      AppContainerBase::CreateProfile(package_name.c_str(), L"Name");
   ASSERT_NE(nullptr, profile_container.get());
   EXPECT_TRUE(ProfileExist(package_name));
   CheckProfileDirectoryLayout(profile_container.get());
@@ -309,22 +299,14 @@ TEST(AppContainerTest, MAYBE_CreateAndDeleteAppContainerProfile) {
   EXPECT_FALSE(ProfileExist(package_name));
 }
 
-// TODO(crbug/347529039): re-enable the tests once they are passing on
-// Windows ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_CreateAndOpenAppContainer DISABLED_CreateAndOpenAppContainer
-#else
-#define MAYBE_CreateAndOpenAppContainer CreateAndOpenAppContainer
-#endif
-TEST(AppContainerTest, MAYBE_CreateAndOpenAppContainer) {
+TEST(AppContainerTest, CreateAndOpenAppContainer) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
   EXPECT_FALSE(ProfileExist(package_name));
   std::unique_ptr<AppContainerBase> profile_container =
-      AppContainerBase::CreateProfile(package_name.c_str(), L"Name",
-                                      L"Description");
+      AppContainerBase::CreateProfile(package_name.c_str(), L"Name");
   ASSERT_NE(nullptr, profile_container.get());
   EXPECT_TRUE(ProfileExist(package_name));
   CheckProfileDirectoryLayout(profile_container.get());
@@ -340,34 +322,19 @@ TEST(AppContainerTest, MAYBE_CreateAndOpenAppContainer) {
   EXPECT_FALSE(ProfileExist(package_name));
 }
 
-TEST(AppContainerTest, CreateAndDeleteAppContainerProfileNoFirewall) {
-  if (!features::IsAppContainerSandboxSupported()) {
-    return;
-  }
-  std::wstring package_name = GenerateRandomPackageName();
-  EXPECT_FALSE(AppContainerBase::ProfileExists(package_name.c_str()));
-  std::unique_ptr<AppContainerBase> profile_container =
-      AppContainerBase::CreateProfileNoFirewall(package_name.c_str(), L"Name");
-  ASSERT_NE(nullptr, profile_container.get());
-  EXPECT_TRUE(AppContainerBase::ProfileExists(package_name.c_str()));
-  CheckProfileDirectoryLayout(profile_container.get());
-  EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
-  EXPECT_FALSE(AppContainerBase::ProfileExists(package_name.c_str()));
-}
-
-TEST(AppContainerTest, ReOpenAppContainerProfileNoFirewall) {
+TEST(AppContainerTest, ReOpenAppContainerProfile) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
   std::wstring package_name = GenerateRandomPackageName();
   EXPECT_FALSE(ProfileExist(package_name));
   std::unique_ptr<AppContainerBase> profile_container =
-      AppContainerBase::CreateProfileNoFirewall(package_name.c_str(), L"Name");
+      AppContainerBase::CreateProfile(package_name.c_str(), L"Name");
   ASSERT_NE(nullptr, profile_container.get());
   EXPECT_TRUE(ProfileExist(package_name));
   CheckProfileDirectoryLayout(profile_container.get());
   std::unique_ptr<AppContainerBase> open_container =
-      AppContainerBase::CreateProfileNoFirewall(package_name.c_str(), L"Name");
+      AppContainerBase::CreateProfile(package_name.c_str(), L"Name");
   ASSERT_NE(nullptr, open_container.get());
   EXPECT_EQ(profile_container->GetPackageSid(),
             open_container->GetPackageSid());

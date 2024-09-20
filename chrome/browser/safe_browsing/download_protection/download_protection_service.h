@@ -158,10 +158,10 @@ class DownloadProtectionService {
 
   // Checks the user permissions, and submits the downloaded file if
   // appropriate. Returns whether the submission was successful.
-  bool MaybeBeginFeedbackForDownload(
-      Profile* profile,
-      download::DownloadItem* download,
-      DownloadCommands::Command download_command);
+  bool MaybeBeginFeedbackForDownload(Profile* profile,
+                                     download::DownloadItem* download,
+                                     const std::string& ping_request,
+                                     const std::string& ping_response);
 
   // Registers a callback that will be run when a ClientDownloadRequest has
   // been formed.
@@ -198,14 +198,6 @@ class DownloadProtectionService {
 
   static ClientDownloadResponse::TailoredVerdict
   GetDownloadProtectionTailoredVerdict(const download::DownloadItem* item);
-
-  // Sends dangerous download report if the following conditions are met:
-  // (1) it is a dangerous download.
-  // (2) user is NOT in incognito mode.
-  // (3) user is opted-in for extended reporting.
-  // (4) there is a download ping token associated with the download (i.e.
-  //     Safe Browsing returns a dangerous verdict).
-  static bool ShouldSendDangerousDownloadReport(download::DownloadItem* item);
 
   // Sends dangerous download opened report when download is opened or
   // shown in folder, and if |ShouldSendDangerousDownloadReport| is true.

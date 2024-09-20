@@ -5141,6 +5141,73 @@ TEST_F(UnderlayTest, ProtectedVideoOverlayScaling) {
   }
 }
 
+TEST_F(UnderlayTest, DisableOverlayWithRootCopies) {
+  auto root_pass = CreateRenderPass();
+
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList render_pass_list;
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  render_pass_list.push_back(std::move(root_pass));
+  auto output_surface_plane = overlay_processor_->ProcessOutputSurfaceAsOverlay(
+      kDisplaySize, kDisplaySize, kDefaultSIFormat, gfx::ColorSpace(),
+      false /* has_alpha */, 1.0f /* opacity */, gpu::Mailbox());
+  OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane =
+      &output_surface_plane;
+
+  // Choose 5 here for testing purpose, this value will not change
+  constexpr int kDisableOverlayTestVectorSize =
+      OverlayProcessorUsingStrategy::kCopyRequestSkipOverlayFrames + 5;
+
+  std::vector<bool> copy_frames = {true, false, true};
+  copy_frames.resize(kDisableOverlayTestVectorSize, false);
+
+  // The last 3 elements in |expected_overlays| should always be true
+  // for testing purpose
+  std::vector<bool> expected_overlays(kDisableOverlayTestVectorSize, false);
+  for (int i = kDisableOverlayTestVectorSize - 3;
+       i < kDisableOverlayTestVectorSize; i++) {
+    expected_overlays[i] = true;
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kTemporalSkipOverlaysWithRootCopyOutputRequests);
+
+  for (size_t i = 0; i < copy_frames.size(); ++i) {
+    SCOPED_TRACE(i);
+
+    render_pass_list[0]->copy_requests.clear();
+    render_pass_list[0]->quad_list.clear();
+
+    CreateOpaqueQuadAt(resource_provider_.get(),
+                       render_pass_list[0]->shared_quad_state_list.back(),
+                       render_pass_list[0].get(),
+                       render_pass_list[0]->output_rect, SkColors::kWhite);
+
+    CreateCandidateQuadAt(resource_provider_.get(),
+                          child_resource_provider_.get(), child_provider_.get(),
+                          render_pass_list[0]->shared_quad_state_list.back(),
+                          render_pass_list[0].get(), kOverlayRect);
+
+    // Add copy output request to root render pass on certain frames.
+    if (copy_frames[i]) {
+      render_pass_list[0]->copy_requests.push_back(
+          CopyOutputRequest::CreateStubForTesting());
+    }
+
+    OverlayCandidateList candidate_list;
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &render_pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        surface_damage_rect_list, primary_plane, &candidate_list, &damage_rect_,
+        &content_bounds_);
+
+    EXPECT_EQ(expected_overlays[i], candidate_list.size() > 0);
+  }
+}
+
 #if BUILDFLAG(IS_OZONE)
 
 TileDrawQuad* CreateTileCandidateQuadAt(

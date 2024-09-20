@@ -15,11 +15,13 @@ class AutocompleteClassifier;
 
 namespace ios {
 // Singleton that owns all AutocompleteClassifiers and associates them with
-// ChromeBrowserState.
+// profiles.
 class AutocompleteClassifierFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static AutocompleteClassifier* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static AutocompleteClassifier* GetForBrowserState(ProfileIOS* profile);
+
+  static AutocompleteClassifier* GetForProfile(ProfileIOS* profile);
   static AutocompleteClassifierFactory* GetInstance();
 
   // Returns the default factory used to build AutocompleteClassifiers. Can be

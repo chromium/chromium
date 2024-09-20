@@ -78,6 +78,13 @@ void SetAccountKeyedPrefDictEntry(PrefService* pref_service,
                                   const char* key,
                                   base::Value value);
 
+// In the account-keyed dictionary pref at `pref_path` (which must be a valid
+// registered pref), removes any value under `key` for the given `gaia_id_hash`.
+void RemoveAccountKeyedPrefDictEntry(PrefService* pref_service,
+                                     const char* pref_path,
+                                     const signin::GaiaIdHash& gaia_id_hash,
+                                     const char* key);
+
 // For the account-keyed pref at `pref_path` (which must be a valid registered
 // pref), drops all entries for accounts that are *not* listed in
 // `available_gaia_ids`.

@@ -128,6 +128,11 @@ public class DataSharingServiceImpl implements DataSharingService {
         return DataSharingServiceImplJni.get().getUIDelegate(mNativePtr);
     }
 
+    @Override
+    public ServiceStatus getServiceStatus() {
+        return DataSharingServiceImplJni.get().getServiceStatus(mNativePtr);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -193,5 +198,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                 Callback<SharedDataPreviewOrFailureOutcome> callback);
 
         DataSharingUIDelegate getUIDelegate(long nativeDataSharingServiceAndroid);
+
+        ServiceStatus getServiceStatus(long nativeDataSharingServiceAndroid);
     }
 }

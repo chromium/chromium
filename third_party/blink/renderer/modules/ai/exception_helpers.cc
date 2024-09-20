@@ -27,6 +27,7 @@ const char kExceptionMessageDisabled[] = "The response was disabled.";
 const char kExceptionMessageCancelled[] = "The request was canceled.";
 const char kExceptionMessageSessionDestroyed[] =
     "The model execution session has been destroyed.";
+const char kExceptionMessageRequestAborted[] = "The request has been aborted.";
 
 const char kExceptionMessageInvalidTemperatureAndTopKFormat[] =
     "Initializing a new session must either specify both topK and temperature, "
@@ -35,7 +36,11 @@ const char kExceptionMessageUnableToCreateSession[] =
     "The session cannot be created.";
 const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
-const char kExceptionMessageRequestAborted[] = "The request has been aborted.";
+const char kExceptionMessageSystemPromptAndInitialPromptsExist[] =
+    "The systemPrompt and initialPrompts should not present at the same time.";
+const char kExceptionMessageSystemPromptIsNotTheFirst[] =
+    "The prompt with 'system' role must be placed at the first entry of "
+    "initialPrompts.";
 
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -45,6 +50,11 @@ void ThrowInvalidContextException(ExceptionState& exception_state) {
 void ThrowSessionDestroyedException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     kExceptionMessageSessionDestroyed);
+}
+
+void ThrowAbortedException(ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                    kExceptionMessageRequestAborted);
 }
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver) {

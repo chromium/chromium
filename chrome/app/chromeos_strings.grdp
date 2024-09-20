@@ -4674,14 +4674,6 @@
     Go to files
   </message>
 
-  <!-- Lacros data migration triggering UI. -->
-  <message name="IDS_LACROS_DATA_MIGRATION_RELAUNCH" desc="Message shown as a menu to relaunch Chrome in order to trigger data migration.">
-    Relaunch to update
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_OUT_OF_DISK_ERROR_TEXT" desc="Message shown when a user clicks 'Relaunch to update' button, but failed to restart due to out of disk space.">
-    There isn't enough space on this device to complete this update. Free up <ph name="NECESSARY_SPACE">$1<ex>10 MB</ex></ph> on your device and try again.
-  </message>
-
   <!-- Lacros data backward migration screen. -->
   <message name="IDS_LACROS_DATA_BACKWARD_MIGRATION_SCREEN_ERROR_SUBTITLE" desc="Shown if Lacros data backward migration fails.">
     If you click “Cancel”, it may affect your browser data and you may need to perform a factory reset.
@@ -5330,6 +5322,9 @@
   </message>
   <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE" desc="Message displayed in the notification when import (restore) of the Linux container fails due to insufficient space.">
     Cannot restore due to lack of storage space. Free up <ph name="SPACE_REQUIRED">$1<ex>10Gb</ex></ph> from the device and try again.
+  </message>
+  <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE_UNKNOWN_AMOUNT" desc="Message displayed in the notification when import (restore) of the Linux container fails due to insufficient space.">
+    Cannot restore due to lack of storage space.
   </message>
   <message name="IDS_CROSTINI_RECOVERY_TITLE" desc="Title displayed in the dialog when a Linux will be restarted after a Chrome crash.">
     Restart Linux?
@@ -6914,6 +6909,32 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
   <message name="IDS_THEME_AUTO_DESCRIPTION" desc="Description of the auto theme button">
     Switch themes at sunrise and sunset
+  </message>
+
+  <!-- Split Modifier Screen -->
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_TITLE" desc="Title of the split modifier info screen." translateable="false">
+    Test new feature on your device after setup
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SUBTITLE" desc="Subtitle of the split modifier info screen." translateable="false">
+    Test new feature on your device after setup.
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TITLE" desc="Title of the first description section." translateable="false">
+    Testing
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TEXT" desc="Text inside the first description section." translateable="false">
+    Test your device with the new features added to the Chromebook and more.
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the first description section." translateable="false">
+    Test your device with the new features added to the Chromebook and more accessibility test.
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TITLE" desc="Title of the second description section." translateable="false">
+    Testing
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TEXT" desc="Text inside the second description section." translateable="false">
+    Test your device with the new features added to the Chromebook and more.
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the second description section." translateable="false">
+    Test your device with the new features added to the Chromebook and more accessibility test.
   </message>
 
   <!-- Touchpad Scroll -->

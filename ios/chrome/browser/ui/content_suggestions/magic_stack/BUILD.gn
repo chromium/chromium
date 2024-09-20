@@ -75,6 +75,8 @@ source_set("cells") {
   sources = [
     "magic_stack_edit_button_cell.h",
     "magic_stack_edit_button_cell.mm",
+    "magic_stack_module_collection_view_cell.h",
+    "magic_stack_module_collection_view_cell.mm",
     "magic_stack_module_container.h",
     "magic_stack_module_container.mm",
     "magic_stack_module_contents_factory.h",
@@ -131,6 +133,7 @@ source_set("magic_stack") {
     ":constants",
     ":public",
     "//base",
+    "//components/segmentation_platform/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/shared/public/features",

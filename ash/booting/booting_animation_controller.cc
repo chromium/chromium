@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -72,7 +73,7 @@ void BootingAnimationController::Show() {
   params.delegate->SetCanMaximize(true);
   params.delegate->SetCanFullscreen(true);
   params.name = "BootingAnimationWidget";
-  params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  params.show_state = ui::mojom::WindowShowState::kFullscreen;
   // Create the Booting Animation widget on the primary display.
   auto* animation_window = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_BootingAnimationContainer);

@@ -1,3 +1,0 @@
-TYPE_ANNOUNCEMENT - [Hello world!!]
-TYPE_ANNOUNCEMENT - [Hello world!!]
-TYPE_ANNOUNCEMENT - [First alert]

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/common/viz_utils.h"
 
 #include <algorithm>
@@ -100,21 +95,6 @@ bool GetScaledRRectF(const gfx::Rect& space,
   scaled_rect->Offset(-scaled_rect->rect().origin().x(),
                       -scaled_rect->rect().origin().y());
   scaled_rect->Offset(new_x, new_y);
-  return true;
-}
-
-bool GetScaledUVs(const gfx::Rect& rect, const gfx::QuadF* clip, float uvs[8]) {
-  if (!clip)
-    return false;
-
-  uvs[0] = ((clip->p1().x() - rect.x()) / rect.width());
-  uvs[1] = ((clip->p1().y() - rect.y()) / rect.height());
-  uvs[2] = ((clip->p2().x() - rect.x()) / rect.width());
-  uvs[3] = ((clip->p2().y() - rect.y()) / rect.height());
-  uvs[4] = ((clip->p3().x() - rect.x()) / rect.width());
-  uvs[5] = ((clip->p3().y() - rect.y()) / rect.height());
-  uvs[6] = ((clip->p4().x() - rect.x()) / rect.width());
-  uvs[7] = ((clip->p4().y() - rect.y()) / rect.height());
   return true;
 }
 

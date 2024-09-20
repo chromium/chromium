@@ -3,6 +3,7 @@
     background-color: var(--color-surface-container-highest-dark);
     display: block;
     height: 16px;
+    flex-shrink: 0;
     margin-block: auto;
     mask-image: url('bidirectional_arrow.svg');
     mask-position: center;
@@ -14,6 +15,7 @@
   .button {
     border: none;
     padding: 0;
+    pointer-events: all;
   }
 
   .button-label {
@@ -43,10 +45,24 @@
     background-color: var(--color-selection-element);
     border-radius: 100px;
     height: 38px;
+    flex-shrink: 1;
     gap: 0px;
     margin-block-start: 5px;
     margin-block-end: 5px;
+    min-width: 0;
+    pointer-events: none;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0);
+    white-space: nowrap;
+  }
+
+  :host([is-translate-mode-enabled]) .language-picker-button {
+    max-width: 165px;
     min-width: 77px;
+    pointer-events: all;
+    transform: scaleX(1);
+    transition-delay: 33ms;
   }
 
   .language-picker-label {
@@ -71,6 +87,26 @@
     width: 100%;
   }
 
+  .language-picker-menu::-webkit-scrollbar {
+    width: 14px;
+  }
+
+  .language-picker-menu::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+  }
+
+  .language-picker-menu::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--color-scrim-rgb), 0.3);
+    border: 4px solid white;
+    border-radius: 10px;
+    min-height: 56px;
+  }
+
+  .language-picker-menu::-webkit-scrollbar-track {
+    margin: 12px;
+  }
+
   .language-picker-menu-back-button {
     margin: 2px 0px 2px 10px;
   }
@@ -79,7 +115,10 @@
     border-radius: 0;
     color: var(--color-scrim);
     justify-content: start;
-    padding: 8px 16px 8px 44px;
+    padding-block-start: 8px;
+    padding-block-end: 8px;
+    padding-inline-start: 44px;
+    padding-inline-end: 16px;
   }
 
   .language-picker-menu-button-label {
@@ -103,7 +142,10 @@
     font-weight: 500;
     line-height: 26px;
     margin: 0;
-    padding: 0 16px 13px;
+    padding-block-start: 0px;
+    padding-block-end: 13px;
+    padding-inline-start: 16px;
+    padding-inline-end: 16px;
   }
 
   .language-picker-menu-section {
@@ -118,20 +160,45 @@
     font-style: normal;
     font-weight: 500;
     margin: 8px 0;
-    padding: 0 0 0 2px;
+    padding-inline-end: 2px;
   }
 
   .language-picker-menu-title-section {
     display: flex;
   }
 
+  .translate-icon {
+    display: block;
+    height: 20px;
+    mask-image: url('translate.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 20px;
+  }
+
   #languagePicker {
     border-radius: 100px;
     display: flex;
-    gap: 6px;
     height: 48px;
+    gap: 6px;
+    min-width: 121px;
+    max-width: 121px;
+    opacity: 0;
+    transition: min-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
+                max-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
+                opacity 50ms linear;
+    pointer-events: none;
+  }
+
+  :host([is-translate-mode-enabled]) #languagePicker {
+    min-width: 197px;
+    max-width: 370px;
+    opacity: 1;
     pointer-events: all;
-    position: relative;
+    transition: min-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
+                max-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
+                opacity 100ms linear 33ms;
   }
 
   #languagePickerMenuStarsIcon {
@@ -162,7 +229,10 @@
   }
 
   #sourceAutoDetectButton {
-    padding: 20px 16px 24px 44px;
+    padding-block-start: 20px;
+    padding-block-end: 24px;
+    padding-inline-start: 44px;
+    padding-inline-end: 16px;
   }
 
   #starsIcon {
@@ -187,23 +257,46 @@
     margin-inline-start: 16px;
   }
 
-  #translateButton {
-    background-color: var(--color-selection-element);
-    height: 48px;
-    min-width: 50px;
-    pointer-events: all;
-    width: 164px;
-  }
-
-  :host([is-translate-mode-enabled]) #translateButton {
+  #translateDisableButton {
     background-color: var(--color-surface-container-highest-dark);
     gap: 0px;
     height: 38px;
-    margin-block-start: 5px;
-    margin-block-end: 5px;
-    margin-inline-end: 5px;
-    min-width: 38px;
+    min-width: 0px;
+    opacity: 0;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: opacity 50ms linear,
+                transform 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
+                width 1ms linear 200ms;
+    width: 0px;
+  }
+
+  :host([is-translate-mode-enabled]) #translateDisableButton {
+    opacity: 1;
+    transform: scaleX(1);
+    transition: opacity 100ms linear 33ms,
+                transform 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms;
     width: 38px;
+  }
+
+  #translateEnableButton {
+    background-color: var(--color-selection-element);
+    height: 48px;
+    left: 50%;
+    opacity: 1;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 150ms linear 50ms;
+    position: absolute;
+    width: 164px;
+    z-index: 1;
+  }
+
+  :host([is-translate-mode-enabled]) #translateEnableButton {
+    background-color: white;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 50ms linear;
   }
 
   #translateButtonLabel {
@@ -212,29 +305,50 @@
   }
 
   #translateContainer {
-    background-color: white;
+    background-color: var(--color-selection-element);
     border-radius: 36px;
+    cursor: default;
     display: flex;
     flex-direction: row;
+    min-width: 164px;
+    overflow: hidden;
+    pointer-events: all;
   }
 
-  #translateIcon {
-    background-color: var(--color-primary);
+  :host([is-translate-mode-enabled]) #translateContainer {
+    background-color: white;
+  }
+
+  #translateDisableButtonContainer {
+    display: grid;
+    height: 38px;
+    margin-block-start: 5px;
+    margin-block-end: 5px;
+    margin-inline-end: 5px;
+    place-items: center;
+    width: 38px;
+  }
+
+  #translateDisableIcon {
+    background-color: var(--color-overlay-icon);
     display: block;
-    height: 20px;
-    mask-image: url('translate.svg');
-    mask-position: center;
-    mask-repeat: no-repeat;
-    mask-size: 100%;
+    pointer-events: none;
+    position: absolute;
+    opacity: 0;
+    transition: opacity 1ms linear 15ms;
     width: 20px;
   }
 
-  :host([is-translate-mode-enabled]) #translateIcon {
-    background-color: var(--color-overlay-icon);
+  :host([is-translate-mode-enabled]) #translateDisableIcon {
+    display: block;
+    opacity: 1;
+    transition: opacity 1ms linear 33ms;
   }
 
-  :host([is-translate-mode-enabled]) #translateButtonLabel,
-  :host(:not([is-translate-mode-enabled])) #languagePicker,
+  #translateEnableIcon {
+    background-color: var(--color-primary);
+  }
+
   :host(:not([should-show-stars-icon])) #starsIcon {
     display: none;
   }
@@ -246,30 +360,38 @@
   }
 </style>
 <div id="translateContainer">
+  <cr-button id="translateEnableButton" class="button"
+  on-click="onTranslateButtonClick">
+    <span id="translateEnableIcon" class="translate-icon" slot="prefix-icon">
+    </span>
+    <span id="translateButtonLabel" class="button-label">
+      $i18n{translateButtonLabel}
+    </span>
+  </cr-button>
   <div id="languagePicker">
     <cr-button id="sourceLanguageButton" class="button language-picker-button"
         on-click="onSourceLanguageButtonClick">
       <span id="starsIcon" slot="prefix-icon"></span>
       <span id="sourceLanguageLabel"
           class="button-label language-picker-label">
-        [[getSourceLanguageDisplayName(sourceLanguage, contentLanguage)]]
+        [[getSourceLanguageDisplayName(translateLanguageList,
+            sourceLanguage, contentLanguage)]]
       </span>
     </cr-button>
     <span id="arrowRightIcon"></span>
     <cr-button id="targetLanguageButton" class="button language-picker-button"
         on-click="onTargetLanguageButtonClick">
       <span id="targetLanguageLabel" class="button-label language-picker-label">
-        [[targetLanguage.displayName]]
+        [[getTargetLanguageDisplayName(targetLanguage)]]
       </span>
     </cr-button>
   </div>
-  <cr-button id="translateButton" class="button"
-  on-click="onTranslateButtonClick">
-    <span id="translateIcon" slot="prefix-icon"></span>
-    <span id="translateButtonLabel" class="button-label">
-      $i18n{translateButtonLabel}
-    </span>
-  </cr-button>
+  <div id="translateDisableButtonContainer">
+    <cr-button id="translateDisableButton" class="button"
+    on-click="onTranslateButtonClick">
+    </cr-button>
+    <span id="translateDisableIcon" class="translate-icon"></span>
+  </div>
   <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"
       aria-labelledby="sourceLanguageButton">
     <div class="language-picker-menu-title-section">
@@ -291,10 +413,11 @@
         </div>
         <div id="menuDetectedLanguage"
             class="language-picker-menu-detected-language">
-          [[getContentLanguageDisplayName(contentLanguage)]]
+          [[getContentLanguageDisplayName(
+              translateLanguageList, contentLanguage)]]
         </div>
         <span id="languagePickerMenuStarsIcon" slot="suffix-icon"></span>
-        </cr-button>
+      </cr-button>
     </div>
     <div class="language-picker-menu-section">
       <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
@@ -309,8 +432,8 @@
           <span class="language-picker-menu-button-label">
             [[language.displayName]]
           </span>
-          </cr-button>
-          </template>
+        </cr-button>
+      </template>
     </div>
   </div>
   <div id="targetLanguagePickerMenu" class="language-picker-menu" role="menu"
@@ -335,8 +458,8 @@
           <span class="language-picker-menu-button-label">
             [[language.displayName]]
           </span>
-          </cr-button>
-          </template>
+        </cr-button>
+      </template>
     </div>
   </div>
 </div>

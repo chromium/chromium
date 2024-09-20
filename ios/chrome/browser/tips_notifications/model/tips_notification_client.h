@@ -93,6 +93,13 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if an Omnibox Position promo notification should be sent.
   bool ShouldSendOmniboxPosition();
 
+  // Returns true if a Lens promo notification should be sent.
+  bool ShouldSendLens();
+
+  // Returns true if an Enhanced Safe Browsing promo notification should be
+  // sent.
+  bool ShouldSendEnhancedSafeBrowsing();
+
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
 
@@ -105,6 +112,7 @@ class TipsNotificationClient : public PushNotificationClient {
   void ShowDocking(Browser* browser);
   void ShowOmniboxPosition(Browser* browser);
   void ShowLensPromo(Browser* browser);
+  void ShowEnhancedSafeBrowsingPromo(Browser* browser);
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);
@@ -121,6 +129,9 @@ class TipsNotificationClient : public PushNotificationClient {
 
   // Returns true if Tips notifications are permitted.
   bool IsPermitted();
+
+  // Returns true if the Dismiss Limit has been reached.
+  bool DismissLimitReached();
 
   // Called when the pref that stores whether Tips notifications are permitted
   // changes.

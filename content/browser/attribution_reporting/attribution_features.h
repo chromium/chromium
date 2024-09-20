@@ -5,22 +5,9 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_FEATURES_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_FEATURES_H_
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
-#include "content/common/content_export.h"
-
-namespace base {
-class TimeDelta;
-}  // namespace base
-
 namespace content {
-
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionReportDeliveryRetryDelays);
-CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kAttributionReportDeliveryFirstRetryDelay;
-CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kAttributionReportDeliverySecondRetryDelay;
-
+// TODO(crbug.com/365974433): Add feature flag to gate third report delay
+// window.
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_FEATURES_H_

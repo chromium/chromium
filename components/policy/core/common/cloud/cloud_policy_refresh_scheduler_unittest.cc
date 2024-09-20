@@ -296,17 +296,6 @@ TEST_F(CloudPolicyRefreshSchedulerTest, RefreshSoon) {
   Mock::VerifyAndClearExpectations(&client_);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(CloudPolicyRefreshSchedulerTest, SkipFirstFetch) {
-  CloudPolicyRefreshScheduler scheduler(
-      &client_, &store_, service_.get(), task_runner_,
-      network::TestNetworkConnectionTracker::CreateGetter(), true);
-  base::TimeDelta delay = task_runner_->NextPendingTaskDelay();
-  EXPECT_EQ(CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs,
-            delay.InMilliseconds());
-}
-#endif
-
 TEST_F(CloudPolicyRefreshSchedulerTest, RefreshSoonOverriding) {
   auto scheduler = base::WrapUnique(CreateRefreshScheduler());
 

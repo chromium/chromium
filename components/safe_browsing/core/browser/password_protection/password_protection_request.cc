@@ -380,6 +380,9 @@ void PasswordProtectionRequest::SendRequestWithToken(
   bool has_access_token = !access_token.empty();
   LogPasswordProtectionRequestTokenHistogram(trigger_type_, has_access_token);
   if (has_access_token) {
+    LogAuthenticatedCookieResets(
+        *resource_request,
+        SafeBrowsingAuthenticatedEndpoint::kPasswordProtection);
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token);
   }

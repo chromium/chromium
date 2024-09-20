@@ -157,6 +157,41 @@ DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice1* dml_device) {
   return feature_levels_supported.MaxSupportedFeatureLevel;
 }
 
+std::string_view DMLFeatureLevelToString(DML_FEATURE_LEVEL dml_feature_level) {
+  switch (dml_feature_level) {
+    case DML_FEATURE_LEVEL_1_0:
+      return "DML_FEATURE_LEVEL_1_0";
+    case DML_FEATURE_LEVEL_2_0:
+      return "DML_FEATURE_LEVEL_2_0";
+    case DML_FEATURE_LEVEL_2_1:
+      return "DML_FEATURE_LEVEL_2_1";
+    case DML_FEATURE_LEVEL_3_0:
+      return "DML_FEATURE_LEVEL_3_0";
+    case DML_FEATURE_LEVEL_3_1:
+      return "DML_FEATURE_LEVEL_3_1";
+    case DML_FEATURE_LEVEL_4_0:
+      return "DML_FEATURE_LEVEL_4_0";
+    case DML_FEATURE_LEVEL_4_1:
+      return "DML_FEATURE_LEVEL_4_1";
+    case DML_FEATURE_LEVEL_5_0:
+      return "DML_FEATURE_LEVEL_5_0";
+    case DML_FEATURE_LEVEL_5_1:
+      return "DML_FEATURE_LEVEL_5_1";
+    case DML_FEATURE_LEVEL_5_2:
+      return "DML_FEATURE_LEVEL_5_2";
+    case DML_FEATURE_LEVEL_6_0:
+      return "DML_FEATURE_LEVEL_6_0";
+    case DML_FEATURE_LEVEL_6_1:
+      return "DML_FEATURE_LEVEL_6_1";
+    case DML_FEATURE_LEVEL_6_2:
+      return "DML_FEATURE_LEVEL_6_2";
+    case DML_FEATURE_LEVEL_6_4:
+      return "DML_FEATURE_LEVEL_6_4";
+    default:
+      return "Unknown DML_FEATURE_LEVEL";
+  }
+}
+
 D3D12_RESOURCE_BARRIER CreateTransitionBarrier(ID3D12Resource* resource,
                                                D3D12_RESOURCE_STATES before,
                                                D3D12_RESOURCE_STATES after) {
@@ -211,23 +246,23 @@ void ReadbackBufferWithBarrier(
   command_recorder->ResourceBarrier(barriers);
 }
 
-void UploadBufferWithBarrier(CommandRecorder* command_recorder,
-                             TensorImplDml* dst_buffer,
+void UploadTensorWithBarrier(CommandRecorder* command_recorder,
+                             TensorImplDml* dst_tensor,
                              Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
                              size_t buffer_size) {
-  UploadBufferWithBarrier(command_recorder, dst_buffer->buffer(),
+  UploadBufferWithBarrier(command_recorder, dst_tensor->buffer(),
                           std::move(src_buffer), buffer_size);
-  command_recorder->OnBufferAccessed(dst_buffer);
+  command_recorder->OnTensorAccessed(dst_tensor);
 }
 
-void ReadbackBufferWithBarrier(
+void ReadbackTensorWithBarrier(
     CommandRecorder* command_recorder,
     Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
-    TensorImplDml* src_buffer,
+    TensorImplDml* src_tensor,
     size_t buffer_size) {
-  ReadbackBufferWithBarrier(command_recorder, dst_buffer, src_buffer->buffer(),
+  ReadbackBufferWithBarrier(command_recorder, dst_buffer, src_tensor->buffer(),
                             buffer_size);
-  command_recorder->OnBufferAccessed(src_buffer);
+  command_recorder->OnTensorAccessed(src_tensor);
 }
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,

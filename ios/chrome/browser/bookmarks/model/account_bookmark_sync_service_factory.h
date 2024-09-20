@@ -16,13 +16,17 @@ class BookmarkSyncService;
 }
 
 namespace ios {
-// Owns the bookmark sync service for bookmarks that belong to the primary
-// account.
+// Owns the bookmark sync service for bookmarks that belong to the associated
+// profile.
 class AccountBookmarkSyncServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static sync_bookmarks::BookmarkSyncService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static sync_bookmarks::BookmarkSyncService* GetForProfile(
+      ProfileIOS* profile);
   static AccountBookmarkSyncServiceFactory* GetInstance();
 
   AccountBookmarkSyncServiceFactory(const AccountBookmarkSyncServiceFactory&) =

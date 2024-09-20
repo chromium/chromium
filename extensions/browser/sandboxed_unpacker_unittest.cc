@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/sandboxed_unpacker.h"
-#include "build/build_config.h"
 
 #include <memory>
 #include <tuple>
@@ -11,6 +10,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/features.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -23,8 +23,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
@@ -90,13 +92,15 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
 
   base::FilePath temp_dir() const { return temp_dir_; }
   std::u16string unpack_error_message() const {
-    if (error_)
+    if (error_) {
       return error_->message();
+    }
     return std::u16string();
   }
   CrxInstallErrorType unpack_error_type() const {
-    if (error_)
+    if (error_) {
       return error_->type();
+    }
     return CrxInstallErrorType::NONE;
   }
   int unpack_error_detail() const {
@@ -561,6 +565,10 @@ TEST_F(SandboxedUnpackerTest, UnzipperServiceFails) {
 }
 
 TEST_F(SandboxedUnpackerTest, JsonParserFails) {
+  // Disable the Rust JSON parser, as it is in-process and cannot crash.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(base::features::kUseRustJsonParser, false);
+
   in_process_data_decoder().SimulateJsonParserCrash(true);
   InitSandboxedUnpacker();
 

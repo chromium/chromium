@@ -9,7 +9,6 @@ if (is_android) {
 }
 import("//build/buildflag_header.gni")
 import("//components/optimization_guide/features.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/mediapipe/features.gni")
 import("//third_party/tflite/features.gni")
 
@@ -44,8 +43,6 @@ static_library("model_executor") {
       "bert_model_executor.h",
       "model_execution_timeout_watchdog.cc",
       "model_execution_timeout_watchdog.h",
-      "page_visibility_model_executor.cc",
-      "page_visibility_model_executor.h",
       "tflite_model_executor.h",
     ]
   }
@@ -102,15 +99,12 @@ mojom("interfaces") {
 if (build_with_tflite_lib) {
   static_library("machine_learning") {
     sources = [
-      "page_visibility_op_resolver.cc",
-      "page_visibility_op_resolver.h",
       "tflite_op_resolver.cc",
       "tflite_op_resolver.h",
     ]
     deps = [
       ":features",
       "//components/optimization_guide:machine_learning_tflite_buildflags",
-      "//third_party/tensorflow_models:tflite_custom_ops",
       "//third_party/tflite",
       "//third_party/tflite:buildflags",
       "//third_party/tflite:tflite_public_headers",
@@ -144,7 +138,10 @@ component("features") {
     "optimization_guide_switches.cc",
     "optimization_guide_switches.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//ui/accessibility",
+  ]
   deps = [
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -327,10 +324,12 @@ static_library("core") {
     "//components/unified_consent",
     "//components/variations",
     "//components/variations/net",
+    "//google_apis",
     "//google_apis/common:request_util",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
+    "//services/on_device_model/public/cpp",
     "//services/on_device_model/public/mojom",
     "//third_party/tflite:buildflags",
     "//url:url",
@@ -374,6 +373,7 @@ static_library("prediction") {
     "//components/prefs",
     "//components/services/unzip/public/cpp",
     "//crypto",
+    "//google_apis",
     "//google_apis/common:request_util",
     "//net/traffic_annotation",
     "//services/network/public/cpp",
@@ -636,21 +636,6 @@ if (is_mac && build_with_internal_optimization_guide) {
   }
 }
 
-if (build_with_tflite_lib) {
-  fuzzer_test("optimization_guide_page_visibility_model_fuzzer") {
-    sources = [ "page_visibility_model_fuzzer.cc" ]
-    deps = [
-      ":core",
-      ":features",
-      ":machine_learning",
-      ":model_executor",
-      "//base:base",
-      "//base/test:test_support",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-    ]
-  }
-}
-
 action("on_device_model_execution_proto_generator") {
   script =
       "//components/optimization_guide/tools/gen_on_device_proto_descriptors.py"
@@ -660,6 +645,7 @@ action("on_device_model_execution_proto_generator") {
     "$root_gen_dir/components/optimization_guide/proto/string_value.descriptor",
     "$root_gen_dir/components/optimization_guide/proto/tab_organization.descriptor",
     "$root_gen_dir/components/optimization_guide/proto/history_answer.descriptor",
+    "$root_gen_dir/components/optimization_guide/proto/prompt_api.descriptor",
     "$root_gen_dir/components/optimization_guide/proto/summarize.descriptor",
   ]
   outputs = [ output_proto_descriptors_cc_file ]
@@ -671,12 +657,14 @@ action("on_device_model_execution_proto_generator") {
     "--include=\"components/optimization_guide/proto/string_value.pb.h\"",
     "--include=\"components/optimization_guide/proto/features/tab_organization.pb.h\"",
     "--include=\"components/optimization_guide/proto/features/history_answer.pb.h\"",
+    "--include=\"components/optimization_guide/proto/features/prompt_api.pb.h\"",
     "--include=\"components/optimization_guide/proto/features/summarize.pb.h\"",
     "--request=.optimization_guide.proto.ComposeRequest",
     "--request=.optimization_guide.proto.TabOrganizationRequest",
     "--request=.optimization_guide.proto.HistoryAnswerRequest",
     "--request=.optimization_guide.proto.StringValue",
     "--request=.optimization_guide.proto.SummarizeRequest",
+    "--request=.optimization_guide.proto.PromptApiRequest",
     "--response=.optimization_guide.proto.ComposeResponse",
     "--response=.optimization_guide.proto.TabOrganizationResponse",
     "--response=.optimization_guide.proto.HistoryAnswerResponse",
@@ -692,6 +680,7 @@ action("on_device_model_execution_proto_generator") {
   deps = [
     "//components/optimization_guide/proto:compose_proto_descriptor",
     "//components/optimization_guide/proto:history_answer_proto_descriptor",
+    "//components/optimization_guide/proto:prompt_api_proto_descriptor",
     "//components/optimization_guide/proto:string_value_proto_descriptor",
     "//components/optimization_guide/proto:summarize_descriptor",
     "//components/optimization_guide/proto:tab_organization_proto_descriptor",

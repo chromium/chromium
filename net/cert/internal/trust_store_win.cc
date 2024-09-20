@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/internal/trust_store_win.h"
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/hash/sha1.h"
 #include "base/location.h"
@@ -21,6 +17,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "net/base/features.h"
 #include "net/cert/x509_util.h"
+#include "net/cert/x509_util_win.h"
 #include "net/third_party/mozilla_win/cert/win_util.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
@@ -91,8 +88,12 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
         return false;
     }
   }
-  for (DWORD i = 0; i < usage->cUsageIdentifier; i++) {
-    std::string_view eku = std::string_view(usage->rgpszUsageIdentifier[i]);
+
+  // SAFETY: `usage->rgpszUsageIdentifier` is an array of LPSTR (pointer to null
+  // terminated string) of length `usage->cUsageIdentifier`.
+  base::span<LPSTR> usage_identifiers = UNSAFE_BUFFERS(
+      base::make_span(usage->rgpszUsageIdentifier, usage->cUsageIdentifier));
+  for (std::string_view eku : usage_identifiers) {
     if ((eku == szOID_PKIX_KP_SERVER_AUTH) ||
         (eku == szOID_ANY_ENHANCED_KEY_USAGE)) {
       return true;
@@ -106,8 +107,7 @@ void AddCertWithTrust(
     const bssl::CertificateTrust trust,
     std::vector<net::PlatformTrustStore::CertWithTrust>* certs) {
   certs->push_back(net::PlatformTrustStore::CertWithTrust(
-      base::ToVector(base::make_span(cert->pbCertEncoded, cert->cbCertEncoded)),
-      trust));
+      base::ToVector(x509_util::CertContextAsSpan(cert)), trust));
 }
 
 }  // namespace
@@ -301,9 +301,8 @@ class TrustStoreWin::Impl {
     while ((cert_from_store = CertFindCertificateInStore(
                 all_certs_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SUBJECT_NAME, &cert_issuer_blob, cert_from_store))) {
-      bssl::UniquePtr<CRYPTO_BUFFER> der_crypto =
-          x509_util::CreateCryptoBuffer(base::make_span(
-              cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded));
+      bssl::UniquePtr<CRYPTO_BUFFER> der_crypto = x509_util::CreateCryptoBuffer(
+          x509_util::CertContextAsSpan(cert_from_store));
       bssl::CertErrors errors;
       bssl::ParsedCertificate::CreateAndAddToVector(
           std::move(der_crypto), x509_util::DefaultParseCertificateOptions(),
@@ -330,8 +329,8 @@ class TrustStoreWin::Impl {
     while ((cert_from_store = CertFindCertificateInStore(
                 disallowed_cert_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-      base::span<const uint8_t> cert_from_store_span = base::make_span(
-          cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
+      base::span<const uint8_t> cert_from_store_span =
+          x509_util::CertContextAsSpan(cert_from_store);
       // If a cert is in the windows distruted store, it is considered
       // distrusted for all purporses. EKU isn't checked. See crbug.com/1355961.
       if (base::ranges::equal(cert_span, cert_from_store_span)) {
@@ -342,8 +341,8 @@ class TrustStoreWin::Impl {
     while ((cert_from_store = CertFindCertificateInStore(
                 root_cert_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-      base::span<const uint8_t> cert_from_store_span = base::make_span(
-          cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
+      base::span<const uint8_t> cert_from_store_span =
+          x509_util::CertContextAsSpan(cert_from_store);
       if (base::ranges::equal(cert_span, cert_from_store_span)) {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
@@ -356,8 +355,8 @@ class TrustStoreWin::Impl {
     while ((cert_from_store = CertFindCertificateInStore(
                 trusted_people_cert_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-      base::span<const uint8_t> cert_from_store_span = base::make_span(
-          cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
+      base::span<const uint8_t> cert_from_store_span =
+          x509_util::CertContextAsSpan(cert_from_store);
       if (base::ranges::equal(cert_span, cert_from_store_span)) {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.

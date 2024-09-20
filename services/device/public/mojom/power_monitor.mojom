@@ -4,15 +4,18 @@
 
 module device.mojom;
 
+import "mojo/public/mojom/base/battery_power_status.mojom";
+
 interface PowerMonitor {
   // Add a client that will be notified on PowerStateChange, Suspend and Resume.
   AddClient(pending_remote<PowerMonitorClient> client);
 };
 
+// Client that broadcasts the battery power status to the current process.
 interface PowerMonitorClient {
   // Notification of a change in power status of the computer, such
-  // as from switching between battery and A/C power.
-  PowerStateChange(bool on_battery_power);
+  // as from switching between battery and A/C power or becoming unknown.
+  PowerStateChange(mojo_base.mojom.BatteryPowerStatus battery_power_status);
 
   // Notification that the system is suspending.
   Suspend();

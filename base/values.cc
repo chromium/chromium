@@ -259,6 +259,10 @@ const Value::BlobStorage* Value::GetIfBlob() const {
   return absl::get_if<BlobStorage>(&data_);
 }
 
+Value::BlobStorage* Value::GetIfBlob() {
+  return absl::get_if<BlobStorage>(&data_);
+}
+
 const Value::Dict* Value::GetIfDict() const {
   return absl::get_if<Dict>(&data_);
 }
@@ -311,6 +315,11 @@ const Value::BlobStorage& Value::GetBlob() const {
   return absl::get<BlobStorage>(data_);
 }
 
+Value::BlobStorage& Value::GetBlob() {
+  DCHECK(is_blob());
+  return absl::get<BlobStorage>(data_);
+}
+
 const Value::Dict& Value::GetDict() const {
   DCHECK(is_dict());
   return absl::get<Dict>(data_);
@@ -333,6 +342,10 @@ Value::List& Value::GetList() {
 
 std::string Value::TakeString() && {
   return std::move(GetString());
+}
+
+Value::BlobStorage Value::TakeBlob() && {
+  return std::move(GetBlob());
 }
 
 Value::Dict Value::TakeDict() && {
@@ -458,6 +471,11 @@ std::string* Value::Dict::FindString(std::string_view key) {
 
 const Value::BlobStorage* Value::Dict::FindBlob(std::string_view key) const {
   const Value* v = Find(key);
+  return v ? v->GetIfBlob() : nullptr;
+}
+
+Value::BlobStorage* Value::Dict::FindBlob(std::string_view key) {
+  Value* v = Find(key);
   return v ? v->GetIfBlob() : nullptr;
 }
 
@@ -678,6 +696,11 @@ std::string* Value::Dict::FindStringByDottedPath(std::string_view path) {
 const Value::BlobStorage* Value::Dict::FindBlobByDottedPath(
     std::string_view path) const {
   const Value* v = FindByDottedPath(path);
+  return v ? v->GetIfBlob() : nullptr;
+}
+
+Value::BlobStorage* Value::Dict::FindBlobByDottedPath(std::string_view path) {
+  Value* v = FindByDottedPath(path);
   return v ? v->GetIfBlob() : nullptr;
 }
 

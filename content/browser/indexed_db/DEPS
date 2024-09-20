@@ -2,6 +2,8 @@ include_rules = [
   "-content",
 
   "+content/browser/indexed_db",
+  "-content/browser/indexed_db/instance",
+
   "+content/common/content_export.h",
   "+content/public/common",
 
@@ -13,7 +15,13 @@ specific_include_rules = {
   '.*browsertest.cc': [
     "+content",
   ],
+  '.*test.cc': [
+    "+content/browser/indexed_db/instance",
+  ],
   '.*internals_ui\..*': [
     "+content",
+  ],
+  'indexed_db_context_impl.*': [
+    "+content/browser/indexed_db/instance/bucket_context.h",
   ],
 }

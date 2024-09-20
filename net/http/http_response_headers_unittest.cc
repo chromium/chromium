@@ -15,6 +15,7 @@
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/base/tracing.h"
@@ -1381,6 +1382,86 @@ const IsRedirectTestData is_redirect_tests[] = {
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          IsRedirectTest,
                          testing::ValuesIn(is_redirect_tests));
+
+struct HasStorageAccessRetryTestData {
+  const char* headers;
+  std::optional<std::string> expected_origin;
+
+  bool want_result;
+};
+
+class HasStorageAccessRetryTest
+    : public HttpResponseHeadersTest,
+      public ::testing::WithParamInterface<HasStorageAccessRetryTestData> {};
+
+TEST_P(HasStorageAccessRetryTest, HasStorageAccessRetry) {
+  const HasStorageAccessRetryTestData test = GetParam();
+
+  std::string headers(test.headers);
+  HeadersToRaw(&headers);
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
+
+  EXPECT_EQ(parsed->HasStorageAccessRetryHeader(
+                base::OptionalToPtr(test.expected_origin)),
+            test.want_result);
+}
+
+const HasStorageAccessRetryTestData has_storage_access_retry_tests[] = {
+    // No expected initiator; explicit allowlist.
+    {"HTTP/1.1 200 OK\n"
+     R"(Activate-Storage-Access: retry; allowed-origin="https://example.com:123")"
+     "\n",
+     std::nullopt, false},
+    // No expected initiator; wildcard allowlist matches anyway, since the
+    // server says anything goes.
+    {"HTTP/1.1 200 OK\n"
+     R"(Activate-Storage-Access: retry; allowed-origin=*)"
+     "\n",
+     std::nullopt, true},
+    // No allowlist, no expected initiator.
+    {"HTTP/1.1 200 OK\n"
+     "Activate-Storage-Access: retry\n",
+     std::nullopt, false},
+    // No allowlist.
+    {"HTTP/1.1 200 OK\n"
+     "Activate-Storage-Access: retry\n",
+     "https://example.com", false},
+    // Invalid structured header.
+    {"HTTP/1.1 200 OK\n"
+     R"(Activate-Storage-Access: retry, allowed-origin:"https://example.com:123")"
+     "\n",
+     "https://example.com:123", false},
+    // Unknown parameter.
+    {"HTTP/1.1 200 OK\n"
+     R"(Activate-Storage-Access: retry; frobnify="https://example.com:123")"
+     "\n",
+     "https://example.com:123", false},
+    // allowed-origin parameter present along with unrecognized parameter.
+    {"HTTP/1.1 200 OK\n"
+     R"(Activate-Storage-Access: retry; frobnify=*;)"
+     R"( allowed-origin="https://example.com:123")"
+     "\n",
+     "https://example.com:123", true},
+    // Allowlist and expected initiator match.
+    {"HTTP/1.1 200 OK\n"
+     R"(Activate-Storage-Access: retry; allowed-origin="https://example.com:123")"
+     "\n",
+     "https://example.com:123", true},
+    // Allowlist and expected initiator mismatch.
+    {"HTTP/1.1 200 OK\n"
+     R"(Activate-Storage-Access: retry; allowed-origin="https://example.com")"
+     "\n",
+     "https://example.com:123", false},
+    // Unrelated items are ignored.
+    {"HTTP/1.1 200 OK\n"
+     R"(Activate-Storage-Access: foo, retry; allowed-origin=*, bar)"
+     "\n",
+     "https://example.com", true},
+};
+
+INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
+                         HasStorageAccessRetryTest,
+                         testing::ValuesIn(has_storage_access_retry_tests));
 
 struct ContentLengthTestData {
   const char* headers;

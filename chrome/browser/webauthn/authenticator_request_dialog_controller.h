@@ -22,6 +22,7 @@
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 
 class Profile;
 
@@ -248,8 +249,6 @@ class AuthenticatorRequestDialogController
   void OnRetryUserVerification(int attempts);
 
   void OnResidentCredentialConfirmed() override;
-  void OnAttestationPermissionResponse(
-      bool attestation_permission_granted) override;
 
   // Adds or removes an authenticator to the list of known authenticators. The
   // first authenticator added with transport `kInternal` (or without a
@@ -325,9 +324,6 @@ class AuthenticatorRequestDialogController
   void OnSampleCollected(int bio_samples_remaining);
   void OnBioEnrollmentDone() override;
 
-  void RequestAttestationPermission(bool is_enterprise_attestation,
-                                    base::OnceCallback<void(bool)> callback);
-
   void set_is_non_webauthn_request(bool is_non_webauthn_request) {
     is_non_webauthn_request_ = is_non_webauthn_request;
   }
@@ -360,6 +356,8 @@ class AuthenticatorRequestDialogController
   void set_is_active_profile_authenticator_user(bool);
   void set_has_icloud_drive_enabled(bool);
 #endif
+
+  void set_ambient_credential_types(int types);
 
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
 
@@ -523,8 +521,6 @@ class AuthenticatorRequestDialogController
 
   base::OnceCallback<void(std::u16string)> pin_callback_;
 
-  base::OnceCallback<void(bool)> attestation_callback_;
-
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
 
@@ -610,6 +606,11 @@ class AuthenticatorRequestDialogController
 #endif
 
   bool enclave_can_be_default_ = true;
+
+  // The credential types that are being asked for in an ambient UI
+  // request.
+  int ambient_credential_types_ =
+      static_cast<int>(blink::mojom::CredentialTypeFlags::kNone);
 
   const content::GlobalRenderFrameHostId frame_host_id_;
 

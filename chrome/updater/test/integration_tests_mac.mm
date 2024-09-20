@@ -179,21 +179,21 @@ void ExpectClean(UpdaterScope scope) {
     // If the path exists, then expect only the log and json files to be
     // present.
     int count = CountDirectoryFiles(*path);
-    EXPECT_LE(count, 1) << base::JoinString(
+    for (const auto& file_name : {"updater.log", "prefs.json"}) {
+      if (base::PathExists(path->AppendASCII(file_name))) {
+        count -= 1;
+      }
+    }
+    EXPECT_EQ(count, 0) << base::JoinString(
         [](const base::FilePath& dir) {
           std::vector<base::FilePath::StringType> files;
           base::FileEnumerator(dir, false, base::FileEnumerator::FILES)
               .ForEach([&files](const base::FilePath& name) {
                 files.push_back(name.value());
               });
-
           return files;
         }(*path),
         FILE_PATH_LITERAL(","));
-
-    if (count >= 1) {
-      EXPECT_TRUE(base::PathExists(path->AppendASCII("updater.log")));
-    }
   }
   // Keystone must not exist on the file system.
   std::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);

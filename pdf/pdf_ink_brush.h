@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "third_party/ink/src/ink/brush/brush.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -17,8 +18,6 @@ class PointF;
 }
 
 namespace chrome_pdf {
-
-class InkBrush;
 
 // A class used to create ink brushes for PDF annotation mode and support
 // invalidation for rendering.
@@ -56,12 +55,12 @@ class PdfInkBrush {
   // Validates `size` is in range.
   static void CheckToolSizeIsInRange(float size);
 
-  // Returns the `InkBrush` that `this` represents.
-  const InkBrush& GetInkBrush() const;
+  // Returns the `ink::Brush` that `this` represents.
+  const ink::Brush& GetInkBrush() const;
 
  private:
-  // The ink brush of type `type_` with params` params_`. Always non-nullptr.
-  std::unique_ptr<InkBrush> ink_brush_;
+  // The ink brush of type `type_` with params` params_`.
+  ink::Brush ink_brush_;
 };
 
 }  // namespace chrome_pdf

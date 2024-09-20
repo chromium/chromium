@@ -43,7 +43,6 @@
 #include "components/viz/common/quads/picture_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/switches.h"
@@ -52,7 +51,6 @@
 #include "components/viz/service/display/viz_pixel_test.h"
 #include "components/viz/test/buildflags.h"
 #include "components/viz/test/test_in_process_context_provider.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "components/viz/test/test_types.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -880,6 +878,59 @@ TEST_P(RendererPixelTest, SimpleGreenRect) {
                                  cc::AlphaDiscardingExactPixelComparator()));
 }
 
+// Check that RendererPixelTest can run tests that verify incremental damage.
+TEST_P(RendererPixelTest, SimpleDamageRect) {
+  const gfx::Rect rect(this->device_viewport_size_);
+  const gfx::Rect damage_rect = gfx::Rect(20, 30, 40, 50);
+
+  const SkColor4f background_color = SkColors::kGreen;
+  const SkColor4f foreground_color = SkColors::kBlue;
+
+  std::vector<SkColor> expected_output_colors(rect.width() * rect.height());
+  for (int y = 0; y < rect.height(); y++) {
+    for (int x = 0; x < rect.width(); x++) {
+      expected_output_colors[y * rect.width() + x] =
+          damage_rect.Contains(x, y) ? foreground_color.toSkColor()
+                                     : background_color.toSkColor();
+    }
+  }
+
+  // Draw two frames with semi-transparent content. Both frames should result in
+  // the same image.
+  for (size_t i = 0; i < 2; i++) {
+    SCOPED_TRACE(base::StringPrintf("Frame %zu", i));
+
+    auto pass = CreateTestRootRenderPass(AggregatedRenderPassId{1}, rect);
+
+    if (i != 0) {
+      pass->damage_rect = damage_rect;
+    }
+
+    SharedQuadState* shared_state = CreateTestSharedQuadState(
+        gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
+
+    auto* foreground_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    foreground_quad->SetNew(shared_state, damage_rect, damage_rect,
+                            foreground_color, false);
+
+    // Only add the background in the first frame. If the renderer forces full
+    // damage for all frames, the second frame will not contain the background
+    // color from the first frame.
+    if (i == 0) {
+      auto* background_quad =
+          pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+      background_quad->SetNew(shared_state, rect, rect, background_color,
+                              false);
+    }
+
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    EXPECT_TRUE(this->RunPixelTest(&pass_list, &expected_output_colors,
+                                   cc::AlphaDiscardingExactPixelComparator()));
+  }
+}
+
 TEST_P(RendererPixelTest, OutputSurfaceClipRect) {
   gfx::Rect rect(device_viewport_size_);
 
@@ -938,7 +989,7 @@ TEST_P(RendererPixelTest, SimpleGreenRectNonRootRenderPass) {
   pass_list.push_back(std::move(child_pass));
   pass_list.push_back(std::move(root_pass));
 
-  EXPECT_TRUE(this->RunPixelTestWithReadbackTarget(
+  EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequest(
       &pass_list, child_pass_ptr,
       base::FilePath(FILE_PATH_LITERAL("green_small.png")),
       cc::AlphaDiscardingExactPixelComparator()));
@@ -1700,10 +1751,9 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallback) {
   // shouldn't matter since the renderer shouldn't attempt to draw this quad.
   TextureDrawQuad* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(texture_quad_state, gfx::Rect(this->device_viewport_size_),
-               gfx::Rect(this->device_viewport_size_), false,
-               kInvalidResourceId, true, gfx::PointF(), gfx::PointF(),
-               SkColors::kTransparent, false, false, false,
-               gfx::ProtectedVideoType::kClear);
+               gfx::Rect(this->device_viewport_size_), false, ResourceId{1},
+               true, gfx::PointF(), gfx::PointF(), SkColors::kTransparent,
+               false, false, false, gfx::ProtectedVideoType::kClear);
   quad->overlay_priority_hint = OverlayPriority::kRequired;
 
   // Add a background that's not the expected fallback color.
@@ -1747,10 +1797,9 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallbackRPDQBypassCase) {
     // this quad.
     TextureDrawQuad* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     quad->SetNew(sqs, gfx::Rect(this->device_viewport_size_),
-                 gfx::Rect(this->device_viewport_size_), false,
-                 kInvalidResourceId, true, gfx::PointF(), gfx::PointF(),
-                 SkColors::kTransparent, false, false, false,
-                 gfx::ProtectedVideoType::kClear);
+                 gfx::Rect(this->device_viewport_size_), false, ResourceId{1},
+                 true, gfx::PointF(), gfx::PointF(), SkColors::kTransparent,
+                 false, false, false, gfx::ProtectedVideoType::kClear);
     quad->overlay_priority_hint = OverlayPriority::kRequired;
 
     pass_list.push_back(std::move(pass));
@@ -5027,7 +5076,7 @@ TEST_P(RendererPixelTestWithFlippedOutputSurface, CheckChildPassUnflipped) {
   pass_list.push_back(std::move(root_pass));
 
   // Check that the child pass remains unflipped.
-  EXPECT_TRUE(this->RunPixelTestWithReadbackTarget(
+  EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequest(
       &pass_list, pass_list.front().get(),
       base::FilePath(FILE_PATH_LITERAL("blue_yellow.png")),
       cc::AlphaDiscardingExactPixelComparator()));
@@ -5076,7 +5125,7 @@ TEST_P(GPURendererPixelTest, CheckReadbackSubset) {
                          this->device_viewport_size_.height() / 2,
                          this->device_viewport_size_.width() / 2,
                          this->device_viewport_size_.height() / 2);
-  EXPECT_TRUE(this->RunPixelTestWithReadbackTargetAndArea(
+  EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequestAndArea(
       &pass_list, pass_list.front().get(),
       base::FilePath(FILE_PATH_LITERAL("green_small_with_blue_corner.png")),
       cc::AlphaDiscardingExactPixelComparator(), &capture_rect));
@@ -6252,53 +6301,7 @@ INSTANTIATE_TEST_SUITE_P(,
 // GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DelegatedInkTest);
 
-// Test to confirm that predicted points are not drawn if prediction is not
-// enabled, since it is disabled by default.
-TEST_P(DelegatedInkTest, DrawTrailWithPredictionDisabled) {
-  // Send some DelegatedInkPoints, numbers arbitrary. Sending 4 points will
-  // cause prediction to be available.
-  const gfx::PointF kFirstPoint(20, 35);
-  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
-  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
-  CreateAndSendPointFromLastPoint(gfx::PointF(56, 92));
-  CreateAndSendPointFromLastPoint(gfx::PointF(101, 145));
-  CreateAndSendPointFromLastPoint(gfx::PointF(106, 170));
-
-  // Provide the metadata required to draw the trail, matching the first
-  // DelegatedInkPoint sent.
-  CreateAndSendMetadata(kFirstPoint, 3.5f, SkColors::kCyan, kFirstTimestamp,
-                        gfx::RectF(0, 0, 200, 200));
-
-  base::FilePath expected_result = base::FilePath(
-      FILE_PATH_LITERAL("delegated_ink_trail_no_prediction.png"));
-  if (is_skia_graphite()) {
-    expected_result = expected_result.InsertBeforeExtensionASCII(kGraphiteStr);
-  }
-
-  // Confirm that the trail was drawn without prediction.
-  EXPECT_TRUE(DrawAndTestTrail(expected_result));
-
-  // The metadata should have been cleared after drawing, so confirm that there
-  // is no trail after another draw.
-  EXPECT_TRUE(DrawAndTestTrail(base::FilePath(FILE_PATH_LITERAL("white.png"))));
-}
-
-class DelegatedInkWithPredictionTest : public DelegatedInkTest {
-  void SetUp() override {
-    EnablePrediction();
-    DelegatedInkTest::SetUp();
-  }
-
-  virtual void EnablePrediction() {
-    base::FieldTrialParams params;
-    params["predicted_points"] = ::features::kDraw1Point12Ms;
-    base::test::FeatureRefAndParams prediction_params = {
-        features::kDrawPredictedInkPoint, params};
-
-    feature_list_.Reset();
-    feature_list_.InitWithFeaturesAndParameters({prediction_params}, {});
-  }
-};
+class DelegatedInkWithPredictionTest : public DelegatedInkTest {};
 
 INSTANTIATE_TEST_SUITE_P(,
                          DelegatedInkWithPredictionTest,
@@ -6496,7 +6499,7 @@ TEST_P(DelegatedInkWithPredictionTest, SimpleTrailNonRootRenderPass) {
 
   // This will only check what was drawn in the child pass, which should never
   // contain a delegated ink trail, so it should be solid green.
-  EXPECT_TRUE(this->RunPixelTestWithReadbackTarget(
+  EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequest(
       &pass_list, child_pass_ptr,
       base::FilePath(FILE_PATH_LITERAL("green.png")),
       cc::AlphaDiscardingExactPixelComparator()));

@@ -89,10 +89,6 @@ namespace gpu {
 
 namespace {
 
-BASE_FEATURE(kCorrectColorAttachmentUsageComputationInExternalVk,
-             "CorrectColorAttachmentUsageComputationInExternalVk",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Determine whether to apply the correction of the computation on using the
 // color attachment, which conceptually is "can this backing be written".
 bool CorrectComputationOfUsagesNeedingColorAttachment() {
@@ -102,16 +98,8 @@ bool CorrectComputationOfUsagesNeedingColorAttachment() {
   // backing. Without this invariant, there is no guarantee that a SharedImage
   // with WEBGPU_READ won't require the color attachment (e.g., for lazy
   // clearing).
-  if (!base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    return false;
-  }
-
-  // This killswitch guards the correction of the computation on using the
-  // color attachment, which conceptually is "can this backing be written".
-  // TODO(crbug.com/333014977): Remove this killswitch post safe rollout.
   return base::FeatureList::IsEnabled(
-      kCorrectColorAttachmentUsageComputationInExternalVk);
+      features::kDawnSIRepsUseClientProvidedInternalUsages);
 }
 
 class ScopedDedicatedMemoryObject {

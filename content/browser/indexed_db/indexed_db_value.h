@@ -15,7 +15,7 @@
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/common/content_export.h"
 
-namespace content {
+namespace content::indexed_db {
 
 struct CONTENT_EXPORT IndexedDBValue {
   // Destructively converts an IndexedDBValue to a Mojo Value.
@@ -50,6 +50,6 @@ struct CONTENT_EXPORT IndexedDBValue {
   std::vector<IndexedDBExternalObject> external_objects;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_VALUE_H_

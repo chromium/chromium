@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ChildProcess.Ping.{Source}" enum="UmaChildPingStatus"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ClientIdSource" enum="ClientIdSource"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>pdyson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>The source of the client id when its creation is forced.</summary>
@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.InitialStabilityRecordBeacon" enum="Boolean"
-    expires_after="2024-12-30">
+    expires_after="2025-03-09">
   <owner>mpearson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -342,7 +342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.InitSequence" enum="UmaInitSequence"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.PersistentHistograms.InitResult"
-    enum="PersistentHistogramsInitResult" expires_after="2025-01-05">
+    enum="PersistentHistogramsInitResult" expires_after="2025-03-09">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -658,7 +658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.PrimaryUserType" enum="UserType"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -878,7 +878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.StructuredMetrics.InternalError2"
-    enum="StructuredMetricsInternalError2" expires_after="2025-01-05">
+    enum="StructuredMetricsInternalError2" expires_after="2025-03-09">
   <owner>jongahn@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
@@ -906,7 +906,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.StructuredMetrics.NumEventsInUpload" units="count"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>jongahn@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
@@ -918,7 +918,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.StructuredMetrics.NumFilesPerExternalMetricsScan"
-    units="count" expires_after="2025-01-05">
+    units="count" expires_after="2025-03-09">
   <owner>tby@chromium.org</owner>
   <owner>jongahn@chromium.org</owner>
   <summary>
@@ -940,8 +940,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.TPMMetricsProvider.ReadSuccess" enum="Boolean"
+    expires_after="2025-06-29">
+  <owner>psarouthakis@google.com</owner>
+  <owner>kristianm@google.com</owner>
+  <summary>
+    Records if Chrome was able to read the manufacturer ID on the devices TPM.
+    This is recorded once during metrics initialization.
+  </summary>
+</histogram>
+
+<histogram name="UMA.TPMMetricsProvider.UnknownID" enum="Boolean"
+    expires_after="2025-06-29">
+  <owner>psarouthakis@google.com</owner>
+  <owner>kristianm@google.com</owner>
+  <summary>
+    Records if the Windows device has a unknown TPM. TPM ID's are compared to a
+    list of trusted ID provided by the Trusted Computing Group. This is recorded
+    once during metrics initialization if the TPMMetricsProvider was able to
+    read the TPM ID.
+  </summary>
+</histogram>
+
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2025-03-02">
+    expires_after="2025-03-09">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -951,7 +973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.Dropped" units="logs"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>lucnguyen@google.com</owner>

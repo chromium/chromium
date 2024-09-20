@@ -276,7 +276,9 @@ void SegmentResultProviderImpl::ExecuteModelAndGetScore(
   if (!segment_info) {
     VLOG(1) << __func__ << ": segment="
             << SegmentId_Name(request_state->options->segment_id)
-            << " default segment info not available";
+            << (model_source == ModelSource::SERVER_MODEL_SOURCE ? " server"
+                                                                 : " default")
+            << " segment info not available";
     auto state = model_source == ModelSource::SERVER_MODEL_SOURCE
                      ? ResultState::kServerModelSegmentInfoNotAvailable
                      : ResultState::kDefaultModelSegmentInfoNotAvailable;

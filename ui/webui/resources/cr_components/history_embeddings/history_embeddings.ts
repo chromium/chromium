@@ -14,12 +14,12 @@ import './icons.html.js';
 
 import {HistoryResultType, QUERY_RESULT_MINIMUM_AGE} from '//resources/cr_components/history/constants.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -43,9 +43,6 @@ export const LOADING_STATE_MINIMUM_MS = 300;
 
 export interface HistoryEmbeddingsElement {
   $: {
-    feedbackButtons: CrFeedbackButtonsElement,
-    heading: HTMLElement,
-    loading: HTMLElement,
     sharedMenu: CrLazyRenderElement<CrActionMenuElement>,
   };
 }
@@ -74,6 +71,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   static get properties() {
     return {
       clickedIndices_: Array,
+      forceSuppressLogging: Boolean,
       numCharsForQuery: Number,
       feedbackState_: {
         type: String,
@@ -90,6 +88,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         computed: 'computeIsEmpty_(loading_, searchResult_.items.length)',
         notify: true,
       },
+      enableAnswers_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers'),
+      },
     };
   }
 
@@ -102,6 +105,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private actionMenuItem_: SearchResultItem|null = null;
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
   private clickedIndices_: Set<number> = new Set();
+  private enableAnswers_: boolean;
   private feedbackState_: CrFeedbackOption;
   private loading_ = false;
   private loadingStateMinimumMs_ = LOADING_STATE_MINIMUM_MS;
@@ -116,6 +120,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
    */
   private resultPendingMetricsTimestamp_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
+  forceSuppressLogging: boolean;
   isEmpty: boolean;
   numCharsForQuery: number = 0;
   private numCharsForLastResultQuery_: number = 0;
@@ -160,6 +165,13 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     return this.i18n('historyEmbeddingsHeading', this.searchQuery);
   }
 
+  private hasAnswer_(): boolean {
+    if (!this.enableAnswers_ || this.loading_) {
+      return false;
+    }
+    return this.searchResult_?.answer !== '';
+  }
+
   private onFeedbackSelectedOptionChanged_(
       e: CustomEvent<{value: CrFeedbackOption}>) {
     this.feedbackState_ = e.detail.value;
@@ -178,6 +190,9 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private onMoreActionsClick_(e: DomRepeatEvent<SearchResultItem>) {
+    e.preventDefault();
+    e.stopPropagation();
+
     const target = e.target as HTMLElement;
     const item = e.model.item;
     this.actionMenuItem_ = item;
@@ -259,7 +274,6 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
     // Reset feedback state for new results.
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
-
     this.searchResult_ = result;
     this.loading_ = false;
 
@@ -290,7 +304,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       this.browserProxy_.recordSearchResultsMetrics(nonEmptyResults, false);
     }
 
-    if (canLog) {
+    if (!this.forceSuppressLogging && canLog) {
       this.browserProxy_.sendQualityLog(
           Array.from(this.clickedIndices_), this.numCharsForLastResultQuery_);
     }

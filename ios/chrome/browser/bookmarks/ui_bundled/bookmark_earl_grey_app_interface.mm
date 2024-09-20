@@ -33,8 +33,8 @@
 namespace {
 
 bookmarks::BookmarkModel* GetBookmarkModel() {
-  return ios::BookmarkModelFactory::GetForBrowserState(
-      chrome_test_util::GetOriginalBrowserState());
+  return ios::BookmarkModelFactory::GetForProfile(
+      chrome_test_util::GetOriginalProfile());
 }
 
 std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithTitle(
@@ -95,13 +95,12 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
   }
 
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   [BookmarkPathCache
-      clearBookmarkTopMostRowCacheWithPrefService:browserState->GetPrefs()];
+      clearBookmarkTopMostRowCacheWithPrefService:profile->GetPrefs()];
 
   bookmarkModel->RemoveAllUserBookmarks(FROM_HERE);
-  ResetLastUsedBookmarkFolder(browserState->GetPrefs());
+  ResetLastUsedBookmarkFolder(profile->GetPrefs());
 
   // Checking whether managed bookmarks remain, in which case return false.
   if (bookmarkModel->HasBookmarks()) {
@@ -112,10 +111,9 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 }
 
 + (void)clearBookmarksPositionCache {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   [BookmarkPathCache
-      clearBookmarkTopMostRowCacheWithPrefService:browser_state->GetPrefs()];
+      clearBookmarkTopMostRowCacheWithPrefService:profile->GetPrefs()];
 }
 
 + (NSError*)setupStandardBookmarksUsingFirstURL:(NSString*)firstURL
@@ -230,9 +228,8 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
   const bookmarks::BookmarkNode* folder =
       GetMobileNodeWithType(storageType, bookmarkModel);
-  SetLastUsedBookmarkFolder(
-      chrome_test_util::GetOriginalBrowserState()->GetPrefs(), folder,
-      storageType);
+  SetLastUsedBookmarkFolder(chrome_test_util::GetOriginalProfile()->GetPrefs(),
+                            folder, storageType);
 }
 
 + (NSError*)verifyBookmarksWithTitle:(NSString*)title
@@ -386,9 +383,8 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 }
 
 + (NSError*)verifyPromoAlreadySeen:(BOOL)seen {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  PrefService* prefs = browserState->GetPrefs();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  PrefService* prefs = profile->GetPrefs();
   if (prefs->GetBoolean(prefs::kIosBookmarkPromoAlreadySeen) == seen) {
     return nil;
   }
@@ -399,17 +395,17 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 }
 
 + (void)setPromoAlreadySeen:(BOOL)seen {
-  PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kIosBookmarkPromoAlreadySeen, seen);
 }
 
 + (void)setPromoAlreadySeenNumberOfTimes:(int)times {
-  PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   prefs->SetInteger(prefs::kIosBookmarkSigninPromoDisplayedCount, times);
 }
 
 + (int)numberOfTimesPromoAlreadySeen {
-  PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   return prefs->GetInteger(prefs::kIosBookmarkSigninPromoDisplayedCount);
 }
 

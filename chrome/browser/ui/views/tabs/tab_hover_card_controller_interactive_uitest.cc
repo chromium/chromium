@@ -42,6 +42,7 @@
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -510,10 +511,24 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   EXPECT_TRUE(alert_row->icon()->GetImageModel().IsEmpty());
 }
 
+class TabHoverCardFadeFooterWithDiscardInteractiveUiTest
+    : public TabHoverCardFadeFooterInteractiveUiTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    TabHoverCardFadeFooterInteractiveUiTest::SetUp();
+    scoped_feature_list_.InitWithFeatureState(features::kWebContentsDiscard,
+                                              GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Mocks that a tab is discarded and verifies that the correct string
 // for a discarded tab and discarded tab with memory usage is displayed
 // on the hover card
-IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
                        HoverCardFooterShowsDiscardStatus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
@@ -640,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                   CheckAlertRowLabel(u"Inactive tab", true),
                   CheckView(
                       TabHoverCardBubbleView::kHoverCardBubbleElementId,
-                      [=](TabHoverCardBubbleView* bubble) {
+                      [=, this](TabHoverCardBubbleView* bubble) {
                         return GetPrimaryPerformanceRowFromHoverCard(bubble)
                             ->footer_label()
                             ->GetText()
@@ -651,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 
 // The discarded status in the hover card footer should disappear after a
 // discarded tab is reloaded
-IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
                        DiscardStatusHidesOnReload) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
@@ -802,3 +817,12 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardSystemWebAppTest,
       WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
 #endif
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
+    ::testing::Values(false, true),
+    [](const ::testing::TestParamInfo<
+        TabHoverCardFadeFooterWithDiscardInteractiveUiTest::ParamType>& info) {
+      return info.param ? "RetainedWebContents" : "UnretainedWebContents";
+    });

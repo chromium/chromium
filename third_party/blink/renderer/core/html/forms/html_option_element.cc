@@ -63,7 +63,7 @@ class OptionTextObserver : public MutationObserver::Delegate {
     init->setCharacterData(true);
     init->setChildList(true);
     init->setSubtree(true);
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       init->setAttributes(true);
     }
     observer_->observe(option_, init, ASSERT_NO_EXCEPTION);
@@ -482,7 +482,7 @@ void HTMLOptionElement::UpdateLabel() {
   // only check UsesMenuList and not computed style because we don't want to
   // change DOM content based on computed style and because appearance:auto/none
   // don't render the UA shadowroot when UsesMenuList is true.
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     if (auto* select = OwnerSelectElement()) {
       if (select->UsesMenuList()) {
         return;
@@ -498,7 +498,7 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     ContainerNode& insertion_point) {
   auto return_value = HTMLElement::InsertedInto(insertion_point);
   if (!RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
-    CHECK(!RuntimeEnabledFeatures::StylableSelectEnabled());
+    CHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled());
     return return_value;
   }
 
@@ -514,10 +514,12 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     // insertion_point is an ancestor of parent_select, then we shouldn't really
     // be doing anything here and OptionInserted was already called in a
     // previous insertion.
-    // TODO(crbug.com/1511354): When the StylableSelect flag is removed, we can
-    // remove the code in HTMLSelectElement::ChildrenChanged and
+    // TODO(crbug.com/1511354): When the CustomizableSelect flag is removed, we
+    // can remove the code in HTMLSelectElement::ChildrenChanged and
     // HTMLOptGroupElement::ChildrenChanged which handles this case as well as
     // the code here which avoids handling it.
+    // TODO(crbug.com/1511354): This UsesMenuList check doesn't account for
+    // the case when the select's rendering is changed after insertion.
     SetTextOnlyRendering(!parent_select->UsesMenuList());
     return return_value;
   }
@@ -533,6 +535,8 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
       if (passed_insertion_point) {
+        // TODO(crbug.com/1511354): This UsesMenuList check doesn't account for
+        // the case when the select's rendering is changed after insertion.
         SetTextOnlyRendering(!select->UsesMenuList());
         select->OptionInserted(*this, Selected());
       }
@@ -546,7 +550,7 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
 void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
   if (!RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
-    CHECK(!RuntimeEnabledFeatures::StylableSelectEnabled());
+    CHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled());
     return;
   }
 
@@ -605,7 +609,7 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLOptionElement::SetTextOnlyRendering(bool text_only) {
-  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return;
   }
 

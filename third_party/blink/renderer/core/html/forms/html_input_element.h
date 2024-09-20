@@ -344,12 +344,6 @@ class CORE_EXPORT HTMLInputElement
   bool ShouldDrawCapsLockIndicator() const;
   void SetShouldRevealPassword(bool value);
   bool ShouldRevealPassword() const { return should_reveal_password_; }
-  void SetShouldShowStrongPasswordLabel(bool value) {
-    should_show_strong_password_label_ = value;
-  }
-  bool ShouldShowStrongPasswordLabel() const {
-    return should_show_strong_password_label_;
-  }
 #if BUILDFLAG(IS_ANDROID)
   bool IsLastInputElementInForm();
   void DispatchSimulatedEnter();
@@ -517,7 +511,6 @@ class CORE_EXPORT HTMLInputElement
   unsigned needs_to_update_view_value_ : 1;
   unsigned is_placeholder_visible_ : 1;
   unsigned has_been_password_field_ : 1;
-  unsigned should_show_strong_password_label_ : 1;
   unsigned scheduled_create_shadow_tree_ : 1;
   Member<InputType> input_type_;
   Member<InputTypeView> input_type_view_;

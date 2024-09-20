@@ -103,7 +103,7 @@ void AttachBrowserAgents(Browser* browser) {
   // the SessionRestorationBrowserAgent, so they should be created after the the
   // SessionRestorationBrowserAgent is created.
   WebStateListMetricsBrowserAgent::CreateForBrowser(
-      browser, SessionMetrics::FromBrowserState(browser->GetBrowserState()));
+      browser, SessionMetrics::FromProfile(browser->GetProfile()));
 
   // Normal browser states are the only ones to get tab usage recorder.
   if (!browser_is_off_record) {

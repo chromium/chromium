@@ -178,14 +178,17 @@
   <message name="IDS_HISTORY_EMBEDDINGS_FEEDBACK_PLACEHOLDER" desc="Placeholder text in feedback from for history search">
     Send feedback for history search powered by AI
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_IPH_LABEL" desc="Text for the IPH bubble for searching history using AI and everyday language.">
-    You can enter any phrases or details you remember from pages you browsed in the past, like "comfortable walking shoes"
+  <message name="IDS_HISTORY_EMBEDDINGS_IPH_BODY" desc="Text for the IPH bubble for searching history using AI and everyday language." translateable="false">
+    For a more powerful way to search your browsing history, turn on History search, powered by AI
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_IPH_LABEL_SCREENREADER" desc="Screen reader text for the IPH bubble for history search that also notes a keyboard shortcut.">
-    You can enter any phrases or details you remember from pages you browsed in the past, like "comfortable walking shoes". <ph name="SHORTCUT">$1<ex>CTRL+F</ex></ph> to search.
+  <message name="IDS_HISTORY_EMBEDDINGS_IPH_ACTION" desc="Text for the button in the IPH bubble for searching history using AI that takes user to Settings." translateable="false">
+    Turn on
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT" desc="Placeholder text/label for the search input field in the history page when history embeddings is enabled." translateable="false">
     In a few words, describe what you're searching for
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING" desc="Heading for answer section in history search results." translateable="false">
+    Summary
   </message>
 
   <!-- For Compare -->

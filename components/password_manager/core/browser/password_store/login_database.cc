@@ -1687,7 +1687,7 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
   sql::Statement s(
       db_.GetCachedStatement(SQL_FROM_HERE,
                              "DELETE FROM logins WHERE "
-                             "date_created >= ? AND date_created < ?"));
+                             "date_created >= ? AND date_created <= ?"));
   s.BindTime(0, delete_begin);
   s.BindTime(1, delete_end.is_null() ? base::Time::Max() : delete_end);
 
@@ -2467,7 +2467,7 @@ void LoginDatabase::InitializeStatementStrings(const SQLTableBuilder& builder) {
   DCHECK(created_statement_.empty());
   created_statement_ =
       "SELECT " + all_column_names +
-      " FROM logins WHERE date_created >= ? AND date_created < "
+      " FROM logins WHERE date_created >= ? AND date_created <= "
       "? ORDER BY origin_url";
   DCHECK(blocklisted_statement_.empty());
   blocklisted_statement_ =

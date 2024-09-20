@@ -31,14 +31,21 @@ bool IsHistorySyncEnabled(ChromeBrowserState* browser_state) {
 
 // static
 history::WebHistoryService* WebHistoryServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+history::WebHistoryService* WebHistoryServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   // Ensure that the service is not instantiated or used if the user is not
   // signed into sync, or if web history is not enabled.
-  if (!IsHistorySyncEnabled(browser_state))
+  if (!IsHistorySyncEnabled(profile)) {
     return nullptr;
+  }
 
   return static_cast<history::WebHistoryService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

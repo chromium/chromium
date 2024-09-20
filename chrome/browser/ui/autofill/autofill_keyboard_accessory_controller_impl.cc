@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
@@ -34,6 +35,7 @@
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -284,8 +286,28 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   delegate_->DidAcceptSuggestion(
       suggestion, AutofillSuggestionDelegate::SuggestionMetadata{.row = index});
 
-  if (suggestion.type == SuggestionType::kPasswordEntry &&
-      base::FeatureList::IsEnabled(
+  if (suggestion.type != SuggestionType::kPasswordEntry) {
+    // Returning early because the code below triggers the UI which is shown
+    // after accepting passwords.
+    return;
+  }
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    if (!access_loss_warning_bridge_) {
+      access_loss_warning_bridge_ =
+          std::make_unique<PasswordAccessLossWarningBridgeImpl>();
+    }
+    if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
+                       profile->GetPrefs(), /*called_at_startup=*/false)) {
+      access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
+          profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(),
+          profile, /*called_at_startup=*/false);
+    }
+  }
+  if (base::FeatureList::IsEnabled(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
     show_pwd_migration_warning_callback_.Run(

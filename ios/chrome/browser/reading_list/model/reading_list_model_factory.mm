@@ -42,17 +42,22 @@ GetWipeModelUponSyncDisabledBehaviorForSyncableModel() {
 
 // static
 ReadingListModel* ReadingListModelFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+ReadingListModel* ReadingListModelFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<ReadingListModel*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
 reading_list::DualReadingListModel*
-ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
-    ChromeBrowserState* browser_state) {
+ReadingListModelFactory::GetAsDualReadingListModelForProfile(
+    ProfileIOS* profile) {
   return static_cast<reading_list::DualReadingListModel*>(
-      GetForBrowserState(browser_state));
+      GetForProfile(profile));
 }
 
 // static

@@ -26,6 +26,7 @@
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
@@ -288,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
   auto extension = CreateDummyExtension();
   extensions::AppWindow::CreateParams params;
   params.frame = extensions::AppWindow::FRAME_NONE;
-  params.state = ui::SHOW_STATE_MAXIMIZED;
+  params.state = ui::mojom::WindowShowState::kMaximized;
   extensions::AppWindow* app_window =
       CreateAppWindowFromParams(browser()->profile(), extension.get(), params);
 
@@ -314,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
   auto extension = CreateDummyExtension();
   extensions::AppWindow::CreateParams params;
   params.frame = extensions::AppWindow::FRAME_NONE;
-  params.state = ui::SHOW_STATE_MAXIMIZED;
+  params.state = ui::mojom::WindowShowState::kMaximized;
   extensions::AppWindow* app_window =
       CreateAppWindowFromParams(browser()->profile(), extension.get(), params);
 

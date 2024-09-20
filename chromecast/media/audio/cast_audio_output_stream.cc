@@ -79,8 +79,7 @@ audio_service::ContentType ConvertContentType(AudioContentType content_type) {
     case AudioContentType::kCommunication:
       return audio_service::CONTENT_TYPE_COMMUNICATION;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return audio_service::CONTENT_TYPE_MEDIA;
+      NOTREACHED();
   }
 }
 
@@ -116,7 +115,7 @@ class CastAudioOutputStream::MixerServiceWrapper
                       int64_t delay_timestamp,
                       int64_t delay) override;
   // We don't push an EOS buffer.
-  void OnEosPlayed() override { NOTREACHED_IN_MIGRATION(); }
+  void OnEosPlayed() override { NOTREACHED(); }
 
   const ::media::AudioParameters audio_params_;
   const std::string device_id_;

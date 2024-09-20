@@ -63,10 +63,18 @@ PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void* PartitionRealloc(void* address, size_t size, void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void* PartitionReallocWithAdvancedChecks(void* address,
+                                         size_t size,
+                                         void* context);
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void* PartitionReallocUnchecked(void* address, size_t size, void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void PartitionFree(void* object, void* context);
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void PartitionFreeWithAdvancedChecks(void* object, void* context);
 
 #if PA_BUILDFLAG(IS_APPLE)
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)

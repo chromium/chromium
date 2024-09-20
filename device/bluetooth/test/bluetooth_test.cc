@@ -106,6 +106,15 @@ void BluetoothTestBase::TearDown() {
   EXPECT_EQ(expected_error_callback_calls_, actual_error_callback_calls_);
   EXPECT_FALSE(unexpected_success_callback_);
   EXPECT_FALSE(unexpected_error_callback_);
+
+  // Tear down the test before the destructor runs. By the time the destructor
+  // runs, the BluetoothTestBase subclass has been partially destructed, so
+  // any pointers to the subclass in these objects cannot be accessed.
+  notify_sessions_.clear();
+  gatt_connections_.clear();
+  discovery_sessions_.clear();
+  advertisements_.clear();
+  adapter_ = nullptr;
 }
 
 bool BluetoothTestBase::DenyPermission() {

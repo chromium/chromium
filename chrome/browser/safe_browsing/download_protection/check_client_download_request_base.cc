@@ -287,8 +287,8 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
     LogDeepScanningPrompt(deep_scanning_prompt);
   }
 
-  bool immediate_deep_scan_prompt = ShouldImmediatelyDeepScan(
-      response.request_deep_scan(), /*log_metrics=*/true);
+  bool immediate_deep_scan_prompt =
+      ShouldImmediatelyDeepScan(response.request_deep_scan());
   if (immediate_deep_scan_prompt) {
     *result = DownloadCheckResult::IMMEDIATE_DEEP_SCAN;
     *reason = DownloadCheckResultReason::REASON_IMMEDIATE_DEEP_SCAN;
@@ -300,8 +300,7 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
 
   // Only record the UMA metric if we're in a population that potentially
   // could prompt for deep scanning.
-  if (ShouldImmediatelyDeepScan(/*server_requests_prompt=*/true,
-                                /*log_metrics=*/false)) {
+  if (ShouldImmediatelyDeepScan(/*server_requests_prompt=*/true)) {
     base::UmaHistogramBoolean(
         "SBClientDownload.ServerRequestsImmediateDeepScan2",
         immediate_deep_scan_prompt);
@@ -467,6 +466,9 @@ void CheckClientDownloadRequestBase::SendRequest() {
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
 
   if (!access_token_.empty()) {
+    LogAuthenticatedCookieResets(
+        *resource_request,
+        SafeBrowsingAuthenticatedEndpoint::kDownloadProtection);
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token_);
   }
@@ -516,6 +518,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
   }
   base::UmaHistogramSparse("SBClientDownload.DownloadRequestNetError",
                            -loader_->NetError());
+
   DownloadCheckResultReason reason = REASON_SERVER_PING_FAILED;
   DownloadCheckResult result = DownloadCheckResult::UNKNOWN;
   std::string token;
@@ -589,9 +592,9 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     }
 
     bool upload_requested = response.upload();
-    MaybeStorePingsForDownload(result, upload_requested,
-                               client_download_request_data_,
-                               *response_body.get());
+    MaybeBeginFeedbackForDownload(result, upload_requested,
+                                  client_download_request_data_,
+                                  *response_body.get());
   }
 
   // We don't need the loader anymore.

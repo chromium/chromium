@@ -5,6 +5,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -115,6 +116,43 @@ TEST_F(ImageButtonFactoryWidgetTest, AccessibleCheckedStateChange) {
   toggle_image_button->SetToggled(false);
   toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+}
+
+TEST_F(ImageButtonFactoryWidgetTest, AccessibleName) {
+  const std::u16string untoggled_text(u"untoggled_text");
+  const std::u16string toggled_tooltip_text(u"toggled_tooltip_text");
+  const std::u16string toggled_accessible_name(u"toggled_accessible_name");
+  const std::u16string toggled_accessible_empty_name(u"");
+
+  std::unique_ptr<ToggleImageButton> button =
+      CreateVectorToggleImageButton(Button::PressedCallback());
+
+  button->SetTooltipText(untoggled_text);
+  button->SetToggledAccessibleName(toggled_accessible_name);
+  button->SetToggledTooltipText(toggled_tooltip_text);
+
+  ui::AXNodeData data;
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            untoggled_text);
+
+  button->SetToggled(true);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            toggled_accessible_name);
+
+  button->SetToggledAccessibleName(toggled_accessible_empty_name);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            toggled_tooltip_text);
+
+  button->SetToggled(false);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            untoggled_text);
 }
 
 }  // namespace views

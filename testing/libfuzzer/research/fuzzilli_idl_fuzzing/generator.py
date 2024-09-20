@@ -264,7 +264,7 @@ SIMPLE_TYPE_TO_ILTYPE = {
     'ArrayBuffer': ILType.jsArrayBuffer(),
     'ArrayBufferView': ILType.jsDataView(),
     'SharedArray': ILType.jsSharedArrayBuffer(),
-    'Int8Array': ILType.jsTypedArray('Uint8Array'),
+    'Int8Array': ILType.jsTypedArray('Int8Array'),
     'Int16Array': ILType.jsTypedArray('Int16Array'),
     'Int32Array': ILType.jsTypedArray('Int32Array'),
     'Uint8Array': ILType.jsTypedArray('Uint8Array'),

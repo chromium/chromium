@@ -21,9 +21,15 @@ TrackerFactory* TrackerFactory::GetInstance() {
 
 // static
 feature_engagement::Tracker* TrackerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+feature_engagement::Tracker* TrackerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<feature_engagement::Tracker*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 TrackerFactory::TrackerFactory()

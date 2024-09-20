@@ -91,7 +91,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     }
 
     @Override
-    public void stopOrReloadCurrentTab() {
+    public void stopOrReloadCurrentTab(boolean ignoreCache) {
         Tab currentTab = mTabSupplier.get();
         if (currentTab == null) return;
 
@@ -99,7 +99,11 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             currentTab.stopLoading();
             RecordUserAction.record("MobileToolbarStop");
         } else {
-            currentTab.reload();
+            if (ignoreCache) {
+                currentTab.reloadIgnoringCache();
+            } else {
+                currentTab.reload();
+            }
             RecordUserAction.record("MobileToolbarReload");
         }
         mOnSuccessRunnable.run();

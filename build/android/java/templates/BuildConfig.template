@@ -59,22 +59,16 @@ public class BuildConfig {
     public static long VERSION_CODE = 1;
 #endif
 
-#if defined(_BUNDLES_SUPPORTED)
-    public static boolean BUNDLES_SUPPORTED = true;
+#if defined(_IS_BUNDLE)
+    public static boolean IS_BUNDLE = true;
 #else
-    public static boolean BUNDLES_SUPPORTED;
+    public static boolean IS_BUNDLE;
 #endif
 
 #if defined(_IS_INCREMENTAL_INSTALL)
     public static boolean IS_INCREMENTAL_INSTALL = true;
 #else
     public static boolean IS_INCREMENTAL_INSTALL;
-#endif
-
-#if defined(_ISOLATED_SPLITS_ENABLED)
-    public static boolean ISOLATED_SPLITS_ENABLED = true;
-#else
-    public static boolean ISOLATED_SPLITS_ENABLED;
 #endif
 
 #if defined(_IS_FOR_TEST)

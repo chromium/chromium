@@ -9,6 +9,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
@@ -23,16 +24,23 @@ import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dial
 import {CrScrollableMixin} from 'chrome://resources/ash/common/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
+import {ModifierKeyCodes} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {KeyEvent, ShortcutInputProviderInterface} from '../device_page/input_device_settings_types.js';
+import {getShortcutInputProvider} from '../device_page/shortcut_input_mojo_interface_provider.js';
+
 import {getTemplate} from './facegaze_actions_add_dialog.html.js';
-import {FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeUtils} from './facegaze_constants.js';
+import {AssignedKeyCombo, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeUtils, KeyCombination} from './facegaze_constants.js';
 import {FaceGazeSubpageBrowserProxy, FaceGazeSubpageBrowserProxyImpl} from './facegaze_subpage_browser_proxy.js';
 
 export interface FaceGazeAddActionDialogElement {
   $: {
     dialog: CrDialogElement,
+    shortcutInput: ShortcutInputElement,
   };
 }
 
@@ -40,6 +48,7 @@ export enum AddDialogPage {
   SELECT_ACTION = 0,
   SELECT_GESTURE = 1,
   GESTURE_THRESHOLD = 2,
+  CUSTOM_KEYBOARD = 3,
 }
 
 export enum Navigation {
@@ -56,6 +65,41 @@ export class FaceGazeGestureConfidence {
   gesture: FacialGesture;
   confidence: number;
 }
+
+export const FACEGAZE_DEFINED_MACRO_FLOW:
+    Record<AddDialogPage, PageNavigation> = {
+      [AddDialogPage.SELECT_ACTION]: {
+        next: AddDialogPage.SELECT_GESTURE,
+      },
+      [AddDialogPage.SELECT_GESTURE]: {
+        previous: AddDialogPage.SELECT_ACTION,
+        next: AddDialogPage.GESTURE_THRESHOLD,
+      },
+      [AddDialogPage.GESTURE_THRESHOLD]: {
+        previous: AddDialogPage.SELECT_GESTURE,
+      },
+      [AddDialogPage.CUSTOM_KEYBOARD]: {},
+    };
+
+export const FACEGAZE_CUSTOM_KEYBOARD_SHORTCUT_FLOW:
+    Record<AddDialogPage, PageNavigation> = {
+      [AddDialogPage.SELECT_ACTION]: {
+        next: AddDialogPage.CUSTOM_KEYBOARD,
+      },
+      [AddDialogPage.SELECT_GESTURE]: {
+        previous: AddDialogPage.CUSTOM_KEYBOARD,
+        next: AddDialogPage.GESTURE_THRESHOLD,
+      },
+      [AddDialogPage.GESTURE_THRESHOLD]: {
+        previous: AddDialogPage.SELECT_GESTURE,
+      },
+      [AddDialogPage.CUSTOM_KEYBOARD]: {
+        previous: AddDialogPage.SELECT_ACTION,
+        next: AddDialogPage.SELECT_GESTURE,
+      },
+    };
+
+export type ShortcutInputCompleteEvent = CustomEvent<{keyEvent: KeyEvent}>;
 
 export const FACEGAZE_CONFIDENCE_DEFAULT = 60;
 export const FACEGAZE_CONFIDENCE_MIN = 1;
@@ -87,14 +131,9 @@ export class FaceGazeAddActionDialogElement extends
         observer: 'initialPageChanged_',
       },
 
-      actionToAssignGesture: {
+      commandPairToConfigure: {
         type: Object,
-        observer: 'actionToAssignGestureChanged_',
-      },
-
-      gestureToConfigure: {
-        type: Object,
-        observer: 'gestureToConfigureChanged_',
+        observer: 'commandPairToConfigureChanged_',
       },
 
       leftClickGestures: {
@@ -106,6 +145,11 @@ export class FaceGazeAddActionDialogElement extends
       showSelectAction_: {
         type: Boolean,
         computed: 'shouldShowSelectAction_(currentPage_)',
+      },
+
+      showCustomKeyboard_: {
+        type: Boolean,
+        computed: 'shouldShowCustomKeyboard_(currentPage_)',
       },
 
       showSelectGesture_: {
@@ -126,6 +170,11 @@ export class FaceGazeAddActionDialogElement extends
       selectedAction_: {
         type: Object,
         value: null,
+        observer: 'onSelectedActionChanged_',
+      },
+
+      keyCombination_: {
+        type: Object,
       },
 
       localizedSelectGestureTitle_: {
@@ -168,6 +217,11 @@ export class FaceGazeAddActionDialogElement extends
         computed: 'shouldDisableActionNextButton_(selectedAction_)',
       },
 
+      disableCustomKeyboardNextButton_: {
+        type: Boolean,
+        computed: 'shouldDisableCustomKeyboardNextButton_(keyCombination_)',
+      },
+
       disableGestureNextButton_: {
         type: Boolean,
         computed: 'shouldDisableGestureNextButton_(selectedGesture_)',
@@ -185,29 +239,21 @@ export class FaceGazeAddActionDialogElement extends
     };
   }
 
-  actionToAssignGesture: MacroName|null = null;
   initialPage: AddDialogPage = AddDialogPage.SELECT_ACTION;
-  gestureToConfigure: FacialGesture|null = null;
+  commandPairToConfigure: FaceGazeCommandPair|null = null;
   leftClickGestures: FacialGesture[] = [];
+  shortcutInput: ShortcutInputElement|null;
 
   // Internal state.
   private selectedAction_: MacroName|null = null;
+  private keyCombination_: KeyCombination|null = null;
   private selectedGesture_: FacialGesture|null = null;
   private gestureThresholdValue_: number;
   private currentPage_: AddDialogPage = AddDialogPage.SELECT_ACTION;
-  private pageNavigation_: Record<AddDialogPage, PageNavigation> = {
-    [AddDialogPage.SELECT_ACTION]: {
-      next: AddDialogPage.SELECT_GESTURE,
-    },
-    [AddDialogPage.SELECT_GESTURE]: {
-      previous: AddDialogPage.SELECT_ACTION,
-      next: AddDialogPage.GESTURE_THRESHOLD,
-    },
-    [AddDialogPage.GESTURE_THRESHOLD]: {
-      previous: AddDialogPage.SELECT_GESTURE,
-    },
-  };
+  private pageNavigation_: Record<AddDialogPage, PageNavigation> =
+      FACEGAZE_DEFINED_MACRO_FLOW;
   private detectedGestureCount_ = 0;
+  private eventTracker_: EventTracker = new EventTracker();
 
   // Computed properties.
   private displayedActions_: MacroName[] = FaceGazeActions;
@@ -223,10 +269,68 @@ export class FaceGazeAddActionDialogElement extends
         'settings.sendGestureInfoToSettings',
         (gestureConfidences: FaceGazeGestureConfidence[]) =>
             this.onGestureConfidencesReceived_(gestureConfidences));
+    this.eventTracker_.add(
+        this, 'shortcut-input-event', this.onShortcutInputEvent_);
+  }
+
+  protected onShortcutInputDomChange(): void {
+    // Start observing for input events the moment `shortcutInput` is available.
+    this.shortcutInput =
+        this.shadowRoot!.querySelector<ShortcutInputElement>('#shortcutInput');
+    if (this.shortcutInput) {
+      this.shortcutInput.startObserving();
+    }
   }
 
   private getItemClass_(selected: boolean): 'selected'|'' {
     return selected ? 'selected' : '';
+  }
+
+  private getShortcutInputProvider(): ShortcutInputProviderInterface {
+    return getShortcutInputProvider();
+  }
+
+  private onShortcutInputEvent_(e: ShortcutInputCompleteEvent): void {
+    this.keyCombination_ = this.formatKeyCombination_(e.detail.keyEvent);
+  }
+
+  private formatKeyCombination_(keyEvent: KeyEvent): KeyCombination|null {
+    if (!this.shortcutInput) {
+      return null;
+    }
+
+    // Do not support a key combination consisting of only a modifier key.
+    if (ModifierKeyCodes.includes(keyEvent.vkey as number)) {
+      return null;
+    }
+
+    const newKeyCombination:
+        KeyCombination = {key: keyEvent.vkey, keyDisplay: keyEvent.keyDisplay};
+
+    const modifiers = this.shortcutInput.getModifiers(keyEvent);
+    if (modifiers.length > 0) {
+      newKeyCombination.modifiers = {};
+      modifiers.forEach((modifier: string) => {
+        switch (modifier) {
+          case 'ctrl':
+            newKeyCombination.modifiers!.ctrl = true;
+            break;
+          case 'alt':
+            newKeyCombination.modifiers!.alt = true;
+            break;
+          case 'shift':
+            newKeyCombination.modifiers!.shift = true;
+            break;
+          case 'meta':
+            // TODO(b:366052411): Investigate support for meta keys other than
+            // search.
+            newKeyCombination.modifiers!.search = true;
+            break;
+        }
+      });
+    }
+
+    return newKeyCombination;
   }
 
   private getLocalizedSelectGestureTitle_(): string {
@@ -241,7 +345,8 @@ export class FaceGazeAddActionDialogElement extends
     return this.i18n(
         'faceGazeActionsDialogGestureThresholdTitle',
         this.selectedGesture_ ?
-            FaceGazeUtils.getGestureDisplayText(this.selectedGesture_) :
+            this.i18n(FaceGazeUtils.getGestureDisplayTextName(
+                this.selectedGesture_)) :
             '');
   }
 
@@ -262,7 +367,7 @@ export class FaceGazeAddActionDialogElement extends
   }
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {
-    return FaceGazeUtils.getGestureDisplayText(gesture);
+    return this.i18n(FaceGazeUtils.getGestureDisplayTextName(gesture));
   }
 
   private getGestureIconName_(gesture: FacialGesture|null): string {
@@ -272,6 +377,10 @@ export class FaceGazeAddActionDialogElement extends
   // Dialog page navigation.
   private shouldShowSelectAction_(): boolean {
     return this.currentPage_ === AddDialogPage.SELECT_ACTION;
+  }
+
+  private shouldShowCustomKeyboard_(): boolean {
+    return this.currentPage_ === AddDialogPage.CUSTOM_KEYBOARD;
   }
 
   private shouldShowSelectGesture_(): boolean {
@@ -285,6 +394,10 @@ export class FaceGazeAddActionDialogElement extends
   // Disable navigation buttons.
   private shouldDisableActionNextButton_(): boolean {
     return this.selectedAction_ === null;
+  }
+
+  private shouldDisableCustomKeyboardNextButton_(): boolean {
+    return this.keyCombination_ === null;
   }
 
   private shouldDisableGestureNextButton_(): boolean {
@@ -341,6 +454,17 @@ export class FaceGazeAddActionDialogElement extends
 
     const commandPair =
         new FaceGazeCommandPair(this.selectedAction_, this.selectedGesture_);
+
+    if (this.selectedAction_ === MacroName.CUSTOM_KEY_COMBINATION) {
+      if (!this.keyCombination_) {
+        throw new Error(
+            'FaceGaze selected custom key combination action but no key combination set.');
+      }
+
+      commandPair.assignedKeyCombo =
+          new AssignedKeyCombo(JSON.stringify(this.keyCombination_));
+    }
+
     const event = new CustomEvent(FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, {
       bubbles: true,
       composed: true,
@@ -366,6 +490,10 @@ export class FaceGazeAddActionDialogElement extends
       this.faceGazeSubpageBrowserProxy_.toggleGestureInfoForSettings(
           newPage === AddDialogPage.GESTURE_THRESHOLD);
     }
+
+    if (oldPage === AddDialogPage.CUSTOM_KEYBOARD && this.shortcutInput) {
+      this.shortcutInput.stopObserving();
+    }
   }
 
   // Handlers for initial state.
@@ -373,20 +501,17 @@ export class FaceGazeAddActionDialogElement extends
     this.currentPage_ = page;
   }
 
-  private actionToAssignGestureChanged_(newValue: MacroName|null): void {
+  private commandPairToConfigureChanged_(newValue: FaceGazeCommandPair|
+                                         null): void {
     if (!newValue) {
       return;
     }
 
-    this.selectedAction_ = newValue;
-  }
-
-  private gestureToConfigureChanged_(newValue: FacialGesture|null): void {
-    if (!newValue) {
-      return;
+    this.selectedAction_ = newValue.action;
+    this.selectedGesture_ = newValue.gesture;
+    if (newValue.assignedKeyCombo) {
+      this.keyCombination_ = newValue.assignedKeyCombo.keyCombo;
     }
-
-    this.selectedGesture_ = newValue;
   }
 
   // If left-click action is assigned to a singular gesture then remove it
@@ -446,6 +571,14 @@ export class FaceGazeAddActionDialogElement extends
     });
   }
 
+  private onSelectedActionChanged_(): void {
+    if (this.selectedAction_ === MacroName.CUSTOM_KEY_COMBINATION) {
+      this.pageNavigation_ = FACEGAZE_CUSTOM_KEYBOARD_SHORTCUT_FLOW;
+    } else {
+      this.pageNavigation_ = FACEGAZE_DEFINED_MACRO_FLOW;
+    }
+  }
+
   private onSelectedGestureChanged_(): void {
     this.detectedGestureCount_ = 0;
     this.gestureThresholdValue_ = FACEGAZE_CONFIDENCE_DEFAULT;
@@ -462,6 +595,12 @@ export class FaceGazeAddActionDialogElement extends
   }
 
   private close_(): void {
+    if (this.shortcutInput) {
+      this.shortcutInput.stopObserving();
+    }
+
+    this.commandPairToConfigure = null;
+    this.keyCombination_ = null;
     this.faceGazeSubpageBrowserProxy_.toggleGestureInfoForSettings(false);
     this.$.dialog.close();
   }

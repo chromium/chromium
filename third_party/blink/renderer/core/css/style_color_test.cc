@@ -241,4 +241,47 @@ TEST(StyleColorTest, UnresolvedRelativeColor_ToCSSValue) {
   EXPECT_EQ(value_2->CssText(), "color(from currentcolor srgb r 25% none)");
 }
 
+TEST(StyleColorTest, UnresolvedRelativeColor_Resolve) {
+  StyleColor currentcolor;
+  Color rebeccapurple(102, 51, 153);
+
+  // Note: This test compares serializations to allow tolerance for
+  // floating-point rounding error.
+
+  using UnresolvedRelativeColor = StyleColor::UnresolvedRelativeColor;
+  UnresolvedRelativeColor* rgb = MakeGarbageCollected<UnresolvedRelativeColor>(
+      currentcolor, Color::ColorSpace::kSRGB,
+      *CreateCalcAddValue(CSSValueID::kR, CSSValueID::kG),
+      *CSSNumericLiteralValue::Create(0, CSSPrimitiveValue::UnitType::kNumber),
+      *CSSIdentifierValue::Create(CSSValueID::kNone), nullptr);
+  EXPECT_EQ(
+      rgb->Resolve(rebeccapurple).SerializeAsCSSColor(),
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.6, 0, std::nullopt, 1.0)
+          .SerializeAsCSSColor());
+
+  UnresolvedRelativeColor* hsl = MakeGarbageCollected<UnresolvedRelativeColor>(
+      currentcolor, Color::ColorSpace::kHSL,
+      *CSSIdentifierValue::Create(CSSValueID::kH),
+      *CSSNumericLiteralValue::Create(20,
+                                      CSSPrimitiveValue::UnitType::kPercentage),
+      *CSSIdentifierValue::Create(CSSValueID::kL),
+      CSSIdentifierValue::Create(CSSValueID::kAlpha));
+  EXPECT_EQ(
+      hsl->Resolve(rebeccapurple).SerializeAsCSSColor(),
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.4, 0.32, 0.48, 1.0)
+          .SerializeAsCSSColor());
+
+  UnresolvedRelativeColor* lch = MakeGarbageCollected<UnresolvedRelativeColor>(
+      currentcolor, Color::ColorSpace::kLch,
+      *CSSIdentifierValue::Create(CSSValueID::kL),
+      *CSSIdentifierValue::Create(CSSValueID::kC),
+      *CSSIdentifierValue::Create(CSSValueID::kH),
+      CSSIdentifierValue::Create(CSSValueID::kAlpha));
+  EXPECT_EQ(lch->Resolve(Color::FromColorSpace(Color::ColorSpace::kLch, 200,
+                                               300, 400, 5))
+                .SerializeAsCSSColor(),
+            Color::FromColorSpace(Color::ColorSpace::kLch, 100, 300, 40, 1)
+                .SerializeAsCSSColor());
+}
+
 }  // namespace blink

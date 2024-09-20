@@ -337,6 +337,14 @@ Browser* WebAppUiManagerImpl::ReparentAppTabToWindow(
   return ReparentWebContentsIntoAppBrowser(contents, app_id);
 }
 
+Browser* WebAppUiManagerImpl::ReparentAppTabToWindow(
+    content::WebContents* contents,
+    const webapps::AppId& app_id,
+    base::OnceCallback<void(content::WebContents*)> completion_callback) {
+  return ReparentWebContentsIntoAppBrowser(contents, app_id,
+                                           std::move(completion_callback));
+}
+
 void WebAppUiManagerImpl::ShowWebAppFileLaunchDialog(
     const std::vector<base::FilePath>& file_paths,
     const webapps::AppId& app_id,
@@ -570,7 +578,7 @@ void WebAppUiManagerImpl::MaybeCreateEnableSupportedLinksInfobar(
 }
 
 void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-    content::WebContents* web_contents,
+    Browser* browser,
     Profile* profile,
     const std::string& app_id) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -582,7 +590,7 @@ void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
   }
 
   const Browser* app_browser =
-      AppBrowserController::FindForWebApp(*profile, app_id);
+      browser ? browser : AppBrowserController::FindForWebApp(*profile, app_id);
   if (!app_browser) {
     return;
   }

@@ -110,7 +110,7 @@ public class UpgradePromoIntegrationTest {
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
-        mSigninTestRule.addAccountAndWaitForSeeding(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
     }
 

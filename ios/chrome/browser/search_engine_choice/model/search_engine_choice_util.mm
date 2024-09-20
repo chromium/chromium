@@ -24,7 +24,7 @@ namespace {
 // Whether the choice screen might be displayed. The choice screen is by default
 // disabled for tests or for non-branded builds. This method eliminates those
 // cases, unless it is force-enabled by flag.
-bool IsChoiceEnabled(search_engines::ChoicePromo promo) {
+bool IsChoiceEnabled() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceSearchEngineChoiceScreen)) {
     return true;
@@ -37,31 +37,28 @@ bool IsChoiceEnabled(search_engines::ChoicePromo promo) {
     // Outside of tests, this view should be disabled upstream.
     return false;
   }
-  return search_engines::IsChoiceScreenFlagEnabled(promo);
+  return true;
 }
 }  // namespace
 
 bool ShouldDisplaySearchEngineChoiceScreen(
-    ChromeBrowserState& browser_state,
-    search_engines::ChoicePromo promo,
+    ProfileIOS& profile,
+    bool is_first_run_entrypoint,
     bool app_started_via_external_intent) {
-  if (!IsChoiceEnabled(promo)) {
+  if (!IsChoiceEnabled()) {
     // This build is not eligible for the choice screen.
     return false;
   }
-  ChromeBrowserState* original_browser_state =
-      browser_state.GetOriginalChromeBrowserState();
+  ProfileIOS* original_profile = profile.GetOriginalProfile();
   // Getting data needed to check condition.
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(
-          original_browser_state);
+      ios::SearchEngineChoiceServiceFactory::GetForProfile(original_profile);
   BrowserStatePolicyConnector* policy_connector =
-      original_browser_state->GetPolicyConnector();
+      original_profile->GetPolicyConnector();
   const policy::PolicyService& policy_service =
       *policy_connector->GetPolicyService();
   TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          original_browser_state);
+      ios::TemplateURLServiceFactory::GetForProfile(original_profile);
 
   // Checking whether the user is eligible for the screen.
   auto condition =
@@ -76,11 +73,10 @@ bool ShouldDisplaySearchEngineChoiceScreen(
 
   // If the app has been started via an external intent, and skip the Dialog
   // promo up to switches::kSearchEngineChoiceMaximumSkipCount() times.
-  if (app_started_via_external_intent &&
-      promo == search_engines::ChoicePromo::kDialog &&
+  if (app_started_via_external_intent && !is_first_run_entrypoint &&
       condition ==
           search_engines::SearchEngineChoiceScreenConditions::kEligible) {
-    PrefService* pref_service = original_browser_state->GetPrefs();
+    PrefService* pref_service = original_profile->GetPrefs();
     const int count = pref_service->GetInteger(
         prefs::kDefaultSearchProviderChoiceScreenSkippedCount);
 

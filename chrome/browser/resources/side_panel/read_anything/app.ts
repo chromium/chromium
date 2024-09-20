@@ -364,6 +364,7 @@ export class AppElement extends AppElementBase {
       theme: chrome.readingMode.colorTheme,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
+      highlightGranularity: chrome.readingMode.highlightGranularity,
     };
 
     document.onselectionchange = () => {
@@ -1683,12 +1684,26 @@ export class AppElement extends AppElementBase {
   // Highlights or rehighlights the current granularity, sentence or word.
   highlightCurrentGranularity(
       axNodeIds: number[], scrollIntoView: boolean = true) {
-    if (this.wordBoundaryState.mode ===
-            WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED ||
-        !this.shouldUseWordHighlighting()) {
-      this.highlightCurrentSentence(axNodeIds, scrollIntoView);
-    } else {
-      this.highlightCurrentWord();
+    const highlightGranularity = this.getEffectiveHighlightingGranularity_();
+    switch (highlightGranularity) {
+      case chrome.readingMode.noHighlighting:
+      // Even without highlighting, we still calculate the sentence highlight,
+      // so that it's visible as soon as the user turns on sentence
+      // highlighting. The highlight will not be visible, since the highlight
+      // color in this case will be transparent.
+      case chrome.readingMode.sentenceHighlighting:
+        this.highlightCurrentSentence(axNodeIds, scrollIntoView);
+        break;
+      case chrome.readingMode.wordHighlighting:
+        this.highlightCurrentWord();
+        break;
+      case chrome.readingMode.phraseHighlighting:
+        this.highlightCurrentPhrase();
+        break;
+      case chrome.readingMode.autoHighlighting:
+      default:
+        // This cannot happen, but ensures the switch statement is exhaustive.
+        assert(false, 'invalid value for effective highlight');
     }
   }
 
@@ -1812,10 +1827,25 @@ export class AppElement extends AppElementBase {
       if (event.name === 'word') {
         this.updateBoundary(event.charIndex);
 
-        // Only update the highlighting with word highlights if they should be
-        // used.
-        if (this.shouldUseWordHighlighting()) {
-          this.highlightCurrentWord();
+        const highlightGranularity =
+            this.getEffectiveHighlightingGranularity_();
+        switch (highlightGranularity) {
+          case chrome.readingMode.noHighlighting:
+          case chrome.readingMode.sentenceHighlighting:
+            // No need to update the highlight on word boundary events if
+            // highlighting is off or if sentence highlighting is used.
+            break;
+          case chrome.readingMode.wordHighlighting:
+            this.highlightCurrentWord();
+            break;
+          case chrome.readingMode.phraseHighlighting:
+            this.highlightCurrentPhrase();
+            break;
+          case chrome.readingMode.autoHighlighting:
+          default:
+            // This cannot happen, but ensures the switch statement is
+            // exhaustive.
+            assert(false, 'invalid value for effective highlight');
         }
       }
     });
@@ -1930,16 +1960,26 @@ export class AppElement extends AppElementBase {
     return utteranceText;
   }
 
-  // TODO(b/301131238): Verify all edge cases.
   highlightCurrentWord() {
+    this.highlightCurrentWordOrPhrase_(false);
+  }
+
+  highlightCurrentPhrase() {
+    this.highlightCurrentWordOrPhrase_(true);
+  }
+
+  // TODO(b/301131238): Verify all edge cases.
+  private highlightCurrentWordOrPhrase_(highlightPhrases: boolean) {
     // Word highlights can be called quite frequently which can create some
-    // misordering, so just make sure we've cleared the previous word highlight
-    // before showing the next one.
-    this.removeCurrentHighlight();
+    // misordering, so just make sure we've cleared the prior current word
+    // highlight before showing the next one.
+    this.resetCurrentHighlight();
+    this.resetPreviousHighlight_();
     const index = this.wordBoundaryState.speechUtteranceStartIndex +
         this.wordBoundaryState.previouslySpokenIndex;
     const highlightNodes =
-        chrome.readingMode.getHighlightForCurrentSegmentIndex(index);
+        chrome.readingMode.getHighlightForCurrentSegmentIndex(
+            index, highlightPhrases);
     let anyHighlighted: boolean = false;
     for (let i = 0; i < highlightNodes.length; i++) {
       const highlightNode = highlightNodes[i].nodeId;
@@ -2105,12 +2145,54 @@ export class AppElement extends AppElementBase {
     this.resetToDefaultWordBoundaryState();
   }
 
-  private shouldUseWordHighlighting(): boolean {
-    // Word highlighting should only be used for speech rates less than or
-    // equal to 1x speed. It should be skipped on espeak voices, since espeak
-    // boundaries are different than Google TTS word boundaries.
-    return chrome.readingMode.isAutomaticWordHighlightingEnabled &&
-        getCurrentSpeechRate() <= 1 && !isEspeak(this.selectedVoice_);
+  private getEffectiveHighlightingGranularity_(): number {
+    // Parse all of the conditions that control highlighting and return the
+    // effective highlighting granularity.
+    const highlight = chrome.readingMode.highlightGranularity;
+
+    if (highlight === chrome.readingMode.noHighlighting ||
+        highlight === chrome.readingMode.sentenceHighlighting) {
+      return highlight;
+    }
+
+    if (!chrome.readingMode.isAutomaticWordHighlightingEnabled ||
+        this.wordBoundaryState.mode ===
+            WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED ||
+        isEspeak(this.selectedVoice_)) {
+      // Fall back where word highlighting is not possible. Since espeak
+      // boundaries are different than Google TTS word boundaries, fall back to
+      // sentence boundaries in that case too.
+      return chrome.readingMode.sentenceHighlighting;
+    }
+
+    const currentSpeechRate: number = getCurrentSpeechRate();
+
+    if (!chrome.readingMode.isPhraseHighlightingEnabled) {
+      // Choose sentence highlighting for fast voices.
+      if (currentSpeechRate > 1.2 &&
+          highlight === chrome.readingMode.autoHighlighting) {
+        return chrome.readingMode.sentenceHighlighting;
+      }
+
+      // In other cases where phrase highilghting is off, choose word
+      // highlighting.
+      return chrome.readingMode.wordHighlighting;
+    }
+
+    // TODO(crbug.com/364327601): Check that the language of the page should
+    // be English for phrase highlighting.
+    if (highlight === chrome.readingMode.autoHighlighting) {
+      if (currentSpeechRate <= 0.8) {
+        return chrome.readingMode.wordHighlighting;
+      } else if (currentSpeechRate >= 2.0) {
+        return chrome.readingMode.sentenceHighlighting;
+      } else {
+        return chrome.readingMode.phraseHighlighting;
+      }
+    }
+
+    // In other cases, return what the user selected (i.e. word/phrase).
+    return highlight;
   }
 
   protected onSelectVoice_(
@@ -2199,6 +2281,8 @@ export class AppElement extends AppElementBase {
     this.resetPreviousHighlight_();
   }
 
+  // Resets formatting on the current highlight, including previous highlight
+  // formatting.
   private removeCurrentHighlight() {
     // The most recent highlight could have been spread across multiple segments
     // so clear the formatting for all of the segments.
@@ -2208,6 +2292,16 @@ export class AppElement extends AppElementBase {
         lastElement.classList.remove(currentReadHighlightClass);
       }
     }
+  }
+
+  // Resets the current highlight. Does not change how this element will
+  // be considered for previous highlighting.
+  private resetCurrentHighlight() {
+    const elements =
+        this.shadowRoot?.querySelectorAll('.' + currentReadHighlightClass);
+    elements?.forEach(element => {
+      element.classList.remove(currentReadHighlightClass);
+    });
   }
 
   private resetPreviousHighlight_() {
@@ -2233,6 +2327,7 @@ export class AppElement extends AppElementBase {
       theme: chrome.readingMode.colorTheme,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
+      highlightGranularity: chrome.readingMode.highlightGranularity,
     };
     this.styleUpdater_.setAllTextStyles();
     // TODO(crbug.com/40927698): Remove this call. Using this.settingsPrefs_
@@ -2340,10 +2435,6 @@ export class AppElement extends AppElementBase {
     this.styleUpdater_.setFontSize();
   }
 
-  protected onHighlightToggle_() {
-    this.styleUpdater_.setHighlight();
-  }
-
   protected onThemeChange_() {
     this.styleUpdater_.setTheme();
   }
@@ -2356,6 +2447,21 @@ export class AppElement extends AppElementBase {
     const shouldScroll =
         (event.detail.overflowLength >= minOverflowLengthToScroll);
     this.styleUpdater_.overflowToolbar(shouldScroll);
+  }
+
+  protected onHighlightChange_(event: CustomEvent<{data: number}>) {
+    // Handler for HIGHLIGHT_CHANGE.
+    const changedHighlight = event.detail.data;
+    chrome.readingMode.onHighlightGranularityChanged(changedHighlight);
+    // Apply highlighting changes to the DOM.
+    this.styleUpdater_.setHighlight();
+
+    // TODO(crbug.com/366002886): Re-highlight with the new granularity. In
+    // particular, when switching from word or phrase to sentence, the sentence
+    // highlight needs to be recalculated.
+
+    // TODO(crbug.com/364546547): Log these highlight granularity changes when
+    // the phrase menu is shown. (Toggles are already logged in the toolbar.)
   }
 
   // If the screen is locked during speech, we should stop speaking.

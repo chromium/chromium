@@ -1476,6 +1476,39 @@ BackForwardCacheImpl::GetOrEvictEntry(int navigation_entry_id) {
   return (*matching_entry).get();
 }
 
+bool BackForwardCacheImpl::HasPotentiallyMatchingEntry(
+    const RenderFrameHostImpl& commiting_rfh,
+    const std::optional<url::Origin>& initiator_origin,
+    bool require_no_subframes) const {
+  if (commiting_rfh.GetSiteInstance()->GetRelatedActiveContentsCount() > 1) {
+    // If the committing RFH has relation to other pages/WebContents, it can't
+    // possibly restore BFCached pages, as BFCached pages use a separate
+    // BrowsingInstance (and thus will sever relation to other pages).
+    return false;
+  }
+  for (auto& entry : entries_) {
+    auto* bfcached_rfh = entry->render_frame_host();
+    if (require_no_subframes && bfcached_rfh->child_count() > 0) {
+      continue;
+    }
+    // If the URL, origin, and security properties match, the navigation is
+    // targeting the same page as `bfcached_rfh`, so theoretically it could
+    // just use `bfcached_rfh` instead of creating a new RenderFrameHost to
+    // commit in. We don't currently do that, but track these cases in metrics.
+    if (commiting_rfh.GetLastCommittedURL() ==
+            bfcached_rfh->GetLastCommittedURL() &&
+        commiting_rfh.GetLastCommittedOrigin() ==
+            bfcached_rfh->GetLastCommittedOrigin() &&
+        bfcached_rfh->last_committed_frame_entry()->initiator_origin() ==
+            initiator_origin &&
+        commiting_rfh.policy_container_host()->policies() ==
+            bfcached_rfh->policy_container_host()->policies()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void BackForwardCacheImpl::RenderViewHostNoLongerStored(
     RenderViewHostImpl* rvh) {
   // `AddProcessesForEntry` are gated on
@@ -1590,23 +1623,44 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
   }
 }
 
-bool BackForwardCacheImpl::IsBrowsingInstanceInBackForwardCacheForDebugging(
-    BrowsingInstanceId browsing_instance_id) {
+bool BackForwardCacheImpl::
+    IsRenderFrameHostWithSIGInBackForwardCacheForDebugging(
+        SiteInstanceGroupId site_instance_group_id) {
+  bool found = false;
   for (std::unique_ptr<Entry>& entry : entries_) {
-    if (entry->render_frame_host()
-            ->GetSiteInstance()
-            ->GetBrowsingInstanceId() == browsing_instance_id) {
-      return true;
+    entry->render_frame_host()->ForEachRenderFrameHostWithAction(
+        [&found, site_instance_group_id](RenderFrameHostImpl* rfh) {
+          if (rfh->GetSiteInstance()->group()->GetId() ==
+              site_instance_group_id) {
+            found = true;
+            return RenderFrameHost::FrameIterationAction::kStop;
+          }
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        });
+  }
+  return found;
+}
+
+bool BackForwardCacheImpl::
+    IsRenderFrameProxyHostWithSIGInBackForwardCacheForDebugging(
+        SiteInstanceGroupId site_instance_group_id) {
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    for (const auto& entry_rfph : entry->proxy_hosts()) {
+      if (entry_rfph.second->site_instance_group()->GetId() ==
+          site_instance_group_id) {
+        return true;
+      }
     }
   }
   return false;
 }
 
-bool BackForwardCacheImpl::IsProxyInBackForwardCacheForDebugging(
-    RenderFrameProxyHost* proxy) {
+bool BackForwardCacheImpl::
+    IsRenderViewHostWithMapIdInBackForwardCacheForDebugging(
+        const RenderViewHostImpl& rvh) {
   for (std::unique_ptr<Entry>& entry : entries_) {
-    for (auto& proxy_map_entry : entry->proxy_hosts()) {
-      if (proxy_map_entry.second.get() == proxy) {
+    for (const auto& entry_rvh : entry->render_view_hosts()) {
+      if (entry_rvh->rvh_map_id() == rvh.rvh_map_id()) {
         return true;
       }
     }

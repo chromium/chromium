@@ -9,7 +9,6 @@
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/serialization/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
@@ -18,6 +17,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_underlying_source_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
@@ -33,7 +33,7 @@ class MODULES_EXPORT RTCRtpScriptTransformer : public ScriptWrappable {
 
  public:
   RTCRtpScriptTransformer() = default;
-  ~RTCRtpScriptTransformer() override = default;
+  ~RTCRtpScriptTransformer() override;
 
   explicit RTCRtpScriptTransformer(
       ScriptState* script_state,

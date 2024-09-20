@@ -47,15 +47,6 @@ enum class HandleToClose {
   kDisconnectCsrss,
 };
 
-// Specifies how to register an AppContainer profile if it doesn't already
-// exist.
-enum class ACProfileRegistration {
-  // Use the default registration.
-  kDefault,
-  // Create the profile without registering with the firewall.
-  kNoFirewall
-};
-
 // Policy configuration that can be shared over multiple targets of the same tag
 // (see BrokerServicesBase::CreatePolicy(tag)). Methods in TargetConfig will
 // only need to be called the first time a TargetPolicy object with a given tag
@@ -227,13 +218,9 @@ class [[clang::lto_visibility_public]] TargetConfig {
   virtual void SetLockdownDefaultDacl() = 0;
 
   // Configure policy to use an AppContainer profile. |package_name| is the
-  // name of the profile to use. Specifying kDefault for |registration| will
-  // use the default mechanism to register the profile if it doesn't already
-  // exist. Specifying kNoFirewall will create the profile without registering
-  // it with the firewall service which reduces system impact.
+  // name of the profile to use.
   [[nodiscard]] virtual ResultCode AddAppContainerProfile(
-      const wchar_t* package_name,
-      ACProfileRegistration registration) = 0;
+      const wchar_t* package_name) = 0;
 
   // Get the configured AppContainer. The returned object lasts only as long as
   // the containing TargetConfig.

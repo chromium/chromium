@@ -9,10 +9,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
-#include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -66,8 +64,7 @@ ScriptPromise<IDLString> AISummarizer::summarize(
 
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      kExceptionMessageRequestAborted);
+    ThrowAbortedException(exception_state);
     return ScriptPromise<IDLString>();
   }
 
@@ -106,8 +103,7 @@ ReadableStream* AISummarizer::summarizeStreaming(
 
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      kExceptionMessageRequestAborted);
+    ThrowAbortedException(exception_state);
     return nullptr;
   }
   auto [readable_stream, pending_remote] =

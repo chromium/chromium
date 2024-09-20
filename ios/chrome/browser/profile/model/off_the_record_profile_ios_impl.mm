@@ -65,21 +65,37 @@ OffTheRecordChromeBrowserStateImpl::~OffTheRecordChromeBrowserStateImpl() {
 
 ChromeBrowserState*
 OffTheRecordChromeBrowserStateImpl::GetOriginalChromeBrowserState() {
-  return original_chrome_browser_state_;
+  return GetOriginalProfile();
 }
 
 bool OffTheRecordChromeBrowserStateImpl::HasOffTheRecordChromeBrowserState()
     const {
-  return true;
+  return HasOffTheRecordProfile();
 }
 
 ChromeBrowserState*
 OffTheRecordChromeBrowserStateImpl::GetOffTheRecordChromeBrowserState() {
-  return this;
+  return GetOffTheRecordProfile();
 }
 
 void OffTheRecordChromeBrowserStateImpl::
     DestroyOffTheRecordChromeBrowserState() {
+  return DestroyOffTheRecordProfile();
+}
+
+ProfileIOS* OffTheRecordProfileIOSImpl::GetOriginalProfile() {
+  return original_chrome_browser_state_;
+}
+
+bool OffTheRecordProfileIOSImpl::HasOffTheRecordProfile() const {
+  return true;
+}
+
+ProfileIOS* OffTheRecordProfileIOSImpl::GetOffTheRecordProfile() {
+  return this;
+}
+
+void OffTheRecordProfileIOSImpl::DestroyOffTheRecordProfile() {
   NOTREACHED_IN_MIGRATION();
 }
 

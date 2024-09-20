@@ -189,7 +189,8 @@ FindBadConstructsConsumer::FindBadConstructsConsumer(CompilerInstance& instance,
   diag_no_explicit_copy_ctor_ = diagnostic().getCustomDiagID(
       getErrorLevel(),
       "[chromium-style] Complex class/struct needs an explicit out-of-line "
-      "copy constructor.");
+      "copy constructor. If this type is meant to be moveable, it also needs "
+      "a move constructor and assignment operator.");
   diag_inline_complex_ctor_ = diagnostic().getCustomDiagID(
       getErrorLevel(),
       "[chromium-style] Complex constructor has an inlined body.");

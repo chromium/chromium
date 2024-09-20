@@ -212,6 +212,8 @@ source_set("web_applications") {
     "manifest_update_manager.h",
     "manifest_update_utils.cc",
     "manifest_update_utils.h",
+    "navigation_capturing_log.cc",
+    "navigation_capturing_log.h",
     "os_integration/file_handling_sub_manager.cc",
     "os_integration/file_handling_sub_manager.h",
     "os_integration/os_integration_manager.cc",
@@ -271,6 +273,8 @@ source_set("web_applications") {
     "user_display_mode.h",
     "user_uninstalled_preinstalled_web_app_prefs.cc",
     "user_uninstalled_preinstalled_web_app_prefs.h",
+    "visited_manifest_manager.cc",
+    "visited_manifest_manager.h",
     "web_app.cc",
     "web_app.h",
     "web_app_audio_focus_id_map.cc",
@@ -574,6 +578,7 @@ source_set("web_applications") {
 
   if (is_win) {
     deps += [
+      "//chrome/browser/profiles:profile_attributes",
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
       "//components/custom_handlers",
     ]
@@ -581,6 +586,7 @@ source_set("web_applications") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash",
       "//ash/components/arc:arc_base",
       "//ash/constants",
       "//ash/public/cpp",
@@ -849,6 +855,7 @@ source_set("web_applications_unit_tests") {
     "tabbed_mode_scope_matcher_unittest.cc",
     "test/web_app_test.cc",
     "test/web_app_test.h",
+    "visited_manifest_manager_unittest.cc",
     "web_app_command_manager_unittest.cc",
     "web_app_command_scheduler_unittest.cc",
     "web_app_constants_unittest.cc",
@@ -1118,12 +1125,12 @@ source_set("web_applications_browser_tests") {
     deps += [
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/login:test_support",
-      "//chrome/browser/ash/login/ui",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/core:test_support",
       "//chrome/browser/ash/policy/test_support",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+      "//chrome/browser/ui/ash/login",
     ]
   }
 

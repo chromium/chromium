@@ -203,12 +203,6 @@ class PLATFORM_EXPORT FixedPoint {
 
   // Convert to a `FixedPoint` with a different storage and/or precision.
   template <typename Target>
-    requires(Target::kIntegralBits >= kIntegralBits)
-  constexpr Target To() const {
-    return Target::template FromFixed<kFractionalBits>(RawValue());
-  }
-  template <typename Target>
-    requires(Target::kIntegralBits < kIntegralBits)
   constexpr Target To() const {
     return Target::template FromFixed<kFractionalBits>(RawValue());
   }

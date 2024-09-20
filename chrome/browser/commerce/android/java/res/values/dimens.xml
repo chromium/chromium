@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+<!-- Commerce bottom sheet dimensions. -->
+  <dimen name="content_item_container_surface_elevation">@dimen/default_elevation_1</dimen>
+  <dimen name="content_item_container_background_radius">24dp</dimen>
+  <dimen name="content_item_container_padding">16dp</dimen>
+  <dimen name="content_item_container_top_offset">16dp</dimen>
+  <dimen name="content_item_title_bottom_margin">16dp</dimen>
+  <dimen name="content_recycler_view_padding">16dp</dimen>
+</resources>

@@ -24,6 +24,7 @@
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/common/tile_property.h"
+#include "ui/ozone/platform/drm/gpu/crtc_commit_request.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
@@ -222,6 +223,12 @@ class HardwareDisplayController {
                                bool use_current_crtc_mode,
                                const drmModeModeInfo& mode,
                                std::optional<bool> enable_vrr);
+  // Returns true if |controller| is a non-primary tiled controlelr and should
+  // be disabled as part of the modeset with a non-tiled |mode|.
+  bool ShouldDisableNonprimaryTileController(
+      const CrtcController& controller,
+      const drmModeModeInfo& mode,
+      const bool use_current_crtc_mode) const;
   void OnModesetComplete(const DrmOverlayPlaneList& modeset_planes);
   PageFlipResult ScheduleOrTestPageFlip(
       const DrmOverlayPlaneList& plane_list,

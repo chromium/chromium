@@ -138,11 +138,6 @@ BASE_FEATURE(kAnchorElementInteraction,
              "AnchorElementInteraction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable anchor element mouse motion estimator.
-BASE_FEATURE(kAnchorElementMouseMotionEstimator,
-             "AnchorElementMouseMotionEstimator",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAndroidExtendedKeyboardShortcuts,
              "AndroidExtendedKeyboardShortcuts",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -351,6 +346,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kBrowsingTopicsParameters,
                    "max_epoch_introduction_delay",
                    base::Days(2));
+// The duration an epoch is retained before deletion.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kBrowsingTopicsEpochRetentionDuration,
+                   &kBrowsingTopicsParameters,
+                   "epoch_retention_duration",
+                   base::Days(28));
 // How many epochs (weeks) of API usage data (i.e. topics observations) will be
 // based off for the filtering of topics for a calling context.
 BASE_FEATURE_PARAM(
@@ -553,7 +554,7 @@ BASE_FEATURE(kCompressParkableStrings,
 // foreground, and increase aging tick intervals.
 BASE_FEATURE(kLessAggressiveParkableString,
              "LessAggressiveParkableString",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Limits maximum capacity of disk data allocator per renderer process.
 // DiskDataAllocator and its clients(ParkableString, ParkableImage) will try
@@ -619,10 +620,12 @@ const base::FeatureParam<TaskDeferralPolicy>::Option kTaskDeferralOptions[] = {
     {TaskDeferralPolicy::kAllTypes,
      kDeferRendererTasksAfterInputAllTypesPolicyName}};
 
-const base::FeatureParam<TaskDeferralPolicy> kTaskDeferralPolicyParam{
-    &kDeferRendererTasksAfterInput,
-    kDeferRendererTasksAfterInputPolicyParamName,
-    TaskDeferralPolicy::kAllDeferrableTypes, &kTaskDeferralOptions};
+BASE_FEATURE_ENUM_PARAM(TaskDeferralPolicy,
+                        kTaskDeferralPolicyParam,
+                        &kDeferRendererTasksAfterInput,
+                        kDeferRendererTasksAfterInputPolicyParamName,
+                        TaskDeferralPolicy::kAllDeferrableTypes,
+                        &kTaskDeferralOptions);
 
 BASE_FEATURE(kDelayAsyncScriptExecution,
              "DelayAsyncScriptExecution",
@@ -741,9 +744,11 @@ const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode{
     &kDelayLowPriorityRequestsAccordingToNetworkState,
     "MaxNumOfThrottleableRequestsInTightMode", 5};
 
-const base::FeatureParam<base::TimeDelta> kHttpRttThreshold{
-    &kDelayLowPriorityRequestsAccordingToNetworkState, "HttpRttThreshold",
-    base::Milliseconds(450)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kHttpRttThreshold,
+                   &kDelayLowPriorityRequestsAccordingToNetworkState,
+                   "HttpRttThreshold",
+                   base::Milliseconds(450));
 
 const base::FeatureParam<double> kCostReductionOfMultiplexedRequests{
     &kDelayLowPriorityRequestsAccordingToNetworkState,
@@ -787,12 +792,6 @@ BASE_FEATURE(kEstablishGpuChannelAsync,
 #endif
 );
 
-// Exposes Event Timing keyboard InteractionId of composition and keypress
-// events.
-BASE_FEATURE(kEventTimingKeypressAndCompositionInteractionId,
-             "EventTimingKeypressAndCompositionInteractionId",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables unload handler deprecation via Permissions-Policy.
 // https://crbug.com/1324111
 BASE_FEATURE(kDeprecateUnload,
@@ -816,12 +815,6 @@ BASE_FEATURE(kDeprecateUnloadByAllowList,
 // the all hosts are allowed.
 const base::FeatureParam<std::string> kDeprecateUnloadAllowlist{
     &kDeprecateUnloadByAllowList, "allowlist", ""};
-
-// Enable reporting the modal dialog start time as an alternative end time for
-// duration measurement in performance event timing.
-BASE_FEATURE(kEventTimingFallbackToModalDialogStart,
-             "EventTimingFallbackToModalDialogStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable not reporting orphan pointerup (pointerup not accompanied by
 // pointerdown) as an interaction in performance event timing.
@@ -1696,18 +1689,6 @@ BASE_FEATURE(kResourceFetcherStoresStrongReferences,
              "ResourceFetcherStoresStrongReferences",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMemoryCacheStrongReferenceFilterImages,
-             "MemoryCacheStrongReferenceFilterImages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMemoryCacheStrongReferenceFilterScripts,
-             "MemoryCacheStrongReferenceFilterScripts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMemoryCacheStrongReferenceFilterCrossOriginScripts,
-             "MemoryCacheStrongReferenceFilterCrossOriginScripts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMemoryCacheStrongReference,
              "MemoryCacheStrongReference",
 // Finch study showed no improvement on Android for strong memory cache.
@@ -1718,14 +1699,20 @@ BASE_FEATURE(kMemoryCacheStrongReference,
 #endif
 );
 
-const base::FeatureParam<int>
-    kMemoryCacheStrongReferenceTotalSizeThresholdParam{
-        &kMemoryCacheStrongReference,
-        "memory_cache_strong_ref_total_size_threshold", 15 * 1024 * 1024};
-const base::FeatureParam<int>
-    kMemoryCacheStrongReferenceResourceSizeThresholdParam{
-        &kMemoryCacheStrongReference,
-        "memory_cache_strong_ref_resource_size_threshold", 3 * 1024 * 1024};
+BASE_FEATURE_PARAM(int,
+                   kMemoryCacheStrongReferenceTotalSizeThresholdParam,
+                   &kMemoryCacheStrongReference,
+                   "memory_cache_strong_ref_total_size_threshold",
+                   15 * 1024 * 1024);
+BASE_FEATURE_PARAM(int,
+                   kMemoryCacheStrongReferenceResourceSizeThresholdParam,
+                   &kMemoryCacheStrongReference,
+                   "memory_cache_strong_ref_resource_size_threshold",
+                   3 * 1024 * 1024);
+
+BASE_FEATURE(kMHTML_Improvements,
+             "MHTML_Improvements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Used to control the collection of anchor element metrics (crbug.com/856683).
 // If kNavigationPredictor is enabled, then metrics of anchor elements
@@ -1762,10 +1749,6 @@ BASE_FEATURE(kBFCacheOpenBroadcastChannel,
 
 BASE_FEATURE(kOriginAgentClusterDefaultEnabled,
              "OriginAgentClusterDefaultEnable",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOriginAgentClusterDefaultWarning,
-             "OriginAgentClusterDefaultWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOriginTrialStateHostApplyFeatureDiff,
@@ -2140,13 +2123,6 @@ BASE_FEATURE(kSaveDataImgSrcset,
              "SaveDataImgSrcset",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Scopes the memory cache to a fetcher i.e. document/frame. Any resource cached
-// in the blink cache will only be reused if the most recent fetcher that
-// fetched it was the same as the current document.
-BASE_FEATURE(kScopeMemoryCachePerContext,
-             "ScopeMemoryCachePerContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPausePagesPerBrowsingContextGroup,
              "PausePagesPerBrowsingContextGroup",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2155,10 +2131,14 @@ BASE_FEATURE(kShowHudDisplayForPausedPages,
              "ShowHudDisplayForPausedPages",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls script streaming.
+// Controls script streaming for http and https scripts.
 BASE_FEATURE(kScriptStreaming,
              "ScriptStreaming",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables script streaming for non-http scripts.
+BASE_FEATURE(kScriptStreamingForNonHTTP,
+             "ScriptStreamingForNonHTTP",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSelectiveInOrderScript,
              "SelectiveInOrderScript",
@@ -2278,11 +2258,11 @@ BASE_FEATURE(kSharedStorageAPIM125,
 
 BASE_FEATURE(kSharedStorageCrossOriginScript,
              "SharedStorageCrossOriginScript",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedStorageCreateWorkletUseContextOriginByDefault,
              "SharedStorageCreateWorkletUseContextOriginByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedStorageAPIEnableWALForDatabase,
              "SharedStorageAPIEnableWALForDatabase",
@@ -2414,8 +2394,11 @@ BASE_FEATURE(kThreadedPreloadScanner,
 BASE_FEATURE(kThrottleInstallingServiceWorker,
              "ThrottleInstallingServiceWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kInstallingServiceWorkerOutstandingThrottledLimit{
-    &kThrottleInstallingServiceWorker, "limit", 3};
+BASE_FEATURE_PARAM(int,
+                   kInstallingServiceWorkerOutstandingThrottledLimit,
+                   &kThrottleInstallingServiceWorker,
+                   "limit",
+                   3);
 
 // Throttles Javascript timer wake ups of unimportant frames (cross origin
 // frames with small proportion of the page's visible area and no user
@@ -2426,15 +2409,18 @@ BASE_FEATURE(kThrottleUnimportantFrameTimers,
 // Interval between Javascript timer wake ups for unimportant frames (small
 // cross origin frames with no user activation) when the
 // "ThrottleUnimportantFrameTimers" feature is enabled.
-const base::FeatureParam<int>
-    kUnimportantFrameTimersThrottledWakeUpIntervalMills{
-        &features::kThrottleUnimportantFrameTimers,
-        "unimportant_frame_timers_throttled_wake_up_interval_millis", 32};
+BASE_FEATURE_PARAM(int,
+                   kUnimportantFrameTimersThrottledWakeUpIntervalMills,
+                   &features::kThrottleUnimportantFrameTimers,
+                   "unimportant_frame_timers_throttled_wake_up_interval_millis",
+                   32);
 // The percentage of the page's visible area below which a frame is considered
 // small. Only small frames can be throttled by ThrottleUnimportantFrameTimers.
-const base::FeatureParam<int> kLargeFrameSizePercentThreshold{
-    &features::kThrottleUnimportantFrameTimers,
-    "large_frame_size_percent_threshold", 75};
+BASE_FEATURE_PARAM(int,
+                   kLargeFrameSizePercentThreshold,
+                   &features::kThrottleUnimportantFrameTimers,
+                   "large_frame_size_percent_threshold",
+                   75);
 
 BASE_FEATURE(kTimedHTMLParserBudget,
              "TimedHTMLParserBudget",
@@ -2457,10 +2443,6 @@ BASE_FEATURE(kEmulateLoadStartedForInspectorOncePerResource,
 BASE_FEATURE(kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics,
              "BlinkSchedulerDiscreteInputMatchesResponsivenessMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBlinkSchedulerPrioritizeNavigationIPCs,
-             "BlinkSchedulerPrioritizeNavigationIPCs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFileBackedBlobFactory,
              "EnableFileBackedBlobFactory",
@@ -2494,7 +2476,7 @@ BASE_FEATURE(kUseSnappyForParkableStrings,
 // Use the zstd compression algorithm for ParkableString compression.
 BASE_FEATURE(kUseZstdForParkableStrings,
              "UseZstdForParkableStrings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows to tweak the compression / speed tradeoff.
 //
@@ -2503,8 +2485,11 @@ BASE_FEATURE(kUseZstdForParkableStrings,
 // - Roughly as fast as snappy, with a better compression ratio.
 //
 // And even -3 should be smaller *and* faster than snappy.
-const base::FeatureParam<int> kZstdCompressionLevel{
-    &features::kUseZstdForParkableStrings, "compression_level", 1};
+BASE_FEATURE_PARAM(int,
+                   kZstdCompressionLevel,
+                   &features::kUseZstdForParkableStrings,
+                   "compression_level",
+                   1);
 
 BASE_FEATURE(kUseThreadPoolForMediaStreamVideoTaskRunner,
              "UseThreadPoolForMediaStreamVideoTaskRunner",
@@ -2513,9 +2498,11 @@ BASE_FEATURE(kUseThreadPoolForMediaStreamVideoTaskRunner,
 BASE_FEATURE(kVSyncDecoding,
              "VSyncDecoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kVSyncDecodingHiddenOccludedTickDuration{
-        &kVSyncDecoding, "occluded_tick_duration", base::Hertz(10)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kVSyncDecodingHiddenOccludedTickDuration,
+                   &kVSyncDecoding,
+                   "occluded_tick_duration",
+                   base::Hertz(10));
 
 BASE_FEATURE(kVSyncEncoding,
              "VSyncEncoding",
@@ -2564,11 +2551,6 @@ BASE_FEATURE(kWebAppManifestLockScreen,
 BASE_FEATURE(kWebAudioBypassOutputBuffering,
              "WebAudioBypassOutputBuffering",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Update echo cancellation output device on AudioContext construction.
-BASE_FEATURE(kWebAudioContextConstructorEchoCancellation,
-             "WebAudioContextConstructorEchoCancellation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at
@@ -2703,14 +2685,21 @@ bool IsLinkPreviewTriggerTypeEnabled(LinkPreviewTriggerType type) {
 BASE_FEATURE(kExpandCompositedCullRect,
              "ExpandCompositedCullRect",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int>
-    kCullRectPixelDistanceToExpand(&kExpandCompositedCullRect, "pixels", 4000);
-const base::FeatureParam<double>
-    kCullRectExpansionDPRCoef(&kExpandCompositedCullRect, "dpr_coef", 0);
-const base::FeatureParam<bool> kSmallScrollersUseMinCullRect(
-    &kExpandCompositedCullRect,
-    "small_scroller_opt",
-    false);
+BASE_FEATURE_PARAM(int,
+                   kCullRectPixelDistanceToExpand,
+                   &kExpandCompositedCullRect,
+                   "pixels",
+                   4000);
+BASE_FEATURE_PARAM(double,
+                   kCullRectExpansionDPRCoef,
+                   &kExpandCompositedCullRect,
+                   "dpr_coef",
+                   0);
+BASE_FEATURE_PARAM(bool,
+                   kSmallScrollersUseMinCullRect,
+                   &kExpandCompositedCullRect,
+                   "small_scroller_opt",
+                   false);
 
 BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
              "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",

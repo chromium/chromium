@@ -7,7 +7,10 @@ package org.chromium.ui.test.util;
 /**
  * Disable if enums that are usable with the @DisableIf in layers depending on //ui.
  *
- * e.g. @DisableIf.Device(type = {UiDisableIf.PHONE})
+ * <p>e.g. @DisableIf.Device(type = {UiDisableIf.PHONE})
+ *
+ * <p>TODO(crbug.com/366241165): Rename to FormFactors so it makes more sense to use it
+ * in @ImportantFormFactors().
  */
 public final class UiDisableIf {
     /** Specifies the test is disabled if on phone form factors. */

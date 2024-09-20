@@ -20,6 +20,7 @@ import("//url/features.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//components/cronet/android/cronet_test_templates.gni")
   import("//third_party/jni_zero/jni_zero.gni")
 } else if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
@@ -105,6 +106,8 @@ buildflag_header("buildflags") {
     "CHROME_ROOT_STORE_ONLY=$chrome_root_store_only",
     "CHROME_ROOT_STORE_SUPPORTED=$chrome_root_store_supported",
     "ENABLE_DEVICE_BOUND_SESSIONS=$enable_device_bound_sessions",
+    "ENABLE_BRACKETED_PROXY_URIS=$enable_bracketed_proxy_uris",
+    "ENABLE_QUIC_PROXY_SUPPORT=$enable_quic_proxy_support",
   ]
 }
 
@@ -650,6 +653,8 @@ component("net") {
     "http/http_stream_pool_job_controller.h",
     "http/http_stream_pool_quic_task.cc",
     "http/http_stream_pool_quic_task.h",
+    "http/http_stream_pool_switching_info.cc",
+    "http/http_stream_pool_switching_info.h",
     "http/http_stream_request.cc",
     "http/http_stream_request.h",
     "http/http_transaction.h",
@@ -1040,6 +1045,7 @@ component("net") {
     "url_request/redirect_info.h",
     "url_request/redirect_util.cc",
     "url_request/redirect_util.h",
+    "url_request/referrer_policy.cc",
     "url_request/referrer_policy.h",
     "url_request/static_http_user_agent_settings.cc",
     "url_request/static_http_user_agent_settings.h",
@@ -1171,6 +1177,8 @@ component("net") {
       "device_bound_sessions/session.h",
       "device_bound_sessions/session_binding_utils.cc",
       "device_bound_sessions/session_binding_utils.h",
+      "device_bound_sessions/session_challenge_param.cc",
+      "device_bound_sessions/session_challenge_param.h",
       "device_bound_sessions/session_inclusion_rules.cc",
       "device_bound_sessions/session_inclusion_rules.h",
       "device_bound_sessions/session_json_utils.cc",
@@ -1354,6 +1362,8 @@ component("net") {
       "proxy_resolution/win/windows_system_proxy_resolution_service.h",
       "proxy_resolution/win/windows_system_proxy_resolver.h",
       "proxy_resolution/win/winhttp_status.h",
+      "socket/tcp_socket_io_completion_port_win.cc",
+      "socket/tcp_socket_io_completion_port_win.h",
       "socket/tcp_socket_win.cc",
       "socket/tcp_socket_win.h",
       "socket/udp_socket_win.cc",
@@ -2550,7 +2560,13 @@ if (!is_cronet_build) {
   }
 }
 
-test("net_unittests") {
+if (is_cronet_build) {
+  _test_target_type = "cronet_test"
+} else {
+  _test_target_type = "test"
+}
+
+target(_test_target_type, "net_unittests") {
   sources = [
     "base/address_family_unittest.cc",
     "base/address_list_unittest.cc",
@@ -3315,6 +3331,7 @@ test("net_unittests") {
       "device_bound_sessions/registration_fetcher_param_unittest.cc",
       "device_bound_sessions/registration_fetcher_unittest.cc",
       "device_bound_sessions/session_binding_utils_unittest.cc",
+      "device_bound_sessions/session_challenge_param_unittest.cc",
       "device_bound_sessions/session_inclusion_rules_unittest.cc",
       "device_bound_sessions/session_service_impl_unittest.cc",
       "device_bound_sessions/session_service_unittest.cc",
@@ -3970,6 +3987,7 @@ proto_library("reporting_policy_proto") {
   proto_in_dir = "//"
   sources = [ "reporting/reporting_policy.proto" ]
   link_deps = [ "//testing/libfuzzer/proto:json_proto" ]
+  proto_data_sources = [ "//testing/libfuzzer/proto/json.proto" ]
 }
 
 fuzzer_test("net_reporting_header_parser_fuzzer") {

@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_UPDATER_EXTENSION_INSTALLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -55,8 +56,8 @@ class ExtensionInstaller : public update_client::CrxInstaller {
                std::unique_ptr<InstallParams> install_params,
                ProgressCallback progress_callback,
                UpdateClientCallback update_client_callback) override;
-  bool GetInstalledFile(const std::string& file,
-                        base::FilePath* installed_file) override;
+  std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) override;
   bool Uninstall() override;
 
   // For unit tests.

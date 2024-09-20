@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="1444443021901415601">Chrome note les sujets d'intérêt en fonction de votre historique de navigation récent</translation>
 <translation id="2252052615723281030">Lorsque vous êtes connecté à Chrome, ce paramètre permet de préserver la confidentialité de votre adresse IP. Si Chrome soupçonne un site de vous suivre, une partie de votre trafic peut être envoyée par l'intermédiaire de serveurs de confidentialité.</translation>
+<translation id="2793385791865768072">Chromium note les sujets d'intérêt en fonction de votre historique de navigation récent</translation>
 <translation id="33479675708419823">Lorsque vous êtes connecté à Chrome, ce paramètre permet de préserver la confidentialité de votre adresse IP. Si Chrome soupçonne un site de vous suivre, une partie de votre trafic peut être envoyée par l'intermédiaire de serveurs de confidentialité. En savoir plus sur le <ph name="LINK_BEGIN" />fonctionnement de la protection de l'adresse IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">En savoir plus sur le masquage de l'adresse IP</translation>
+<translation id="4041687306270459969">Les sujets d'annonces datant de plus de quatre semaines sont automatiquement supprimés. Les sujets comprennent des domaines comme le sport, l'habillement et plus</translation>
+<translation id="4177501066905053472">Sujets d'annonces</translation>
 <translation id="4301151630239508244">Les sujets d'annonces ne sont qu'un des nombreux moyens qu'un site peut utiliser pour personnaliser les annonces. Même sans sujets d'annonces, les sites peuvent toujours vous montrer des annonces. Celles-ci pourraient toutefois moins vous intéresser. Apprenez-en davantage sur la <ph name="BEGIN_LINK_1" />gestion de la confidentialité de vos annonces<ph name="END_LINK_1" />.</translation>
+<translation id="453692855554576066">Vous pouvez consulter vos sujets d'annonces dans les paramètres de Chromium et bloquer ceux que vous ne souhaitez pas voir partagés avec les sites</translation>
 <translation id="4598427486995631491">Masquer votre adresse IP</translation>
+<translation id="4692439979815346597">Vous pouvez consulter vos sujets d'annonces dans les paramètres de Chrome et bloquer ceux que vous ne souhaitez pas voir partagés avec les sites</translation>
+<translation id="5413586988657235240">Les sites que vous visitez peuvent demander à Chromium des sujets d'annonces pertinentes à vous montrer tout en protégeant votre historique de navigation et votre identité</translation>
+<translation id="6186536480878693792">Les sites que vous visitez peuvent demander à Chrome des sujets d'annonces pertinentes à vous montrer tout en protégeant votre historique de navigation et votre identité</translation>
 <translation id="6371812158043974664">Lorsque vous êtes connecté à Chromium, ce paramètre permet de préserver la confidentialité de votre adresse IP. Si Chromium soupçonne un site de vous suivre, une partie de votre trafic peut être envoyée par l'intermédiaire de serveurs de confidentialité. En savoir plus sur le <ph name="LINK_BEGIN" />fonctionnement de la protection de l'adresse IP<ph name="LINK_END" /></translation>
 <translation id="7040031291654706261">Découvrir <ph name="BEGIN_LINK" />comment fonctionne la protection de l'adresse IP<ph name="END_LINK" /></translation>
+<translation id="7475768947023614021">Vérifiez les paramètres de vos sujets d'annonces</translation>
 </translationbundle>

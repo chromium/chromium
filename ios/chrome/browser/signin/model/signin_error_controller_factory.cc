@@ -18,9 +18,15 @@ namespace ios {
 
 // static
 SigninErrorController* SigninErrorControllerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+SigninErrorController* SigninErrorControllerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<SigninErrorController*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

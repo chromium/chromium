@@ -31,6 +31,12 @@ bool IsHardwareEnabled(
     const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
         profiles);
 
+// Call to disable a hardware codec using a singleton.
+void DenyListHardwareCodec(VideoCodec codec);
+
+// Reset the global hardware codec deny list for use in testing.
+void ClearHardwareCodecDenyListForTesting();
+
 }  // namespace cast::encoding_support
 }  // namespace media
 

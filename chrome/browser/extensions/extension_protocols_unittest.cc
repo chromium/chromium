@@ -21,7 +21,6 @@
 #include "base/test/test_file_util.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
@@ -44,7 +43,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/file_util.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -386,17 +384,8 @@ class ExtensionProtocolsIncognitoTest : public ExtensionProtocolsTestBase {
       : ExtensionProtocolsTestBase(true /*force_incognito*/) {}
 };
 
-// TODO(crbug.com/40282364): remove this class before launch to stable.
-class ExtensionProtocolsOriginTrial : public ExtensionProtocolsTestBase {
- public:
-  ExtensionProtocolsOriginTrial()
-      : ExtensionProtocolsTestBase(false /*force_incognito*/) {}
-
- private:
-  // This override must match value of trial_tokens.channel in
-  // extensions/common/api/_manifest_features.json
-  ScopedCurrentChannel channel_{version_info::Channel::CANARY};
-};
+// A specialization that will only run on MV3 extensions.
+using ExtensionProtocolsMV3Test = ExtensionProtocolsTest;
 
 INSTANTIATE_TEST_SUITE_P(MV2, ExtensionProtocolsTest, ::testing::Values(2));
 INSTANTIATE_TEST_SUITE_P(MV3, ExtensionProtocolsTest, ::testing::Values(3));
@@ -406,9 +395,7 @@ INSTANTIATE_TEST_SUITE_P(MV2,
 INSTANTIATE_TEST_SUITE_P(MV3,
                          ExtensionProtocolsIncognitoTest,
                          ::testing::Values(3));
-INSTANTIATE_TEST_SUITE_P(MV3,
-                         ExtensionProtocolsOriginTrial,
-                         ::testing::Values(3));
+INSTANTIATE_TEST_SUITE_P(MV3, ExtensionProtocolsMV3Test, ::testing::Values(3));
 
 // Tests that making a chrome-extension request in an incognito context is
 // only allowed under the right circumstances (if the extension is allowed
@@ -594,10 +581,10 @@ TEST_P(ExtensionProtocolsTest, BackgroundScriptRequestResponseHeaders) {
 
 // Tests that request for background service worker returns Origin-Trial
 // response header.
-TEST_P(ExtensionProtocolsOriginTrial, BackgroundScriptRequestResponseHeaders) {
+TEST_P(ExtensionProtocolsMV3Test, BackgroundScriptRequestResponseHeaders) {
   EXPECT_EQ(3, GetParam());
   scoped_refptr<const Extension> extension =
-      CreateTestResponseHeaderExtension(3);
+      CreateTestResponseHeaderExtension(GetParam());
   AddExtension(extension, false, false);
 
   {
@@ -732,7 +719,7 @@ TEST_P(ExtensionProtocolsTest, ModuleRequestResponseHeaders) {
 
 // Tests that request for background service worker returns Origin-Trial
 // response header.
-TEST_P(ExtensionProtocolsOriginTrial, ModuleRequestResponseHeaders) {
+TEST_P(ExtensionProtocolsMV3Test, ModuleRequestResponseHeaders) {
   EXPECT_EQ(3, GetParam());
   const int manifest_version = GetParam();
   scoped_refptr<const Extension> module_extension =

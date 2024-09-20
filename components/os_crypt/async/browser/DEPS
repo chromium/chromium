@@ -1,13 +1,12 @@
 include_rules = [
+  "+components/dbus",
   "+components/prefs",
+  "+crypto",
+  "+dbus",
 ]
 
 specific_include_rules = {
   ".*_unittest\.cc": [
     "+components/os_crypt/sync",
-    "+crypto",
-  ],
-  "test_utils\.cc": [
-    "+crypto",
   ],
 }

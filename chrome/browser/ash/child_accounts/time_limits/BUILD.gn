@@ -45,6 +45,7 @@ static_library("time_limits") {
     "//ash/public/cpp",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
     "//chrome/common",
     "//chromeos/crosapi/mojom",
     "//chromeos/ui/vector_icons",

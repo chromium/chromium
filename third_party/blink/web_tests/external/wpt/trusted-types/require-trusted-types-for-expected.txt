@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Set require trusted types for 'script' without CSP for trusted types don't block policy creation and using.
-  assert_equals: expected "HTMLScriptElement innerText" but got "HTMLElement innerText"
-Harness: the test ran to completion.
-

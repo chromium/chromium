@@ -25,6 +25,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
@@ -94,7 +95,7 @@ void ResizeToPhone(views::Widget* widget) {
   // Always make sure the window is in normal state because the window might be
   // maximized/snapped.
   widget->GetNativeWindow()->SetProperty(aura::client::kShowStateKey,
-                                         ui::SHOW_STATE_NORMAL);
+                                         ui::mojom::WindowShowState::kNormal);
 
   widget->CenterWindow(GetPossibleSizeInWorkArea(widget, kPortraitPhoneDp));
 
@@ -109,7 +110,7 @@ void ResizeToTablet(views::Widget* widget) {
   // Always make sure the window is in normal state because the window might be
   // maximized/snapped.
   widget->GetNativeWindow()->SetProperty(aura::client::kShowStateKey,
-                                         ui::SHOW_STATE_NORMAL);
+                                         ui::mojom::WindowShowState::kNormal);
 
   // We here don't shrink the preferred size according to the available workarea
   // bounds like ResizeToPhone, because we'd like to let Android decide if the
@@ -216,8 +217,8 @@ bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate) {
 int GetUnresizableSnappedWidth(aura::Window* window) {
   const auto& bounds = window->bounds();
   const bool isPortrait = bounds.width() <= bounds.height();
-  const bool isNormal =
-      window->GetProperty(aura::client::kShowStateKey) == ui::SHOW_STATE_NORMAL;
+  const bool isNormal = window->GetProperty(aura::client::kShowStateKey) ==
+                        ui::mojom::WindowShowState::kNormal;
   if (isPortrait && isNormal) {
     return bounds.width();
   }

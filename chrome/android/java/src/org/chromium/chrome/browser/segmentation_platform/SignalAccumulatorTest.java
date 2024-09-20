@@ -56,6 +56,7 @@ public class SignalAccumulatorTest {
                     accumulator.setHasPriceTracking(true);
                     accumulator.setHasReaderMode(false);
                     accumulator.setHasPriceInsights(true);
+                    accumulator.setHasDiscounts(true);
                 };
         actionProviders.add(actionProvider);
         final CallbackHelper callbackHelper = new CallbackHelper();
@@ -66,6 +67,7 @@ public class SignalAccumulatorTest {
         Assert.assertTrue(accumulator.hasPriceTracking());
         Assert.assertFalse(accumulator.hasReaderMode());
         Assert.assertTrue(accumulator.hasPriceInsights());
+        Assert.assertTrue(accumulator.hasDiscounts());
     }
 
     @Test
@@ -79,5 +81,6 @@ public class SignalAccumulatorTest {
         Assert.assertFalse(accumulator.hasPriceTracking());
         Assert.assertFalse(accumulator.hasReaderMode());
         Assert.assertFalse(accumulator.hasPriceInsights());
+        Assert.assertFalse(accumulator.hasDiscounts());
     }
 }

@@ -247,13 +247,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::TimeDelta timestamp,
       bool zero_initialize_memory);
 
-  // Wraps a set of native textures with a VideoFrame.
-  // |mailbox_holders_release_cb| will be called with a sync token as the
+  // Wraps a native texture with a VideoFrame.
+  // |mailbox_holder_release_cb| will be called with a sync token as the
   // argument when the VideoFrame is to be destroyed.
-  static scoped_refptr<VideoFrame> WrapNativeTextures(
+  static scoped_refptr<VideoFrame> WrapNativeTexture(
       VideoPixelFormat format,
-      const gpu::MailboxHolder (&mailbox_holder)[kMaxPlanes],
-      ReleaseMailboxCB mailbox_holders_release_cb,
+      const gpu::MailboxHolder& mailbox_holder,
+      ReleaseMailboxCB mailbox_holder_release_cb,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
@@ -579,8 +579,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // memory which allows for hardware acceleration.
   bool HasNativeGpuMemoryBuffer() const;
 
-  // Gets the GpuMemoryBuffer backing the VideoFrame.
-  gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const;
+  // Gets the GpuMemoryBuffer backing the VideoFrame. Meant to be only used by
+  // the tests until they are converted to use MappableSI.
+  gfx::GpuMemoryBuffer* GetGpuMemoryBufferForTesting() const;
 
   // Gets the ScopedMapping object which clients can use to access the CPU
   // visible memory and other metadata for the gpu buffer backing this
@@ -778,10 +779,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   gpu::SyncToken UpdateReleaseSyncToken(SyncTokenClient* client);
 
   // Similar to UpdateReleaseSyncToken() but operates on the gpu::SyncToken
-  // for each plane. This should only be called when a VideoFrame has a single
+  // for mailbox. This should only be called when a VideoFrame has a single
   // owner. I.e., before it has been vended after creation.
-  gpu::SyncToken UpdateMailboxHolderSyncToken(size_t plane,
-                                              SyncTokenClient* client);
+  gpu::SyncToken UpdateMailboxHolderSyncToken(SyncTokenClient* client);
 
   // Returns a human-readable string describing |*this|.
   std::string AsHumanReadableString() const;
@@ -832,6 +832,15 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
                                     const gfx::Size& natural_size);
 
  private:
+  // Friend class and methods which are currently using
+  // VideoFrame::GetGpuMemorybuffer() until they are fully converted to use
+  // MappableSI.
+  // TODO(crbug.com/40263579): Remove below friends as well as
+  // ::GetGpuMemoryBuffer() and ::GetGpuMemoryBufferForTesting() once all
+  // friends and tests are converted.
+  friend class VideoEncodeAcceleratorAdapter;
+  friend gfx::GenericSharedMemoryId GetSharedMemoryId(const VideoFrame& frame);
+
   // The constructor of VideoFrame should use IsValidConfigInternal()
   // instead of the public IsValidConfig() to check the config, because we can
   // create special video frames that won't pass the check by IsValidConfig().
@@ -900,6 +909,12 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   template <typename T>
   T GetVisibleDataInternal(T data, size_t plane) const;
 
+  // Meant to be only used by friends until they are fully converted to use
+  // MappableSI instead. Note that all the clients should use
+  // VideoFrame::MapGMBOrSharedImage() instead since direct use of
+  // GpuMemoryBuffers are being deprecated as a part of MappableSI.
+  gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const;
+
   // VideFrameLayout (includes format, coded_size, and strides).
   const VideoFrameLayout layout_;
 
@@ -929,9 +944,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // VideoFrame.
   const uint8_t* data_[kMaxPlanes];
 
-  // Native texture mailboxes, if this is a IsTexture() frame.
-  gpu::MailboxHolder mailbox_holders_[kMaxPlanes];
-  ReleaseMailboxAndGpuMemoryBufferCB mailbox_holders_and_gmb_release_cb_;
+  // Native texture mailbox, if this is a IsTexture() frame.
+  gpu::MailboxHolder mailbox_holder_;
+  ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb_;
 
   // Native texture shared image that is only set when the VideoFrame is
   // created via VideoFrame::WrapSharedImage().

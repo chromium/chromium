@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './header_menu.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './header.html.js';
@@ -64,6 +66,7 @@ export class HeaderElement extends PolymerElement {
   private showingMenu_: boolean;
   private showingInput_: boolean;
   private pageName_: string;
+  private maxNameLength_: number = loadTimeData.getInteger('maxNameLength');
 
   private showMenu_() {
     this.$.menu.showAt(this.$.menuButton);
@@ -96,6 +99,9 @@ export class HeaderElement extends PolymerElement {
     const inputValue = this.getInput_().value;
     this.showingInput_ = false;
     if (!inputValue) {
+      if (this.subtitle) {
+        this.getInput_().value = this.subtitle;
+      }
       return;
     }
     this.subtitle = inputValue;

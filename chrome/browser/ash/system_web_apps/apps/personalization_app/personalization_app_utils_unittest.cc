@@ -66,7 +66,7 @@ class PersonalizationAppUtilsTest : public testing::Test {
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
         {features::kSeaPen, features::kSeaPenDemoMode,
-         features::kFeatureManagementSeaPen},
+         features::kSeaPenEnterprise, features::kFeatureManagementSeaPen},
         {});
   }
 
@@ -99,48 +99,52 @@ class PersonalizationAppUtilsTest : public testing::Test {
   TestingProfileManager profile_manager_;
 };
 
-TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_Guest) {
+TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenGuest) {
   auto* guest_profile = profile_manager().CreateGuestProfile();
   AddAndLoginUser(EmptyAccountId(), user_manager::UserType::kGuest);
+  ASSERT_FALSE(IsAllowedToInstallSeaPen(guest_profile));
   ASSERT_FALSE(IsEligibleForSeaPen(guest_profile));
 }
 
-TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_Child) {
+TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenChild) {
   const std::string email = "child@example.com";
   auto* child_profile = profile_manager().CreateTestingProfile(email);
   child_profile->SetIsSupervisedProfile();
   AddAndLoginUser(AccountId::FromUserEmail(email),
                   user_manager::UserType::kChild);
+  ASSERT_FALSE(IsAllowedToInstallSeaPen(child_profile));
   ASSERT_FALSE(IsEligibleForSeaPen(child_profile));
 }
 
-TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_NoProfile) {
+TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenNoProfile) {
+  ASSERT_FALSE(IsAllowedToInstallSeaPen(nullptr));
   ASSERT_FALSE(IsEligibleForSeaPen(nullptr));
 }
 
-TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_Googler) {
+TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenGoogler) {
   const std::string email = "user@google.com";
   auto* googler_profile = profile_manager().CreateTestingProfile(email);
   googler_profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       true);
   AddAndLoginUser(AccountId::FromUserEmail(email),
                   user_manager::UserType::kRegular);
+  ASSERT_TRUE(IsAllowedToInstallSeaPen(googler_profile));
   ASSERT_TRUE(IsEligibleForSeaPen(googler_profile));
 }
 
-TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_Managed) {
+TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenManaged) {
   const std::string email = "managed@example.com";
   auto* managed_profile = profile_manager().CreateTestingProfile(email);
   managed_profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       true);
   AddAndLoginUser(AccountId::FromUserEmail(email),
                   user_manager::UserType::kRegular);
+  ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
   ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
-       IsEligibleForSeaPen_Managed_SeaPenEnterpriseEnabled_capabilityIsTrue) {
-  base::test::ScopedFeatureList features(features::kSeaPenEnterprise);
+       IsEligibleForSeaPenManagedSeaPenEnterpriseEnabledCapabilityIsTrue) {
   const std::string email = "managed@example.com";
   auto* managed_profile = profile_manager().CreateTestingProfile(email);
   auto* identity_manager =
@@ -162,12 +166,12 @@ TEST_F(PersonalizationAppUtilsTest,
   mutator.set_can_use_manta_service(true);
   signin::UpdateAccountInfoForAccount(identity_manager, primary_account);
 
+  ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
   ASSERT_TRUE(IsEligibleForSeaPen(managed_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
-       IsEligibleForSeaPen_Managed_SeaPenEnterpriseEnabled_CapabilityIsFalse) {
-  base::test::ScopedFeatureList features(features::kSeaPenEnterprise);
+       IsEligibleForSeaPenManagedSeaPenEnterpriseEnabledCapabilityIsFalse) {
   const std::string email = "managed@example.com";
   auto* managed_profile = profile_manager().CreateTestingProfile(email);
   auto* identity_manager =
@@ -189,13 +193,12 @@ TEST_F(PersonalizationAppUtilsTest,
   mutator.set_can_use_manta_service(false);
   signin::UpdateAccountInfoForAccount(identity_manager, primary_account);
 
+  ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
   ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
 }
 
-TEST_F(
-    PersonalizationAppUtilsTest,
-    IsEligibleForSeaPen_Managed_SeaPenEnterpriseEnabled_CapabilityIsUnknown) {
-  base::test::ScopedFeatureList features(features::kSeaPenEnterprise);
+TEST_F(PersonalizationAppUtilsTest,
+       IsEligibleForSeaPenManagedSeaPenEnterpriseEnabledCapabilityIsUnknown) {
   const std::string email = "managed@example.com";
   auto* managed_profile = profile_manager().CreateTestingProfile(email);
   auto* identity_manager =
@@ -214,29 +217,31 @@ TEST_F(
   user_manager->LoginUser(account_id);
   // No capability is set.
 
+  ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
   ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
 }
 
-TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_Regular) {
+TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenRegular) {
   const std::string email = "user@example.com";
   auto* regular_profile = profile_manager().CreateTestingProfile(email);
   AddAndLoginUser(AccountId::FromUserEmail(email),
                   user_manager::UserType::kRegular);
+  ASSERT_TRUE(IsAllowedToInstallSeaPen(regular_profile));
   ASSERT_TRUE(IsEligibleForSeaPen(regular_profile));
 }
 
-TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_PublicAccount) {
+TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenPublicAccount) {
   const std::string email = "public-account@example.com";
   auto* managed_profile = profile_manager().CreateTestingProfile(email);
   managed_profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       true);
   AddAndLoginUser(AccountId::FromUserEmail(email),
                   user_manager::UserType::kPublicAccount);
-
+  ASSERT_FALSE(IsAllowedToInstallSeaPen(managed_profile));
   ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
 }
 
-TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_PublicAccountDemoMode) {
+TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenPublicAccountDemoMode) {
   const std::string email = "demo-public-account@example.com";
   auto* managed_profile = profile_manager().CreateTestingProfile(email);
   managed_profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
@@ -257,6 +262,7 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_PublicAccountDemoMode) {
   demo_mode_test_helper->InitializeSession();
   ASSERT_TRUE(::ash::DemoSession::Get());
 
+  ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
   ASSERT_TRUE(IsEligibleForSeaPen(managed_profile))
       << "Demo mode should force enable SeaPen for managed profile";
 }

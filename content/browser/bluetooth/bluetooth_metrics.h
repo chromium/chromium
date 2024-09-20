@@ -19,12 +19,12 @@ namespace content {
 
 // Enumeration for outcomes of querying the bluetooth cache.
 enum class CacheQueryOutcome {
-  SUCCESS = 0,
-  BAD_RENDERER = 1,
-  NO_DEVICE = 2,
-  NO_SERVICE = 3,
-  NO_CHARACTERISTIC = 4,
-  NO_DESCRIPTOR = 5,
+  kSuccess = 0,
+  kBadRenderer = 1,
+  kNoDevice = 2,
+  kNoService = 3,
+  kNoCharacteristic = 4,
+  kNoDescriptor = 5,
 };
 
 // requestDevice() Metrics
@@ -37,33 +37,33 @@ void RecordRequestDeviceOptions(
 // GattServer.connect() Metrics
 
 enum class UMAConnectGATTOutcome {
-  SUCCESS = 0,
-  NO_DEVICE = 1,
-  UNKNOWN = 2,
-  IN_PROGRESS = 3,
-  FAILED = 4,
-  AUTH_FAILED = 5,
-  AUTH_CANCELED = 6,
-  AUTH_REJECTED = 7,
-  AUTH_TIMEOUT = 8,
-  UNSUPPORTED_DEVICE = 9,
-  NOT_READY = 10,
-  ALREADY_CONNECTED = 11,
-  ALREADY_EXISTS = 12,
-  NOT_CONNECTED = 13,
-  DOES_NOT_EXIST = 14,
-  INVALID_ARGS = 15,
-  NON_AUTH_TIMEOUT = 16,
-  NO_MEMORY = 17,
-  JNI_ENVIRONMENT = 18,
-  JNI_THREAD_ATTACH = 19,
-  WAKELOCK = 20,
-  UNEXPECTED_STATE = 21,
-  SOCKET_ERROR = 22,
+  kSuccess = 0,
+  kNoDevice = 1,
+  kUnknown = 2,
+  kInProgress = 3,
+  kFailed = 4,
+  kAuthFailed = 5,
+  kAuthCanceled = 6,
+  kAuthRejected = 7,
+  kAuthTimeout = 8,
+  kUnsupportedDevice = 9,
+  kNotReady = 10,
+  kAlreadyConnected = 11,
+  kAlreadyExists = 12,
+  kNotConnected = 13,
+  kDoesNotExist = 14,
+  kInvalidArgs = 15,
+  kNonAuthTimeout = 16,
+  kNoMemory = 17,
+  kJniEnvironment = 18,
+  kJniThreadAttach = 19,
+  kWakelock = 20,
+  kUnexpectedState = 21,
+  kSocketError = 22,
   // Note: Add new ConnectGATT outcomes immediately above this line. Make sure
   // to update the enum list in
   // tools/metrics/histograms/metadata/bluetooth/enums.xml accordingly.
-  COUNT
+  kMaxValue = kSocketError,
 };
 
 // There should be a call to this function before every
@@ -85,30 +85,30 @@ void RecordGetPrimaryServicesServices(
 // getCharacteristic() and getCharacteristics() Metrics
 
 enum class UMAGetCharacteristicOutcome {
-  SUCCESS = 0,
-  NO_DEVICE = 1,
-  NO_SERVICE = 2,
-  NOT_FOUND = 3,
-  BLOCKLISTED = 4,
-  NO_CHARACTERISTICS = 5,
+  kSuccess = 0,
+  kNoDevice = 1,
+  kNoService = 2,
+  kNotFound = 3,
+  kBlocklisted = 4,
+  kNoCharacteristics = 5,
   // Note: Add new outcomes immediately above this line.
   // Make sure to update the enum list in
   // tools/metrics/histogram/histograms.xml accordingly.
-  COUNT
+  kMaxValue = kNoCharacteristics,
 };
 
 enum class UMAGetDescriptorOutcome {
-  SUCCESS = 0,
-  NO_DEVICE = 1,
-  NO_SERVICE = 2,
-  NO_CHARACTERISTIC = 3,
-  NOT_FOUND = 4,
-  BLOCKLISTED = 5,
-  NO_DESCRIPTORS = 6,
+  kSuccess = 0,
+  kNoDevice = 1,
+  kNoService = 2,
+  kNoCharacteristic = 3,
+  kNotFound = 4,
+  kBlocklisted = 5,
+  kNoDescriptors = 6,
   // Note: Add new outcomes immediately above this line.
   // Make sure to update the enum list in
   // tools/metrics/histogram/histograms.xml accordingly.
-  COUNT
+  kMaxValue = kNoDescriptors,
 };
 
 // There should be a call to this function whenever
@@ -207,15 +207,15 @@ void RecordStartNotificationsOutcome(UMAGATTOperationOutcome outcome);
 void RecordStartNotificationsOutcome(CacheQueryOutcome outcome);
 
 enum class UMARSSISignalStrengthLevel {
-  LESS_THAN_OR_EQUAL_TO_MIN_RSSI,
-  LEVEL_0,
-  LEVEL_1,
-  LEVEL_2,
-  LEVEL_3,
-  LEVEL_4,
-  GREATER_THAN_OR_EQUAL_TO_MAX_RSSI,
+  kLessThanOrEqualToMinRssi = 0,
+  kLevel0 = 1,
+  kLevel1 = 2,
+  kLevel2 = 3,
+  kLevel3 = 4,
+  kLevel4 = 5,
+  kGreaterThanOrEqualToMaxRssi = 6,
   // Note: Add new RSSI signal strength level immediately above this line.
-  COUNT
+  kMaxValue = kGreaterThanOrEqualToMaxRssi,
 };
 
 // Records the raw RSSI, and processed result displayed to users, when

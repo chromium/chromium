@@ -36,7 +36,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -360,13 +360,13 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       case app_window::State::kNormal:
         break;
       case app_window::State::kFullscreen:
-        create_params.state = ui::SHOW_STATE_FULLSCREEN;
+        create_params.state = ui::mojom::WindowShowState::kFullscreen;
         break;
       case app_window::State::kMaximized:
-        create_params.state = ui::SHOW_STATE_MAXIMIZED;
+        create_params.state = ui::mojom::WindowShowState::kMaximized;
         break;
       case app_window::State::kMinimized:
-        create_params.state = ui::SHOW_STATE_MINIMIZED;
+        create_params.state = ui::mojom::WindowShowState::kMinimized;
         break;
     }
   }

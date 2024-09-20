@@ -34,7 +34,7 @@ promise_test(async t => {
   const builder = new MLGraphBuilder(context);
   context.destroy();
   assert_throws_dom('InvalidStateError', () => {
-    const operandType = {dataType: 'float32', dimensions: [1]};
+    const operandType = {dataType: 'float32', shape: [1]};
     builder.input('input', operandType);
   });
 }, 'Destroyed context can not build operator.');
@@ -50,7 +50,7 @@ promise_test(async t => {
 promise_test(async t => {
   const context = await navigator.ml.createContext(contextOptions);
   const builder = new MLGraphBuilder(context);
-  const operandType = {dataType: 'float32', dimensions: [1]};
+  const operandType = {dataType: 'float32', shape: [1]};
   const input_operand = builder.input('input', operandType);
   const const_operand = builder.constant(operandType, Float32Array.from([2]));
   const output_operand = builder.mul(input_operand, const_operand);
@@ -63,7 +63,7 @@ promise_test(async t => {
 promise_test(async t => {
   const context = await navigator.ml.createContext(contextOptions);
   const builder = new MLGraphBuilder(context);
-  const operandType = {dataType: 'float32', dimensions: [1]};
+  const operandType = {dataType: 'float32', shape: [1]};
   const input_operand = builder.input('input', operandType);
   const const_operand = builder.constant(operandType, Float32Array.from([2]));
   const output_operand = builder.mul(input_operand, const_operand);
@@ -79,22 +79,22 @@ promise_test(async t => {
 promise_test(async t => {
   const context = await navigator.ml.createContext(contextOptions);
   const builder = new MLGraphBuilder(context);
-  const operandType = {dataType: 'float32', dimensions: [1]};
+  const operandType = {dataType: 'float32', shape: [1]};
   const lhsOperand = builder.input('lhs', operandType);
   const rhsOperand = builder.input('rhs', operandType);
   const graph =
       await builder.build({'output': builder.sub(lhsOperand, rhsOperand)});
 
-  const lhsBuffer = await context.createBuffer(operandType);
-  const rhsBuffer = await context.createBuffer(operandType);
+  const lhsTensor = await context.createTensor(operandType);
+  const rhsTensor = await context.createTensor(operandType);
 
-  const dispatchOutputs = {'output': await context.createBuffer(operandType)};
+  const dispatchOutputs = {'output': await context.createTensor(operandType)};
   context.destroy();
   assert_throws_dom('InvalidStateError', () => {
     context.dispatch(
         graph, {
-          'lhs': lhsBuffer,
-          'rhs': rhsBuffer,
+          'lhs': lhsTensor,
+          'rhs': rhsTensor,
         },
         dispatchOutputs);
   });
@@ -103,20 +103,20 @@ promise_test(async t => {
 promise_test(async t => {
   const context = await navigator.ml.createContext(contextOptions);
   const builder = new MLGraphBuilder(context);
-  const operandType = {dataType: 'float32', dimensions: [1]};
+  const operandType = {dataType: 'float32', shape: [1]};
   const lhsOperand = builder.input('lhs', operandType);
   const rhsOperand = builder.input('rhs', operandType);
   const graph =
       await builder.build({'output': builder.sub(lhsOperand, rhsOperand)});
 
-  const lhsBuffer = await context.createBuffer(operandType);
-  const rhsBuffer = await context.createBuffer(operandType);
+  const lhsTensor = await context.createTensor(operandType);
+  const rhsTensor = await context.createTensor(operandType);
 
-  const dispatchOutputs = {'output': await context.createBuffer(operandType)};
+  const dispatchOutputs = {'output': await context.createTensor(operandType)};
   context.dispatch(
       graph, {
-        'lhs': lhsBuffer,
-        'rhs': rhsBuffer,
+        'lhs': lhsTensor,
+        'rhs': rhsTensor,
       },
       dispatchOutputs);
   context.destroy();
@@ -127,45 +127,45 @@ promise_test(async t => {
   context.destroy();
   promise_rejects_dom(
       t, 'InvalidStateError',
-      context.createBuffer({dataType: 'float32', dimensions: [1]}));
-}, 'Destroyed context can not create buffer.');
+      context.createTensor({dataType: 'float32', shape: [1]}));
+}, 'Destroyed context can not create tensor.');
 
 promise_test(async t => {
   const context = await navigator.ml.createContext(contextOptions);
-  const buffer = await context.createBuffer({
+  const tensor = await context.createTensor({
     dataType: 'float32',
-    dimensions: [1],
-    usage: MLTensorUsage.READ_FROM,
+    shape: [1],
+    usage: MLTensorUsage.READ,
   });
   context.destroy();
-  promise_rejects_dom(t, 'InvalidStateError', context.readBuffer(buffer));
-}, 'Destroyed context can not read buffer.');
+  promise_rejects_dom(t, 'InvalidStateError', context.readTensor(tensor));
+}, 'Destroyed context can not read tensor.');
 
 promise_test(async t => {
   const context = await navigator.ml.createContext(contextOptions);
-  const buffer = await context.createBuffer({
+  const tensor = await context.createTensor({
     dataType: 'float32',
-    dimensions: [1],
-    usage: MLTensorUsage.READ_FROM,
+    shape: [1],
+    usage: MLTensorUsage.READ,
   });
-  let promise = context.readBuffer(buffer);
+  let promise = context.readTensor(tensor);
   context.destroy();
   promise_rejects_dom(t, 'InvalidStateError', promise);
-}, 'Pending promise of readbuffer() will be rejected immediately when context is destroyed.');
+}, 'Pending promise of readtensor() will be rejected immediately when context is destroyed.');
 
 promise_test(async t => {
   const context = await navigator.ml.createContext(contextOptions);
   // Destroying another context doesn't impact the first context.
   const another_context = await navigator.ml.createContext(contextOptions);
   another_context.destroy();
-  const buffer = await context.createBuffer({
+  const tensor = await context.createTensor({
     dataType: 'float32',
-    dimensions: [1],
-    usage: MLTensorUsage.WRITE_TO,
+    shape: [1],
+    usage: MLTensorUsage.WRITE,
   });
   let arrayBuffer = new ArrayBuffer(4);
   context.destroy();
   assert_throws_dom('InvalidStateError', () => {
-    context.writeBuffer(buffer, new Uint8Array(arrayBuffer));
+    context.writeTensor(tensor, new Uint8Array(arrayBuffer));
   });
-}, 'Destroyed context can not write buffer.');
+}, 'Destroyed context can not write tensor.');

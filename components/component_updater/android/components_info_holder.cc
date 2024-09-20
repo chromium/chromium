@@ -32,8 +32,8 @@ void ComponentsInfoHolder::AddComponent(const std::string& component_id,
 std::vector<ComponentInfo> ComponentsInfoHolder::GetComponents() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<ComponentInfo> components_info;
-  for (const auto& it : components_) {
-    components_info.emplace_back(it.first, "", std::u16string(), it.second, "");
+  for (const auto& [component_id, registration] : components_) {
+    components_info.emplace_back(component_id, "", u"", registration, "");
   }
   return components_info;
 }

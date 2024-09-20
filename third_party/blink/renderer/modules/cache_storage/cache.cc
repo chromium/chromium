@@ -79,7 +79,7 @@ bool HasJavascriptMimeType(const Response* response) {
 
 void ValidateRequestForPut(const Request* request,
                            ExceptionState& exception_state) {
-  KURL url(NullURL(), request->url());
+  const KURL& url = request->url();
   if (!url.ProtocolIsInHTTPFamily()) {
     exception_state.ThrowTypeError("Request scheme '" + url.Protocol() +
                                    "' is unsupported");
@@ -214,15 +214,19 @@ class Cache::BarrierCallbackForPutResponse final
   }
 
   void FailedResponse() {
-    resolver_->RejectWithDOMException(
-        DOMExceptionCode::kNetworkError,
-        method_name_ + " encountered a network error");
+    if (resolver_->GetScriptState()->ContextIsValid()) {
+      resolver_->RejectWithDOMException(
+          DOMExceptionCode::kNetworkError,
+          method_name_ + " encountered a network error");
+    }
     Stop();
   }
 
   void AbortedResponse() {
-    resolver_->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                      method_name_ + " was aborted");
+    if (resolver_->GetScriptState()->ContextIsValid()) {
+      resolver_->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                        method_name_ + " was aborted");
+    }
     Stop();
   }
 
@@ -534,8 +538,8 @@ class Cache::FetchHandler final : public ScriptFunction::Callable {
     // promise is never returned to script or chained to another handler.
     // If we return our real result and an exception occurs then unhandled
     // promise errors will occur.
-    ScriptValue rtn =
-        ScriptPromiseUntyped::CastUndefined(script_state).AsScriptValue();
+    ScriptValue rtn(script_state->GetIsolate(),
+                    ToResolvedUndefinedPromise(script_state).V8Promise());
 
     // If there is no loader, we were created as a reject handler.
     if (!response_loader_) {
@@ -667,10 +671,8 @@ class Cache::CodeCacheHandleCallbackForPut final
             TextResourceDecoderOptions::CreateUTF8Decode());
 
     return V8CodeCache::GenerateFullCodeCache(
-        script_state_,
-        text_decoder->Decode(static_cast<const char*>(array_buffer->Data()),
-                             array_buffer->ByteLength()),
-        url_, text_decoder->Encoding(), opaque_mode_);
+        script_state_, text_decoder->Decode(array_buffer->ByteSpan()), url_,
+        text_decoder->Encoding(), opaque_mode_);
   }
 
   const Member<ScriptState> script_state_;

@@ -60,15 +60,12 @@ HotspotTrayView::HotspotTrayView(Shelf* shelf) : TrayItemView(shelf) {
       hotspot_config_observer_receiver_.BindNewPipeAndPassRemote());
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
+  UpdateAccessibleName();
 }
 
 HotspotTrayView::~HotspotTrayView() {
   Shell::Get()->session_controller()->RemoveObserver(this);
   Shell::Get()->hotspot_icon_animation()->RemoveObserver(this);
-}
-
-void HotspotTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(tooltip_);
 }
 
 std::u16string HotspotTrayView::GetAccessibleNameString() const {
@@ -137,6 +134,7 @@ void HotspotTrayView::OnGetHotspotInfo(HotspotInfoPtr hotspot_info) {
 
   SetVisible(true);
   tooltip_ = ComputeHotspotTooltip(hotspot_info->client_count);
+  UpdateAccessibleName();
 
   if (hotspot_info->state == HotspotState::kEnabling) {
     Shell::Get()->hotspot_icon_animation()->AddObserver(this);
@@ -147,6 +145,10 @@ void HotspotTrayView::OnGetHotspotInfo(HotspotInfoPtr hotspot_info) {
     state_ = hotspot_info->state;
     UpdateIconImage();
   }
+}
+
+void HotspotTrayView::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(tooltip_);
 }
 
 BEGIN_METADATA(HotspotTrayView)

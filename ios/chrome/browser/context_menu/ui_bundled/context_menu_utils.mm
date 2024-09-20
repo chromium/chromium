@@ -56,7 +56,11 @@ TitleAndOrigin GetContextMenuTitleAndOrigin(web::ContextMenuParams params) {
   // Prepend the alt text attribute if element is an image without a link.
   if (params.alt_text && params.src_url.is_valid() &&
       !params.link_url.is_valid()) {
-    title = [NSString stringWithFormat:@"%@ – %@", params.alt_text, title];
+    if ([title length]) {
+      title = [NSString stringWithFormat:@"%@ – %@", params.alt_text, title];
+    } else {
+      title = params.alt_text;
+    }
     // If there was a title attribute, then the title origin is still "image
     // title", even though the alt text was prepended. Otherwise, set the title
     // origin to be "alt text".

@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/form_parsing/name_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/numeric_quantity_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
+#include "components/autofill/core/browser/form_parsing/prediction_improvements_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/price_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/search_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field_parser.h"
@@ -87,12 +88,12 @@ void RegexMatchesCache::Put(RegexMatchesCache::Key key, bool value) {
 
 ParsingContext::ParsingContext(GeoIpCountryCode client_country,
                                LanguageCode page_language,
-                               PatternSource pattern_source,
+                               PatternFile pattern_file,
                                DenseSet<RegexFeature> active_features,
                                LogManager* log_manager)
     : client_country(std::move(client_country)),
       page_language(std::move(page_language)),
-      pattern_source(pattern_source),
+      pattern_file(pattern_file),
       active_features(active_features),
       regex_cache(GetAutofillRegexCache()),
       log_manager(log_manager) {
@@ -136,6 +137,15 @@ void FormFieldParser::ParseFormFields(
     FieldCandidatesMap& field_candidates) {
   std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
       RemoveCheckableFields(fields);
+
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  // Prediction improvements are parsed using their own exclusive pattern file.
+  if (context.pattern_file == PatternFile::kPredictionImprovements) {
+    ParseFormFieldsPass(PredictionImprovementsFieldParser::Parse, context,
+                        processed_fields, field_candidates);
+    return;
+  }
+#endif
 
   // Email pass.
   ParseFormFieldsPass(EmailFieldParser::Parse, context, processed_fields,

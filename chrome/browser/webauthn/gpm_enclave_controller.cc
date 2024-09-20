@@ -41,6 +41,8 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -314,7 +316,14 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
     bool have_added_device,
     bool has_pin,
     EnclaveManager::UvKeyState uv_key_state,
-    bool platform_has_biometrics) {
+    bool platform_has_biometrics,
+    bool browser_is_app) {
+#if BUILDFLAG(IS_MAC)
+  constexpr bool kIsMac = true;
+#else
+  constexpr bool kIsMac = false;
+#endif
+
   if (have_added_device) {
     return EnclaveUserVerificationMethod::kImplicit;
   }
@@ -344,7 +353,14 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
       return EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI;
 
     case EnclaveManager::UvKeyState::kUsesChromeUI:
-      return EnclaveUserVerificationMethod::kUVKeyWithChromeUI;
+      if (browser_is_app && kIsMac) {
+        // When running in an app (i.e. a PWA) the UI is out of process. Thus we
+        // cannot position the LAAuthenticationView in the UI and so we use the
+        // system Touch ID dialog instead.
+        return EnclaveUserVerificationMethod::kUVKeyWithSystemUI;
+      } else {
+        return EnclaveUserVerificationMethod::kUVKeyWithChromeUI;
+      }
   }
 }
 
@@ -547,7 +563,7 @@ void GPMEnclaveController::OnEnclaveLoaded() {
           user_verification_requirement_, /*have_added_device=*/false,
           enclave_manager_->has_wrapped_pin(),
           enclave_manager_->uv_key_state(/*platform_has_biometrics=*/false),
-          /*platform_has_biometrics=*/false)) {
+          /*platform_has_biometrics=*/false, BrowserIsApp())) {
         case EnclaveUserVerificationMethod::kPIN:
           FIDO_LOG(EVENT)
               << "Checking security domain service because a GPM PIN will be "
@@ -928,7 +944,7 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
       user_verification_requirement_, have_added_device_,
       enclave_manager_->has_wrapped_pin(),
       enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
-      *model_->platform_has_biometrics);
+      *model_->platform_has_biometrics, BrowserIsApp());
   // `have_added_device_` is set, which satisfies UV, so we must have picked
   // "implicit" UV.
   CHECK_EQ(*uv_method_, EnclaveUserVerificationMethod::kImplicit);
@@ -959,7 +975,7 @@ void GPMEnclaveController::OnGPMSelected() {
           user_verification_requirement_, have_added_device_,
           enclave_manager_->has_wrapped_pin(),
           enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
-          *model_->platform_has_biometrics);
+          *model_->platform_has_biometrics, BrowserIsApp());
 
       switch (*uv_method_) {
         case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
@@ -1012,7 +1028,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
           user_verification_requirement_, have_added_device_,
           enclave_manager_->has_wrapped_pin(),
           enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
-          *model_->platform_has_biometrics);
+          *model_->platform_has_biometrics, BrowserIsApp());
 
       switch (*uv_method_) {
         case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
@@ -1482,6 +1498,17 @@ void GPMEnclaveController::HandlePINValidationResult(
       model_->SetStep(Step::kGPMLockedPin);
       break;
   }
+}
+
+bool GPMEnclaveController::BrowserIsApp() const {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(render_frame_host_id_));
+  if (!web_contents) {
+    return false;
+  }
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  return browser && browser->is_type_app();
 }
 
 void GPMEnclaveController::OnGpmPasskeysReset(bool success) {

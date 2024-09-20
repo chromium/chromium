@@ -9,6 +9,7 @@ build_webui_tests("build") {
     "about_page_test.ts",
     "advanced_page_test.ts",
     "ai_page_test.ts",
+    "ai_subpage_test.ts",
     "all_sites_test.ts",
     "anti_abuse_page_test.ts",
     "appearance_fonts_page_test.ts",
@@ -209,10 +210,6 @@ build_webui_tests("build") {
 
   if (is_win && is_chrome_branded) {
     files += [ "incompatible_applications_page_test.ts" ]
-  }
-
-  if (is_chrome_branded) {
-    files += [ "get_most_chrome_page_test.ts" ]
   }
 
   ts_path_mappings = [

@@ -90,6 +90,11 @@ bool IsPasswordsAutofillManuallyTriggered(
 bool IsPlusAddressesManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source);
 
+// Returns whether the feature `kAutofillAddressFieldSwapping` is enabled or
+// not.
+// TODO(crbug.com/339543182): Cleanup after launching on iOS.
+bool IsAddressFieldSwappingEnabled();
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_UTIL_H_

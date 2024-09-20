@@ -12,8 +12,6 @@ static_library("picker") {
     "picker_client_impl.h",
     "picker_file_suggester.cc",
     "picker_file_suggester.h",
-    "picker_lacros_omnibox_search_provider.cc",
-    "picker_lacros_omnibox_search_provider.h",
     "picker_link_suggester.cc",
     "picker_link_suggester.h",
     "picker_thumbnail_loader.cc",
@@ -32,7 +30,6 @@ static_library("picker") {
     "//chrome/browser/ash/app_list/search/files",
     "//chrome/browser/ash/app_list/search/omnibox",
     "//chrome/browser/ash/app_list/search/ranking",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fileapi",
@@ -65,10 +62,7 @@ static_library("picker") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "picker_client_impl_unittest.cc",
-    "picker_lacros_omnibox_search_provider_unittest.cc",
-  ]
+  sources = [ "picker_client_impl_unittest.cc" ]
 
   deps = [
     ":picker",

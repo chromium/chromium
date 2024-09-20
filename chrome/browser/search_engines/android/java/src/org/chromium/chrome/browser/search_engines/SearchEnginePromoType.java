@@ -15,7 +15,6 @@ import java.lang.annotation.RetentionPolicy;
     SearchEnginePromoType.SHOW_SOGOU,
     SearchEnginePromoType.SHOW_EXISTING,
     SearchEnginePromoType.SHOW_NEW,
-    SearchEnginePromoType.SHOW_WAFFLE
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface SearchEnginePromoType {
@@ -23,7 +22,4 @@ public @interface SearchEnginePromoType {
     int SHOW_SOGOU = 0;
     int SHOW_EXISTING = 1;
     int SHOW_NEW = 2;
-
-    /** Style of Search Engine Choice promo introduced with b/280753530. */
-    int SHOW_WAFFLE = 3;
 }

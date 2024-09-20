@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/sync/base/data_type.h"
 #include "components/webdata/common/web_database_backend.h"
@@ -431,12 +432,11 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
 }
 
 std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
-    std::optional<AutofillProfile::RecordType> record_type,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<AutofillProfile> profiles;
-  AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfiles(record_type,
-                                                                 profiles);
+  AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfiles(
+      DenseSet<AutofillProfile::RecordType>::all(), profiles);
   return std::make_unique<WDResult<std::vector<AutofillProfile>>>(
       AUTOFILL_PROFILES_RESULT, std::move(profiles));
 }

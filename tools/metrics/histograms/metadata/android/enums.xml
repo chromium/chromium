@@ -555,7 +555,9 @@ chromium-metrics-reviews@google.com.
   <int value="106" label="WebSettingsCompat.setBackForwardCacheEnabled"/>
   <int value="107" label="WebSettingsCompat.getBackForwardCacheEnabled"/>
   <int value="108" label="Profile.prefetchUrl"/>
-  <int value="109" label="Profile.clearPrefetchCache"/>
+  <int value="109" label="Profile.prefetchUrlWithParams"/>
+  <int value="110" label="Profile.clearPrefetch"/>
+  <int value="111" label="Profile.cancelPrefetch"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -712,6 +714,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="WebAPK"/>
   <int value="4" label="Webapp (not WebAPK)"/>
   <int value="5" label="Pre-First-Tab (Startup/Warmup)"/>
+  <int value="6" label="Auth Tab"/>
 </enum>
 
 <enum name="ChromeStartupDelegateFailureType">
@@ -1131,6 +1134,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Created external intent with tab clobbering"/>
   <int value="2" label="Created async dialog for confirming external intent"/>
   <int value="3" label="Navigation not intercepted"/>
+  <int value="4" label="Tab closed after successful authentication"/>
 </enum>
 
 <enum name="NavigationInterceptScheme">

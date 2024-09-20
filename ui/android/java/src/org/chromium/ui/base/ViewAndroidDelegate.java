@@ -96,14 +96,23 @@ public class ViewAndroidDelegate {
     }
 
     /**
-     * Adds observer that needs notification when container view is updated. Note that
-     * there is no {@code removObserver} since the added observers are all supposed to
-     * go away with this object together.
-     * @param observer {@link ContainerViewObserver} object. The object should have
-     *        the lifetime same as this {@link ViewAndroidDelegate} to avoid gc issues.
+     * Adds observer that needs notification when container view is updated.
+     *
+     * @param observer {@link ContainerViewObserver} object. If {@code removObserver} is not used,
+     *     then the object should have the lifetime same as this {@link ViewAndroidDelegate} to
+     *     avoid gc issues.
      */
     public final void addObserver(ContainerViewObserver observer) {
         mContainerViewObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes observer that does not need notification when container view is updated anymore.
+     *
+     * @param observer {@link ContainerViewObserver} object.
+     */
+    public final void removeObserver(ContainerViewObserver observer) {
+        mContainerViewObservers.removeObserver(observer);
     }
 
     /** Adds the provided {@link VerticalScrollDirectionChangeListener}. */
@@ -583,7 +592,7 @@ public class ViewAndroidDelegate {
     public void autofill(final SparseArray<AutofillValue> values) {}
 
     /**
-     * Check whether the Android can request a ViewStructure for Autofill.
+     * Check whether the Android Autofill Framework can request a ViewStructure for Autofill.
      *
      * @return true iff an AutofillProvider provides a ViewStructure when prompted.
      */

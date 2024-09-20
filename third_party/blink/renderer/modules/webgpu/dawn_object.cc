@@ -10,23 +10,6 @@
 
 namespace blink {
 
-// ExternalMemoryTracker
-
-ExternalMemoryTracker::~ExternalMemoryTracker() {
-  SetCurrentSize(0);
-}
-
-void ExternalMemoryTracker::SetCurrentSize(size_t newSizeUnchecked) {
-  base::CheckedNumeric<int64_t> newSize = newSizeUnchecked;
-  base::CheckedNumeric<int64_t> deltaChecked = newSize - size_;
-
-  int64_t delta = deltaChecked.ValueOrDie();
-  if (delta != 0) {
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(delta);
-    size_ = newSize.ValueOrDie();
-  }
-}
-
 // DawnObjectBase
 
 DawnObjectBase::DawnObjectBase(

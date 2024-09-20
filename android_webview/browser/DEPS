@@ -22,6 +22,7 @@ include_rules = [
   "+components/embedder_support",
   "+components/favicon_base",
   "+components/flags_ui",
+  "+components/grit",
   "+components/heap_profiling",
   "+components/history/core/browser",
   "+components/keyed_service/core",
@@ -88,6 +89,8 @@ include_rules = [
   "+services/cert_verifier/public/mojom",
 
   "+services/metrics/public/cpp/ukm_source_id.h",
+
+  "+services/data_decoder/public/cpp/data_decoder.h",
 
   "+services/network/public",
   # This is needed for the CookieManager to configure the CookieStore directly.
@@ -167,5 +170,6 @@ include_rules = [
   # For Android WebView Media Integrity
   "+third_party/blink/public/mojom/webview/webview_media_integrity.mojom.h",
   # For Chrome's API keys in WebView.
+  "+google_apis/common/api_key_request_util.h",
   "+google_apis/google_api_keys.h",
 ]

@@ -15,8 +15,11 @@ import {
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {usePlatformHandler} from '../core/lit/context.js';
+import {ModelState} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {currentRoute} from '../core/state/route.js';
+import {settings} from '../core/state/settings.js';
 import {assertExists} from '../core/utils/assert.js';
 
 import {MainPage} from './main-page.js';
@@ -39,14 +42,20 @@ export class RecorderApp extends ReactiveLitElement {
     }
   `;
 
-  private readonly mainPage = createRef<MainPage>();
+  private readonly mainPageRef = createRef<MainPage>();
 
   private readonly playbackPage = createRef<PlaybackPage>();
 
   private readonly recordPage = createRef<RecordPage>();
 
+  private readonly platformHandler = usePlatformHandler();
+
+  get mainPage(): MainPage {
+    return assertExists(this.mainPageRef.value);
+  }
+
   get mainPageForTest(): MainPage {
-    return assertExists(this.mainPage.value);
+    return assertExists(this.mainPageRef.value);
   }
 
   get playbackPageForTest(): PlaybackPage {
@@ -61,6 +70,26 @@ export class RecorderApp extends ReactiveLitElement {
     return 'Not found';
   }
 
+  override firstUpdated(): void {
+    const summaryState = this.platformHandler.summaryModelLoader.state;
+    const titleState = this.platformHandler.titleSuggestionModelLoader.state;
+    const sodaState = this.platformHandler.sodaState;
+
+    function isAvailable(state: ModelState) {
+      return state.kind !== 'unavailable' && state.kind !== 'error';
+    }
+
+    this.platformHandler.eventsSender.sendStartSessionEvent({
+      speakerLabelEnableState: settings.value.speakerLabelEnabled,
+      summaryAvailable: isAvailable(summaryState.value),
+      summaryEnableState: settings.value.summaryEnabled,
+      titleSuggestionAvailable: isAvailable(titleState.value),
+      transcriptionAvailable: isAvailable(sodaState.value),
+      transcriptionEnableState: settings.value.transcriptionEnabled,
+    });
+    this.platformHandler.perfLogger.finish('appStart');
+  }
+
   override render(): RenderResult {
     if (currentRoute.value === null) {
       return nothing;
@@ -69,8 +98,12 @@ export class RecorderApp extends ReactiveLitElement {
     const route = currentRoute.value;
 
     switch (route.name) {
-      case 'index':
-        return html`<main-page ${ref(this.mainPage)}></main-page>`;
+      case 'main':
+        return html`<main-page
+          ${ref(this.mainPageRef)}
+          exportparts="actions:main-page-actions"
+        >
+        </main-page>`;
       case 'playback':
         return html`<playback-page
           .recordingId=${route.parameters.id}
@@ -82,6 +115,8 @@ export class RecorderApp extends ReactiveLitElement {
         return html`<record-page
           .includeSystemAudio=${toBoolean(includeSystemAudio)}
           .micId=${micId}
+          part="record-page"
+          exportparts="container:record-page-container"
           ${ref(this.recordPage)}
         >
         </record-page>`;

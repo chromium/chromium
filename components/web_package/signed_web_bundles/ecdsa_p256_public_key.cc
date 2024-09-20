@@ -11,8 +11,6 @@
 
 namespace web_package {
 
-EcdsaP256PublicKey::~EcdsaP256PublicKey() = default;
-
 base::expected<EcdsaP256PublicKey, std::string> EcdsaP256PublicKey::Create(
     base::span<const uint8_t> bytes) {
   if (bytes.size() != kLength) {

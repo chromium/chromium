@@ -752,22 +752,22 @@ TEST_F(FindBufferTest, FindMaxCodepointWithReplacedElementUTF32) {
 }
 
 TEST_F(FindBufferTest,
-       FindMaxCodepointWithReplacedElementAndMaxCodepointUTF16) {
+       FindNonCharacterWithReplacedElementAndNonCharacterUTF16) {
   SetBodyContent(
-      "some text with <img/> <scrip></script> and \uFFFF (max codepoint)");
+      "some text with <img/> <scrip></script> and \uFFFF (non character)");
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("\uFFFF", FindOptions());
   ASSERT_EQ(1u, results.CountForTesting());
 }
 
-TEST_F(FindBufferTest, FindMaxCodepointNormalTextUTF16) {
+TEST_F(FindBufferTest, FindNonCharacterNormalTextUTF16) {
   SetBodyContent("some text");
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("\uFFFF", FindOptions());
   ASSERT_EQ(0u, results.CountForTesting());
 }
 
-TEST_F(FindBufferTest, FindMaxCodepointWithReplacedElementUTF16) {
+TEST_F(FindBufferTest, FindNonCharacterWithReplacedElementUTF16) {
   SetBodyContent("some text with <img/> <script></script>");
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("\uFFFF", FindOptions());

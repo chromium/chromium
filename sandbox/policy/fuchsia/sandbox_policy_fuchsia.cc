@@ -175,7 +175,6 @@ const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kUtility:
-    case sandbox::mojom::Sandbox::kVideoEffects:
       return &kMinimalConfig;
   }
 }

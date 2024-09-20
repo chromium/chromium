@@ -12,7 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "components/ip_protection/common/ip_protection_config_cache.h"
+#include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
@@ -25,10 +25,10 @@ namespace {
 // Default Geo used until caching by geo is enabled.
 constexpr char kDefaultGeo[] = "EARTH";
 
-// Based on the logic in the `IpProtectionProxyConfigFetcher`, if there is a
-// non-empty proxy list with an empty `GeoHint`, it would be considered a failed
-// call which means a `proxy_list` with a value of `std::nullopt` would be
-// returned. Thus, the following function captures all states of failure
+// Based on the logic in the `IpProtectionProxyConfigDirectFetcher`, if there is
+// a non-empty proxy list with an empty `GeoHint`, it would be considered a
+// failed call which means a `proxy_list` with a value of `std::nullopt` would
+// be returned. Thus, the following function captures all states of failure
 // accurately even though we only check the `proxy_chain`.
 void RecordTelemetry(
     const std::optional<std::vector<net::ProxyChain>>& proxy_list,
@@ -51,10 +51,10 @@ void RecordTelemetry(
 }  // namespace
 
 IpProtectionProxyConfigManagerImpl::IpProtectionProxyConfigManagerImpl(
-    IpProtectionConfigCache* config_cache,
+    IpProtectionCore* core,
     IpProtectionConfigGetter& config_getter,
     bool disable_proxy_refreshing_for_testing)
-    : ip_protection_config_cache_(config_cache),
+    : ip_protection_core_(core),
       config_getter_(config_getter),
       proxy_list_min_age_(
           net::features::kIpPrivacyProxyListMinFetchInterval.Get()),
@@ -157,7 +157,7 @@ void IpProtectionProxyConfigManagerImpl::OnGotProxyList(
     if (enable_token_caching_by_geo_ && !proxy_list->empty()) {
       CHECK(geo_hint.has_value());
       current_geo_id_ = ip_protection::GetGeoIdFromGeoHint(std::move(geo_hint));
-      ip_protection_config_cache_->GeoObserved(current_geo_id_);
+      ip_protection_core_->GeoObserved(current_geo_id_);
     }
   }
 

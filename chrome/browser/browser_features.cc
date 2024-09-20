@@ -71,6 +71,15 @@ BASE_FEATURE(kClosedTabCache,
              "ClosedTabCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_LINUX)
+// Enables usage of os_crypt_async::SecretPortalKeyProvider.  Once
+// `kSecretPortalKeyProviderUseForEncryption` is enabled, this flag cannot be
+// disabled without losing data.
+BASE_FEATURE(kDbusSecretPortal,
+             "DbusSecretPortal",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX)
+
 // Destroy profiles when their last browser window is closed, instead of when
 // the browser exits.
 // On Lacros the feature is enabled only for secondary profiles, check the
@@ -110,12 +119,16 @@ const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId{
     &kDevToolsFreestylerDogfood, "aida_model_id", /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature{
     &kDevToolsFreestylerDogfood, "aida_temperature", /*default_value=*/0};
-const base::FeatureParam<DevToolsFreestylerUserTier>::Option devtools_freestyler_user_tier_options[] = {
-    {DevToolsFreestylerUserTier::kTesters, "TESTERS"},
-    {DevToolsFreestylerUserTier::kPublic, "PUBLIC"}};
-const base::FeatureParam<DevToolsFreestylerUserTier> kDevToolsFreestylerDogfoodUserTier{
-    &kDevToolsFreestylerDogfood, "user_tier", /*default_value=*/DevToolsFreestylerUserTier::kTesters,
-    &devtools_freestyler_user_tier_options};
+const base::FeatureParam<DevToolsFreestylerUserTier>::Option
+    devtools_freestyler_user_tier_options[] = {
+        {DevToolsFreestylerUserTier::kTesters, "TESTERS"},
+        {DevToolsFreestylerUserTier::kBeta, "BETA"},
+        {DevToolsFreestylerUserTier::kPublic, "PUBLIC"}};
+const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsFreestylerDogfoodUserTier{
+        &kDevToolsFreestylerDogfood, "user_tier",
+        /*default_value=*/DevToolsFreestylerUserTier::kBeta,
+        &devtools_freestyler_user_tier_options};
 
 // Whether the DevTools resource explainer assistant is enabled.
 BASE_FEATURE(kDevToolsExplainThisResourceDogfood,
@@ -338,6 +351,14 @@ BASE_FEATURE(kSandboxExternalProtocolBlockedWarning,
              "SandboxExternalProtocolBlockedWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_LINUX)
+// If true, encrypt new data with the key provided by SecretPortalKeyProvider.
+// Otherwise, it will only decrypt existing data.
+BASE_FEATURE(kSecretPortalKeyProviderUseForEncryption,
+             "SecretPortalKeyProviderUseForEncryption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX)
+
 // This flag controls whether to trigger prerendering when the default search
 // engine suggests to prerender a search result.
 BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
@@ -348,6 +369,13 @@ BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// Enables the Task Manager Desktop Refresh project.
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kTaskManagerDesktopRefresh,
+             "TaskManagerDesktopRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables migration of the network context data from `unsandboxed_data_path` to
 // `data_path`. See the explanation in network_context.mojom.
@@ -425,4 +453,5 @@ BASE_FEATURE(kReportPakFileIntegrity,
 BASE_FEATURE(kRemovalOfIWAsFromTabCapture,
              "RemovalOfIWAsFromTabCapture",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

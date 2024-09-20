@@ -25,6 +25,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/cast/cast_config.h"
+#include "media/cast/encoding/encoding_support.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -39,7 +40,7 @@
 #include "third_party/jsoncpp/source/include/json/reader.h"
 #include "third_party/jsoncpp/source/include/json/writer.h"
 #include "third_party/openscreen/src/cast/streaming/message_fields.h"
-#include "third_party/openscreen/src/cast/streaming/offer_messages.h"
+#include "third_party/openscreen/src/cast/streaming/public/offer_messages.h"
 #include "third_party/openscreen/src/cast/streaming/remoting_capabilities.h"
 #include "third_party/openscreen/src/cast/streaming/sender_message.h"
 #include "third_party/openscreen/src/cast/streaming/ssrc.h"
@@ -162,6 +163,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   OpenscreenSessionHostTest(const OpenscreenSessionHostTest&) = delete;
   OpenscreenSessionHostTest& operator=(const OpenscreenSessionHostTest&) =
       delete;
+
+  void TearDown() override {
+    media::cast::encoding_support::ClearHardwareCodecDenyListForTesting();
+  }
 
   ~OpenscreenSessionHostTest() override { task_environment_.RunUntilIdle(); }
 
@@ -363,6 +368,9 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(this);
   }
+
+  // Negotiate mirroring.
+  void NegotiateMirroring() { session_host_->NegotiateMirroring(); }
 
   void StopSession() {
     if (video_host_)
@@ -568,6 +576,20 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
+  void PushEncoderStatusChange(const media::cast::FrameSenderConfig& config,
+                               media::cast::OperationalStatus status) {
+    session_host_->OnEncoderStatusChange(config, status);
+  }
+
+  const std::vector<media::cast::FrameSenderConfig>& LastOfferedVideoConfigs() {
+    return session_host_->last_offered_video_configs_;
+  }
+
+  void SetSupportedProfiles(
+      media::VideoEncodeAccelerator::SupportedProfiles profiles) {
+    session_host_->supported_profiles_ = std::move(profiles);
+  }
 
  protected:
   std::unique_ptr<FakeVideoCaptureHost> video_host_;
@@ -838,15 +860,15 @@ TEST_F(OpenscreenSessionHostTest, Av1CodecEnabledInOffer) {
 }
 
 TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareVp8EncodingIfSupported) {
-#if !BUILDFLAG(IS_CHROMEOS)
   CreateSession(SessionType::VIDEO_ONLY);
 
   // Mock the profiles to enable VP8 hardware encode.
-  session_host().supported_profiles_ =
+  SetSupportedProfiles(
       std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
           media::VideoEncodeAccelerator::SupportedProfile(
-              media::VideoCodecProfile::VP8PROFILE_ANY, gfx::Size{1920, 1080})};
-  session_host().NegotiateMirroring();
+              media::VideoCodecProfile::VP8PROFILE_ANY,
+              gfx::Size{1920, 1080})});
+  NegotiateMirroring();
   task_environment().RunUntilIdle();
 
   const openscreen::cast::Offer& offer =
@@ -861,27 +883,89 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareVp8EncodingIfSupported) {
 
   // We should have put a video config for VP8 with hardware enabled in the last
   // offered configs.
-  EXPECT_TRUE(std::any_of(session_host().last_offered_video_configs_.begin(),
-                          session_host().last_offered_video_configs_.end(),
+  EXPECT_TRUE(std::any_of(LastOfferedVideoConfigs().begin(),
+                          LastOfferedVideoConfigs().end(),
 
                           [](const media::cast::FrameSenderConfig& config) {
                             return config.video_codec() ==
                                        media::VideoCodec::kVP8 &&
                                    config.use_hardware_encoder;
                           }));
-#endif
+}
+
+TEST_F(OpenscreenSessionHostTest,
+       ShouldDisableHardwareEncodingIfEncoderReportsAnIssue) {
+  CreateSession(SessionType::VIDEO_ONLY);
+
+  // Mock the profiles to enable VP8 hardware encode.
+  SetSupportedProfiles(
+      std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
+          media::VideoEncodeAccelerator::SupportedProfile(
+              media::VideoCodecProfile::VP8PROFILE_ANY,
+              gfx::Size{1920, 1080})});
+  NegotiateMirroring();
+  task_environment().RunUntilIdle();
+
+  const openscreen::cast::Offer& offer =
+      absl::get<openscreen::cast::Offer>(last_sent_offer().body);
+
+  // We should have offered VP8.
+  EXPECT_TRUE(
+      std::any_of(offer.video_streams.begin(), offer.video_streams.end(),
+                  [](const openscreen::cast::VideoStream& stream) {
+                    return stream.codec == openscreen::cast::VideoCodec::kVp8;
+                  }));
+
+  // We should have put a video config for VP8 with hardware enabled in the last
+  // offered configs.
+  EXPECT_TRUE(std::any_of(
+      LastOfferedVideoConfigs().begin(), LastOfferedVideoConfigs().end(),
+      [](const media::cast::FrameSenderConfig& config) {
+        return config.video_codec() == media::VideoCodec::kVP8 &&
+               config.use_hardware_encoder;
+      }));
+
+  // Oh no! The encoder had a problem.
+  FrameSenderConfig config;
+  config.use_hardware_encoder = true;
+  config.rtp_payload_type = media::cast::RtpPayloadType::VIDEO_VP8;
+  config.video_codec_params =
+      media::cast::VideoCodecParams{media::VideoCodec::kVP8};
+  PushEncoderStatusChange(
+      config, media::cast::OperationalStatus::STATUS_CODEC_INIT_FAILED);
+
+  // This should have forced a renegotiation.
+  const openscreen::cast::Offer& second_offer =
+      absl::get<openscreen::cast::Offer>(last_sent_offer().body);
+
+  // We should have offered VP8 again.
+  EXPECT_TRUE(std::any_of(
+      second_offer.video_streams.begin(), second_offer.video_streams.end(),
+      [](const openscreen::cast::VideoStream& stream) {
+        return stream.codec == openscreen::cast::VideoCodec::kVp8;
+      }));
+
+  // We should have put a video config for VP8 with hardware DISABLED in the
+  // last offered configs.
+  EXPECT_TRUE(std::any_of(
+      LastOfferedVideoConfigs().begin(), LastOfferedVideoConfigs().end(),
+
+      [](const media::cast::FrameSenderConfig& config) {
+        return config.video_codec() == media::VideoCodec::kVP8 &&
+               !config.use_hardware_encoder;
+      }));
 }
 
 TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareH264EncodingIfSupported) {
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   CreateSession(SessionType::VIDEO_ONLY);
 
-  session_host().supported_profiles_ =
+  SetSupportedProfiles(
       std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
           media::VideoEncodeAccelerator::SupportedProfile(
               media::VideoCodecProfile::H264PROFILE_MIN,
-              gfx::Size{1920, 1080})};
-  session_host().NegotiateMirroring();
+              gfx::Size{1920, 1080})});
+  NegotiateMirroring();
   task_environment().RunUntilIdle();
 
   const openscreen::cast::Offer& offer =
@@ -896,8 +980,8 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareH264EncodingIfSupported) {
 
   // We should have put a video config for H264 with hardware enabled in the
   // last offered configs.
-  EXPECT_TRUE(std::any_of(session_host().last_offered_video_configs_.begin(),
-                          session_host().last_offered_video_configs_.end(),
+  EXPECT_TRUE(std::any_of(LastOfferedVideoConfigs().begin(),
+                          LastOfferedVideoConfigs().end(),
 
                           [](const media::cast::FrameSenderConfig& config) {
                             return config.video_codec() ==

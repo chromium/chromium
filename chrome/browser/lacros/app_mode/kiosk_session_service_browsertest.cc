@@ -3,10 +3,16 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
@@ -22,10 +28,17 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/crosapi/mojom/browser_service.mojom-shared.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom-forward.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"

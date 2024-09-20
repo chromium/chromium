@@ -345,6 +345,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableGetNetworkConnectivityHintAPI);
 // Whether or not to enable TCP port randomization via SO_RANDOMIZE_PORT on
 // Windows 20H1+.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableTcpPortRandomization);
+
+// Whether to use a TCP socket implementation which uses an IO completion
+// handler to be notified of completed reads and writes, instead of an event.
+NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketIoCompletionPortWin);
 #endif
 
 // Avoid creating cache entries for transactions that are most likely no-store.
@@ -569,12 +573,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kStoreConnectionSubtype);
 // partitioned, allowing greater connection re-use.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionProxyChains);
 
-// Enables the Storage Access Headers semantics.
-NET_EXPORT BASE_DECLARE_FEATURE(kStorageAccessHeaders);
-
-// Enables the Storage Access Headers Origin Trial.
-NET_EXPORT BASE_DECLARE_FEATURE(kStorageAccessHeadersTrial);
-
 // Enables more checks when creating a SpdySession for proxy. These checks are
 // already applied to non-proxy SpdySession creations.
 // TODO(crbug.com/343519247): Remove this once we are sure that these checks are
@@ -606,6 +604,13 @@ NET_EXPORT BASE_DECLARE_FEATURE(kOptimizeParsingDataUrls);
 // enable RSA keys to be used with client certificates even if they do not
 // support RSA-PSS.
 NET_EXPORT BASE_DECLARE_FEATURE(kLegacyPKCS1ForTLS13);
+
+// Keep whitespace for non-base64 encoded data: URLs.
+NET_EXPORT BASE_DECLARE_FEATURE(kKeepWhitespaceForDataUrls);
+
+// If enabled, unrecognized keys in a No-Vary-Search header will be ignored.
+// Otherwise, unrecognized keys are treated as if the header was invalid.
+NET_EXPORT BASE_DECLARE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys);
 
 }  // namespace net::features
 

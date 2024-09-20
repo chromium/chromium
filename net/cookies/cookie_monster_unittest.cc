@@ -3844,7 +3844,7 @@ TEST_F(CookieMonsterTest, CookieJarSizeHistograms) {
     histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
                                         /*sample=*/0,
                                         /*expected_bucket_count=*/1);
-    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey2",
                                         /*sample=*/0,
                                         /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
@@ -3876,8 +3876,9 @@ TEST_F(CookieMonsterTest, CookieJarSizeHistograms) {
     histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
                                         /*sample=*/2,
                                         /*expected_bucket_count=*/1);
-    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
-                                        /*sample=*/2,
+    // Recorded in bytes.
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey2",
+                                        /*sample=*/2049,
                                         /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
                                         /*sample=*/2,
@@ -3894,8 +3895,9 @@ TEST_F(CookieMonsterTest, CookieJarSizeHistograms) {
     histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
                                         /*sample=*/2,
                                         /*expected_bucket_count=*/1);
-    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
-                                        /*sample=*/2,
+    // Recorded in bytes.
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey2",
+                                        /*sample=*/2049,
                                         /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
                                         /*sample=*/2,
@@ -3911,8 +3913,9 @@ TEST_F(CookieMonsterTest, CookieJarSizeHistograms) {
     histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
                                         /*sample=*/6,
                                         /*expected_bucket_count=*/1);
-    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
-                                        /*sample=*/3,
+    // Recorded in bytes.
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey2",
+                                        /*sample=*/3073,
                                         /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
                                         /*sample=*/4,

@@ -10,7 +10,7 @@
 #include "chrome/browser/storage_access_api/storage_access_header_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
-#include "net/base/features.h"
+#include "services/network/public/cpp/features.h"
 
 namespace storage_access_api::trial {
 
@@ -32,7 +32,7 @@ StorageAccessHeaderService* StorageAccessHeaderServiceFactory::GetForProfile(
 // static
 ProfileSelections StorageAccessHeaderServiceFactory::CreateProfileSelections() {
   if (!base::FeatureList::IsEnabled(
-          net::features::kStorageAccessHeadersTrial) ||
+          network::features::kStorageAccessHeadersTrial) ||
       !base::FeatureList::IsEnabled(features::kPersistentOriginTrials)) {
     return ProfileSelections::BuildNoProfilesSelected();
   }

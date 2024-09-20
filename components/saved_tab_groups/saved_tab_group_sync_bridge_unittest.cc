@@ -30,6 +30,8 @@
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#include "components/saved_tab_groups/sync_bridge_tab_group_model_wrapper.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_batch.h"
@@ -88,8 +90,8 @@ class ModelObserverForwarder : public SavedTabGroupModelObserver {
     bridge_->SavedTabGroupUpdatedLocally(group_guid, tab_guid);
   }
 
-  void SavedTabGroupTabsReorderedLocally(
-      const base::Uuid& group_guid) override {
+  void SavedTabGroupTabMovedLocally(const base::Uuid& group_guid,
+                                    const base::Uuid& tab_guid) override {
     bridge_->SavedTabGroupTabsReorderedLocally(group_guid);
   }
 
@@ -213,7 +215,12 @@ syncer::EntityChangeList CreateEntityChangeListFromGroup(
 class SavedTabGroupSyncBridgeTest : public ::testing::Test {
  public:
   SavedTabGroupSyncBridgeTest()
-      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : sync_bridge_model_wrapper_(
+            syncer::SAVED_TAB_GROUP,
+            &saved_tab_group_model_,
+            base::BindOnce(&SavedTabGroupModel::LoadStoredEntries,
+                           base::Unretained(&saved_tab_group_model_))),
+        store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
   ~SavedTabGroupSyncBridgeTest() override = default;
 
   void SetUp() override {
@@ -222,10 +229,9 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<SavedTabGroupSyncBridge>(
-        &saved_tab_group_model_,
+        &sync_bridge_model_wrapper_,
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        processor_.CreateForwardingProcessor(), &pref_service_,
-        base::DoNothing());
+        processor_.CreateForwardingProcessor(), &pref_service_);
     observer_forwarder_ = std::make_unique<ModelObserverForwarder>(
         saved_tab_group_model_, *bridge_);
     task_environment_.RunUntilIdle();
@@ -246,6 +252,7 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   SavedTabGroupModel saved_tab_group_model_;
+  SyncBridgeTabGroupModelWrapper sync_bridge_model_wrapper_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<syncer::DataTypeStore> store_;
   TestingPrefServiceSimple pref_service_;
@@ -1204,11 +1211,9 @@ class SavedTabGroupSyncBridgeMigrationTest
     pref_service_.SetBoolean(prefs::kSavedTabGroupSpecificsToDataMigration,
                              has_specifics_migrated);
     bridge_ = std::make_unique<SavedTabGroupSyncBridge>(
-        &saved_tab_group_model_,
+        &sync_bridge_model_wrapper_,
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        processor_.CreateForwardingProcessor(), &pref_service_,
-        base::BindOnce(&SavedTabGroupModel::LoadStoredEntries,
-                       base::Unretained(&saved_tab_group_model_)));
+        processor_.CreateForwardingProcessor(), &pref_service_);
     task_environment_.RunUntilIdle();
   }
 };

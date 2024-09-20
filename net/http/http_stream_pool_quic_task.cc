@@ -66,11 +66,10 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
   std::optional<QuicEndpoint> quic_endpoint = GetQuicEndpointToAttempt();
   if (!quic_endpoint.has_value()) {
     if (manager_->is_service_endpoint_request_finished()) {
-      // TODO(crbug.com/346835898): Use a different error code?
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&QuicTask::OnSessionAttemptComplete,
-                         weak_ptr_factory_.GetWeakPtr(), ERR_FAILED));
+          FROM_HERE, base::BindOnce(&QuicTask::OnSessionAttemptComplete,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    ERR_DNS_NO_MATCHING_SUPPORTED_ALPN));
     }
     return;
   }
@@ -189,7 +188,14 @@ void HttpStreamPool::QuicTask::OnSessionAttemptComplete(int rv) {
       NetLogEventType::HTTP_STREAM_POOL_QUIC_ATTEMPT_END, rv);
 
   // TODO(crbug.com/346835898): Attempt other endpoints when failed.
-  quic_session_pool()->set_is_quic_known_to_work_on_current_network(rv == OK);
+
+  // The destination is not considered broken or working if we didn't attempt
+  // QUIC due to no matching ALPN.
+  if (rv == OK) {
+    quic_session_pool()->set_is_quic_known_to_work_on_current_network(true);
+  } else if (rv != ERR_DNS_NO_MATCHING_SUPPORTED_ALPN) {
+    quic_session_pool()->set_is_quic_known_to_work_on_current_network(false);
+  }
   session_attempt_.reset();
   manager_->OnQuicTaskComplete(rv);
   // `this` is deleted.

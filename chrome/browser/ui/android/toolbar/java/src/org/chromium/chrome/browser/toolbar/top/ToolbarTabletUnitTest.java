@@ -21,6 +21,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -57,6 +59,7 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
@@ -82,6 +85,7 @@ public final class ToolbarTabletUnitTest {
     @Mock private ToolbarColorObserver mToolbarColorObserver;
     @Mock private ToolbarDataProvider mToolbarDataProvider;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
+    @Mock private ToolbarTabController mToolbarTabController;
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -150,6 +154,50 @@ public final class ToolbarTabletUnitTest {
                 "Reloading button position is not as expected",
                 mReloadingButton,
                 mToolbarTabletLayout.getChildAt(3));
+    }
+
+    @Test
+    public void testReloadButton() {
+        mToolbarTablet.onFinishInflate();
+        mToolbarTablet.initialize(
+                mToolbarDataProvider,
+                mToolbarTabController,
+                mMenuButtonCoordinator,
+                mTabSwitcherButtonCoordinator,
+                null,
+                () -> false,
+                null,
+                null,
+                null);
+        mToolbarTablet.onNativeLibraryReady();
+
+        mToolbarTablet.onClick(mReloadingButton);
+
+        verify(mToolbarTabController).stopOrReloadCurrentTab(false);
+    }
+
+    @Test
+    public void testReloadButton_shiftDown() {
+        mToolbarTablet.onFinishInflate();
+        mToolbarTablet.initialize(
+                mToolbarDataProvider,
+                mToolbarTabController,
+                mMenuButtonCoordinator,
+                mTabSwitcherButtonCoordinator,
+                null,
+                () -> false,
+                null,
+                null,
+                null);
+        mToolbarTablet.onNativeLibraryReady();
+
+        MotionEvent shiftClick =
+                MotionEvent.obtain(
+                        0, 0, MotionEvent.ACTION_BUTTON_PRESS, 0, 0, KeyEvent.META_SHIFT_ON);
+        mToolbarTablet.getReloadButtonTouchListenerForTest().onTouch(mReloadingButton, shiftClick);
+        mToolbarTablet.onClick(mReloadingButton);
+
+        verify(mToolbarTabController).stopOrReloadCurrentTab(true);
     }
 
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)

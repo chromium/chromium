@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
@@ -21,7 +22,20 @@
 #include "url/gurl.h"
 
 namespace net {
+
 namespace {
+
+// Determine if we are in the deprecated mode of whitespace removal
+// Enterprise policies can enable this command line flag to force
+// the old (non-standard compliant) behavior.
+bool HasRemoveWhitespaceCommandLineFlag() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (!command_line) {
+    return false;
+  }
+  return command_line->HasSwitch(kRemoveWhitespaceForDataURLs);
+}
 
 // https://infra.spec.whatwg.org/#ascii-whitespace, which is referenced by
 // https://infra.spec.whatwg.org/#forgiving-base64, does not include \v in the
@@ -157,13 +171,20 @@ bool DataURL::Parse(const GURL& url,
         }
       }
     } else {
-      // Strip whitespace for non-text MIME types.
+      // `temp`'s storage needs to be outside feature check since `raw_body` is
+      // a string_view.
       std::string temp;
-      if (!(mime_type_value.compare(0, 5, "text/") == 0 ||
-            mime_type_value.find("xml") != std::string::npos)) {
-        temp = std::string(raw_body);
-        std::erase_if(temp, base::IsAsciiWhitespace<char>);
-        raw_body = temp;
+      // Strip whitespace for non-text MIME types. This is controlled either by
+      // the feature (finch kill switch) or an enterprise policy which sets the
+      // command line flag.
+      if (!base::FeatureList::IsEnabled(features::kKeepWhitespaceForDataUrls) ||
+          HasRemoveWhitespaceCommandLineFlag()) {
+        if (!(mime_type_value.compare(0, 5, "text/") == 0 ||
+              mime_type_value.find("xml") != std::string::npos)) {
+          temp = std::string(raw_body);
+          std::erase_if(temp, base::IsAsciiWhitespace<char>);
+          raw_body = temp;
+        }
       }
 
       *data = base::UnescapeBinaryURLComponent(raw_body);

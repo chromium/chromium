@@ -8,9 +8,6 @@
 // Delegate for actions relating to the NTP content.
 @protocol NewTabPageContentDelegate
 
-// YES if the content requires the header to stick while scrolling.
-- (BOOL)isContentHeaderSticky;
-
 // Handles what happens when the signin promo changes visibility in the NTP.
 - (void)signinPromoHasChangedVisibility:(BOOL)visible;
 

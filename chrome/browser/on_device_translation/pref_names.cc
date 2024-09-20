@@ -5,14 +5,10 @@
 #include "chrome/browser/on_device_translation/pref_names.h"
 
 #include "base/files/file_path.h"
+#include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace prefs {
-
-// The fully-qualified path to the root of installed TranslateKit binary and
-// models.
-const char kTranslateKitRootDir[] =
-    "on_device_translation.translate_kit_root_dir";
 
 // The fully-qualified path to the installed TranslateKit binary.
 const char kTranslateKitBinaryPath[] =
@@ -23,9 +19,15 @@ const char kTranslateKitBinaryPath[] =
 namespace on_device_translation {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterFilePathPref(prefs::kTranslateKitRootDir, base::FilePath());
   registry->RegisterFilePathPref(prefs::kTranslateKitBinaryPath,
                                  base::FilePath());
+
+  // Register language pack config path preferences.
+  for (const auto& it :
+       on_device_translation::kLanguagePackComponentConfigMap) {
+    registry->RegisterFilePathPref(it.second->config_path_pref,
+                                   base::FilePath());
+  }
 }
 
 }  // namespace on_device_translation

@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
@@ -823,7 +824,8 @@ void LogPasswordReuse(int saved_passwords,
                       PasswordType reused_password_type);
 
 // Log the type of the password dropdown when it's shown.
-void LogPasswordDropdownShown(PasswordDropdownState state);
+void LogPasswordDropdownShown(
+    const std::vector<autofill::Suggestion>& suggestions);
 
 // Log the type of the password dropdown suggestion when chosen.
 void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
@@ -965,6 +967,16 @@ void AddPasswordRemovalReason(
     PrefService* prefs,
     IsAccountStore is_account_store,
     PasswordManagerCredentialRemovalReason removal_reason);
+
+// Emits histograms for the number of password and webauthn credentials in the
+// passwords popup / dropdown. Also emits a user action for the displayed
+// dropdown.
+void MaybeLogMetricsForPasswordAndWebauthnCounts(
+    const std::vector<autofill::Suggestion>& suggestions,
+    bool is_for_webauthn_request);
+
+// Emits a user action that the dropdown was hidden.
+void LogPasswordDropdownHidden();
 
 }  // namespace password_manager::metrics_util
 

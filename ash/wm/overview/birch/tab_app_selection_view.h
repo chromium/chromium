@@ -29,6 +29,8 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   TabAppSelectionView& operator=(const TabAppSelectionView&) = delete;
   ~TabAppSelectionView() override;
 
+  void ProcessKeyEvent(ui::KeyEvent* event);
+
  private:
   class TabAppSelectionItemView;
   FRIEND_TEST_ALL_PREFIXES(TabAppSelectionViewTest, CloseSelectorItems);
@@ -40,12 +42,13 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
     kCloseButtonID,
   };
 
+  void AdvanceSelection(bool reverse);
+
   void OnCloseButtonPressed(TabAppSelectionItemView* sender);
 
   raw_ptr<views::ScrollView> scroll_view_;
 
-  std::vector<raw_ptr<TabAppSelectionItemView>> tab_item_views_;
-  std::vector<raw_ptr<TabAppSelectionItemView>> app_item_views_;
+  std::vector<raw_ptr<TabAppSelectionItemView>> item_views_;
 };
 
 }  // namespace ash

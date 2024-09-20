@@ -13,6 +13,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -71,20 +72,19 @@ public class DefaultBrowserPromoUtils {
      *
      * @param activity The context.
      * @param windowAndroid The {@link WindowAndroid} for sending an intent.
+     * @param track A {@link Tracker} for tracking role manager promo shown event.
      * @param ignoreMaxCount Whether the promo dialog should be shown irrespective of whether it has
      *     been shown before
      * @return True if promo dialog will be displayed.
      */
-    public static boolean prepareLaunchPromoIfNeeded(
-            Activity activity, WindowAndroid windowAndroid, boolean ignoreMaxCount) {
-        return DefaultBrowserPromoUtils.getInstance()
-                .prepareLaunchPromoIfNeededInternal(activity, windowAndroid, ignoreMaxCount);
-    }
-
-    private boolean prepareLaunchPromoIfNeededInternal(
-            Activity activity, WindowAndroid windowAndroid, boolean ignoreMaxCount) {
-        if (!shouldShowPromo(activity, ignoreMaxCount)) return false;
+    public boolean prepareLaunchPromoIfNeeded(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            Tracker tracker,
+            boolean ignoreMaxCount) {
+        if (!shouldShowRoleManagerPromo(activity, ignoreMaxCount)) return false;
         mImpressionCounter.onPromoShown();
+        tracker.notifyEvent("role_manager_default_browser_promos_shown");
         DefaultBrowserPromoManager manager =
                 new DefaultBrowserPromoManager(
                         activity, windowAndroid, mImpressionCounter, mStateProvider);
@@ -93,11 +93,23 @@ public class DefaultBrowserPromoUtils {
     }
 
     /**
+     * Determine whether other types of default browser promo should be displayed if:
+     * 1. Role Manager Promo shouldn't be shown,
+     * 2. Impression count condition, other than the max count for RoleManager is met,
+     * 3. Current default browser state satisfied the pre-defined conditions.
+     */
+    public boolean shouldShowOtherPromo(Context context) {
+        return !shouldShowRoleManagerPromo(context, false)
+                && mImpressionCounter.shouldShowPromo(true)
+                && mStateProvider.shouldShowPromo();
+    }
+
+    /**
      * This decides whether the dialog should be promoted. Returns true if: the feature is enabled,
      * the {@link RoleManager} is available, and both the impression count and current default
      * browser state satisfied the pre-defined conditions.
      */
-    public boolean shouldShowPromo(Context context, boolean ignoreMaxCount) {
+    public boolean shouldShowRoleManagerPromo(Context context, boolean ignoreMaxCount) {
         if (!isFeatureEnabled()) return false;
 
         if (!mStateProvider.isRoleAvailable(context)) {

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
 
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/strong_alias.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/extensions/install_verifier.h"
@@ -23,10 +19,10 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/family_live_test.h"
 #include "chrome/test/supervised_user/family_member.h"
-#include "chrome/test/supervised_user/test_state_seeded_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/test_support/browser_state_management.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -300,9 +296,9 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
   extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kDefineStateObserverId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kResetStateObserverId);
   const int child_tab_index = 0;
 
@@ -323,7 +319,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
       WaitForStateSeeding(kResetStateObserverId, child(),
                           BrowserState::SetAdvancedSettingsDefault()));
 
-  InstallExtension(child().browser()->profile());
+  InstallExtension(&child().profile());
 
   RunTestSequence(InAnyContext(Steps(
       Log("Given an installed disabled extension."),
@@ -341,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
       // Child navigates to the extensions page and tries to enable the
       // extension, if it is disabled.
       Log("When child visits the extensions management page."),
-      InstrumentTab(kChildElementId, child_tab_index, child().browser()),
+      InstrumentTab(kChildElementId, child_tab_index, &child().browser()),
       NavigateWebContents(kChildElementId, GURL(kChromeManageExternsionsUrl)),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Extensions")),
       Log("When child tries to enable the extension."),
@@ -350,8 +346,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
       // If the extension is not already enabled, check that the expect UI
       // dialog appears.
       CheckForParentDialogIfExtensionDisabled(should_be_enabled),
-      CheckExtensionLocationPermissions(kChildElementId,
-                                        child().browser()->profile()))));
+      CheckExtensionLocationPermissions(kChildElementId, &child().profile()))));
 }
 
 INSTANTIATE_TEST_SUITE_P(

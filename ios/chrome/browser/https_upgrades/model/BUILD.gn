@@ -47,6 +47,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/prerender/model:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/components/security_interstitials/https_only_mode",
     "//ios/components/security_interstitials/https_only_mode:feature",

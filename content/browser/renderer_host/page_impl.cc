@@ -71,11 +71,7 @@ void PageImpl::GetManifest(GetManifestCallback callback) {
 }
 
 bool PageImpl::IsPrimary() const {
-  if (main_document_->IsFencedFrameRoot())
-    return false;
-
-  return main_document_->lifecycle_state() ==
-         RenderFrameHostImpl::LifecycleStateImpl::kActive;
+  return main_document_->IsInPrimaryMainFrame();
 }
 
 void PageImpl::UpdateManifestUrl(const GURL& manifest_url) {

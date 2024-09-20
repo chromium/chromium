@@ -39,6 +39,7 @@ class MetricReportQueue;
 class CollectorBase;
 class Sampler;
 class FatalCrashEventsObserver;
+class ChromeFatalCrashEventsObserver;
 
 BASE_DECLARE_FEATURE(kEnableAppEventsObserver);
 BASE_DECLARE_FEATURE(kEnableFatalCrashEventsObserver);
@@ -356,6 +357,11 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // Fatal crash event observer. Life time of this object is owned by
   // `event_observer_managers_`.
   raw_ptr<FatalCrashEventsObserver> fatal_crash_events_observer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Chrome fatal crash event observer. Life time of this object is owned by
+  // `event_observer_managers_`.
+  raw_ptr<ChromeFatalCrashEventsObserver> chrome_fatal_crash_events_observer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // App usage observer used to observe and collect app usage reports from the

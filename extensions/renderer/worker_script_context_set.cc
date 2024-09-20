@@ -12,7 +12,6 @@
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/worker_thread_util.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "v8/include/v8-context.h"
 
 namespace extensions {
@@ -35,7 +34,7 @@ ContextVector::iterator FindContext(ContextVector* contexts,
 }
 
 // Implement thread safety by storing each ScriptContext in TLS.
-ABSL_CONST_INIT thread_local ContextVector* contexts = nullptr;
+constinit thread_local ContextVector* contexts = nullptr;
 
 }  // namespace
 

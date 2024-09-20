@@ -213,6 +213,10 @@ void SavedTabGroupModel::MakeTabGroupShared(
 
   group->SetCollaborationId(std::move(collaboration_id));
 
+  // Creator cache GUID is not used for the shared tab groups.
+  // TODO(crbug.com/351022699): clean up creator cache GUID for tabs.
+  group->SetCreatorCacheGuid(std::nullopt);
+
   for (SavedTabGroupModelObserver& observer : observers_) {
     observer.SavedTabGroupSharedStateUpdatedLocally(group->saved_guid());
   }
@@ -403,11 +407,8 @@ void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
 
 void SavedTabGroupModel::RemoveTabFromGroupFromSync(const base::Uuid& group_id,
                                                     const base::Uuid& tab_id) {
-  if (!Contains(group_id)) {
-    return;
-  }
-
   std::optional<int> index = GetIndexOf(group_id);
+  CHECK(index.has_value());
   const SavedTabGroup& group = saved_tab_groups_[index.value()];
 
   if (!group.ContainsTab(tab_id)) {
@@ -442,9 +443,9 @@ void SavedTabGroupModel::MoveTabInGroupTo(const base::Uuid& group_id,
   std::optional<int> index = GetIndexOf(group_id);
   saved_tab_groups_[index.value()].MoveTabLocally(tab_id, new_index);
 
-  for (auto& observer : observers_) {
+  for (SavedTabGroupModelObserver& observer : observers_) {
     // TODO(crbug.com/40919583): Consider further optimizations.
-    observer.SavedTabGroupTabsReorderedLocally(group_id);
+    observer.SavedTabGroupTabMovedLocally(group_id, copy_tab_id);
   }
 }
 
@@ -590,8 +591,10 @@ SavedTabGroupModel::UpdateLocalCacheGuid(
   std::set<base::Uuid> updated_group_ids;
   std::set<base::Uuid> updated_tab_ids;
   // Update the group cache guids.
-  for (auto& saved_group : saved_tab_groups_) {
-    if (saved_group.creator_cache_guid() != old_cache_guid) {
+  for (SavedTabGroup& saved_group : saved_tab_groups_) {
+    // Only saved tab groups use creator cache GUID.
+    if (saved_group.is_shared_tab_group() ||
+        saved_group.creator_cache_guid() != old_cache_guid) {
       continue;
     }
 
@@ -599,9 +602,14 @@ SavedTabGroupModel::UpdateLocalCacheGuid(
     updated_group_ids.insert(saved_group.saved_guid());
   }
 
-  for (auto& saved_group : saved_tab_groups_) {
+  for (SavedTabGroup& saved_group : saved_tab_groups_) {
+    // Only saved tab groups use creator cache GUID.
+    if (saved_group.is_shared_tab_group()) {
+      continue;
+    }
+
     // Update the tabs in the group with the new cache guid.
-    for (auto& saved_tab : saved_group.saved_tabs()) {
+    for (SavedTabGroupTab& saved_tab : saved_group.saved_tabs()) {
       if (saved_tab.creator_cache_guid() != old_cache_guid) {
         continue;
       }

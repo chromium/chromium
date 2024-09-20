@@ -108,13 +108,23 @@ BASE_DECLARE_FEATURE(kExtensionManifestV2DeprecationWarning);
 // Users can re-enable these extensions.
 BASE_DECLARE_FEATURE(kExtensionManifestV2Disabled);
 
+// Controls fully removing support for user-installed MV2 extensions.
+// Users may no longer re-enable these extensions. Enterprises may still
+// override this.
+BASE_DECLARE_FEATURE(kExtensionManifestV2Unsupported);
+
 // Allows server-side configuration of a temporary exception list.
 BASE_DECLARE_FEATURE(kExtensionManifestV2ExceptionList);
 extern const base::FeatureParam<std::string>
     kExtensionManifestV2ExceptionListParam;
 
-// Side panel API availability.
-BASE_DECLARE_FEATURE(kExtensionSidePanelIntegration);
+// A feature to allow legacy MV2 extensions, even if they are not supported by
+// the browser or experiment configuration. This is important to allow
+// developers of MV2 extensions to continue loading, running, and testing their
+// extensions for as long as MV2 is supported in any variant.
+// This will be removed once the ExtensionManifestV2Availability enterprise
+// policy is no longer supported.
+BASE_DECLARE_FEATURE(kAllowLegacyMV2Extensions);
 
 // IsValidSourceUrl enforcement for ExtensionHostMsg_OpenChannelToExtension IPC.
 BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);

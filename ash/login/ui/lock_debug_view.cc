@@ -634,7 +634,8 @@ class LockDebugView::DebugDataDispatcherTransformer
   }
   void OnUserAuthFactorsChanged(
       const AccountId& user,
-      cryptohome::AuthFactorsSet auth_factors) override {
+      cryptohome::AuthFactorsSet auth_factors,
+      cryptohome::PinLockAvailability pin_available_at) override {
     // Forward notification only if the user is currently being shown.
     for (auto& debug_user : debug_users_) {
       if (debug_user.account_id == user) {
@@ -644,7 +645,8 @@ class LockDebugView::DebugDataDispatcherTransformer
             auth_factors.Has(cryptohome::AuthFactorType::kPin);
         debug_user.enable_challenge_response =
             auth_factors.Has(cryptohome::AuthFactorType::kSmartCard);
-        debug_dispatcher_.SetAuthFactorsForUser(user, auth_factors);
+        debug_dispatcher_.SetAuthFactorsForUser(user, auth_factors,
+                                                pin_available_at);
         break;
       }
     }

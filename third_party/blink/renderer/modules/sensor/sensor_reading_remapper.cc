@@ -121,8 +121,6 @@ void SensorReadingRemapper::RemapToScreenCoords(
   DCHECK(reading);
   switch (type) {
     case SensorType::AMBIENT_LIGHT:
-    case SensorType::PROXIMITY:
-    case SensorType::PRESSURE:
       NOTREACHED_IN_MIGRATION()
           << "Remap must not be performed for the sensor type " << type;
       break;
@@ -146,8 +144,6 @@ void SensorReadingRemapper::RemapToScreenCoords(
       NOTREACHED_IN_MIGRATION()
           << "Remap is not yet implemented for the sensor type " << type;
       break;
-    default:
-      NOTREACHED_IN_MIGRATION() << "Unknown sensor type " << type;
   }
 }
 

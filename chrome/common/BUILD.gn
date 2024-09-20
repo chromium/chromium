@@ -133,7 +133,6 @@ static_library("common_lib") {
   ]
   sources = [
     "all_messages.h",
-    "child_process_logging.h",
     "chrome_content_client.cc",
     "chrome_content_client.h",
     "chrome_content_client_constants.cc",
@@ -373,17 +372,12 @@ static_library("common_lib") {
 
   if (is_win) {
     sources += [
-      "child_process_logging_win.cc",
       "conflicts/module_watcher_win.cc",
       "conflicts/module_watcher_win.h",
       "conflicts/remote_module_watcher_win.cc",
       "conflicts/remote_module_watcher_win.h",
     ]
-    deps += [
-      "//chrome/chrome_elf:chrome_elf_main_include",
-      "//chrome/common/win:eventlog_messages",
-      "//components/crash/core/app:crash_export_thunk_include",
-    ]
+    deps += [ "//chrome/common/win:eventlog_messages" ]
 
     public_deps += [
       "//components/dom_distiller/core",  # Needed by chrome_content_client.cc.

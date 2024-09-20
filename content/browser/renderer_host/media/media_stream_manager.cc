@@ -76,7 +76,6 @@
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_system_impl.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -114,7 +113,7 @@ using ::blink::mojom::MediaDeviceType;
 
 namespace content {
 
-ABSL_CONST_INIT thread_local MediaStreamManager* media_stream_manager = nullptr;
+constinit thread_local MediaStreamManager* media_stream_manager = nullptr;
 
 using ::blink::MediaStreamDevice;
 using ::blink::MediaStreamDevices;

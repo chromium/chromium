@@ -7,27 +7,30 @@
 
 #include <cstdint>
 
+#include "ui/base/mojom/window_show_state.mojom.h"
+
 namespace ui {
 
-// This enum must be version-skew tolerant. It is persisted to disk by ChromeOS
-// full restore, and read from disk by a possibly newer version of chrome. This
-// means that it's ok to add new values, but existing values should never be
-// changed or removed.
-//
-// Window "show" state.
-// TODO: Add snapped window state to immersive fullscreen state to
-// WindowShowState. Those are ChromeOS specific window states but we should make
-// it available here as well as Lacros also needs to know those states.
-enum WindowShowState {
-  // A default un-set state.
-  SHOW_STATE_DEFAULT = 0,
-  SHOW_STATE_NORMAL = 1,
-  SHOW_STATE_MINIMIZED = 2,
-  SHOW_STATE_MAXIMIZED = 3,
-  SHOW_STATE_INACTIVE = 4,  // Views only, not persisted.
-  SHOW_STATE_FULLSCREEN = 5,
-  SHOW_STATE_END = 6  // The end of show state enum.
-};
+// Alias until all clients of `WindowShowState` have been migrated.
+// Will be removed once that is complete.
+using WindowShowState = ::ui::mojom::WindowShowState;
+
+// Alias for the old enumerators of `WindowShowState` until all clients have
+// been migrated. Will be removed once that is complete.
+inline constexpr WindowShowState SHOW_STATE_DEFAULT =
+    ui::mojom::WindowShowState::kDefault;
+inline constexpr WindowShowState SHOW_STATE_NORMAL =
+    ui::mojom::WindowShowState::kNormal;
+inline constexpr WindowShowState SHOW_STATE_MINIMIZED =
+    ui::mojom::WindowShowState::kMinimized;
+inline constexpr WindowShowState SHOW_STATE_MAXIMIZED =
+    ui::mojom::WindowShowState::kMaximized;
+inline constexpr WindowShowState SHOW_STATE_INACTIVE =
+    ui::mojom::WindowShowState::kInactive;
+inline constexpr WindowShowState SHOW_STATE_FULLSCREEN =
+    ui::mojom::WindowShowState::kFullscreen;
+inline constexpr WindowShowState SHOW_STATE_END =
+    ui::mojom::WindowShowState::kEnd;
 
 // Specifies which edges of the window are tiled.
 //

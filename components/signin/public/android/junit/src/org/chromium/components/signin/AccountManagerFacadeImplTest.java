@@ -79,7 +79,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AccountManagerFacadeImplTest {
     private static final AccountInfo TEST_ACCOUNT =
             new AccountInfo.Builder("test@gmail.com", "testGaiaId").build();
-    private static final String TEST_TOKEN_SCOPE = "test-token-scope";
 
     private static class ShadowPostTaskImpl implements ShadowPostTask.TestImpl {
         private final List<Runnable> mRunnables = new ArrayList<>();
@@ -466,30 +465,6 @@ public class AccountManagerFacadeImplTest {
                 coreAccountInfo, mChildAccountStatusListenerMock);
 
         verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
-    }
-
-    @Test
-    public void testGetAndInvalidateAccessToken() throws Exception {
-        final CoreAccountInfo coreAccountInfo = addTestAccount("test@gmail.com");
-        final AccessTokenData originalToken =
-                mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE);
-        Assert.assertEquals(
-                "The same token should be returned before invalidating the token.",
-                mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE).getToken(),
-                originalToken.getToken());
-
-        mFacade.invalidateAccessToken(originalToken.getToken());
-
-        final AccessTokenData newToken = mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE);
-        Assert.assertNotEquals(
-                "A different token should be returned since the original token is invalidated.",
-                newToken.getToken(),
-                originalToken.getToken());
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void testAccountManagerFacadeProviderGetNullInstance() {
-        AccountManagerFacadeProvider.getInstance();
     }
 
     @Test

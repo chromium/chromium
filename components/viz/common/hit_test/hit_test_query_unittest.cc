@@ -31,7 +31,7 @@ class HitTestQueryTest : public testing::Test {
   std::vector<AggregatedHitTestRegion> active_data_;
 
  private:
-  HitTestQuery hit_test_query_;
+  HitTestQuery hit_test_query_{std::nullopt};
 };
 
 // One surface.

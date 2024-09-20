@@ -14,6 +14,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -36,9 +38,7 @@
 namespace apps {
 
 WebAppsCrosapi::WebAppsCrosapi(AppServiceProxy* proxy)
-    : apps::AppPublisher(proxy),
-      proxy_(proxy),
-      device_info_manager_(proxy->profile()) {}
+    : apps::AppPublisher(proxy), proxy_(proxy) {}
 
 WebAppsCrosapi::~WebAppsCrosapi() = default;
 
@@ -82,7 +82,10 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
   // TODO(b/331702863): Remove this custom integration.
   if (chromeos::features::IsCrosMallWebAppEnabled() &&
       app_id == web_app::kMallAppId) {
-    device_info_manager_.GetDeviceInfo(base::BindOnce(
+    apps::DeviceInfoManager* device_info_manager =
+        apps::DeviceInfoManagerFactory::GetForProfile(proxy_->profile());
+    CHECK(device_info_manager);
+    device_info_manager->GetDeviceInfo(base::BindOnce(
         &WebAppsCrosapi::LaunchMallWithContext, weak_factory_.GetWeakPtr(),
         event_flags, launch_source, std::move(window_info)));
     return;

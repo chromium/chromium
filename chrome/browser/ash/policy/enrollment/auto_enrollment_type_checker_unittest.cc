@@ -59,12 +59,6 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
   ~AutoEnrollmentTypeCheckerTest() override = default;
 
  protected:
-  void SetUpNonchromeDevice() {
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kFirmwareTypeKey,
-        ash::system::kFirmwareTypeValueNonchrome);
-  }
-
   void SetUpFlexDeviceWithFREOnFlexEnabled() {
     enrollment_test_helper_.SetUpFlexDevice();
     enrollment_test_helper_.EnableFREOnFlex();
@@ -387,6 +381,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
             AutoEnrollmentTypeChecker::FRERequirement::kDisabled);
 }
 
+// TODO(b/353731379): Remove when removing legacy state determination code.
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWhenTokenPresent) {
   enrollment_test_helper_.SetUpFlexDevice();
@@ -395,6 +390,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
                                                 kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kBrandCodeValue);
+  AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
+      true);
 
   EXPECT_EQ(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled(),
             is_google_branded_);
@@ -413,6 +410,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 // device, auto_enrollment_type_checker should ignore it and continue initial
 // state determination as normal (and the token won't be included in the state
 // retrieval request).
+// TODO(b/353731379): Remove when removing legacy state determination code.
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeNotOnFlexWhenTokenPresent) {
   enrollment_test_helper_.SetUpEnrollmentTokenConfig();
@@ -420,6 +418,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
                                                 kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kBrandCodeValue);
+  AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
+      true);
 
   EXPECT_EQ(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled(),
             is_google_branded_);
@@ -435,6 +435,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   EXPECT_EQ(check_type, expected_check_type);
 }
 
+// TODO(b/353731379): Remove when removing legacy state determination code.
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWithoutTokenPresent) {
   enrollment_test_helper_.SetUpFlexDevice();
@@ -442,6 +443,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
                                                 kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kBrandCodeValue);
+  AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
+      true);
 
   EXPECT_EQ(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled(),
             is_google_branded_);
@@ -452,6 +455,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   EXPECT_EQ(check_type, AutoEnrollmentTypeChecker::CheckType::kNone);
 }
 
+// TODO(b/353731379): Remove when removing legacy state determination code.
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWithEmptyToken) {
   // TODO(b/331285209): Change the JSON key to "enrollmentToken" along with the
@@ -466,6 +470,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
                                                 kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kBrandCodeValue);
+  AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
+      true);
 
   EXPECT_EQ(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled(),
             is_google_branded_);
@@ -736,7 +742,7 @@ TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, KillSwitch) {
 }
 
 TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, NonChrome) {
-  SetUpNonchromeDevice();
+  enrollment_test_helper_.SetUpNonchromeDevice();
 
   AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
 
@@ -769,7 +775,7 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
   void SetUp() override {
     AutoEnrollmentTypeCheckerTest::SetUp();
     if (device_os_ == DeviceOs::Nonchrome) {
-      SetUpNonchromeDevice();
+      enrollment_test_helper_.SetUpNonchromeDevice();
     } else if (device_os_ == DeviceOs::FlexWithoutFRE) {
       enrollment_test_helper_.SetUpFlexDevice();
     } else if (device_os_ == DeviceOs::FlexWithFRE) {

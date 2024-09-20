@@ -14,8 +14,8 @@ class EdgeToEdgeBottomChinProperties {
     /** The height of the bottom chin layer in px. */
     static final WritableIntPropertyKey HEIGHT = new WritableIntPropertyKey();
 
-    /** Whether the bottom chin component is visible. */
-    static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
+    /** Whether the bottom chin component can be shown. */
+    static final WritableBooleanPropertyKey CAN_SHOW = new WritableBooleanPropertyKey();
 
     /** The color of the bottom chin layer. */
     static final WritableIntPropertyKey COLOR = new WritableIntPropertyKey();
@@ -24,5 +24,5 @@ class EdgeToEdgeBottomChinProperties {
     static final WritableIntPropertyKey DIVIDER_COLOR = new WritableIntPropertyKey();
 
     static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {Y_OFFSET, HEIGHT, IS_VISIBLE, COLOR, DIVIDER_COLOR};
+            new PropertyKey[] {Y_OFFSET, HEIGHT, CAN_SHOW, COLOR, DIVIDER_COLOR};
 }

@@ -159,10 +159,12 @@ DownloadInterruptReason DownloadFileImpl::SourceStream::GetCompletionStatus()
   return input_stream_->GetCompletionStatus();
 }
 
-void DownloadFileImpl::SourceStream::RegisterCompletionCallback(
-    DownloadFileImpl::SourceStream::CompletionCallback callback) {
-  input_stream_->RegisterCompletionCallback(
-      base::BindOnce(std::move(callback), base::Unretained(this)));
+void DownloadFileImpl::SourceStream::RequestCompletionNotification(
+    base::WeakPtr<DownloadFileImpl> download_file) {
+  input_stream_->RegisterCompletionCallback(base::BindOnce(
+      &DownloadFileImpl::OnStreamCompleted, std::move(download_file),
+      // Precondition: `download_file` owns `this`.
+      base::Unretained(this)));
 }
 
 InputStream::StreamState DownloadFileImpl::SourceStream::Read(
@@ -197,9 +199,11 @@ DownloadFileImpl::DownloadFileImpl(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("download", "DownloadFileActive",
                                     download_id);
 
-  source_streams_[save_info_->offset] = std::make_unique<SourceStream>(
-      save_info_->offset, save_info_->GetStartingFileWriteOffset(),
-      std::move(stream));
+  source_streams_.insert(
+      {save_info_->offset,
+       std::make_unique<SourceStream>(save_info_->offset,
+                                      save_info_->GetStartingFileWriteOffset(),
+                                      std::move(stream))});
 
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -274,10 +278,11 @@ void DownloadFileImpl::AddInputStream(std::unique_ptr<InputStream> stream,
     CancelRequest(offset);
     return;
   }
-  DCHECK(source_streams_.find(offset) == source_streams_.end());
-  source_streams_[offset] =
-      std::make_unique<SourceStream>(offset, offset, std::move(stream));
-  OnSourceStreamAdded(source_streams_[offset].get());
+  auto [it, inserted] =
+      source_streams_.insert({offset, std::make_unique<SourceStream>(
+                                          offset, offset, std::move(stream))});
+  CHECK(inserted);
+  OnSourceStreamAdded(it->second.get());
 }
 
 void DownloadFileImpl::OnSourceStreamAdded(SourceStream* source_stream) {
@@ -382,6 +387,7 @@ void DownloadFileImpl::RenameAndAnnotate(
     const std::string& client_guid,
     const GURL& source_url,
     const GURL& referrer_url,
+    const std::optional<url::Origin>& request_initiator,
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
     RenameCompletionCallback callback) {
   std::unique_ptr<RenameParameters> parameters(new RenameParameters(
@@ -389,6 +395,7 @@ void DownloadFileImpl::RenameAndAnnotate(
   parameters->client_guid = client_guid;
   parameters->source_url = source_url;
   parameters->referrer_url = referrer_url;
+  parameters->request_initiator = request_initiator;
   parameters->remote_quarantine = std::move(remote_quarantine);
   RenameWithRetryInternal(std::move(parameters));
 }
@@ -476,7 +483,8 @@ void DownloadFileImpl::RenameWithRetryInternal(
     // QuarantineFile when kPreventDownloadsWithSamePath is disabled.
     file_.AnnotateWithSourceInformation(
         parameters->client_guid, parameters->source_url,
-        parameters->referrer_url, std::move(parameters->remote_quarantine),
+        parameters->referrer_url, parameters->request_initiator,
+        std::move(parameters->remote_quarantine),
         base::BindOnce(&DownloadFileImpl::OnRenameComplete,
                        weak_factory_.GetWeakPtr(), new_path,
                        std::move(parameters->completion_callback)));
@@ -623,8 +631,8 @@ void DownloadFileImpl::StreamActive(SourceStream* source_stream,
         }
       } break;
       case InputStream::WAIT_FOR_COMPLETION:
-        source_stream->RegisterCompletionCallback(base::BindOnce(
-            &DownloadFileImpl::OnStreamCompleted, weak_factory_.GetWeakPtr()));
+        source_stream->RequestCompletionNotification(
+            weak_factory_.GetWeakPtr());
         break;
       case InputStream::COMPLETE:
         break;

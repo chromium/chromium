@@ -13,10 +13,10 @@
 #include "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-BookmarkRemoverHelper::BookmarkRemoverHelper(ChromeBrowserState* browser_state)
-    : browser_state_(browser_state),
-      model_(ios::BookmarkModelFactory::GetForBrowserState(browser_state)) {
-  CHECK(browser_state_);
+BookmarkRemoverHelper::BookmarkRemoverHelper(ProfileIOS* profile)
+    : profile_(profile),
+      model_(ios::BookmarkModelFactory::GetForProfile(profile)) {
+  CHECK(profile_);
   CHECK(model_);
 }
 
@@ -60,7 +60,7 @@ void BookmarkRemoverHelper::RemoveAllUserBookmarksFromLoadedModel() {
   CHECK(model_->loaded());
 
   model_->RemoveAllUserBookmarks(location_);
-  ResetLastUsedBookmarkFolder(browser_state_->GetPrefs());
+  ResetLastUsedBookmarkFolder(profile_->GetPrefs());
   TriggerCompletion(/*success=*/true);
 }
 

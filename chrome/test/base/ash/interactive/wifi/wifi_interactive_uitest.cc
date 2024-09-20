@@ -34,8 +34,18 @@ class WifiInteractiveUiTest : public InteractiveAshTest {
 
     // Set up context for element tracking for InteractiveBrowserTest.
     SetupContextWidget();
+  }
 
-    wifi_service_info_.ConfigureService(/*connected=*/true);
+  void ConfigureWifi(bool connected) {
+    wifi_service_info_.ConfigureService(connected);
+  }
+
+  const std::string WifiServicePath() const {
+    return wifi_service_info_.service_path();
+  }
+
+  const std::string WifiServiceName() const {
+    return wifi_service_info_.service_name();
   }
 
  private:
@@ -45,6 +55,8 @@ class WifiInteractiveUiTest : public InteractiveAshTest {
 IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, EnableDisableFromOsSettings) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
                                       kWifiPoweredState);
+
+  ConfigureWifi(/*connected=*/true);
 
   // Ensure the OS Settings app is installed.
   InstallSystemApps();
@@ -97,6 +109,8 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, EnableDisableFromQuickSettings) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
                                       kWifiPoweredState);
 
+  ConfigureWifi(/*connected=*/true);
+
   // Use a poller because the toggle gets set on a small delay, and we want to
   // avoid race conditions when checking the state.
   using ToggleObserver =
@@ -139,6 +153,66 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, EnableDisableFromQuickSettings) {
       WaitForState(kToggleButtonState, true),
       WaitForShow(kNetworkDetailedViewWifiNetworkListElementId),
 
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, ConnectFromSettingsSubpage) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kIsWifiConnected);
+  ConfigureWifi(/*connected=*/false);
+
+  // Ensure the OS Settings app is installed.
+  InstallSystemApps();
+
+  const WebContentsInteractionTestUtil::DeepQuery kWifiNetworkItem(
+      {"network-list-item"});
+  const WebContentsInteractionTestUtil::DeepQuery kWifiItemTitle =
+      kWifiNetworkItem + "div#itemTitle";
+
+  const WebContentsInteractionTestUtil::DeepQuery kWifiItemSublabel =
+      kWifiNetworkItem + "div#sublabel";
+
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      PollState(kIsWifiConnected,
+                [this]() -> bool {
+                  const auto* shill_service_client_test =
+                      ShillServiceClient::Get()->GetTestInterface();
+                  CHECK(shill_service_client_test);
+                  const auto* wifi_properties =
+                      shill_service_client_test->GetServiceProperties(
+                          WifiServicePath());
+                  CHECK(wifi_properties);
+                  const std::string* connected =
+                      wifi_properties->FindString(shill::kStateProperty);
+                  return connected && *connected == shill::kStateOnline;
+                }),
+      WaitForState(kIsWifiConnected, false),
+
+      Log("Navigate to the WiFi subpage"),
+
+      NavigateSettingsToNetworkSubpage(kOSSettingsId,
+                                       NetworkTypePattern::WiFi()),
+      WaitForElementTextContains(
+          kOSSettingsId, settings::InternetSettingsSubpageTitle(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_NETWORK_TYPE_WIFI)),
+      WaitForElementExists(kOSSettingsId, settings::wifi::WifiNetworksList()),
+
+      Log("Connect to a Wifi network"),
+
+      ClickAnyElementTextContains(kOSSettingsId,
+                                  settings::wifi::WifiNetworksList(),
+                                  kWifiItemTitle, WifiServiceName()),
+      WaitForState(kIsWifiConnected, true),
+      WaitForAnyElementAndSiblingTextContains(
+          kOSSettingsId, settings::wifi::WifiNetworksList(), kWifiNetworkItem,
+          kWifiItemTitle, WifiServiceName(), kWifiItemSublabel,
+          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
       Log("Test complete"));
 }
 

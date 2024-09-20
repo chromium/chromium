@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">You visited <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
+<translation id="5048841907079026162">Manage your browsing data</translation>
 <translation id="5050380848339752099">This site is about to share information with an app outside of Incognito mode.</translation>
 <translation id="5063480226653192405">Usage</translation>
 <translation id="5091013926750941408">Mobile site</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">Allow sites to run JavaScript (recommended)</translation>
 <translation id="534295439873310000">NFC devices</translation>
 <translation id="5344522958567249764">Manage ads privacy</translation>
+<translation id="5373874281522292782">Your tab groups are saved</translation>
 <translation id="5389626883706033615">Sites are blocked from asking you to use info they've saved about you</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 more)}other{(+ # more)}}</translation>
 <translation id="5403592356182871684">Names</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">Always</translation>
 <translation id="757524316907819857">Block sites from playing protected content</translation>
 <translation id="7594634374516752650">Connected to a Bluetooth device</translation>
+<translation id="7617547684249261169">You can delete some or all of your history, cookies, site data and more</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>

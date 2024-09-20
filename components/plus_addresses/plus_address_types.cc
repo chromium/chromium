@@ -9,6 +9,8 @@
 #include <ostream>
 #include <string>
 
+#include "net/http/http_status_code.h"
+
 namespace plus_addresses {
 
 PreallocatedPlusAddress::PreallocatedPlusAddress(PlusAddress plus_address,
@@ -40,6 +42,18 @@ PlusProfile::PlusProfile(std::optional<std::string> profile_id,
 PlusProfile::PlusProfile(const PlusProfile&) = default;
 PlusProfile::PlusProfile(PlusProfile&&) = default;
 PlusProfile::~PlusProfile() = default;
+
+bool PlusAddressRequestError::IsQuotaError() const {
+  return error_type_ == PlusAddressRequestErrorType::kNetworkError &&
+         http_response_code_.value_or(net::HTTP_REQUEST_TIMEOUT) ==
+             net::HTTP_TOO_MANY_REQUESTS;
+}
+
+bool PlusAddressRequestError::IsTimeoutError() const {
+  return error_type_ == PlusAddressRequestErrorType::kNetworkError &&
+         http_response_code_.value_or(net::HTTP_TOO_MANY_REQUESTS) ==
+             net::HTTP_REQUEST_TIMEOUT;
+}
 
 PlusAddressDataChange::PlusAddressDataChange(Type type, PlusProfile profile)
     : type_(type), profile_(std::move(profile)) {}

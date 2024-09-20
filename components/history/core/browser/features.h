@@ -23,6 +23,17 @@ extern const base::FeatureParam<int> kRepeatableQueriesMinVisitCount;
 // with data.
 BASE_DECLARE_FEATURE(kPopulateVisitedLinkDatabase);
 
+// If enabled, change the scoring function for most visited tiles.
+BASE_DECLARE_FEATURE(kMostVisitedTilesNewScoring);
+
+// |kMostVisitedTilesNewScoring|: Feature param names.
+extern const char kMvtScoringParamRecencyFactor[];
+extern const char kMvtScoringParamDailyVisitCountCap[];
+
+// |kMvtScoringParamRecencyFactor|: Feature param values.
+extern const char kMvtScoringParamRecencyFactor_Default[];
+extern const char kMvtScoringParamRecencyFactor_DecayStaircase[];
+
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_FEATURES_H_

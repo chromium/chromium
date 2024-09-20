@@ -12,13 +12,10 @@ import android.app.Activity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
-import com.google.android.material.textfield.TextInputLayout;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -28,10 +25,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -76,8 +71,6 @@ public class SaveUpdateAddressProfilePrompt {
             mDialogView = inflater.inflate(R.layout.autofill_save_address_profile_prompt, null);
             userFlow = SAVE_NEW_ADDRESS_PROFILE;
         }
-
-        if (!isUpdate && !isMigrationToAccount) setupAddressNickname();
 
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -268,30 +261,6 @@ public class SaveUpdateAddressProfilePrompt {
         mDialogView
                 .findViewById(R.id.no_header_space)
                 .setVisibility(show ? View.GONE : View.VISIBLE);
-    }
-
-    private void setupAddressNickname() {
-        TextInputLayout nicknameInputLayout = mDialogView.findViewById(R.id.nickname_input_layout);
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT)) {
-            nicknameInputLayout.setVisibility(View.GONE);
-            return;
-        }
-        EditText nicknameInput = mDialogView.findViewById(R.id.nickname_input);
-        nicknameInput.setOnFocusChangeListener(
-                (v, hasFocus) ->
-                        nicknameInputLayout.setHint(
-                                !hasFocus && TextUtils.isEmpty(nicknameInput.getText())
-                                        // TODO(crbug.com/40267973): Use localized strings.
-                                        ? "Add a label"
-                                        : "Label"));
-
-        // Prevent input from being focused when keyboard is closed.
-        KeyboardVisibilityDelegate.getInstance()
-                .addKeyboardVisibilityListener(
-                        isShowing -> {
-                            if (!isShowing && nicknameInput.hasFocus()) nicknameInput.clearFocus();
-                        });
     }
 
     void setAddressEditorForTesting(AddressEditorCoordinator addressEditor) {

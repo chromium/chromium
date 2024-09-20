@@ -651,8 +651,8 @@ void DismissPaymentBottomSheet() {
       selectElementWithMatcher:manual_fill::ManagePaymentMethodsMatcher()]
       performAction:grey_tap()];
 
-  // Tap Cancel Button.
-  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+  // Tap the "Done" button to dismiss the view.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   // TODO(crbug.com/332956674): Keyboard and keyboard accessory are not present
@@ -1187,8 +1187,8 @@ void DismissPaymentBottomSheet() {
                                           AutofillCreditCardEditTableView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap Cancel Button.
-  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+  // Tap the "Done" button to dismiss the view.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   [FormInputAccessoryAppInterface removeMockReauthenticationModule];

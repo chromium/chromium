@@ -551,16 +551,16 @@ std::string TextCodecUTF8::EncodeCommon(const CharType* characters,
 
 template <typename CharType>
 TextCodec::EncodeIntoResult TextCodecUTF8::EncodeIntoCommon(
-    const CharType* characters,
-    wtf_size_t length,
-    unsigned char* destination,
-    size_t capacity) {
+    base::span<const CharType> source,
+    base::span<uint8_t> destination) {
+  const auto* characters = source.data();
+  const wtf_size_t length = base::checked_cast<wtf_size_t>(source.size());
   TextCodec::EncodeIntoResult encode_into_result{0, 0};
 
   wtf_size_t i = 0;
   wtf_size_t previous_code_unit_index = 0;
   bool is_error = false;
-  while (i < length && encode_into_result.bytes_written < capacity &&
+  while (i < length && encode_into_result.bytes_written < destination.size() &&
          !is_error) {
     UChar32 character;
     previous_code_unit_index = i;
@@ -569,7 +569,7 @@ TextCodec::EncodeIntoResult TextCodecUTF8::EncodeIntoCommon(
     // surrogate is encountered. See comment in EncodeCommon() for more info.
     if (0xD800 <= character && character <= 0xDFFF)
       character = kReplacementCharacter;
-    U8_APPEND(destination, encode_into_result.bytes_written, capacity,
+    U8_APPEND(destination, encode_into_result.bytes_written, destination.size(),
               character, is_error);
   }
 
@@ -598,19 +598,15 @@ std::string TextCodecUTF8::Encode(const LChar* characters,
 }
 
 TextCodec::EncodeIntoResult TextCodecUTF8::EncodeInto(
-    const UChar* characters,
-    wtf_size_t length,
-    unsigned char* destination,
-    size_t capacity) {
-  return EncodeIntoCommon(characters, length, destination, capacity);
+    base::span<const UChar> characters,
+    base::span<uint8_t> destination) {
+  return EncodeIntoCommon(characters, destination);
 }
 
 TextCodec::EncodeIntoResult TextCodecUTF8::EncodeInto(
-    const LChar* characters,
-    wtf_size_t length,
-    unsigned char* destination,
-    size_t capacity) {
-  return EncodeIntoCommon(characters, length, destination, capacity);
+    base::span<const LChar> characters,
+    base::span<uint8_t> destination) {
+  return EncodeIntoCommon(characters, destination);
 }
 
 }  // namespace WTF

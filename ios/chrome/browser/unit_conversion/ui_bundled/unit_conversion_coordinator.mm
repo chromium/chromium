@@ -67,8 +67,7 @@ CGFloat const kHalfSheetCornerRadius = 13;
   // Init the keyed service to track the changes of the target unit and pass it
   // to the mediator.
   UnitConversionService* service =
-      UnitConversionServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      UnitConversionServiceFactory::GetForProfile(self.browser->GetProfile());
   _mediator = [[UnitConversionMediator alloc] initWithService:service];
   _viewController = [[UnitConversionViewController alloc]
       initWithSourceUnit:_sourceUnit

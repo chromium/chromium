@@ -404,10 +404,9 @@ raw_ptr<FollowService> FollowBrowserAgent::GetFollowService() {
 
 FeedMetricsRecorder* FollowBrowserAgent::GetMetricsRecorder() {
   if (!metrics_recorder_) {
-    ChromeBrowserState* browser_state = browser_->GetBrowserState();
-    metrics_recorder_ =
-        DiscoverFeedServiceFactory::GetForBrowserState(browser_state)
-            ->GetFeedMetricsRecorder();
+    ProfileIOS* profile = browser_->GetProfile();
+    metrics_recorder_ = DiscoverFeedServiceFactory::GetForProfile(profile)
+                            ->GetFeedMetricsRecorder();
   }
   return metrics_recorder_;
 }

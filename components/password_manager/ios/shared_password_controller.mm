@@ -636,10 +636,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                                    metadata:rawSuggestion.metadata];
     [suggestions addObject:suggestion];
   }
-  std::optional<PasswordDropdownState> suggestionState;
-  if (suggestions.count) {
-    suggestionState = PasswordDropdownState::kStandard;
-  }
 
   if ([self canGeneratePasswordForForm:formQuery.formRendererID
                        fieldIdentifier:formQuery.fieldRendererID
@@ -655,12 +651,14 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
              requiresReauth:NO];
 
     [suggestions addObject:suggestion];
-    suggestionState = PasswordDropdownState::kStandardGenerate;
   }
 
-  if (suggestionState) {
-    LogPasswordDropdownShown(*suggestionState);
+  std::vector<autofill::Suggestion> suggestions_vector;
+  for (FormSuggestion* suggestion in suggestions) {
+    // LogPasswordDropdownShown requires types only.
+    suggestions_vector.emplace_back(suggestion.type);
   }
+  LogPasswordDropdownShown(suggestions_vector);
 
   completion(suggestions, self);
 }

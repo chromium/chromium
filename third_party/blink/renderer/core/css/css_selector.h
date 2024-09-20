@@ -311,8 +311,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoScrollbarTrack,
     kPseudoScrollbarTrackPiece,
     kPseudoSearchText,
-    kPseudoSelectFallbackButton,
-    kPseudoSelectFallbackButtonText,
+    kPseudoSelectHasChildButton,
     kPseudoPicker,
     kPseudoSelection,
     kPseudoSelectorFragmentAnchor,
@@ -356,6 +355,8 @@ class CORE_EXPORT CSSSelector {
     // Pseudo elements in UA ShadowRoots. Available only in UA stylesheets.
     kPseudoBlinkInternalElement,
     kPseudoClosed,
+    // Pseudo element for fragment styling
+    kPseudoColumn,
     kPseudoCue,
     kPseudoDefined,
     kPseudoDir,
@@ -587,6 +588,7 @@ class CORE_EXPORT CSSSelector {
   }
 
   bool MatchesPseudoElement() const;
+  bool IsAllowedInParentPseudo() const;
   bool IsTreeAbidingPseudoElement() const;
   bool IsAllowedAfterPart() const;
 

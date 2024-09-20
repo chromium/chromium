@@ -53,8 +53,6 @@ class WebApkInstallService : public KeyedService {
   using InstallFinishCallback =
       base::OnceCallback<void(webapps::WebApkInstallResult)>;
 
-  static WebApkInstallService* Get(content::BrowserContext* browser_context);
-
   explicit WebApkInstallService(content::BrowserContext* browser_context);
 
   WebApkInstallService(const WebApkInstallService&) = delete;

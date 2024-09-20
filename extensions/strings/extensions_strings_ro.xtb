@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Produs necunoscut <ph name="PRODUCT_ID" /> de la furnizorul <ph name="VENDOR_ID" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Înlocuirea fișierului crx a eșuat. Verificați dacă fișierul este în uz.</translation>
 <translation id="3163201441334626963">Produs necunoscut <ph name="PRODUCT_ID" /> de la furnizorul <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Nu se poate despacheta extensia. Pentru a despacheta în siguranță o extensie, trebuie să existe o cale către directorul de profil, care începe cu o literă de unitate și nu conține o joncțiune, un punct de montare sau un link simbolic. Nu există o astfel de cale pentru profilul tău.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> de la furnizorul <ph name="VENDOR_ID" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Valoarea introdusă pentru cheia privată trebuie să fie o cale validă.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Administratorul acestui computer solicită ca <ph name="EXTENSION_NAME" /> să fie instalată. Aceasta nu poate fi dezinstalată.</translation>
 <translation id="6027032947578871493">Produs necunoscut <ph name="PRODUCT_ID" /> de la <ph name="VENDOR_NAME" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> de la furnizorul <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Extensia nu poate fi dezarhivată. Pentru a dezarhiva în siguranță o extensie, trebuie să existe o cale către directorul tău de profiluri care să nu conțină un link simbolic. Pentru profilul tău nu există nicio astfel de cale.</translation>
 <translation id="6322279351188361895">Cheia privată nu a fost citită.</translation>
 <translation id="6391538222494443604">Directorul de intrare trebuie să existe.</translation>
 <translation id="641087317769093025">Extensia nu a putut fi dezarhivată</translation>

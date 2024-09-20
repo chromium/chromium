@@ -554,8 +554,7 @@ WebVector<WebString> WebURLResponse::CorsExposedHeaderNames() const {
 void WebURLResponse::SetCorsExposedHeaderNames(
     const WebVector<WebString>& header_names) {
   Vector<String> exposed_header_names;
-  exposed_header_names.Append(
-      header_names.data(), base::checked_cast<wtf_size_t>(header_names.size()));
+  exposed_header_names.AppendSpan(base::span(header_names));
   resource_response_->SetCorsExposedHeaderNames(exposed_header_names);
 }
 

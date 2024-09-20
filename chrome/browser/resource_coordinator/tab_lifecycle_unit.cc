@@ -576,6 +576,9 @@ void TabLifecycleUnitSource::TabLifecycleUnit::
   AttemptFastKillForDiscard(web_contents(), discard_reason);
 
   web_contents()->Discard();
+  tab_strip_model_->UpdateWebContentsStateAt(
+      tab_strip_model_->GetIndexOfWebContents(web_contents()),
+      TabChangeType::kAll);
 
   SetState(LifecycleUnitState::DISCARDED,
            DiscardReasonToStateChangeReason(discard_reason));

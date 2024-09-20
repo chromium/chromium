@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -23,25 +24,30 @@ struct CORE_EXPORT MatchResultICU {
 };
 
 class CORE_EXPORT TextSearcherICU {
-  DISALLOW_NEW();
-
  public:
+  enum ConstructLocalTag { kConstructLocal };
+
+  // Instantiate with the global UStringSearch instance.
+  // We can't have multiple instances constructed by this.
   TextSearcherICU();
+  // Instantiate with a local UStringSearch instance.
+  explicit TextSearcherICU(ConstructLocalTag);
   TextSearcherICU(const TextSearcherICU&) = delete;
   TextSearcherICU& operator=(const TextSearcherICU&) = delete;
   ~TextSearcherICU();
 
   void SetPattern(const StringView& pattern, FindOptions options);
-  void SetText(const UChar* text, wtf_size_t length);
+  void SetText(base::span<const UChar> text);
   void SetOffset(wtf_size_t);
   std::optional<MatchResultICU> NextMatchResult();
 
  private:
-  void SetPattern(const UChar* pattern, wtf_size_t length);
+  void SetPattern(base::span<const UChar> pattern);
   void SetCaseSensitivity(bool case_sensitive);
   bool ShouldSkipCurrentMatch(const MatchResultICU&) const;
   std::optional<MatchResultICU> NextMatchResultInternal();
-  bool IsCorrectKanaMatch(const UChar* text, const MatchResultICU&) const;
+  bool IsCorrectKanaMatch(base::span<const UChar> text,
+                          const MatchResultICU&) const;
 
   UStringSearch* searcher_ = nullptr;
   wtf_size_t text_length_ = 0;

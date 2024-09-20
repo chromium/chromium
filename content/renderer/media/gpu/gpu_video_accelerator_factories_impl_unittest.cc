@@ -199,6 +199,7 @@ class FakeVEAProviderImpl
   }
   // media::mojom::VideoEncodeAcceleratorProvider impl.
   void CreateVideoEncodeAccelerator(
+      media::mojom::EncodeCommandBufferIdPtr command_buffer_id,
       mojo::PendingReceiver<media::mojom::VideoEncodeAccelerator> receiver)
       override {}
   void GetVideoEncodeAcceleratorSupportedProfiles(
@@ -416,6 +417,11 @@ class GpuVideoAcceleratorFactoriesImplTest : public testing::Test {
               receiver.EnableUnassociatedUsage();
               *result = gpu::ContextResult::kSuccess;
               return true;
+            }));
+    ON_CALL(mock_gpu_channel_, GetChannelToken(_))
+        .WillByDefault(Invoke(
+            [&](gpu::MockGpuChannel::GetChannelTokenCallback callback) -> void {
+              std::move(callback).Run(base::UnguessableToken::Create());
             }));
   }
 

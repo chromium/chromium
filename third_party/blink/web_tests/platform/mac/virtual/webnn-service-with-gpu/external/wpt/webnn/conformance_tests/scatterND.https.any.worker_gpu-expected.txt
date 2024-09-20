@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Insert individual elements in a tensor by index
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'scatterND' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] Insert entire slices of a higher rank tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'scatterND' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+Harness: the test ran to completion.
+

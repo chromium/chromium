@@ -197,9 +197,12 @@
       <div id="audioInputStyleTransferLabel"
           class="settings-box-text start" aria-hidden="true">
         $i18n{audioInputStyleTransferTitle}
-        <cros-badge>$i18n{audioInputStyleTransferBadge}</cros-badge>
         <div class="secondary">
-          $i18n{audioInputStyleTransferDescription}
+          <localized-link
+              on-link-clicked="onStyleTransferLearnMoreLinkClicked_"
+              id="styleTransferSecondary"
+              localized-string="$i18n{audioInputStyleTransferDescription}">
+          </localized-link>
         </div>
       </div>
       <cr-toggle id="audioInputStyleTransferToggle"

@@ -165,7 +165,7 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   // Remove the profile and expect that no profiles remain.
   EXPECT_TRUE(table_.RemoveAutofillProfile(home_profile.guid()));
   std::vector<AutofillProfile> profiles;
-  EXPECT_TRUE(table_.GetAutofillProfiles(record_type(), profiles));
+  EXPECT_TRUE(table_.GetAutofillProfiles({record_type()}, profiles));
   EXPECT_TRUE(profiles.empty());
 }
 
@@ -183,13 +183,13 @@ TEST_F(AddressAutofillTableTest, GetAutofillProfiles) {
 
   std::vector<AutofillProfile> profiles;
   EXPECT_TRUE(table_.GetAutofillProfiles(
-      AutofillProfile::RecordType::kLocalOrSyncable, profiles));
+      {AutofillProfile::RecordType::kLocalOrSyncable}, profiles));
   EXPECT_THAT(profiles, UnorderedElementsAre(local_profile));
-  EXPECT_TRUE(table_.GetAutofillProfiles(AutofillProfile::RecordType::kAccount,
-                                         profiles));
+  EXPECT_TRUE(table_.GetAutofillProfiles(
+      {AutofillProfile::RecordType::kAccount}, profiles));
   EXPECT_THAT(profiles, UnorderedElementsAre(account_profile));
-  EXPECT_TRUE(
-      table_.GetAutofillProfiles(/*record_type=*/std::nullopt, profiles));
+  EXPECT_TRUE(table_.GetAutofillProfiles(
+      DenseSet<AutofillProfile::RecordType>::all(), profiles));
   EXPECT_THAT(profiles, UnorderedElementsAre(local_profile, account_profile));
 }
 
@@ -203,11 +203,11 @@ TEST_P(AddressAutofillTableProfileTest, RemoveAllAutofillProfiles) {
       AutofillProfile(AutofillProfile::RecordType::kAccount,
                       i18n_model_definition::kLegacyHierarchyCountryCode)));
 
-  EXPECT_TRUE(table_.RemoveAllAutofillProfiles(record_type()));
+  EXPECT_TRUE(table_.RemoveAllAutofillProfiles({record_type()}));
 
   // Expect that the profiles from `record_type()` are gone.
   std::vector<AutofillProfile> profiles;
-  ASSERT_TRUE(table_.GetAutofillProfiles(record_type(), profiles));
+  ASSERT_TRUE(table_.GetAutofillProfiles({record_type()}, profiles));
   EXPECT_TRUE(profiles.empty());
 
   // Expect that the profile from the opposite record_type remains.
@@ -215,7 +215,7 @@ TEST_P(AddressAutofillTableProfileTest, RemoveAllAutofillProfiles) {
       record_type() == AutofillProfile::RecordType::kAccount
           ? AutofillProfile::RecordType::kLocalOrSyncable
           : AutofillProfile::RecordType::kAccount;
-  ASSERT_TRUE(table_.GetAutofillProfiles(other_record_type, profiles));
+  ASSERT_TRUE(table_.GetAutofillProfiles({other_record_type}, profiles));
   EXPECT_EQ(profiles.size(), 1u);
 }
 

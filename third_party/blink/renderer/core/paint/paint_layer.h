@@ -268,13 +268,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                HitTestResult&,
                const PhysicalRect& hit_test_area);
 
-  // Static position is set in parent's coordinate space.
-  LayoutUnit StaticBlockPosition() const { return static_block_position_; }
-
-  void SetStaticBlockPosition(LayoutUnit position) {
-    static_block_position_ = position;
-  }
-
   using InlineEdge = LogicalStaticPosition::InlineEdge;
   using BlockEdge = LogicalStaticPosition::BlockEdge;
   InlineEdge StaticInlineEdge() const {
@@ -400,8 +393,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   PaintLayerClipper Clipper() const;
 
-  bool ScrollsOverflow() const;
-
   bool NeedsVisualOverflowRecalc() const {
     return needs_visual_overflow_recalc_;
   }
@@ -444,11 +435,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // context's painted output, but not the content in any grandparent
   // stacking contexts.
   bool HasNonIsolatedDescendantWithBlendMode() const;
-
-  CompositingReasons GetCompositingReasons() const {
-    // TODO(pdr): Remove this.
-    return CompositingReason::kNone;
-  }
 
   void UpdateDescendantDependentFlags();
 
@@ -526,7 +512,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool IsReplacedNormalFlowStacking() const;
 
 #if DCHECK_IS_ON()
-  bool IsInStackingParentZOrderLists() const;
   bool LayerListMutationAllowed() const { return layer_list_mutation_allowed_; }
 #endif
 
@@ -559,8 +544,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void SetPreviousSibling(PaintLayer* prev) { previous_ = prev; }
   void SetFirstChild(PaintLayer* first) { first_ = first; }
   void SetLastChild(PaintLayer* last) { last_ = last; }
-
-  void UpdateHasSelfPaintingLayerDescendant() const;
 
   void AppendSingleFragmentForHitTesting(
       PaintLayerFragments&,

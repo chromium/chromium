@@ -45,13 +45,14 @@ import javax.crypto.CipherOutputStream;
  * if the app is killed e.g. while in the background.
  */
 public class CookiesFetcher implements Destroyable {
-    /** The default file name for the encrypted cookies storage. */
-    private static final String DEFAULT_COOKIE_FILE_NAME = "COOKIES.DAT";
+    /** The default file name for the encrypted cookies storage for the primary OTR profile. */
+    @VisibleForTesting public static final String DEFAULT_COOKIE_FILE_NAME = "COOKIES.DAT";
 
     /** Used for logging. */
     private static final String TAG = "CookiesFetcher";
 
     private final ProfileProvider mProfileProvider;
+    private final CipherFactory mCipherFactory;
     private final ProfileManager.Observer mProfileManagerObserver;
     private final String mCookieDirPath;
 
@@ -60,8 +61,9 @@ public class CookiesFetcher implements Destroyable {
      *
      * <p>Consumers must call {@link #destroy()} on this object.
      */
-    public CookiesFetcher(ProfileProvider profileProvider) {
+    public CookiesFetcher(ProfileProvider profileProvider, CipherFactory cipherFactory) {
         mProfileProvider = profileProvider;
+        mCipherFactory = cipherFactory;
 
         mProfileManagerObserver =
                 new ProfileManager.Observer() {
@@ -72,8 +74,6 @@ public class CookiesFetcher implements Destroyable {
                     public void onProfileDestroyed(Profile profile) {
                         if (profile.isOffTheRecord()
                                 && mProfileProvider.getOffTheRecordProfile(false) == profile) {
-                            assert profile.isPrimaryOTRProfile()
-                                    : "Only primary OTR profiles support serialized Cookies";
                             scheduleDeleteCookies();
                         }
                     }
@@ -90,16 +90,26 @@ public class CookiesFetcher implements Destroyable {
         ProfileManager.removeObserver(mProfileManagerObserver);
     }
 
+    /** Return the directory for cookie files for the appropriate Profile. */
+    protected File getCookieDir() {
+        return new File(mCookieDirPath);
+    }
+
     /** Return the cookie file path for the appropriate Profile. */
     @VisibleForTesting
-    String fetchFileName() {
+    String fetchAbsoluteFilePath() {
         ThreadUtils.assertOnBackgroundThread();
-        File directory = new File(mCookieDirPath);
+        File directory = getCookieDir();
         if (!directory.exists() && !directory.mkdir()) {
             Log.e(TAG, "Failed to create cookie directory");
             return null;
         }
-        return new File(mCookieDirPath, DEFAULT_COOKIE_FILE_NAME).getAbsolutePath();
+        return new File(directory, fetchFileName()).getAbsolutePath();
+    }
+
+    /** Return the cookie file name for the appropriate Profile. */
+    protected String fetchFileName() {
+        return DEFAULT_COOKIE_FILE_NAME;
     }
 
     /**
@@ -114,7 +124,8 @@ public class CookiesFetcher implements Destroyable {
                 .getAbsolutePath();
     }
 
-    private boolean isLegacyFileApplicable() {
+    /** Return whether the legacy cookie file is applicable for the associated Profile. */
+    protected boolean isLegacyFileApplicable() {
         ThreadUtils.assertOnUiThread();
         return mProfileProvider.getOriginalProfile().isInitialProfile();
     }
@@ -126,8 +137,6 @@ public class CookiesFetcher implements Destroyable {
             return;
         }
         Profile offTheRecordProfile = mProfileProvider.getOffTheRecordProfile(false);
-        assert offTheRecordProfile.isPrimaryOTRProfile()
-                : "Only primary OTR profiles support serialized Cookies";
         CookiesFetcherJni.get().persistCookies(offTheRecordProfile, this);
     }
 
@@ -143,11 +152,9 @@ public class CookiesFetcher implements Destroyable {
             return;
         }
         Profile offTheRecordProfile = mProfileProvider.getOffTheRecordProfile(false);
-        assert offTheRecordProfile.isPrimaryOTRProfile()
-                : "Only primary OTR profiles support serialized Cookies";
         new AsyncTask<List<CanonicalCookie>>() {
             private File getCookieFile() {
-                String fileName = fetchFileName();
+                String fileName = fetchAbsoluteFilePath();
                 if (fileName == null) {
                     Log.e(TAG, "Failed to load cookie file, skipping restore.");
                     return null;
@@ -162,7 +169,7 @@ public class CookiesFetcher implements Destroyable {
                 List<CanonicalCookie> cookies = new ArrayList<CanonicalCookie>();
                 DataInputStream in = null;
                 try {
-                    Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
+                    Cipher cipher = mCipherFactory.getCipher(Cipher.DECRYPT_MODE);
                     if (cipher == null) {
                         // Something is wrong. Can't encrypt, don't restore cookies.
                         return cookies;
@@ -221,13 +228,13 @@ public class CookiesFetcher implements Destroyable {
     }
 
     /** Delete the cookies file. Called when we detect that all incognito tabs have been closed. */
-    private void scheduleDeleteCookies() {
+    protected void scheduleDeleteCookies() {
         ThreadUtils.assertOnUiThread();
         boolean isLegacyFileApplicable = isLegacyFileApplicable();
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
-                String fileName = fetchFileName();
+                String fileName = fetchAbsoluteFilePath();
                 if (fileName != null) {
                     deleteCookeFileInBackground(fileName);
                 }
@@ -296,22 +303,23 @@ public class CookiesFetcher implements Destroyable {
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
-                String fileName = fetchFileName();
+                String fileName = fetchAbsoluteFilePath();
                 if (fileName == null) {
                     Log.e(TAG, "Unable to save OTR cookies because file is null");
                     return null;
                 }
-                saveFetchedCookiesToDisk(fileName, cookies);
+                saveFetchedCookiesToDisk(fileName, mCipherFactory, cookies);
                 return null;
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     @VisibleForTesting
-    static void saveFetchedCookiesToDisk(String fileName, CanonicalCookie[] cookies) {
+    static void saveFetchedCookiesToDisk(
+            String fileName, CipherFactory cipherFactory, CanonicalCookie[] cookies) {
         DataOutputStream out = null;
         try {
-            Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+            Cipher cipher = cipherFactory.getCipher(Cipher.ENCRYPT_MODE);
             if (cipher == null) {
                 // Something is wrong. Can't encrypt, don't save cookies.
                 return;
@@ -342,8 +350,9 @@ public class CookiesFetcher implements Destroyable {
         return new CanonicalCookie[size];
     }
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         @JniType("std::string")
         String getCookieFileDirectory(@JniType("Profile*") Profile profile);
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "url/gurl.h"
 
@@ -23,13 +24,15 @@ constexpr char kSteamStoreUrlPrefix[] = "https://store.steampowered.com/app/";
 namespace borealis {
 
 void UserRequestedSteamGameInstall(Profile* profile, uint32_t steam_game_id) {
-  bool installed =
-      borealis::BorealisService::GetForProfile(profile)->Features().IsEnabled();
+  bool installed = borealis::BorealisServiceFactory::GetForProfile(profile)
+                       ->Features()
+                       .IsEnabled();
   if (!installed) {
-    borealis::BorealisService::GetForProfile(profile)->AppLauncher().Launch(
-        borealis::kClientAppId,
-        borealis::BorealisLaunchSource::kUnifiedAppInstaller,
-        base::DoNothing());
+    borealis::BorealisServiceFactory::GetForProfile(profile)
+        ->AppLauncher()
+        .Launch(borealis::kClientAppId,
+                borealis::BorealisLaunchSource::kUnifiedAppInstaller,
+                base::DoNothing());
     return;
   }
 

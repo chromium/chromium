@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/version.h"
 #include "base/version_info/channel.h"
+#include "base/version_info/version_info.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -72,16 +74,16 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
                                               signin::ConsentLevel::kSync);
   bool is_otr_profile = !profile->IsRegularProfile() || !is_signed_in;
 
-  std::string chrome_version, locale;
-  if (PrefService* pref_service = profile->GetPrefs()) {
-    chrome_version = pref_service->GetString(prefs::kProfileCreatedByVersion);
-    // Check to make sure that the locale pref is set before accessing.
+  std::string chrome_version = version_info::GetVersion().GetString();
+  std::string locale;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (PrefService* pref_service = profile->GetPrefs()) {
+    // Check to make sure that the locale pref is set before accessing.
     locale = pref_service->GetString(language::prefs::kApplicationLocale);
-#else
-    locale = g_browser_process->GetApplicationLocale();
-#endif
   }
+#else
+  locale = g_browser_process->GetApplicationLocale();
+#endif
 
   return std::make_unique<MantaService>(
       profile->GetDefaultStoragePartition()

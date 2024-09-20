@@ -26,8 +26,7 @@ class TextBreakIteratorTest : public testing::Test {
       const Vector<int> expected_break_positions,
       BreakSpaceType break_space = BreakSpaceType::kAfterSpaceRun) {
     if (test_string_.Is8Bit()) {
-      test_string_ = String::Make16BitFrom8BitSource(test_string_.Characters8(),
-                                                     test_string_.length());
+      test_string_ = String::Make16BitFrom8BitSource(test_string_.Span8());
     }
     LazyLineBreakIterator lazy_break_iterator(test_string_, locale_.get());
     lazy_break_iterator.SetBreakType(line_break_type);

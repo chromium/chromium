@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
 namespace {
@@ -184,7 +185,7 @@ TEST_F(IOSImageDataFetcherWrapperTest, TestGoodWebPNoHeader) {
   NSData* webPImageConverted =
       [NSData dataWithBytes:reinterpret_cast<const char*>(kWEBPImage)
                      length:sizeof(kWEBPImage)];
-  EXPECT_TRUE([result_data_ isEqualToData:webPImageConverted]);
+  EXPECT_NSEQ(result_data_, webPImageConverted);
   EXPECT_TRUE(called_);
 }
 
@@ -223,7 +224,7 @@ TEST_F(IOSImageDataFetcherWrapperTest, DeleteDuringWebPDecoding) {
   NSData* webPImageConverted =
       [NSData dataWithBytes:reinterpret_cast<const char*>(kWEBPImage)
                      length:sizeof(kWEBPImage)];
-  EXPECT_TRUE([result_data_ isEqualToData:webPImageConverted]);
+  EXPECT_NSEQ(result_data_, webPImageConverted);
   EXPECT_TRUE(called_);
 }
 

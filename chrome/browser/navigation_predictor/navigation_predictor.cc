@@ -651,7 +651,7 @@ void NavigationPredictor::ReportAnchorElementsPositionUpdate(
     std::vector<blink::mojom::AnchorElementPositionUpdatePtr> elements) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kNavigationPredictorNewViewportFeatures)) {
-    mojo::ReportBadMessage(
+    ReportBadMessageAndDeleteThis(
         "ReportAnchorElementsPositionUpdate should only be called with "
         "kNavigationPredictorNewViewportFeatures enabled.");
     return;

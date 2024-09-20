@@ -10,6 +10,7 @@ struct SummaryCertInfo {
   string sha256hash_hex;
   // Human-readable name for the certificate. May be empty.
   string display_name;
+  bool is_deletable;
 };
 
 // Factory ensures that the Page and PageHandler interfaces are always created
@@ -72,6 +73,7 @@ struct CertManagementMetadata {
 
   // If true, an enterprise policy controls whether user-added certs are
   // imported from the system.
+  [EnableIfNot=is_chromeos]
   bool is_include_system_trust_store_managed;
 
   // Number of certificates added via enterprise policy.
@@ -83,11 +85,11 @@ enum SuccessResult {
   kSuccess,
 };
 
-union ImportResult {
-  // If present, the import failed and will contain an error message about why.
+union ActionResult {
+  // If present, the action failed and will contain an error message about why.
   string error;
 
-  // If present, the import succeeded.
+  // If present, the action succeeded.
   SuccessResult success;
 };
 
@@ -113,7 +115,18 @@ interface CertificateManagerPageHandler {
   // because an import operation was already in progress.
   // The name is a little misleading as in the case of client certificates it
   // actually imports both a certificate and a private key.
-  ImportCertificate(CertificateSource source) => (ImportResult? result);
+  ImportCertificate(CertificateSource source) => (ActionResult? result);
+
+  // Begin a client certificate import and bind the private key to the TPM.
+  ImportAndBindCertificate(CertificateSource source) => (ActionResult? result);
+
+  // Begin process to delete the certificate from `source` that has the hex
+  // SHA256 hash `sha256_hash_hex`. The result may be `success` indicating the
+  // deletion succeeded and the certificate list should be refreshed, `error`
+  // on failure with an error message to display, or null if the delete was
+  // cancelled.
+  DeleteCertificate(CertificateSource source, string sha256_hash_hex)
+      => (ActionResult? result);
 
   // Show the platform's native certificate management UI.
   [EnableIf=native_cert_management]
@@ -125,4 +138,9 @@ interface CertificateManagerPageHandler {
 interface CertificateManagerPage {
   // Show dialog prompting user to enter a password to import a file.
   AskForImportPassword() => (string? password);
+
+  // Show dialog prompting user for confirmation of an action.
+  // Returns true if the user confirmed or false if the user cancelled or
+  // closed the dialog.
+  AskForConfirmation(string title, string message) => (bool confirmed);
 };

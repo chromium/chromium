@@ -4,6 +4,7 @@
 
 #include "extensions/browser/process_manager.h"
 
+#include "build/android_buildflags.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
@@ -144,9 +145,16 @@ TEST_F(ProcessManagerTest, IsBackgroundHostAllowed) {
   EXPECT_FALSE(manager->startup_background_hosts_created_for_test());
 }
 
+// TODO(https://crbug.com/356905053):Strict site isolation is not enabled on
+// Android, so this test is disabled on desktop android.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_ProcessGrouping DISABLED_ProcessGrouping
+#else
+#define MAYBE_ProcessGrouping ProcessGrouping
+#endif
 // Test that extensions get grouped in the right SiteInstance (and therefore
 // process) based on their URLs.
-TEST_F(ProcessManagerTest, ProcessGrouping) {
+TEST_F(ProcessManagerTest, MAYBE_ProcessGrouping) {
   // Extensions in different browser contexts should always be different
   // SiteInstances.
   std::unique_ptr<ProcessManager> manager1(ProcessManager::CreateForTesting(

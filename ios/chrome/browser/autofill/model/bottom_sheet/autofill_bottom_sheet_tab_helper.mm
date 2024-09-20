@@ -95,6 +95,11 @@ void AutofillBottomSheetTabHelper::ShowEditAddressBottomSheet() {
 
 void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
     id<AutofillCommands> commands_handler) {
+  if (!commands_handler) {
+    // Means that the web state has been destroyed therefore dismiss the edit
+    // address bottom sheet if it's shown.
+    [commands_handler_ dismissEditAddressBottomSheet];
+  }
   commands_handler_ = commands_handler;
 }
 
@@ -424,8 +429,7 @@ AutofillBottomSheetTabHelper::GetVirtualCardEnrollmentCallbacks() {
 
 bool AutofillBottomSheetTabHelper::HasReachedPasswordSuggestionDismissLimit() {
   const PrefService* pref_service =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState())
-          ->GetPrefs();
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
   bool dismissLimitReached =
       pref_service->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) >=
       kPasswordBottomSheetMaxDismissCount;
@@ -436,8 +440,7 @@ bool AutofillBottomSheetTabHelper::HasReachedPasswordSuggestionDismissLimit() {
 
 bool AutofillBottomSheetTabHelper::HasReachedPasswordGenerationDismissLimit() {
   const PrefService* pref_service =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState())
-          ->GetPrefs();
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
   return pref_service->GetInteger(
              prefs::kIosPasswordGenerationBottomSheetDismissCount) >=
          kPasswordGenerationBottomSheetMaxDismissCount;

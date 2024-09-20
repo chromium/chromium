@@ -219,6 +219,30 @@ struct StorageInfo {
   pending_remote<blink.mojom.StorageArea>? session_storage_area;
 };
 
+enum NavigationClientDisconnectReason {
+  // No explicit reason set while calling.
+  kNoExplicitReason = 0,
+
+  // Explicit reset reason when the NavigationClient needs to be reset when
+  // swapping frames. In this case, it is often desirable to *not* cancel the
+  // navigation: otherwise, this may interfere with the navigation queueing
+  // logic (by unexpectedly cancelling the queued navigation).
+  kResetForSwap,
+
+  // Explicit reset reason when the NavigationClient needs to be reset because
+  // the renderer explicitly aborted the navigation (instead of the connection
+  // being automatically disconncted due to e.g. crashing).
+  kResetForAbort,
+
+  // Explicit reset reason when the NavigationClient needs to be reset because
+  // a new renderer-initiated navigation started.
+  kResetForNewNavigation,
+
+  // Similar to above but the navigation is a duplicate navigation (i.e. the
+  // URL, method, other params are all the same).
+  kResetForDuplicateNavigation,
+};
+
 // Implemented by the renderer and called by the browser. Used for two purposes:
 //
 // - When the renderer requests a navigation in a RenderFrame in the same
@@ -230,16 +254,6 @@ struct StorageInfo {
 //   or `CommitFailedNavigation()`. Similar to requesting a navigation above,
 //   disconnecting this interface is used as a signal to cancel the navigation.
 interface NavigationClient {
-  // Explicit reset reason when the NavigationClient needs to be reset when
-  // swapping frames. In this case, it is often desirable to *not* cancel the
-  // navigation: otherwise, this may interfere with the navigation queueing
-  // logic (by unexpectedly cancelling the queued navigation).
-  const uint32 kResetForSwap = 1;
-
-  // Explicit reset reason when the NavigationClient needs to be reset because
-  // the renderer explicitly aborted the navigation (instead of e.g. crashing).
-  const uint32 kResetForAbort = 2;
-
   // Tells the renderer that a navigation is ready to commit.
   //
   // The renderer should bind the |url_loader_client_endpoints| to an

@@ -62,6 +62,8 @@ enum class DictationBubbleHintType;
 enum class DictationBubbleIconType;
 enum class DictationNotificationType;
 class DisableTrackpadEventRewriter;
+enum class DisableTrackpadMode;
+class FaceGazeBubbleController;
 class FilterKeysEventRewriter;
 class FlashScreenController;
 class FloatingAccessibilityController;
@@ -355,6 +357,8 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void SetAccessibilityEventRewriter(
       AccessibilityEventRewriter* accessibility_event_rewriter);
   void SetDisableTrackpadEventRewriter(DisableTrackpadEventRewriter* rewriter);
+  void EnableInternalTrackpad();
+  DisableTrackpadMode GetDisableTrackpadMode();
   void SetFilterKeysEventRewriter(FilterKeysEventRewriter* rewriter);
   bool IsPointScanEnabled();
 
@@ -575,6 +579,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
       const std::optional<std::u16string>& text,
       const std::optional<std::vector<DictationBubbleHintType>>& hints);
 
+  // Updates the FaceGaze UI bubble.
+  void UpdateFaceGazeBubble(const std::u16string& text);
+
   // Shows a notification notifying the user about the FaceGaze DLC download.
   void ShowNotificationForFaceGaze(FaceGazeNotificationType type);
 
@@ -653,6 +660,8 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   }
 
   DictationBubbleController* GetDictationBubbleControllerForTest();
+
+  FaceGazeBubbleController* GetFaceGazeBubbleControllerForTest();
 
   bool IsDictationKeyboardDialogShowingForTesting() {
     return dictation_keyboard_dialog_showing_for_testing_;
@@ -815,6 +824,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   // Used to control the Dictation bubble UI.
   std::unique_ptr<DictationBubbleController> dictation_bubble_controller_;
+
+  // Used to control the FaceGaze bubble UI.
+  std::unique_ptr<FaceGazeBubbleController> facegaze_bubble_controller_;
 
   // Used to control accessibility-related notifications.
   std::unique_ptr<AccessibilityNotificationController>

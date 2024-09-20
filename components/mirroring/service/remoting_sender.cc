@@ -24,8 +24,8 @@
 #include "media/cast/openscreen/decoder_buffer_reader.h"
 #include "media/cast/openscreen/remoting_proto_utils.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
-#include "third_party/openscreen/src/cast/streaming/sender.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender.h"
 
 using Dependency = openscreen::cast::EncodedFrame::Dependency;
 

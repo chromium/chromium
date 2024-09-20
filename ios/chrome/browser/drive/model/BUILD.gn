@@ -29,6 +29,7 @@ source_set("drive_tab_helper") {
     "//base",
     "//ios/chrome/browser/drive/model:drive_service",
     "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
@@ -152,6 +153,8 @@ source_set("test_constants") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "test_drive_file_downloader.h",
+    "test_drive_file_downloader.mm",
     "test_drive_file_uploader.h",
     "test_drive_file_uploader.mm",
     "test_drive_list.h",
@@ -160,6 +163,7 @@ source_set("test_support") {
     "test_drive_service.mm",
   ]
   public_deps = [
+    ":drive_file_downloader",
     ":drive_file_uploader",
     ":drive_list",
     ":drive_service",

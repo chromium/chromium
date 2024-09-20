@@ -22,7 +22,7 @@ import {openMenu, ToolbarEvent} from './common.js';
 import type {LanguageMenuElement} from './language_menu.js';
 import {ReadAloudSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger} from './read_anything_logger.js';
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, VoiceClientSideStatusCode} from './voice_language_util.js';
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isGoogle, isNatural, VoiceClientSideStatusCode} from './voice_language_util.js';
 import {getCss} from './voice_selection_menu.css.js';
 import {getHtml} from './voice_selection_menu.html.js';
 
@@ -157,7 +157,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     const languageToVoices =
         enabledVoices.reduce((languageToDropdownItems, voice) => {
           const dropdownItem: VoiceDropdownItem = {
-            title: voice.name,
+            title: this.getVoiceTitle_(voice),
             voice,
             id: this.stringToHtmlTestId_(voice.name),
             selected: areVoicesEqual(this.selectedVoice, voice),
@@ -183,6 +183,17 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
                                                   language,
                                                   voices,
                                                 ]) => ({language, voices}));
+  }
+
+  private getVoiceTitle_(voice: SpeechSynthesisVoice): string {
+    let title = voice.name;
+    // <if expr="not is_chromeos">
+    // We only use the system label outside of ChromeOS.
+    if (!isGoogle(voice)) {
+      title = loadTimeData.getString('systemVoiceLabel');
+    }
+    // </if>
+    return title;
   }
 
   // This ID does not ensure uniqueness and is just used for testing purposes.

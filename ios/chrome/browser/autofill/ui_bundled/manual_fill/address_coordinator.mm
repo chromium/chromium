@@ -55,17 +55,16 @@
   if (self) {
     _addressViewController = [[AddressViewController alloc] init];
 
-    ChromeBrowserState* browserState =
-        self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
 
-    // Service must use regular browser state, even if the Browser has an
-    // OTR browser state.
+    // Service must use regular profile, even if the Browser has an
+    // OTR profile.
     autofill::PersonalDataManager* personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
+        autofill::PersonalDataManagerFactory::GetForProfile(profile);
     CHECK(personalDataManager);
 
     AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
+        AuthenticationServiceFactory::GetForProfile(profile);
     CHECK(authenticationService);
 
     _addressMediator = [[ManualFillAddressMediator alloc]
@@ -76,8 +75,10 @@
     _addressMediator.contentInjector = super.injectionHandler;
     _addressMediator.consumer = _addressViewController;
     if (manualFillPlusAddressMediator) {
+      manualFillPlusAddressMediator.contentInjector = super.injectionHandler;
       manualFillPlusAddressMediator.consumer = _addressViewController;
       manualFillPlusAddressMediator.navigator = self;
+      _addressViewController.imageDataSource = manualFillPlusAddressMediator;
     }
   }
   return self;
@@ -106,13 +107,19 @@
   }];
 }
 
-- (void)openAddressDetailsInEditMode:(const autofill::AutofillProfile*)address
+- (void)openAddressDetailsInEditMode:(autofill::AutofillProfile)address
                offerMigrateToAccount:(BOOL)offerMigrateToAccount {
   __weak __typeof(self) weakSelf = self;
-  [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate openAddressDetailsInEditMode:address
-                              offerMigrateToAccount:offerMigrateToAccount];
-  }];
+  auto callback = base::BindOnce(
+      [](__weak __typeof(self) weak_self, autofill::AutofillProfile address,
+         BOOL offer_migrate_to_account) {
+        [weak_self.delegate
+            openAddressDetailsInEditMode:std::move(address)
+                   offerMigrateToAccount:offer_migrate_to_account];
+      },
+      weakSelf, std::move(address), offerMigrateToAccount);
+  [self dismissIfNecessaryThenDoCompletion:base::CallbackToBlock(
+                                               std::move(callback))];
 }
 
 #pragma mark - PlusAddressListNavigator
@@ -128,6 +135,13 @@
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
     [weakSelf.delegate openAllPlusAddressesPicker];
+  }];
+}
+
+- (void)openManagePlusAddress {
+  __weak __typeof(self) weakSelf = self;
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [weakSelf.delegate openManagePlusAddress];
   }];
 }
 

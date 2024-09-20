@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -37,6 +38,7 @@
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -118,49 +120,93 @@ TEST_F(ContentSettingBubbleModelTest, ImageRadios) {
   EXPECT_FALSE(bubble_content.manage_text.empty());
 }
 
-TEST_F(ContentSettingBubbleModelTest, Cookies) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-  content_settings->OnContentBlocked(ContentSettingsType::COOKIES);
-
-  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          nullptr, web_contents(), ContentSettingsType::COOKIES));
-  const ContentSettingBubbleModel::BubbleContent& bubble_content =
-      content_setting_bubble_model->bubble_content();
-  std::u16string title = bubble_content.title;
-  EXPECT_FALSE(title.empty());
-  ASSERT_EQ(2U, bubble_content.radio_group.radio_items.size());
+void VerifyBubbleContent(
+    ContentSetting site_setting,
+    const ContentSettingBubbleModel::BubbleContent& bubble_content) {
+  EXPECT_FALSE(bubble_content.title.empty());
+  ASSERT_EQ(bubble_content.radio_group.radio_items.size(), 2u);
+  if (site_setting == CONTENT_SETTING_BLOCK) {
+    EXPECT_EQ(
+        bubble_content.radio_group.radio_items[0],
+        l10n_util::GetStringUTF16(IDS_BLOCKED_ON_DEVICE_SITE_DATA_UNBLOCK));
+    EXPECT_EQ(
+        bubble_content.radio_group.radio_items[1],
+        l10n_util::GetStringUTF16(IDS_BLOCKED_ON_DEVICE_SITE_DATA_NO_ACTION));
+    EXPECT_EQ(bubble_content.title,
+              l10n_util::GetStringUTF16(IDS_BLOCKED_ON_DEVICE_SITE_DATA_TITLE));
+  } else {
+    EXPECT_EQ(
+        bubble_content.radio_group.radio_items[0],
+        l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION));
+    EXPECT_EQ(bubble_content.radio_group.radio_items[1],
+              l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK));
+    EXPECT_EQ(
+        bubble_content.title,
+        l10n_util::GetStringUTF16(IDS_ACCESSED_ON_DEVICE_SITE_DATA_TITLE));
+  }
   EXPECT_TRUE(bubble_content.custom_link.empty());
   EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_FALSE(bubble_content.manage_text.empty());
-
-  WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL("https://www.example.com"));
-  content_settings = PageSpecificContentSettings::GetForFrame(
-      web_contents()->GetPrimaryMainFrame());
-  content_settings->OnContentAllowed(ContentSettingsType::COOKIES);
-  content_setting_bubble_model =
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          nullptr, web_contents(), ContentSettingsType::COOKIES);
-  const ContentSettingBubbleModel::BubbleContent& bubble_content_2 =
-      content_setting_bubble_model->bubble_content();
-
-  EXPECT_FALSE(bubble_content_2.title.empty());
-  EXPECT_NE(title, bubble_content_2.title);
-  ASSERT_EQ(2U, bubble_content_2.radio_group.radio_items.size());
-  EXPECT_EQ(
-      bubble_content_2.radio_group.radio_items[0],
-      l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION));
-  EXPECT_EQ(bubble_content_2.radio_group.radio_items[1],
-            l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK));
-  EXPECT_TRUE(bubble_content_2.custom_link.empty());
-  EXPECT_FALSE(bubble_content_2.custom_link_enabled);
-  EXPECT_FALSE(bubble_content_2.manage_text.empty());
 }
+
+TEST_F(ContentSettingBubbleModelTest,
+       CookiesContentSettingReflectedWhenCookiesBlocked) {
+  const std::string url = "https://www.example.com";
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile());
+  cookie_settings->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  WebContentsTester::For(web_contents())->NavigateAndCommit(GURL(url));
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  content_settings->OnContentBlocked(ContentSettingsType::COOKIES);
+  VerifyBubbleContent(
+      CONTENT_SETTING_BLOCK,
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(), ContentSettingsType::COOKIES)
+          ->bubble_content());
+}
+
+class CookiesContentSettingBubbleModelTest
+    : public ContentSettingBubbleModelTest,
+      public testing::WithParamInterface<
+          std::tuple<ContentSetting, ContentSetting>> {};
+
+TEST_P(CookiesContentSettingBubbleModelTest,
+       BubbleShowsSiteSettingWhenDifferentFromDefaultSetting) {
+  const std::string url = "https://www.example.com";
+  ContentSetting site_setting = std::get<1>(GetParam());
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile());
+  cookie_settings->SetDefaultCookieSetting(std::get<0>(GetParam()));
+  cookie_settings->SetCookieSetting(GURL(url), site_setting);
+  WebContentsTester::For(web_contents())->NavigateAndCommit(GURL(url));
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  // Even if cookies are blocked on the 1P site, it's still possible for
+  // OnContentAllowed() to be called due to 3PC being allowed by the default
+  // content setting. This should NOT change how we render the 1PC bubble.
+  content_settings->OnContentAllowed(ContentSettingsType::COOKIES);
+  VerifyBubbleContent(
+      site_setting, ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+                        nullptr, web_contents(), ContentSettingsType::COOKIES)
+                        ->bubble_content());
+
+  // Even if cookies are allowed on the 1P site, it's still possible for
+  // OnContentBlocked() to be called due to 3PC being blocked by the default
+  // content setting. This should NOT change how we render the 1PC bubble.
+  content_settings->OnContentBlocked(ContentSettingsType::COOKIES);
+  VerifyBubbleContent(
+      site_setting, ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+                        nullptr, web_contents(), ContentSettingsType::COOKIES)
+                        ->bubble_content());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CookiesContentSettingBubbleModelTests,
+    CookiesContentSettingBubbleModelTest,
+    testing::Values(
+        std::make_tuple(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK),
+        std::make_tuple(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW)));
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamMicAndCamera) {
   WebContentsTester::For(web_contents())

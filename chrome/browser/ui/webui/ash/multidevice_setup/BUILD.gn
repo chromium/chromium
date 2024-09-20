@@ -36,12 +36,14 @@ static_library("multidevice_setup") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/browser:resources",
-    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/login/smart_lock",
     "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/phonehub",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos:multidevice_setup_resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/user_image",
     "//chromeos/ash/services/multidevice_setup",
@@ -58,5 +60,9 @@ static_library("multidevice_setup") {
     "//ui/wm",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ui/webui/ash/login" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/smart_lock",
+    "//chrome/browser/ash/phonehub",
+    "//chrome/browser/ui/webui/ash/login",
+  ]
 }

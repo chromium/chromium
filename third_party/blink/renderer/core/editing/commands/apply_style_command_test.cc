@@ -157,8 +157,10 @@ TEST_F(ApplyStyleCommandTest, JustifyCenterWithNonEditable) {
       ApplyStyleCommand::kForceBlockProperties)
       ->Apply();
 
-  EXPECT_EQ("<div style=\"text-align: center;\">|<br>x</div>",
-            GetSelectionTextFromBody());
+  EXPECT_EQ(
+      "<div style=\"text-align: center;\">|x</div><div "
+      "contenteditable=\"false\"></div>",
+      GetSelectionTextFromBody());
 }
 
 // This is a regression test for https://crbug.com/1199902

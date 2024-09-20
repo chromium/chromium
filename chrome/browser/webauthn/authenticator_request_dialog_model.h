@@ -158,9 +158,6 @@ class Profile;
   /* |SelectAccount| has been picked. The argument is the index of the */     \
   /* selected account in |creds()|. */                                        \
   AUTHENTICATOR_REQUEST_EVENT_1(OnAccountSelected, size_t)                    \
-  /* OnAttestationPermissionResponse is called when the user either */        \
-  /* allows or disallows an attestation permission request. */                \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnAttestationPermissionResponse, bool)        \
   /* Called when the user selects a GPM passkey. */                           \
   AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPasskeySelected, std::vector<uint8_t>)   \
   /* Called when the user enters the GPM pin in the UI (during initial */     \
@@ -265,9 +262,6 @@ struct AuthenticatorRequestDialogModel
     // kSelectPriorityMechanism lets the user confirm a single "priority"
     // mechanism.
     kSelectPriorityMechanism,
-    // Attestation permission requests.
-    kAttestationPermissionRequest,
-    kEnterpriseAttestationPermissionRequest,
     // GPM Pin (6-digit).
     kGPMChangePin,
     kGPMCreatePin,
@@ -424,6 +418,9 @@ struct AuthenticatorRequestDialogModel
   device::FidoRequestType request_type = device::FidoRequestType::kGetAssertion;
   device::ResidentKeyRequirement resident_key_requirement =
       device::ResidentKeyRequirement::kDiscouraged;
+  // This value is present if, and only if, `request_type` is `kMakeCredential`.
+  std::optional<device::AttestationConveyancePreference>
+      attestation_conveyance_preference;
   std::string relying_party_id;
   // mechanisms contains the entries that appear in the "transport" selection
   // sheet and the drop-down menu.
@@ -444,9 +441,9 @@ struct AuthenticatorRequestDialogModel
   // errors.
   bool offer_try_again_in_ui = true;
   bool ble_adapter_is_powered = false;
-  // security_key_is_possible is true if a security key might be used for the
-  // current transaction.
-  bool security_key_is_possible = false;
+  // show_security_key_on_qr_sheet is true if the security key option should be
+  // offered on the QR sheet.
+  bool show_security_key_on_qr_sheet = false;
   bool is_off_the_record = false;
 
   std::optional<int> max_bio_samples;

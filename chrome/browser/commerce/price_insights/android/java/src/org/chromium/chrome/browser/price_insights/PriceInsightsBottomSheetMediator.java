@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordi
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.commerce.core.PriceBucket;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
@@ -124,10 +125,10 @@ public class PriceInsightsBottomSheetMediator {
                 R.drawable.price_insights_sheet_price_tracking_button_disabled);
         mPropertyModel.set(
                 PRICE_TRACKING_BUTTON_FOREGROUND_COLOR,
-                R.color.price_insights_sheet_price_tracking_ineligible_button_foreground_color);
+                mContext.getColor(R.color.price_tracking_ineligible_button_foreground_color));
         mPropertyModel.set(
                 PRICE_TRACKING_BUTTON_BACKGROUND_COLOR,
-                R.color.price_insights_sheet_price_tracking_ineligible_button_bg_color);
+                mContext.getColor(R.color.price_tracking_ineligible_button_background_color));
     }
 
     private void updatePriceTrackingButtonState(boolean enabled) {
@@ -139,22 +140,21 @@ public class PriceInsightsBottomSheetMediator {
                 enabled
                         ? R.drawable.price_insights_sheet_price_tracking_button_enabled
                         : R.drawable.price_insights_sheet_price_tracking_button_disabled;
-        int buttonForegroundColorResId =
+
+        int buttonForegroundColor =
                 enabled
-                        ? R.color
-                                .price_insights_sheet_price_tracking_enabled_button_foreground_color
-                        : R.color
-                                .price_insights_sheet_price_tracking_disabled_button_foreground_color;
-        int buttonBackgroundColorResId =
+                        ? SemanticColorUtils.getDefaultControlColorActive(mContext)
+                        : SemanticColorUtils.getDefaultIconColorOnAccent1Container(mContext);
+        int buttonBackgroundColor =
                 enabled
-                        ? R.color.price_insights_sheet_price_tracking_enabled_button_bg_color
-                        : R.color.price_insights_sheet_price_tracking_disabled_button_bg_color;
+                        ? SemanticColorUtils.getDefaultBgColor(mContext)
+                        : SemanticColorUtils.getColorPrimaryContainer(mContext);
 
         mPropertyModel.set(
                 PRICE_TRACKING_BUTTON_TEXT, mContext.getResources().getString(buttonTextResId));
         mPropertyModel.set(PRICE_TRACKING_BUTTON_ICON, buttonIconResId);
-        mPropertyModel.set(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR, buttonForegroundColorResId);
-        mPropertyModel.set(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR, buttonBackgroundColorResId);
+        mPropertyModel.set(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR, buttonForegroundColor);
+        mPropertyModel.set(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR, buttonBackgroundColor);
     }
 
     private OnClickListener createPriceTrackingButtonListener(boolean shouldBeTracked) {

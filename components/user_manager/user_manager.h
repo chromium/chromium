@@ -33,6 +33,7 @@ enum class UserRemovalReason : int32_t {
   DEVICE_EPHEMERAL_USERS_ENABLED = 4,
   GAIA_REMOVED = 5,
   MISCONFIGURED_USER = 6,
+  DEVICE_LOCAL_ACCOUNT_UPDATED = 7,
 };
 
 // Interface for UserManagerBase - that provides base implementation for
@@ -141,6 +142,23 @@ class USER_MANAGER_EXPORT UserManager {
     const std::u16string display_name_;
     const std::u16string given_name_;
     const std::string locale_;
+  };
+
+  // Info to build a device local account.
+  struct DeviceLocalAccountInfo {
+    DeviceLocalAccountInfo(std::string user_id, UserType type);
+    DeviceLocalAccountInfo(const DeviceLocalAccountInfo&);
+    DeviceLocalAccountInfo& operator=(const DeviceLocalAccountInfo&);
+    ~DeviceLocalAccountInfo();
+
+    // Corresponding to AccountId's user email.
+    std::string user_id;
+
+    // Type of the device local account.
+    UserType type;
+
+    // Display name. Can be set only if the type is kPublicAccount.
+    std::optional<std::u16string> display_name;
   };
 
   // Initializes UserManager instance to this. Normally should be called right

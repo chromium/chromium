@@ -420,17 +420,15 @@ void SetAndroidPayMethodData(v8::Isolate* isolate,
 
 void MeasureGooglePlayBillingPriceChangeConfirmation(
     ExecutionContext& execution_context,
-    const ScriptValue& input,
-    ExceptionState& exception_state) {
-  DCHECK(!exception_state.HadException());
-
+    const ScriptValue& input) {
+  v8::Isolate* isolate = execution_context.GetIsolate();
+  v8::TryCatch try_catch(isolate);
   GooglePlayBillingMethodData* google_play_billing =
       NativeValueTraits<GooglePlayBillingMethodData>::NativeValue(
-          execution_context.GetIsolate(), input.V8Value(), exception_state);
-  if (exception_state.HadException()) {
+          isolate, input.V8Value(), PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
     // No need to report this exception, because this function is
     // only for measuring usage of a deprecated field.
-    exception_state.ClearException();
     return;
   }
 
@@ -452,8 +450,7 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
   }
 
   if (supported_method == kGooglePlayBillingMethod) {
-    MeasureGooglePlayBillingPriceChangeConfirmation(execution_context, input,
-                                                    exception_state);
+    MeasureGooglePlayBillingPriceChangeConfirmation(execution_context, input);
   }
 
   // Serialize payment method specific data to be sent to the payment apps. The
@@ -463,10 +460,7 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
       supported_method == kAndroidPayMethod ||
       supported_method == kGooglePayAuthenticationMethod) {
     SetAndroidPayMethodData(execution_context.GetIsolate(), input, output,
-                            exception_state);
-    if (exception_state.HadException()) {
-      exception_state.ClearException();
-    }
+                            IGNORE_EXCEPTION);
   }
 
   // Parse method data to avoid parsing JSON in the browser.
@@ -757,6 +751,11 @@ void ValidateAndConvertPaymentMethodData(
     }
 
     method_names.insert(payment_method_data->supportedMethod());
+
+    if (payment_method_data->supportedMethod() == kAndroidPayMethod) {
+      UseCounter::Count(&execution_context,
+                        WebFeature::kPaymentRequestDeprecatedPaymentMethod);
+    }
 
     output.push_back(payments::mojom::blink::PaymentMethodData::New());
     output.back()->supported_method = payment_method_data->supportedMethod();

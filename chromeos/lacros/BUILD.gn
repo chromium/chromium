@@ -92,7 +92,7 @@ if (is_chromeos_device) {
     # To disable a specific test, add it to the
     # tast_disabled_tests_from_lacros_all list in "tast_control.gni" and cite
     # a bug.
-    tast_disabled_tests = tast_disabled_tests_from_lacros_all
+    tast_disabled_tests = []
   }
 
   lacros_tast_tests("lacros_variations_tast_tests") {

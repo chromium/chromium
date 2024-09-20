@@ -519,7 +519,7 @@
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-pixel6-perf-pgo_map.json",
-          "--ignore-benchmark-exit-code"
+          "--benchmark-max-runs=3"
         ],
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
@@ -1242,7 +1242,8 @@
             "cpu": "arm",
             "mac_model": "Mac14,7",
             "os": "Mac",
-            "pool": "chrome.tests.perf"
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z"
           },
           "expiration": 7200,
           "hard_timeout": 21600,

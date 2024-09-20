@@ -1609,6 +1609,9 @@ TEST(CreditCardTest, CreditCardVerificationCode) {
   card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"999");
   EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
   EXPECT_EQ(u"999", card.cvc());
+  card.SetRawInfo(CREDIT_CARD_STANDALONE_VERIFICATION_CODE, u"999");
+  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
+  EXPECT_EQ(u"999", card.cvc());
 }
 
 // Tests that the card in only deletable if it is expired before the threshold.
@@ -1690,8 +1693,8 @@ TEST_P(CreditCardMatchingTypesTest, Cases) {
                   ASCIIToUTF16(test_case.card_exp_year));
 
   FieldTypeSet matching_types;
-  card.GetMatchingTypesWithProfileSources(UTF8ToUTF16(test_case.value),
-                                          test_case.locale, &matching_types);
+  card.GetMatchingTypesWithProfileSources(
+      UTF8ToUTF16(test_case.value), test_case.locale, &matching_types, nullptr);
   EXPECT_EQ(test_case.expected_matched_types, matching_types);
 }
 

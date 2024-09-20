@@ -34,13 +34,13 @@ using CommitContributorMap = std::map<DataType, CommitContributor*>;
 // Keeps track of the sets of active update handlers and commit contributors.
 // Lives on the sync sequence.
 class DataTypeRegistry : public DataTypeConnector,
-                          public SyncEncryptionHandler::Observer {
+                         public SyncEncryptionHandler::Observer {
  public:
   // |nudge_handler|, |cancelation_signal| and |sync_encryption_handler| must
   // outlive this object.
   DataTypeRegistry(NudgeHandler* nudge_handler,
-                    CancelationSignal* cancelation_signal,
-                    SyncEncryptionHandler* sync_encryption_handler);
+                   CancelationSignal* cancelation_signal,
+                   SyncEncryptionHandler* sync_encryption_handler);
 
   DataTypeRegistry(const DataTypeRegistry&) = delete;
   DataTypeRegistry& operator=(const DataTypeRegistry&) = delete;

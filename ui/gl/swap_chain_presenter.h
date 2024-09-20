@@ -11,6 +11,7 @@
 #include <dcomp.h>
 #include <wrl/client.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
@@ -91,7 +92,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Upload given YUV buffers to an NV12 texture that can be used to create
   // video processor input view.  Returns nullptr on failure.
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> UploadVideoImage(
+  UNSAFE_BUFFER_USAGE Microsoft::WRL::ComPtr<ID3D11Texture2D> UploadVideoImage(
       const gfx::Size& size,
       const uint8_t* nv12_pixmap,
       size_t stride);
@@ -221,7 +222,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
   void RecordPresentationStatistics();
 
   // base::PowerStateObserver
-  void OnPowerStateChange(bool on_battery_power) override;
+  void OnBatteryPowerStatusChange(
+      PowerStateObserver::BatteryPowerStatus battery_power_status) override;
 
   // If connected with a power source, let the Intel video processor to do
   // the upscaling because it produces better results.

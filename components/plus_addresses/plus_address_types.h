@@ -116,6 +116,11 @@ class PlusAddressRequestError {
 
   std::optional<int> http_response_code() const { return http_response_code_; }
 
+  // Returns whether the error signals that the user has hit a quota limit.
+  bool IsQuotaError() const;
+  // Returns whether the error corresponds to a network timeout.
+  bool IsTimeoutError() const;
+
  private:
   PlusAddressRequestErrorType error_type_;
   // Only set when error_type_ = PlusAddressRequestErrorType::kNetworkError;

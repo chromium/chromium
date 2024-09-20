@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {MenuItem} from 'chrome://resources/cros_components/menu/menu_item.js';
+import {PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 
 export class CraMenuItem extends MenuItem {
   // TODO(pihsun): Remove this once the upstream fix is merged and pulled in
@@ -21,6 +22,28 @@ export class CraMenuItem extends MenuItem {
       this.renderRoot?.querySelector('cros-switch')?.selected ??
       this.missedPropertySets.switchSelected ?? false
     );
+  }
+
+  private setAriaChecked(): void {
+    this.listItem?.setAttribute('aria-checked', this.checked.toString());
+  }
+
+  override firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    const role = this.getAttribute('data-role');
+    if (role === 'menuitemradio' || role === 'menuitemcheckbox') {
+      this.mdMenuItem?.updateComplete.then(() => {
+        this.listItem?.setAttribute('role', role);
+        this.setAriaChecked();
+      });
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    if (changedProperties.has('checked')) {
+      this.setAriaChecked();
+    }
   }
 }
 

@@ -11,7 +11,7 @@
 #include "third_party/jni_zero/jni_zero_internal.h"
 
 extern const int64_t kJniZeroHashmoduleWhole = -7714383706413312501LL;
-extern const int64_t kJniZeroHashmodulePriority = -7714383706413312501LL;
+extern const int64_t kJniZeroHashmodulePriority = 0LL;
 
 // Forward declarations (methods).
 
@@ -22,7 +22,6 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_1jni_11zero_1SampleModule_1bar(
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_1jni_11zero_1SampleModule_1foo(
     JNIEnv* env,
     jclass jcaller);
-
 
 JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N__1Z_1Z(
     JNIEnv* env,
@@ -36,26 +35,20 @@ JNI_BOUNDARY_EXPORT void Java_J_module_1N__1V(
     jint switch_num) {
         return Java_org_1jni_11zero_1SampleModule_1foo(env, jcaller);
 }
-// Method declarations.
 
-
-static const JNINativeMethod kMethods_J_module_1N[] = {
-    { "_V", "(I)V", reinterpret_cast<void*>(Java_J_module_1N__1V) },
-    { "_Z_Z", "(IZ)Z", reinterpret_cast<void*>(Java_J_module_1N__1Z_1Z) }
-};
+// Helper Methods.
 
 namespace {
 
-JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_J_module_1N(JNIEnv* env) {
-  const int number_of_methods = std::size(kMethods_J_module_1N);
+bool RegisterNative_J_module_1N(JNIEnv* env) {
+  static const JNINativeMethod kMethods[] = {
+    { "_V", "(I)V", reinterpret_cast<void*>(Java_J_module_1N__1V) },
+    { "_Z_Z", "(IZ)Z", reinterpret_cast<void*>(Java_J_module_1N__1Z_1Z) }
+  };
 
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
       jni_zero::GetClass(env, "J/module_N");
-  if (env->RegisterNatives(
-      native_clazz.obj(),
-      kMethods_J_module_1N,
-      number_of_methods) < 0) {
-
+  if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {
     jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
     return false;
   }
@@ -65,10 +58,9 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_J_module_1N(JNIEnv* env) {
 
 }  // namespace
 
+// Main Register Function.
 
-// Registration function.
-
-namespace  {
+namespace {
 
 bool RegisterNatives(JNIEnv* env) {
   // Register natives in a proxy.
@@ -76,12 +68,9 @@ bool RegisterNatives(JNIEnv* env) {
     return false;
   }
 
-
   return true;
 }
 
-}  // namespace 
-
+}  // namespace
 
 #endif  // TEMP_DIR_HEADER_
-

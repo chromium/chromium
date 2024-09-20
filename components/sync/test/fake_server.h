@@ -257,14 +257,9 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   // Implement LoopbackServer::ObserverForTests:
   void OnCommit(syncer::DataTypeSet committed_data_types) override;
-  void OnHistoryCommit(const std::string& url) override;
   void OnCommittedDeletionOrigin(
       syncer::DataType type,
       const sync_pb::DeletionOrigin& deletion_origin) override;
-
-  // Returns all URLs that were committed to server-side history through the
-  // HISTORY data type.
-  const std::set<std::string>& GetCommittedHistoryURLs() const;
 
   // Returns all DeletionOrigin protos committed to the server for `type`.
   const std::vector<sync_pb::DeletionOrigin>& GetCommittedDeletionOrigins(
@@ -317,9 +312,6 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   // If set, the server will return HTTP errors.
   std::optional<net::HttpStatusCode> http_error_status_code_;
-
-  // All URLs received via HISTORY sync.
-  std::set<std::string> committed_history_urls_;
 
   // All committed deletion origins (optional part of committed tombstone).
   std::map<syncer::DataType, std::vector<sync_pb::DeletionOrigin>>

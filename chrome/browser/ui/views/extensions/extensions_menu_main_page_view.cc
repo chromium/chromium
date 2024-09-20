@@ -58,6 +58,9 @@
 
 namespace {
 
+// Radius for the containers in the extensions menu.
+constexpr int kContainerBackgroundRadius = 12;
+
 // Updates the `toggle_button` text based on its state.
 std::u16string GetSiteSettingToggleText(bool is_on) {
   int label_id = is_on ? IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP
@@ -106,7 +109,10 @@ class MessageSection : public views::BoxLayoutView {
     kRequestsAccessContainer
   };
 
-  MessageSection(base::RepeatingCallback<void()> reload_callback,
+  MessageSection(int vertical_margin,
+                 int horizontal_margin,
+                 int control_vertical_margin,
+                 base::RepeatingCallback<void()> reload_callback,
                  base::RepeatingCallback<void(const extensions::ExtensionId&)>
                      allow_callback,
                  base::RepeatingCallback<void(const extensions::ExtensionId&)>
@@ -198,6 +204,9 @@ END_VIEW_BUILDER
 DEFINE_VIEW_BUILDER(/* No Export */, MessageSection)
 
 MessageSection::MessageSection(
+    int vertical_margin,
+    int horizontal_margin,
+    int control_vertical_margin,
     base::RepeatingCallback<void()> reload_callback,
     base::RepeatingCallback<void(const extensions::ExtensionId&)>
         allow_callback,
@@ -207,21 +216,13 @@ MessageSection::MessageSection(
       allow_callback_(std::move(allow_callback)),
       dismiss_callback_(std::move(dismiss_callback)) {
   auto* layout_provider = ChromeLayoutProvider::Get();
-  const int section_vertical_margin = layout_provider->GetDistanceMetric(
-      DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE);
-  const int section_horizontal_margin = layout_provider->GetDistanceMetric(
-      DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE);
-  const int control_vertical_margin = layout_provider->GetDistanceMetric(
-      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
 
   views::Builder<MessageSection>(this)
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      // TODO(crbug.com/40879945): After adding margins, compute radius from a
-      // variable or create a const variable.
-      .SetBackground(views::CreateThemedRoundedRectBackground(
-          kColorExtensionsMenuHighlightedBackground, 4))
       .SetInsideBorderInsets(
-          gfx::Insets::VH(section_vertical_margin, section_horizontal_margin))
+          gfx::Insets::VH(vertical_margin, horizontal_margin))
+      .SetBackground(views::CreateThemedRoundedRectBackground(
+          kColorExtensionsMenuContainerBackground, kContainerBackgroundRadius))
       .AddChildren(
           // Text container.
           views::Builder<views::FlexLayoutView>()
@@ -274,7 +275,7 @@ MessageSection::MessageSection(
                   views::Builder<views::MdTextButton>()
                       .SetCallback(base::BindRepeating(reload_callback_))
                       .SetBgColorIdOverride(
-                          kColorExtensionsMenuHighlightedBackground)
+                          kColorExtensionsMenuContainerBackground)
                       .SetProperty(
                           views::kMarginsKey,
                           gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))
@@ -428,7 +429,7 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
                     .SetCallback(base::BindRepeating(dismiss_callback_, id))
                     .SetStyle(ui::ButtonStyle::kText)
                     .SetBgColorIdOverride(
-                        kColorExtensionsMenuHighlightedBackground)
+                        kColorExtensionsMenuContainerBackground)
                     .SetText(l10n_util::GetStringUTF16(
                         IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT))
                     .SetTooltipText(l10n_util::GetStringUTF16(
@@ -437,7 +438,7 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
                     .SetCallback(base::BindRepeating(allow_callback_, id))
                     .SetStyle(ui::ButtonStyle::kText)
                     .SetBgColorIdOverride(
-                        kColorExtensionsMenuHighlightedBackground)
+                        kColorExtensionsMenuContainerBackground)
                     .SetText(l10n_util::GetStringUTF16(
                         IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT))
                     .SetTooltipText(l10n_util::GetStringUTF16(
@@ -534,8 +535,15 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 
   ChromeLayoutProvider* const chrome_layout_provider =
       ChromeLayoutProvider::Get();
-  const int vertical_spacing = chrome_layout_provider->GetDistanceMetric(
-      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
+  const int container_vertical_margin =
+      chrome_layout_provider->GetDistanceMetric(
+          DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE);
+  const int container_horizontal_margin =
+      chrome_layout_provider->GetDistanceMetric(
+          DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE);
+  const int control_vertical_spacing =
+      chrome_layout_provider->GetDistanceMetric(
+          DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
   // This value must be the same as the `HoverButton` vertical margin.
   const int hover_button_vertical_spacing =
       chrome_layout_provider->GetDistanceMetric(
@@ -545,10 +553,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
   views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   const gfx::Insets dialog_insets =
       layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
-
-  // Views that need configuration after construction (e.g access size after a
-  // separate view is constructed).
-  views::Label* subheader_title;
 
   views::Builder<ExtensionsMenuMainPageView>(this)
       // Last item is a hover button, so we need to account for the extra
@@ -562,21 +566,33 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               dialog_insets.top(), 0,
               dialog_insets.bottom() - hover_button_vertical_spacing, 0)))
       .AddChildren(
-          // Title.
-          views::Builder<views::Label>()
-              .CopyAddressTo(&subheader_title)
-              .SetText(l10n_util::GetStringUTF16(IDS_EXTENSIONS_MENU_TITLE))
-              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-              .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-              .SetTextStyle(views::style::STYLE_HEADLINE_4)
-              .SetEnabledColorId(kColorExtensionsMenuText)
+          // Header.
+          views::Builder<views::FlexLayoutView>()
               .SetProperty(views::kMarginsKey,
-                           gfx::Insets::VH(0, dialog_insets.left())),
+                           gfx::Insets::VH(0, dialog_insets.left()))
+              .AddChildren(
+                  // Title.
+                  views::Builder<views::Label>()
+                      .SetText(
+                          l10n_util::GetStringUTF16(IDS_EXTENSIONS_MENU_TITLE))
+                      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                      .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+                      .SetTextStyle(views::style::STYLE_HEADLINE_4)
+                      .SetEnabledColorId(kColorExtensionsMenuText)
+                      .SetProperty(views::kFlexBehaviorKey,
+                                   stretch_specification),
+                  // Close button.
+                  views::Builder<views::Button>(
+                      views::BubbleFrameView::CreateCloseButton(
+                          base::BindRepeating(
+                              &ExtensionsMenuHandler::CloseBubble,
+                              base::Unretained(menu_handler_))))),
           // Site settings.
           views::Builder<views::FlexLayoutView>()
               .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
               .SetProperty(views::kMarginsKey,
-                           gfx::Insets::VH(0, dialog_insets.left()))
+                           gfx::Insets::VH(control_vertical_spacing,
+                                           dialog_insets.left()))
               .AddChildren(
                   views::Builder<views::Label>()
                       .CopyAddressTo(&site_settings_label_)
@@ -604,7 +620,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               .SetHorizontalScrollBarMode(
                   views::ScrollView::ScrollBarMode::kDisabled)
               .SetProperty(views::kMarginsKey,
-                           gfx::Insets::VH(vertical_spacing, 0))
+                           gfx::Insets::VH(control_vertical_spacing, 0))
               .SetContents(
                   views::Builder<views::BoxLayoutView>()
                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -617,6 +633,9 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           // Message section.
                           views::Builder<MessageSection>(
                               std::make_unique<MessageSection>(
+                                  container_vertical_margin,
+                                  container_horizontal_margin,
+                                  control_vertical_spacing,
                                   base::BindRepeating(
                                       &ExtensionsMenuHandler::
                                           OnReloadPageButtonClicked,
@@ -634,7 +653,18 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           views::Builder<views::BoxLayoutView>()
                               .CopyAddressTo(&menu_items_)
                               .SetOrientation(
-                                  views::BoxLayout::Orientation::kVertical))),
+                                  views::BoxLayout::Orientation::kVertical)
+                              .SetInsideBorderInsets(
+                                  gfx::Insets::VH(container_vertical_margin,
+                                                  container_horizontal_margin))
+                              .SetBackground(
+                                  views::CreateThemedRoundedRectBackground(
+                                      kColorExtensionsMenuContainerBackground,
+                                      kContainerBackgroundRadius))
+                              .SetProperty(
+                                  views::kMarginsKey,
+                                  gfx::Insets::TLBR(control_vertical_spacing, 0,
+                                                    0, 0)))),
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           // Webstore button.
           views::Builder<HoverButton>(std::make_unique<HoverButton>(
@@ -698,6 +728,18 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
                           base::Unretained(menu_handler_), extension_id));
   item->Update(site_access_toggle_state, site_permissions_button_state,
                site_permissions_button_access, is_enterprise);
+
+  // Add vertical spacing in between menu items.
+  if (index > 0) {
+    ChromeLayoutProvider* const chrome_layout_provider =
+        ChromeLayoutProvider::Get();
+    const int control_vertical_spacing =
+        chrome_layout_provider->GetDistanceMetric(
+            DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
+    item->SetInteriorMargin(
+        gfx::Insets::TLBR(control_vertical_spacing, 0, 0, 0));
+  }
+
   menu_items_->AddChildViewAt(std::move(item), index);
 }
 

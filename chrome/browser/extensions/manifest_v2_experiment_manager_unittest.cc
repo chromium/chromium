@@ -132,6 +132,17 @@ class ManifestV2ExperimentManagerDisableWithReEnableAndWarningUnitTest
       default;
 };
 
+// Test suite for cases where the user is in the "unsupported" experiment phase.
+class ManifestV2ExperimentManagerUnsupportedUnitTest
+    : public ManifestV2ExperimentManagerUnitTestBase {
+ public:
+  ManifestV2ExperimentManagerUnsupportedUnitTest()
+      : ManifestV2ExperimentManagerUnitTestBase(
+            {extensions_features::kExtensionManifestV2Unsupported},
+            {}) {}
+  ~ManifestV2ExperimentManagerUnsupportedUnitTest() override = default;
+};
+
 // Tests that the experiment stage is properly set when the manifest V2
 // deprecation warning experiment is enabled.
 TEST_F(ManifestV2ExperimentManagerWarningUnitTest,
@@ -783,6 +794,14 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest,
   histogram_tester.ExpectBucketCount(
       "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
       ManifestV2ExperimentManager::MV2ExtensionState::kUnaffected, 1);
+}
+
+// Tests that the experiment phase is properly set for a user in the
+// "unsupported" experiment phase.
+TEST_F(ManifestV2ExperimentManagerUnsupportedUnitTest,
+       ExperimentStageIsSetToUnsupported) {
+  EXPECT_EQ(MV2ExperimentStage::kUnsupported,
+            experiment_manager()->GetCurrentExperimentStage());
 }
 
 }  // namespace extensions

@@ -112,6 +112,7 @@ class ChromeDownloadManagerDelegate
   bool ShouldOpenDownload(
       download::DownloadItem* item,
       content::DownloadOpenDelayedCallback callback) override;
+  bool ShouldObfuscateDownload(download::DownloadItem* item) override;
   bool InterceptDownloadIfApplicable(
       const GURL& url,
       const std::string& user_agent,
@@ -157,6 +158,7 @@ class ChromeDownloadManagerDelegate
 #if BUILDFLAG(IS_ANDROID)
   bool IsFromExternalApp(download::DownloadItem* item) override;
   bool ShouldOpenPdfInline() override;
+  bool IsDownloadRestrictedByPolicy() override;
 #else
   void AttachExtraInfo(download::DownloadItem* item) override;
 #endif  // BUILDFLAG(IS_ANDROID)

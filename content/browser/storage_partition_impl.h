@@ -74,6 +74,10 @@ class SharedStorageManager;
 
 namespace content {
 
+namespace indexed_db {
+class IndexedDBControlWrapper;
+}
+
 class AggregationService;
 class AttributionManager;
 class BackgroundFetchContext;
@@ -97,7 +101,6 @@ class FileSystemAccessManagerImpl;
 class FontAccessManager;
 class GeneratedCodeCacheContext;
 class HostZoomLevelContext;
-class IndexedDBControlWrapper;
 class InterestGroupManagerImpl;
 class LockManager;
 class NavigationStateKeepAlive;
@@ -739,7 +742,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<storage::DatabaseTracker> database_tracker_;
   scoped_refptr<DOMStorageContextWrapper> dom_storage_context_;
   std::unique_ptr<LockManager> lock_manager_;
-  std::unique_ptr<IndexedDBControlWrapper> indexed_db_control_wrapper_;
+  std::unique_ptr<indexed_db::IndexedDBControlWrapper>
+      indexed_db_control_wrapper_;
   std::unique_ptr<CacheStorageControlWrapper> cache_storage_control_wrapper_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   std::unique_ptr<DedicatedWorkerServiceImpl> dedicated_worker_service_;

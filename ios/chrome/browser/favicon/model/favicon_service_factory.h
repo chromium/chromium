@@ -19,12 +19,16 @@ class FaviconService;
 
 namespace ios {
 // Singleton that owns all FaviconServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class FaviconServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358299863): Remove when fully migrated.
   static favicon::FaviconService* GetForBrowserState(
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       ServiceAccessType access_type);
+
+  static favicon::FaviconService* GetForProfile(ProfileIOS* profile,
+                                                ServiceAccessType access_type);
   static FaviconServiceFactory* GetInstance();
   // Returns the default factory used to build FaviconService. Can be
   // registered with SetTestingFactory to use real instances during testing.

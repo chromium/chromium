@@ -12,6 +12,7 @@ if (is_chrome_branded) {
     out_grd = "$target_gen_dir/icon_resources.grdp"
     input_files = [
       "copy.svg",
+      "download.svg",
       "lens.svg",
       "search.svg",
       "stars.svg",

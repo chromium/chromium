@@ -67,6 +67,8 @@ build_webui("build") {
     ]
     non_web_component_files += [
       "certificates_v2_browser_proxy.ts",
+      "certificate_confirmation_dialog.html.ts",
+      "certificate_confirmation_dialog.ts",
       "certificate_info_dialog.html.ts",
       "certificate_info_dialog.ts",
       "certificate_password_dialog.html.ts",
@@ -78,6 +80,7 @@ build_webui("build") {
     mojo_files = [ "$target_gen_dir/certificate_manager_v2.mojom-webui.ts" ]
 
     icons_html_files = [ "certificate_manager_v2_icons.html" ]
+    html_to_wrapper_template = "detect"
     css_files += [ "certificate_manager_style_v2.css" ]
   }
 

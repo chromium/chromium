@@ -4,10 +4,15 @@
 
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 
+#include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,6 +22,10 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
@@ -32,6 +41,7 @@ constexpr char kSampleSearchUrl[] = "https://www.google.com/search?q=";
 history::AnnotatedVisit SampleAnnotatedVisit(
     history::VisitID visit_id,
     const GURL& url,
+    const std::u16string& title,
     float visibility_score,
     const std::string& originator_cache_guid,
     const std::optional<std::string> app_id = std::nullopt,
@@ -41,6 +51,7 @@ history::AnnotatedVisit SampleAnnotatedVisit(
   history::AnnotatedVisit annotated_visit;
   history::URLRow url_row;
   url_row.set_url(url);
+  url_row.set_title(title);
   annotated_visit.url_row = std::move(url_row);
   history::VisitContentModelAnnotations model_annotations;
   model_annotations.visibility_score = visibility_score;
@@ -76,6 +87,50 @@ class MockHistoryService : public history::HistoryService {
                          bool get_unclustered_visits_only,
                          HistoryService::GetAnnotatedVisitsCallback callback,
                          base::CancelableTaskTracker* tracker));
+};
+
+class MockDeviceInfoTracker : public syncer::DeviceInfoTracker {
+ public:
+  MOCK_CONST_METHOD0(IsSyncing, bool());
+
+  MOCK_CONST_METHOD1(GetDeviceInfo,
+                     syncer::DeviceInfo*(const std::string& client_id));
+
+  MOCK_CONST_METHOD0(GetAllDeviceInfo,
+                     std::vector<const syncer::DeviceInfo*>());
+
+  MOCK_CONST_METHOD0(GetAllChromeDeviceInfo,
+                     std::vector<const syncer::DeviceInfo*>());
+
+  MOCK_METHOD1(AddObserver, void(Observer* observer));
+
+  MOCK_METHOD1(RemoveObserver, void(Observer* observer));
+
+  MOCK_CONST_METHOD0(CountActiveDevicesByType,
+                     std::map<syncer::DeviceInfo::FormFactor, int>());
+
+  MOCK_METHOD0(ForcePulseForTest, void());
+
+  MOCK_CONST_METHOD1(IsRecentLocalCacheGuid,
+                     bool(const std::string& cache_guid));
+};
+
+class MockDeviceInfoSyncService : public syncer::DeviceInfoSyncService {
+ public:
+  MockDeviceInfoSyncService() = default;
+  MockDeviceInfoSyncService(const MockDeviceInfoSyncService&) = delete;
+  MockDeviceInfoSyncService& operator=(const MockDeviceInfoSyncService&) =
+      delete;
+  ~MockDeviceInfoSyncService() override = default;
+
+  MOCK_METHOD0(GetLocalDeviceInfoProvider, syncer::LocalDeviceInfoProvider*());
+
+  MOCK_METHOD0(GetDeviceInfoTracker, syncer::DeviceInfoTracker*());
+
+  MOCK_METHOD0(GetControllerDelegate,
+               base::WeakPtr<syncer::DataTypeControllerDelegate>());
+
+  MOCK_METHOD0(RefreshLocalDeviceInfo, void());
 };
 
 struct HistoryScenario {
@@ -143,15 +198,45 @@ using Source = URLVisit::Source;
 using URLType = visited_url_ranking::FetchOptions::URLType;
 using ResultOption = visited_url_ranking::FetchOptions::ResultOption;
 
+constexpr char kSampleForeignDeviceGUID[] = "foreign_guid";
+constexpr char kSampleForeignDeviceClientName[] = "Windows PC";
+const syncer::DeviceInfo kSampleForeignDeviceInfo{
+    kSampleForeignDeviceGUID,
+    kSampleForeignDeviceClientName,
+    "",
+    "",
+    sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+    syncer::DeviceInfo::OsType::kWindows,
+    syncer::DeviceInfo::FormFactor::kDesktop,
+    "",
+    "",
+    "",
+    "",
+    base::Time::Now(),
+    base::Seconds(1),
+    false,
+    sync_pb::
+        SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+    std::nullopt,
+    std::nullopt,
+    "",
+    {},
+    std::nullopt};
+
 class HistoryURLVisitDataFetcherTest : public testing::Test {
  public:
   HistoryURLVisitDataFetcherTest() {
     clock_.SetNow(base::Time::Now());
 
     mock_history_service_ = std::make_unique<MockHistoryService>();
+    mock_device_info_tracker_ = std::make_unique<MockDeviceInfoTracker>();
+    mock_device_info_sync_service_ =
+        std::make_unique<MockDeviceInfoSyncService>();
+    EXPECT_CALL(*mock_device_info_sync_service_, GetDeviceInfoTracker())
+        .WillRepeatedly(testing::Return(mock_device_info_tracker_.get()));
 
     history_url_visit_fetcher_ = std::make_unique<HistoryURLVisitDataFetcher>(
-        mock_history_service_.get());
+        mock_history_service_.get(), mock_device_info_sync_service_.get());
   }
 
   FetchOptions GetSampleFetchOptions() {
@@ -168,10 +253,10 @@ class HistoryURLVisitDataFetcherTest : public testing::Test {
     std::vector<history::AnnotatedVisit> annotated_visits;
     annotated_visits.emplace_back(
         SampleAnnotatedVisit(1, GURL(base::StrCat({kSampleSearchUrl, "1"})),
-                             1.0f, "", "sample_app_id"));
+                             u"Search 1", 1.0f, "", "sample_app_id"));
     annotated_visits.emplace_back(
         SampleAnnotatedVisit(2, GURL(base::StrCat({kSampleSearchUrl, "2"})),
-                             0.75f, "foreign_session_guid"));
+                             u"Search 2", 0.75f, kSampleForeignDeviceGUID));
     return annotated_visits;
   }
 
@@ -180,10 +265,21 @@ class HistoryURLVisitDataFetcherTest : public testing::Test {
     std::vector<history::AnnotatedVisit> annotated_visits;
     for (size_t i = 0; i < scenario.timestamps.size(); i++) {
       annotated_visits.emplace_back(SampleAnnotatedVisit(
-          i + 1, GURL(kSampleSearchUrl), 1.0f, "", "", scenario.timestamps[i]));
+          i + 1, GURL(kSampleSearchUrl), base::NumberToString16(i), 1.0f, "",
+          "", scenario.timestamps[i]));
     }
 
     return annotated_visits;
+  }
+
+  void SetDeviceInfoTrackerExpectations() {
+    std::vector<const syncer::DeviceInfo*> device_infos;
+    device_infos.push_back(&kSampleForeignDeviceInfo);
+    EXPECT_CALL(*mock_device_info_tracker_, GetAllDeviceInfo())
+        .WillOnce(testing::Return(device_infos));
+    EXPECT_CALL(*mock_device_info_tracker_,
+                IsRecentLocalCacheGuid(kSampleForeignDeviceGUID))
+        .WillRepeatedly(testing::Return(false));
   }
 
   void SetHistoryServiceExpectations(
@@ -226,10 +322,13 @@ class HistoryURLVisitDataFetcherTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_env_;
   std::unique_ptr<MockHistoryService> mock_history_service_;
+  std::unique_ptr<MockDeviceInfoTracker> mock_device_info_tracker_;
+  std::unique_ptr<MockDeviceInfoSyncService> mock_device_info_sync_service_;
   std::unique_ptr<HistoryURLVisitDataFetcher> history_url_visit_fetcher_;
 };
 
 TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
+  SetDeviceInfoTrackerExpectations();
   SetHistoryServiceExpectations(GetSampleAnnotatedVisits());
 
   FetchOptions options = FetchOptions(
@@ -250,6 +349,17 @@ TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
       &result.data.at(entry_url.spec()));
   EXPECT_EQ(history->last_app_id, "sample_app_id");
   EXPECT_EQ(history->total_foreground_duration.InSeconds(), 0);
+  EXPECT_EQ(history->visit.source, URLVisit::Source::kLocal);
+
+  const GURL visit2_url = GURL(base::StrCat({kSampleSearchUrl, "2"}));
+  const auto* history_data2 = std::get_if<URLVisitAggregate::HistoryData>(
+      &result.data.at(visit2_url.spec()));
+  EXPECT_EQ(history_data2->visit.url, visit2_url);
+  EXPECT_EQ(history_data2->visit.title, u"Search 2");
+  EXPECT_EQ(history_data2->visit.client_name, kSampleForeignDeviceClientName);
+  EXPECT_EQ(history_data2->visit.device_type,
+            syncer::DeviceInfo::FormFactor::kDesktop);
+  EXPECT_EQ(history_data2->visit.source, URLVisit::Source::kForeign);
 }
 
 TEST_F(HistoryURLVisitDataFetcherTest,
@@ -259,12 +369,12 @@ TEST_F(HistoryURLVisitDataFetcherTest,
   const float kSampleVisibilityScore = 0.75f;
   std::vector<history::AnnotatedVisit> annotated_visits;
   annotated_visits.emplace_back(SampleAnnotatedVisit(
-      1, GURL(kSampleSearchUrl),
+      1, GURL(kSampleSearchUrl), u"Search 1",
       history::VisitContentModelAnnotations::kDefaultVisibilityScore,
       /*originator_cache_guid=*/""));
-  annotated_visits.emplace_back(
-      SampleAnnotatedVisit(2, GURL(kSampleSearchUrl), kSampleVisibilityScore,
-                           /*originator_cache_guid=*/""));
+  annotated_visits.emplace_back(SampleAnnotatedVisit(
+      2, GURL(kSampleSearchUrl), u"Search 2", kSampleVisibilityScore,
+      /*originator_cache_guid=*/""));
   SetHistoryServiceExpectations(std::move(annotated_visits));
 
   auto result = FetchAndGetResult(GetSampleFetchOptions());
@@ -289,23 +399,26 @@ TEST_F(HistoryURLVisitDataFetcherTest,
 
   std::vector<history::AnnotatedVisit> annotated_visits;
   annotated_visits.emplace_back(
-      SampleAnnotatedVisit(1, GURL("http://gmail.com/"),
+      SampleAnnotatedVisit(1, GURL("http://gmail.com/"), /*title=*/u"Gmail",
                            /*visibility_score=*/1.0,
                            /*originator_cache_guid=*/"",
                            /*app_id=*/std::nullopt, base::Time::Now(),
                            /*visit_duration=*/base::Milliseconds(0)));
   annotated_visits.emplace_back(SampleAnnotatedVisit(
-      2, GURL("https://gmail.com/"), /*visibility_score=*/1.0f,
+      2, GURL("https://gmail.com/"), /*title=*/u"Gmail",
+      /*visibility_score=*/1.0f,
       /*originator_cache_guid=*/"", /*app_id=*/std::nullopt, base::Time::Now(),
       /*visit_duration=*/base::Milliseconds(0),
       /*referring_visit_id=*/1));
   annotated_visits.emplace_back(SampleAnnotatedVisit(
-      3, GURL("https://mail.google.com/mail/u/0/"), /*visibility_score=*/1.0f,
+      3, GURL("https://mail.google.com/mail/u/0/"), /*title=*/u"Gmail",
+      /*visibility_score=*/1.0f,
       /*originator_cache_guid=*/"", /*app_id=*/std::nullopt, base::Time::Now(),
       /*visit_duration=*/base::Milliseconds(0),
       /*referring_visit_id=*/2));
   annotated_visits.emplace_back(SampleAnnotatedVisit(
       4, GURL("https://mail.google.com/mail/u/0/#inbox"),
+      /*title=*/u"Gmail Inbox",
       /*visibility_score=*/1.0f,
       /*originator_cache_guid=*/"", /*app_id=*/std::nullopt, base::Time::Now(),
       /*visit_duration=*/base::Minutes(1),

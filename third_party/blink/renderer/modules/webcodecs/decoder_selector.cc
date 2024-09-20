@@ -80,6 +80,7 @@ void NullDemuxerStream<media::DemuxerStream::VIDEO>::Configure(
   video_decoder_config_ = config;
 }
 
+// TODO(crbug.com/368085608): Flip `enable_priority_based_selection` to true.
 template <media::DemuxerStream::Type StreamType>
 DecoderSelector<StreamType>::DecoderSelector(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -87,7 +88,8 @@ DecoderSelector<StreamType>::DecoderSelector(
     typename Decoder::OutputCB output_cb)
     : impl_(std::move(task_runner),
             std::move(create_decoders_cb),
-            &null_media_log_),
+            &null_media_log_,
+            /*enable_priority_based_selection=*/false),
       demuxer_stream_(new NullDemuxerStream<StreamType>()),
       stream_traits_(CreateStreamTraits()),
       output_cb_(output_cb) {

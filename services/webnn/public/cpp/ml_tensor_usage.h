@@ -10,17 +10,17 @@
 namespace webnn {
 
 enum class MLTensorUsageFlags {
-  // This buffer may be imported/rented to WebGPU.
+  // This tensor may be imported/rented to WebGPU.
   kWebGpuInterop,
 
-  // This buffer can be used with readBuffer().
-  kReadFrom,
+  // This tensor can be used with readTensor().
+  kRead,
 
-  // This buffer can be used with writeBuffer().
-  kWriteTo,
+  // This tensor can be used with writeTensor().
+  kWrite,
 
   kMinValue = kWebGpuInterop,
-  kMaxValue = kWriteTo,
+  kMaxValue = kWrite,
 };
 
 using MLTensorUsage = base::EnumSet<MLTensorUsageFlags,

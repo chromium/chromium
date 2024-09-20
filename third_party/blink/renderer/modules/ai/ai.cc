@@ -6,25 +6,15 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/metrics/histogram_functions.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_capability_availability.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_assistant_factory.h"
-#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_rewriter_factory.h"
+#include "third_party/blink/renderer/modules/ai/ai_summarizer_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/ai_writer_factory.h"
-#include "third_party/blink/renderer/modules/ai/exception_helpers.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 

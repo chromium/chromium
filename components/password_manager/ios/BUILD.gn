@@ -96,6 +96,7 @@ optimize_ts("password_controller_js") {
 
   deps = [
     "//components/autofill/ios/form_util:fill_js_dependencies",
+    "//components/autofill/ios/form_util:fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
   ]
 }

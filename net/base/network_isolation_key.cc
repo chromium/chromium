@@ -44,11 +44,6 @@ NetworkIsolationKey::NetworkIsolationKey(
   DCHECK(!nonce_ || !nonce_->is_empty());
 }
 
-NetworkIsolationKey::NetworkIsolationKey(const url::Origin& top_frame_origin,
-                                         const url::Origin& frame_origin)
-    : NetworkIsolationKey(SchemefulSite(top_frame_origin),
-                          SchemefulSite(frame_origin)) {}
-
 NetworkIsolationKey::NetworkIsolationKey() = default;
 
 NetworkIsolationKey::NetworkIsolationKey(

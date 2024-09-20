@@ -141,8 +141,8 @@ void CSSDefaultStyleSheets::Reset() {
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
   selectlist_style_sheet_.Clear();
-  stylable_select_style_sheet_.Clear();
-  stylable_select_forced_colors_style_sheet_.Clear();
+  customizable_select_style_sheet_.Clear();
+  customizable_select_forced_colors_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   permission_element_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
@@ -388,13 +388,13 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
-  if (!stylable_select_style_sheet_ && IsA<HTMLSelectElement>(element) &&
-      RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    // TODO(crbug.com/1511354): Merge stylable_select.css into html.css and
+  if (!customizable_select_style_sheet_ && IsA<HTMLSelectElement>(element) &&
+      RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    // TODO(crbug.com/1511354): Merge customizable_select.css into html.css and
     // remove this code.
-    stylable_select_style_sheet_ = ParseUASheet(
-        UncompressResourceAsASCIIString(IDR_UASTYLE_STYLABLE_SELECT_CSS));
-    AddRulesToDefaultStyleSheets(stylable_select_style_sheet_,
+    customizable_select_style_sheet_ = ParseUASheet(
+        UncompressResourceAsASCIIString(IDR_UASTYLE_CUSTOMIZABLE_SELECT_CSS));
+    AddRulesToDefaultStyleSheets(customizable_select_style_sheet_,
                                  NamespaceType::kHTML);
     changed_default_style = true;
   }
@@ -478,10 +478,11 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
     forced_colors_rules =
         forced_colors_rules +
         UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_FORCED_COLORS_CSS);
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-      forced_colors_rules = forced_colors_rules +
-                            UncompressResourceAsASCIIString(
-                                IDR_UASTYLE_STYLABLE_SELECT_FORCED_COLORS_CSS);
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      forced_colors_rules =
+          forced_colors_rules +
+          UncompressResourceAsASCIIString(
+              IDR_UASTYLE_CUSTOMIZABLE_SELECT_FORCED_COLORS_CSS);
     }
   }
   forced_colors_style_sheet_ = ParseUASheet(forced_colors_rules);
@@ -552,8 +553,8 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
   visitor->Trace(selectlist_style_sheet_);
-  visitor->Trace(stylable_select_style_sheet_);
-  visitor->Trace(stylable_select_forced_colors_style_sheet_);
+  visitor->Trace(customizable_select_style_sheet_);
+  visitor->Trace(customizable_select_forced_colors_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(default_json_document_style_);
   visitor->Trace(default_forced_colors_media_controls_style_);

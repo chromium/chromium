@@ -73,9 +73,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     virtual ~Observer() = default;
   };
 
-  // TODO(https://crbug.com/361344235): Remove.
-  static const int kFrameTreeNodeInvalidId;
-
   // Returns the FrameTreeNode with the given global |frame_tree_node_id|,
   // regardless of which FrameTree it is in.
   static FrameTreeNode* GloballyFindByID(FrameTreeNodeId frame_tree_node_id);
@@ -714,12 +711,14 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
       int http_response_code) override;
   void CancelNavigation(NavigationDiscardReason reason) override;
+  void ResetNavigationsForDiscard() override;
   bool Credentialless() const override;
 #if !BUILDFLAG(IS_ANDROID)
   void GetVirtualAuthenticatorManager(
       mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
           receiver) override;
 #endif
+  FrameType GetCurrentFrameType() const override;
 
   // Restart the navigation restoring the page from the back-forward cache
   // as a regular non-BFCached history navigation.

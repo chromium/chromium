@@ -84,14 +84,7 @@ const double kShortIdlePeriodDurationPercentile = 50;
 const double kFastCompositingIdleTimeThreshold = .2;
 const int64_t kSecondsPerMinute = 60;
 
-constexpr base::TimeDelta kDefaultPrioritizeCompositingAfterDelay =
-    base::Milliseconds(100);
-
-// Duration before rendering is considered starved by render-blocking tasks,
-// which is a safeguard against pathological cases for render-blocking image
-// prioritization.
-constexpr base::TimeDelta kRenderBlockingStarvationThreshold =
-    base::Milliseconds(500);
+constexpr int kDefaultPrioritizeCompositingAfterDelayMs = 100;
 
 v8::RAILMode RAILModeToV8RAILMode(RAILMode rail_mode) {
   switch (rail_mode) {
@@ -208,20 +201,6 @@ const char* InputEventStateToString(
     default:
       NOTREACHED_IN_MIGRATION();
       return nullptr;
-  }
-}
-
-TaskPriority GetPriorityFromCompositorTQPolicyDuringThreadedScrolling(
-    CompositorTQPolicyDuringThreadedScroll policy) {
-  switch (policy) {
-    case CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways:
-    case CompositorTQPolicyDuringThreadedScroll::kLowPriorityWithAntiStarvation:
-      return TaskPriority::kLowPriority;
-    case CompositorTQPolicyDuringThreadedScroll::
-        kNormalPriorityWithAntiStarvation:
-      return TaskPriority::kNormalPriority;
-    case CompositorTQPolicyDuringThreadedScroll::kVeryHighPriorityAlways:
-      return TaskPriority::kVeryHighPriority;
   }
 }
 
@@ -551,10 +530,8 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
   mbi_override_task_runner_handle =
       base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle);
 
-  compositor_tq_policy_during_threaded_scroll =
-      base::FeatureList::IsEnabled(kThreadedScrollPreventRenderingStarvation)
-          ? kCompositorTQPolicyDuringThreadedScroll.Get()
-          : CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways;
+  compositor_gesture_rendering_starvation_threshold =
+      GetThreadedScrollRenderingStarvationThreshold();
 
   if (base::FeatureList::IsEnabled(features::kDeferRendererTasksAfterInput)) {
     discrete_input_task_deferral_policy =
@@ -563,10 +540,12 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
 
   prioritize_compositing_after_delay_pre_fcp =
       base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-          kPrioritizeCompositingAfterDelayTrials, "PreFCP", 100));
+          kPrioritizeCompositingAfterDelayTrials, "PreFCP",
+          kDefaultPrioritizeCompositingAfterDelayMs));
   prioritize_compositing_after_delay_post_fcp =
       base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-          kPrioritizeCompositingAfterDelayTrials, "PostFCP", 100));
+          kPrioritizeCompositingAfterDelayTrials, "PostFCP",
+          kDefaultPrioritizeCompositingAfterDelayMs));
 }
 
 MainThreadSchedulerImpl::AnyThread::~AnyThread() = default;
@@ -2641,14 +2620,14 @@ TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
   // scrolling is to deprioritize compositor TQ tasks (low priority) and not
   // apply delay-based anti-starvation. This can lead to degraded user
   // experience due to increased checkerboarding or scrolling blank content.
-  // When `kThreadedScrollPreventRenderingStarvation` is enabled, we use the
-  // priority computed in `ComputeCompositorPriorityFromUseCase()` as well as
-  // enable the delay-based anti-starvation to mitigate these issues.
+  // When `kThreadedScrollPreventRenderingStarvation` is enabled, we use a
+  // configurable value to control the delay-based anti-starvation to mitigate
+  // these issues.
   //
   // Note: for other use cases, the computed priority is higher, so they are
   // not prone to rendering starvation in the same way.
-  if (scheduling_settings().compositor_tq_policy_during_threaded_scroll ==
-      CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways) {
+  if (!base::FeatureList::IsEnabled(
+          kThreadedScrollPreventRenderingStarvation)) {
     return *use_case_priority;
   } else {
     CHECK_LE(*targeted_main_frame_priority, *use_case_priority);
@@ -2732,6 +2711,19 @@ void MainThreadSchedulerImpl::UpdateRenderingPrioritizationStateOnTaskCompleted(
         task_timing.wall_duration();
   }
 
+  // With `kThreadedScrollPreventRenderingStarvation` enabled, no rendering
+  // anti-starvation policy should kick in until the configurable threshold is
+  // reached when in `UseCase::kCompositorGesture`.
+  base::TimeDelta render_blocking_starvation_threshold =
+      base::FeatureList::IsEnabled(kThreadedScrollPreventRenderingStarvation) &&
+              current_use_case() == UseCase::kCompositorGesture &&
+              kRenderBlockingStarvationThreshold <
+                  scheduling_settings_
+                      .compositor_gesture_rendering_starvation_threshold
+          ? scheduling_settings_
+                .compositor_gesture_rendering_starvation_threshold
+          : kRenderBlockingStarvationThreshold;
+
   // A main frame task resets the rendering prioritization state. Otherwise if
   // the scheduler is waiting for a frame because of discrete input, the state
   // will only change once a main frame happens. Otherwise, compute the state in
@@ -2754,16 +2746,15 @@ void MainThreadSchedulerImpl::UpdateRenderingPrioritizationStateOnTaskCompleted(
           RenderingPrioritizationState::kWaitingForInputResponse;
     } else if (main_thread_only()
                    .rendering_blocking_duration_since_last_frame >=
-               kRenderBlockingStarvationThreshold) {
+               render_blocking_starvation_threshold) {
       main_thread_only().main_frame_prioritization_state =
           RenderingPrioritizationState::kRenderingStarvedByRenderBlocking;
     } else {
       base::TimeDelta threshold;
       switch (current_use_case()) {
         case UseCase::kCompositorGesture:
-          // Don't use experimental values if we're processing a gesture, so as
-          // not to interfere with kThreadedScrollPreventRenderingStarvation.
-          threshold = kDefaultPrioritizeCompositingAfterDelay;
+          threshold = scheduling_settings_
+                          .compositor_gesture_rendering_starvation_threshold;
           break;
         case UseCase::kEarlyLoading:
           threshold =
@@ -2801,8 +2792,7 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
       // delay-based rendering anti-starvation when the
       // `kThreadedScrollPreventRenderingStarvation` experiment is enabled to
       // mitigate these issues.
-      return GetPriorityFromCompositorTQPolicyDuringThreadedScrolling(
-          scheduling_settings().compositor_tq_policy_during_threaded_scroll);
+      return TaskPriority::kLowPriority;
 
     case UseCase::kSynchronizedGesture:
     case UseCase::kMainThreadCustomInputHandling:
@@ -2904,15 +2894,11 @@ void MainThreadSchedulerImpl::ExecuteAfterCurrentTaskForTesting(
 }
 
 void MainThreadSchedulerImpl::OnUrgentMessageReceived() {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kBlinkSchedulerPrioritizeNavigationIPCs));
   std::atomic_fetch_add_explicit(&num_pending_urgent_ipc_messages_, 1u,
                                  std::memory_order_relaxed);
 }
 
 void MainThreadSchedulerImpl::OnUrgentMessageProcessed() {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kBlinkSchedulerPrioritizeNavigationIPCs));
   uint64_t prev_urgent_message_count = std::atomic_fetch_sub_explicit(
       &num_pending_urgent_ipc_messages_, 1u, std::memory_order_relaxed);
   CHECK_GT(prev_urgent_message_count, 0u);

@@ -10,12 +10,8 @@
 // We redefine what is already available in chromium's base/logging.h because
 // we want to avoid having that dependency in dummy implementation. When OEMs
 // swap in their implementation it complains about missing symbols.
-#if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
 #include <stdlib.h>  // abort()
-#define NOTREACHED_IN_MIGRATION() abort()
-#else
-#define NOTREACHED_IN_MIGRATION() static_cast<void>(0)
-#endif
+#define NOTREACHED() abort()
 
 namespace chromecast {
 namespace media {
@@ -26,40 +22,40 @@ bool ExternalAudioPipelineShlib::IsSupported() {
 
 void ExternalAudioPipelineShlib::AddExternalMediaVolumeChangeRequestObserver(
     ExternalMediaVolumeChangeRequestObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExternalAudioPipelineShlib::RemoveExternalMediaVolumeChangeRequestObserver(
     ExternalMediaVolumeChangeRequestObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExternalAudioPipelineShlib::SetExternalMediaVolume(float level) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExternalAudioPipelineShlib::SetExternalMediaMuted(bool muted) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExternalAudioPipelineShlib::AddExternalLoopbackAudioObserver(
     LoopbackAudioObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExternalAudioPipelineShlib::RemoveExternalLoopbackAudioObserver(
     LoopbackAudioObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExternalAudioPipelineShlib::AddExternalMediaMetadataChangeObserver(
     ExternalMediaMetadataChangeObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExternalAudioPipelineShlib::RemoveExternalMediaMetadataChangeObserver(
     ExternalMediaMetadataChangeObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<MixerOutputStream>

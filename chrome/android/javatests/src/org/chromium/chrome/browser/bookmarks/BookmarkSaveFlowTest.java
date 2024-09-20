@@ -64,7 +64,6 @@ import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncFeatureMap;
-import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -73,10 +72,7 @@ import java.util.concurrent.ExecutionException;
 /** Tests for the bookmark save flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({
-    ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
-    SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE
-})
+@DisableFeatures({SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE})
 // TODO(crbug.com/40743432): Once SyncTestRule supports batching, investigate batching this suite.
 @DoNotBatch(reason = "SyncTestRule doesn't support batching.")
 public class BookmarkSaveFlowTest {
@@ -86,6 +82,7 @@ public class BookmarkSaveFlowTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
+                    .setRevision(1)
                     .build();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -171,23 +168,7 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
-    public void testBookmarkSaveFlow_improvedBookmarks() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
-                    mBookmarkSaveFlowCoordinator.show(id);
-                    return null;
-                });
-        mRenderTestRule.render(
-                mBookmarkSaveFlowCoordinator.getViewForTesting(), "bookmark_save_flow_improved");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
     @EnableFeatures({
-        ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
         SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE
     })
@@ -304,7 +285,7 @@ public class BookmarkSaveFlowTest {
                     CompoundButton toggle =
                             mBookmarkSaveFlowCoordinator
                                     .getViewForTesting()
-                                    .findViewById(R.id.notification_switch);
+                                    .findViewById(R.id.price_tracking_switch);
                     return toggle.isChecked();
                 });
 
@@ -360,14 +341,14 @@ public class BookmarkSaveFlowTest {
                         })
                 .when(mShoppingService)
                 .subscribe(any(CommerceSubscription.class), any());
-        onView(withId(R.id.notification_switch)).perform(click());
+        onView(withId(R.id.price_tracking_switch)).perform(click());
 
         CriteriaHelper.pollUiThread(
                 () -> {
                     CompoundButton toggle =
                             mBookmarkSaveFlowCoordinator
                                     .getViewForTesting()
-                                    .findViewById(R.id.notification_switch);
+                                    .findViewById(R.id.price_tracking_switch);
                     return !toggle.isChecked();
                 });
 
@@ -389,29 +370,9 @@ public class BookmarkSaveFlowTest {
                             /* isNewBookmark= */ true);
                     return null;
                 });
-        ClickUtils.clickButton(mActivity.findViewById(R.id.bookmark_edit));
+
+        onView(withId(R.id.edit_chev)).perform(click());
         onView(withText(mActivity.getResources().getString(R.string.edit_bookmark)))
-                .check(matches(isDisplayed()));
-
-        // Dismiss the activity.
-        Espresso.pressBack();
-    }
-
-    @Test
-    @MediumTest
-    public void testBookmarkSaveFlowChooseFolder() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
-                    mBookmarkSaveFlowCoordinator.show(
-                            id,
-                            /* fromHeuristicEntryPoint= */ false,
-                            /* wasBookmarkMoved= */ false,
-                            /* isNewBookmark= */ true);
-                    return null;
-                });
-        ClickUtils.clickButton(mActivity.findViewById(R.id.bookmark_select_folder));
-        onView(withText(mActivity.getResources().getString(R.string.bookmark_item_move)))
                 .check(matches(isDisplayed()));
 
         // Dismiss the activity.

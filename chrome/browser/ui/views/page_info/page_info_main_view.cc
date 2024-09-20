@@ -60,14 +60,7 @@ namespace {
 
 constexpr int kMinPermissionRowHeight = 40;
 constexpr float kMaxPermissionRowCount = 10.5;
-
-// Used to experiment with different icons through a finch parameter.
-enum class AboutThisSiteSeconaryIcon {
-  kNewTabIcon = 0,
-  kArrowIcon = 1,
-  kSidePanelIcon = 2,
-  kNoIcon = 3,
-};
+constexpr int kContainerExtraRightMargin = 2;
 
 }  // namespace
 
@@ -76,8 +69,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kMainLayoutElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kPermissionsElementId);
 
 PageInfoMainView::ContainerView::ContainerView() {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  auto box_layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical);
+  box_layout->set_inside_border_insets(
+      gfx::Insets::TLBR(0, 0, 0, kContainerExtraRightMargin));
+  SetLayoutManager(std::move(box_layout));
 }
 
 void PageInfoMainView::ContainerView::Update() {
@@ -142,6 +138,9 @@ PageInfoMainView::PageInfoMainView(
         std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
     site_settings_link_->SetID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS);
+    site_settings_link_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, 0, kContainerExtraRightMargin));
   }
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoHistoryDesktop)) {
@@ -168,7 +167,9 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
   std::u16string tooltip, title, label = std::u16string();
 
   // Check if 3PCD blocking status is initialized.
-  if (cookie_info.blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd) {
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtection3pcdUx) &&
+      cookie_info.blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd) {
     icon = PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon();
     title = l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME);
@@ -412,8 +413,9 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   // For now, this has only VR settings.
-  if (!info.is_vr_presentation_in_headset)
+  if (!info.is_vr_presentation_in_headset) {
     return;
+  }
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   page_feature_info_view_
@@ -485,8 +487,9 @@ void PageInfoMainView::SetAdPersonalizationInfo(
 
   ads_personalization_section_->RemoveAllChildViews();
 
-  if (info.is_empty())
+  if (info.is_empty()) {
     return;
+  }
 
   ads_personalization_section_->AddChildView(CreateAdPersonalizationSection());
 
@@ -562,36 +565,38 @@ void PageInfoMainView::ChildPreferredSizeChanged(views::View* child) {
 }
 
 std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
-  auto header = std::make_unique<views::View>();
-  header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(gfx::Insets::VH(0, 20));
-  title_ = header->AddChildView(std::make_unique<views::Label>(
-      std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
-      views::style::STYLE_HEADLINE_4,
-      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
-  title_->SetMultiLine(true);
-  title_->SetAllowCharacterBreak(true);
-  title_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true)
-          .WithWeight(1));
-  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  auto close_button = views::BubbleFrameView::CreateCloseButton(
-      base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
-                          base::Unretained(navigation_handler_)));
-
-  close_button->SetVisible(true);
-  close_button->SetProperty(views::kCrossAxisAlignmentKey,
-                            views::LayoutAlignment::kStart);
-  // Set views::kInternalPaddingKey for flex layout to account for internal
-  // button padding when calculating margins.
-  close_button->SetProperty(views::kInternalPaddingKey,
-                            close_button->GetInsets());
-  header->AddChildView(close_button.release());
-
-  return header;
+  return views::Builder<views::FlexLayoutView>()
+      .SetInteriorMargin(gfx::Insets::VH(0, 20))
+      .AddChildren(
+          views::Builder<views::Label>(
+              std::make_unique<views::Label>(
+                  std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
+                  views::style::STYLE_HEADLINE_4,
+                  gfx::DirectionalityMode::DIRECTIONALITY_AS_URL))
+              .CopyAddressTo(&title_)
+              .SetMultiLine(true)
+              .SetAllowCharacterBreak(true)
+              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .SetProperty(views::kFlexBehaviorKey,
+                           views::FlexSpecification(
+                               views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+                               .WithWeight(1)),
+          views::Builder<views::View>(
+              views::BubbleFrameView::CreateCloseButton(
+                  base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
+                                      base::Unretained(navigation_handler_))))
+              .SetVisible(true)
+              .SetProperty(views::kCrossAxisAlignmentKey,
+                           views::LayoutAlignment::kStart)
+              .CustomConfigure(base::BindOnce([](views::View* button) {
+                // Set views::kInternalPaddingKey for flex layout to account for
+                // internal button padding when calculating margins.
+                button->SetProperty(views::kInternalPaddingKey,
+                                    button->GetInsets());
+              })))
+      .Build();
 }
 
 std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(

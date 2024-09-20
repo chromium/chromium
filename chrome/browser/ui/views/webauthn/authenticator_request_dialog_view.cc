@@ -335,8 +335,6 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
   // Currently, all sheets have a label on top and controls at the bottom.
   // Consider moving this to AuthenticatorRequestSheetView if this changes.
   SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  OnStepTransition();
 }
 
 void AuthenticatorRequestDialogView::Show() {

@@ -166,9 +166,7 @@ std::unique_ptr<protocol::Security::SafetyTipInfo> CreateSafetyTipInfo(
 }
 
 std::unique_ptr<protocol::Security::VisibleSecurityState>
-CreateVisibleSecurityState(content::WebContents* web_contents) {
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
+CreateVisibleSecurityState(SecurityStateTabHelper* helper) {
   DCHECK(helper);
   auto state = helper->GetVisibleSecurityState();
   std::string security_state =
@@ -270,6 +268,10 @@ void SecurityHandler::DidChangeVisibleSecurityState() {
   if (!enabled_)
     return;
 
-  auto visible_security_state = CreateVisibleSecurityState(web_contents());
+  SecurityStateTabHelper* helper = web_contents() ? SecurityStateTabHelper::FromWebContents(web_contents()) : nullptr;
+  if (!helper)
+    return;
+
+  auto visible_security_state = CreateVisibleSecurityState(helper);
   frontend_->VisibleSecurityStateChanged(std::move(visible_security_state));
 }

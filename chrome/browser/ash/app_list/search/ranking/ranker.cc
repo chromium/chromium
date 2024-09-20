@@ -8,7 +8,8 @@
 
 namespace app_list {
 
-void Ranker::Start(const std::u16string& query, CategoriesList& categories) {}
+void Ranker::Start(const std::u16string& query,
+                   const CategoriesList& categories) {}
 
 // Ranks search results. Should return a vector of scores that is the same
 // length as |results|.

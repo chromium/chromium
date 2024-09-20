@@ -36,6 +36,10 @@
 #include "third_party/dawn/include/dawn/webgpu_cpp_print.h"
 #include "third_party/dawn/include/dawn/wire/WireClient.h"
 
+#if MEDIAPIPE_USE_WEBGPU
+#include "third_party/mediapipe/src/mediapipe/gpu/webgpu/webgpu_device_registration.h"
+#endif
+
 namespace {
 
 scoped_refptr<gpu::ClientSharedImage> CreateSharedImageRGBA(
@@ -590,9 +594,15 @@ void VideoEffectsProcessorWebGpu::OnRequestDevice(
     return;
   }
 
-  device_ = std::move(device);
+  device_ = device;
   device_.SetUncapturedErrorCallback(&ErrorCallback, nullptr);
   device_.SetLoggingCallback(&LoggingCallback, nullptr);
+
+#if MEDIAPIPE_USE_WEBGPU
+  // TODO(b/366236619): Move device registration to VideoEffectsServiceImpl.
+  mediapipe::WebGpuDeviceRegistration::GetInstance().RegisterWebGpuDevice(
+      std::move(device));
+#endif
 
   default_queue_ = device_.GetQueue();
   compute_pipeline_ = CreateComputePipeline();
@@ -715,6 +725,9 @@ void VideoEffectsProcessorWebGpu::OnDeviceLost(WGPUDeviceLostReason reason,
                                                char const* message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if MEDIAPIPE_USE_WEBGPU
+  mediapipe::WebGpuDeviceRegistration::GetInstance().UnRegisterWebGpuDevice();
+#endif
   device_ = {};
 
   MaybeCallOnUnrecoverableError();

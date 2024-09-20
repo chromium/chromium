@@ -17,6 +17,7 @@
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
 #include "components/ip_protection/android/android_auth_client_lib/javatests/jni_headers/IpProtectionAuthTestNatives_jni.h"
+#include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
 
@@ -180,6 +181,33 @@ AuthAndSignBlocking(
   return result;
 }
 
+// Perform a getProxyConfig request in a RunLoop, quitting the RunLoop when a
+// response is received and returning the base::expected result.
+base::expected<ip_protection::GetProxyConfigResponse,
+               ip_protection::android::AuthRequestError>
+GetProxyConfigBlocking(
+    ip_protection::android::IpProtectionAuthClientInterface& client,
+    ip_protection::GetProxyConfigRequest request) {
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      result;
+  base::RunLoop run_loop;
+  client.GetProxyConfig(
+      std::move(request),
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindLambdaForTesting(
+              [&run_loop,
+               &result](base::expected<ip_protection::GetProxyConfigResponse,
+                                       ip_protection::android::AuthRequestError>
+                            response) {
+                result = std::move(response);
+                run_loop.Quit();
+              })));
+  run_loop.Run();
+  return result;
+}
+
 }  // namespace
 
 static void JNI_IpProtectionAuthTestNatives_Initialize(JNIEnv* env) {
@@ -304,6 +332,25 @@ static void JNI_IpProtectionAuthTestNatives_TestAuthAndSign(JNIEnv* env) {
       << auth_and_sign_response->apn_type();
 }
 
+static void JNI_IpProtectionAuthTestNatives_TestGetProxyConfig(JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+      client = CreateAndExpectClientBlocking(kMockClassNameForDefault);
+  // TODO(b/344853279): This request is missing required fields. It should be
+  // updated.
+  ip_protection::GetProxyConfigRequest get_proxy_config_request;
+  get_proxy_config_request.set_service_type("webviewipblinding");
+
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response =
+          GetProxyConfigBlocking(*client, get_proxy_config_request);
+
+  CHECK(get_proxy_config_response.has_value());
+  CHECK_EQ(get_proxy_config_response->proxy_chain_size(), 1);
+  CHECK_EQ(get_proxy_config_response->proxy_chain(0).proxy_a(), "test");
+}
+
 static void JNI_IpProtectionAuthTestNatives_TestTransientError(JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
@@ -317,12 +364,19 @@ static void JNI_IpProtectionAuthTestNatives_TestTransientError(JNIEnv* env) {
                  ip_protection::android::AuthRequestError>
       auth_and_sign_response =
           AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response = GetProxyConfigBlocking(
+          *client, ip_protection::GetProxyConfigRequest());
 
   CHECK(!get_initial_data_response.has_value());
   CHECK(get_initial_data_response.error() ==
         ip_protection::android::AuthRequestError::kTransient);
   CHECK(!auth_and_sign_response.has_value());
   CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kTransient);
+  CHECK(!get_proxy_config_response.has_value());
+  CHECK(get_proxy_config_response.error() ==
         ip_protection::android::AuthRequestError::kTransient);
 }
 
@@ -339,12 +393,19 @@ static void JNI_IpProtectionAuthTestNatives_TestPersistentError(JNIEnv* env) {
                  ip_protection::android::AuthRequestError>
       auth_and_sign_response =
           AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response = GetProxyConfigBlocking(
+          *client, ip_protection::GetProxyConfigRequest());
 
   CHECK(!get_initial_data_response.has_value());
   CHECK(get_initial_data_response.error() ==
         ip_protection::android::AuthRequestError::kPersistent);
   CHECK(!auth_and_sign_response.has_value());
   CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kPersistent);
+  CHECK(!get_proxy_config_response.has_value());
+  CHECK(get_proxy_config_response.error() ==
         ip_protection::android::AuthRequestError::kPersistent);
 }
 
@@ -361,12 +422,19 @@ static void JNI_IpProtectionAuthTestNatives_TestIllegalErrorCode(JNIEnv* env) {
                  ip_protection::android::AuthRequestError>
       auth_and_sign_response =
           AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response = GetProxyConfigBlocking(
+          *client, ip_protection::GetProxyConfigRequest());
 
   CHECK(!get_initial_data_response.has_value());
   CHECK(get_initial_data_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
   CHECK(!auth_and_sign_response.has_value());
   CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!get_proxy_config_response.has_value());
+  CHECK(get_proxy_config_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
 }
 
@@ -383,12 +451,19 @@ static void JNI_IpProtectionAuthTestNatives_TestNullResponse(JNIEnv* env) {
                  ip_protection::android::AuthRequestError>
       auth_and_sign_response =
           AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response = GetProxyConfigBlocking(
+          *client, ip_protection::GetProxyConfigRequest());
 
   CHECK(!get_initial_data_response.has_value());
   CHECK(get_initial_data_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
   CHECK(!auth_and_sign_response.has_value());
   CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!get_proxy_config_response.has_value());
+  CHECK(get_proxy_config_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
 }
 
@@ -407,12 +482,19 @@ static void JNI_IpProtectionAuthTestNatives_TestUnparsableResponse(
                  ip_protection::android::AuthRequestError>
       auth_and_sign_response =
           AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response = GetProxyConfigBlocking(
+          *client, ip_protection::GetProxyConfigRequest());
 
   CHECK(!get_initial_data_response.has_value());
   CHECK(get_initial_data_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
   CHECK(!auth_and_sign_response.has_value());
   CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!get_proxy_config_response.has_value());
+  CHECK(get_proxy_config_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
 }
 
@@ -429,12 +511,19 @@ static void JNI_IpProtectionAuthTestNatives_TestSynchronousError(JNIEnv* env) {
                  ip_protection::android::AuthRequestError>
       auth_and_sign_response =
           AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response = GetProxyConfigBlocking(
+          *client, ip_protection::GetProxyConfigRequest());
 
   CHECK(!get_initial_data_response.has_value());
   CHECK(get_initial_data_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
   CHECK(!auth_and_sign_response.has_value());
   CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!get_proxy_config_response.has_value());
+  CHECK(get_proxy_config_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
 }
 
@@ -447,8 +536,11 @@ static void JNI_IpProtectionAuthTestNatives_TestUnresolvedWhenClosed(
   base::expected<privacy::ppn::AuthAndSignResponse,
                  ip_protection::android::AuthRequestError>
       auth_and_sign_response;
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response;
 
-  int remaining = 2;
+  int remaining = 3;
   base::RunLoop run_loop;
   {
     std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
@@ -483,6 +575,21 @@ static void JNI_IpProtectionAuthTestNatives_TestUnresolvedWhenClosed(
                     run_loop.Quit();
                   }
                 })));
+    client->GetProxyConfig(
+        ip_protection::GetProxyConfigRequest(),
+        base::BindPostTask(
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::BindLambdaForTesting(
+                [&run_loop, &remaining, &get_proxy_config_response](
+                    base::expected<ip_protection::GetProxyConfigResponse,
+                                   ip_protection::android::AuthRequestError>
+                        response) {
+                  get_proxy_config_response = std::move(response);
+                  remaining--;
+                  if (remaining == 0) {
+                    run_loop.Quit();
+                  }
+                })));
     // client closes when out of scope
   }
   run_loop.Run();
@@ -492,6 +599,9 @@ static void JNI_IpProtectionAuthTestNatives_TestUnresolvedWhenClosed(
         ip_protection::android::AuthRequestError::kOther);
   CHECK(!auth_and_sign_response.has_value());
   CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!get_proxy_config_response.has_value());
+  CHECK(get_proxy_config_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
 }
 
@@ -507,6 +617,9 @@ JNI_IpProtectionAuthTestNatives_TestCrashOnRequestSyncWithoutResponse(
   base::expected<privacy::ppn::AuthAndSignResponse,
                  ip_protection::android::AuthRequestError>
       auth_and_sign_response;
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response;
 
   {
     std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
@@ -522,12 +635,22 @@ JNI_IpProtectionAuthTestNatives_TestCrashOnRequestSyncWithoutResponse(
     auth_and_sign_response =
         AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
   }
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashOnRequestSyncWithoutResponse);
+    get_proxy_config_response =
+        GetProxyConfigBlocking(*client, ip_protection::GetProxyConfigRequest());
+  }
 
   CHECK(!get_initial_data_response.has_value());
   CHECK(get_initial_data_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
   CHECK(!auth_and_sign_response.has_value());
   CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!get_proxy_config_response.has_value());
+  CHECK(get_proxy_config_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
 }
 
@@ -544,6 +667,9 @@ JNI_IpProtectionAuthTestNatives_TestCrashOnRequestAsyncWithoutResponse(
   base::expected<privacy::ppn::AuthAndSignResponse,
                  ip_protection::android::AuthRequestError>
       auth_and_sign_response;
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response;
 
   {
     std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
@@ -559,12 +685,22 @@ JNI_IpProtectionAuthTestNatives_TestCrashOnRequestAsyncWithoutResponse(
     auth_and_sign_response =
         AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
   }
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashOnRequestSyncWithoutResponse);
+    get_proxy_config_response =
+        GetProxyConfigBlocking(*client, ip_protection::GetProxyConfigRequest());
+  }
 
   CHECK(!get_initial_data_response.has_value());
   CHECK(get_initial_data_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
   CHECK(!auth_and_sign_response.has_value());
   CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!get_proxy_config_response.has_value());
+  CHECK(get_proxy_config_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
 }
 
@@ -581,6 +717,9 @@ static void JNI_IpProtectionAuthTestNatives_TestCrashOnRequestSyncWithResponse(
   base::expected<privacy::ppn::AuthAndSignResponse,
                  ip_protection::android::AuthRequestError>
       auth_and_sign_response;
+  base::expected<ip_protection::GetProxyConfigResponse,
+                 ip_protection::android::AuthRequestError>
+      get_proxy_config_response;
 
   {
     std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
@@ -596,6 +735,13 @@ static void JNI_IpProtectionAuthTestNatives_TestCrashOnRequestSyncWithResponse(
     auth_and_sign_response =
         AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
   }
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashOnRequestSyncWithoutResponse);
+    get_proxy_config_response =
+        GetProxyConfigBlocking(*client, ip_protection::GetProxyConfigRequest());
+  }
 
   // The synchronous error handler and the callback handler may theoretically
   // race, so don't assert between kTransient and kOther.
@@ -604,6 +750,7 @@ static void JNI_IpProtectionAuthTestNatives_TestCrashOnRequestSyncWithResponse(
   // result in a crash.
   CHECK(!get_initial_data_response.has_value());
   CHECK(!auth_and_sign_response.has_value());
+  CHECK(!get_proxy_config_response.has_value());
 }
 
 // Client tries to send three requests:
@@ -623,6 +770,9 @@ JNI_IpProtectionAuthTestNatives_TestUnresolvedCallbacksRejectedAfterCrash(
   std::vector<base::expected<privacy::ppn::AuthAndSignResponse,
                              ip_protection::android::AuthRequestError>>
       auth_and_sign_responses;
+  std::vector<base::expected<ip_protection::GetProxyConfigResponse,
+                             ip_protection::android::AuthRequestError>>
+      get_proxy_config_responses;
   const int numCalls = 3;
 
   {
@@ -676,14 +826,45 @@ JNI_IpProtectionAuthTestNatives_TestUnresolvedCallbacksRejectedAfterCrash(
     }
     run_loop.Run();
   }
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashAfterTwoRequestsSyncWithoutResponses);
+    int remaining = numCalls;
+    base::RunLoop run_loop;
+    for (int i = 0; i < numCalls; i++) {
+      client->GetProxyConfig(
+          ip_protection::GetProxyConfigRequest(),
+          base::BindPostTask(
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              base::BindLambdaForTesting(
+                  [&run_loop, &remaining, &get_proxy_config_responses](
+                      base::expected<ip_protection::GetProxyConfigResponse,
+                                     ip_protection::android::AuthRequestError>
+                          response) {
+                    get_proxy_config_responses.emplace_back(
+                        std::move(response));
+                    remaining--;
+                    if (remaining == 0) {
+                      run_loop.Quit();
+                    }
+                  })));
+    }
+    run_loop.Run();
+  }
 
   CHECK(get_initial_data_responses.size() == 3);
   CHECK(auth_and_sign_responses.size() == 3);
+  CHECK(get_proxy_config_responses.size() == 3);
   for (const auto& response : get_initial_data_responses) {
     CHECK(!response.has_value());
     CHECK(response.error() == ip_protection::android::AuthRequestError::kOther);
   }
   for (const auto& response : auth_and_sign_responses) {
+    CHECK(!response.has_value());
+    CHECK(response.error() == ip_protection::android::AuthRequestError::kOther);
+  }
+  for (const auto& response : get_proxy_config_responses) {
     CHECK(!response.has_value());
     CHECK(response.error() == ip_protection::android::AuthRequestError::kOther);
   }

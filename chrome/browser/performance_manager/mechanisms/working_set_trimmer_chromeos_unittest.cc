@@ -410,6 +410,9 @@ TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetDropPageCachesOnly) {
 // with false (failure) when DropCaches() fails.
 TEST_F(TestWorkingSetTrimmerChromeOS,
        TrimArcVmWorkingSetDropPageCachesOnly_DropCachesFailure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(arc::kSkipDropCaches);
+
   // Inject the failure.
   memory_instance()->set_drop_caches_result(false);
 

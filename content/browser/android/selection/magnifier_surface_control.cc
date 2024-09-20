@@ -72,9 +72,8 @@ static jlong JNI_MagnifierSurfaceControl_Create(
   gl::ScopedJavaSurfaceControl scoped_java_surface_control(j_surface_control,
                                                            release_on_destroy);
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
-  gpu::SurfaceHandle surface_handle =
-      tracker->AddSurfaceForNativeWidget(gpu::GpuSurfaceTracker::SurfaceRecord(
-          std::move(scoped_java_surface_control)));
+  gpu::SurfaceHandle surface_handle = tracker->AddSurfaceForNativeWidget(
+      gpu::SurfaceRecord(std::move(scoped_java_surface_control)));
 
   return reinterpret_cast<jlong>(new MagnifierSurfaceControl(
       web_contents, surface_handle, device_scale, width, height, corner_radius,

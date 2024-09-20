@@ -11,13 +11,13 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/search/mock_search_picker_client.h"
 #include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_web_view.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -148,10 +148,10 @@ class ScopedFakeResourceBundleDelegate {
 TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearchImmediately) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client(), StartCrosSearch(Eq(u"cat"), _, _)).Times(1);
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 }
@@ -159,11 +159,10 @@ TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearchImmediately) {
 TEST_F(PickerSearchControllerTest, DoesNotPublishResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
-  PickerSearchController controller(&client(),
-                                    /*burn_in_period=*/base::Milliseconds(100));
+  PickerSearchController controller(/*burn_in_period=*/base::Milliseconds(100));
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
@@ -191,10 +190,10 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromOmniboxSearch) {
                        Property("spec", &GURL::spec,
                                 "https://www.google.com/search?q=cat")))))))))
       .Times(AtLeast(1));
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
@@ -260,10 +259,10 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
   // As `StopCrosQuery` may be called in the destructor of
   // `PickerSearchController`, ensure that it gets destructed before any of the
   // variables used in the above mocks are used.
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&first_search_results_callback)));
   after_start_search.Call();
@@ -273,7 +272,7 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   controller.StartSearch(
-      u"dog", std::nullopt, kDefaultSearchOptions,
+      &client(), u"dog", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&second_search_results_callback)));
 }
@@ -281,10 +280,10 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
 TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -301,10 +300,10 @@ TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
 TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kAfterBurnIn);
@@ -342,10 +341,10 @@ TEST_F(PickerSearchControllerTest,
         search_started = true;
         client().cros_search_callback() = std::move(callback);
       });
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -378,10 +377,10 @@ TEST_F(PickerSearchControllerTest,
         search_started = true;
         client().cros_search_callback() = std::move(callback);
       });
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -421,10 +420,10 @@ TEST_F(
         search_started = true;
         client().cros_search_callback() = std::move(callback);
       });
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
@@ -449,10 +448,10 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
                                Field("text", &PickerTextResult::primary_text,
                                      u"monorail_cat.jpg"))))))))
       .Times(AtLeast(1));
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
@@ -464,10 +463,10 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
 TEST_F(PickerSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -482,10 +481,10 @@ TEST_F(PickerSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
 TEST_F(PickerSearchControllerTest, RecordsFileMetricsAfterBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kAfterBurnIn);
@@ -520,10 +519,10 @@ TEST_F(PickerSearchControllerTest, DoesNotRecordFileMetricsIfNoFileResponse) {
         search_started = true;
         client().cros_search_callback() = std::move(callback);
       });
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -556,10 +555,10 @@ TEST_F(PickerSearchControllerTest,
         search_started = true;
         client().cros_search_callback() = std::move(callback);
       });
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -585,10 +584,10 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromDriveSearch) {
                                Field("text", &PickerTextResult::primary_text,
                                      u"catrbug_135117.jpg"))))))))
       .Times(AtLeast(1));
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
@@ -600,10 +599,10 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromDriveSearch) {
 TEST_F(PickerSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -618,10 +617,10 @@ TEST_F(PickerSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
 TEST_F(PickerSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kAfterBurnIn);
@@ -656,10 +655,10 @@ TEST_F(PickerSearchControllerTest, DoesNotRecordDriveMetricsIfNoDriveResponse) {
         search_started = true;
         client().cros_search_callback() = std::move(callback);
       });
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -692,10 +691,10 @@ TEST_F(PickerSearchControllerTest,
         search_started = true;
         client().cros_search_callback() = std::move(callback);
       });
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -735,10 +734,10 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
                              u"drive"))))),
       })))
       .Times(AtLeast(1));
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -756,10 +755,10 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
 TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"zz", std::nullopt, kDefaultSearchOptions,
+      &client(), u"zz", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -772,10 +771,10 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
 TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"zz", std::nullopt, kDefaultSearchOptions,
+      &client(), u"zz", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBurnInPeriod);
@@ -796,10 +795,10 @@ TEST_F(PickerSearchControllerTest, ShowResultsEvenAfterBurnIn) {
                                "primary_text", &PickerTextResult::primary_text,
                                u"test")))))))))
       .Times(AtLeast(1));
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBurnInPeriod);
@@ -818,13 +817,13 @@ TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {
   EXPECT_CALL(client(),
               StartCrosSearch(Eq(u"cat"), Eq(PickerCategory::kLocalFiles), _))
       .Times(1);
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
-  controller.StartSearch(u"ant", PickerCategory::kLinks, kDefaultSearchOptions,
-                         base::DoNothing());
-  controller.StartSearch(u"bat", PickerCategory::kDriveFiles,
+  controller.StartSearch(&client(), u"ant", PickerCategory::kLinks,
                          kDefaultSearchOptions, base::DoNothing());
-  controller.StartSearch(u"cat", PickerCategory::kLocalFiles,
+  controller.StartSearch(&client(), u"bat", PickerCategory::kDriveFiles,
+                         kDefaultSearchOptions, base::DoNothing());
+  controller.StartSearch(&client(), u"cat", PickerCategory::kLocalFiles,
                          kDefaultSearchOptions, base::DoNothing());
 }
 
@@ -841,10 +840,10 @@ TEST_F(PickerSearchControllerTest,
         .Times(1);
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
   }
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt,
+      &client(), u"cat", std::nullopt,
       {.available_categories = {{PickerCategory::kLinks}}},
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -867,10 +866,10 @@ TEST_F(PickerSearchControllerTest,
         .Times(1);
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
   }
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt,
+      &client(), u"cat", std::nullopt,
       {.available_categories = {{PickerCategory::kLinks}}},
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -888,10 +887,10 @@ TEST_F(PickerSearchControllerTest,
               Call(Contains(Property("type", &PickerSearchResultsSection::type,
                                      PickerSectionType::kLinks))))
       .Times(0);
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
@@ -906,10 +905,10 @@ TEST_F(PickerSearchControllerTest,
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(0);
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
@@ -925,10 +924,10 @@ TEST_F(PickerSearchControllerTest,
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(0);
   NiceMock<MockSearchResultsCallback> second_search_results_callback;
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
@@ -942,10 +941,10 @@ TEST_F(PickerSearchControllerTest, StopSearchDoesNotCallOldCallbackAfterwards) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
   MockSearchResultsCallback second_search_results_callback;
-  PickerSearchController controller(&client(), kBurnInPeriod);
+  PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      &client(), u"cat", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
@@ -1003,12 +1002,13 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataInAllLanguages) {
           Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
 
-  PickerSearchController controller(&client(),
-                                    /*burn_in_period=*/base::Milliseconds(100));
-  controller.LoadEmojiLanguagesFromPrefs();
+  PickerSearchController controller(
+      /*burn_in_period=*/base::Milliseconds(100));
+  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   controller.StartEmojiSearch(
-      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
-                                    base::Unretained(&results_callback)));
+      &prefs_service(), u"smile",
+      base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                          base::Unretained(&results_callback)));
 }
 
 TEST_F(PickerSearchControllerTest,
@@ -1047,12 +1047,13 @@ TEST_F(PickerSearchControllerTest,
                        Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
 
-  PickerSearchController controller(&client(),
-                                    /*burn_in_period=*/base::Milliseconds(100));
-  controller.LoadEmojiLanguagesFromPrefs();
+  PickerSearchController controller(
+      /*burn_in_period=*/base::Milliseconds(100));
+  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   controller.StartEmojiSearch(
-      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
-                                    base::Unretained(&results_callback)));
+      &prefs_service(), u"smile",
+      base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                          base::Unretained(&results_callback)));
 }
 
 TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
@@ -1091,11 +1092,11 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
   prefs_service().registry()->RegisterDictionaryPref(
       prefs::kEmojiPickerPreferences, base::Value::Dict());
 
-  PickerSearchController controller(&client(),
-                                    /*burn_in_period=*/base::Milliseconds(100));
+  PickerSearchController controller(
+      /*burn_in_period=*/base::Milliseconds(100));
 
   // First search, only English results
-  controller.LoadEmojiLanguagesFromPrefs();
+  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   MockEmojiSearchResultsCallback results_callback;
   EXPECT_CALL(results_callback,
               Call(ElementsAre(
@@ -1104,8 +1105,9 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
                   Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
-      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
-                                    base::Unretained(&results_callback)));
+      &prefs_service(), u"smile",
+      base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                          base::Unretained(&results_callback)));
 
   // Second search after adding a Japanese IME should include Japanese results
   prefs_service().SetUserPref(
@@ -1120,8 +1122,9 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
                        Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
-      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
-                                    base::Unretained(&results_callback_jp)));
+      &prefs_service(), u"smile",
+      base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                          base::Unretained(&results_callback_jp)));
 }
 
 TEST_F(PickerSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
@@ -1160,10 +1163,10 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
   prefs_service().registry()->RegisterDictionaryPref(
       prefs::kEmojiPickerPreferences, base::Value::Dict());
 
-  PickerSearchController controller(&client(),
-                                    /*burn_in_period=*/base::Milliseconds(100));
+  PickerSearchController controller(
+      /*burn_in_period=*/base::Milliseconds(100));
 
-  controller.LoadEmojiLanguagesFromPrefs();
+  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   MockEmojiSearchResultsCallback results_callback_jp;
   EXPECT_CALL(
       results_callback_jp,
@@ -1172,8 +1175,9 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
                        Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
-      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
-                                    base::Unretained(&results_callback_jp)));
+      &prefs_service(), u"smile",
+      base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                          base::Unretained(&results_callback_jp)));
 }
 
 }  // namespace

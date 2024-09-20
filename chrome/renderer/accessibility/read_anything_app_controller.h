@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_
 
+#include <deque>
 #include <map>
 #include <memory>
 #include <set>
@@ -13,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
+#include "base/scoped_observation.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_aloud_app_model.h"
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
@@ -44,6 +46,7 @@ class MojoUkmRecorder;
 }  // namespace ukm
 
 class AXTreeDistiller;
+class DependencyParserModel;
 class ReadAnythingAppControllerTest;
 class ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 
@@ -71,6 +74,7 @@ class ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 class ReadAnythingAppController
     : public content::RenderFrameObserver,
       public gin::Wrappable<ReadAnythingAppController>,
+      public ReadAnythingAppModel::ModelObserver,
       public read_anything::mojom::UntrustedPage,
       public ui::AXTreeObserver {
  public:
@@ -86,6 +90,10 @@ class ReadAnythingAppController
 
   // content::RenderFrameObserver:
   void OnDestruct() override;
+
+  // ReadAnythingAppModel::ModelObserver:
+  void OnTreeAdded(ui::AXTree* tree) override;
+  void OnTreeRemoved(ui::AXTree* tree) override;
 
  private:
   friend ReadAnythingAppControllerTest;
@@ -112,6 +120,8 @@ class ReadAnythingAppController
       const ui::AXTreeID& tree_id,
       const std::vector<ui::AXTreeUpdate>& updates,
       const std::vector<ui::AXEvent>& events) override;
+  void AccessibilityLocationChangesReceived(
+      const std::vector<ui::AXLocationChanges>& details) override;
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
                                ukm::SourceId ukm_source_id,
                                bool is_pdf) override;
@@ -218,8 +228,6 @@ class ReadAnythingAppController
   void OnVoiceChange(const std::string& voice, const std::string& lang);
   void OnLanguagePrefChange(const std::string& lang, bool enabled);
   bool RequiresDistillation();
-  void TurnedHighlightOn();
-  void TurnedHighlightOff();
   void OnHighlightGranularityChanged(int granularity);
   double GetLineSpacingValue(int line_spacing) const;
   double GetLetterSpacingValue(int letter_spacing) const;
@@ -324,10 +332,14 @@ class ReadAnythingAppController
   // correctly position the highlight within the current text segment. The
   // return value is thus a list containing node id, start, and length.
   //
+  //  If the `phrases` argument is `true`, the text ranges for the containing
+  //  phrase are returned, otherwise the text ranges for the word are returned.
+  //
   // Note that this is only needed for custom granularity highlighting. Sentence
   // highlighting is able to be handled directly in WebUI because the entire
   // speech segment is highlighted at once.
-  v8::Local<v8::Value> GetHighlightForCurrentSegmentIndex(int index);
+  v8::Local<v8::Value> GetHighlightForCurrentSegmentIndex(int index,
+                                                          bool phrases);
 
   // SetContentForTesting and SetLanguageForTesting are used by
   // ReadAnythingAppTest and thus need to be kept in ReadAnythingAppController
@@ -357,6 +369,12 @@ class ReadAnythingAppController
   void IncrementMetricCount(const std::string& metric);
   void LogSpeechEventCounts();
 
+  // Called when a new dependency parser model file has been loaded and is
+  // available.
+  void UpdateDependencyParserModel(base::File model_file);
+
+  DependencyParserModel& GetDependencyParserModelForTesting();
+
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_;
@@ -374,6 +392,17 @@ class ReadAnythingAppController
 
   // Model that holds Reading mode state for this controller.
   ReadAnythingAppModel model_;
+
+  // Observer of `model_`, which gets notified when trees are added / removed.
+  base::ScopedObservation<ReadAnythingAppModel,
+                          ReadAnythingAppModel::ModelObserver>
+      model_observer_{this};
+
+  // Observers of AXTrees, which are added / removed  as the `model_` changes
+  // state.
+  std::deque<
+      std::unique_ptr<base::ScopedObservation<ui::AXTree, ui::AXTreeObserver>>>
+      tree_observers_;
 
   // For metrics logging
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;

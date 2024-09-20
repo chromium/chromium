@@ -65,6 +65,7 @@ class FakeFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               GetCoreAccountInfo,
               (),
               (override));
+  MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
 };
 
 class ContentFacilitatedPaymentsDriverTest

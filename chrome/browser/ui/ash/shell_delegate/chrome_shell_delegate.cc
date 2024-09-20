@@ -14,7 +14,6 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/system_sounds_delegate.h"
 #include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/shell_delegate.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/scanner/chrome_scanner_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/nearby_sharing/nearby_share_delegate_impl.h"
@@ -57,8 +57,8 @@
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
-#include "chrome/browser/ui/ash/system_sounds_delegate_impl.h"
 #include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
+#include "chrome/browser/ui/ash/wm/coral_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -76,6 +76,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "components/ui_devtools/devtools_server.h"
@@ -159,6 +160,11 @@ ChromeShellDelegate::CreateClipboardHistoryControllerDelegate() const {
   return std::make_unique<ClipboardHistoryControllerDelegateImpl>();
 }
 
+std::unique_ptr<ash::CoralDelegate> ChromeShellDelegate::CreateCoralDelegate()
+    const {
+  return std::make_unique<CoralDelegateImpl>();
+}
+
 std::unique_ptr<ash::GameDashboardDelegate>
 ChromeShellDelegate::CreateGameDashboardDelegate() const {
   return std::make_unique<ChromeGameDashboardDelegate>();
@@ -219,6 +225,11 @@ ChromeShellDelegate::CreateFocusModeDelegate() const {
 std::unique_ptr<ash::UserEducationDelegate>
 ChromeShellDelegate::CreateUserEducationDelegate() const {
   return std::make_unique<ChromeUserEducationDelegate>();
+}
+
+std::unique_ptr<ash::ScannerDelegate>
+ChromeShellDelegate::CreateScannerDelegate() const {
+  return std::make_unique<ChromeScannerDelegate>();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

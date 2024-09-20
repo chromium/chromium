@@ -217,6 +217,7 @@ def CheckOutput(args,
                 stdout_filter=None,
                 stderr_filter=None,
                 fail_on_output=True,
+                before_join_callback=None,
                 fail_func=lambda returncode, stderr: returncode != 0):
   if not cwd:
     cwd = os.getcwd()
@@ -225,6 +226,8 @@ def CheckOutput(args,
   child = subprocess.Popen(args,
       stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env)
 
+  if before_join_callback:
+    before_join_callback()
   stdout, stderr = child.communicate()
 
   # For Python3 only:

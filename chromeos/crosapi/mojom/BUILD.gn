@@ -170,6 +170,7 @@ mojom("mojom") {
     "//ui/accessibility:ax_enums_mojo",
     "//ui/accessibility/mojom",
     "//ui/base/mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/color:mojom",
     "//ui/display/mojom:mojom",
     "//ui/events/mojom:mojom",

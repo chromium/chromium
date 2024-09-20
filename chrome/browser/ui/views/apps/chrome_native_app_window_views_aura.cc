@@ -16,6 +16,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
 
@@ -30,25 +31,24 @@
 
 using extensions::AppWindow;
 
-ui::WindowShowState
-ChromeNativeAppWindowViewsAura::GetRestorableState(
-    const ui::WindowShowState restore_state) const {
+ui::mojom::WindowShowState ChromeNativeAppWindowViewsAura::GetRestorableState(
+    const ui::mojom::WindowShowState restore_state) const {
   // Allowlist states to return so that invalid and transient states
   // are not saved and used to restore windows when they are recreated.
   switch (restore_state) {
-    case ui::SHOW_STATE_NORMAL:
-    case ui::SHOW_STATE_MAXIMIZED:
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kNormal:
+    case ui::mojom::WindowShowState::kMaximized:
+    case ui::mojom::WindowShowState::kFullscreen:
       return restore_state;
 
-    case ui::SHOW_STATE_DEFAULT:
-    case ui::SHOW_STATE_MINIMIZED:
-    case ui::SHOW_STATE_INACTIVE:
-    case ui::SHOW_STATE_END:
-      return ui::SHOW_STATE_NORMAL;
+    case ui::mojom::WindowShowState::kDefault:
+    case ui::mojom::WindowShowState::kMinimized:
+    case ui::mojom::WindowShowState::kInactive:
+    case ui::mojom::WindowShowState::kEnd:
+      return ui::mojom::WindowShowState::kNormal;
   }
 
-  return ui::SHOW_STATE_NORMAL;
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 void ChromeNativeAppWindowViewsAura::OnBeforeWidgetInit(
@@ -97,18 +97,20 @@ ChromeNativeAppWindowViewsAura::CreateNonStandardAppFrame() {
   return frame;
 }
 
-ui::WindowShowState ChromeNativeAppWindowViewsAura::GetRestoredState() const {
+ui::mojom::WindowShowState ChromeNativeAppWindowViewsAura::GetRestoredState()
+    const {
   // First normal states are checked.
   if (IsMaximized())
-    return ui::SHOW_STATE_MAXIMIZED;
+    return ui::mojom::WindowShowState::kMaximized;
   if (IsFullscreen()) {
-    return ui::SHOW_STATE_FULLSCREEN;
+    return ui::mojom::WindowShowState::kFullscreen;
   }
 
   // Use kRestoreShowStateKey to get the window restore show state in case a
   // window is minimized/hidden.
-  ui::WindowShowState restore_state = widget()->GetNativeWindow()->GetProperty(
-      aura::client::kRestoreShowStateKey);
+  ui::mojom::WindowShowState restore_state =
+      widget()->GetNativeWindow()->GetProperty(
+          aura::client::kRestoreShowStateKey);
   return GetRestorableState(restore_state);
 }
 

@@ -15,7 +15,7 @@
 # run virtual test suites.
 virtual/* [ Skip ]
 
-# StylableSelect Crashes
+# CustomizableSelect Crashes
 crbug.com/1401767 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Crash ]
 
 # Intentional skips for media tests using proprietary codecs.

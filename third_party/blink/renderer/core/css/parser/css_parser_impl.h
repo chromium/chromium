@@ -193,7 +193,7 @@ class CORE_EXPORT CSSParserImpl {
                        StyleRule* parent_rule_for_nesting,
                        T callback);
 
-  // These functions update the range/stream they're given
+  // These functions update the stream they're given
   StyleRuleBase* ConsumeAtRule(CSSParserTokenStream&,
                                AllowedRulesType,
                                CSSNestingType,

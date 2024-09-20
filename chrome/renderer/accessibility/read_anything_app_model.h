@@ -8,6 +8,8 @@
 #include <map>
 
 #include "base/containers/contains.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
@@ -32,6 +34,13 @@ class AXSerializableTree;
 // Anything WebUI app.
 class ReadAnythingAppModel {
  public:
+  // Allows one to observer changes in the model state.
+  class ModelObserver : public base::CheckedObserver {
+   public:
+    virtual void OnTreeAdded(ui::AXTree* tree) = 0;
+    virtual void OnTreeRemoved(ui::AXTree* tree) = 0;
+  };
+
   ReadAnythingAppModel();
   ~ReadAnythingAppModel();
   ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
@@ -243,6 +252,9 @@ class ReadAnythingAppModel {
   void set_is_pdf(bool is_pdf) { is_pdf_ = is_pdf; }
   bool is_pdf() const { return is_pdf_; }
 
+  void AddObserver(ModelObserver* observer);
+  void RemoveObserver(ModelObserver* observer);
+
  private:
   void EraseTree(const ui::AXTreeID& tree_id);
 
@@ -366,6 +378,9 @@ class ReadAnythingAppModel {
   // asynchronously from the language determination so we need to keep track of
   // that here.
   bool requires_tree_lang_ = false;
+
+  // List of observers of model state changes.
+  base::ObserverList<ModelObserver, /*check_empty=*/true> observers_;
 
   base::WeakPtrFactory<ReadAnythingAppModel> weak_ptr_factory_{this};
 };

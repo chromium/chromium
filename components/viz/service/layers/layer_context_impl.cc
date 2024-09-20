@@ -87,9 +87,12 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   if (node.element_id) {
     tree.SetElementIdForNodeId(node.id, node.element_id);
   }
+  if (node.local != wire.local || node.origin != wire.origin ||
+      node.scroll_offset != wire.scroll_offset) {
+    node.needs_local_transform_update = true;
+  }
   node.local = wire.local;
   node.origin = wire.origin;
-  node.post_translation = wire.post_translation;
   node.scroll_offset = wire.scroll_offset;
   node.snap_amount = wire.snap_amount;
 
@@ -113,12 +116,6 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
 
   node.sorting_context_id = wire.sorting_context_id;
-
-  // SUBTLE: This flag signifies that we need to recompute transforms before the
-  // next draw. It's ORed so that if we get two updates before the next draw,
-  // one with true here and then one with false, we'll still recompute
-  // transforms before drawing.
-  node.needs_local_transform_update |= wire.needs_local_transform_update;
 
   node.has_potential_animation = wire.has_potential_animation;
   node.is_currently_animating = wire.is_currently_animating;

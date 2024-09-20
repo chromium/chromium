@@ -921,7 +921,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     TransportSecurityState* transport_security_state,
     SSLConfigService* ssl_config_service,
     std::unique_ptr<QuicServerInfo> server_info,
-    const QuicSessionKey& session_key,
+    QuicSessionAliasKey session_alias_key,
     bool require_confirmation,
     bool migrate_session_early_v2,
     bool migrate_sessions_on_network_change_v2,
@@ -953,7 +953,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
                                       /*visitor=*/nullptr,
                                       config,
                                       connection->supported_versions()),
-      session_key_(session_key),
+      session_alias_key_(std::move(session_alias_key)),
+      session_key_(session_alias_key_.session_key()),
       require_confirmation_(require_confirmation),
       migrate_session_early_v2_(migrate_session_early_v2),
       migrate_session_on_network_change_v2_(
@@ -998,7 +999,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       std::move(socket), clock, this, yield_after_packets, yield_after_duration,
       report_ecn, net_log_));
   crypto_stream_ = crypto_client_stream_factory->CreateQuicCryptoClientStream(
-      session_key.server_id(), this,
+      session_key_.server_id(), this,
       std::make_unique<ProofVerifyContextChromium>(cert_verify_flags, net_log_),
       crypto_config_->GetConfig());
   set_debug_visitor(http3_logger_.get());
@@ -1007,7 +1008,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
   migrate_back_to_default_timer_.SetTaskRunner(task_runner_.get());
   net_log_.BeginEvent(NetLogEventType::QUIC_SESSION, [&] {
     return NetLogQuicClientSessionParams(
-        net_log, &session_key, connection_id(),
+        net_log, &session_key_, connection_id(),
         connection->client_connection_id(), supported_versions(),
         cert_verify_flags, require_confirmation_, ech_config_list_);
   });

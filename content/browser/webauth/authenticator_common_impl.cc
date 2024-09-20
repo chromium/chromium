@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -29,15 +30,19 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/client_data_json.h"
+#include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
+#include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "crypto/sha2.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -648,6 +653,87 @@ std::vector<blink::mojom::WebAuthnClientCapabilityPtr> InsertIsPPAACapability(
   return capabilities;
 }
 
+void DeleteUnacceptedVirtualAuthenticatorCreds(
+    RenderFrameHost* render_frame_host,
+    std::string_view relying_party_id,
+    base::span<uint8_t> user_id,
+    base::span<std::vector<uint8_t>> all_accepted_credentials_ids) {
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+      AuthenticatorEnvironment::GetInstance()
+          ->MaybeGetVirtualAuthenticatorManager(frame_tree_node);
+  if (!virtual_authenticator_manager) {
+    return;
+  }
+  for (VirtualAuthenticator* authenticator :
+       virtual_authenticator_manager->GetAuthenticators()) {
+    std::vector<std::vector<uint8_t>> credential_ids_to_remove;
+    for (const auto& registration : authenticator->registrations()) {
+      if (registration.second.user && registration.second.rp &&
+          registration.second.rp->id == relying_party_id &&
+          registration.second.user->id == user_id &&
+          !base::Contains(all_accepted_credentials_ids, registration.first)) {
+        credential_ids_to_remove.push_back(registration.first);
+      }
+    }
+    for (const std::vector<uint8_t>& credential_id : credential_ids_to_remove) {
+      authenticator->RemoveRegistration(credential_id);
+    }
+  }
+}
+
+void UpdateVirtualAuthenticatorUserCreds(RenderFrameHost* render_frame_host,
+                                         std::string_view relying_party_id,
+                                         base::span<uint8_t> user_id,
+                                         std::string_view name,
+                                         std::string_view display_name) {
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+      AuthenticatorEnvironment::GetInstance()
+          ->MaybeGetVirtualAuthenticatorManager(frame_tree_node);
+  if (!virtual_authenticator_manager) {
+    return;
+  }
+  for (VirtualAuthenticator* authenticator :
+       virtual_authenticator_manager->GetAuthenticators()) {
+    for (auto& registration : authenticator->registrations()) {
+      if (registration.second.user && registration.second.rp &&
+          registration.second.rp->id == relying_party_id &&
+          registration.second.user->id == user_id) {
+        registration.second.user->name = name;
+        registration.second.user->display_name = display_name;
+      }
+    }
+  }
+}
+
+void DeleteVirtualAuthenticatorCreds(
+    RenderFrameHost* render_frame_host,
+    const std::vector<uint8_t>& passkey_credential_id,
+    std::string_view relying_party_id) {
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+      AuthenticatorEnvironment::GetInstance()
+          ->MaybeGetVirtualAuthenticatorManager(frame_tree_node);
+  if (!virtual_authenticator_manager) {
+    return;
+  }
+  for (VirtualAuthenticator* authenticator :
+       virtual_authenticator_manager->GetAuthenticators()) {
+    for (const auto& registration : authenticator->registrations()) {
+      if (registration.second.rp &&
+          registration.second.rp->id == relying_party_id &&
+          registration.first == passkey_credential_id) {
+        authenticator->RemoveRegistration(passkey_credential_id);
+        return;
+      }
+    }
+  }
+}
+
 }  // namespace
 
 // RequestState contains all state that is specific to a single WebAuthn call.
@@ -694,9 +780,6 @@ struct AuthenticatorCommonImpl::RequestState {
                 device::MakeCredentialOptions,
                 device::CtapGetAssertionOptions>
       request_options;
-  // awaiting_attestation_response_ is true if the embedder has been queried
-  // about an attestsation decision and the response is still pending.
-  bool awaiting_attestation_response = false;
   blink::mojom::AuthenticatorStatus error_awaiting_user_acknowledgement =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
   bool discoverable_credential_request = false;
@@ -909,6 +992,11 @@ void AuthenticatorCommonImpl::MakeCredential(
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     MakeCredentialCallback callback) {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.MakeCredential.Start"));
+  callback = base::BindOnce(
+      &AuthenticatorCommonImpl::GetMetricsWrappedMakeCredentialCallback,
+      weak_factory_.GetWeakPtr(), std::move(callback));
+
   if (req_state_) {
     std::move(callback).Run(blink::mojom::AuthenticatorStatus::PENDING_REQUEST,
                             nullptr, nullptr);
@@ -1265,6 +1353,16 @@ void AuthenticatorCommonImpl::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     blink::mojom::PaymentOptionsPtr payment_options,
     GetAssertionCallback callback) {
+  if (options->is_conditional) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Conditional.Start"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("WebAuthn.GetAssertion.Start"));
+  }
+  callback = base::BindOnce(
+      &AuthenticatorCommonImpl::GetMetricsWrappedGetAssertionCallback,
+      weak_factory_.GetWeakPtr(), std::move(callback));
+
   if (req_state_) {
     std::move(callback).Run(blink::mojom::AuthenticatorStatus::PENDING_REQUEST,
                             nullptr, nullptr);
@@ -1482,6 +1580,10 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   }
 
   req_state_->request_delegate->SetConditionalRequest(options->is_conditional);
+  if (options->is_conditional) {
+    req_state_->request_delegate->SetAmbientCredentialTypes(
+        options->requested_credential_type_flags);
+  }
 
   req_state_->request_delegate->SetCredentialIdFilter(
       options->allow_credentials);
@@ -1610,20 +1712,18 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
   // collect the results of the check with the `BarrierCallback`), update this
   // constant to match the number of `barrier_callback.Run()` calls. Otherwise,
   // the `GetClientCapabilities()` call will crash or timeout.
-  constexpr size_t kNumberOfComputedCapabilities = 5;
+  constexpr size_t kNumberOfComputedCapabilities = 4;
   auto barrier_callback =
       base::BarrierCallback<blink::mojom::WebAuthnClientCapabilityPtr>(
           kNumberOfComputedCapabilities, std::move(completion_callback));
 
-  // TODO(crbug.com/360327828): Update when supported.
-  barrier_callback.Run(
-      MakeCapability(client_capabilities::kConditionalCreate, false));
-  // TODO(crbug.com/360327828): Implement `isHybridTransportAvailable()`.
-  barrier_callback.Run(
-      MakeCapability(client_capabilities::kHybridTransport, false));
   barrier_callback.Run(MakeCapability(
       client_capabilities::kRelatedOrigins,
       base::FeatureList::IsEnabled(device::kWebAuthnRelatedOrigin)));
+
+  IsHybridTransportSupported(
+      base::BindOnce(&MakeCapability, client_capabilities::kHybridTransport)
+          .Then(barrier_callback));
 
   IsUvpaaAvailableInternal(
       caller_origin,
@@ -1635,6 +1735,27 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
       caller_origin,
       base::BindOnce(&MakeCapability, client_capabilities::kConditionalGet)
           .Then(barrier_callback));
+}
+
+void AuthenticatorCommonImpl::IsHybridTransportSupported(
+    base::OnceCallback<void(bool)> callback) {
+  // Similar to Web Bluetooth API (`navigator.bluetooth.getAvailability()`) we
+  // want respect the policy and return `false` if the policy is enforced.
+  if (!GetRenderFrameHost()->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kBluetooth)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (!device::BluetoothAdapterFactory::Get()->IsLowEnergySupported()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  device::BluetoothAdapterFactory::Get()->GetAdapter(
+      base::BindOnce([](scoped_refptr<device::BluetoothAdapter> adapter) {
+        return adapter && adapter->IsPresent();
+      }).Then(std::move(callback)));
 }
 
 void AuthenticatorCommonImpl::IsUvpaaAvailableInternal(
@@ -1808,24 +1929,93 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
     CompleteReportRequest(rp_id_validation_result);
     return;
   }
+  RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (options->all_accepted_credentials) {
+    DeleteUnacceptedVirtualAuthenticatorCreds(
+        render_frame_host, req_state_->relying_party_id,
+        options->all_accepted_credentials->user_id,
+        options->all_accepted_credentials->all_accepted_credentials_ids);
     GetWebAuthenticationDelegate()->DeleteUnacceptedPasskeys(
-        WebContents::FromRenderFrameHost(GetRenderFrameHost()),
+        WebContents::FromRenderFrameHost(render_frame_host),
         req_state_->relying_party_id,
         options->all_accepted_credentials->user_id,
         options->all_accepted_credentials->all_accepted_credentials_ids);
   } else if (options->current_user_details) {
+    UpdateVirtualAuthenticatorUserCreds(
+        render_frame_host, req_state_->relying_party_id,
+        options->current_user_details->user_id,
+        options->current_user_details->name,
+        options->current_user_details->display_name);
     GetWebAuthenticationDelegate()->UpdateUserPasskeys(
-        WebContents::FromRenderFrameHost(GetRenderFrameHost()),
-        req_state_->relying_party_id, options->current_user_details->user_id,
+        WebContents::FromRenderFrameHost(render_frame_host),
+        req_state_->caller_origin, req_state_->relying_party_id,
+        options->current_user_details->user_id,
         options->current_user_details->name,
         options->current_user_details->display_name);
   } else if (options->unknown_credential_id) {
+    DeleteVirtualAuthenticatorCreds(render_frame_host,
+                                    *options->unknown_credential_id,
+                                    req_state_->relying_party_id);
     GetWebAuthenticationDelegate()->DeletePasskey(
-        WebContents::FromRenderFrameHost(GetRenderFrameHost()),
+        WebContents::FromRenderFrameHost(render_frame_host),
         *options->unknown_credential_id, req_state_->relying_party_id);
   }
   CompleteReportRequest(blink::mojom::AuthenticatorStatus::SUCCESS, nullptr);
+}
+
+void AuthenticatorCommonImpl::GetMetricsWrappedMakeCredentialCallback(
+    MakeCredentialCallback original_callback,
+    blink::mojom::AuthenticatorStatus status,
+    blink::mojom::MakeCredentialAuthenticatorResponsePtr authenticator_response,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
+  if (req_state_ &&
+      req_state_->request_result == CredentialRequestResult::kTimeout) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.Timeout"));
+  } else if (req_state_ && req_state_->request_result ==
+                               CredentialRequestResult::kUserCancelled) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.Cancelled"));
+  } else if (status == blink::mojom::AuthenticatorStatus::SUCCESS) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.Success"));
+  } else if (status == blink::mojom::AuthenticatorStatus::ABORT_ERROR) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.Aborted"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.Failure"));
+  }
+  std::move(original_callback)
+      .Run(status, std::move(authenticator_response),
+           std::move(dom_exception_details));
+}
+
+void AuthenticatorCommonImpl::GetMetricsWrappedGetAssertionCallback(
+    blink::mojom::Authenticator::GetAssertionCallback callback,
+    blink::mojom::AuthenticatorStatus status,
+    blink::mojom::GetAssertionAuthenticatorResponsePtr authenticator_response,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
+  if (req_state_ &&
+      req_state_->request_result == CredentialRequestResult::kTimeout) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Timeout"));
+  } else if (req_state_ && req_state_->request_result ==
+                               CredentialRequestResult::kUserCancelled) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Cancelled"));
+  } else if (status == blink::mojom::AuthenticatorStatus::SUCCESS) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Success"));
+  } else if (status == blink::mojom::AuthenticatorStatus::ABORT_ERROR) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Aborted"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Failure"));
+  }
+  std::move(callback).Run(status, std::move(authenticator_response),
+                          std::move(dom_exception_details));
 }
 
 void AuthenticatorCommonImpl::Cancel() {
@@ -2008,99 +2198,47 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
           GetBrowserContext(), req_state_->caller_origin,
           req_state_->relying_party_id)) {
     attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
+  } else if (response_data->attestation_object
+                 .IsAttestationCertificateInappropriatelyIdentifying() &&
+             !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
+                 GetBrowserContext(), req_state_->caller_origin,
+                 req_state_->relying_party_id)) {
+    // If the RP sees a "none" attestation with a zero AAGUID after requesting
+    // "direct" attestation then they can reasonably conclude that it was one of
+    // the tokens with inappropriate certs. But this is better than disclosing
+    // the certificate itself, and these tokens are vanishingly rare now.
+    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
   } else if (attestation == device::AttestationConveyancePreference::
                                 kEnterpriseApprovedByBrowser) {
     // If enterprise attestation was approved by policy then it can be
     // returned immediately.
     attestation_erasure = AttestationErasureOption::kIncludeAttestation;
-  } else if (attestation == device::AttestationConveyancePreference::
-                                kEnterpriseIfRPListedOnAuthenticator &&
-             !response_data->enterprise_attestation_returned) {
-    // If enterprise attestation was requested, not approved by policy, and
-    // not approved by the authenticator, then any attestation is stripped.
-    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
-  } else if (is_transport_used_cable) {
-    // Attestation is not returned when caBLEv2 is used, but the AAGUID is
-    // maintained.
-    attestation_erasure =
-        AttestationErasureOption::kEraseAttestationButIncludeAaguid;
-  } else if (is_transport_used_internal) {
+  } else if (response_data->attestation_object.IsSelfAttestation()) {
+    // Self attestation is just a self-signature and carries no identifying
+    // information.
+    attestation_erasure = AttestationErasureOption::kIncludeAttestation;
+  } else if (is_transport_used_internal || is_transport_used_cable) {
     // Direct attestation from platform authenticators is known to be
-    // privacy preserving, so we always return it when requested. Also,
-    // counter to what the WebAuthn spec says, we do not erase the AAGUID
+    // privacy preserving, so we always return it when requested. We follow the
+    // same rule when the platform authenticator is used over hybrid so that
+    // sites see a consistent experience between syncing and using the phone.
+    // Also, counter to what the WebAuthn spec says, we do not erase the AAGUID
     // even when attestation wasn't requested.
     attestation_erasure =
         attestation != device::AttestationConveyancePreference::kNone
             ? AttestationErasureOption::kIncludeAttestation
             : AttestationErasureOption::kEraseAttestationButIncludeAaguid;
-  } else if (attestation == device::AttestationConveyancePreference::kNone &&
-             response_data->attestation_object.IsSelfAttestation()) {
-    attestation_erasure = AttestationErasureOption::kIncludeAttestation;
   } else if (attestation == device::AttestationConveyancePreference::kNone) {
     attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
-  }
-
-  if (attestation_erasure.has_value()) {
-    CompleteMakeCredentialRequest(
-        blink::mojom::AuthenticatorStatus::SUCCESS,
-        CreateMakeCredentialResponse(std::move(*response_data),
-                                     *attestation_erasure),
-        nullptr, Focus::kDoCheck);
   } else {
-    req_state_->awaiting_attestation_response = true;
-    req_state_->request_delegate->ShouldReturnAttestation(
-        req_state_->relying_party_id, authenticator,
-        response_data->enterprise_attestation_returned,
-        base::BindOnce(
-            &AuthenticatorCommonImpl::OnRegisterResponseAttestationDecided,
-            weak_factory_.GetWeakPtr(),
-            attestation_erasure.value_or(
-                AttestationErasureOption::kIncludeAttestation),
-            std::move(*response_data)));
-  }
-}
-
-void AuthenticatorCommonImpl::OnRegisterResponseAttestationDecided(
-    AttestationErasureOption attestation_erasure,
-    device::AuthenticatorMakeCredentialResponse response_data,
-    bool attestation_permitted) {
-  req_state_->awaiting_attestation_response = false;
-  if (!req_state_->request_handler) {
-    // The request has already been cleaned up, probably because a navigation
-    // occurred while the permissions prompt was pending.
-    return;
-  }
-
-  if (!attestation_permitted) {
-    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
-  }
-
-  // The check for IsAttestationCertificateInappropriatelyIdentifying is
-  // performed after the permissions prompt, even though we know the answer
-  // before, because this still effectively discloses the make & model of
-  // the authenticator: If an RP sees a "none" attestation from Chrome after
-  // requesting direct attestation then it knows that it was one of the
-  // tokens with inappropriate certs.
-  if (response_data.attestation_object
-          .IsAttestationCertificateInappropriatelyIdentifying() &&
-      !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
-          GetBrowserContext(), req_state_->caller_origin,
-          req_state_->relying_party_id)) {
-    // The attestation response is incorrectly individually identifiable, but
-    // the consent is for make & model information about a token, not for
-    // individually-identifiable information. Erase the attestation to stop it
-    // begin a tracking signal.
-
-    // The only way to get the underlying attestation will be to list the RP ID
-    // in the enterprise policy, because that enables the individual attestation
-    // bit in the register request and permits individual attestation generally.
-    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
+    // The UI will have shown a notification that attestation was requested.
+    attestation_erasure = AttestationErasureOption::kIncludeAttestation;
   }
 
   CompleteMakeCredentialRequest(
       blink::mojom::AuthenticatorStatus::SUCCESS,
-      CreateMakeCredentialResponse(std::move(response_data),
-                                   attestation_erasure),
+      CreateMakeCredentialResponse(std::move(*response_data),
+                                   *attestation_erasure),
       nullptr, Focus::kDoCheck);
 }
 
@@ -2302,10 +2440,6 @@ void AuthenticatorCommonImpl::BeginRequestTimeout(
 // TODO(crbug.com/41371792): Add web tests to verify timeouts are
 // indistinguishable from NOT_ALLOWED_ERROR cases.
 void AuthenticatorCommonImpl::OnTimeout() {
-  if (req_state_->awaiting_attestation_response) {
-    req_state_->awaiting_attestation_response = false;
-  }
-
   if (!req_state_->request_delegate) {
     // If no UI has been shown yet (likely because we timed out waiting for RP
     // ID validation) then simply cancel the request.

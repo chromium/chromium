@@ -16,6 +16,10 @@
 
 namespace browsing_data {
 
+// Histogram name for when an action happens in Delete Browsing Data dialog used
+// in all platforms.
+extern const char kDeleteBrowsingDataDialogHistogram[];
+
 // Browsing data types as seen in the Android and Desktop UI.
 //
 // A Java counterpart will be generated for this enum.
@@ -74,6 +78,47 @@ enum class DeleteBrowsingDataAction {
   kPageInfoResetPermissions = 7,
   kMaxValue = kPageInfoResetPermissions,
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DeleteBrowsingDataDialogAction)
+enum class DeleteBrowsingDataDialogAction {
+  kBrowsingHistoryToggledOn = 0,
+  kBrowsingHistoryToggledOff = 1,
+  kTabsToggledOn = 2,
+  kTabsToggledOff = 3,
+  kSiteDataToggledOn = 4,
+  kSiteDataToggledOff = 5,
+  kCacheToggledOn = 6,
+  kCacheToggledOff = 7,
+  kPasswordsToggledOn = 8,
+  kPasswordsToggledOff = 9,
+  kAutofillToggledOn = 10,
+  kAutofillToggledOff = 11,
+  kUpdateDataTypesSelected = 12,
+  kCancelDataTypesSelected = 13,
+  kSignoutLinkOpened = 14,
+  kLast15MinutesSelected = 15,
+  kLastHourSelected = 16,
+  kLastDaySelected = 17,
+  kLastWeekSelected = 18,
+  kLastFourWeeksSelected = 19,
+  kOlderThan30DaysSelected = 20,
+  kAllTimeSelected = 21,
+  kBrowsingDataSelected = 22,
+  kSearchHistoryLinkOpened = 23,
+  kMyActivityLinkedOpened = 24,
+  kDeletionSelected = 25,
+  kCancelSelected = 26,
+  kDialogDismissedImplicitly = 27,
+  kMenuItemEntryPointSelected = 28,
+  kHistoryEntryPointSelected = 29,
+  kPrivacyEntryPointSelected = 30,
+  kKeyboardEntryPointSelected = 31,
+  kMaxValue = kKeyboardEntryPointSelected,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:DeleteBrowsingDataDialogAction)
 
 // Calculate the begin time for the deletion range specified by |time_period|.
 base::Time CalculateBeginDeleteTime(TimePeriod time_period);

@@ -110,7 +110,8 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
         {// TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having
          // to disable this feature.
          features::kHttpsUpgrades,
-         content_settings::features::kTrackingProtection3pcd});
+         content_settings::features::kTrackingProtection3pcd,
+         privacy_sandbox::kTrackingProtection3pcdUx});
   }
 
   PageInfoBubbleViewDialogBrowserTest(
@@ -477,8 +478,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 // set. All permissions will show regardless of its factory default value.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_AllowAllPermissions) {
-  // Last updated in crrev.com/c/5642254.
-  set_baseline("5642254");
+  // Last updated in crrev.com/c/5784580.
+  set_baseline("5784580");
   ShowAndVerifyUi();
 }
 
@@ -486,8 +487,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 // set. All permissions will show regardless of its factory default value.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_BlockAllPermissions) {
-  // Last updated in crrev.com/c/5642254.
-  set_baseline("5642254");
+  // Last updated in crrev.com/c/5784580.
+  set_baseline("5784580");
   ShowAndVerifyUi();
 }
 
@@ -744,7 +745,8 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
   PageInfoBubbleViewCookiesSubpageBrowserTest() {
     feature_list_.InitWithFeatures(
         {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-        {content_settings::features::kTrackingProtection3pcd});
+        {content_settings::features::kTrackingProtection3pcd,
+         privacy_sandbox::kTrackingProtection3pcdUx});
   }
 
   static base::Time GetReferenceTime() {

@@ -14,8 +14,7 @@
 class ChromeNewWindowDelegateProvider : public ash::NewWindowDelegateProvider {
  public:
   ChromeNewWindowDelegateProvider(
-      std::unique_ptr<ash::NewWindowDelegate> ash_new_window_delegate,
-      std::unique_ptr<ash::NewWindowDelegate> crosapi_new_window_delegate);
+      std::unique_ptr<ash::NewWindowDelegate> ash_new_window_delegate);
   ChromeNewWindowDelegateProvider(const ChromeNewWindowDelegateProvider&) =
       delete;
   ChromeNewWindowDelegateProvider& operator=(
@@ -28,7 +27,6 @@ class ChromeNewWindowDelegateProvider : public ash::NewWindowDelegateProvider {
 
  private:
   std::unique_ptr<ash::NewWindowDelegate> ash_new_window_delegate_;
-  std::unique_ptr<ash::NewWindowDelegate> crosapi_new_window_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_NEW_WINDOW_CHROME_NEW_WINDOW_DELEGATE_PROVIDER_H_

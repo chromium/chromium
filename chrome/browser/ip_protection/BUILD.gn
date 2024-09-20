@@ -37,6 +37,7 @@ static_library("ip_protection") {
     "//components/signin/public/identity_manager:identity_manager",
     "//content/public/browser",
     "//google_apis:google_apis",
+    "//google_apis/common:request_util",
     "//mojo/public/cpp/bindings:bindings",
     "//net:net",
     "//net/third_party/quiche:blind_sign_auth",

@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Onbekende produk <ph name="PRODUCT_ID" /> vanaf verkoper <ph name="VENDOR_ID" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Kon nie crx-lêer vervang nie. Gaan na om te sien of die lêer gebruik word.</translation>
 <translation id="3163201441334626963">Onbekende produk <ph name="PRODUCT_ID" /> vanaf verkoper <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Kan nie uitbreiding uitpak nie. Om 'n uitbreiding veilig uit te pak, moet daar 'n pad na jou profielgids wees wat met 'n skyfletter begin en nie 'n kruising, koppelpunt of simskakel bevat nie. Geen so 'n pad bestaan vir jou profiel nie.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> vanaf verkoper <ph name="VENDOR_ID" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Invoerwaarde vir private sleutel moet 'n geldige pad wees.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Die administrateur van hierdie masjien vereis dat <ph name="EXTENSION_NAME" /> geïnstalleer moet wees. Dit kan nie gedeïnstalleer word nie.</translation>
 <translation id="6027032947578871493">Onbekende produk <ph name="PRODUCT_ID" /> vanaf <ph name="VENDOR_NAME" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> vanaf verkoper <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Kan nie uitbreiding uitpak nie. Om 'n uitbreiding veilig uit te pak, moet daar 'n pad na jou profielgids wees wat nie 'n simskakel bevat nie. Geen sodanige pad bestaan vir jou profiel nie.</translation>
 <translation id="6322279351188361895">Kon nie private sleutel lees nie.</translation>
 <translation id="6391538222494443604">Invoergids moet bestaan.</translation>
 <translation id="641087317769093025">Kon nie uitbreiding dekompakteer nie</translation>

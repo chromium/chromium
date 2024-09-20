@@ -100,6 +100,8 @@ source_set("omnibox_internal") {
     "omnibox_text_field_ios.mm",
     "omnibox_text_field_paste_delegate.h",
     "omnibox_text_field_paste_delegate.mm",
+    "omnibox_thumbnail_button.h",
+    "omnibox_thumbnail_button.mm",
     "omnibox_view_consumer.h",
     "omnibox_view_controller.h",
     "omnibox_view_controller.mm",

@@ -19,14 +19,18 @@ class HistoryService;
 
 namespace ios {
 // Singleton that owns all HistoryServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class HistoryServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358299863): Remove when fully migrated.
   static history::HistoryService* GetForBrowserState(
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       ServiceAccessType access_type);
-  static history::HistoryService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state,
+
+  static history::HistoryService* GetForProfile(ProfileIOS* profile,
+                                                ServiceAccessType access_type);
+  static history::HistoryService* GetForProfileIfExists(
+      ProfileIOS* profile,
       ServiceAccessType access_type);
   static HistoryServiceFactory* GetInstance();
 

@@ -112,10 +112,9 @@ bool IsRedirectAllowedByCSP(
   // When reaching here, renderer should have be gone, or at least
   // `KeepAliveURLLoader::forwarding_client_` is disconnected.
   return KeepAliveURLLoaderCSPContext()
-      .IsAllowedByCsp(
-          policies, directive, url, url_before_redirects, has_followed_redirect,
-          /*is_response_check=*/false, empty_source_location, disposition,
-          /*is_form_submission=*/false)
+      .IsAllowedByCsp(policies, directive, url, url_before_redirects,
+                      has_followed_redirect, empty_source_location, disposition,
+                      /*is_form_submission=*/false)
       .IsAllowed();
 }
 

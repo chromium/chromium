@@ -42,6 +42,10 @@ const char kSafetyHubCompromiedPasswordOriginsCount[] =
     "passwordCheckCompromisedOriginsNum";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const char kBlocklistCheckCountHistogramName[] =
+    "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
+    "BlocklistCheckCount";
+
 const base::TimeDelta kMinTimeBetweenPasswordChecks = base::Hours(1);
 
 const base::TimeDelta kRevocationCleanUpThresholdWithDelayForTesting =

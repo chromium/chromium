@@ -142,8 +142,7 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
 
   switch (current_method_) {
     case Method::INVALID:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519: {
       DCHECK(config_->session_authz_client_factory);

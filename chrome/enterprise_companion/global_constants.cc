@@ -28,6 +28,8 @@
 
 namespace enterprise_companion {
 
+const char kCompanionAppId[] = ENTERPRISE_COMPANION_APPID;
+
 // Overrides JSON keys.
 const char kCrashUploadUrlKey[] = "crash_upload_url";
 const char kDMEncryptedReportingUrlKey[] = "dm_encrypted_reporting_url";

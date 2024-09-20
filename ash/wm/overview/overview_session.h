@@ -15,7 +15,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
@@ -334,10 +333,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   void UpdateFrameThrottling();
 
-  // TODO(http://b/361326120): Temporary function to create or destroy
-  // `tab_app_selection_widget_`.
-  void ToggleTabAppSelectionMenu();
-
   // DesksController::Observer:
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override;
@@ -443,7 +438,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
  private:
   friend class DesksAcceleratorsTest;
   friend class OverviewTestBase;
-  friend class TabAppSelectionViewTest;
   friend class TestOverviewItemsOnOverviewModeEndObserver;
   FRIEND_TEST_ALL_PREFIXES(SplitViewControllerTest,
                            ItemsRemovedFromOverviewOnSnap);
@@ -551,9 +545,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // The controller to manage the birch bars.
   std::unique_ptr<BirchBarController> birch_bar_controller_;
-
-  // TODO(http://b/361326120): This is not the right object to own this widget.
-  std::unique_ptr<TabAppSelectionHost> tab_app_selection_widget_;
 
   // Boolean to indicate whether chromeVox is enabled or not.
   bool chromevox_enabled_;

@@ -107,6 +107,9 @@ class ArcVmWorkingSetTrimExecutorTest : public testing::Test {
 };
 
 TEST_F(ArcVmWorkingSetTrimExecutorTest, NoTrimAgainIfLastTrimStillWorking) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(arc::kSkipDropCaches);
+
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ArcVmWorkingSetTrimExecutor::Trim, testing_profile(),

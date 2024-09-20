@@ -61,6 +61,7 @@ export interface PasswordDetailsCardElement {
     showPasswordButton: CrIconButtonElement,
     usernameValue: CredentialFieldElement,
     shareButton: CrButtonElement,
+    shareButtonContainer: HTMLElement,
   };
 }
 
@@ -318,7 +319,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     }
 
     this.registerHelpBubble(
-        PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID, this.$.shareButton);
+        PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID, this.$.shareButtonContainer);
   }
 }
 

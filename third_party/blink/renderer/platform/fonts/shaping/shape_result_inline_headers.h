@@ -141,7 +141,7 @@ struct ShapeResult::RunInfo final
 
     run->glyph_data_.CopyFromRange(glyphs);
 
-    float total_advance = 0;
+    InlineLayoutUnit total_advance;
     for (HarfBuzzRunGlyphData& glyph_data : run->glyph_data_) {
       glyph_data.character_index -= start;
       total_advance += glyph_data.advance;

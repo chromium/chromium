@@ -10,6 +10,7 @@
 @protocol PrimaryToolbarViewControllerDelegate;
 @protocol SharingPositioner;
 @protocol ToolbarAnimatee;
+@protocol ToolbarHeightDelegate;
 namespace web {
 class WebState;
 }
@@ -24,6 +25,8 @@ class WebState;
 // Delegate for `primaryToolbarViewController`. Should be non-nil before start.
 @property(nonatomic, weak) id<PrimaryToolbarViewControllerDelegate>
     viewControllerDelegate;
+/// Delegate that handles the toolbars height.
+@property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
 // Positioner for activity services attached to the toolbar
 - (id<SharingPositioner>)SharingPositioner;

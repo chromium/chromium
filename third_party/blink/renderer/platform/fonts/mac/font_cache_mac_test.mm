@@ -61,12 +61,6 @@ INSTANTIATE_TEST_SUITE_P(SystemUISyntheticBold,
                          testing::ValuesIn(Weights));
 
 TEST_P(FontCacheMacTest, SystemUISyntheticBoldCoreText) {
-  ScopedFontMatchingCTMigrationForTest scoped_feature(true);
-  TestSystemUISyntheticBold();
-}
-
-TEST_P(FontCacheMacTest, SystemUISyntheticBoldAppKit) {
-  ScopedFontMatchingCTMigrationForTest scoped_feature(false);
   TestSystemUISyntheticBold();
 }
 

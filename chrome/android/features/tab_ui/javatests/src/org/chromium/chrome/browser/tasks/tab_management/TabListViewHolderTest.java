@@ -87,6 +87,8 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -305,23 +307,27 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                     .with(TabProperties.IS_SELECTED, false)
                                     .with(TabProperties.TAB_CLICK_LISTENER, mMockSelectedListener)
                                     .with(
-                                            TabProperties.TAB_ACTION_BUTTON_LISTENER,
-                                            mMockCloseListener)
+                                            TabProperties.TAB_ACTION_BUTTON_DATA,
+                                            new TabActionButtonData(
+                                                    TabActionButtonType.CLOSE, mMockCloseListener))
                                     .build();
                     mStripModel =
                             new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_STRIP)
                                     .with(TabProperties.TAB_CLICK_LISTENER, mMockSelectedListener)
                                     .with(
-                                            TabProperties.TAB_ACTION_BUTTON_LISTENER,
-                                            mMockCloseListener)
+                                            TabProperties.TAB_ACTION_BUTTON_DATA,
+                                            new TabActionButtonData(
+                                                    TabActionButtonType.CLOSE, mMockCloseListener))
                                     .build();
                     mSelectableModel =
                             new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                                     .with(TabProperties.TAB_ACTION_STATE, TabActionState.SELECTABLE)
                                     .with(TabProperties.IS_SELECTED, false)
                                     .with(
-                                            TabProperties.TAB_ACTION_BUTTON_LISTENER,
-                                            mMockSelectedListener)
+                                            TabProperties.TAB_ACTION_BUTTON_DATA,
+                                            new TabActionButtonData(
+                                                    TabActionButtonType.SELECT,
+                                                    mMockSelectedListener))
                                     .with(TabProperties.TAB_CLICK_LISTENER, mMockSelectedListener)
                                     .with(
                                             TabProperties.TAB_LONG_CLICK_LISTENER,
@@ -390,6 +396,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testSelected() {
         testGridSelected(mTabGridView, mGridModel);
 
@@ -679,6 +686,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testClickToClose() {
         ImageView gridActionButton = mTabGridView.findViewById(R.id.action_button);
         ImageView listActionButton = mTabListView.findViewById(R.id.end_button);
@@ -720,7 +728,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         mCloseClicked.set(false);
 
-        mGridModel.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, null);
+        mGridModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, null);
         gridActionButton.performClick();
         Assert.assertFalse(mCloseClicked.get());
         listActionButton.performClick();
@@ -1063,6 +1071,34 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         assertEquals(notificationView.getVisibility(), View.GONE);
         mStripModel.set(TabProperties.HAS_NOTIFICATION_BUBBLE, true);
         assertEquals(notificationView.getVisibility(), View.VISIBLE);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testTabStripNotificationBubble_contentDescription() {
+        final String title = "vacation and relaxing";
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        ImageButton button = mTabStripView.findViewById(R.id.tab_strip_item_button);
+        mStripModel.set(TabProperties.TITLE, title);
+
+        // Test that as long as the strip item is selected, the notification has no bearing.
+        mStripModel.set(TabProperties.IS_SELECTED, true);
+        mStripModel.set(TabProperties.HAS_NOTIFICATION_BUBBLE, true);
+        assertEquals(
+                button.getContentDescription(),
+                resources.getString(R.string.accessibility_tabstrip_btn_close_tab, title));
+        // Test that this tab is not the selected tab but has a notification.
+        mStripModel.set(TabProperties.IS_SELECTED, false);
+        assertEquals(
+                button.getContentDescription(),
+                resources.getString(R.string.accessibility_tabstrip_tab_notification, title));
+        // Test that this tab has no notification.
+        mStripModel.set(TabProperties.HAS_NOTIFICATION_BUBBLE, false);
+        assertEquals(
+                button.getContentDescription(),
+                resources.getString(R.string.accessibility_tabstrip_tab, title));
     }
 
     private void testFaviconFetcher(

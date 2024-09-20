@@ -250,7 +250,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   // Instead of overriding this, subclasses that want custom painting should use
   // PaintButtonContents.
   void OnPaint(gfx::Canvas* canvas) final;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
@@ -353,6 +352,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   FRIEND_TEST_ALL_PREFIXES(BlueButtonTest, Border);
 
   void ReleaseAnchorHighlight();
+  void UpdateAccessibleCheckedState();
 
   // The text shown in a tooltip.
   std::u16string tooltip_text_;

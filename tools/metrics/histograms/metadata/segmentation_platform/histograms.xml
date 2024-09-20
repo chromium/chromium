@@ -878,7 +878,7 @@ chromium-metrics-reviews@google.com.
     load time to the time next immediate sync session update is received. This
     includes the network delay for receiving the sync session updates. The
     metric is recorded everytime a tab is loaded and a sync session update is
-    recieved after it.
+    received after it.
   </summary>
 </histogram>
 

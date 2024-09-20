@@ -276,6 +276,13 @@ ProgressBarConfig WindowAndroid::GetProgressBarConfig() {
   return config;
 }
 
+ModalDialogManagerBridge* WindowAndroid::GetModalDialogManagerBridge() {
+  JNIEnv* env = AttachCurrentThread();
+  return reinterpret_cast<ModalDialogManagerBridge*>(
+      Java_WindowAndroid_getNativeModalDialogManagerBridge(env,
+                                                           GetJavaObject()));
+}
+
 void WindowAndroid::SetWideColorEnabled(bool enabled) {
   JNIEnv* env = AttachCurrentThread();
   Java_WindowAndroid_setWideColorEnabled(env, GetJavaObject(), enabled);

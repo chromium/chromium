@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -37,12 +38,15 @@ namespace content {
 
 namespace {
 
-void VerifyPowerStateInChildProcess(mojom::PowerMonitorTest* power_monitor_test,
-                                    bool expected_state) {
+void VerifyPowerStateInChildProcess(
+    mojom::PowerMonitorTest* power_monitor_test,
+    base::PowerStateObserver::BatteryPowerStatus expected_state) {
   base::RunLoop run_loop;
   power_monitor_test->QueryNextState(base::BindOnce(
-      [](base::RunLoop* loop, bool expected_state, bool on_battery_power) {
-        EXPECT_EQ(expected_state, on_battery_power);
+      [](base::RunLoop* loop,
+         base::PowerStateObserver::BatteryPowerStatus expected_state,
+         base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+        EXPECT_EQ(expected_state, battery_power_status);
         loop->Quit();
       },
       &run_loop, expected_state));
@@ -69,18 +73,20 @@ class MockPowerMonitorMessageBroadcaster : public device::mojom::PowerMonitor {
                      pending_power_monitor_client) override {
     mojo::Remote<device::mojom::PowerMonitorClient> power_monitor_client(
         std::move(pending_power_monitor_client));
-    power_monitor_client->PowerStateChange(on_battery_power_);
+    power_monitor_client->PowerStateChange(battery_power_status_);
     clients_.Add(std::move(power_monitor_client));
   }
 
-  void OnPowerStateChange(bool on_battery_power) {
-    on_battery_power_ = on_battery_power;
+  void OnPowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+    battery_power_status_ = battery_power_status;
     for (auto& client : clients_)
-      client->PowerStateChange(on_battery_power);
+      client->PowerStateChange(battery_power_status);
   }
 
  private:
-  bool on_battery_power_ = false;
+  base::PowerStateObserver::BatteryPowerStatus battery_power_status_ =
+      base::PowerStateObserver::BatteryPowerStatus::kUnknown;
 
   mojo::ReceiverSet<device::mojom::PowerMonitor> receivers_;
   mojo::RemoteSet<device::mojom::PowerMonitorClient> clients_;
@@ -160,8 +166,9 @@ class PowerMonitorTest : public ContentBrowserTest {
   int request_count_from_utility() { return request_count_from_utility_; }
   int request_count_from_gpu() { return request_count_from_gpu_; }
 
-  void SimulatePowerStateChange(bool on_battery_power) {
-    power_monitor_message_broadcaster_.OnPowerStateChange(on_battery_power);
+  void SimulatePowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+    power_monitor_message_broadcaster_.OnPowerStateChange(battery_power_status);
   }
 
  private:
@@ -233,13 +240,26 @@ IN_PROC_BROWSER_TEST_F(PowerMonitorTest, TestRendererProcess) {
   // power state change.
   power_monitor_renderer.FlushForTesting();
 
-  SimulatePowerStateChange(true);
-  // Verify renderer process on_battery_power changed to true.
-  VerifyPowerStateInChildProcess(power_monitor_renderer.get(), true);
+  SimulatePowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+  // Verify renderer process battery_power_status changed to battery power.
+  VerifyPowerStateInChildProcess(
+      power_monitor_renderer.get(),
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
-  SimulatePowerStateChange(false);
-  // Verify renderer process on_battery_power changed to false.
-  VerifyPowerStateInChildProcess(power_monitor_renderer.get(), false);
+  SimulatePowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
+  // Verify renderer process battery_power_status changed to external power.
+  VerifyPowerStateInChildProcess(
+      power_monitor_renderer.get(),
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
+
+  SimulatePowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kUnknown);
+  // Verify renderer process battery_power_status becomes unknown.
+  VerifyPowerStateInChildProcess(
+      power_monitor_renderer.get(),
+      base::PowerStateObserver::BatteryPowerStatus::kUnknown);
 }
 
 IN_PROC_BROWSER_TEST_F(PowerMonitorTest, TestUtilityProcess) {
@@ -256,13 +276,19 @@ IN_PROC_BROWSER_TEST_F(PowerMonitorTest, TestUtilityProcess) {
   // power state change.
   power_monitor_utility.FlushForTesting();
 
-  SimulatePowerStateChange(true);
-  // Verify utility process on_battery_power changed to true.
-  VerifyPowerStateInChildProcess(power_monitor_utility.get(), true);
+  SimulatePowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+  // Verify renderer process battery_power_status changed to battery power.
+  VerifyPowerStateInChildProcess(
+      power_monitor_utility.get(),
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
-  SimulatePowerStateChange(false);
-  // Verify utility process on_battery_power changed to false.
-  VerifyPowerStateInChildProcess(power_monitor_utility.get(), false);
+  SimulatePowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
+  // Verify renderer process battery_power_status changed to external power.
+  VerifyPowerStateInChildProcess(
+      power_monitor_utility.get(),
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
 }
 
 IN_PROC_BROWSER_TEST_F(PowerMonitorTest, TestGpuProcess) {
@@ -287,13 +313,19 @@ IN_PROC_BROWSER_TEST_F(PowerMonitorTest, TestGpuProcess) {
   // power state change.
   power_monitor_gpu.FlushForTesting();
 
-  SimulatePowerStateChange(true);
-  // Verify gpu process on_battery_power changed to true.
-  VerifyPowerStateInChildProcess(power_monitor_gpu.get(), true);
+  SimulatePowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+  // Verify gpu process battery_power_status changed to battery power.
+  VerifyPowerStateInChildProcess(
+      power_monitor_gpu.get(),
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
-  SimulatePowerStateChange(false);
-  // Verify gpu process on_battery_power changed to false.
-  VerifyPowerStateInChildProcess(power_monitor_gpu.get(), false);
+  SimulatePowerStateChange(
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
+  // Verify gpu process battery_power_status changed to external power.
+  VerifyPowerStateInChildProcess(
+      power_monitor_gpu.get(),
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
 }
 
 }  //  namespace

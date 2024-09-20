@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -26,6 +27,7 @@ namespace autofill {
 // handlers, the calculated size, the Super G logo, testing methods, and the
 // window title (controller eventually handles the title for each sub-class).
 class SaveCardBubbleViews : public AutofillLocationBarBubble {
+  METADATA_HEADER(SaveCardBubbleViews, AutofillLocationBarBubble)
  public:
   // Bubble will be anchored to |anchor_view|.
   SaveCardBubbleViews(views::View* anchor_view,

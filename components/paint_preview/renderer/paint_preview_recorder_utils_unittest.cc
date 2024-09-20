@@ -504,10 +504,11 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
     gfx::SizeF size(100, 50);
     scoped_refptr<TestPaintWorkletInput> input =
         base::MakeRefCounted<TestPaintWorkletInput>(size);
-    cc::PaintImage paint_image = cc::PaintImageBuilder::WithDefault()
-                                     .set_id(1)
-                                     .set_paint_worklet_input(std::move(input))
-                                     .TakePaintImage();
+    cc::PaintImage paint_image =
+        cc::PaintImageBuilder::WithDefault()
+            .set_id(1)
+            .set_deferred_paint_record(std::move(input))
+            .TakePaintImage();
     ASSERT_FALSE(paint_image.IsLazyGenerated());
     ASSERT_TRUE(paint_image.IsPaintWorklet());
     cc::PaintFlags paint;

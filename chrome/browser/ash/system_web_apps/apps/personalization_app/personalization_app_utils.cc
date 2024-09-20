@@ -113,16 +113,6 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
   }
 }
 
-bool IsManagedUserEligibleForSeaPen(Profile* profile) {
-  DCHECK(profile->GetProfilePolicyConnector()->IsManaged());
-  if (!features::IsSeaPenEnterpriseEnabled()) {
-    // Without the experiment, managed users are not allowed for SeaPen.
-    DVLOG(1) << __func__ << " managed profile";
-    return false;
-  }
-  return CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
-}
-
 bool IsSystemInEnglishLanguage() {
   return g_browser_process != nullptr &&
          language::ExtractBaseLanguage(
@@ -130,6 +120,39 @@ bool IsSystemInEnglishLanguage() {
 }
 
 bool IsEligibleForSeaPen(Profile* profile) {
+  if (!IsAllowedToInstallSeaPen(profile)) {
+    return false;
+  }
+
+  if (!profile->GetProfilePolicyConnector()->IsManaged()) {
+    return true;
+  }
+
+  // TODO(b/365134596): remove the exception for Googlers and Demo Mode once the
+  // SeaPenEnterprise flag is removed.
+  if (gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())) {
+    DVLOG(1) << __func__ << " Google internal account";
+    return true;
+  }
+
+  if (features::IsSeaPenDemoModeEnabled() &&
+      DemoSession::IsDeviceInDemoMode()) {
+    DVLOG(1) << __func__ << " demo mode";
+    const auto* user = GetUser(profile);
+    return DemoSession::Get() && user &&
+           user->GetType() == user_manager::UserType::kPublicAccount;
+  }
+
+  if (!features::IsSeaPenEnterpriseEnabled()) {
+    // Without the experiment, managed users are not allowed for SeaPen.
+    DVLOG(1) << __func__ << " managed profile";
+    return false;
+  }
+
+  return CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
+}
+
+bool IsAllowedToInstallSeaPen(Profile* profile) {
   if (!profile) {
     LOG(ERROR) << __func__ << " no profile";
     return false;
@@ -147,11 +170,6 @@ bool IsEligibleForSeaPen(Profile* profile) {
     const auto* user = GetUser(profile);
     return DemoSession::Get() && user &&
            user->GetType() == user_manager::UserType::kPublicAccount;
-  }
-
-  if (profile->GetProfilePolicyConnector()->IsManaged() &&
-      !IsManagedUserEligibleForSeaPen(profile)) {
-    return false;
   }
 
   const auto* user = GetUser(profile);
@@ -172,6 +190,11 @@ bool IsEligibleForSeaPen(Profile* profile) {
     case user_manager::UserType::kGuest:
       return false;
     case user_manager::UserType::kRegular:
+      if (profile->GetProfilePolicyConnector()->IsManaged()) {
+        // Without the experiment, managed users are not allowed for SeaPen.
+        DVLOG(1) << __func__ << " managed profile";
+        return features::IsSeaPenEnterpriseEnabled();
+      }
       return true;
   }
 }

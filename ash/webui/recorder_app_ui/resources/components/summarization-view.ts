@@ -10,6 +10,7 @@ import './cra/cra-icon-button.js';
 import './genai-error.js';
 import './genai-feedback-buttons.js';
 import './genai-placeholder.js';
+import './spoken-message.js';
 import './summary-consent-card.js';
 
 import {
@@ -24,18 +25,20 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {ModelResponse} from '../core/on_device_model/types.js';
+import {
+  GenaiResultType,
+  ModelResponse,
+} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {Transcription} from '../core/soda/soda.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
+import {HELP_URL} from '../core/url_constants.js';
 import {
   assert,
   assertExhaustive,
   assertExists,
 } from '../core/utils/assert.js';
-
-import {GenaiResultType} from './genai-error.js';
 
 export class SummarizationView extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
@@ -128,7 +131,7 @@ export class SummarizationView extends ReactiveLitElement {
 
     #footer {
       font: var(--cros-annotation-2-font);
-      padding: 0 82px 12px 12px;
+      padding: 0 96px 12px 12px;
 
       & > a,
       & > a:visited {
@@ -176,13 +179,11 @@ export class SummarizationView extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
-  private readonly toggleSummaryButton = createRef<HTMLButtonElement>();
-
   private readonly summaryContainer = createRef<HTMLDivElement>();
 
-  get toggleSummaryButtonForTest(): HTMLButtonElement {
-    return assertExists(this.toggleSummaryButton.value);
-  }
+  private readonly downloadRequested = signal(false);
+
+  private readonly downloadPerfCollected = signal(false);
 
   get summaryContainerForTest(): HTMLDivElement {
     return assertExists(this.summaryContainer.value);
@@ -197,46 +198,92 @@ export class SummarizationView extends ReactiveLitElement {
     return summary.result;
   }
 
+  override updated(): void {
+    const summaryState = this.platformHandler.summaryModelLoader.state;
+    if (settings.value.summaryEnabled === SummaryEnableState.ENABLED &&
+      summaryState.value.kind === 'installing') {
+      this.downloadRequested.value = true;
+    } else if (
+      this.downloadRequested.value &&
+      !this.downloadPerfCollected.value &&
+      summaryState.value.kind === 'installed'
+    ) {
+      // TODO: b/367263595 - Collect perf in PlatformHandler instead.
+      this.platformHandler.perfLogger.finish('summaryModelDownload');
+      this.downloadPerfCollected.value = true;
+    }
+  }
+
   private async requestSummary() {
     this.summaryRequested.value = true;
     this.summaryOpened.value = true;
+
+    this.platformHandler.perfLogger.start({
+      kind: 'summary',
+      wordCount: this.transcription?.wordCount ?? 0,
+    });
+
     const text = this.transcription?.toPlainText() ?? '';
-    const model = await this.platformHandler.summaryModelLoader.load();
-    try {
-      this.summary.value = await model.execute(text);
-      // TODO(pihsun): Handle error.
-    } finally {
-      model.close();
+    this.summary.value =
+      await this.platformHandler.summaryModelLoader.loadAndExecute(text);
+    this.sendSummarizeEvent();
+    this.platformHandler.perfLogger.finish('summary');
+  }
+
+  private sendSummarizeEvent() {
+    const response = this.summary.value;
+    if (this.transcription === null || response === null) {
+      return;
     }
+
+    this.platformHandler.eventsSender.sendSummarizeEvent({
+      responseError: response.kind === 'error' ? response.error : null,
+      wordCount: this.transcription.wordCount,
+    });
   }
 
   private renderSummaryFooter() {
     return html`
       <div id="footer">
         ${i18n.genAiDisclaimerText}
-        <!-- TODO: b/336963138 - Add correct link -->
-        <a href="javascript:;">${i18n.genAiLearnMoreLink}</a>
+        <a href=${HELP_URL} target="_blank">${i18n.genAiLearnMoreLink}</a>
       </div>
-      <genai-feedback-buttons></genai-feedback-buttons>
+      <genai-feedback-buttons .resultType=${GenaiResultType.SUMMARY}>
+      </genai-feedback-buttons>
     `;
   }
 
   private renderSummaryContent() {
     const summary = this.summary.value;
     if (summary === null) {
-      return html`<genai-placeholder></genai-placeholder>`;
+      return html`
+        <genai-placeholder
+          aria-label=${i18n.summaryStartedStatusMessage}
+          aria-live="polite"
+          tabindex="-1"
+        ></genai-placeholder>
+      `;
     }
     switch (summary.kind) {
       case 'error':
-        return html`<genai-error
-          .error=${summary.error}
-          .resultType=${GenaiResultType.SUMMARY}
-        >
-        </genai-error>`;
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.summaryFailedStatusMessage}
+          </spoken-message>
+          <genai-error
+            .error=${summary.error}
+            .resultType=${GenaiResultType.SUMMARY}
+          >
+          </genai-error>`;
       case 'success':
+        // Don't add space around ${summary.result}
         // prettier-ignore
-        return html`<div id="summary" ${ref(this.summaryContainer)}>${
-          summary.result}</div>
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.summaryFinishedStatusMessage}
+          </spoken-message>
+          <div
+            id="summary"
+            ${ref(this.summaryContainer)}
+          >${summary.result}</div>
           ${this.renderSummaryFooter()}`;
       default:
         assertExhaustive(summary);
@@ -258,6 +305,11 @@ export class SummarizationView extends ReactiveLitElement {
 
   private renderSummary() {
     // TODO: b/336963138 - Implement error state.
+    const downloadStatus = html`<spoken-message
+      role="status"
+      aria-live="polite">
+        ${i18n.summaryDownloadFinishedStatusMessage}
+      </spoken-message>`;
     return html`
       <cros-accordion variant="compact">
         <cros-accordion-item
@@ -272,12 +324,18 @@ export class SummarizationView extends ReactiveLitElement {
           <div id="main">${this.renderSummaryContent()}</div>
         </cros-accordion-item>
       </cros-accordion>
+      ${this.downloadRequested.value ? downloadStatus : nothing}
     `;
   }
 
   private renderSummaryInstalling(progress: number) {
     return html`
-      <cros-accordion variant="compact">
+      <cros-accordion
+        variant="compact"
+        aria-label=${i18n.summaryDownloadStartedStatusMessage}
+        aria-live="polite"
+        role="status"
+      >
         <cros-accordion-item disabled>
           <cra-icon name="summarize_auto" slot="leading"></cra-icon>
           <div slot="title">

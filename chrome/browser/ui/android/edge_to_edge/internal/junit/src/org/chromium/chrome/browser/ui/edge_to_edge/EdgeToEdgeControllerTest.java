@@ -145,10 +145,9 @@ public class EdgeToEdgeControllerTest {
 
     @Before
     public void setUp() {
-        ChromeFeatureList.sDrawEdgeToEdge.setForTesting(true);
         ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(true);
+        ChromeFeatureList.sEdgeToEdgeWebOptIn.setForTesting(true);
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(false);
-        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
 
         MockitoAnnotations.openMocks(this);
         when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
@@ -299,7 +298,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void onObservingDifferentTab_changeToWebEnabled() {
-        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
@@ -311,7 +310,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void onObservingDifferentTab_changeToWebEnabled_SetsDecor() {
-        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
@@ -324,9 +323,7 @@ public class EdgeToEdgeControllerTest {
     @Test
     public void onObservingDifferentTab_viewportFitChanged() {
         // Start with web always-enabled.
-        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
-        // Enable the bottom chin.
-        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(true);
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
@@ -339,7 +336,7 @@ public class EdgeToEdgeControllerTest {
         // Now switch the viewport-fit value of that page back and forth,
         // with web NOT always enabled. The page opt-in should switch with the viewport fit value,
         // but the page should still draw toEdge to properly show the bottom chin.
-        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(false);
         mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.AUTO);
         assertFalse(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
@@ -507,8 +504,9 @@ public class EdgeToEdgeControllerTest {
     public void disabledWhenNotPhone() {
         // Even these always-draw flags do not override the device abilities.
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
-        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
 
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        // Even the always-draw flags do not override the device abilities.
         assertFalse(
                 EdgeToEdgeControllerFactory.isSupportedConfiguration(
                         Robolectric.buildActivity(AppCompatActivity.class).setup().get()));
@@ -518,8 +516,9 @@ public class EdgeToEdgeControllerTest {
     public void disabledWhenNotGestureEnabled() {
         // Even these always-draw flags do not override the device abilities.
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
-        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
 
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        // Even the always-draw flags do not override the device abilities.
         EdgeToEdgeControllerFactory.setHas3ButtonNavBar(true);
         assertFalse(
                 EdgeToEdgeControllerFactory.isSupportedConfiguration(
@@ -770,6 +769,9 @@ public class EdgeToEdgeControllerTest {
         public void overrideBottomInset(int inset) {
             mInset = inset;
         }
+
+        @Override
+        public void destroy() {}
 
         void checkInsets(int expected) {
             assertEquals("The pad adjuster does not have the expected inset.", expected, mInset);

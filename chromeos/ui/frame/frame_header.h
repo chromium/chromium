@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_observer.h"
@@ -137,7 +138,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   virtual void SetPaintAsActive(bool paint_as_active);
 
   // Called when frame show state is changed.
-  void OnShowStateChanged(ui::WindowShowState show_state);
+  void OnShowStateChanged(ui::mojom::WindowShowState show_state);
 
   void OnFloatStateChanged();
 

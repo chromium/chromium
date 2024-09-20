@@ -25,8 +25,7 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
     return std::make_unique<VideoEncoderVerbatim>();
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unknown codec type: " << video_config.codec;
-  return nullptr;
+  NOTREACHED() << "Unknown codec type: " << video_config.codec;
 }
 
 }  // namespace remoting

@@ -10,7 +10,7 @@ package J;
 
 public class module_N {
     public static final long WHOLE_HASH = -7714383706413312501L;
-    public static final long PRIORITY_HASH = -7714383706413312501L;
+    public static final long PRIORITY_HASH = 0L;
 
 
     public static native boolean _Z_Z(int switch_num, boolean boolean_param1);

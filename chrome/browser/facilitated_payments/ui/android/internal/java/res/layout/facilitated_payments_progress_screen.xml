@@ -30,7 +30,8 @@ found in the LICENSE file.
         android:indeterminate="true"
         app:indicatorSize="@dimen/facilitated_payments_progress_bar_size"
         app:indicatorColor="@macro/default_icon_color_accent1"
-        app:trackThickness="@dimen/facilitated_payments_progress_bar_track_thickness" />
+        app:trackThickness="@dimen/facilitated_payments_progress_bar_track_thickness"
+        app:indeterminateTrackVisible="true" />
 
     <ImageView
         android:layout_width="@dimen/facilitated_payments_progress_screen_lock_size"

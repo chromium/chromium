@@ -1,0 +1,37 @@
+<style include="cros-color-overrides">
+  :host {
+    align-items: center;
+    background-color: var(--cros-sys-app_base_shaded);
+    border-radius: 12px;
+    column-gap: 12px;
+    display: flex;
+    flex-shrink: 0;
+    margin-bottom: 16px;
+    margin-top: 16px;
+    outline-width: 0;
+    padding: 16px 12px;
+  }
+
+  #reviewTermBannerIcon {
+    height: 48px;
+    width: 48px;
+  }
+
+  #reviewTermDescription {
+    color: var(--cr-secondary-text-color);
+    margin-top: 4px;
+    flex-grow: 1;
+  }
+</style>
+
+<iron-icon id="reviewTermBannerIcon"
+  icon="os-settings:magic-boost-banner-icon">
+</iron-icon>
+
+<div id="reviewTermDescription" aria-hidden="true">
+  [[description]]
+</div>
+
+<cr-button aria-describedby="review" on-click="onReviewButtonClick_">
+  [[buttonLabel]]
+</cr-button>

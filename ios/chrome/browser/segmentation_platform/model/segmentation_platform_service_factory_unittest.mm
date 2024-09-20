@@ -9,9 +9,15 @@
 #import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/uuid.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/mock_shopping_service.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/segmentation_platform/embedder/home_modules/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #import "components/segmentation_platform/internal/constants.h"
 #import "components/segmentation_platform/internal/database/client_result_prefs.h"
 #import "components/segmentation_platform/public/constants.h"
@@ -22,6 +28,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/segmentation_platform/public/service_proxy.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_data_manager_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -56,7 +63,9 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
         {{optimization_guide::features::kOptimizationTargetPrediction, {}},
          {features::kSegmentationPlatformFeature, {}},
          {features::kSegmentationPlatformUkmEngine, {}},
-         {features::kContextualPageActionShareModel, {}}},
+         {features::kContextualPageActionShareModel, {}},
+         {features::kSegmentationPlatformEphemeralCardRanker, {}},
+         {commerce::kPriceTrackingPromo, {}}},
         {});
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         kSegmentationPlatformRefreshResultsSwitch);
@@ -151,6 +160,18 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
           SegmentationPlatformServiceFactory::GetInstance(),
           base::BindOnce(&ProfileData::SetUpEnvironment, base::Unretained(this))
               .Then(SegmentationPlatformServiceFactory::GetDefaultFactory()));
+      builder.AddTestingFactory(
+          commerce::ShoppingServiceFactory::GetInstance(),
+          base::BindRepeating([](web::BrowserState*)
+                                  -> std::unique_ptr<KeyedService> {
+            std::unique_ptr<bookmarks::BookmarkNode> bookmark =
+                std::make_unique<bookmarks::BookmarkNode>(
+                    /*id=*/100, base::Uuid::GenerateRandomV4(), GURL());
+            std::unique_ptr<commerce::MockShoppingService> shopping_service =
+                std::make_unique<commerce::MockShoppingService>();
+            shopping_service->SetGetAllShoppingBookmarksValue({bookmark.get()});
+            return std::move(shopping_service);
+          }));
       browser_state = std::move(builder).Build();
       service = SegmentationPlatformServiceFactory::GetForProfile(
           browser_state.get());
@@ -173,6 +194,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
     const raw_ptr<UkmDataManagerTestUtils> test_utils;
     std::unique_ptr<TestChromeBrowserState> browser_state;
     raw_ptr<SegmentationPlatformService> service;
+    std::unique_ptr<bookmarks::BookmarkNode> bookmark_;
   };
 
   void WaitForServiceInit() {
@@ -285,6 +307,34 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
       input_context, PredictionStatus::kSucceeded,
       std::vector<std::string>{"MostVisitedTiles", "Shortcuts", "SafetyCheck",
                                "TabResumption", "ParcelTracking"});
+}
+
+// Tests that the HomeModulesCardRegistry registers the correct cards and the
+// response from the EphemeralHomeModuleBackend returns the correct card.
+TEST_F(SegmentationPlatformServiceFactoryTest, TestEphemeralHomeModuleBackend) {
+  home_modules::HomeModulesCardRegistry* registry =
+      SegmentationPlatformServiceFactory::GetHomeCardRegistryForBrowserState(
+          profile_->browser_state.get());
+  ASSERT_TRUE(registry);
+  EXPECT_EQ(1u, registry->get_all_cards_by_priority().size());
+
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto inputContext = base::MakeRefCounted<InputContext>();
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsNewUser,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0));
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsSynced,
+      segmentation_platform::processing::ProcessedValue::FromFloat(1));
+
+  std::vector<std::string> result = {
+      segmentation_platform::kPriceTrackingNotificationPromo};
+  ExpectGetClassificationResult(
+      kEphemeralHomeModuleBackendKey, prediction_options, inputContext,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/result);
 }
 
 }  // namespace segmentation_platform

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Implementation of functions that are shared between ReadableStream and
 // WritableStream.
 
@@ -181,7 +176,7 @@ class JavaScriptStreamAlgorithmWithExtraArg final : public StreamAlgorithm {
     // 6.c.
     //      i. Let fullArgs be a List consisting of arg followed by the
     //         elements of extraArgs in order.
-    v8::Local<v8::Value> full_argv[2];
+    std::array<v8::Local<v8::Value>, 2> full_argv;
     if (argc != 0) {
       full_argv[0] = argv[0];
     }
@@ -190,7 +185,7 @@ class JavaScriptStreamAlgorithmWithExtraArg final : public StreamAlgorithm {
 
     //     ii. Return ! PromiseCall(method, underlyingObject, fullArgs).
     return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),
-                       full_argc, full_argv);
+                       full_argc, full_argv.data());
   }
 
   void Trace(Visitor* visitor) const override {

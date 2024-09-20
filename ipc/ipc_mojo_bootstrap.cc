@@ -55,7 +55,6 @@
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/tracing_helpers.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace IPC {
 
@@ -63,7 +62,7 @@ class ChannelAssociatedGroupController;
 
 namespace {
 
-ABSL_CONST_INIT thread_local bool off_sequence_binding_allowed = false;
+constinit thread_local bool off_sequence_binding_allowed = false;
 
 BASE_FEATURE(kMojoChannelAssociatedSendUsesRunOrPostTask,
              "MojoChannelAssociatedSendUsesRunOrPostTask",

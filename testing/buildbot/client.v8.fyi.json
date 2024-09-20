@@ -30,7 +30,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "bullhead",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -74,7 +75,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "bullhead",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -109,7 +111,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "bullhead",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -144,7 +147,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "bullhead",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -188,7 +192,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "bullhead",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -224,7 +229,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "bullhead",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -259,7 +265,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "bullhead",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -295,7 +302,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "bullhead",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -332,7 +340,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "bullhead",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",

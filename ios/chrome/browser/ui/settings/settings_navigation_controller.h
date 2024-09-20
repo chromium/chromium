@@ -82,6 +82,15 @@ extern NSString* const kSettingsDoneButtonId;
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate;
 
+// Creates a new SettingsNavigationController that displays the price tracking
+// notifications UI. `browser` is the browser where settings are being displayed
+// and should not be nil.
++ (instancetype)
+    priceNotificationsControllerForBrowser:(Browser*)browser
+                                  delegate:
+                                      (id<SettingsNavigationControllerDelegate>)
+                                          delegate;
+
 // Creates a new SyncEncryptionPassphraseCollectionViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and
 // should not be nil. `delegate` may be nil.
@@ -122,8 +131,7 @@ extern NSString* const kSettingsDoneButtonId;
                                        delegate
                              credential:
                                  (password_manager::CredentialUIEntry)credential
-                             inEditMode:(BOOL)editMode
-                       showCancelButton:(BOOL)showCancelButton;
+                             inEditMode:(BOOL)editMode;
 
 // Creates and displays a new UIViewController for user to report an issue.
 // `browser` is the browser where settings are being displayed and should not be
@@ -145,7 +153,7 @@ extern NSString* const kSettingsDoneButtonId;
                               delegate:
                                   (id<SettingsNavigationControllerDelegate>)
                                       delegate
-                               address:(const autofill::AutofillProfile*)address
+                               address:(autofill::AutofillProfile)address
                             inEditMode:(BOOL)editMode
                  offerMigrateToAccount:(BOOL)offerMigrateToAccount;
 
@@ -182,8 +190,7 @@ extern NSString* const kSettingsDoneButtonId;
                                       delegate:
                                           (id<SettingsNavigationControllerDelegate>)
                                               delegate
-                                    creditCard:
-                                        (const autofill::CreditCard*)creditCard
+                                    creditCard:(autofill::CreditCard)creditCard
                                     inEditMode:(BOOL)editMode;
 
 // Creates a new DefaultBrowserSettingsTableViewController and the chrome

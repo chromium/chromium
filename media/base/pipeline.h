@@ -233,8 +233,8 @@ class MEDIA_EXPORT Pipeline {
 
   // Sets a flag indicating whether the audio stream was played with user
   // activation.
-  virtual void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) = 0;
+  virtual void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) = 0;
 
   // Returns the current media playback time, which progresses from 0 until
   // GetMediaDuration().

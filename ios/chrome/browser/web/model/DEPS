@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/application_context/model",
   "+ios/chrome/browser/autofill/model",
-  "+ios/chrome/browser/browser_state/model",
+  "+ios/chrome/browser/profile/model",
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",

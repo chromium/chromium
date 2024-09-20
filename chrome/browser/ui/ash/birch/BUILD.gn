@@ -123,15 +123,35 @@ source_set("unit_tests") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "birch_test_util.cc",
+    "birch_test_util.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "birch_browsertest.cc" ]
+  sources = [
+    "birch_browsertest.cc",
+    "birch_coral_provider_browsertest.cc",
+  ]
 
   deps = [
     ":birch",
+    ":test_support",
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
@@ -141,6 +161,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash/main_extra_parts",
     "//chrome/test:test_support",
+    "//chrome/test/base/ash/util:test_support",
     "//components/prefs",
     "//content/test:test_support",
     "//testing/gtest",

@@ -88,6 +88,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   // Tells if "extended drag" extension is available.
   bool IsExtendedDragAvailable() const;
+  // Tells if "xdg toplevel drag" extension is available.
+  bool IsXdgToplevelDragAvailable() const;
 
   // Returns true if there there is currently an active drag-and-drop session.
   // This is true if the `data_source_` exists (the session ends when this is
@@ -118,6 +120,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
  private:
   class ExtendedDragSource;
+  class XdgToplevelDrag;
 
   friend class WaylandWindowDragControllerTest;
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
@@ -204,6 +207,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   std::unique_ptr<WaylandDataOffer> data_offer_;
 
   std::unique_ptr<ExtendedDragSource> extended_drag_source_;
+  std::unique_ptr<XdgToplevelDrag> xdg_toplevel_drag_;
 
   // The current toplevel window being dragged, when in detached mode.
   raw_ptr<WaylandToplevelWindow> dragged_window_ = nullptr;

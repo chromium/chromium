@@ -249,7 +249,7 @@ export class ObjectLayerElement extends PolymerElement {
     this.objectsReceivedListenerId = null;
   }
 
-  handleUpGesture(event: GestureEvent): boolean {
+  handleGestureEnd(event: GestureEvent): boolean {
     const objectIndex = this.objectIndexFromPoint(event.clientX, event.clientY);
     // Ignore if the click is not on an object.
     if (objectIndex === null) {

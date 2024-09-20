@@ -46,7 +46,7 @@ namespace mojo {
 
 namespace {
 
-ABSL_CONST_INIT thread_local base::HistogramBase* g_end_to_end_metric = nullptr;
+constinit thread_local base::HistogramBase* g_end_to_end_metric = nullptr;
 
 // A helper to expose a subset of an InterfaceEndpointClient's functionality
 // through a thread-safe interface. Used by SharedRemote.

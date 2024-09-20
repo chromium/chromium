@@ -9,16 +9,15 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
-#include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/file_select_listener.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
-using SidePanelWebUIViewT_LensUntrustedUI =
-    SidePanelWebUIViewT<lens::LensUntrustedUI>;
-BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_LensUntrustedUI,
+using SidePanelWebUIViewT_LensSidePanelUntrustedUI =
+    SidePanelWebUIViewT<lens::LensSidePanelUntrustedUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_LensSidePanelUntrustedUI,
                         SidePanelWebUIViewT)
 END_METADATA
 
@@ -32,8 +31,9 @@ LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(
     : SidePanelWebUIViewT(
           base::RepeatingClosure(),
           base::RepeatingClosure(),
-          std::make_unique<WebUIContentsWrapperT<lens::LensUntrustedUI>>(
-              GURL(chrome::kChromeUILensUntrustedSidePanelURL),
+          std::make_unique<
+              WebUIContentsWrapperT<lens::LensSidePanelUntrustedUI>>(
+              GURL(chrome::kChromeUILensUntrustedSidePanelAPIURL),
               Profile::FromBrowserContext(browser_context),
               /*task_manager_string_id=*/IDS_SIDE_PANEL_COMPANION_TITLE,
               /*esc_closes_ui=*/false)),

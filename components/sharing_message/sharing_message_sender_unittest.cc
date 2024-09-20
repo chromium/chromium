@@ -18,6 +18,7 @@
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_local_device_info_provider.h"
@@ -76,11 +77,13 @@ class MockSharingIOSPushSender : public sharing_message::SharingIOSPushSender {
   MockSharingIOSPushSender(
       SharingSyncPreference* sync_preference,
       syncer::DeviceInfoTracker* device_info_tracker,
-      syncer::LocalDeviceInfoProvider* local_device_info_provider)
+      syncer::LocalDeviceInfoProvider* local_device_info_provider,
+      syncer::SyncService* sync_service)
       : SharingIOSPushSender(
             /*sharing_message_bridge=*/nullptr,
             device_info_tracker,
-            local_device_info_provider) {}
+            local_device_info_provider,
+            sync_service) {}
   MockSharingIOSPushSender(const MockSharingIOSPushSender&) = delete;
   MockSharingIOSPushSender& operator=(const MockSharingIOSPushSender&) = delete;
   ~MockSharingIOSPushSender() override = default;
@@ -150,7 +153,8 @@ class SharingMessageSenderTest : public testing::Test {
         std::make_unique<MockSharingIOSPushSender>(
             &sharing_sync_preference_,
             fake_device_info_sync_service_.GetDeviceInfoTracker(),
-            fake_device_info_sync_service_.GetLocalDeviceInfoProvider());
+            fake_device_info_sync_service_.GetLocalDeviceInfoProvider(),
+            &sync_service_);
     mock_sharing_fcm_sender_ = mock_sharing_fcm_sender.get();
     mock_sharing_ios_push_sender_ = mock_sharing_ios_push_sender.get();
     sharing_message_sender_.RegisterSendDelegate(
@@ -189,6 +193,7 @@ class SharingMessageSenderTest : public testing::Test {
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
   SharingSyncPreference sharing_sync_preference_{
       &prefs_, &fake_device_info_sync_service_};
+  syncer::MockSyncService sync_service_;
 
   SharingMessageSender sharing_message_sender_{
       fake_device_info_sync_service_.GetLocalDeviceInfoProvider(),

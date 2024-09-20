@@ -2858,8 +2858,9 @@ void HTMLMediaElement::PlayInternal() {
   DVLOG(3) << "playInternal(" << *this << ")";
 
   if (web_media_player_) {
-    web_media_player_->SetWasPlayedWithUserActivation(
-        LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
+    web_media_player_->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+        LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()) &&
+        AutoplayPolicy::DocumentHasHighMediaEngagement(GetDocument()));
   }
 
   // Playback aborts any lazy loading.
@@ -3247,9 +3248,11 @@ void HTMLMediaElement::SelectedVideoTrackChanged(VideoTrack* track) {
   if (media_source_attachment_)
     media_source_attachment_->OnTrackChanged(media_source_tracer_, track);
 
-  WebMediaPlayer::TrackId id = track->id();
-  web_media_player_->SelectedVideoTrackChanged(track->selected() ? &id
-                                                                 : nullptr);
+  if (track->selected()) {
+    web_media_player_->SelectedVideoTrackChanged(track->id());
+  } else {
+    web_media_player_->SelectedVideoTrackChanged(std::nullopt);
+  }
 }
 
 void HTMLMediaElement::AddMediaTrack(const media::MediaTrack& track) {

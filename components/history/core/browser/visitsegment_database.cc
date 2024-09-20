@@ -4,20 +4,22 @@
 
 #include "components/history/core/browser/visitsegment_database.h"
 
-#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "components/history/core/browser/page_usage_data.h"
+#include "components/history/core/browser/segment_scorer.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
@@ -37,11 +39,68 @@
 
 namespace history {
 
-VisitSegmentDatabase::VisitSegmentDatabase() {
-}
+namespace {
 
-VisitSegmentDatabase::~VisitSegmentDatabase() {
-}
+constexpr SegmentID kEmptySegmentID = 0;
+
+struct SegmentInfo {
+  SegmentID segment_id;
+  std::vector<base::Time> time_slots;
+  std::vector<int> visit_counts;
+};
+
+// Visits segment_usage entries in the history database, grouped by segment ID
+// and ordered by increasing segment ID.
+class SegmentVisitor {
+ public:
+  // |statement| selects (segment_id, time_slot, visit_count) from segment_usage
+  // table, ordered by segment_id.
+  explicit SegmentVisitor(raw_ptr<sql::Statement> statement)
+      : statement_(statement) {
+    cur_segment_id_ = (statement_->is_valid() && statement_->Step())
+                          ? statement_->ColumnInt64(0)
+                          : kEmptySegmentID;
+  }
+
+  ~SegmentVisitor() = default;
+
+  // Reads the next batch of segment_usage entries with a common segment ID, and
+  // writes the result to |*segment_info|. Returns whether the returned entry is
+  // valid. If false, clears |*segment_info|.
+  bool Step(SegmentInfo* segment_info) {
+    segment_info->segment_id = cur_segment_id_;
+    segment_info->time_slots.clear();
+    segment_info->visit_counts.clear();
+
+    if (cur_segment_id_ == kEmptySegmentID) {
+      return false;
+    }
+
+    SegmentID next_segment_id = kEmptySegmentID;
+    do {
+      segment_info->time_slots.push_back(statement_->ColumnTime(1));
+      segment_info->visit_counts.push_back(statement_->ColumnInt(2));
+      next_segment_id =
+          statement_->Step() ? statement_->ColumnInt64(0) : kEmptySegmentID;
+    } while (next_segment_id == cur_segment_id_);
+
+    cur_segment_id_ = next_segment_id;
+    return true;
+  }
+
+ private:
+  raw_ptr<sql::Statement> statement_;
+
+  // Look-ahead SegmentID of the segment to be retrieved for the next Step()
+  // call. Indicates end of data if value is |kEmptySegmentID|.
+  SegmentID cur_segment_id_;
+};
+
+}  // namespace
+
+VisitSegmentDatabase::VisitSegmentDatabase() = default;
+
+VisitSegmentDatabase::~VisitSegmentDatabase() = default;
 
 bool VisitSegmentDatabase::InitSegmentTables() {
   // Segments table.
@@ -198,16 +257,15 @@ bool VisitSegmentDatabase::UpdateSegmentVisitCount(SegmentID segment_id,
   return true;
 }
 
+// Gathers the highest-ranked segments, computed in two phases.
 std::vector<std::unique_ptr<PageUsageData>>
 VisitSegmentDatabase::QuerySegmentUsage(
     int max_result_count,
     const base::RepeatingCallback<bool(const GURL&)>& url_filter) {
-  // This function gathers the highest-ranked segments in two queries.
-  // The first gathers scores for all segments.
-  // The second gathers segment data (url, title, etc.) for the highest-ranked
-  // segments.
+  // Phase 1: Gather all segments and compute scores.
+  std::vector<std::unique_ptr<PageUsageData>> segments;
+  base::Time now = base::Time::Now();
 
-  // Gather all the segment scores.
   sql::Statement statement(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "SELECT segment_id, time_slot, visit_count "
@@ -215,38 +273,23 @@ VisitSegmentDatabase::QuerySegmentUsage(
   if (!statement.is_valid())
     return std::vector<std::unique_ptr<PageUsageData>>();
 
-  std::vector<std::unique_ptr<PageUsageData>> segments;
-  base::Time now = base::Time::Now();
-  SegmentID previous_segment_id = 0;
-  while (statement.Step()) {
-    SegmentID segment_id = statement.ColumnInt64(0);
-    if (segment_id != previous_segment_id) {
-      segments.push_back(std::make_unique<PageUsageData>(segment_id));
-      previous_segment_id = segment_id;
-    }
+  SegmentVisitor segment_visitor(&statement);
+  SegmentInfo segment_info;
+  std::unique_ptr<SegmentScorer> scorer =
+      SegmentScorer::CreateFromFeatureFlags();
+  while (segment_visitor.Step(&segment_info)) {
+    DCHECK(!segment_info.time_slots.empty());
+    DCHECK_EQ(segment_info.time_slots.size(), segment_info.visit_counts.size());
 
-    base::Time timeslot = statement.ColumnTime(1);
-    if (timeslot > segments.back()->GetLastVisitTimeslot()) {
-      segments.back()->SetLastVisitTimeslot(timeslot);
-    }
-
-    int visit_count = statement.ColumnInt(2);
-    segments.back()->SetVisitCount(segments.back()->GetVisitCount() +
-                                   visit_count);
-
-    // Score for this day in isolation.
-    float day_visits_score = visit_count <= 0.0f
-                                 ? 0.0f
-                                 : 1.0f + log(static_cast<float>(visit_count));
-    // Recent visits count more than historical ones, so we multiply in a boost
-    // related to how long ago this day was.
-    // This boost is a curve that smoothly goes through these values:
-    // Today gets 3x, a week ago 2x, three weeks ago 1.5x, falling off to 1x
-    // at the limit of how far we reach into the past.
-    int days_ago = (now - timeslot).InDays();
-    float recency_boost = 1.0f + (2.0f * (1.0f / (1.0f + days_ago/7.0f)));
-    float score = recency_boost * day_visits_score;
-    segments.back()->SetScore(segments.back()->GetScore() + score);
+    std::unique_ptr<PageUsageData> segment =
+        std::make_unique<PageUsageData>(segment_info.segment_id);
+    segment->SetLastVisitTimeslot(*std::max_element(
+        segment_info.time_slots.begin(), segment_info.time_slots.end()));
+    segment->SetVisitCount(std::accumulate(segment_info.visit_counts.begin(),
+                                           segment_info.visit_counts.end(), 0));
+    segment->SetScore(scorer->Compute(segment_info.time_slots,
+                                      segment_info.visit_counts, now));
+    segments.push_back(std::move(segment));
   }
 
   // Order by descending scores.
@@ -256,12 +299,11 @@ VisitSegmentDatabase::QuerySegmentUsage(
               return lhs->GetScore() > rhs->GetScore();
             });
 
-  // Now fetch the details about the entries we care about.
+  // Phase 2: Read details (url, title, etc.) for the highest-ranked segments.
   sql::Statement statement2(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "SELECT urls.url, urls.title FROM urls "
       "JOIN segments ON segments.url_id = urls.id "
       "WHERE segments.id = ?"));
-
   if (!statement2.is_valid())
     return std::vector<std::unique_ptr<PageUsageData>>();
 

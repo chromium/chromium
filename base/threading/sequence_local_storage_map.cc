@@ -9,15 +9,14 @@
 
 #include "base/check_op.h"
 #include "base/sequence_token.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace internal {
 
 namespace {
 
-ABSL_CONST_INIT thread_local SequenceLocalStorageMap*
-    current_sequence_local_storage = nullptr;
+constinit thread_local SequenceLocalStorageMap* current_sequence_local_storage =
+    nullptr;
 
 }  // namespace
 

@@ -33,120 +33,23 @@
 
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/attribute.h"
-#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class CSSPropertyValueSet;
-class CSSRule;
-class CSSStyleSheet;
-class CSSValue;
-class Document;
-class Element;
-class FontResource;
-class HTMLTemplateElement;
-class ImageResourceContent;
 class LocalFrame;
 class Frame;
-class ShadowRoot;
 
 struct SerializedResource;
 
-class FrameSerializerResourceDelegate {
+// This class is used to serialize frame's contents to MHTML. It serializes
+// frame's document and resources such as images and CSS stylesheets.
+class CORE_EXPORT FrameSerializer {
  public:
-  virtual ~FrameSerializerResourceDelegate() = default;
-
-  // Adds the resource needed to serialize an element.
-  virtual void AddResourceForElement(Document&, const Element&) = 0;
-
-  // Serializes the stylesheet back to text and adds it to the resources if
-  // URL is not-empty.  It also adds any resources included in that stylesheet
-  // (including any imported stylesheets and their own resources).
-  virtual void SerializeCSSStyleSheet(CSSStyleSheet&, const KURL&) = 0;
-};
-
-// An implementation of FrameSerializer's delegate which is used to serialize a
-// frame to a MHTML file.
-class FrameSerializerDelegateImpl final {
-  STACK_ALLOCATED();
-
- public:
-  FrameSerializerDelegateImpl(WebFrameSerializer::MHTMLPartsGenerationDelegate&,
-                              HeapHashSet<WeakMember<const Element>>&);
-  FrameSerializerDelegateImpl(const FrameSerializerDelegateImpl&) = delete;
-  FrameSerializerDelegateImpl& operator=(const FrameSerializerDelegateImpl&) =
-      delete;
-  ~FrameSerializerDelegateImpl() = default;
-
-  // Controls whether HTML serialization should skip the given element.
-  bool ShouldIgnoreElement(const Element&);
-  // Controls whether HTML serialization should skip the given attribute.
-  bool ShouldIgnoreAttribute(const Element&, const Attribute&);
-  // Method allowing the Delegate control which URLs are written into the
-  // generated html document.
-  //
-  // When URL of the element needs to be rewritten, this method should
-  // return true and populate |rewrittenLink| with a desired value of the
-  // html attribute value to be used in place of the original link.
-  // (i.e. in place of img.src or iframe.src or object.data).
-  //
-  // If no link rewriting is desired, this method should return false.
-  bool RewriteLink(const Element&, String& rewritten_link);
-
-  // Tells whether to skip serialization of a subresource or CSSStyleSheet
-  // with a given URI. Used to deduplicate resources across multiple frames.
-  bool ShouldSkipResourceWithURL(const KURL&);
-
-  // Returns custom attributes that need to add in order to serialize the
-  // element.
-  Vector<Attribute> GetCustomAttributes(const Element&);
-
-  // Serializes *all* open *and* closed (non-UA) shadow roots it finds.
-  std::pair<ShadowRoot*, HTMLTemplateElement*> GetShadowTree(
-      const Element&) const;
-
- private:
-  bool ShouldIgnoreHiddenElement(const Element&);
-  bool ShouldIgnoreMetaElement(const Element&);
-  bool ShouldIgnorePopupOverlayElement(const Element&);
-  void GetCustomAttributesForImageElement(const HTMLImageElement&,
-                                          Vector<Attribute>*);
-
-  WebFrameSerializer::MHTMLPartsGenerationDelegate& web_delegate_;
-  HeapHashSet<WeakMember<const Element>>& shadow_template_elements_;
-  bool popup_overlays_skipped_;
-};
-
-// This class is used to serialize frame's contents back to text (typically
-// HTML).  It serializes frame's document and resources such as images and CSS
-// stylesheets.
-class CORE_EXPORT FrameSerializer : public FrameSerializerResourceDelegate {
-  STACK_ALLOCATED();
-
- public:
-  // Constructs a serializer that will write output to the given deque of
-  // SerializedResources and uses the Delegate for controlling some
-  // serialization aspects.  Callers need to ensure that both arguments stay
-  // alive until the FrameSerializer gets destroyed.
-  FrameSerializer(
-      Deque<SerializedResource>&,
-      WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate);
-
-  // Initiates the serialization of the frame. All serialized content and
-  // retrieved resources are added to the Deque passed to the constructor.
-  // The first resource in that deque is the frame's serialized content.
-  // Subsequent resources are images, css, etc.
-  void SerializeFrame(const LocalFrame&);
-
-  static String MarkOfTheWebDeclaration(const KURL&);
+  FrameSerializer() = delete;
 
   // Returns a Content-ID to be used for the given frame.
   // See rfc2557 - section 8.3 - "Use of the Content-ID header and CID URLs".
@@ -154,32 +57,17 @@ class CORE_EXPORT FrameSerializer : public FrameSerializerResourceDelegate {
   // (i.e. the strings should include the angle brackets).
   static String GetContentID(Frame* frame);
 
- private:
-  void AddResourceForElement(Document&, const Element&) override;
-  void SerializeCSSStyleSheet(CSSStyleSheet&, const KURL&) override;
+  // Serializes the frame. Writes output to the given deque of
+  // SerializedResources and uses `web_delegate` for controlling some
+  // serialization aspects. All serialized content and retrieved resources are
+  // added to `resources`. The first resource is the frame's serialized content.
+  // Subsequent resources are images, css, etc.
+  static void SerializeFrame(
+      Deque<SerializedResource>& resources,
+      WebFrameSerializer::MHTMLPartsGenerationDelegate& web_delegate,
+      const LocalFrame&);
 
-  // Serializes the css rule (including any imported stylesheets), adding
-  // referenced resources.
-  void SerializeCSSRule(CSSRule*);
-
-  bool ShouldAddURL(const KURL&);
-
-  void AddToResources(const String& mime_type,
-                      scoped_refptr<const SharedBuffer>,
-                      const KURL&);
-  void AddImageToResources(ImageResourceContent*, const KURL&);
-  void AddFontToResources(FontResource&);
-
-  void RetrieveResourcesForProperties(const CSSPropertyValueSet*, Document&);
-  void RetrieveResourcesForCSSValue(const CSSValue&, Document&);
-
-  Deque<SerializedResource>* resources_;
-  // This hashset is only used for de-duplicating resources to be serialized.
-  HashSet<KURL> resource_urls_;
-
-  HeapHashSet<WeakMember<const Element>> shadow_template_elements_;
-  WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate_;
-  FrameSerializerDelegateImpl delegate_;
+  static String MarkOfTheWebDeclaration(const KURL&);
 };
 
 }  // namespace blink

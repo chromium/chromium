@@ -320,15 +320,16 @@ void AccountConsistencyService::AccountConsistencyHandler::WebStateDestroyed() {
 }
 
 AccountConsistencyService::AccountConsistencyService(
-    web::BrowserState* browser_state,
+    CookieManagerCallback cookie_manager_cb,
     AccountReconcilor* account_reconcilor,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     signin::IdentityManager* identity_manager)
-    : browser_state_(browser_state),
+    : cookie_manager_cb_(std::move(cookie_manager_cb)),
       account_reconcilor_(account_reconcilor),
       cookie_settings_(cookie_settings),
       identity_manager_(identity_manager),
       active_cookie_manager_requests_for_testing_(0) {
+  DCHECK(!cookie_manager_cb_.is_null());
   identity_manager_->AddObserver(this);
   if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     AddChromeConnectedCookies();
@@ -347,8 +348,7 @@ BOOL AccountConsistencyService::RestoreGaiaCookies(
   if (last_gaia_cookie_update_time_.is_null() ||
       base::Time::Now() - last_gaia_cookie_update_time_ >
           GetDelayThresholdToUpdateGaiaCookie()) {
-    network::mojom::CookieManager* cookie_manager =
-        browser_state_->GetCookieManager();
+    network::mojom::CookieManager* cookie_manager = cookie_manager_cb_.Run();
     cookie_manager->GetCookieList(
         GaiaUrls::GetInstance()->secure_google_url(),
         net::CookieOptions::MakeAllInclusive(),
@@ -427,10 +427,7 @@ void AccountConsistencyService::RemoveWebStateHandler(
 
 void AccountConsistencyService::RemoveAllChromeConnectedCookies(
     base::OnceClosure callback) {
-  DCHECK(!browser_state_->IsOffTheRecord());
-
-  network::mojom::CookieManager* cookie_manager =
-      browser_state_->GetCookieManager();
+  network::mojom::CookieManager* cookie_manager = cookie_manager_cb_.Run();
 
   network::mojom::CookieDeletionFilterPtr filter =
       network::mojom::CookieDeletionFilter::New();
@@ -501,8 +498,7 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
 
   ++active_cookie_manager_requests_for_testing_;
 
-  network::mojom::CookieManager* cookie_manager =
-      browser_state_->GetCookieManager();
+  network::mojom::CookieManager* cookie_manager = cookie_manager_cb_.Run();
   cookie_manager->SetCanonicalCookie(
       *cookie, url, options,
       base::BindOnce(
@@ -517,7 +513,6 @@ void AccountConsistencyService::OnChromeConnectedCookieFinished(
 }
 
 void AccountConsistencyService::AddChromeConnectedCookies() {
-  DCHECK(!browser_state_->IsOffTheRecord());
   // These cookie requests are preventive. Chrome cannot be sure that
   // CHROME_CONNECTED cookies are set on google.com and youtube.com domains due
   // to ITP restrictions.

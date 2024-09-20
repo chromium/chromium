@@ -33,6 +33,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+namespace {
+constexpr int kMinimumFaviconSize = 32;
+}  // namespace
+
 SharingService::SharingService(
     std::unique_ptr<SharingSyncPreference> sync_prefs,
     std::unique_ptr<VapidKeyManager> vapid_key_manager,
@@ -182,13 +186,24 @@ void SharingService::EntryAddedLocally(
 
   std::optional<SharingTargetDeviceInfo> target_device_info =
       GetDeviceByGuid(entry->GetTargetDeviceSyncCacheGuid());
+
+  if (!target_device_info.has_value()) {
+    return;
+  }
+
   if (target_device_info.value().platform() != SharingDevicePlatform::kIOS) {
     return;
   }
 
+  auto large_icon_types = std::vector<favicon_base::IconTypeSet>(
+      {{favicon_base::IconType::kWebManifestIcon},
+       {favicon_base::IconType::kFavicon},
+       {favicon_base::IconType::kTouchIcon},
+       {favicon_base::IconType::kTouchPrecomposedIcon}});
+
   // Retrieve favicon to issue notification.
-  favicon_service_->GetFaviconImageForPageURL(
-      entry->GetURL(),
+  favicon_service_->GetLargestRawFaviconForPageURL(
+      entry->GetURL(), large_icon_types, kMinimumFaviconSize,
       base::BindOnce(&SharingService::SendNotificationForSendTabToSelfPush,
                      weak_ptr_factory_.GetWeakPtr(),
                      send_tab_to_self::SendTabToSelfEntry(*entry)),
@@ -317,7 +332,7 @@ void SharingService::OnDeviceUnregistered(
 
 void SharingService::SendNotificationForSendTabToSelfPush(
     const send_tab_to_self::SendTabToSelfEntry& entry,
-    const favicon_base::FaviconImageResult& result) {
+    const favicon_base::FaviconRawBitmapResult& result) {
   std::optional<SharingTargetDeviceInfo> target_device_info =
       GetDeviceByGuid(entry.GetTargetDeviceSyncCacheGuid());
 

@@ -4,35 +4,57 @@
 
 source_set("profile") {
   sources = [
-    "profile_controller.h",
-    "profile_controller.mm",
+    "observing_profile_agent.h",
+    "observing_profile_agent.mm",
+    "profile_init_stage.cc",
     "profile_init_stage.h",
     "profile_state.h",
     "profile_state.mm",
     "profile_state_agent.h",
     "profile_state_observer.h",
+    "scene_observing_profile_agent.h",
+    "scene_observing_profile_agent.mm",
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
     "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+  ]
+}
+
+source_set("profile_controller") {
+  sources = [
+    "profile_controller.h",
+    "profile_controller.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":profile",
+    "//base",
+    "//ios/chrome/browser/profile_metrics/model:profile_agent",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "observing_profile_agent_unittest.mm",
     "profile_controller_unittest.mm",
     "profile_state_unittest.mm",
+    "scene_observing_profile_agent_unittest.mm",
   ]
   deps = [
     ":profile",
+    ":profile_controller",
     "//base/test:test_support",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/profile/test:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/profile/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

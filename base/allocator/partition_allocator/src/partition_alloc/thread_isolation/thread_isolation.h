@@ -56,7 +56,7 @@ namespace partition_alloc::internal {
 
 struct PA_THREAD_ISOLATED_ALIGN ThreadIsolationSettings {
   bool enabled = false;
-  static ThreadIsolationSettings settings PA_CONSTINIT;
+  PA_CONSTINIT static ThreadIsolationSettings settings;
 };
 
 #if PA_BUILDFLAG(ENABLE_PKEYS)

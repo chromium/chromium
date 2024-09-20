@@ -10,27 +10,28 @@
 #include "base/functional/callback.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "components/language_detection/core/language_detection_provider.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace blink {
+namespace {
 
 // TODO(https://crbug.com/354070625): This should be exported from the component
 // as a constant.
 const unsigned kModelInputMaxChars = 128;
 
-void DetectLanguage(
+void DetectLanguageWithModel(
     const WTF::String& text,
-    base::OnceCallback<void(base::expected<WTF::Vector<LanguagePrediction>,
-                                           DetectLanguageError>)> on_complete) {
-  const auto& model = language_detection::GetLanguageDetectionModel();
+    blink::DetectLanguageCallback on_complete,
+    language_detection::LanguageDetectionModel& model) {
   if (!model.IsAvailable()) {
     std::move(on_complete)
-        .Run(base::unexpected(DetectLanguageError::kUnavailable));
+        .Run(base::unexpected(blink::DetectLanguageError::kUnavailable));
     return;
   }
+
   std::map<std::string, double> score_by_language;
 
   // Call the model on the entire string in chunks of kModelInputMaxChars and
@@ -49,12 +50,23 @@ void DetectLanguage(
     }
   }
 
-  WTF::Vector<LanguagePrediction> predictions;
+  WTF::Vector<blink::LanguagePrediction> predictions;
   predictions.reserve(static_cast<wtf_size_t>(score_by_language.size()));
   for (const auto& it : score_by_language) {
     predictions.emplace_back(it.first, it.second / count);
   }
   std::move(on_complete).Run(predictions);
+}
+
+}  // namespace
+
+namespace blink {
+
+void DetectLanguage(const WTF::String& text,
+                    DetectLanguageCallback on_complete) {
+  auto& model = language_detection::GetLanguageDetectionModel();
+  model.AddOnModelLoadedCallback(
+      WTF::BindOnce(DetectLanguageWithModel, text, std::move(on_complete)));
 }
 
 }  // namespace blink

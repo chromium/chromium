@@ -19,7 +19,7 @@
 <translation id="1343356790768851700">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে</translation>
 <translation id="1369915414381695676">ছাইট <ph name="SITE_NAME" /> যোগ কৰা হ’ল</translation>
 <translation id="1371239764779356792">এটা ছাইটক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰিবলৈ দিয়ক</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">সন্ধান কৰক</translation>
 <translation id="1384959399684842514">ডাইনল’ড পজ কৰা হৈছে</translation>
 <translation id="1415402041810619267">URL চুটি কৰা হ’ল</translation>
 <translation id="1448064542941920355">জুম কমাওক</translation>
@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">আপুনি <ph name="RECENCY" />ত গৈছিল</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
 <translation id="5048398596102334565">ম'শ্বন ছেন্সৰসমূহলৈ এক্সেছ পাবলৈ ছাইটসমূহক অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
+<translation id="5048841907079026162">আপোনাৰ ব্ৰাউজিঙৰ ডেটা পৰিচলনা কৰক</translation>
 <translation id="5050380848339752099">এই ছাইটটোৱে ইনক’গনিট’ ম’ডৰ বাহিৰৰ এটা এপৰ সৈতে তথ্য শ্বেয়াৰ কৰিবলৈ লৈছে।</translation>
 <translation id="5063480226653192405">ব্যৱহাৰ</translation>
 <translation id="5091013926750941408">ম’বাইল ছাইট</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">JavaScript চলাবলৈ ছাইটক অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
 <translation id="534295439873310000">NFC ডিভাইচসমূহ</translation>
 <translation id="5344522958567249764">বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰক</translation>
+<translation id="5373874281522292782">আপোনাৰ টেবৰ গোট ছেভ কৰা হৈছে</translation>
 <translation id="5389626883706033615">ছাইটসমূহে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি বিচৰাৰ পৰা অৱৰোধ কৰা হৈছে</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(আৰু ১টা)}one{(আৰু #টা)}other{(আৰু #টা)}}</translation>
 <translation id="5403592356182871684">নামসমূহ</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">সদায়</translation>
 <translation id="757524316907819857">সুৰক্ষিত সমল প্লে’ কৰাৰ পৰা ছাইটসমূহক অৱৰোধ কৰক</translation>
 <translation id="7594634374516752650">এটা ব্লুটুথ ডিভাইচৰ সৈতে সংযুক্ত হৈছে</translation>
+<translation id="7617547684249261169">আপুনি আপোনাৰ কিছুমান বা আটাইবোৰ ইতিহাস, কুকি ছাইটৰ ডেটা আৰু অধিক বস্তু মচিব পাৰে</translation>
 <translation id="7649070708921625228">সহায়</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7667547420449112975">অষ্ট্ৰেলিয়াৰ বিস্ময়কৰ যাদুকৰ</translation>

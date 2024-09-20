@@ -310,7 +310,6 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/ash/url_handler/url_handler.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
@@ -1136,12 +1135,7 @@ bool RenderViewContextMenu::IsInProgressiveWebApp() const {
 void RenderViewContextMenu::InitMenu() {
   RenderViewContextMenuBase::InitMenu();
 
-  if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_PASSWORD) &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManualFallbackAvailable)) {
-    AppendPasswordItems();
-  }
+  AppendPasswordItems();
 
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
     AppendPageItems();
@@ -2675,11 +2669,18 @@ void RenderViewContextMenu::AppendProtocolHandlerSubMenu() {
 }
 
 void RenderViewContextMenu::AppendPasswordItems() {
-  bool add_separator = false;
-
   password_manager::ContentPasswordManagerDriver* driver =
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           GetRenderFrameHost());
+
+  if (!driver ||
+      !driver->IsPasswordFieldForPasswordManager(
+          autofill::FieldRendererId(params_.field_renderer_id), params_)) {
+    return;
+  }
+
+  bool add_separator = false;
+
   // Don't show the item for guest or incognito profiles and also when the
   // automatic generation feature is disabled.
   if (password_manager_util::ManualPasswordGenerationEnabled(driver)) {
@@ -2805,11 +2806,30 @@ void RenderViewContextMenu::AppendLiveCaptionItem() {
 // Menu delegate functions -----------------------------------------------------
 
 bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
-  // Disable context menu in locked fullscreen mode (the menu is not really
-  // disabled as the user can still open it, but all the individual context menu
-  // entries are disabled / greyed out).
-  if (GetBrowser() && platform_util::IsBrowserLockedFullscreen(GetBrowser())) {
-    return false;
+  // Disable context menu in locked fullscreen mode to prevent users from
+  // exiting this mode (the menu is not really disabled as the user can still
+  // open it, but all the individual context menu entries are disabled / greyed
+  // out). We enable page navigation commands as well as extension ones when
+  // locked for OnTask (only relevant for non-web browser scenarios).
+  //
+  // NOTE: If new commands are being added, please disable them by default and
+  // notify the ChromeOS team by filing a bug under this component --
+  // b/?q=componentid:1389107.
+  Browser* const browser = GetBrowser();
+  if (browser && platform_util::IsBrowserLockedFullscreen(browser)) {
+    bool should_disable_command_for_locked_fullscreen = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (browser->IsLockedForOnTask()) {
+      bool is_page_nav_command =
+          (id == IDC_BACK) || (id == IDC_FORWARD) || (id == IDC_RELOAD);
+      should_disable_command_for_locked_fullscreen =
+          !is_page_nav_command &&
+          !ContextMenuMatcher::IsExtensionsCustomCommandId(id);
+    }
+#endif
+    if (should_disable_command_for_locked_fullscreen) {
+      return false;
+    }
   }
 
   {
@@ -3155,11 +3175,6 @@ void RenderViewContextMenu::OpenURLWithExtraHeaders(
     ui::PageTransition transition,
     const std::string& extra_headers,
     bool started_from_context_menu) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::TryOpenUrl(params_.link_url, disposition)) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   RenderViewContextMenuBase::OpenURLWithExtraHeaders(
       url, referring_url, initiator, disposition, transition, extra_headers,
       started_from_context_menu);
@@ -3201,11 +3216,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: {
       WindowOpenDisposition new_tab_disposition =
           WindowOpenDisposition::NEW_BACKGROUND_TAB;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      if (ash::TryOpenUrl(params_.link_url, new_tab_disposition)) {
-        break;
-      }
-#endif
       Browser* browser = nullptr;
       if (IsInProgressiveWebApp()) {
         browser = FindNormalBrowser(GetProfile());
@@ -3313,16 +3323,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME:
-      RecordAmbientSearchQuery(
-          lens::AmbientSearchEntryPoint::
-              CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_GOOGLE_LENS);
-      ExecSearchForVideoFrame(event_flags);
+      ExecSearchForVideoFrame(event_flags, /*is_lens_query=*/true);
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME:
-      RecordAmbientSearchQuery(lens::AmbientSearchEntryPoint::
-                                   CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_WEB);
-      ExecSearchForVideoFrame(event_flags);
+      ExecSearchForVideoFrame(event_flags, /*is_lens_query=*/false);
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE:
@@ -4290,6 +4295,14 @@ void RenderViewContextMenu::ExecSaveLinkAs() {
   dl_params->set_prompt(true);
   dl_params->set_download_source(download::DownloadSource::CONTEXT_MENU);
 
+  // Attach the nonce. This allows URL loader to stop in-progress download
+  // request if the nonce is revoked for untruested network access.
+  url::Origin origin = url::Origin::Create(url);
+  dl_params->set_isolation_info(net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, /*top_frame_origin=*/origin,
+      /*frame_origin=*/origin, net::SiteForCookies::FromUrl(url),
+      /*nonce=*/render_frame_host->GetIsolationInfoForSubresources().nonce()));
+
   browser_context_->GetDownloadManager()->DownloadUrl(std::move(dl_params));
 }
 
@@ -4387,9 +4400,6 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags,
     return;
   }
 
-  lens::RecordAmbientSearchQuery(
-      lens::AmbientSearchEntryPoint::
-          CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS);
   bool entered_through_keyboard =
       IsLensOptionEnteredThroughKeyboard(event_flags);
   bool lens_overlay_for_image_search_enabled =
@@ -4399,6 +4409,10 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags,
           ->IsEnabled() &&
       lens::features::UseLensOverlayForImageSearch();
   if (lens_overlay_for_image_search_enabled && !entered_through_keyboard) {
+    lens::RecordAmbientSearchQuery(
+        lens::AmbientSearchEntryPoint::
+            CONTEXT_MENU_SEARCH_IMAGE_WITH_LENS_OVERLAY);
+
     auto view_bounds = render_frame_host->GetView()->GetViewBounds();
     auto tab_bounds = source_web_contents_->GetViewBounds();
     float device_scale_factor =
@@ -4422,6 +4436,12 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags,
     // Lens Overlay flow.
     bool force_open_in_new_tab =
         lens_overlay_for_image_search_enabled && entered_through_keyboard;
+    lens::RecordAmbientSearchQuery(
+        lens_overlay_for_image_search_enabled
+            ? lens::AmbientSearchEntryPoint::
+                  CONTEXT_MENU_SEARCH_IMAGE_WITH_LENS_OVERLAY_ACCESSIBILITY_FALLBACK
+            : lens::AmbientSearchEntryPoint::
+                  CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS);
     core_tab_helper->SearchWithLens(
         render_frame_host, params().src_url,
         is_image_translate
@@ -4474,6 +4494,9 @@ void RenderViewContextMenu::ExecRegionSearch(
     UserEducationService::MaybeNotifyPromoFeatureUsed(
         GetBrowserContext(), lens::features::kLensOverlay);
     if (!entered_through_keyboard) {
+      lens::RecordAmbientSearchQuery(
+          lens::AmbientSearchEntryPoint::
+              CONTEXT_MENU_SEARCH_REGION_WITH_LENS_OVERLAY);
       LensOverlayController* const controller =
           LensOverlayController::GetController(embedder_web_contents_);
       CHECK(controller);
@@ -4512,7 +4535,10 @@ void RenderViewContextMenu::ExecRegionSearch(
         std::make_unique<lens::LensRegionSearchController>();
   }
   const lens::AmbientSearchEntryPoint entry_point =
-      is_google_default_search_provider
+      lens_overlay_for_region_search_enabled
+          ? lens::AmbientSearchEntryPoint::
+                CONTEXT_MENU_SEARCH_REGION_WITH_LENS_OVERLAY_ACCESSIBILITY_FALLBACK
+      : is_google_default_search_provider
           ? lens::AmbientSearchEntryPoint::
                 CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS
           : lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_REGION_WITH_WEB;
@@ -4593,7 +4619,8 @@ void RenderViewContextMenu::ExecCopyVideoFrame() {
       /*enable=*/true));
 }
 
-void RenderViewContextMenu::ExecSearchForVideoFrame(int event_flags) {
+void RenderViewContextMenu::ExecSearchForVideoFrame(int event_flags,
+                                                    bool is_lens_query) {
   base::RecordAction(UserMetricsAction("MediaContextMenu_SearchForVideoFrame"));
 
   RenderFrameHost* frame_host = GetRenderFrameHost();
@@ -4606,7 +4633,8 @@ void RenderViewContextMenu::ExecSearchForVideoFrame(int event_flags) {
       gfx::Size(lens::kMaxPixelsForImageSearch, lens::kMaxPixelsForImageSearch),
       lens::kMaxAreaForImageSearch,
       base::BindOnce(&RenderViewContextMenu::SearchForVideoFrame,
-                     weak_pointer_factory_.GetWeakPtr(), event_flags));
+                     weak_pointer_factory_.GetWeakPtr(), event_flags,
+                     is_lens_query));
 }
 
 void RenderViewContextMenu::ExecLiveCaption() {
@@ -4765,22 +4793,25 @@ void RenderViewContextMenu::MediaPlayerAction(
 
 void RenderViewContextMenu::SearchForVideoFrame(
     int event_flags,
+    bool is_lens_query,
     const SkBitmap& bitmap,
     const gfx::Rect& region_bounds) {
   if (bitmap.isNull()) {
     return;
   }
 
+  bool lens_overlay_for_video_search_enabled =
+      GetBrowser()
+          ->GetFeatures()
+          .lens_overlay_entry_point_controller()
+          ->IsEnabled() &&
+      lens::features::UseLensOverlayForVideoFrameSearch() && is_lens_query;
   bool entered_through_keyboard =
       IsLensOptionEnteredThroughKeyboard(event_flags);
   bool force_open_in_new_tab = false;
   // TODO(crbug/353984457): Clean this branching when the new server
   // results flow is ready.
-  if (GetBrowser()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller()
-          ->IsEnabled() &&
-      lens::features::UseLensOverlayForVideoFrameSearch()) {
+  if (lens_overlay_for_video_search_enabled) {
     if (entered_through_keyboard) {
       // Using the keyboard to invoke this entry point should use the
       // Lens region search flow through core_tab_helper (with results forced
@@ -4796,6 +4827,10 @@ void RenderViewContextMenu::SearchForVideoFrame(
       auto view_bounds = render_frame_host->GetView()->GetViewBounds();
       float device_scale_factor =
           render_frame_host->GetView()->GetDeviceScaleFactor();
+
+      RecordAmbientSearchQuery(
+          lens::AmbientSearchEntryPoint::
+              CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_LENS_OVERLAY);
 
       // OpenLensOverlayWithPreselectedRegion() only takes a `ChromeRenderFrame`
       // to keep it alive while the mojo calls run, which is not needed here.
@@ -4818,11 +4853,19 @@ void RenderViewContextMenu::SearchForVideoFrame(
   auto image =
       gfx::Image(gfx::ImageSkia::CreateFromBitmap(bitmap, /*scale=*/1));
 
-  if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
+  if (is_lens_query) {
+    RecordAmbientSearchQuery(
+        lens_overlay_for_video_search_enabled
+            ? lens::AmbientSearchEntryPoint::
+                  CONTEXT_MENU_SEARCH_VIDEO_WITH_LENS_OVERLAY_ACCESSIBILITY_FALLBACK
+            : lens::AmbientSearchEntryPoint::
+                  CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_GOOGLE_LENS);
     core_tab_helper->SearchWithLens(
         image, lens::EntryPoint::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM,
         force_open_in_new_tab);
   } else {
+    RecordAmbientSearchQuery(lens::AmbientSearchEntryPoint::
+                                 CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_WEB);
     core_tab_helper->SearchByImage(image);
   }
 }

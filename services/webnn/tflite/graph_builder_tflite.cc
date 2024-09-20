@@ -21,8 +21,9 @@
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_utils.h"
-#include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
+#include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
 
 namespace webnn::tflite {
 
@@ -280,9 +281,13 @@ std::vector<DataType> FillMaskTriangular(base::span<const int32_t> dimensions,
 
 // static
 base::expected<flatbuffers::DetachedBuffer, std::string>
-GraphBuilderTflite::CreateAndBuild(ContextProperties context_properties,
-                                   const mojom::GraphInfo& graph_info) {
-  GraphBuilderTflite builder(std::move(context_properties), graph_info);
+GraphBuilderTflite::CreateAndBuild(
+    ContextProperties context_properties,
+    const mojom::GraphInfo& graph_info,
+    const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands) {
+  GraphBuilderTflite builder(std::move(context_properties), graph_info,
+                             constant_operands);
 
   for (const auto& [operand_id, operand] : graph_info.id_to_operand_map) {
     RETURN_IF_ERROR(builder.SerializeOperand(operand_id, *operand));
@@ -345,6 +350,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*concat_inputs=*/SupportedDataTypes::All(),
        /*conv2d_input=*/kFloat32,
        /*conv_transpose2d_input=*/kFloat32,
+       // CumulativeSum is not implemented.
+       /*cumulative_sum_input=*/{},
        // DequantizeLinear is not implemented.
        /*dequantize_linear_input=*/{},
        /*dequantize_linear_scale=*/{},
@@ -380,10 +387,14 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*elu_input=*/kFloat32AndInt8,
        /*expand_input=*/kFloat32AndInts8To32AndInt64,
        /*gather_input=*/kFloat32AndInt8To64AndUint8,
-       /*gather_indices=*/DataTypeConstraint::kGatherIndicesSupportedDataTypes,
+       /*gather_indices=*/
+       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
        // GatherElements is not implemented.
        /*gather_elements_input=*/{},
        /*gather_elements_indices=*/{},
+       // GatherND is not implemented.
+       /*gather_nd_input=*/{},
+       /*gather_nd_indices=*/{},
        /*gelu_input=*/kFloat32,
        /*gemm_input=*/kFloat32,
        /*gru_input=*/kFloat32,
@@ -424,6 +435,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*relu_input=*/kFloat32,
        /*resample2d_input=*/kFloat32,
        /*reshape_input=*/SupportedDataTypes::All(),
+       // TODO(crbug.com/363677532): Implement scatterND.
+       /*scatter_nd_input=*/{},
+       /*scatter_nd_indices=*/{},
        /*sigmoid_input=*/kFloat32,
        /*slice_input=*/kFloat32AndInts8To32AndInt64,
        /*softmax_input=*/kFloat32,
@@ -439,10 +453,14 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*where_value=*/kFloat32AndInt8To64AndUint32});
 }
 
-GraphBuilderTflite::GraphBuilderTflite(ContextProperties context_properties,
-                                       const mojom::GraphInfo& graph_info)
+GraphBuilderTflite::GraphBuilderTflite(
+    ContextProperties context_properties,
+    const mojom::GraphInfo& graph_info,
+    const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands)
     : context_properties_(std::move(context_properties)),
-      graph_info_(graph_info) {
+      graph_info_(graph_info),
+      constant_operands_(constant_operands) {
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
@@ -465,8 +483,9 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperand(
   if (operand.kind == mojom::Operand::Kind::kConstant) {
     // Serialize buffer and return buffer index which starts from 1, it is
     // used to create the constant's tensor.
-    buffer_index =
-        SerializeBuffer(graph_info_->constant_id_to_buffer_map.at(operand_id));
+    auto it = constant_operands_->find(operand_id);
+    CHECK(it != constant_operands_->end());
+    buffer_index = SerializeBuffer(it->second->ByteSpan());
   }
 
   // Create `Tensor` with operand shape, the index of buffer and the name.
@@ -657,7 +676,10 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kWhere:
       operator_offset = SerializeWhere(*op.get_where());
       break;
+    case mojom::Operation::Tag::kCumulativeSum:
     case mojom::Operation::Tag::kGatherElements:
+    case mojom::Operation::Tag::kGatherNd:
+    case mojom::Operation::Tag::kScatterNd:
       return base::unexpected(NotSupportedOperatorError(op));
   }
   operators_.emplace_back(operator_offset);
@@ -714,10 +736,8 @@ flatbuffers::DetachedBuffer GraphBuilderTflite::FinishAndTakeFlatBuffer(
   return builder_.Release();
 }
 
-uint32_t GraphBuilderTflite::SerializeBuffer(
-    const mojo_base::BigBuffer& constant) {
-  const auto buffer_data =
-      builder_.CreateVector(constant.data(), constant.size());
+uint32_t GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer) {
+  const auto buffer_data = builder_.CreateVector(buffer.data(), buffer.size());
   const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
   buffers_.emplace_back(::tflite::CreateBuffer(builder_, buffer_data));
   // The index of buffer is referenced by tensors.

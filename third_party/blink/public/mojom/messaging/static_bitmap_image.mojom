@@ -8,6 +8,7 @@ import "skia/public/mojom/bitmap.mojom";
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "skia/public/mojom/image_info.mojom";
+import "mojo/public/mojom/base/values.mojom";
 
 // This interface is used to manage the lifetime of the
 // AcceleratedStaticBitmapImage transferred in the TranferableMessage.
@@ -24,6 +25,11 @@ interface ImageReleaseCallback {
   Release(gpu.mojom.SyncToken token);
 };
 
+// Isolate unsafe conversion to/from uint32.
+struct SharedImageUsageSet {
+  uint32 usage;
+};
+
 // Holds all information, necessary to recreate the accelerated image.
 struct AcceleratedStaticBitmapImage {
   // Mailbox holder contains SharedImage reference:
@@ -32,7 +38,7 @@ struct AcceleratedStaticBitmapImage {
   // Shared image usage: a bitmask identifying which API(s)
   // the SharedImage may be used with.
   // See gpu/command_buffer/common/shared_image_usage.h
-  uint32 usage;
+  SharedImageUsageSet usage;
   // Common image metadata.
   skia.mojom.ImageInfo image_info;
   // Indicates the orientation of the image.

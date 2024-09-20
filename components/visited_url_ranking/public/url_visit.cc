@@ -16,12 +16,14 @@ URLVisit::URLVisit(const GURL& url_arg,
                    const std::u16string& title_arg,
                    const base::Time& last_modified_arg,
                    syncer::DeviceInfo::FormFactor device_type_arg,
-                   Source source_arg)
+                   Source source_arg,
+                   const std::optional<std::string>& client_name_arg)
     : url(url_arg),
       title(title_arg),
       last_modified(last_modified_arg),
       device_type(device_type_arg),
-      source(source_arg) {}
+      source(source_arg),
+      client_name(client_name_arg) {}
 
 URLVisit::URLVisit(const URLVisit&) = default;
 
@@ -138,8 +140,18 @@ URLVisitAggregate::TabData::TabData(const URLVisitAggregate::TabData&) =
 URLVisitAggregate::TabData::~TabData() = default;
 
 URLVisitAggregate::HistoryData::HistoryData(
-    history::AnnotatedVisit annotated_visit)
-    : last_visited(std::move(annotated_visit)) {
+    history::AnnotatedVisit annotated_visit,
+    std::optional<std::string> client_name,
+    syncer::DeviceInfo::FormFactor device_type)
+    : last_visited(std::move(annotated_visit)),
+      visit(last_visited.url_row.url(),
+            last_visited.url_row.title(),
+            last_visited.visit_row.visit_time,
+            device_type,
+            last_visited.visit_row.originator_cache_guid.empty()
+                ? URLVisit::Source::kLocal
+                : URLVisit::Source::kForeign,
+            std::move(client_name)) {
   if (last_visited.context_annotations.total_foreground_duration
           .InMilliseconds() > 0) {
     total_foreground_duration =

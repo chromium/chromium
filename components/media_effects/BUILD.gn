@@ -11,6 +11,7 @@ source_set("media_effects") {
     "//content/public/browser",
     "//services/audio/public/mojom",
     "//services/video_capture/public/mojom",
+    "//services/video_effects/public/cpp:video_effects_service_host",
     "//third_party/abseil-cpp:absl",
   ]
   sources = [
@@ -33,6 +34,7 @@ source_set("unit_tests") {
     "//components/media_effects/test:test_support",
     "//components/user_prefs/test:test_support",
     "//content/test:test_support",
+    "//services/video_effects/public/cpp:video_effects_service_host",
     "//services/video_effects/test:test_support",
     "//testing/gtest",
     "//third_party/mediapipe",

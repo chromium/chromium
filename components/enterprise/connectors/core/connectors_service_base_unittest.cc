@@ -175,9 +175,9 @@ class ConnectorsServiceBaseReportingSettingsTest
   ReportingConnector connector() const { return std::get<0>(GetParam()); }
   const char* pref_value() const { return std::get<1>(GetParam()); }
 
-  const char* pref() const { return ConnectorPref(connector()); }
+  const char* pref() const { return kOnSecurityEventPref; }
 
-  const char* scope_pref() const { return ConnectorScopePref(connector()); }
+  const char* scope_pref() const { return kOnSecurityEventScopePref; }
 
   bool reporting_enabled() const {
     return pref_value() == kNormalReportingSettingsPref;

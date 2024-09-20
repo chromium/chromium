@@ -13,9 +13,6 @@
 /// Sets `webView` in the consumer.
 - (void)setWebView:(UIView*)webView;
 
-/// Sets the background color of the consumer.
-- (void)setBackgroundColor:(UIColor*)backgroundColor;
-
 /// Sets the loading progress.
 /// This value is bound between 0 (meaning no progress) and 1 (meaning the page
 /// has fully loaded).

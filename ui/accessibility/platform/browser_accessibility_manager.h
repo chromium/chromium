@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -403,8 +404,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
 
   // AXTreeObserver implementation.
   void OnNodeCreated(AXTree* tree, AXNode* node) override;
-  void OnNodeDeleted(AXTree* tree, int32_t node_id) override;
   void OnNodeReparented(AXTree* tree, AXNode* node) override;
+  void OnAtomicUpdateStarting(
+      AXTree* tree,
+      const base::flat_set<AXNodeID>& deleted_node_ids,
+      const base::flat_set<AXNodeID>& reparented_node_ids) override;
   void OnAtomicUpdateFinished(
       AXTree* tree,
       bool root_changed,
@@ -502,10 +506,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
  protected:
   FRIEND_TEST_ALL_PREFIXES(content::BrowserAccessibilityManagerTest,
                            TestShouldFireEventForNode);
-  FRIEND_TEST_ALL_PREFIXES(content::BrowserAccessibilityManagerTest,
-                           TestShouldFireEventForAlertEventWithEmptyName);
-  FRIEND_TEST_ALL_PREFIXES(content::BrowserAccessibilityManagerTest,
-                           TestShouldFireEventForAlertEventWithNonEmptyName);
 
   explicit BrowserAccessibilityManager(AXNodeIdDelegate& node_id_delegate,
                                        AXPlatformTreeManagerDelegate* delegate);

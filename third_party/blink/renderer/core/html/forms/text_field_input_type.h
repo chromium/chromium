@@ -84,7 +84,6 @@ class TextFieldInputType : public InputType,
   InputTypeView* CreateView() override;
   ValueMode GetValueMode() const override;
   bool MayTriggerVirtualKeyboard() const final;
-  bool IsTextField() const final;
   bool ShouldSubmitImplicitly(const Event&) final;
   bool ShouldRespectListAttribute() override;
   void ListAttributeTargetChanged() override;

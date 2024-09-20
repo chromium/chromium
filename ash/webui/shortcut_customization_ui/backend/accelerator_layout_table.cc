@@ -325,10 +325,13 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                {ui::Accelerator(ui::VKEY_HOME, ui::EF_ALT_DOWN)})},
           {NonConfigurableActions::kBrowserSelectNextTab,
            NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_TAB, ui::EF_CONTROL_DOWN)})},
+               {ui::Accelerator(ui::VKEY_TAB, ui::EF_CONTROL_DOWN),
+                ui::Accelerator(ui::VKEY_NEXT, ui::EF_CONTROL_DOWN)})},
           {NonConfigurableActions::kBrowserSelectPreviousTab,
-           NonConfigurableAcceleratorDetails({ui::Accelerator(
-               ui::VKEY_TAB, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_TAB,
+                                ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN),
+                ui::Accelerator(ui::VKEY_PRIOR, ui::EF_CONTROL_DOWN)})},
           {NonConfigurableActions::kAmbientCopy,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN)})},

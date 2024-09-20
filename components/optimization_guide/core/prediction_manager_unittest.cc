@@ -391,7 +391,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableCheckingUserPermissionsForTesting);
+        switches::kGoogleApiKeyConfigurationCheckOverride);
 
     CreateAndInitializePredictionModelStore();
     RunUntilIdle();

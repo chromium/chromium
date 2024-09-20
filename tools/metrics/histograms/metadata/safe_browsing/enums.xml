@@ -160,6 +160,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kFailedWriteFile"/>
 </enum>
 
+<enum name="ClientReportSendDownloadReportResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="SERIALIZATION_ERROR"/>
+  <int value="2" label="EMPTY_REPORT"/>
+</enum>
+
 <enum name="ClientSafeBrowsingReportType">
   <int value="0" label="Unknown"/>
   <int value="1" label="URL phishing"/>
@@ -268,6 +274,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="INVALID_URL"/>
   <int value="5" label="NAVIGATION_EVENT_NOT_FOUND"/>
   <int value="6" label="SUCCESS_REFERRER"/>
+</enum>
+
+<enum name="SafeBrowsingAuthenticatedEndpoint">
+  <int value="0" label="Deep scanning"/>
+  <int value="1" label="Download protection"/>
+  <int value="2" label="Extension telemetry"/>
+  <int value="3" label="Client side detection"/>
+  <int value="4" label="Password protection"/>
+  <int value="5" label="Threat details"/>
+  <int value="6" label="Realtime URL lookup"/>
 </enum>
 
 <enum name="SafeBrowsingBinaryUploadResult">
@@ -641,6 +657,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="SITE_ENGAGEMENT_SCORE_GTE_10"/>
   <int value="7" label="SITE_ENGAGEMENT_SCORE_EXISTS"/>
   <int value="8" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
+  <int value="9" label="GLOBAL_ALLOWLIST_NOT_READY"/>
 </enum>
 
 <enum name="SiteFamiliarityHistoryHeuristicName">

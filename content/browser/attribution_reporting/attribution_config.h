@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -167,6 +168,7 @@ struct CONTENT_EXPORT AttributionConfig {
   AggregateLimit aggregate_limit;
   DestinationRateLimit destination_rate_limit;
   AggregatableDebugRateLimit aggregatable_debug_rate_limit;
+  attribution_reporting::PrivacyMathConfig privacy_math_config;
 
   friend bool operator==(const AttributionConfig&,
                          const AttributionConfig&) = default;

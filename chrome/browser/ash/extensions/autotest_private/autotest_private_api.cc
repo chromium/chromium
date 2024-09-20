@@ -99,6 +99,7 @@
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
@@ -189,6 +190,7 @@
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/policy_service.h"
@@ -237,6 +239,7 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/text_input_method.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -1980,56 +1983,6 @@ AutotestPrivateGetPlayStoreStateFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateStartArcFunction
-///////////////////////////////////////////////////////////////////////////////
-
-AutotestPrivateStartArcFunction::~AutotestPrivateStartArcFunction() = default;
-
-ExtensionFunction::ResponseAction AutotestPrivateStartArcFunction::Run() {
-  DVLOG(1) << "AutotestPrivateStartArcFunction";
-
-  arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
-  if (!arc_session_manager) {
-    return RespondNow(Error("Could not find ARC session manager"));
-  }
-
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (!arc::IsArcAllowedForProfile(profile)) {
-    return RespondNow(Error("ARC cannot be started for the current user"));
-  }
-
-  if (arc_session_manager->enable_requested()) {
-    return RespondNow(Error("ARC is already started"));
-  }
-
-  arc_session_manager->RequestEnable();
-
-  return RespondNow(NoArguments());
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateStopArcFunction
-///////////////////////////////////////////////////////////////////////////////
-
-AutotestPrivateStopArcFunction::~AutotestPrivateStopArcFunction() = default;
-
-ExtensionFunction::ResponseAction AutotestPrivateStopArcFunction::Run() {
-  DVLOG(1) << "AutotestPrivateStopArcFunction";
-
-  arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
-  if (!arc_session_manager) {
-    return RespondNow(Error("Could not find ARC session manager"));
-  }
-
-  if (!arc_session_manager->enable_requested()) {
-    return RespondNow(Error("ARC is already stopped"));
-  }
-
-  arc_session_manager->RequestDisable();
-
-  return RespondNow(NoArguments());
-}
-///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateSetPlayStoreEnabledFunction
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -2891,15 +2844,16 @@ class AutotestPrivateInstallBorealisFunction::InstallationObserver
       : observation_(this),
         completion_callback_(std::move(completion_callback)) {
     observation_.Observe(
-        &borealis::BorealisService::GetForProfile(profile)->Installer());
+        &borealis::BorealisServiceFactory::GetForProfile(profile)->Installer());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](Profile* profile) {
-                         borealis::BorealisService::GetForProfile(profile)
-                             ->Installer()
-                             .Start();
-                       },
-                       profile));
+        FROM_HERE,
+        base::BindOnce(
+            [](Profile* profile) {
+              borealis::BorealisServiceFactory::GetForProfile(profile)
+                  ->Installer()
+                  .Start();
+            },
+            profile));
   }
 
   void OnProgressUpdated(double fraction_complete) override {}
@@ -5753,7 +5707,7 @@ AutotestPrivateSetWindowBoundsFunction::Run() {
 
   auto* state = ash::WindowState::Get(window);
   if (!state || chromeos::ToWindowShowState(state->GetStateType()) !=
-                    ui::SHOW_STATE_NORMAL) {
+                    ui::mojom::WindowShowState::kNormal) {
     return RespondNow(
         Error("Cannot set bounds of window not in normal show state."));
   }
@@ -7135,6 +7089,30 @@ AutotestPrivateSetDeviceLanguageFunction::Run() {
   profile->ChangeAppLocale(params->locale,
                            Profile::APP_LOCALE_CHANGED_VIA_SETTINGS);
   return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetDeviceEventLogFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetDeviceEventLogFunction::
+    AutotestPrivateGetDeviceEventLogFunction() = default;
+
+AutotestPrivateGetDeviceEventLogFunction::
+    ~AutotestPrivateGetDeviceEventLogFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateGetDeviceEventLogFunction::Run() {
+  std::optional<api::autotest_private::GetDeviceEventLog::Params> params =
+      api::autotest_private::GetDeviceEventLog::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  DVLOG(1) << "AutotestPrivateGetDeviceEventLogFunction " << params->type;
+
+  std::string logs = device_event_log::GetAsString(
+      device_event_log::OLDEST_FIRST, "time,file,type", params->type,
+      device_event_log::LOG_LEVEL_DEBUG, 0);
+
+  return RespondNow(WithArguments(base::UTF8ToUTF16(std::move(logs))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -180,6 +180,38 @@ void SanitizeJpgBytes(
                      output_data.generation_seed()));
 }
 
+manta::MantaStatusCode GetMantaStatusCodeForEmptyImageResponse(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    const ::google::protobuf::RepeatedPtrField<::manta::proto::FilteredData>&
+        filtered_data) {
+  if (!ash::features::IsSeaPenTextInputEnabled() ||
+      query_tag !=
+          ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery) {
+    return manta::MantaStatusCode::kGenericError;
+  }
+  for (auto& filtered_datum : filtered_data) {
+    if (filtered_datum.reason() == manta::proto::FilteredReason::IMAGE_SAFETY ||
+        filtered_datum.reason() ==
+            manta::proto::FilteredReason::TEXT_BLOCKLIST) {
+      // If anything has been filtered due to safety, send the blocked
+      // outputs result.
+      return manta::MantaStatusCode::kBlockedOutputs;
+    }
+  }
+  return manta::MantaStatusCode::kGenericError;
+}
+
+std::vector<ash::SeaPenImage> TakeValidImages(
+    const std::vector<std::optional<ash::SeaPenImage>>& optional_images) {
+  std::vector<ash::SeaPenImage> filtered_images;
+  for (auto& image : optional_images) {
+    if (image.has_value() && !image->jpg_bytes.empty()) {
+      filtered_images.emplace_back(std::move(image->jpg_bytes), image->id);
+    }
+  }
+  return filtered_images;
+}
+
 class SeaPenFetcherImpl : public SeaPenFetcher {
  public:
   // `snapper_provider` may be null.
@@ -339,12 +371,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       const ::google::protobuf::RepeatedPtrField<::manta::proto::FilteredData>&
           filtered_data,
       const std::vector<std::optional<ash::SeaPenImage>>& optional_images) {
-    std::vector<ash::SeaPenImage> filtered_images;
-    for (auto& image : optional_images) {
-      if (image.has_value()) {
-        filtered_images.emplace_back(std::move(image->jpg_bytes), image->id);
-      }
-    }
+    std::vector<ash::SeaPenImage> filtered_images =
+        TakeValidImages(optional_images);
 
     RecordSeaPenThumbnailsCount(query_tag, filtered_images.size());
 
@@ -359,28 +387,6 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
     std::move(pending_fetch_thumbnails_callback_)
         .Run(std::move(filtered_images), manta::MantaStatusCode::kOk);
-  }
-
-  manta::MantaStatusCode GetMantaStatusCodeForEmptyImageResponse(
-      ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
-      const ::google::protobuf::RepeatedPtrField<::manta::proto::FilteredData>&
-          filtered_data) {
-    if (!ash::features::IsSeaPenTextInputEnabled() ||
-        query_tag !=
-            ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery) {
-      return manta::MantaStatusCode::kGenericError;
-    }
-    for (auto& filtered_datum : filtered_data) {
-      if (filtered_datum.reason() ==
-              manta::proto::FilteredReason::IMAGE_SAFETY ||
-          filtered_datum.reason() ==
-              manta::proto::FilteredReason::TEXT_BLOCKLIST) {
-        // If anything has been filtered due to safety, send the blocked
-        // outputs result.
-        return manta::MantaStatusCode::kBlockedOutputs;
-      }
-    }
-    return manta::MantaStatusCode::kGenericError;
   }
 
   void OnFetchThumbnailsTimeout(
@@ -417,15 +423,27 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     RecordSeaPenTimeout(query_tag, /*hit_timeout=*/false,
                         SeaPenApiType::kWallpaper);
 
-    std::vector<ash::SeaPenImage> images;
+    std::unique_ptr<data_decoder::DataDecoder> data_decoder =
+        std::make_unique<data_decoder::DataDecoder>();
+    auto* data_decoder_pointer = data_decoder.get();
+
+    const auto barrier_callback =
+        base::BarrierCallback<std::optional<ash::SeaPenImage>>(
+            response->output_data_size(),
+            base::BindOnce(&SeaPenFetcherImpl::OnWallpaperSanitized,
+                           fetch_wallpaper_weak_ptr_factory_.GetWeakPtr(),
+                           std::move(data_decoder), query_tag));
+
     for (auto& data : *response->mutable_output_data()) {
-      if (!IsValidOutput(data, __func__)) {
-        continue;
-      }
-      images.emplace_back(
-          std::move(*data.mutable_image()->mutable_serialized_bytes()),
-          data.generation_seed());
+      SanitizeJpgBytes(data, data_decoder_pointer, barrier_callback);
     }
+  }
+
+  void OnWallpaperSanitized(
+      std::unique_ptr<data_decoder::DataDecoder> data_decoder,
+      ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+      const std::vector<std::optional<ash::SeaPenImage>>& optional_images) {
+    std::vector<ash::SeaPenImage> images = TakeValidImages(optional_images);
 
     RecordSeaPenWallpaperHasImage(query_tag, !images.empty());
 

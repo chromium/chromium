@@ -15,8 +15,8 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/ip_protection/common/ip_protection_config_cache.h"
 #include "components/ip_protection/common/ip_protection_config_getter.h"
+#include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 
@@ -27,7 +27,7 @@ namespace ip_protection {
 class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
  public:
   explicit IpProtectionTokenManagerImpl(
-      IpProtectionConfigCache* config_cache,
+      IpProtectionCore* core,
       IpProtectionConfigGetter* config_getter,
       ProxyLayer proxy_layer,
       bool disable_cache_management_for_testing = false);
@@ -90,7 +90,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   bool IsTokenLimitExceeded(const std::string& geo_id) const;
 
   // Current geo of the client.
-  // This value should only be set by the `IpProtectionConfigCache` using the
+  // This value should only be set by the `IpProtectionCore` using the
   // `IpProtectionTokenManager::SetCurrentGeo()` function.
   std::string current_geo_id_ = "";
 
@@ -117,12 +117,12 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   // The proxy layer which the cache of tokens will be used for.
   ProxyLayer proxy_layer_;
 
-  // Pointer to the `IpProtectionConfigCache` that holds the proxy list and
+  // Pointer to the `IpProtectionCore` that holds the proxy list and
   // tokens. Required to observe geo changes from retrieved tokens.
-  // The lifetime of the `IpProtectionConfigCache` object WILL ALWAYS outlive
-  // this class b/c `ip_protection_config_cache_` owns this (at least outside of
+  // The lifetime of the `IpProtectionCore` object WILL ALWAYS outlive
+  // this class b/c `ip_protection_core_` owns this (at least outside of
   // testing).
-  const raw_ptr<IpProtectionConfigCache> ip_protection_config_cache_;
+  const raw_ptr<IpProtectionCore> ip_protection_core_;
 
   // True if an invocation of `config_getter_.TryGetAuthTokens()` is
   // outstanding.

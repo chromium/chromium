@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">Ви відвідали цей сайт <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5048398596102334565">Надати сайтам доступ до датчиків руху (рекомендовано)</translation>
+<translation id="5048841907079026162">Керуйте даними вебперегляду</translation>
 <translation id="5050380848339752099">Цей сайт збирається надіслати інформацію зовнішньому додатку, поки ви в режимі анонімного перегляду.</translation>
 <translation id="5063480226653192405">Використання</translation>
 <translation id="5091013926750941408">Мобільний сайт</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">Дозволити сайтам запускати JavaScript (рекомендується)</translation>
 <translation id="534295439873310000">Пристрої NFC</translation>
 <translation id="5344522958567249764">Керувати конфіденційністю в рекламі</translation>
+<translation id="5373874281522292782">Ваші групи вкладок зберігаються</translation>
 <translation id="5389626883706033615">Сайтам заборонено запитувати дозвіл на використання збереженої про вас інформації</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ще 1)}one{(+ ще #)}few{(+ ще #)}many{(+ ще #)}other{(+ ще #)}}</translation>
 <translation id="5403592356182871684">Імена</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">Завжди</translation>
 <translation id="757524316907819857">Заборонити сайтам відтворювати захищений вміст</translation>
 <translation id="7594634374516752650">Підключено до пристрою з Bluetooth</translation>
+<translation id="7617547684249261169">Ви можете частково або повністю видалити історію, файли cookie, дані сайтів тощо</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7667547420449112975">Чарівник країни Оз</translation>
@@ -456,7 +459,7 @@
 <translation id="8117244575099414087">Якщо цей параметр увімкнено, сайти можуть використовувати датчики пристрою. Якщо його вимкнено, сайти не можуть використовувати датчики.</translation>
 <translation id="813082847718468539">Перегляд інформації про сайт</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
-<translation id="8168435359814927499">Вміст</translation>
+<translation id="8168435359814927499">Контент</translation>
 <translation id="8186479265534291036">Сайт не працює? Сторонні файли cookie заблоковано.</translation>
 <translation id="8197286292360124385">Дозволено: "<ph name="PERMISSION_1" />"</translation>
 <translation id="8200772114523450471">Відновити</translation>

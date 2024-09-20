@@ -795,6 +795,8 @@ FilePathWatcherImpl::FindChangedPathAndUpdateWatches(
   }
 
   if (Contains(recursive_paths_by_watch_, fired_watch)) {
+    base::FilePath child_path =
+        recursive_paths_by_watch_[fired_watch].Append(child);
     if (!did_update) {
       if (!UpdateRecursiveWatches(
               fired_watch,
@@ -802,7 +804,7 @@ FilePathWatcherImpl::FindChangedPathAndUpdateWatches(
         return base::unexpected(ChangeProcessError::kLimitExceeded);
       }
     }
-    return base::ok(recursive_paths_by_watch_[fired_watch].Append(child));
+    return base::ok(child_path);
   }
 
   return base::unexpected(ChangeProcessError::kNotFound);

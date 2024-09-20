@@ -207,6 +207,10 @@ crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ 
 # Flaky failure on Mac release NVIDIA - 3 GPU process crashes instead of 4
 crbug.com/355923591 [ mac release nvidia ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
 
+# Flaky failure on Mac Intel ASAN - DevTools Serialization Crash
+crbug.com/338574390 [ mac intel asan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
+crbug.com/338574390 [ mac intel asan ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

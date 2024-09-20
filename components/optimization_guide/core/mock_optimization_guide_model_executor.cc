@@ -44,8 +44,16 @@ void MockSessionWrapper::GetSizeInTokens(
     OptimizationGuideModelSizeInTokenCallback callback) {
   session_->GetSizeInTokens(text, std::move(callback));
 }
+void MockSessionWrapper::GetContextSizeInTokens(
+    const google::protobuf::MessageLite& request,
+    OptimizationGuideModelSizeInTokenCallback callback) {
+  session_->GetContextSizeInTokens(request, std::move(callback));
+}
 const SamplingParams MockSessionWrapper::GetSamplingParams() const {
   return session_->GetSamplingParams();
+}
+const proto::Any& MockSessionWrapper::GetOnDeviceFeatureMetadata() const {
+  return session_->GetOnDeviceFeatureMetadata();
 }
 
 }  // namespace optimization_guide

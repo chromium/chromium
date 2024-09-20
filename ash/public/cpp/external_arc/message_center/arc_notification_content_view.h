@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/views/controls/native/native_view_host.h"
@@ -100,9 +101,6 @@ class ArcNotificationContentView
 
   void ShowCopiedSurface();
   void HideCopiedSurface();
-
-  // Generates a mask using |top_radius_| and |bottom_radius_| and installs it.
-  void UpdateMask(bool force_update);
 
   // views::NativeViewHost
   void ViewHierarchyChanged(
@@ -205,17 +203,10 @@ class ArcNotificationContentView
   // Widget which this view tree is currently attached to.
   raw_ptr<views::Widget> attached_widget_ = nullptr;
 
-  std::u16string accessible_name_;
-
   // If it's true, the surface gets active when attached to this view.
   bool activate_on_attach_ = false;
 
-  // Radiuses of rounded corners. These values are used in UpdateMask().
-  float top_radius_ = 0;
-  float bottom_radius_ = 0;
-
-  // Current insets of mask layer.
-  std::optional<gfx::Insets> mask_insets_;
+  gfx::RoundedCornersF contents_radii_;
 
   std::unique_ptr<ui::LayerTreeOwner> surface_copy_;
 };

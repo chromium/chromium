@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/material_timing.h"
@@ -350,6 +351,10 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   }
   _underPageBackgroundColor = underPageBackgroundColor;
   [self updateBackgroundColor];
+}
+
+- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle {
+  [self.view setTabGridButtonStyle:tabGridButtonStyle];
 }
 
 #pragma mark - NewTabPageControllerDelegate

@@ -278,12 +278,8 @@ bool PlatformSensor::IsSignificantlyDifferent(const SensorReading& lhs,
     case mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
     case mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION:
     case mojom::SensorType::MAGNETOMETER:
-    case mojom::SensorType::PRESSURE:
-    case mojom::SensorType::PROXIMITY:
       return !base::ranges::equal(lhs.raw.values, rhs.raw.values);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
 }
 
 base::WeakPtr<PlatformSensor> PlatformSensor::AsWeakPtr() {

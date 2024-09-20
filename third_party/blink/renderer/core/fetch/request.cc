@@ -559,6 +559,8 @@ Request* Request::CreateRequestWithRequestOrString(
     if (init->browsingTopics()) {
       UseCounter::Count(execution_context,
                         mojom::blink::WebFeature::kTopicsAPIFetch);
+      UseCounter::Count(execution_context,
+                        mojom::blink::WebFeature::kTopicsAPIAll);
     }
   }
 
@@ -1028,6 +1030,10 @@ String Request::redirect() const {
 
 String Request::integrity() const {
   return request_->Integrity();
+}
+
+String Request::duplex() const {
+  return "half";
 }
 
 bool Request::keepalive() const {

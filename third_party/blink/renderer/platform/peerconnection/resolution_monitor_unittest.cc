@@ -173,6 +173,31 @@ INSTANTIATE_TEST_SUITE_P(AV1,
                          ResolutionMonitorTestWithValidVideo,
                          ::testing::ValuesIn(kAV1Videos));
 
+TEST(ResolutionMonitorTestWithTruncatedH264, ZeroLengthNalUnit) {
+  auto resolution_monitor = ResolutionMonitor::Create(media::VideoCodec::kH264);
+  ASSERT_TRUE(resolution_monitor);
+  const uint8_t invalid_data[] = {
+      0x00, 0x00, 0x00, 0x01,  // Just a NAL header.
+      0x00, 0x00, 0x00, 0x01,
+      0x68,  // PPS since FindNaluIndices does not like just an empty NAL
+             // header.
+  };
+  auto invalid_buffer = media::DecoderBuffer::CopyFrom(invalid_data);
+  invalid_buffer->set_is_key_frame(true);
+  EXPECT_EQ(resolution_monitor->GetResolution(*invalid_buffer), std::nullopt);
+}
+
+TEST(ResolutionMonitorTestWithTruncatedH264, IncompleteSps) {
+  auto resolution_monitor = ResolutionMonitor::Create(media::VideoCodec::kH264);
+  ASSERT_TRUE(resolution_monitor);
+  const uint8_t invalid_data[] = {
+      0x00, 0x00, 0x00, 0x01, 0x67,  // NAL header and type but no content.
+  };
+  auto invalid_buffer = media::DecoderBuffer::CopyFrom(invalid_data);
+  invalid_buffer->set_is_key_frame(true);
+  EXPECT_EQ(resolution_monitor->GetResolution(*invalid_buffer), std::nullopt);
+}
+
 }  // namespace
 
 }  // namespace blink

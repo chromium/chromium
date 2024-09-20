@@ -90,8 +90,7 @@ void VolumeControlAndroid::SetVolume(VolumeChangeSource source,
                                      AudioContentType type,
                                      float level) {
   if (type == AudioContentType::kOther) {
-    NOTREACHED_IN_MIGRATION() << "Can't set volume for content type kOther";
-    return;
+    NOTREACHED() << "Can't set volume for content type kOther";
   }
 
   level = std::clamp(level, 0.0f, 1.0f);
@@ -113,8 +112,7 @@ void VolumeControlAndroid::SetMuted(VolumeChangeSource source,
                                     AudioContentType type,
                                     bool muted) {
   if (type == AudioContentType::kOther) {
-    NOTREACHED_IN_MIGRATION() << "Can't set mute state for content type kOther";
-    return;
+    NOTREACHED() << "Can't set mute state for content type kOther";
   }
 
   thread_.task_runner()->PostTask(
@@ -125,9 +123,7 @@ void VolumeControlAndroid::SetMuted(VolumeChangeSource source,
 
 void VolumeControlAndroid::SetOutputLimit(AudioContentType type, float limit) {
   if (type == AudioContentType::kOther) {
-    NOTREACHED_IN_MIGRATION()
-        << "Can't set output limit for content type kOther";
-    return;
+    NOTREACHED() << "Can't set output limit for content type kOther";
   }
 
   // The input limit is in the kMedia (MUSIC) volume table domain.

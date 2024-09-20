@@ -38,7 +38,6 @@
 #include <android/keycodes.h>
 #endif
 
-using perfetto::protos::pbzero::ChromeLatencyInfo;
 using perfetto::protos::pbzero::TrackEvent;
 
 namespace blink {
@@ -310,10 +309,12 @@ void WidgetBaseInputHandler::HandleInputEvent(
   int64_t trace_id = coalesced_event.latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [trace_id](perfetto::EventContext ctx) {
-                ChromeLatencyInfo* info =
-                    ctx.event()->set_chrome_latency_info();
+                auto* info =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                        ->set_chrome_latency_info();
                 info->set_trace_id(trace_id);
-                info->set_step(ChromeLatencyInfo::STEP_HANDLE_INPUT_EVENT_MAIN);
+                info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::
+                                   Step::STEP_HANDLE_INPUT_EVENT_MAIN);
                 tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
                                        trace_id);
               });

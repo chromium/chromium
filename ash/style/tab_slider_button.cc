@@ -243,7 +243,7 @@ IconLabelSliderButton::IconLabelSliderButton(PressedCallback callback,
                       tooltip_text.empty() ? text : tooltip_text),
       image_view_(AddChildView(std::make_unique<views::ImageView>())),
       label_(AddChildView(std::make_unique<views::Label>(text))) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
+  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       horizontal ? views::BoxLayout::Orientation::kHorizontal
                  : views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/
@@ -267,6 +267,16 @@ IconLabelSliderButton::IconLabelSliderButton(PressedCallback callback,
   // Force the label to use requested colors.
   label_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
+
+  if (horizontal) {
+    layout_manager->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+
+    // Keep `image_view_` to the left side of `label_` in RTL.
+    if (base::i18n::IsRTL()) {
+      ReorderChildView(label_, 0);
+    }
+  }
 }
 
 IconLabelSliderButton::~IconLabelSliderButton() = default;

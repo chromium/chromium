@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_BYTE_STREAM_TEE_ENGINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_BYTE_STREAM_TEE_ENGINE_H_
 
@@ -81,11 +76,11 @@ class ByteStreamTeeEngine final : public GarbageCollected<ByteStreamTeeEngine> {
   // stream. These are implemented as arrays here. While they are 1-indexed in
   // the standard, they are 0-indexed here; ie. "canceled_[0]" here corresponds
   // to "canceled1" in the standard.
-  bool canceled_[2] = {false, false};
-  bool read_again_for_branch_[2] = {false, false};
-  TraceWrapperV8Reference<v8::Value> reason_[2];
-  Member<ReadableStream> branch_[2];
-  Member<ReadableByteStreamController> controller_[2];
+  std::array<bool, 2> canceled_ = {false, false};
+  std::array<bool, 2> read_again_for_branch_ = {false, false};
+  std::array<TraceWrapperV8Reference<v8::Value>, 2> reason_;
+  std::array<Member<ReadableStream>, 2> branch_;
+  std::array<Member<ReadableByteStreamController>, 2> controller_;
 };
 
 }  // namespace blink

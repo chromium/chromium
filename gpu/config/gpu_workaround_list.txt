@@ -56,6 +56,7 @@ disable_software_to_accelerated_canvas_upgrade
 disable_svc_encoding
 disable_texture_storage
 disable_timestamp_queries
+disable_video_overlay_if_moving
 disable_vp9_hmft_temporal_encoding
 disable_vp_auto_hdr
 disable_vp_scaling

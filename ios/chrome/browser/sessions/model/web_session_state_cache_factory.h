@@ -17,9 +17,10 @@
 // ChromeBrowserState.
 class WebSessionStateCacheFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static WebSessionStateCache* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static WebSessionStateCache* GetForBrowserState(ProfileIOS* profile);
 
+  static WebSessionStateCache* GetForProfile(ProfileIOS* profile);
   static WebSessionStateCacheFactory* GetInstance();
 
   WebSessionStateCacheFactory(const WebSessionStateCacheFactory&) = delete;

@@ -13,6 +13,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -41,14 +42,12 @@ TEST_F(SafetyCheckNotificationUtilsTest,
   NSString* expected_title = l10n_util::GetNSString(
       IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_CHANGE_PASSWORDS);
 
-  EXPECT_TRUE(
-      [expected_title isEqualToString:compromised_password_notification.title]);
+  EXPECT_NSEQ(expected_title, compromised_password_notification.title);
 
   NSString* expected_body = l10n_util::GetPluralNSStringF(
       IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_COMPROMISED_PASSWORD, 3);
 
-  EXPECT_TRUE(
-      [expected_body isEqualToString:compromised_password_notification.body]);
+  EXPECT_NSEQ(expected_body, compromised_password_notification.body);
 }
 
 // Tests if a notification is correctly generated for the weak password state.
@@ -70,13 +69,12 @@ TEST_F(SafetyCheckNotificationUtilsTest,
   NSString* expected_title = l10n_util::GetNSString(
       IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_CHANGE_PASSWORDS);
 
-  EXPECT_TRUE(
-      [expected_title isEqualToString:weak_password_notification.title]);
+  EXPECT_NSEQ(expected_title, weak_password_notification.title);
 
   NSString* expected_body = l10n_util::GetPluralNSStringF(
       IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_WEAK_PASSWORD, 4);
 
-  EXPECT_TRUE([expected_body isEqualToString:weak_password_notification.body]);
+  EXPECT_NSEQ(expected_body, weak_password_notification.body);
 }
 
 // Tests if a notification is correctly generated for the reused password state.
@@ -98,14 +96,12 @@ TEST_F(SafetyCheckNotificationUtilsTest,
   NSString* expected_title = l10n_util::GetNSString(
       IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_CHANGE_PASSWORDS);
 
-  EXPECT_TRUE(
-      [expected_title isEqualToString:reused_password_notification.title]);
+  EXPECT_NSEQ(expected_title, reused_password_notification.title);
 
   NSString* expected_body = l10n_util::GetPluralNSStringF(
       IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_REUSED_PASSWORD, 5);
 
-  EXPECT_TRUE(
-      [expected_body isEqualToString:reused_password_notification.body]);
+  EXPECT_NSEQ(expected_body, reused_password_notification.body);
 }
 
 // Tests that no notification is generated for the safe password state.
@@ -137,13 +133,12 @@ TEST_F(SafetyCheckNotificationUtilsTest,
   NSString* expected_title =
       l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_UPDATE_BROWSER);
 
-  EXPECT_TRUE(
-      [expected_title isEqualToString:update_chrome_notification.title]);
+  EXPECT_NSEQ(expected_title, update_chrome_notification.title);
 
   NSString* expected_body =
       l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_DESCRIPTION_UPDATE_CHROME);
 
-  EXPECT_TRUE([expected_body isEqualToString:update_chrome_notification.body]);
+  EXPECT_NSEQ(expected_body, update_chrome_notification.body);
 }
 
 // Tests that no notification is generated for the up-to-date Chrome state.
@@ -168,13 +163,12 @@ TEST_F(SafetyCheckNotificationUtilsTest,
   NSString* expected_title = l10n_util::GetNSString(
       IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_ADD_BROWSING_PROTECTION);
 
-  EXPECT_TRUE(
-      [expected_title isEqualToString:safe_browsing_notification.title]);
+  EXPECT_NSEQ(expected_title, safe_browsing_notification.title);
 
   NSString* expected_body = l10n_util::GetNSString(
       IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_BROWSING_PROTECTION_OFF);
 
-  EXPECT_TRUE([expected_body isEqualToString:safe_browsing_notification.body]);
+  EXPECT_NSEQ(expected_body, safe_browsing_notification.body);
 }
 
 // Tests that no notification is generated for the safe Safe Browsing state.
@@ -198,12 +192,12 @@ TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesNonSafetyCheckRequest) {
                                            content:content
                                            trigger:nil];
 
-  EXPECT_FALSE(IsSafetyCheckNotification(request));
+  EXPECT_FALSE(ParseSafetyCheckNotificationType(request).has_value());
 }
 
-// Tests that a request with a Safety Check-related notification identifier
-// is correctly identified as a Safety Check notification.
-TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesSafetyCheckRequest) {
+// Tests that an Update Chrome notification request is correctly identified and
+// returns the `kUpdateChrome` identifier enum.
+TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesUpdateChromeRequest) {
   UNMutableNotificationContent* content =
       [[UNMutableNotificationContent alloc] init];
   content.title = @"Safety Check";
@@ -213,5 +207,38 @@ TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesSafetyCheckRequest) {
                     content:content
                     trigger:nil];
 
-  EXPECT_TRUE(IsSafetyCheckNotification(request));
+  EXPECT_EQ(ParseSafetyCheckNotificationType(request).value(),
+            SafetyCheckNotificationType::kUpdateChrome);
+}
+
+// Tests that a Passwords notification request is correctly identified and
+// returns the `kPasswords` identifier enum.
+TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesPasswordRequest) {
+  UNMutableNotificationContent* content =
+      [[UNMutableNotificationContent alloc] init];
+  content.title = @"Safety Check";
+
+  UNNotificationRequest* request = [UNNotificationRequest
+      requestWithIdentifier:kSafetyCheckPasswordNotificationID
+                    content:content
+                    trigger:nil];
+
+  EXPECT_EQ(ParseSafetyCheckNotificationType(request).value(),
+            SafetyCheckNotificationType::kPasswords);
+}
+
+// Tests that a Safe Browsing notification request is correctly identified and
+// returns the `kSafeBrowsing` identifier enum.
+TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesSafeBrowsingRequest) {
+  UNMutableNotificationContent* content =
+      [[UNMutableNotificationContent alloc] init];
+  content.title = @"Safety Check";
+
+  UNNotificationRequest* request = [UNNotificationRequest
+      requestWithIdentifier:kSafetyCheckSafeBrowsingNotificationID
+                    content:content
+                    trigger:nil];
+
+  EXPECT_EQ(ParseSafetyCheckNotificationType(request).value(),
+            SafetyCheckNotificationType::kSafeBrowsing);
 }

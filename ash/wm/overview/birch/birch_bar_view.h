@@ -87,8 +87,6 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   static std::unique_ptr<views::Widget> CreateBirchBarWidget(
       aura::Window* root_window);
 
-  // TODO(http://b/361326120): Temporary getter for the chips before the menu
-  // ownership is defined.
   const std::vector<raw_ptr<BirchChipButtonBase>>& chips() const {
     return chips_;
   }

@@ -115,14 +115,6 @@ class FrameTreeNode::OpenerDestroyedObserver : public FrameTreeNode::Observer {
   bool observing_original_opener_;
 };
 
-// TODO(https://crbug.com/361344235): Remove.
-const int FrameTreeNode::kFrameTreeNodeInvalidId = -1;
-
-// TODO(https://crbug.com/361344235): Remove.
-static_assert(FrameTreeNode::kFrameTreeNodeInvalidId ==
-                  RenderFrameHost::kNoFrameTreeNodeId,
-              "Have consistent sentinel values for an invalid FTN id.");
-
 // static
 FrameTreeNodeId::Generator FrameTreeNode::frame_tree_node_id_generator_;
 
@@ -581,7 +573,8 @@ void FrameTreeNode::TakeNavigationRequest(
     }
     ResetNavigationRequestButKeepState(
         navigation_request->GetTypeForNavigationDiscardReason());
-  } else if (navigation_request_) {
+  } else if (navigation_request_ &&
+             !navigation_request_->GetNavigationDiscardReason().has_value()) {
     navigation_request_->set_navigation_discard_reason(
         navigation_request->GetTypeForNavigationDiscardReason());
   }
@@ -641,8 +634,9 @@ void FrameTreeNode::ResetNavigationRequestButKeepState(
   // accidentally complete a navigation that should be reset.
   CancelRestartingBackForwardCacheNavigation();
   devtools_instrumentation::OnResetNavigationRequest(navigation_request_.get());
-
-  navigation_request_->set_navigation_discard_reason(reason);
+  if (!navigation_request_->GetNavigationDiscardReason().has_value()) {
+    navigation_request_->set_navigation_discard_reason(reason);
+  }
   navigation_request_.reset();
 }
 
@@ -1254,6 +1248,16 @@ void FrameTreeNode::CancelNavigation(NavigationDiscardReason reason) {
   ResetNavigationRequest(reason);
 }
 
+void FrameTreeNode::ResetNavigationsForDiscard() {
+  for (FrameTreeNode* frame : frame_tree().SubtreeNodes(this)) {
+    // TODO(crbug.com/365481515): Consider adding a separate discard reason for
+    // frame tree discarding.
+    frame->ResetNavigationRequest(NavigationDiscardReason::kWillRemoveFrame);
+    frame->current_frame_host()->ResetOwnedNavigationRequests(
+        NavigationDiscardReason::kWillRemoveFrame);
+  }
+}
+
 bool FrameTreeNode::Credentialless() const {
   return attributes_->credentialless;
 }
@@ -1269,6 +1273,10 @@ void FrameTreeNode::GetVirtualAuthenticatorManager(
                                                          std::move(receiver));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+FrameType FrameTreeNode::GetCurrentFrameType() const {
+  return GetFrameType();
+}
 
 void FrameTreeNode::RestartBackForwardCachedNavigationAsync(int nav_entry_id) {
   TRACE_EVENT0("navigation",

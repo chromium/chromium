@@ -42,6 +42,7 @@ static_library("eche_app") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/secure_channel",
     "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/ui:browser_list",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/phonehub",

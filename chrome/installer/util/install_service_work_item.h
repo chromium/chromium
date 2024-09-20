@@ -37,6 +37,10 @@ class InstallServiceWorkItem : public WorkItem {
   // |display_name| is the human-readable name that is visible in the Service
   // control panel. For example, "Chrome Elevation Service".
   //
+  // |description| is the human-readable description, a comment that explains
+  // the purpose of the service, and is visible in the Service control panel.
+  // For example, "Foo Service keeps Bar up to date".
+  //
   // |start_type| is typically SERVICE_DEMAND_START or SERVICE_AUTO_START.
   //
   // |service_cmd_line| is the command line with which the service is invoked by
@@ -61,6 +65,7 @@ class InstallServiceWorkItem : public WorkItem {
   // required, |iids| should contain the Interfaces and Typelibs to register.
   InstallServiceWorkItem(const std::wstring& service_name,
                          const std::wstring& display_name,
+                         const std::wstring& description,
                          uint32_t start_type,
                          const base::CommandLine& service_cmd_line,
                          const base::CommandLine& com_service_cmd_line_args,

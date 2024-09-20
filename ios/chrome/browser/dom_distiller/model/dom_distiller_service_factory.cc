@@ -56,9 +56,15 @@ DomDistillerServiceFactory* DomDistillerServiceFactory::GetInstance() {
 
 // static
 DomDistillerService* DomDistillerServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+DomDistillerService* DomDistillerServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<DomDistillerKeyedService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 DomDistillerServiceFactory::DomDistillerServiceFactory()

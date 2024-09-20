@@ -71,9 +71,6 @@ if (!is_debug || partition_alloc_optimized_debug) {
 partition_alloc_remove_configs +=
     [ "//build/config/compiler/pgo:default_pgo_flags" ]
 
-# Sanitizers replace the allocator, don't use our own.
-_is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
-
 # - Component build support is disabled on all platforms except Linux. It is
 #   known to cause issues on some (e.g. Windows with shims, Android with
 #   non-universal symbol wrapping), and has not been validated on others.
@@ -83,49 +80,68 @@ _disable_partition_alloc_everywhere =
 
 # - NaCl: No plans to support it.
 # - iOS: Depends on ios_partition_alloc_enabled.
-if (is_ios) {
-  _is_partition_alloc_everywhere_platform = ios_partition_alloc_enabled
-} else {
-  _is_partition_alloc_everywhere_platform = !is_nacl
+_is_partition_alloc_everywhere_platform =
+    !is_nacl && (!is_ios || ios_partition_alloc_enabled)
+
+use_allocator_shim_default = true  # Updated below:
+
+# Sanitizers replace the allocator, don't use our own.
+if (is_asan || is_hwasan || is_lsan || is_tsan || is_msan) {
+  use_allocator_shim_default = false
+}
+
+# NaCl will never support the allocator shim.
+if (is_nacl) {
+  use_allocator_shim_default = false
+}
+
+# Under Fuchsia, the allocator shim is only required for PA-E.
+if (is_fuchsia && _disable_partition_alloc_everywhere) {
+  use_allocator_shim_default = false
 }
 
 # Under Windows debug build, the allocator shim is not compatible with CRT.
-#     NaCl in particular does seem to link some binaries statically
-#     against the debug CRT with "is_nacl=false".
-# Under Fuchsia, the allocator shim is only required for PA-E.
-# For all other platforms & configurations, the shim is required, to replace
-#     the default system allocators, e.g. with PartitionAlloc.
-if ((is_linux || is_chromeos || is_android || is_apple ||
-     (is_fuchsia && !_disable_partition_alloc_everywhere) ||
-     (is_win && !is_debug &&
-      (!is_component_build || (use_custom_libcxx && !libcxx_is_shared)))) &&
-    !_is_using_sanitizers) {
-  _default_use_allocator_shim = true
-} else {
-  _default_use_allocator_shim = false
+# NaCl in particular does seem to link some binaries statically against the
+# debug CRT with "is_nacl=false".
+if (is_win && is_debug) {
+  use_allocator_shim_default = false
 }
 
-if (_default_use_allocator_shim && _is_partition_alloc_everywhere_platform &&
-    !_disable_partition_alloc_everywhere) {
-  _default_allocator = "partition"
-} else {
-  _default_allocator = "none"
+if (is_win && is_component_build && (!use_custom_libcxx || libcxx_is_shared)) {
+  use_allocator_shim_default = false
 }
 
-use_partition_alloc_as_malloc_default = _default_allocator == "partition"
-use_allocator_shim_default = _default_use_allocator_shim
+use_partition_alloc_as_malloc_default =
+    use_allocator_shim_default && _is_partition_alloc_everywhere_platform &&
+    !_disable_partition_alloc_everywhere
 
-_is_brp_supported =
-    (is_win || is_android || is_linux || is_mac || is_ios || is_chromeos ||
-     is_fuchsia) && use_partition_alloc_as_malloc_default
-
-enable_backup_ref_ptr_support_default = _is_brp_supported
+enable_backup_ref_ptr_support_default = use_partition_alloc_as_malloc_default
 
 enable_backup_ref_ptr_slow_checks_default = false
+
 enable_dangling_raw_ptr_checks_default =
+    # The DanglingPointerDetector relies on BackupRefPtr:
     enable_backup_ref_ptr_support_default &&
-    (is_linux || is_win || is_chromeos || is_mac) && !is_official_build &&
-    (is_debug || dcheck_always_on)
+    # DanglingPointerDetector is not yet enabled for official builds.
+    # Enabling it would require:
+    # - Metric-monitored dry-runs to assess real-world impact.
+    # - Performance re-evaluation, although past impact was neutral.
+    # - Additional considerations (etc.).
+    #
+    # It's also unclear if potential security issues warrant crash reports,
+    # as this could burden developers. Non-crashing metrics might help assess
+    # the value.
+    !is_official_build &&
+    # In unofficial builds, enable only for developers interested in
+    # DCHECKd/Debug builds. In the future, given its neutral performance impact,
+    # we could consider removing this restriction.
+    (is_debug || dcheck_always_on) &&
+    # Fuchsia and iOS have never been tested against DanglingPointerDetector at
+    # the moment.
+    !is_ios && !is_fuchsia &&
+    # Only the `android-rel` CQ bot has enforced DanglingPointerDetector checks
+    # at the moment. The other Android bots are not ready for it yet.
+    !is_android
 
 raw_ptr_zero_on_construct_default = true
 raw_ptr_zero_on_move_default = true

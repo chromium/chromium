@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
@@ -56,6 +57,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
+#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -68,7 +70,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -285,6 +290,7 @@ struct EnhancedSafeBrowsingActivePromoData
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
   TableViewDetailIconItem* _notificationsItem;
   TableViewDetailIconItem* _plusAddressesItem;
+  TableViewDetailIconItem* _defaultBrowserCellItem;
   TableViewItem* _syncItem;
 
   // Whether Settings have been dismissed.
@@ -798,20 +804,24 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (TableViewItem*)defaultBrowserCellItem {
-  TableViewDetailIconItem* defaultBrowser = [[TableViewDetailIconItem alloc]
+  _defaultBrowserCellItem = [[TableViewDetailIconItem alloc]
       initWithType:SettingsItemTypeDefaultBrowser];
-  defaultBrowser.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  defaultBrowser.text =
+  _defaultBrowserCellItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _defaultBrowserCellItem.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
 
-  defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
-  defaultBrowser.iconBackgroundColor = [UIColor colorNamed:kPurple500Color];
-  defaultBrowser.iconTintColor = UIColor.whiteColor;
-  defaultBrowser.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
+  _defaultBrowserCellItem.iconImage =
+      DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+  _defaultBrowserCellItem.iconBackgroundColor =
+      [UIColor colorNamed:kPurple500Color];
+  _defaultBrowserCellItem.iconTintColor = UIColor.whiteColor;
+  _defaultBrowserCellItem.iconCornerRadius =
+      kColorfulBackgroundSymbolCornerRadius;
 
-  [self maybeActivateDefaultBrowserBlueDotPromo:defaultBrowser];
+  [self updateDefaultBrowserSettingsBlueDot];
 
-  return defaultBrowser;
+  return _defaultBrowserCellItem;
 }
 
 - (TableViewItem*)accountCellItem {
@@ -1123,11 +1133,20 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (TableViewItem*)switchProfileItem {
+  NSString* detailText = nil;
+  std::string profileName = _browserState->GetProfileName();
+  // TODO(crbug.com/331783685): Remove assumption that "Default" is the
+  // personal profile.
+  if (profileName == kIOSChromeInitialBrowserState) {
+    detailText = @"Personal";
+  } else {
+    detailText = base::SysUTF8ToNSString(profileName);
+  }
   return [self
            detailItemWithType:SettingsItemTypeSwitchProfile
                          text:l10n_util::GetNSString(
                                   IDS_IOS_SWITCH_PROFILE_MANAGEMENT_SETTINGS)
-                   detailText:nil
+                   detailText:detailText
                        symbol:DefaultSettingsRootSymbol(kMultiIdentitySymbol)
         symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
       accessibilityIdentifier:nil];
@@ -1407,6 +1426,9 @@ struct EnhancedSafeBrowsingActivePromoData
           id<PopupMenuCommands> popupMenuHandler = HandlerForProtocol(
               _browser->GetCommandDispatcher(), PopupMenuCommands);
           [popupMenuHandler updateToolsMenuBlueDotVisibility];
+          self.showingDefaultBrowserNotificationDot =
+              [popupMenuHandler hasBlueDotForOverflowMenu];
+          [self updateDefaultBrowserSettingsBlueDot];
         }
         [self reloadData];
       }
@@ -1650,7 +1672,11 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showGoogleServices {
-  DCHECK(!_googleServicesSettingsCoordinator);
+  if (_googleServicesSettingsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _googleServicesSettingsCoordinator =
       [[GoogleServicesSettingsCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
@@ -1660,6 +1686,10 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showTabsSettings {
+  if (_tabsCoordinator && self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _tabsCoordinator = [[TabsSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1667,6 +1697,11 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showSwitchProfileSettings {
+  if (_switchProfileCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _switchProfileCoordinator = [[SwitchProfileSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1674,6 +1709,11 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showAddressBarPreferenceSetting {
+  if (_addressBarPreferenceCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _addressBarPreferenceCoordinator = [[AddressBarPreferenceCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1689,9 +1729,11 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showGoogleSync {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_manageSyncSettingsCoordinator);
+  if (_manageSyncSettingsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   SyncSettingsAccountState accountState =
       [self shouldReplaceSyncSettingsWithAccountSettings]
           ? SyncSettingsAccountState::kSignedIn
@@ -1705,9 +1747,11 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showPasswords {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_passwordsCoordinator);
+  if (_passwordsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _passwordsCoordinator = [[PasswordsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1717,9 +1761,10 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Shows the Safety Check screen.
 - (void)showSafetyCheck {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_safetyCheckCoordinator);
+  if (_safetyCheckCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   _safetyCheckCoordinator = [[SafetyCheckCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
@@ -1773,8 +1818,11 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Shows Notifications screen.
 - (void)showNotifications {
-  DCHECK(!_notificationsCoordinator);
-  DCHECK(self.navigationController);
+  if (_notificationsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _notificationsCoordinator = [[NotificationsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1784,9 +1832,11 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Shows Privacy screen.
 - (void)showPrivacy {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_privacyCoordinator);
+  if (_privacyCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _privacyCoordinator = [[PrivacyCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -2015,11 +2065,12 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Decides whether the default browser blue dot promo should be active, and adds
 // the blue dot badge to the right settings row if it is.
-- (void)maybeActivateDefaultBrowserBlueDotPromo:
-    (TableViewDetailIconItem*)defaultBrowserCellItem {
+- (void)updateDefaultBrowserSettingsBlueDot {
+  // Add or remove the blue dot promo badge for the default browser row.
   if (self.showingDefaultBrowserNotificationDot) {
-    // Add the blue dot promo badge to the default browser row.
-    defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
+    _defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
+  } else {
+    _defaultBrowserCellItem.badgeType = BadgeType::kNone;
   }
 }
 
@@ -2096,9 +2147,9 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showDownloadsSettings {
-  if (_downloadsSettingsCoordinator) {
-    [_downloadsSettingsCoordinator stop];
-    _downloadsSettingsCoordinator = nil;
+  if (_downloadsSettingsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
   }
 
   _downloadsSettingsCoordinator = [[DownloadsSettingsCoordinator alloc]

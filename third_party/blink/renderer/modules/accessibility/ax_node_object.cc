@@ -2389,28 +2389,6 @@ ax::mojom::blink::Role AXNodeObject::DetermineRoleValue() {
                                                         : aria_role_;
 }
 
-void AXNodeObject::AccessibilityChildrenFromAOMProperty(
-    AOMRelationListProperty property,
-    AXObject::AXObjectVector& children) const {
-  HeapVector<Member<Element>> elements;
-  if (!HasAOMPropertyOrARIAAttribute(property, elements))
-    return;
-  AXObjectCacheImpl& cache = AXObjectCache();
-  for (const auto& element : elements) {
-    if (AXObject* child = cache.Get(element)) {
-      // Only aria-labelledby and aria-describedby can target hidden elements.
-      if (!child)
-        continue;
-      if (child->IsIgnored() &&
-          property != AOMRelationListProperty::kLabeledBy &&
-          property != AOMRelationListProperty::kDescribedBy) {
-        continue;
-      }
-      children.push_back(child);
-    }
-  }
-}
-
 static Element* SiblingWithAriaRole(String role, Node* node) {
   Node* parent = LayoutTreeBuilderTraversal::Parent(*node);
   if (!parent)
@@ -4271,8 +4249,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     // We don't retrieve the element's value attribute on purpose. The value
     // attribute might be sanitized and might be different from what is actually
     // displayed inside the <select> element on screen.
-    return select_element->InnerElementForAppearanceAuto()
-        .GetInnerTextWithoutUpdate();
+    return select_element->InnerElement().GetInnerTextWithoutUpdate();
   }
 
   if (IsAtomicTextField()) {
@@ -4392,15 +4369,6 @@ String AXNodeObject::SlowGetValueForControlIncludingContentEditable(
 
 ax::mojom::blink::Role AXNodeObject::RawAriaRole() const {
   return aria_role_;
-}
-
-void AXNodeObject::AriaDescribedbyElements(AXObjectVector& describedby) const {
-  AccessibilityChildrenFromAOMProperty(AOMRelationListProperty::kDescribedBy,
-                                       describedby);
-}
-
-void AXNodeObject::AriaOwnsElements(AXObjectVector& owns) const {
-  AccessibilityChildrenFromAOMProperty(AOMRelationListProperty::kOwns, owns);
 }
 
 ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
@@ -5056,14 +5024,16 @@ bool AXNodeObject::IsRedundantLabel(HTMLLabelElement* label) {
     return false;
 
   if (!input->GetLayoutObject() ||
-      input->GetLayoutObject()->Style()->Visibility() != EVisibility::kVisible)
+      input->GetLayoutObject()->Style()->UsedVisibility() !=
+          EVisibility::kVisible) {
     return false;
-
-  if (!input->IsCheckable())
+  }
+  if (!input->IsCheckable()) {
     return false;
-
-  if (!IsNameFromLabelElement(input))
+  }
+  if (!IsNameFromLabelElement(input)) {
     return false;
+  }
 
   DCHECK_NE(input->labels()->length(), 0U);
 
@@ -5632,7 +5602,7 @@ void AXNodeObject::AddMenuListPopupChildren() {
     // popup are all of the natural dom children of the <select>.
     for (Node* child = NodeTraversal::FirstChild(*select); child;
          child = NodeTraversal::NextSibling(*child)) {
-      if (child == select->DisplayedButton()) {
+      if (child == select->SlottedButton()) {
         // The displayed button does not need to be part of the a11y tree. It
         // is not in the popup, and for accessibility purposes it is redundant
         // with the <select>.
@@ -6151,7 +6121,7 @@ bool AXNodeObject::OnNativeFocusAction() {
   // which actually handles the focus.
   // TODO(accessibility) Try to remove after crrev.com/c/5800883 lands.
   if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
-    if (auto* button = select->DisplayedButton()) {
+    if (auto* button = select->SlottedButton()) {
       element = button;
     }
   }

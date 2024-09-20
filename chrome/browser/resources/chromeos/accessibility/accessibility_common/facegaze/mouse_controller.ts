@@ -27,6 +27,15 @@ interface FloatingPoint2D {
   y: number;
 }
 
+enum LandmarkType {
+  FOREHEAD = 'forehead',
+  FOREHEAD_TOP = 'foreheadTop',
+  LEFT_TEMPLE = 'leftTemple',
+  NOSE_TIP = 'noseTip',
+  RIGHT_TEMPLE = 'rightTemple',
+  ROTATION = 'rotation',
+}
+
 /** Handles all interaction with the mouse. */
 export class MouseController {
   /** Last seen mouse location (cached from event in onMouseMovedOrDragged_). */
@@ -45,6 +54,9 @@ export class MouseController {
   private spdLeft_ = MouseController.DEFAULT_MOUSE_SPEED;
   private spdUp_ = MouseController.DEFAULT_MOUSE_SPEED;
   private spdDown_ = MouseController.DEFAULT_MOUSE_SPEED;
+  private velocityThreshold_ = 0;
+  private velocityThresholdFactor_ = 0.3;
+  private useVelocityThreshold_ = true;
 
   /** The most recent raw face landmark mouse locations. */
   private buffer_: ScreenPoint[] = [];
@@ -87,10 +99,15 @@ export class MouseController {
     this.scrollModeController_ = new ScrollModeController();
 
     this.calcSmoothKernel_();
+    this.calcVelocityThreshold_();
+
     this.landmarkWeights_ = new Map();
-    // TODO(b:309121742): This should be a fixed list of weights depending on
-    // what works best from experimentation.
-    this.landmarkWeights_.set('forehead', 1);
+    this.landmarkWeights_.set(LandmarkType.FOREHEAD, 0.1275);
+    this.landmarkWeights_.set(LandmarkType.FOREHEAD_TOP, 0.0738);
+    this.landmarkWeights_.set(LandmarkType.NOSE_TIP, 0.3355);
+    this.landmarkWeights_.set(LandmarkType.LEFT_TEMPLE, 0.0336);
+    this.landmarkWeights_.set(LandmarkType.RIGHT_TEMPLE, 0.0336);
+    this.landmarkWeights_.set(LandmarkType.ROTATION, 0.3960);
 
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init();
@@ -153,9 +170,7 @@ export class MouseController {
     this.landmarkWeights_ = weights;
   }
 
-  /**
-   * Update the current location of the tracked face landmark.
-   */
+  /** Update the current location of the tracked face landmark. */
   onFaceLandmarkerResult(result: FaceLandmarkerResult): void {
     if (this.paused_ || !this.screenBounds_ || !result.faceLandmarks ||
         !result.faceLandmarks[0]) {
@@ -240,16 +255,26 @@ export class MouseController {
       // start-up.
       this.previousSmoothedLocation_ = smoothed;
     }
+
     const velocityX = smoothed.x - this.previousSmoothedLocation_.x;
     const velocityY = smoothed.y - this.previousSmoothedLocation_.y;
     const scaledVel = this.asymmetryScale_({x: velocityX, y: velocityY});
     this.previousSmoothedLocation_ = smoothed;
-
     if (this.useMouseAcceleration_) {
       scaledVel.x *= this.applySigmoidAcceleration_(scaledVel.x);
       scaledVel.y *= this.applySigmoidAcceleration_(scaledVel.y);
     }
 
+    if (!this.exceedsVelocityThreshold_(scaledVel.x) &&
+        !this.exceedsVelocityThreshold_(scaledVel.y)) {
+      // The velocity threshold wasn't exceeded, so we shouldn't update the
+      // mouse location. We do this to avoid unintended jitteriness of the
+      // mouse.
+      return;
+    }
+
+    scaledVel.x = this.applyVelocityThreshold_(scaledVel.x);
+    scaledVel.y = this.applyVelocityThreshold_(scaledVel.y);
     // The mouse location is the previous location plus the velocity.
     const newX = this.mouseLocation_.x + scaledVel.x;
     const newY = this.mouseLocation_.y + scaledVel.y;
@@ -520,17 +545,22 @@ export class MouseController {
 
   /**
    * Construct a kernel for smoothing the recent facegaze points.
-   * Specifically, this is a Hamming curve with M = targetBufferSize_ * 2,
-   * matching the project-gameface Python implementation.
+   * Specifically, this is an exponential curve with amplitude of 0.92 and
+   * y-intercept of 0.08. This ensures that the curve hits the points (0, 0.08)
+   * and (1, 1).
    * Note: Whenever the buffer size is updated, we must reconstruct
    * the smoothing kernel so that it is the right length.
    */
   private calcSmoothKernel_(): void {
     this.smoothKernel_ = [];
     let sum = 0;
-    for (let i = 0; i < this.targetBufferSize_; i++) {
-      const value = .54 -
-          .46 * Math.cos((2 * Math.PI * i) / (this.targetBufferSize_ * 2 - 1));
+    const step = 1 / this.targetBufferSize_;
+    // We use values step <= i <= 1 to determine the weight of each point.
+    for (let i = step; i <= 1; i += step) {
+      const smoothFactor = Math.E;
+      const numerator = (Math.E ** (smoothFactor * i)) - 1;
+      const denominator = (Math.E ** smoothFactor) - 1;
+      const value = 0.92 * (numerator / denominator) + 0.08;
       this.smoothKernel_.push(value);
       sum += value;
     }
@@ -593,21 +623,25 @@ export class MouseController {
         case MouseController.PREF_SPD_UP:
           if (pref.value) {
             this.spdUp_ = pref.value;
+            this.calcVelocityThreshold_();
           }
           break;
         case MouseController.PREF_SPD_DOWN:
           if (pref.value) {
             this.spdDown_ = pref.value;
+            this.calcVelocityThreshold_();
           }
           break;
         case MouseController.PREF_SPD_LEFT:
           if (pref.value) {
             this.spdLeft_ = pref.value;
+            this.calcVelocityThreshold_();
           }
           break;
         case MouseController.PREF_SPD_RIGHT:
           if (pref.value) {
             this.spdRight_ = pref.value;
+            this.calcVelocityThreshold_();
           }
           break;
         case MouseController.PREF_CURSOR_SMOOTHING:
@@ -624,10 +658,61 @@ export class MouseController {
             this.useMouseAcceleration_ = pref.value;
           }
           break;
+        case MouseController.PREF_VELOCITY_THRESHOLD:
+          if (pref.value !== undefined) {
+            // Ensure threshold factor is a decimal value.
+            this.velocityThresholdFactor_ =
+                pref.value / MouseController.MAX_VELOCITY_THRESHOLD_PREF_VALUE;
+            this.calcVelocityThreshold_();
+          }
+          break;
         default:
           return;
       }
     });
+  }
+
+  private calcVelocityThreshold_(): void {
+    // Threshold is a function of speed. Threshold increases as speed increases
+    // because it's easier to move the mouse accidentally at high mouse speeds.
+    // The velocity threshold factor can be tuned by the user.
+    const averageSpeed =
+        (this.spdUp_ + this.spdDown_ + this.spdLeft_ + this.spdRight_) / 4;
+    this.velocityThreshold_ = averageSpeed * this.velocityThresholdFactor_;
+  }
+
+  private exceedsVelocityThreshold_(velocity: number): boolean {
+    if (!this.useVelocityThreshold_) {
+      return true;
+    }
+
+    return Math.abs(velocity) > this.velocityThreshold_;
+  }
+
+  private applyVelocityThreshold_(velocity: number): number {
+    if (!this.useVelocityThreshold_) {
+      return velocity;
+    }
+
+    if (Math.abs(velocity) < this.velocityThreshold_) {
+      return 0;
+    }
+
+    return (velocity > 0) ? velocity - this.velocityThreshold_ :
+                            velocity + this.velocityThreshold_;
+  }
+
+  setLandmarkWeightsForTesting(useWeights: boolean): void {
+    if (!useWeights) {
+      // If we don't want to use landmark weights, we should default to the
+      // forehead location.
+      this.landmarkWeights_ = new Map();
+      this.landmarkWeights_.set('forehead', 1);
+    }
+  }
+
+  setVelocityThresholdForTesting(useThreshold: boolean): void {
+    this.useVelocityThreshold_ = useThreshold;
   }
 }
 
@@ -638,15 +723,21 @@ export namespace MouseController {
    * https://storage.googleapis.com/mediapipe-assets/documentation/mediapipe_face_landmark_fullsize.png.
    */
   export const LANDMARK_INDICES = [
-    {name: 'forehead', index: 8},
-    {name: 'foreheadTop', index: 10},
-    {name: 'noseTip', index: 4},
-    {name: 'rightTemple', index: 127},
-    {name: 'leftTemple', index: 356},
+    {name: LandmarkType.FOREHEAD, index: 8},
+    {name: LandmarkType.FOREHEAD_TOP, index: 10},
+    {name: LandmarkType.NOSE_TIP, index: 4},
+    {name: LandmarkType.RIGHT_TEMPLE, index: 127},
+    {name: LandmarkType.LEFT_TEMPLE, index: 356},
     // Rotation does not have a landmark index, but is included in this list
     // because it can be used as a landmark.
-    {name: 'rotation', index: -1},
+    {name: LandmarkType.ROTATION, index: -1},
   ];
+
+  /**
+   * The maximum value for the velocity threshold pref. We use this to ensure
+   * this.velocityThresholdFactor_ is a decimal.
+   */
+  export const MAX_VELOCITY_THRESHOLD_PREF_VALUE = 20;
 
   /** How frequently to run the mouse movement logic. */
   export const MOUSE_INTERVAL_MS = 16;
@@ -666,6 +757,8 @@ export namespace MouseController {
       'settings.a11y.face_gaze.cursor_smoothing';
   export const PREF_CURSOR_USE_ACCELERATION =
       'settings.a11y.face_gaze.cursor_use_acceleration';
+  export const PREF_VELOCITY_THRESHOLD =
+      'settings.a11y.face_gaze.velocity_threshold';
 
   // Default values. Will be overwritten by prefs.
   export const DEFAULT_MOUSE_SPEED = 20;

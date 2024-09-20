@@ -5,6 +5,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 
 #include <cstdarg>
+#include <iterator>
 #include <vector>
 
 #include "base/logging.h"
@@ -18,6 +19,8 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_test_util.h"
 #include "ui/display/util/display_util.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace display {
 namespace test {
@@ -67,10 +70,65 @@ DisplayManagerTestApi::DisplayManagerTestApi(DisplayManager* display_manager)
   DCHECK(display_manager);
 }
 
-DisplayManagerTestApi::~DisplayManagerTestApi() {}
+DisplayManagerTestApi::~DisplayManagerTestApi() = default;
 
 void DisplayManagerTestApi::ResetMaximumDisplay() {
   maximum_support_display_ = kDefaultMaxSupportDisplayTest;
+}
+
+int64_t DisplayManagerTestApi::AddDisplay(const DisplayParams& display_params) {
+  const Displays& current_displays = display_manager_->active_display_list();
+  if (current_displays.size() >= maximum_support_display_) {
+    LOG(ERROR) << "Display limit exceeded.";
+    return kInvalidDisplayId;
+  }
+  int64_t new_display_id = GetASynthesizedDisplayId();
+  std::vector<ManagedDisplayInfo> current_display_infos;
+  for (const Display& display : current_displays) {
+    ManagedDisplayInfo display_info =
+        GetInternalManagedDisplayInfo(display.id());
+    gfx::Rect bounds = display_info.bounds_in_native();
+    // Reset the bounds so that UpdateDisplayWithDisplayInfoList automatically
+    // arranges them.
+    bounds.set_origin(gfx::Point());
+    display_info.SetBounds(bounds);
+    current_display_infos.push_back(display_info);
+  }
+  ManagedDisplayInfo new_display;
+  new_display.set_display_id(new_display_id);
+  new_display.SetBounds(gfx::Rect(display_params.resolution));
+  ManagedDisplayInfo::ManagedDisplayModeList display_modes;
+  display_modes.emplace_back(display_params.resolution, /*refresh_rate=*/60,
+                             /*is_interlaced=*/false, /*native=*/true,
+                             /*device_scale_factor=*/1);
+  new_display.SetManagedDisplayModes(display_modes);
+  current_display_infos.push_back(new_display);
+  UpdateDisplayWithDisplayInfoList(current_display_infos,
+                                   /*from_native_platform=*/false);
+  return new_display.id();
+}
+
+void DisplayManagerTestApi::RemoveDisplay(int64_t display_id) {
+  const Displays& active_displays = display_manager_->active_display_list();
+  std::vector<ManagedDisplayInfo> desired_display_infos;
+  for (const Display& display : active_displays) {
+    if (display.id() == display_id) {
+      continue;
+    }
+    desired_display_infos.push_back(
+        GetInternalManagedDisplayInfo(display.id()));
+  }
+  if (desired_display_infos.size() == active_displays.size()) {
+    LOG(ERROR) << "Display with ID " << display_id << " not found.";
+    return;
+  }
+
+  UpdateDisplayWithDisplayInfoList(desired_display_infos,
+                                   /*from_native_platform=*/false);
+}
+
+void DisplayManagerTestApi::ResetDisplays() {
+  display_manager_->InitDefaultDisplay();
 }
 
 void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs,
@@ -85,7 +143,6 @@ void DisplayManagerTestApi::UpdateDisplayWithDisplayInfoList(
     const std::vector<ManagedDisplayInfo>& display_info_list,
     bool from_native_platform) {
   std::vector<ManagedDisplayInfo> display_list_copy = display_info_list;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (display_list_copy.size() > maximum_support_display_) {
     display_manager_->configurator()->has_unassociated_display_ = true;
     while (display_list_copy.size() > maximum_support_display_) {
@@ -94,7 +151,6 @@ void DisplayManagerTestApi::UpdateDisplayWithDisplayInfoList(
   } else {
     display_manager_->configurator()->has_unassociated_display_ = false;
   }
-#endif
   bool is_host_origin_set = false;
   for (const ManagedDisplayInfo& display_info : display_list_copy) {
     if (display_info.bounds_in_native().origin() != gfx::Point(0, 0)) {

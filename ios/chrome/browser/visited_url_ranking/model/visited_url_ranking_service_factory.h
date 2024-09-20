@@ -19,8 +19,8 @@ class VisitedURLRankingService;
 // ranks visited URL.
 class VisitedURLRankingServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static visited_url_ranking::VisitedURLRankingService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static visited_url_ranking::VisitedURLRankingService* GetForProfile(
+      ProfileIOS* profile);
   static VisitedURLRankingServiceFactory* GetInstance();
 
   VisitedURLRankingServiceFactory(const VisitedURLRankingServiceFactory&) =

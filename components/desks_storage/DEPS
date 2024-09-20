@@ -15,6 +15,7 @@ include_rules = [
   "+components/tab_groups",
   "+components/version_info",
   "+third_party/re2",
+  "+ui/base/mojom",
   "+ui/base/ui_base_types.h",
   "+ui/base/window_open_disposition.h",
   "+ui/gfx/geometry",

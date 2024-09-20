@@ -5,7 +5,10 @@
 #ifndef SERVICES_WEBNN_WEBNN_GRAPH_BUILDER_IMPL_H_
 #define SERVICES_WEBNN_WEBNN_GRAPH_BUILDER_IMPL_H_
 
+#include <optional>
+
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -20,6 +23,7 @@
 
 namespace webnn {
 
+class WebNNConstantOperand;
 class WebNNContextImpl;
 
 // Services-side connection to an `MLGraphBuilder`. Responsible for managing
@@ -54,6 +58,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
   [[nodiscard]] static bool IsValidForTesting(
       const ContextProperties& context_properties,
       const mojom::GraphInfo& graph_info);
+
+  [[nodiscard]] static base::flat_map<uint64_t,
+                                      std::unique_ptr<WebNNConstantOperand>>
+  TakeConstants(mojom::GraphInfo& graph_info);
 
  private:
   void DidCreateGraph(

@@ -865,10 +865,6 @@ void AutofillAgent::TextFieldDidChange(const WebFormControlElement& element) {
 
 void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillContentEditableChangeEvents)) {
-    return;
-  }
   // TODO(crbug.com/40286232): Add throttling to avoid sending this event for
   // rapid changes.
   if (std::optional<FormData> form =
@@ -1326,19 +1322,10 @@ void AutofillAgent::ShowSuggestions(
   }
 
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  if (input_element) {
-    if (!input_element.IsTextField()) {
-      return;
-    }
-    if (!input_element.SuggestedValue().IsEmpty()) {
-      return;
-    }
-  } else {
-    DCHECK(form_util::IsTextAreaElement(element));
-    if (!element.To<WebFormControlElement>().SuggestedValue().IsEmpty()) {
-      return;
-    }
+  if (input_element && !input_element.IsTextField()) {
+    return;
   }
+  DCHECK(input_element || form_util::IsTextAreaElement(element));
 
   const bool show_for_empty_value =
       config_.uses_keyboard_accessory_for_suggestions ||
@@ -1381,7 +1368,7 @@ void AutofillAgent::ShowSuggestions(
   }
 
   // Proceed with generating suggestions based on the field type.
-  if (form_util::IsAutofillableInputElement(input_element)) {
+  if (input_element) {
     if (password_generation_agent_ &&
         password_generation_agent_->ShowPasswordGenerationSuggestions(
             input_element)) {
@@ -1393,18 +1380,17 @@ void AutofillAgent::ShowSuggestions(
       is_popup_possibly_visible_ = true;
       return;
     }
-  }
 
-  // Password field elements should only have suggestions shown by the password
-  // AutofillAgent. We call `FormControlType()` instead of
-  // `FormControlTypeForAutofill()` because we are interested in whether the
-  // field is *currently* a password field, not whether it has ever been a
-  // password field.
-  if (input_element &&
-      input_element.FormControlType()  // nocheck
-          == blink::mojom::FormControlType::kInputPassword &&
-      !config_.query_password_suggestions) {
-    return;
+    // Password field elements should only have suggestions shown by the
+    // password AutofillAgent. We call `FormControlType()` instead of
+    // `FormControlTypeForAutofill()` because we are interested in whether the
+    // field is *currently* a password field, not whether it has ever been a
+    // password field.
+    if (input_element.FormControlType() ==  // nocheck
+            blink::mojom::FormControlType::kInputPassword &&
+        !config_.query_password_suggestions) {
+      return;
+    }
   }
 
   QueryAutofillSuggestions(element, trigger_source);

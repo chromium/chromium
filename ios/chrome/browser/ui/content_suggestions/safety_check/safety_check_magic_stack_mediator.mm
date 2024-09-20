@@ -7,20 +7,25 @@
 #import <optional>
 
 #import "base/memory/raw_ptr.h"
+#import "base/values.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_consumer.h"
@@ -28,7 +33,32 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 
+namespace {
+
+// Returns the number of times the Safety Check module with the
+// notifications opt-in button has been shown to the user in the Magic Stack.
+//
+// If `only_include_top_module` is `true`, only impressions where the module
+// was shown at the top of the Magic Stack are counted.
+int ImpressionsCount(const base::Value::List& impressions,
+                     bool only_include_top_module) {
+  int count = 0;
+
+  for (const base::Value& impression : impressions) {
+    std::optional<int> index = impression.GetIfInt();
+
+    if (index.has_value() && (!only_include_top_module || index.value() == 0)) {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+}  // namespace
+
 @interface SafetyCheckMagicStackMediator () <AppStateObserver,
+                                             MagicStackModuleDelegate,
                                              PrefObserverDelegate,
                                              SafetyCheckAudience,
                                              SafetyCheckConsumerSource,
@@ -100,6 +130,8 @@
 
       _safetyCheckState = [self initialSafetyCheckState];
 
+      _safetyCheckState.delegate = self;
+
       if (ShouldHideSafetyCheckModuleIfNoIssues()) {
         [self updateIssueCount:[_safetyCheckState numberOfIssues]
                withPrefService:localState];
@@ -153,6 +185,13 @@
                   passwordState:PasswordSafetyCheckState::kDefault
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
+
+  if (IsSafetyCheckNotificationsEnabled()) {
+    _safetyCheckState.showNotificationsOptIn =
+        [self shouldShowNotificationsOptIn];
+  }
+
+  _safetyCheckState.delegate = self;
   _safetyCheckState.audience = self;
   _safetyCheckState.safetyCheckConsumerSource = self;
 }
@@ -239,6 +278,32 @@
     if (!IsSafetyCheckNotificationsEnabled()) {
       _safetyCheckManager->StartSafetyCheck();
     }
+  }
+}
+
+#pragma mark - MagicStackModuleDelegate
+
+// Stores the index at which the Safety Check module (with notifications
+// opt-in button) was displayed in the Magic Stack. This is used to track
+// impressions for the Safety Check Notifications feature.
+- (void)magicStackModule:(MagicStackModule*)magicStackModule
+     wasDisplayedAtIndex:(NSUInteger)index {
+  if (magicStackModule.type != ContentSuggestionsModuleType::kSafetyCheck ||
+      !magicStackModule.showNotificationsOptIn) {
+    return;
+  }
+
+  if (IsSafetyCheckNotificationsEnabled()) {
+    CHECK(_localState);
+
+    base::Value::List impressions =
+        _localState->GetList(prefs::kMagicStackSafetyCheckNotificationsShown)
+            .Clone();
+
+    impressions.Append(static_cast<int>(index));
+
+    _localState->SetList(prefs::kMagicStackSafetyCheckNotificationsShown,
+                         std::move(impressions));
   }
 }
 
@@ -345,8 +410,13 @@
                            ? RunningSafetyCheckState::kRunning
                            : RunningSafetyCheckState::kDefault;
 
+  if (IsSafetyCheckNotificationsEnabled()) {
+    state.showNotificationsOptIn = [self shouldShowNotificationsOptIn];
+  }
+
   state.audience = self;
   state.safetyCheckConsumerSource = self;
+
   return state;
 }
 
@@ -385,6 +455,34 @@
 
   localPrefService->SetInteger(
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, issuesCount);
+}
+
+// Returns `YES` if the notifications opt-in button should be displayed.
+- (BOOL)shouldShowNotificationsOptIn {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  BOOL isOptedIn = push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kSafetyCheck, "");
+
+  if (isOptedIn) {
+    return NO;
+  }
+
+  base::Value::List impressions =
+      _localState->GetList(prefs::kMagicStackSafetyCheckNotificationsShown)
+          .Clone();
+
+  SafetyCheckNotificationsImpressionTrigger trigger =
+      SafetyCheckNotificationsImpressionTriggerEnabled();
+
+  int impressionsCount = ImpressionsCount(
+      impressions,
+      trigger == SafetyCheckNotificationsImpressionTrigger::kOnlyWhenTopModule);
+
+  int impressionsLimit = SafetyCheckNotificationsImpressionLimit();
+
+  return impressionsCount < impressionsLimit;
 }
 
 @end

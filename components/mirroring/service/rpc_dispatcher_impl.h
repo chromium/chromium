@@ -13,9 +13,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "components/mirroring/service/rpc_dispatcher.h"
-#include "third_party/openscreen/src/cast/streaming/receiver_message.h"
+#include "third_party/openscreen/src/cast/streaming/public/receiver_message.h"
+#include "third_party/openscreen/src/cast/streaming/public/session_messenger.h"
 #include "third_party/openscreen/src/cast/streaming/sender_message.h"
-#include "third_party/openscreen/src/cast/streaming/session_messenger.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 
 namespace mirroring {

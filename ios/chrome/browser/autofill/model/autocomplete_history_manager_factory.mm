@@ -21,10 +21,15 @@ namespace autofill {
 
 // static
 AutocompleteHistoryManager*
-AutocompleteHistoryManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+AutocompleteHistoryManagerFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+AutocompleteHistoryManager* AutocompleteHistoryManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<AutocompleteHistoryManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -50,9 +55,8 @@ AutocompleteHistoryManagerFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   std::unique_ptr<AutocompleteHistoryManager> service(
       new AutocompleteHistoryManager());
-  auto autofill_db =
-      ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-          chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+  auto autofill_db = ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
+      chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   service->Init(autofill_db, chrome_browser_state->GetPrefs(),
                 chrome_browser_state->IsOffTheRecord());
   return service;

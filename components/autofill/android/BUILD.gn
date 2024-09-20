@@ -186,6 +186,7 @@ java_cpp_enum("autofill_core_browser_java_enums") {
     "../core/browser/metrics/payments/mandatory_reauth_metrics.h",
     "../core/browser/metrics/payments/virtual_card_enrollment_metrics.h",
     "../core/browser/payments/card_unmask_challenge_option.h",
+    "../core/browser/ui/autofill_image_fetcher_base.h",
     "../core/browser/ui/payments/payments_bubble_closed_reasons.h",
     "../core/browser/ui/suggestion.h",
     "../core/browser/ui/suggestion_type.h",

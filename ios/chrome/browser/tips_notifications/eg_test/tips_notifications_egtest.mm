@@ -310,4 +310,44 @@ void MaybeDismissNotification() {
                                                           @"kLensPromoAXID")];
   TapText(@"Done");
 }
+
+// Tests that the Lens Promo appears when tapping on the Lens notification.
+- (void)testEnhancedSafeBrowsingNotification {
+  MaybeDismissNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [self optInToTipsNotifications:{}];
+
+  // Request the notification and tap it.
+  [ChromeEarlGrey
+      requestTipsNotification:TipsNotificationType::kEnhancedSafeBrowsing];
+  TapNotification();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(@"kEnhancedSafeBrowsingPromoAXID")];
+  // Tap "Show me how".
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::PromoStyleSecondaryActionButtonMatcher()]
+      performAction:grey_tap()];
+  id<GREYMatcher> instructions =
+      grey_accessibilityID(@"kEnhancedSafeBrowsingPromoInstructionsAXID");
+  // Swipe down to dismiss the instructions.
+  [[EarlGrey selectElementWithMatcher:instructions]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Tap "Show me how" again.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::PromoStyleSecondaryActionButtonMatcher()]
+      performAction:grey_tap()];
+  // Tap "Go To Settings".
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Request the notification a second time.
+  [ChromeEarlGrey
+      requestTipsNotification:TipsNotificationType::kEnhancedSafeBrowsing];
+  TapNotification();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(@"kEnhancedSafeBrowsingPromoAXID")];
+  TapText(@"Done");
+}
 @end

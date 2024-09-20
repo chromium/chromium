@@ -172,7 +172,8 @@ void HostFrameSinkManager::CreateRootCompositorFrameSink(
       maybe_wait_on_destruction && params->gpu_compositing;
 
   frame_sink_manager_->CreateRootCompositorFrameSink(std::move(params));
-  display_hit_test_query_[frame_sink_id] = std::make_unique<HitTestQuery>();
+  display_hit_test_query_[frame_sink_id] =
+      std::make_unique<HitTestQuery>(std::nullopt);
 }
 
 void HostFrameSinkManager::CreateCompositorFrameSink(
@@ -496,7 +497,8 @@ void HostFrameSinkManager::EvictCachedBackBuffer(uint32_t cache_id) {
 
 void HostFrameSinkManager::CreateHitTestQueryForSynchronousCompositor(
     const FrameSinkId& frame_sink_id) {
-  display_hit_test_query_[frame_sink_id] = std::make_unique<HitTestQuery>();
+  display_hit_test_query_[frame_sink_id] =
+      std::make_unique<HitTestQuery>(std::nullopt);
 }
 void HostFrameSinkManager::EraseHitTestQueryForSynchronousCompositor(
     const FrameSinkId& frame_sink_id) {

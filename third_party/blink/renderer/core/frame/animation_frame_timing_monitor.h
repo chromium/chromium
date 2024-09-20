@@ -72,7 +72,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void WillHandlePromise(ScriptState*,
                          bool resolving,
                          const char* class_like,
-                         const String& property_like,
+                         std::variant<const char*, String> property_like,
                          const String& script_url);
   void Will(const probe::EvaluateScriptBlock&);
   void Did(const probe::EvaluateScriptBlock& probe_data) {
@@ -113,7 +113,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     base::TimeDelta pause_duration;
     int layout_depth = 0;
     const char* class_like_name = nullptr;
-    String property_like_name;
+    std::variant<const char*, String> property_like_name;
     ScriptTimingInfo::ScriptSourceLocation source_location;
   };
 

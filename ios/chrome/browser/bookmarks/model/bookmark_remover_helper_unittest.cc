@@ -22,7 +22,7 @@ class BookmarkRemoverHelperUnitTest : public BookmarkIOSUnitTestSupport {
 TEST_F(BookmarkRemoverHelperUnitTest,
        TestRemoveAllUserBookmarksIOSBeforeIntialization) {
   base::test::TestFuture<bool> test_future;
-  BookmarkRemoverHelper helper(chrome_browser_state_.get());
+  BookmarkRemoverHelper helper(profile_.get());
   ASSERT_FALSE(bookmark_model_->loaded());
   helper.RemoveAllUserBookmarksIOS(FROM_HERE, test_future.GetCallback());
 
@@ -35,7 +35,7 @@ TEST_F(BookmarkRemoverHelperUnitTest,
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
 
   base::test::TestFuture<bool> test_future;
-  BookmarkRemoverHelper helper(chrome_browser_state_.get());
+  BookmarkRemoverHelper helper(profile_.get());
   ASSERT_TRUE(bookmark_model_->loaded());
   helper.RemoveAllUserBookmarksIOS(FROM_HERE, test_future.GetCallback());
   EXPECT_TRUE(test_future.Get());
@@ -44,7 +44,7 @@ TEST_F(BookmarkRemoverHelperUnitTest,
 TEST_F(BookmarkRemoverHelperUnitTest,
        TestDeleteModelWhileOngoingRemoveAllUserBookmarksIOS) {
   base::test::TestFuture<bool> test_future;
-  BookmarkRemoverHelper helper(chrome_browser_state_.get());
+  BookmarkRemoverHelper helper(profile_.get());
   ASSERT_FALSE(bookmark_model_->loaded());
   helper.RemoveAllUserBookmarksIOS(FROM_HERE, test_future.GetCallback());
 

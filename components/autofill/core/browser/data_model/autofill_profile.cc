@@ -414,11 +414,13 @@ bool AutofillProfile::HasGreaterRankingThan(const AutofillProfile* other,
 void AutofillProfile::GetMatchingTypesWithProfileSources(
     const std::u16string& text,
     const std::string& app_locale,
-    FieldTypeSet* matching_types) const {
+    FieldTypeSet* matching_types,
+    PossibleProfileValueSources* profile_value_sources) const {
   FieldTypeSet matching_types_in_this_profile;
   for (const auto* form_group : FormGroups()) {
     form_group->GetMatchingTypesWithProfileSources(
-        text, app_locale, &matching_types_in_this_profile);
+        text, app_locale, &matching_types_in_this_profile,
+        profile_value_sources);
   }
 
   for (auto type : matching_types_in_this_profile) {

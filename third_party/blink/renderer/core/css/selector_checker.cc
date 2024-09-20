@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
@@ -368,8 +369,10 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
   //
   // In all of those cases we need to skip matching the pseudo classes after the
   // pseudo element on the originating element.
+  // But we allow the ::column::scroll-marker case to keep matching when we are
+  // at ::column part.
   if (context.in_rightmost_compound && dynamic_pseudo != kPseudoIdNone &&
-      context.pseudo_id == kPseudoIdNone) {
+      context.pseudo_id == kPseudoIdNone && dynamic_pseudo != kPseudoIdColumn) {
     // We are in the rightmost compound and have matched a pseudo element
     // (dynamic_pseudo is not kPseudoIdNone), which means we are looking at
     // pseudo classes after the pseudo element. We are also matching the
@@ -394,10 +397,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
     return kSelectorMatches;
   }
 
-  next_context.has_selection_pseudo = dynamic_pseudo == kPseudoIdSelection;
-  next_context.has_search_text_pseudo = dynamic_pseudo == kPseudoIdSearchText;
-  next_context.has_scroll_marker_pseudo =
-      dynamic_pseudo == kPseudoIdScrollMarker;
+  next_context.previously_matched_pseudo_element = dynamic_pseudo;
   next_context.is_sub_selector = true;
   return MatchSelector(next_context, result);
 }
@@ -1649,7 +1649,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           }
         }
       }
-      return MatchesFocusPseudoClass(element, context.has_scroll_marker_pseudo);
+      return MatchesFocusPseudoClass(element,
+                                     context.previously_matched_pseudo_element);
     case CSSSelector::kPseudoFocusVisible:
       if (mode_ == kResolvingStyle) {
         if (context.is_inside_has_pseudo_class) [[unlikely]] {
@@ -2045,6 +2046,15 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoListBox:
       DCHECK(is_ua_rule_);
       return MatchesListBoxPseudoClass(element);
+    case CSSSelector::kPseudoSelectHasChildButton:
+      DCHECK(is_ua_rule_);
+      if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+        return false;
+      }
+      if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        return select->SlottedButton();
+      }
+      return false;
     case CSSSelector::kPseudoMultiSelectFocus:
       DCHECK(is_ua_rule_);
       return MatchesMultiSelectFocusPseudoClass(element);
@@ -2059,7 +2069,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return false;
     case CSSSelector::kPseudoWindowInactive:
-      if (!context.has_selection_pseudo) {
+      if (context.previously_matched_pseudo_element != kPseudoIdSelection) {
         return false;
       }
       return !element.GetDocument().GetPage()->GetFocusController().IsActive();
@@ -2159,7 +2169,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoTrue:
       return true;
     case CSSSelector::kPseudoCurrent:
-      if (!context.has_search_text_pseudo) {
+      if (context.previously_matched_pseudo_element == kPseudoIdSearchText) {
         return false;
       }
       return context.search_text_request_is_current;
@@ -2251,12 +2261,6 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoFileSelectorButton:
       return MatchesUAShadowElement(
           element, shadow_element_names::kPseudoFileUploadButton);
-    case CSSSelector::kPseudoSelectFallbackButton:
-      return MatchesUAShadowElement(
-          element, shadow_element_names::kSelectFallbackButton);
-    case CSSSelector::kPseudoSelectFallbackButtonText:
-      return MatchesUAShadowElement(
-          element, shadow_element_names::kSelectFallbackButtonText);
     case CSSSelector::kPseudoPicker:
       if (selector.Argument() == "select") {
         return MatchesUAShadowElement(element,
@@ -2365,6 +2369,15 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
         return false;
       }
       result.dynamic_pseudo = context.pseudo_id;
+      return true;
+    }
+    case CSSSelector::kPseudoScrollMarker: {
+      // The style for ::column::scroll-marker is stored on the originating
+      // element's style.
+      result.dynamic_pseudo =
+          context.previously_matched_pseudo_element == kPseudoIdColumn
+              ? kPseudoIdColumnScrollMarker
+              : kPseudoIdScrollMarker;
       return true;
     }
     case CSSSelector::kPseudoTargetText:
@@ -2553,21 +2566,23 @@ bool SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(
              ->IsSelectorFragmentAnchor();
 }
 
-bool SelectorChecker::MatchesFocusPseudoClass(const Element& element,
-                                              bool has_scroll_marker_pseudo) {
+bool SelectorChecker::MatchesFocusPseudoClass(
+    const Element& element,
+    PseudoId matching_for_pseudo_element) {
+  const Element* matching_element = &element;
+  if (matching_for_pseudo_element != kPseudoIdNone) {
+    matching_element = element.GetPseudoElement(matching_for_pseudo_element);
+    if (!matching_element) {
+      return false;
+    }
+  }
   bool force_pseudo_state = false;
-  probe::ForcePseudoState(const_cast<Element*>(&element),
+  probe::ForcePseudoState(const_cast<Element*>(matching_element),
                           CSSSelector::kPseudoFocus, &force_pseudo_state);
   if (force_pseudo_state) {
     return true;
   }
-  if (has_scroll_marker_pseudo) {
-    if (const Element* scroll_marker =
-            element.GetPseudoElement(kPseudoIdScrollMarker)) {
-      return scroll_marker->IsFocused() && IsFrameFocused(*scroll_marker);
-    }
-  }
-  return element.IsFocused() && IsFrameFocused(element);
+  return matching_element->IsFocused() && IsFrameFocused(*matching_element);
 }
 
 bool SelectorChecker::MatchesFocusVisiblePseudoClass(const Element& element) {

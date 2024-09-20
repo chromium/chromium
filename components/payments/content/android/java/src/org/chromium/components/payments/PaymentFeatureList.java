@@ -20,6 +20,7 @@ public abstract class PaymentFeatureList {
     public static final String GPAY_APP_DYNAMIC_UPDATE = "GPayAppDynamicUpdate";
     public static final String OMIT_PARAMETERS_IN_READY_TO_PAY = "OmitParametersInReadyToPay";
     public static final String SERVICE_WORKER_PAYMENT_APPS = "ServiceWorkerPaymentApps";
+    public static final String SHOW_READY_TO_PAY_DEBUG_INFO = "ShowReadyToPayDebugInfo";
     public static final String WEB_PAYMENTS = "WebPayments";
     public static final String WEB_PAYMENTS_APP_STORE_BILLING = "AppStoreBilling";
     public static final String WEB_PAYMENTS_APP_STORE_BILLING_DEBUG = "AppStoreBillingDebug";

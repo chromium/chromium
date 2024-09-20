@@ -701,6 +701,15 @@
   </message>
   <!-- Autofill save IBAN bottom sheet prompt -->
   <if expr="is_android">
+    <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The description of the Autofill save IBAN bottom sheet. 'Swipe down to close.' will automatically be appended." formatter_data="android_java">
+      Save IBAN
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_BOTTOM_SHEET_FULL_HEIGHT" desc="The announcement when the Autofill save IBAN bottom sheet is opened." formatter_data="android_java">
+      Save IBAN opened at full height.
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_BOTTOM_SHEET_CLOSED" desc="The announcement when the Autofill save IBAN bottom sheet is closed." formatter_data="android_java">
+      Save IBAN closed.
+    </message>
     <if expr="not use_titlecase">
       <message name="IDS_AUTOFILL_SAVE_IBAN_MOBILE_NO_THANKS" desc="The label for cancel button used in Autofill save IBAN bottom sheet on Clank.">
         No thanks
@@ -1122,6 +1131,9 @@
     </message>
     <message name="IDS_AUTOFILL_PAYMENT_METHOD_A11Y_ITEM_COLLECTION_INFO" desc="A template message for a fillable item content description, provides its position in the list info (e.g. 'Item label, 2 of 4')." formatter_data="android_java">
       <ph name="ITEM_LABEL">%1$s<ex>Card info</ex></ph>, <ph name="ITEM_POSITION">%2$s<ex>2</ex></ph> of <ph name="ITEMS_TOTAL">%3$s<ex>8</ex></ph>.
+    </message>
+    <message name="IDS_AUTOFILL_PAYMENT_METHOD_BOTTOM_SHEET_BENEFITS_TERMS_LABEL" desc="The label for the card benefits terms appears on the bottom sheet when at least one of the cards has benefits." formatter_data="android_java">
+      Terms apply for card benefits
     </message>
   </if>
 

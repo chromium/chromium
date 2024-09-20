@@ -193,6 +193,10 @@ BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 // which is expected to be a no-op.
 BASE_DECLARE_FEATURE(kSyncEnableModelTypeLocalDataBatchUploaders);
 
+// Enables syncing for extensions when in transport mode (when a user is signed
+// in but has not turned on full sync).
+BASE_DECLARE_FEATURE(kSyncEnableExtensionsInTransportMode);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

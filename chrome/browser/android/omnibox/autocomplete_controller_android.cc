@@ -238,7 +238,8 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
     const JavaParamRef<jstring>& j_omnibox_text,
     const JavaParamRef<jstring>& j_current_url,
     jint j_page_classification,
-    const JavaParamRef<jstring>& j_current_title) {
+    const JavaParamRef<jstring>& j_current_title,
+    bool is_on_focus_context) {
   // Prevents double triggering of zero suggest when OnOmniboxFocused is issued
   // in quick succession (due to odd timing in the Android focus callbacks).
   if (!autocomplete_controller_->done()) {
@@ -260,9 +261,9 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   auto page_class =
       OmniboxEventProto::PageClassification(j_page_classification);
   const bool interaction_clobber_focus_type =
-      base::FeatureList::IsEnabled(
-          omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
-      !omnibox::IsNTPPage(page_class);
+      !(omnibox::IsNTPPage(page_class) ||
+        (is_on_focus_context &&
+         base::FeatureList::IsEnabled(omnibox::kRetainOmniboxOnFocus)));
   if (interaction_clobber_focus_type) {
     omnibox_text.clear();
   }

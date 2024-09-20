@@ -13,6 +13,7 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/media_session.h"
@@ -252,9 +253,7 @@ bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions(
     return false;
   }
 
-  // TODO(crbug.com/328637466): Make sure that there is a video that is
-  // currently audible.
-  return has_audio_focus_ && is_playing_ &&
+  return has_audio_focus_ && is_playing_ && WasRecentlyAudible() &&
          (has_sufficiently_visible_video == HasSufficientlyVisibleVideo::kYes);
 }
 
@@ -262,6 +261,15 @@ bool AutoPictureInPictureTabHelper::IsUsingCameraOrMicrophone() const {
   return MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
       ->IsCapturingUserMedia(web_contents());
+}
+
+bool AutoPictureInPictureTabHelper::WasRecentlyAudible() const {
+  auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents());
+  if (!audible_helper) {
+    return false;
+  }
+
+  return audible_helper->WasRecentlyAudible();
 }
 
 ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {

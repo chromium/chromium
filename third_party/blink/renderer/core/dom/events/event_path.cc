@@ -122,13 +122,12 @@ void EventPath::CalculatePath() {
         nodes_in_path.push_back(current);
     }
   }
-
-  node_event_contexts_.reserve(nodes_in_path.size());
-  for (Node* node_in_path : nodes_in_path) {
-    DCHECK(node_in_path);
-    node_event_contexts_.push_back(NodeEventContext(
-        *node_in_path, EventTargetRespectingTargetRules(*node_in_path)));
-  }
+  node_event_contexts_ = HeapVector<NodeEventContext>(
+      nodes_in_path, [](Node* node_in_path) -> NodeEventContext {
+        DCHECK(node_in_path);
+        return NodeEventContext(
+            *node_in_path, EventTargetRespectingTargetRules(*node_in_path));
+      });
 }
 
 void EventPath::CalculateTreeOrderAndSetNearestAncestorClosedTree() {

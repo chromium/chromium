@@ -36,7 +36,7 @@ String MaybeStripSuffix(const String& value, StringView suffix) {
 
 String StringFromCanonOutput(const url::CanonOutput& output,
                              const url::Component& component) {
-  return String::FromUTF8(output.data() + component.begin, component.len);
+  return String::FromUTF8(output.view().substr(component.begin, component.len));
 }
 
 }  // anonymous namespace

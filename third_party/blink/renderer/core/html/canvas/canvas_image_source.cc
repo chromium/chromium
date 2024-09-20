@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
@@ -19,7 +20,7 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
   const cc::PaintFlags::FilterQuality filter_quality =
       cc::PaintFlags::FilterQuality::kLow;
   if (context_provider) {
-    const uint32_t usage_flags =
+    const gpu::SharedImageUsageSet usage_flags =
         context_provider->ContextProvider()
             ->SharedImageInterface()
             ->UsageForMailbox(source_image->GetMailboxHolder().mailbox);

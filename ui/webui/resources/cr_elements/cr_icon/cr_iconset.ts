@@ -6,7 +6,6 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {assert} from '//resources/js/assert.js';
 
-import type {Iconset} from './iconset_map.js';
 import {IconsetMap} from './iconset_map.js';
 import {getCss} from './cr_iconset.css.js';
 import {getHtml} from './cr_iconset.html.js';
@@ -19,7 +18,7 @@ export interface CrIconsetElement {
   };
 }
 
-export class CrIconsetElement extends CrLitElement implements Iconset {
+export class CrIconsetElement extends CrLitElement {
   static get is() {
     return 'cr-iconset';
   }

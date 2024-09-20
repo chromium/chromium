@@ -147,8 +147,6 @@
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/skia_memory_dump_provider.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/switches.h"
@@ -248,7 +246,7 @@ using ::blink::WebView;
 
 // Keep the global RenderThreadImpl in a TLS slot so it is impossible to access
 // incorrectly from the wrong thread.
-ABSL_CONST_INIT thread_local RenderThreadImpl* render_thread = nullptr;
+constinit thread_local RenderThreadImpl* render_thread = nullptr;
 
 base::LazyInstance<scoped_refptr<base::SingleThreadTaskRunner>>::
     DestructorAtExit g_main_task_runner = LAZY_INSTANCE_INITIALIZER;
@@ -506,11 +504,7 @@ RenderThreadImpl::RenderThreadImpl(
               .ConnectToBrowser(true)
               .IPCTaskRunner(scheduler->DeprecatedDefaultTaskRunner())
               .ExposesInterfacesToBrowser()
-              .SetUrgentMessageObserver(
-                  base::FeatureList::IsEnabled(
-                      blink::features::kBlinkSchedulerPrioritizeNavigationIPCs)
-                      ? scheduler.get()
-                      : nullptr)
+              .SetUrgentMessageObserver(scheduler.get())
               .Build()),
       main_thread_scheduler_(std::move(scheduler)),
       client_id_(GetClientIdFromCommandLine()) {
@@ -1118,7 +1112,7 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
 }
 
 scoped_refptr<gpu::ClientSharedImageInterface>
-RenderThreadImpl::GetVideoFrameCompositorSharedImageInterface() {
+RenderThreadImpl::GetRenderThreadSharedImageInterface() {
   if (shared_image_interface_ &&
       !shared_image_interface_->gpu_channel()->IsLost()) {
     return shared_image_interface_;
@@ -1565,8 +1559,6 @@ void RenderThreadImpl::UpdateScrollbarTheme(
 
 void RenderThreadImpl::OnSystemColorsChanged(int32_t aqua_color_variant) {
 #if BUILDFLAG(IS_MAC)
-  SystemColorsDidChange(aqua_color_variant);
-
   // Let blink know it should invalidate and recalculate styles for elements
   // that rely on system colors, such as the accent and highlight colors.
   blink::SystemColorsChanged();

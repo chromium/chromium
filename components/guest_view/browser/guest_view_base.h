@@ -18,6 +18,7 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 }
 
@@ -68,6 +70,11 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   static GuestViewBase* FromRenderFrameHostId(
       const content::GlobalRenderFrameHostId& rfh_id);
 
+  static GuestViewBase* FromNavigationHandle(
+      content::NavigationHandle* navigation_handle);
+  static GuestViewBase* FromFrameTreeNodeId(
+      content::FrameTreeNodeId frame_tree_node_id);
+
   ~GuestViewBase() override;
   GuestViewBase(const GuestViewBase&) = delete;
   GuestViewBase& operator=(const GuestViewBase&) = delete;
@@ -85,6 +92,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   static bool IsGuest(content::WebContents* web_contents);
   static bool IsGuest(content::RenderFrameHost* rfh);
   static bool IsGuest(const content::GlobalRenderFrameHostId& rfh_id);
+  static bool IsGuest(content::NavigationHandle* navigation_handle);
+  static bool IsGuest(content::FrameTreeNodeId frame_tree_node_id);
 
   // Returns the name of the derived type of this GuestView.
   virtual const char* GetViewType() const = 0;

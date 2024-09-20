@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/constants/ash_pref_names.h"
@@ -34,6 +36,14 @@ using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
 using MockFaceLandmarkerResult = FaceGazeTestUtils::MockFaceLandmarkerResult;
 
 namespace {
+
+// Default forehead location.
+constexpr std::pair<double, double> kDefaultForeheadLocation =
+    std::make_pair(0.11, 0.21);
+// Expected cursor location when the above forehead location is used.
+constexpr gfx::Point kDefaultCursorLocation = gfx::Point(360, 560);
+// The center of the screen.
+constexpr gfx::Point kCenter = gfx::Point(600, 400);
 
 PrefService* GetPrefs() {
   return AccessibilityManager::Get()->profile()->GetPrefs();
@@ -158,9 +168,10 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateCursorLocation) {
   event_handler().ClearEvents();
 
   utils()->ProcessFaceLandmarkerResult(
-      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(0.11, 0.21));
+      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(
+          kDefaultForeheadLocation));
   utils()->TriggerMouseControllerInterval();
-  utils()->AssertCursorAt(gfx::Point(360, 560));
+  utils()->AssertCursorAt(kDefaultCursorLocation);
 
   // We expect two mouse move events to be received because the FaceGaze
   // extension calls two APIs to update the cursor position.
@@ -168,10 +179,10 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateCursorLocation) {
       event_handler().mouse_events();
   ASSERT_EQ(2u, mouse_events.size());
   ASSERT_EQ(ui::EventType::kMouseMoved, mouse_events[0].type());
-  ASSERT_EQ(gfx::Point(360, 560), mouse_events[0].root_location());
+  ASSERT_EQ(kDefaultCursorLocation, mouse_events[0].root_location());
   ASSERT_TRUE(mouse_events[0].IsSynthesized());
   ASSERT_EQ(ui::EventType::kMouseMoved, mouse_events[1].type());
-  ASSERT_EQ(gfx::Point(360, 560), mouse_events[1].root_location());
+  ASSERT_EQ(kDefaultCursorLocation, mouse_events[1].root_location());
   ASSERT_TRUE(mouse_events[1].IsSynthesized());
 }
 
@@ -185,16 +196,17 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
 
   // Move cursor.
   utils()->ProcessFaceLandmarkerResult(
-      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(0.11, 0.21));
+      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(
+          kDefaultForeheadLocation));
   utils()->TriggerMouseControllerInterval();
-  utils()->AssertCursorAt(gfx::Point(360, 560));
+  utils()->AssertCursorAt(kDefaultCursorLocation);
 
   event_handler().ClearEvents();
 
   // Reset the cursor to the center of the screen using a gesture.
   utils()->ProcessFaceLandmarkerResult(
       MockFaceLandmarkerResult().WithGesture(MediapipeGesture::JAW_OPEN, 90));
-  utils()->AssertCursorAt(gfx::Point(600, 400));
+  utils()->AssertCursorAt(kCenter);
 
   // We expect one mouse move event to be received because the FaceGaze
   // extension only calls one API to reset the cursor position.
@@ -202,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
       event_handler().mouse_events();
   ASSERT_EQ(1u, mouse_events.size());
   ASSERT_EQ(ui::EventType::kMouseMoved, mouse_events[0].type());
-  ASSERT_EQ(gfx::Point(600, 400), mouse_events[0].root_location());
+  ASSERT_EQ(kCenter, mouse_events[0].root_location());
   ASSERT_TRUE(mouse_events[0].IsSynthesized());
 }
 
@@ -217,9 +229,10 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
 
   // Move cursor.
   utils()->ProcessFaceLandmarkerResult(
-      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(0.11, 0.21));
+      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(
+          kDefaultForeheadLocation));
   utils()->TriggerMouseControllerInterval();
-  utils()->AssertCursorAt(gfx::Point(360, 560));
+  utils()->AssertCursorAt(kDefaultCursorLocation);
 
   // Attempt to reset the cursor to the center of the screen using a gesture.
   // This gesture will be ignored because the gesture doesn't have high enough
@@ -227,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   event_handler().ClearEvents();
   utils()->ProcessFaceLandmarkerResult(
       MockFaceLandmarkerResult().WithGesture(MediapipeGesture::JAW_OPEN, 90));
-  utils()->AssertCursorAt(gfx::Point(360, 560));
+  utils()->AssertCursorAt(kDefaultCursorLocation);
   ASSERT_EQ(0u, event_handler().mouse_events().size());
 }
 
@@ -243,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   for (int i = 1; i < 10; ++i) {
     utils()->ProcessFaceLandmarkerResult(
         MockFaceLandmarkerResult().WithNormalizedForeheadLocation(
-            0.1 + px * i, 0.2 + py * i));
+            std::make_pair(0.1 + px * i, 0.2 + py * i)));
     utils()->TriggerMouseControllerInterval();
     utils()->AssertCursorAt(gfx::Point(600 - i, 400 + i));
   }
@@ -305,8 +318,8 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, BrowsDownGesture) {
       MockFaceLandmarkerResult()
           .WithGesture(MediapipeGesture::BROW_DOWN_LEFT, 50)
           .WithGesture(MediapipeGesture::BROW_DOWN_RIGHT, 30));
-  utils()->AssertCursorAt(gfx::Point(600, 400));
-  AssertLatestMouseEvent(1, ui::EventType::kMouseMoved, gfx::Point(600, 400));
+  utils()->AssertCursorAt(kCenter);
+  AssertLatestMouseEvent(1, ui::EventType::kMouseMoved, kCenter);
 
   // Reset the mouse cursor away from the center.
   utils()->MoveMouseTo(gfx::Point(0, 0));
@@ -318,8 +331,8 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, BrowsDownGesture) {
       MockFaceLandmarkerResult()
           .WithGesture(MediapipeGesture::BROW_DOWN_LEFT, 30)
           .WithGesture(MediapipeGesture::BROW_DOWN_RIGHT, 50));
-  utils()->AssertCursorAt(gfx::Point(600, 400));
-  AssertLatestMouseEvent(1, ui::EventType::kMouseMoved, gfx::Point(600, 400));
+  utils()->AssertCursorAt(kCenter);
+  AssertLatestMouseEvent(1, ui::EventType::kMouseMoved, kCenter);
 
   // Reset the mouse cursor away from the center.
   utils()->MoveMouseTo(gfx::Point(0, 0));
@@ -331,8 +344,8 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, BrowsDownGesture) {
       MockFaceLandmarkerResult()
           .WithGesture(MediapipeGesture::BROW_DOWN_LEFT, 50)
           .WithGesture(MediapipeGesture::BROW_DOWN_RIGHT, 50));
-  utils()->AssertCursorAt(gfx::Point(600, 400));
-  AssertLatestMouseEvent(1, ui::EventType::kMouseMoved, gfx::Point(600, 400));
+  utils()->AssertCursorAt(kCenter);
+  AssertLatestMouseEvent(1, ui::EventType::kMouseMoved, kCenter);
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MousePressAndReleaseEvents) {
@@ -354,9 +367,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MousePressAndReleaseEvents) {
   ASSERT_EQ(1u, press_events.size());
   ASSERT_EQ(1u, release_events.size());
   ASSERT_TRUE(press_events.back().IsOnlyLeftMouseButton());
-  ASSERT_EQ(gfx::Point(600, 400), press_events[0].root_location());
+  ASSERT_EQ(kCenter, press_events[0].root_location());
   ASSERT_TRUE(release_events.back().IsOnlyLeftMouseButton());
-  ASSERT_EQ(gfx::Point(600, 400), release_events[0].root_location());
+  ASSERT_EQ(kCenter, release_events[0].root_location());
 
   // Release doesn't trigger anything else.
   event_handler().ClearEvents();
@@ -383,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   ASSERT_EQ(1u, mouse_events.size());
   ASSERT_EQ(ui::EventType::kMousePressed, mouse_events.back().type());
   ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
-  ASSERT_EQ(gfx::Point(600, 400), mouse_events.back().root_location());
+  ASSERT_EQ(kCenter, mouse_events.back().root_location());
   ASSERT_TRUE(mouse_events.back().IsSynthesized());
 
   // Release mouth right to trigger mouse release event.
@@ -394,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   ASSERT_EQ(1u, mouse_events.size());
   ASSERT_EQ(ui::EventType::kMouseReleased, mouse_events.back().type());
   ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
-  ASSERT_EQ(gfx::Point(600, 400), mouse_events.back().root_location());
+  ASSERT_EQ(kCenter, mouse_events.back().root_location());
   ASSERT_TRUE(mouse_events.back().IsSynthesized());
 }
 
@@ -476,12 +489,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DoubleClick) {
   const auto& release_event = release_events.back();
 
   ASSERT_TRUE(press_event.IsOnlyLeftMouseButton());
-  ASSERT_EQ(gfx::Point(600, 400), press_event.root_location());
+  ASSERT_EQ(kCenter, press_event.root_location());
   // Assert that the press event is for a double click.
   ASSERT_TRUE(ui::EF_IS_DOUBLE_CLICK & press_event.flags());
 
   ASSERT_TRUE(release_event.IsOnlyLeftMouseButton());
-  ASSERT_EQ(gfx::Point(600, 400), release_event.root_location());
+  ASSERT_EQ(kCenter, release_event.root_location());
   // Assert that the release event is for a double click.
   ASSERT_TRUE(ui::EF_IS_DOUBLE_CLICK & release_event.flags());
 
@@ -511,8 +524,10 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, AcceptDialog) {
   AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
       base::BindLambdaForTesting(
           [&settings_waiter]() { settings_waiter.Quit(); }));
-  // Accepting the dialog should make FaceGaze open the settings page.
+  // Accepting the dialog should initialize the FaceLandmarker and open the
+  // settings page.
   controller->GetConfirmationDialogForTest()->Accept();
+  utils()->WaitForFaceLandmarker();
   settings_waiter.Run();
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
   // Verify that the dialog accepted pref is now true.
@@ -558,7 +573,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ScrollMode) {
           .WithGesturesToMacros(
               {{FaceGazeGesture::JAW_LEFT, MacroName::TOGGLE_SCROLL_MODE}})
           .WithGestureConfidences({{FaceGazeGesture::JAW_LEFT, 30}})
-          .WithCursorSpeeds({/*up=*/1, /*down=*/1, /*left=*/1, /*right=*/1})
+          // Ensure speeds are high so that head movements exceed the scroll
+          // mode movement threshold.
+          .WithCursorSpeeds({/*up=*/5, /*down=*/5, /*left=*/5, /*right=*/5})
           .WithGestureRepeatDelayMs(0));
 
   // Move jaw left to enter scroll mode.
@@ -569,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ScrollMode) {
   event_handler().ClearEvents();
   utils()->ProcessFaceLandmarkerResult(
       MockFaceLandmarkerResult()
-          .WithNormalizedForeheadLocation(0.9, 0.9)
+          .WithNormalizedForeheadLocation(std::make_pair(0.9, 0.9))
           .WithGesture(MediapipeGesture::JAW_LEFT, 0));
   utils()->TriggerMouseControllerInterval();
 
@@ -584,6 +601,23 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ScrollMode) {
   utils()->ProcessFaceLandmarkerResult(
       MockFaceLandmarkerResult().WithGesture(MediapipeGesture::JAW_LEFT, 40));
   utils()->AssertScrollMode(false);
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DefaultBehavior) {
+  utils()->EnableFaceGaze(Config().Default());
+  // Default gesture-to-macro and gesture-to-confidence mappings should be
+  // installed if we didn't specify them.
+  const auto& gestures_to_macros =
+      GetPrefs()->GetDict(prefs::kAccessibilityFaceGazeGesturesToMacros);
+  const auto& gestures_to_confidences =
+      GetPrefs()->GetDict(prefs::kAccessibilityFaceGazeGesturesToConfidence);
+  ASSERT_EQ(gestures_to_macros.size(), 1u);
+  ASSERT_EQ(gestures_to_confidences.size(), 1u);
+  ASSERT_EQ(/* MOUTH_SMILE */ 35,
+            gestures_to_macros.FindInt(
+                FaceGazeTestUtils::ToString(FaceGazeGesture::MOUTH_SMILE)));
+  ASSERT_EQ(60, gestures_to_confidences.FindInt(
+                    FaceGazeTestUtils::ToString(FaceGazeGesture::MOUTH_SMILE)));
 }
 
 }  // namespace ash

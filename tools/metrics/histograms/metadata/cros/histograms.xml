@@ -64,14 +64,14 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FileSystem">
     <variant name="archive"/>
-    <variant name="drivefs"/>
-    <variant name="fuseblk.exfat"/>
-    <variant name="fuseblk.ntfs"/>
+    <variant name="drivefs" summary="DriveFS"/>
+    <variant name="fuseblk.exfat" summary="FUSE-exFAT"/>
+    <variant name="fuseblk.ntfs" summary="FUSE-NTFS"/>
     <variant name="fusebox"/>
-    <variant name="rar"/>
+    <variant name="rar" summary="RAR"/>
     <variant name="smbfs"/>
-    <variant name="sshfs"/>
-    <variant name="zip"/>
+    <variant name="sshfs" summary="SSHFS"/>
+    <variant name="zip" summary="ZIP"/>
   </token>
 </histogram>
 
@@ -80,17 +80,16 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Error returned by the program performing the {Action} action on a partition
-    with the {FileSystem} filesystem.
+    Error returned by the program {Action} {FileSystem} partition.
   </summary>
   <token key="Action">
-    <variant name="Format"/>
-    <variant name="Rename"/>
+    <variant name="Format" summary="formatting"/>
+    <variant name="Rename" summary="renaming"/>
   </token>
   <token key="FileSystem">
-    <variant name="exfat"/>
-    <variant name="ntfs"/>
-    <variant name="vfat"/>
+    <variant name="exfat" summary="an exFAT"/>
+    <variant name="ntfs" summary="an NTFS"/>
+    <variant name="vfat" summary="a FAT"/>
   </token>
 </histogram>
 
@@ -99,34 +98,34 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Error returned by the `{SysCall}` system call when the ChromeOS cros-disks
-    daemon deals with a `{FileSystem}` filesystem.
+    Error encountered by the ChromeOS cros-disks daemon when it tried to
+    {SysCall} a {FileSystem} filesystem.
   </summary>
   <token key="SysCall">
     <variant name="mount"/>
-    <variant name="syncfs"/>
-    <variant name="umount"/>
-    <variant name="umount2"/>
+    <variant name="syncfs" summary="flush"/>
+    <variant name="umount" summary="unmount"/>
+    <variant name="umount2" summary="detach"/>
   </token>
   <token key="FileSystem">
     <variant name="archive"/>
-    <variant name="drivefs"/>
-    <variant name="exfat"/>
+    <variant name="drivefs" summary="DriveFS"/>
+    <variant name="exfat" summary="exFAT"/>
     <variant name="ext2"/>
     <variant name="ext3"/>
     <variant name="ext4"/>
-    <variant name="fuseblk.exfat"/>
-    <variant name="fuseblk.ntfs"/>
+    <variant name="fuseblk.exfat" summary="FUSE-exFAT"/>
+    <variant name="fuseblk.ntfs" summary="FUSE-NTFS"/>
     <variant name="fusebox"/>
-    <variant name="hfsplus"/>
-    <variant name="iso9660"/>
-    <variant name="ntfs3"/>
-    <variant name="rar"/>
+    <variant name="hfsplus" summary="HFS+"/>
+    <variant name="iso9660" summary="ISO 9660"/>
+    <variant name="ntfs3" summary="NTFS"/>
+    <variant name="rar" summary="RAR"/>
     <variant name="smbfs"/>
-    <variant name="sshfs"/>
-    <variant name="udf"/>
-    <variant name="vfat"/>
-    <variant name="zip"/>
+    <variant name="sshfs" summary="SSHFS"/>
+    <variant name="udf" summary="UDF"/>
+    <variant name="vfat" summary="FAT"/>
+    <variant name="zip" summary="ZIP"/>
   </token>
 </histogram>
 
@@ -192,14 +191,14 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FileSystem">
     <variant name="archive"/>
-    <variant name="drivefs"/>
-    <variant name="fuseblk.exfat"/>
-    <variant name="fuseblk.ntfs"/>
+    <variant name="drivefs" summary="DriveFS"/>
+    <variant name="fuseblk.exfat" summary="FUSE-exFAT"/>
+    <variant name="fuseblk.ntfs" summary="FUSE-NTFS"/>
     <variant name="fusebox"/>
-    <variant name="rar"/>
+    <variant name="rar" summary="RAR"/>
     <variant name="smbfs"/>
-    <variant name="sshfs"/>
-    <variant name="zip"/>
+    <variant name="sshfs" summary="SSHFS"/>
+    <variant name="zip" summary="ZIP"/>
   </token>
 </histogram>
 
@@ -207,18 +206,15 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Time taken by the program performing the {Action} action on a partition with
-    the {FileSystem} filesystem.
-  </summary>
+  <summary>Time taken by the program {Action} {FileSystem} partition.</summary>
   <token key="Action">
-    <variant name="Format"/>
-    <variant name="Rename"/>
+    <variant name="Format" summary="formatting"/>
+    <variant name="Rename" summary="renaming"/>
   </token>
   <token key="FileSystem">
-    <variant name="exfat"/>
-    <variant name="ntfs"/>
-    <variant name="vfat"/>
+    <variant name="exfat" summary="an exFAT"/>
+    <variant name="ntfs" summary="an NTFS"/>
+    <variant name="vfat" summary="a FAT"/>
   </token>
 </histogram>
 
@@ -227,34 +223,34 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Time taken by the `{SysCall}` system call when the ChromeOS cros-disks
-    daemon deals with a `{FileSystem}` filesystem.
+    Time taken by the ChromeOS cros-disks daemon when it tried to {SysCall} a
+    {FileSystem} filesystem.
   </summary>
   <token key="SysCall">
     <variant name="mount"/>
-    <variant name="syncfs"/>
-    <variant name="umount"/>
-    <variant name="umount2"/>
+    <variant name="syncfs" summary="flush"/>
+    <variant name="umount" summary="unmount"/>
+    <variant name="umount2" summary="detach"/>
   </token>
   <token key="FileSystem">
     <variant name="archive"/>
-    <variant name="drivefs"/>
-    <variant name="exfat"/>
+    <variant name="drivefs" summary="DriveFS"/>
+    <variant name="exfat" summary="exFAT"/>
     <variant name="ext2"/>
     <variant name="ext3"/>
     <variant name="ext4"/>
-    <variant name="fuseblk.exfat"/>
-    <variant name="fuseblk.ntfs"/>
+    <variant name="fuseblk.exfat" summary="FUSE-exFAT"/>
+    <variant name="fuseblk.ntfs" summary="FUSE-NTFS"/>
     <variant name="fusebox"/>
-    <variant name="hfsplus"/>
-    <variant name="iso9660"/>
-    <variant name="ntfs3"/>
-    <variant name="rar"/>
+    <variant name="hfsplus" summary="HFS+"/>
+    <variant name="iso9660" summary="ISO 9660"/>
+    <variant name="ntfs3" summary="NTFS"/>
+    <variant name="rar" summary="RAR"/>
     <variant name="smbfs"/>
-    <variant name="sshfs"/>
-    <variant name="udf"/>
-    <variant name="vfat"/>
-    <variant name="zip"/>
+    <variant name="sshfs" summary="SSHFS"/>
+    <variant name="udf" summary="UDF"/>
+    <variant name="vfat" summary="FAT"/>
+    <variant name="zip" summary="ZIP"/>
   </token>
 </histogram>
 

@@ -100,8 +100,8 @@ class ScopedCoMemArray {
     size_ = size;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of, #union
+  // RAW_PTR_EXCLUSION: #addr-of (address returned from a function, also points
+  // to memory managed by the COM Allocator rather than partition_alloc).
   RAW_PTR_EXCLUSION T* mem_ptr_ = nullptr;
   LONG size_ = 0;
 };

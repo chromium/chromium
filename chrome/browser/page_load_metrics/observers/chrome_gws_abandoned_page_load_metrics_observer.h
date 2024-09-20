@@ -7,6 +7,10 @@
 
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 
+namespace internal {
+extern const char kSuffixResponseFromCache[];
+}
+
 // Similar to GWSAbandonedPageLoadMetricsObserver but adds suffixes that are
 // only available on //chrome (e.g. connection RTT info).
 class ChromeGWSAbandonedPageLoadMetricsObserver

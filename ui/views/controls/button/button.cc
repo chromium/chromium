@@ -262,7 +262,7 @@ void Button::SetState(ButtonState state) {
 
   GetViewAccessibility().SetIsEnabled(state_ != STATE_DISABLED);
   GetViewAccessibility().SetIsHovered(state_ == STATE_HOVERED);
-
+  UpdateAccessibleCheckedState();
   StateChanged(old_state);
   OnPropertyChanged(&state_, kPropertyEffectsPaint);
 }
@@ -615,23 +615,6 @@ void Button::OnPaint(gfx::Canvas* canvas) {
   Painter::PaintFocusPainter(this, canvas, focus_painter_.get());
 }
 
-void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-
-  switch (state_) {
-    case STATE_HOVERED:
-      break;
-    case STATE_PRESSED:
-      node_data->SetCheckedState(ax::mojom::CheckedState::kTrue);
-      break;
-    case STATE_DISABLED:
-    case STATE_NORMAL:
-    case STATE_COUNT:
-      // No additional accessibility node_data set for this button node_data.
-      break;
-  }
-}
-
 void Button::VisibilityChanged(View* starting_from, bool visible) {
   View::VisibilityChanged(starting_from, visible);
   if (state_ == STATE_DISABLED) {
@@ -818,6 +801,17 @@ void Button::ReleaseAnchorHighlight() {
     SetHighlighted(false);
   }
   anchor_count_changed_callbacks_.Notify(anchor_count_);
+}
+
+void Button::UpdateAccessibleCheckedState() {
+  switch (state_) {
+    case STATE_PRESSED:
+      GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kTrue);
+      break;
+    default:
+      GetViewAccessibility().RemoveCheckedState();
+      break;
+  }
 }
 
 void Button::SetDefaultActionVerb(ax::mojom::DefaultActionVerb verb) {

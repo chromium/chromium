@@ -58,8 +58,9 @@ class LayoutSVGHiddenContainer : public LayoutSVGContainer {
     NOT_DESTROYED();
     return gfx::RectF();
   }
-  void AbsoluteQuads(Vector<gfx::QuadF>&,
-                     MapCoordinatesFlags mode = 0) const final {
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const final {
     NOT_DESTROYED();
   }
 

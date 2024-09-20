@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2025-03-09">
   <owner>tquintanilla@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -339,15 +339,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AttributionBehavior"
-    enum="ConversionAttributionBehavior" expires_after="2024-10-24">
+    enum="ConversionAttributionBehavior" expires_after="2025-09-01">
+  <owner>pbirk@chromium.org</owner>
   <owner>jdeabreu@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records the Attribution Behavior for WebView set via the androidx.webkit
-    WebSettingsCompat#setAttributionRegistrationBehavior method. This setting
-    allows developers to configure whether Attribution sources and triggers are
-    registered as coming from the app itself or coming from the web content in
-    the WebView, or if Attribution should be disabled.
+    Records the Attribution Behavior for WebView. This behavior can be changed
+    via the androidx.webkit WebSettingsCompat#setAttributionRegistrationBehavior
+    method, and allows developers to configure whether Attribution sources and
+    triggers are registered as coming from the app itself or coming from the web
+    content in the WebView, or if Attribution should be disabled.
+
+    The histogram is logged whenever a new WebContents is created for a WebView.
   </summary>
 </histogram>
 
@@ -400,17 +403,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ClearDataTime" units="ms"
-    expires_after="2024-05-10">
+    expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records the time it takes to clear conversion data. Logged any time site
     data is cleared in Chrome.
+
+    Warning: this histogram was expired from 2024-05-11 to 2024-09-10; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Conversions.CorruptReportsInDatabase5"
-    enum="ConversionCorruptReportStatus" expires_after="2024-12-08">
+    enum="ConversionCorruptReportStatus" expires_after="2025-03-09">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -457,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.DbVersionOnReportSentAndDeleted" units="Report"
-    expires_after="2024-09-15">
+    expires_after="2025-03-09">
   <owner>tquintanilla@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -683,7 +689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.HeadersSize.Register{Type}" units="bytes"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -713,12 +719,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ImpressionNavigationHasDeadInitiator"
-    enum="Boolean" expires_after="2024-05-12">
+    enum="Boolean" expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Measures how often impressions are ignored because the initiator frame is
     dead by the time the navigation reaches the browser.
+
+    Warning: this histogram was expired from 2024-05-13 to 2024-09-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -784,17 +793,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.NavigationSourceRegistrationsWithScopesAllowed"
-    enum="Boolean" expires_after="2024-12-08">
+<histogram name="Conversions.NavigationSourceScopesLimitOutcome"
+    enum="ConversionNavigationSourceScopesLimitOutcome"
+    expires_after="2024-12-08">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
-    Measures how many parsable navigation source registrations containing
-    attribution scopes were accepted or rejected. A `false` outcome in this case
-    is fired if a previous successful source registration within the same
-    navigation contained a different set of attribution scopes. Records
-    immediately after the source registration is successfully parsed.
+    Measures how many parsable navigation source registrations were accepted or
+    rejected due to navigation source scopes limit. Records immediately after
+    the source registration is successfully parsed.
   </summary>
 </histogram>
 
@@ -834,6 +842,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     When a trigger is received by the attribution manager, records whether it
     includes a non-default aggregatable filtering id.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.NumEventsQueuedOnAttestationsLoaded"
+    units="registrations" expires_after="2025-03-12">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how many web registrations are enqueued waiting for attestations to
+    be loaded. Recorded once per storage partition when attestations are loaded
+    or timeout if there are any pending registrations..
+  </summary>
+</histogram>
+
+<histogram name="Conversions.NumOsEventsQueuedOnAttestationsLoaded"
+    units="registrations" expires_after="2025-03-12">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how many OS registrations are enqueued waiting for attestations to
+    be loaded. Recorded once per storage partition when attestations are loaded
+    or timeout if there are any pending registrations.
   </summary>
 </histogram>
 
@@ -1015,7 +1045,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ReportsDeletedInDataClearOperation.Aggregatable"
-    units="conversions" expires_after="2024-09-15">
+    units="conversions" expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>tquintanilla@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1080,7 +1110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SchedulerReportDelay" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1092,6 +1122,20 @@ chromium-metrics-reviews@google.com.
     in Chrome scheduling the report. Recorded when an event-level report is to
     be sent.
   </summary>
+</histogram>
+
+<histogram name="Conversions.ScopesPer{Type}Registration" units="scopes"
+    expires_after="2025-03-30">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how many attribution scopes are in a {Type} registration. Recorded
+    when a {Type} registration is successfully parsed.
+  </summary>
+  <token key="Type">
+    <variant name="Source"/>
+    <variant name="Trigger"/>
+  </token>
 </histogram>
 
 <histogram name="Conversions.SentVerboseDebugReportType4"
@@ -1142,25 +1186,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourcesPerSourceOrigin2.{Position}"
-    units="sources" expires_after="2025-01-05">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    When the storage database is initialized upon the API's first use, count and
-    sort in descending order the number of sources per source origin. The metric
-    records the count at the {Position} position. Only recorded if
-    initialization is successful.
-  </summary>
-  <token key="Position">
-    <variant name="1st"/>
-    <variant name="3rd"/>
-    <variant name="7th"/>
-    <variant name="20th"/>
-  </token>
-</histogram>
-
 <histogram name="Conversions.SourceStoredStatus8"
     enum="ConversionStorageSourceStatus" expires_after="never">
 <!-- expires-never: critical system health metric for monitoring -->
@@ -1181,7 +1206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.ClearDataWithFilterDuration" units="ms"
-    expires_after="2024-05-10">
+    expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -1189,6 +1214,9 @@ chromium-metrics-reviews@google.com.
     when supplied an origin filter. Recorded when the conversion database
     finishes performing a clear operation. Note that filters may vary in size
     and computation complexity, skewing this metric aribtrarily.
+
+    Warning: this histogram was expired from 2024-05-11 to 2024-09-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1204,7 +1232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.FindMatchingSourceTime" units="ms"
-    expires_after="2025-01-07">
+    expires_after="2025-03-09">
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
@@ -1214,13 +1242,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.MigrationTime" units="ms"
-    expires_after="2024-07-14">
+    expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records the time it took to migrate a preexisting conversions database to
     the latest schema. Recorded when the conversion database finishes
     initialization. Only recorded on platforms with base::ThreadTicks support.
+
+    Warning: this histogram was expired from 2024-07-15 to 2024-09-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1284,12 +1315,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TimeFromConversionToReportSend" units="hours"
-    expires_after="2024-07-14">
+    expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records the time between a conversion and its reporting. This is emitted
     whenever a conversion report is sent.
+
+    Warning: this histogram was expired from 2024-07-15 to 2024-09-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1317,7 +1351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TriggerTimeLessThanSourceTime" enum="Boolean"
-    expires_after="2024-09-29">
+    expires_after="2025-03-09">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1381,6 +1415,21 @@ chromium-metrics-reviews@google.com.
       variants="AttributionReportingAggregatableContextType"/>
 </histogram>
 
+<histogram
+    name="Conversions.{ContextType}HttpResponseOrNetErrorCodeAggregatableNull"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-11">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending a null aggregatable report, recorded for each sent
+    null aggregatable report. The HTTP response code is recorded if there is no
+    net error code for the request, or the net error code indicates there was a
+    response code failure.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
+</histogram>
+
 <histogram name="Conversions.{ContextType}ReportRetrySucceedAggregatable"
     enum="BooleanSuccess" expires_after="2025-02-10">
   <owner>linnan@chromium.org</owner>
@@ -1395,13 +1444,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.{ContextType}ReportStatusAggregatable"
-    enum="ConversionReportStatus" expires_after="2024-09-15">
+    enum="ConversionReportStatus" expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
-    Records the high level request status of an attribution report. Recorded for
+    Records the high-level request status of an attribution report. Recorded for
     every aggregatable attribution report sent. For attribution report that has
     been retried, every retry will be counted.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
+</histogram>
+
+<histogram name="Conversions.{ContextType}ReportStatusAggregatableNull"
+    enum="ConversionReportStatus" expires_after="2025-03-11">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high-level request status of a null aggregatable report.
+    Recorded for every null aggregatable report sent. For null aggregatable
+    report that has been retried, every retry will be counted.
   </summary>
   <token key="ContextType"
       variants="AttributionReportingAggregatableContextType"/>
@@ -1423,8 +1485,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.{ReportType}.ReportBodySize"
-    enum="ConversionReportSendRetryCount" expires_after="2025-03-03">
+<histogram name="Conversions.{ReportType}.ReportBodySize" units="bytes"
+    expires_after="2025-03-03">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

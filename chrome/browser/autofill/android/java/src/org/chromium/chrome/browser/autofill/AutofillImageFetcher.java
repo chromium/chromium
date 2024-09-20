@@ -12,9 +12,9 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSize;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -44,15 +44,15 @@ public class AutofillImageFetcher {
      * Fetches images for the passed in URLs and stores them in cache.
      *
      * @param urls The URLs to fetch the images.
+     * @param imageSize The list of image sizes that should be fetched for each of the above URLs.
      */
     @CalledByNative
-    void prefetchImages(@JniType("base::span<const GURL>") GURL[] urls) {
+    void prefetchImages(
+            @JniType("base::span<const GURL>") GURL[] urls, @ImageSize int[] imageSizes) {
         Context context = ContextUtils.getApplicationContext();
 
         for (GURL url : urls) {
-            // Credit card art images are shown in 2 different sizes depending on the surface.
-            // Prefetch and cache images in both sizes.
-            for (@CardIconSize int size : new int[] {CardIconSize.SMALL, CardIconSize.LARGE}) {
+            for (@ImageSize int size : imageSizes) {
                 CardIconSpecs cardIconSpecs = CardIconSpecs.create(context, size);
                 fetchImage(url, cardIconSpecs);
             }
@@ -118,7 +118,6 @@ public class AutofillImageFetcher {
         if (bitmap == null) {
             return;
         }
-
         // When adding new sizes for card icons, check if the corner radius needs to be added as
         // a suffix for caching (crbug.com/1431283).
         mImagesCache.put(

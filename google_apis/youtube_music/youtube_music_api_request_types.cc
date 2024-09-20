@@ -174,6 +174,19 @@ std::string PlaybackQueuePrepareRequestPayload::ToJson() const {
   return json.value();
 }
 
+PlaybackQueueNextRequestPayload::PlaybackQueueNextRequestPayload() = default;
+PlaybackQueueNextRequestPayload::~PlaybackQueueNextRequestPayload() = default;
+
+std::string PlaybackQueueNextRequestPayload::ToJson() const {
+  // All fields are optional so this is currently an empty dictionary.
+  base::Value::Dict root;
+
+  const std::optional<std::string> json = base::WriteJson(root);
+  CHECK(json);
+
+  return json.value();
+}
+
 ReportPlaybackRequestPayload::Params::Params(
     const bool initial_report,
     const std::string& playback_reporting_token,
@@ -252,6 +265,25 @@ std::string ReportPlaybackRequestPayload::ToJson() const {
   CHECK(json);
 
   return json.value();
+}
+
+SignedRequest::SignedRequest(RequestSender* sender)
+    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()) {}
+
+SignedRequest::~SignedRequest() = default;
+
+void SignedRequest::SetSigningHeaders(std::vector<std::string>&& headers) {
+  headers_ = headers;
+}
+
+HttpRequestMethod SignedRequest::GetRequestType() const {
+  // Signed requests must have a body so they are always POSTs.
+  return HttpRequestMethod::kPost;
+}
+
+std::vector<std::string> SignedRequest::GetExtraRequestHeaders() const {
+  CHECK(!headers_.empty());
+  return headers_;
 }
 
 }  // namespace google_apis::youtube_music

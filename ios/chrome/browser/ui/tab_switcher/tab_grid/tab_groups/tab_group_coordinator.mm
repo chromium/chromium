@@ -257,7 +257,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
-       didRemoveItemWIthID:(web::WebStateID)itemID {
+       didRemoveItemWithID:(web::WebStateID)itemID {
   // No-op.
 }
 
@@ -305,6 +305,16 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
     (BaseGridViewController*)gridViewController {
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
+}
+
+- (void)gridViewControllerDropSessionDidEnter:
+    (BaseGridViewController*)gridViewController {
+  // No-op
+}
+
+- (void)gridViewControllerDropSessionDidExit:
+    (BaseGridViewController*)gridViewController {
+  // No-op
 }
 
 @end

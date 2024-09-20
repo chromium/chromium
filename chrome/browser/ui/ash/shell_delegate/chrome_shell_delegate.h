@@ -33,6 +33,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       const override;
   std::unique_ptr<ash::ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const override;
+  std::unique_ptr<ash::CoralDelegate> CreateCoralDelegate() const override;
   std::unique_ptr<ash::GameDashboardDelegate> CreateGameDashboardDelegate()
       const override;
   std::unique_ptr<ash::AcceleratorPrefsDelegate>
@@ -56,6 +57,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       const override;
   std::unique_ptr<ash::UserEducationDelegate> CreateUserEducationDelegate()
       const override;
+  std::unique_ptr<ash::ScannerDelegate> CreateScannerDelegate() const override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetBrowserProcessUrlLoaderFactory() const override;
   void OpenKeyboardShortcutHelpPage() const override;

@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller+Testing.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -246,6 +247,32 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   // Title may change between the call to -init and -viewWillAppear, so we want
   // to wait until the last moment possible before setting the titleView.
   self.navigationItem.titleView = _titleLabel;
+
+  SettingsNavigationController* navigationController =
+      base::apple::ObjCCast<SettingsNavigationController>(
+          self.navigationController);
+  if (!navigationController) {
+    return;
+  }
+
+  // Add a "Done" button to the navigation bar if this view controller is the
+  // first in the navigation stack. This "Done" button's purpose being to
+  // dismiss the presented view.
+  if (navigationController.viewControllers.count > 0 &&
+      navigationController.viewControllers.firstObject == self) {
+    UIBarButtonItem* doneButton = [navigationController doneButton];
+
+    // If not in edit mode, set the newly created "Done" button as the left bar
+    // button item. Otherwise, don't override the "Cancel" button that's shown
+    // when in edit mode.
+    if (!self.tableView.editing) {
+      self.navigationItem.leftBarButtonItem = doneButton;
+    }
+
+    // Set `customLeftBarButtonItem` with the "Done" button, so that it'll be
+    // used as the left bar button item when exiting edit mode.
+    self.customLeftBarButtonItem = doneButton;
+  }
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -465,6 +492,12 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   item.text = passwordDetails.note;
   item.editingEnabled = self.tableView.editing;
   item.delegate = self;
+
+  // Make the text field non-interactable in non-editing table view state and
+  // when the note is empty, so that UITextView does not capture taps in that
+  // case and they can be handled by `didSelectRowAtIndexPath`.
+  item.textFieldInteractionEnabled =
+      self.tableView.editing || passwordDetails.note.length > 0;
   return item;
 }
 
@@ -652,7 +685,11 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
       TableViewMultiLineTextEditCell* textFieldCell =
           base::apple::ObjCCastStrict<TableViewMultiLineTextEditCell>(cell);
-      [textFieldCell.textView becomeFirstResponder];
+      if (!self.tableView.editing && textFieldCell.textView.text.length == 0) {
+        [self switchToEditingOnEmptyNoteTapAtIndexPath:indexPath];
+      } else {
+        [textFieldCell.textView becomeFirstResponder];
+      }
       break;
     }
     case PasswordDetailsItemTypeDismissWarningButton:
@@ -743,8 +780,13 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     case PasswordDetailsItemTypeMoveToAccountButton:
       return !self.editing;
     case PasswordDetailsItemTypeDeleteButton:
-    case PasswordDetailsItemTypeNote:
       return self.editing;
+    case PasswordDetailsItemTypeNote: {
+      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+      TableViewMultiLineTextEditCell* textFieldCell =
+          base::apple::ObjCCastStrict<TableViewMultiLineTextEditCell>(cell);
+      return self.editing || textFieldCell.textView.text.length == 0;
+    }
     case PasswordDetailsItemTypeChangePasswordRecommendation:
     case PasswordDetailsItemTypeMoveToAccountRecommendation:
       return NO;
@@ -1353,15 +1395,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // Notifies the handler that the share button was pressed by the user.
 - (void)onShareButtonPressed {
   CHECK(self.handler);
-
-  // Replace `_shareButton` with a spinner.
-  UIActivityIndicatorView* spinner = GetMediumUIActivityIndicatorView();
-  [spinner startAnimating];
-  UIBarButtonItem* spinnerBarButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:spinner];
-  self.navigationItem.rightBarButtonItems =
-      @[ self.navigationItem.rightBarButtonItem, spinnerBarButtonItem ];
-
   [self.handler onShareButtonPressed];
 }
 
@@ -1383,6 +1416,26 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   [self presentViewController:popoverViewController
                      animated:YES
                    completion:nil];
+}
+
+// Switches to editing mode and makes the note text field at `indexPath` the
+// first responder.
+- (void)switchToEditingOnEmptyNoteTapAtIndexPath:(NSIndexPath*)indexPath {
+  [super editButtonPressed];
+  [self reloadData];
+
+  // After switching to editing mode, the note that was originally tapped might
+  // not be visible on the screen anymore when there's a lot of credential
+  // groups (since there are additional elements appearing, e.g. "Delete
+  // password" buttons).
+  UITableView* tableView = self.tableView;
+  [tableView scrollToRowAtIndexPath:indexPath
+                   atScrollPosition:UITableViewScrollPositionBottom
+                           animated:NO];
+  UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+  TableViewMultiLineTextEditCell* textFieldCell =
+      base::apple::ObjCCastStrict<TableViewMultiLineTextEditCell>(cell);
+  [textFieldCell.textView becomeFirstResponder];
 }
 
 #pragma mark - AutofillEditTableViewController
@@ -1717,21 +1770,18 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   [self editButtonPressed];
 }
 
-- (void)setupLeftCancelButton {
-  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self
-                           action:@selector(dismissView)];
-  self.customLeftBarButtonItem = cancelButton;
-  self.navigationItem.leftBarButtonItem = self.customLeftBarButtonItem;
-}
-
-// TODO(crbug.com/322967526): Add timer to display the spinner for min amount of
-// time and possibly a completion to only proceed with sharing views after share
-// button is back.
 - (void)showShareButton {
   self.navigationItem.rightBarButtonItems =
       @[ self.navigationItem.rightBarButtonItem, _shareButton ];
+}
+
+- (void)showSpinnerOnRightNavigationBar {
+  UIActivityIndicatorView* spinner = GetMediumUIActivityIndicatorView();
+  [spinner startAnimating];
+  UIBarButtonItem* spinnerBarButtonItem =
+      [[UIBarButtonItem alloc] initWithCustomView:spinner];
+  self.navigationItem.rightBarButtonItems =
+      @[ self.navigationItem.rightBarButtonItem, spinnerBarButtonItem ];
 }
 
 @end

@@ -11,11 +11,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/url_visit_types.mojom.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/history/core/browser/mojom/history_types.mojom.h"
 #include "components/search/ntp_features.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
@@ -58,19 +58,23 @@ class MostRelevantTabResumptionPageHandlerTest
     web_contents_.reset();
   }
 
-  std::vector<history::mojom::TabPtr> RunGetTabs() {
-    std::vector<history::mojom::TabPtr> tabs_mojom;
+  std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
+  RunGetURLVisits() {
+    std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
+        url_visits_mojom;
     base::RunLoop wait_loop;
-    handler_->GetTabs(base::BindOnce(
+    handler_->GetURLVisits(base::BindOnce(
         [](base::OnceClosure stop_waiting,
-           std::vector<history::mojom::TabPtr>* tabs,
-           std::vector<history::mojom::TabPtr> tabs_arg) {
-          *tabs = std::move(tabs_arg);
+           std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>*
+               url_visits,
+           std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
+               url_visits_arg) {
+          *url_visits = std::move(url_visits_arg);
           std::move(stop_waiting).Run();
         },
-        wait_loop.QuitClosure(), &tabs_mojom));
+        wait_loop.QuitClosure(), &url_visits_mojom));
     wait_loop.Run();
-    return tabs_mojom;
+    return url_visits_mojom;
   }
 
   void TearDown() override {
@@ -123,15 +127,15 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetFakeTabs) {
       },
       {});
 
-  auto tabs_mojom = RunGetTabs();
-  ASSERT_EQ(3u, tabs_mojom.size());
-  for (const auto& tab_mojom : tabs_mojom) {
-    ASSERT_EQ("Test Session", tab_mojom->session_name);
-    ASSERT_EQ(GURL("https://www.google.com"), tab_mojom->url);
+  auto url_visits_mojom = RunGetURLVisits();
+  ASSERT_EQ(3u, url_visits_mojom.size());
+  for (const auto& url_visit_mojom : url_visits_mojom) {
+    ASSERT_EQ("Test Session", url_visit_mojom->session_name);
+    ASSERT_EQ(GURL("https://www.google.com"), url_visit_mojom->url);
   }
 }
 
-TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs_TabURLTypesOnly) {
+TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits_TabURLTypesOnly) {
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
       {
@@ -196,11 +200,11 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs_TabURLTypesOnly) {
             std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
           }));
 
-  auto tabs_mojom = RunGetTabs();
-  ASSERT_EQ(2u, tabs_mojom.size());
+  auto url_visits_mojom = RunGetURLVisits();
+  ASSERT_EQ(2u, url_visits_mojom.size());
 }
 
-TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
+TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits) {
   base::HistogramTester histogram_tester;
   visited_url_ranking::MockVisitedURLRankingService*
       mock_visited_url_ranking_service =
@@ -252,19 +256,21 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
             std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
           }));
 
-  auto tabs_mojom = RunGetTabs();
-  ASSERT_EQ(2u, tabs_mojom.size());
-  for (const auto& tab_mojom : tabs_mojom) {
-    ASSERT_EQ(history::mojom::DeviceType::kUnknown, tab_mojom->device_type);
-    ASSERT_EQ("sample_title", tab_mojom->title);
-    ASSERT_EQ(GURL(visited_url_ranking::kSampleSearchUrl), tab_mojom->url);
+  auto url_visits_mojom = RunGetURLVisits();
+  ASSERT_EQ(2u, url_visits_mojom.size());
+  for (const auto& url_visit_mojom : url_visits_mojom) {
+    ASSERT_EQ(syncer::DeviceInfo::FormFactor::kUnknown,
+              url_visit_mojom->form_factor);
+    ASSERT_EQ("sample_title", url_visit_mojom->title);
+    ASSERT_EQ(GURL(visited_url_ranking::kSampleSearchUrl),
+              url_visit_mojom->url);
   }
 
   histogram_tester.ExpectBucketCount("NewTabPage.Modules.DataRequest",
                                      base::PersistentHash("tab_resumption"), 1);
 }
 
-TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreTab) {
+TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreURLVisit) {
   visited_url_ranking::MockVisitedURLRankingService*
       mock_visited_url_ranking_service =
           static_cast<visited_url_ranking::MockVisitedURLRankingService*>(
@@ -324,17 +330,17 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreTab) {
             expected_action = action;
           }));
 
-  auto tabs_mojom = RunGetTabs();
-  ASSERT_EQ(2u, tabs_mojom.size());
-  Handler()->DismissTab(mojo::Clone(tabs_mojom[0]));
+  auto url_visits_mojom = RunGetURLVisits();
+  ASSERT_EQ(2u, url_visits_mojom.size());
+  Handler()->DismissURLVisit(mojo::Clone(url_visits_mojom[0]));
   ASSERT_EQ(visited_url_ranking::ScoredURLUserAction::kDismissed,
             expected_action);
-  auto dismissed_tabs_mojom = RunGetTabs();
-  ASSERT_EQ(1u, dismissed_tabs_mojom.size());
-  Handler()->RestoreTab(mojo::Clone(tabs_mojom[0]));
+  auto dismissed_url_visits_mojom = RunGetURLVisits();
+  ASSERT_EQ(1u, dismissed_url_visits_mojom.size());
+  Handler()->RestoreURLVisit(mojo::Clone(url_visits_mojom[0]));
   ASSERT_EQ(visited_url_ranking::ScoredURLUserAction::kSeen, expected_action);
-  auto restored_tabs_mojom = RunGetTabs();
-  ASSERT_EQ(2u, restored_tabs_mojom.size());
+  auto restored_url_visits_mojom = RunGetURLVisits();
+  ASSERT_EQ(2u, restored_url_visits_mojom.size());
 }
 
 TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreAll) {
@@ -399,20 +405,20 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreAll) {
             expected_actions.push_back(action);
           }));
 
-  auto tabs_mojom = RunGetTabs();
-  ASSERT_EQ(2u, tabs_mojom.size());
-  Handler()->DismissModule(mojo::Clone(tabs_mojom));
+  auto url_visits_mojom = RunGetURLVisits();
+  ASSERT_EQ(2u, url_visits_mojom.size());
+  Handler()->DismissModule(mojo::Clone(url_visits_mojom));
   ASSERT_EQ(visited_url_ranking::ScoredURLUserAction::kDismissed,
             expected_actions[0]);
   ASSERT_EQ(visited_url_ranking::ScoredURLUserAction::kDismissed,
             expected_actions[1]);
-  auto dismissed_tabs_mojom = RunGetTabs();
-  ASSERT_EQ(0u, dismissed_tabs_mojom.size());
-  Handler()->RestoreModule(mojo::Clone(tabs_mojom));
+  auto dismissed_url_visits_mojom = RunGetURLVisits();
+  ASSERT_EQ(0u, dismissed_url_visits_mojom.size());
+  Handler()->RestoreModule(mojo::Clone(url_visits_mojom));
   ASSERT_EQ(visited_url_ranking::ScoredURLUserAction::kSeen,
             expected_actions[2]);
   ASSERT_EQ(visited_url_ranking::ScoredURLUserAction::kSeen,
             expected_actions[3]);
-  auto restored_tabs_mojom = RunGetTabs();
-  ASSERT_EQ(2u, restored_tabs_mojom.size());
+  auto restored_url_visits_mojom = RunGetURLVisits();
+  ASSERT_EQ(2u, restored_url_visits_mojom.size());
 }

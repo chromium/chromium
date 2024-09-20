@@ -33,7 +33,7 @@ function testDelete(tagName, originalMarkup, expected) {
     shouldBe("confirmedMarkup", "'" + expected + "'");
 }
 
-testDelete("div", "Hello", "");
+testDelete("div", "Hello", "<br>");
 testDelete("div", "<div>Hello</div>", "<br>");
 testDelete("div", "<div id=\"mydiv\">Hello</div>", "<div id=\"mydiv\"><br></div>");
 testDelete("div", "<div><div>Hello</div></div>", "<br>");

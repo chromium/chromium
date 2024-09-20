@@ -229,8 +229,6 @@ class CORE_EXPORT ImageResourceContent final
   // BitmapImage. |use_counter| may be a null pointer.
   void RecordDecodedImageType(UseCounter* use_counter);
 
-  void SetAllocatedExternalMemory() { allocated_external_memory_ = true; }
-
  private:
   using CanDeferInvalidation = ImageResourceObserver::CanDeferInvalidation;
 
@@ -280,8 +278,6 @@ class CORE_EXPORT ImageResourceContent final
   Image::SizeAvailability size_available_ = Image::kSizeUnavailable;
 
   bool has_device_pixel_ratio_header_value_ = false;
-
-  bool allocated_external_memory_ = false;
 
   bool is_broken_ = false;
 

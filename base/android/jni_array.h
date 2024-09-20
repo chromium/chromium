@@ -59,56 +59,25 @@ BASE_EXPORT ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(
     JNIEnv* env,
     const std::vector<bool>& bools);
 
-// Returns a new Java boolean array converted from the given bool array.
-//
-// TODO(crbug.com/40284755): Remove this overload, use spans.
-UNSAFE_BUFFER_USAGE BASE_EXPORT ScopedJavaLocalRef<jbooleanArray>
-ToJavaBooleanArray(JNIEnv* env, const bool* bools, size_t len);
-
 // Returns a new Java int array converted from the given int array.
 BASE_EXPORT ScopedJavaLocalRef<jintArray> ToJavaIntArray(
     JNIEnv* env,
     span<const int32_t> ints);
-
-// Returns a new Java int array converted from the given int array.
-//
-// TODO(crbug.com/40284755): Remove this overload, use spans.
-BASE_EXPORT ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
-                                                         const int32_t* ints,
-                                                         size_t len);
 
 // Returns a new Java long array converted from the given int64_t array.
 BASE_EXPORT ScopedJavaLocalRef<jlongArray> ToJavaLongArray(
     JNIEnv* env,
     span<const int64_t> longs);
 
-// Returns a new Java long array converted from the given int64_t array.
-//
-// TODO(crbug.com/40284755): Remove this overload, use spans.
-UNSAFE_BUFFER_USAGE BASE_EXPORT ScopedJavaLocalRef<jlongArray>
-ToJavaLongArray(JNIEnv* env, const int64_t* longs, size_t len);
-
 // Returns a new Java float array converted from the given C++ float array.
 BASE_EXPORT ScopedJavaLocalRef<jfloatArray> ToJavaFloatArray(
     JNIEnv* env,
     span<const float> floats);
 
-// Returns a new Java float array converted from the given C++ float array.
-//
-// TODO(crbug.com/40284755): Remove this overload, use spans.
-UNSAFE_BUFFER_USAGE BASE_EXPORT ScopedJavaLocalRef<jfloatArray>
-ToJavaFloatArray(JNIEnv* env, const float* floats, size_t len);
-
 // Returns a new Java double array converted from the given C++ double array.
 BASE_EXPORT ScopedJavaLocalRef<jdoubleArray> ToJavaDoubleArray(
     JNIEnv* env,
     span<const double> doubles);
-
-// Returns a new Java double array converted from the given C++ double array.
-//
-// TODO(crbug.com/40284755): Remove this overload, use spans.
-UNSAFE_BUFFER_USAGE BASE_EXPORT ScopedJavaLocalRef<jdoubleArray>
-ToJavaDoubleArray(JNIEnv* env, const double* doubles, size_t len);
 
 // Returns a new clazz[] with the content of |v|.
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(

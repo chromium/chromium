@@ -189,6 +189,25 @@ void GraphInfoBuilder::BuildConcat(std::vector<uint64_t> input_operand_ids,
       mojom::Operation::NewConcat(std::move(concat)));
 }
 
+void GraphInfoBuilder::BuildCumulativeSum(uint64_t input_operand_id,
+                                          uint64_t output_operand_id,
+                                          uint32_t axis,
+                                          std::optional<bool> exclusive,
+                                          std::optional<bool> reversed) {
+  mojom::CumulativeSumPtr cumulative_sum = mojom::CumulativeSum::New();
+  cumulative_sum->input_operand_id = input_operand_id;
+  cumulative_sum->output_operand_id = output_operand_id;
+  cumulative_sum->axis = axis;
+  if (exclusive.has_value()) {
+    cumulative_sum->exclusive = exclusive.value();
+  }
+  if (reversed.has_value()) {
+    cumulative_sum->reversed = reversed.value();
+  }
+  graph_info_->operations.push_back(
+      mojom::Operation::NewCumulativeSum(std::move(cumulative_sum)));
+}
+
 void GraphInfoBuilder::BuildDequantizeLinear(uint64_t input_operand_id,
                                              uint64_t scale_operand_id,
                                              uint64_t zero_point_operand_id,
@@ -268,6 +287,15 @@ void GraphInfoBuilder::BuildGatherElements(uint64_t input_operand_id,
   gather_elements->axis = axis;
   graph_info_->operations.push_back(
       mojom::Operation::NewGatherElements(std::move(gather_elements)));
+}
+
+void GraphInfoBuilder::BuildGatherND(uint64_t input_operand_id,
+                                     uint64_t indices_operand_id,
+                                     uint64_t output_operand_id) {
+  auto gather_nd = mojom::GatherND::New(input_operand_id, indices_operand_id,
+                                        output_operand_id, "");
+  graph_info_->operations.push_back(
+      mojom::Operation::NewGatherNd(std::move(gather_nd)));
 }
 
 void GraphInfoBuilder::BuildGelu(uint64_t input_operand_id,
@@ -357,6 +385,17 @@ void GraphInfoBuilder::BuildReshape(uint64_t input_operand_id,
   reshape->output_operand_id = output_operand_id;
   graph_info_->operations.push_back(
       mojom::Operation::NewReshape(std::move(reshape)));
+}
+
+void GraphInfoBuilder::BuildScatterND(uint64_t input_operand_id,
+                                      uint64_t indices_operand_id,
+                                      uint64_t updates_operand_id,
+                                      uint64_t output_operand_id) {
+  mojom::ScatterNDPtr scatter_nd =
+      mojom::ScatterND::New(input_operand_id, indices_operand_id,
+                            updates_operand_id, output_operand_id, "");
+  graph_info_->operations.push_back(
+      mojom::Operation::NewScatterNd(std::move(scatter_nd)));
 }
 
 void GraphInfoBuilder::BuildSigmoid(uint64_t input_operand_id,
@@ -504,6 +543,7 @@ ContextProperties GetContextPropertiesForTesting() {
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/
        DataTypeConstraint::kFloat16To32,
+       /*cumulative_sum_input=*/DataTypeConstraint::kFloat16To32,
        /*dequantize_linear_input=*/SupportedDataTypes::All(),
        /*dequantize_linear_scale=*/SupportedDataTypes::All(),
        /*add_input=*/SupportedDataTypes::All(),
@@ -542,6 +582,9 @@ ContextProperties GetContextPropertiesForTesting() {
        /*gather_elements_input=*/SupportedDataTypes::All(),
        /*gather_elements_indices=*/
        SupportedDataTypes::All(),
+       /*gather_nd_input=*/SupportedDataTypes::All(),
+       /*gather_nd_indices=*/
+       SupportedDataTypes::All(),
        /*gelu_input=*/SupportedDataTypes::All(),
        /*gemm_input=*/SupportedDataTypes::All(),
        /*gru_input=*/SupportedDataTypes::All(),
@@ -575,6 +618,8 @@ ContextProperties GetContextPropertiesForTesting() {
        /*relu_input=*/SupportedDataTypes::All(),
        /*resample2d_input=*/SupportedDataTypes::All(),
        /*reshape_input=*/SupportedDataTypes::All(),
+       /*scatter_nd_input=*/SupportedDataTypes::All(),
+       /*scatter_nd_indices=*/SupportedDataTypes::All(),
        /*sigmoid_input=*/SupportedDataTypes::All(),
        /*slice_input=*/SupportedDataTypes::All(),
        /*softmax_input=*/SupportedDataTypes::All(),

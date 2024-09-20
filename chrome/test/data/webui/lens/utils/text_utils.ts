@@ -4,9 +4,9 @@
 
 import {hexColorToSkColor} from '//resources/js/color_utils.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
-import type {Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from 'chrome-untrusted://lens/text.mojom-webui.js';
-import {Alignment, WritingDirection} from 'chrome-untrusted://lens/text.mojom-webui.js';
+import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
+import type {Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from 'chrome-untrusted://lens-overlay/text.mojom-webui.js';
+import {Alignment, WritingDirection} from 'chrome-untrusted://lens-overlay/text.mojom-webui.js';
 
 export function createText(paragraphs: Paragraph[]): Text {
   return {

@@ -163,7 +163,8 @@ void HTMLScriptElement::setInnerTextForBinding(
         string_or_trusted_script,
     ExceptionState& exception_state) {
   const String& value = TrustedTypesCheckForScript(
-      string_or_trusted_script, GetExecutionContext(), exception_state);
+      string_or_trusted_script, GetExecutionContext(), "HTMLScriptElement",
+      "innerText", exception_state);
   if (exception_state.HadException())
     return;
   // https://w3c.github.io/trusted-types/dist/spec/#setting-slot-values
@@ -176,8 +177,9 @@ void HTMLScriptElement::setInnerTextForBinding(
 void HTMLScriptElement::setTextContentForBinding(
     const V8UnionStringOrTrustedScript* value,
     ExceptionState& exception_state) {
-  const String& string =
-      TrustedTypesCheckForScript(value, GetExecutionContext(), exception_state);
+  const String& string = TrustedTypesCheckForScript(
+      value, GetExecutionContext(), "HTMLScriptElement", "textContent",
+      exception_state);
   if (exception_state.HadException())
     return;
   setTextContent(string);

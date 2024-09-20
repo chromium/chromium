@@ -50,8 +50,8 @@ namespace {
 class WebNavigationBrowserAgentTest : public PlatformTest {
  public:
   WebNavigationBrowserAgentTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     delegate_ = [[FakeNTPDelegate alloc] init];
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
@@ -68,7 +68,7 @@ class WebNavigationBrowserAgentTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeNTPDelegate* delegate_;
   raw_ptr<WebNavigationBrowserAgent> agent_;

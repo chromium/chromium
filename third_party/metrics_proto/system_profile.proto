@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 47
+// Next tag: 48
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -1266,4 +1266,48 @@ message SystemProfileProto {
   // aware of the existence of lts and we would lose monitoring for many Chrome
   // features.
   optional LTSChannel lts_channel = 45;
+
+  // Metrics for Windows device's Trusted Platform Module (TPM).
+  // This field is only filled in on Windows devices. The string values are
+  // only be reported on the Canary channel. On other channels, the hashes
+  // are reported and matched with their Canary equivalent.
+  message TpmIdentifier {
+    // The ID used to identify the manufacturer of the TPM. It is matched
+    // against the list of trusted manufacturers reported by the Trusted
+    // Computing Group.
+    optional fixed32 manufacturer_id = 1;
+
+    // The hardware version is used to identify the physical TPM chip provided
+    // by the manufacturer. The meaning of the value that appears in this field
+    // depends on the manufacturer.  This might not be recorded, see
+    // ShouldReportFullNames() in
+    // chrome/browser/metrics/tpm_metrics_provider_win.cc.
+    optional string manufacturer_version = 2;
+
+    // Hash value of the manufacturer_version value.
+    optional fixed32 manufacturer_version_hash = 3;
+
+    // Information regarding the type of TPM on the machine, such as if the
+    // chip is a virtual TPM or a physical one. This information is provided by
+    // the Windows Operating System, not the manufacturer and can be used
+    // independently. This might not be recorded, see ShouldReportFullNames() in
+    // chrome/browser/metrics/tpm_metrics_provider_win.cc.
+    optional string manufacturer_version_info = 4;
+
+    // Hash value of the manufacturer_version_info value.
+    optional fixed32 manufacturer_version_info_hash = 5;
+
+    // The TPM software specification version (2.0 or 1.2) and sub version. The
+    // meaning of the value that appears in this field is dependent on the
+    // manufacturer. This might not be recorded, see ShouldReportFullNames() in
+    // chrome/browser/metrics/tpm_metrics_provider_win.cc.
+    optional string tpm_specific_version = 6;
+
+    // Hash value of the tpm_specific_version_hash value.
+    optional fixed32 tpm_specific_version_hash = 7;
+  }
+
+  // Identifying information of Trusted Platform Module on the device. This
+  // field is only filled in on Windows devices.
+  optional TpmIdentifier tpm_identifier = 47;
 }

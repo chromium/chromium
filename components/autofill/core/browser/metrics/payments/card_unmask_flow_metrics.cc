@@ -55,6 +55,9 @@ void LogServerCardUnmaskResult(
     case ServerCardUnmaskFlowType::kDeviceUnlock:
       flow_type_suffix = ".DeviceUnlock";
       break;
+    case ServerCardUnmaskFlowType::kThreeDomainSecure:
+      flow_type_suffix = ".ThreeDomainSecure";
+      break;
   }
 
   base::UmaHistogramEnumeration(

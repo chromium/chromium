@@ -188,6 +188,21 @@ public class BrandingControllerUnitTest {
     }
 
     @Test
+    public void testBrandingWorkflow_AuthTab() {
+        new BrandingCheckTester()
+                .newAuthTabBrandingController()
+                .onToolbarInitialized()
+                .idleMainLooper()
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
+                .assertShownToastBranding(true)
+                .newAuthTabBrandingController()
+                .idleMainLooper()
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
+                .onToolbarInitialized()
+                .assertShownToastBranding(true);
+    }
+
+    @Test
     public void testDestroy() {
         // Inspired by https://crbug.com/1362437. Make sure callback are canceled once the branding
         // controller is destroyed.
@@ -253,8 +268,25 @@ public class BrandingControllerUnitTest {
             mBrandingController =
                     new BrandingController(
                             new ContextThemeWrapper(context, R.style.Theme_Chromium_Activity),
-                            context.getPackageName(),
                             "appName",
+                            context.getPackageName(),
+                            R.string.twa_running_in_chrome_template,
+                            null);
+
+            // Always initialize a new mock, as some tests were testing multiple branding runs.
+            mToolbarBrandingDelegate = mock(ToolbarBrandingDelegate.class);
+            ShadowToast.reset(); // Reset the shadow toast so the toast shown count resets.
+            return this;
+        }
+
+        public BrandingCheckTester newAuthTabBrandingController() {
+            Context context = ContextUtils.getApplicationContext();
+            mBrandingController =
+                    new BrandingController(
+                            new ContextThemeWrapper(context, R.style.Theme_Chromium_Activity),
+                            /* appId= */ null,
+                            context.getPackageName(),
+                            R.string.auth_tab_secured_by_chrome_template,
                             null);
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.

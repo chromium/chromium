@@ -16,10 +16,6 @@
 
 class GURL;
 
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
-
 namespace safe_browsing {
 struct ThreatMetadata;
 }  // namespace safe_browsing
@@ -28,7 +24,7 @@ namespace subresource_filter {
 
 class SubresourceFilterSafeBrowsingClient;
 
-// This class is scoped to a single database check, and it lives on the IO
+// This class is scoped to a single database check, and it lives on the UI
 // thread exclusively.
 class SubresourceFilterSafeBrowsingClientRequest
     : public safe_browsing::SafeBrowsingDatabaseManager::Client {
@@ -38,7 +34,6 @@ class SubresourceFilterSafeBrowsingClientRequest
       base::TimeTicks start_time_,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       SubresourceFilterSafeBrowsingClient* client);
 
   SubresourceFilterSafeBrowsingClientRequest(

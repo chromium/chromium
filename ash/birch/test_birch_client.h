@@ -12,6 +12,7 @@
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
 #include "base/files/scoped_temp_dir.h"
+#include "ui/base/models/image_model.h"
 
 namespace ash {
 class BirchModel;
@@ -81,6 +82,7 @@ class TestBirchClient : public BirchClient {
       const GURL& url,
       const bool is_page_url,
       base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
+  ui::ImageModel GetChromeBackupIcon() override;
 
  private:
   void HandleCalendarFetch(const std::vector<BirchCalendarItem>& items);

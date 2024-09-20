@@ -34,7 +34,7 @@ static_library("network_ui") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/network_ui:resources",
     "//chrome/browser/ui/ash/system",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/internet",
     "//chromeos/ash/components/dbus/debug_daemon",

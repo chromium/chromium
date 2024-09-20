@@ -66,12 +66,13 @@ void DomainReliabilityDispatcher::ScheduleTask(base::OnceClosure closure,
       std::move(closure), time_->CreateTimer(), min_delay, max_delay);
   Task* task = owned_task.get();
   tasks_.insert(std::move(owned_task));
-  if (max_delay.InMicroseconds() < 0)
+  if (max_delay.InMicroseconds() < 0) {
     RunAndDeleteTask(task);
-  else if (min_delay.InMicroseconds() < 0)
+  } else if (min_delay.InMicroseconds() < 0) {
     MakeTaskEligible(task);
-  else
+  } else {
     MakeTaskWaiting(task);
+  }
 }
 
 void DomainReliabilityDispatcher::RunEligibleTasks() {

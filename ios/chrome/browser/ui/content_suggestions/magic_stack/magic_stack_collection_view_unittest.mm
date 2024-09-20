@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_collection_view.h"
 
+#import "base/test/scoped_feature_list.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_config.h"
@@ -56,6 +58,7 @@ class MagicStackCollectionViewControllerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   UIWindow* _window;
   UIView* _superview;
@@ -68,6 +71,10 @@ class MagicStackCollectionViewControllerTest : public PlatformTest {
 // Tests that bringing an ephemeral card into view triggers the expected
 // audience signal.
 TEST_F(MagicStackCollectionViewControllerTest, TestEphemeralCardAudienceCall) {
+  scoped_feature_list_.InitWithFeatures(
+      {segmentation_platform::features::
+           kSegmentationPlatformEphemeralCardRanker},
+      {});
   OCMExpect([audience_ logEphemeralCardVisibility:ContentSuggestionsModuleType::
                                                       kPriceTrackingPromo]);
   // Test that populating the Magic Stack triggers audience call

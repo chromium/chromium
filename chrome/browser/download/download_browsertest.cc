@@ -131,14 +131,12 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fenced_frame_test_util.h"
-#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_download_http_response.h"
 #include "content/public/test/test_file_error_injector.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "content/public/test/url_loader_monitor.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -193,7 +191,6 @@ using content::BrowserContext;
 using content::BrowserThread;
 using content::DownloadManager;
 using content::URLLoaderInterceptor;
-using content::URLLoaderMonitor;
 using content::WebContents;
 using download::DownloadItem;
 using download::DownloadUrlParameters;
@@ -209,9 +206,9 @@ class InnerWebContentsAttachedWaiter : public content::WebContentsObserver {
   explicit InnerWebContentsAttachedWaiter(WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
 
-  void InnerWebContentsAttached(WebContents* inner_web_contents,
-                                content::RenderFrameHost* render_frame_host,
-                                bool is_full_page) override {
+  void InnerWebContentsAttached(
+      WebContents* inner_web_contents,
+      content::RenderFrameHost* render_frame_host) override {
     run_loop_.Quit();
   }
 
@@ -1152,8 +1149,6 @@ class FencedFrameDownloadTest : public MPArchDownloadTest {
 
   void SetUpOnMainThread() override {
     MPArchDownloadTest::SetUpOnMainThread();
-    // Add content/test/data for cross_site_iframe_factory.html.
-    https_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   }
 
@@ -1262,80 +1257,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
             "See https://www.chromestatus.com/feature/5706745674465280 for "
             "more details.");
   EXPECT_TRUE(VerifyNoDownloads());
-}
-
-// This test verifies when fenced frame untrusted network is disabled
-// immediately after user right clicks and before "Save Image As..." is
-// selected, the download request is blocked.
-IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest, NetworkCutoffBlockSaveImageAs) {
-  // Disable SafeBrowsing for testing.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                               false);
-
-  ASSERT_TRUE(https_test_server()->Start());
-  EnableFileChooser(true);
-
-  // Sanity check that there is no downloads at the start of the test.
-  ASSERT_TRUE(VerifyNoDownloads());
-
-  // Navigate the fenced frame to a page with an image element.
-  GURL fenced_frame_url(
-      https_test_server()->GetURL("a.test", "/test_visual.html"));
-
-  GURL main_url(https_test_server()->GetURL(
-      "a.test",
-      base::StringPrintf("/cross_site_iframe_factory.html?a.test(%s{fenced})",
-                         fenced_frame_url.spec().c_str())));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  // Get fenced frame render frame host.
-  std::vector<content::RenderFrameHost*> child_frames =
-      fenced_frame_test_helper().GetChildFencedFrameHosts(
-          GetWebContents()->GetPrimaryMainFrame());
-  ASSERT_EQ(child_frames.size(), 1u);
-  content::RenderFrameHost* fenced_frame_rfh = child_frames[0];
-  ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-
-  // Upon context menu shown, disable fenced frame untrusted network access.
-  // Then execute "Save Image As...".
-  ContextMenuWaiter context_menu_waiter(
-      IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
-      base::BindLambdaForTesting([fenced_frame_rfh]() {
-        ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-            (async () => {
-              return window.fence.disableUntrustedNetwork();
-            })();
-          )"));
-      }));
-
-  // Get the src URL of the image element.
-  GURL image_src =
-      GURL(EvalJs(fenced_frame_rfh, "document.getElementById('image').src")
-               .ExtractString());
-
-  // Monitor requests to this URL.
-  URLLoaderMonitor monitor({image_src});
-
-  // Click inside the fenced frame.
-  const gfx::PointF image_element(15, 15);
-
-  // Right-click on the image element to open the context menu.
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, image_element);
-
-  // Wait for the context menu to be shown.
-  context_menu_waiter.WaitForMenuOpenAndClose();
-
-  // The download request should be blocked.
-  EXPECT_EQ(monitor.WaitForRequestCompletion(image_src).error_code,
-            net::ERR_NETWORK_ACCESS_REVOKED);
-  EXPECT_TRUE(VerifyNoDownloads());
-
-  // Navigate away to avoid flakiness.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 }
 
 // Download a 0-size file with a content-disposition header, verify that the
@@ -5040,131 +4961,6 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SafeSupportedFile) {
             download->GetDangerType());
 
   download->Cancel(true);
-}
-
-IN_PROC_BROWSER_TEST_F(DownloadTest, FeedbackServiceDiscardDownload) {
-  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
-      safe_browsing::ScopedMarkAllFilesDangerousForTesting();
-
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  prefs->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  safe_browsing::SetExtendedReportingPrefForTests(prefs, true);
-
-  // Make a dangerous file.
-  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL download_url =
-      embedded_test_server()->GetURL("/downloads/dangerous/dangerous.swf");
-  std::unique_ptr<content::DownloadTestObserverInterrupted> observer(
-      new content::DownloadTestObserverInterrupted(
-          DownloadManagerForBrowser(browser()), 1,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT));
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), download_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NO_WAIT);
-  observer->WaitForFinished();
-
-  // Get the download from the DownloadManager.
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
-  DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
-  ASSERT_EQ(1u, downloads.size());
-  EXPECT_TRUE(downloads[0]->IsDangerous());
-
-  // Save fake pings for the download.
-  safe_browsing::ClientDownloadReport fake_metadata;
-  fake_metadata.mutable_download_request()->set_url("http://test");
-  fake_metadata.mutable_download_request()->set_length(1);
-  fake_metadata.mutable_download_request()->mutable_digests()->set_sha1("hi");
-  fake_metadata.mutable_download_response()->set_verdict(
-      safe_browsing::ClientDownloadResponse::UNCOMMON);
-  std::string ping_request(
-      fake_metadata.download_request().SerializeAsString());
-  std::string ping_response(
-      fake_metadata.download_response().SerializeAsString());
-  safe_browsing::DownloadFeedbackService::MaybeStorePingsForDownload(
-      safe_browsing::DownloadCheckResult::UNCOMMON, true /* upload_requested */,
-      downloads[0], ping_request, ping_response);
-  ASSERT_TRUE(safe_browsing::DownloadFeedbackService::IsEnabledForDownload(
-      *(downloads[0])));
-
-  // Begin feedback and check that the file is "stolen".
-  DownloadItemModel model(downloads[0]);
-  DownloadCommands(model.GetWeakPtr())
-      .ExecuteCommand(DownloadCommands::DISCARD);
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> updated_downloads;
-  GetDownloads(browser(), &updated_downloads);
-  ASSERT_TRUE(updated_downloads.empty());
-}
-
-// TODO the test is flaky on Mac. See https://crbug.com/1345657.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_FeedbackServiceKeepDownload DISABLED_FeedbackServiceKeepDownload
-#else
-#define MAYBE_FeedbackServiceKeepDownload FeedbackServiceKeepDownload
-#endif
-IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_FeedbackServiceKeepDownload) {
-  // Make all file types DANGEROUS for testing.
-  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
-      safe_browsing::ScopedMarkAllFilesDangerousForTesting();
-
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  prefs->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  safe_browsing::SetExtendedReportingPrefForTests(prefs, true);
-
-  // Make a dangerous file.
-  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL download_url =
-      embedded_test_server()->GetURL("/downloads/dangerous/dangerous.swf");
-
-  std::unique_ptr<content::DownloadTestObserverInterrupted>
-      interruption_observer(new content::DownloadTestObserverInterrupted(
-          DownloadManagerForBrowser(browser()), 1,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT));
-  std::unique_ptr<content::DownloadTestObserver> completion_observer(
-      new content::DownloadTestObserverTerminal(
-          DownloadManagerForBrowser(browser()), 1,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE));
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), download_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NO_WAIT);
-  interruption_observer->WaitForFinished();
-
-  // Get the download from the DownloadManager.
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
-  DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
-  ASSERT_EQ(1u, downloads.size());
-  EXPECT_TRUE(downloads[0]->IsDangerous());
-
-  // Save fake pings for the download.
-  safe_browsing::ClientDownloadReport fake_metadata;
-  fake_metadata.mutable_download_request()->set_url("http://test");
-  fake_metadata.mutable_download_request()->set_length(1);
-  fake_metadata.mutable_download_request()->mutable_digests()->set_sha1("hi");
-  fake_metadata.mutable_download_response()->set_verdict(
-      safe_browsing::ClientDownloadResponse::UNCOMMON);
-  std::string ping_request(
-      fake_metadata.download_request().SerializeAsString());
-  std::string ping_response(
-      fake_metadata.download_response().SerializeAsString());
-  safe_browsing::DownloadFeedbackService::MaybeStorePingsForDownload(
-      safe_browsing::DownloadCheckResult::UNCOMMON, true /* upload_requested */,
-      downloads[0], ping_request, ping_response);
-  ASSERT_TRUE(safe_browsing::DownloadFeedbackService::IsEnabledForDownload(
-      *(downloads[0])));
-
-  // Begin feedback and check that file is still there.
-  DownloadItemModel model(downloads[0]);
-  DownloadCommands(model.GetWeakPtr()).ExecuteCommand(DownloadCommands::KEEP);
-  completion_observer->WaitForFinished();
-
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> updated_downloads;
-  GetDownloads(browser(), &updated_downloads);
-  ASSERT_EQ(std::size_t(1), updated_downloads.size());
-  ASSERT_FALSE(updated_downloads[0]->IsDangerous());
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_TRUE(PathExists(updated_downloads[0]->GetTargetFilePath()));
-  updated_downloads[0]->Cancel(true);
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,

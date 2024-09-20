@@ -22,7 +22,9 @@
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled;
 
 // Update account particle disc error badge.
-- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError;
+- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
+                                name:(NSString*)name
+                               email:(NSString*)email;
 
 @end
 

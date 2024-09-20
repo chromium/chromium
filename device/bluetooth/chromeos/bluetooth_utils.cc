@@ -169,10 +169,12 @@ bool IsUserError(std::optional<ConnectionFailureReason> failure_reason) {
   }
 
   switch (failure_reason.value()) {
-    case ConnectionFailureReason::kNotFound:
-      return true;
-    case ConnectionFailureReason::kAuthCanceled:
+    case ConnectionFailureReason::kInprogress:
       [[fallthrough]];
+    case ConnectionFailureReason::kNotFound:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAuthCanceled:
+      return true;
     case ConnectionFailureReason::kAuthRejected:
       [[fallthrough]];
     case ConnectionFailureReason::kUnknownError:
@@ -190,8 +192,6 @@ bool IsUserError(std::optional<ConnectionFailureReason> failure_reason) {
     case ConnectionFailureReason::kSystemError:
       [[fallthrough]];
     case ConnectionFailureReason::kFailed:
-      [[fallthrough]];
-    case ConnectionFailureReason::kInprogress:
       [[fallthrough]];
     case ConnectionFailureReason::kBluetoothDisabled:
       [[fallthrough]];
@@ -504,7 +504,7 @@ void RecordPairingResult(std::optional<ConnectionFailureReason> failure_reason,
   std::string result_histogram_name_prefix =
       "Bluetooth.ChromeOS.Pairing.Result";
   std::string result_histogram_user_errors_filtered_name =
-      result_histogram_name_prefix + "." + "UserErrorsFiltered";
+      result_histogram_name_prefix + "." + "UserErrorsFiltered2";
 
   base::UmaHistogramBoolean(result_histogram_name_prefix, success);
   base::UmaHistogramBoolean(result_histogram_name_prefix + "." + transport_name,
@@ -539,6 +539,13 @@ void RecordUserInitiatedReconnectionAttemptResult(
   bool success = !failure_reason.has_value();
   std::string base_histogram_name =
       "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result";
+  std::string result_histogram_user_errors_filtered_name =
+      base_histogram_name + ".UserErrorsFiltered";
+
+  if (!IsUserError(failure_reason)) {
+    base::UmaHistogramBoolean(result_histogram_user_errors_filtered_name,
+                              success);
+  }
 
   base::UmaHistogramBoolean(base_histogram_name, success);
 
@@ -709,5 +716,20 @@ void MaybeRecordConnectionToastShownCount(PrefService* local_state_pref,
                             base::Time::Now().LocalMidnight());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void RecordFlossManagerClientInit(bool success, base::TimeDelta duration) {
+  static constexpr char kSuccessHistogramSuffix[] = "Success";
+  static constexpr char kFailureHistogramSuffix[] = "Failure";
+  std::string success_histogram_name =
+      success ? kSuccessHistogramSuffix : kFailureHistogramSuffix;
+
+  base::UmaHistogramTimes(
+      base::StrCat({"Bluetooth.ChromeOS.FlossManagerClientInit.Duration.",
+                    success_histogram_name}),
+      duration);
+
+  base::UmaHistogramBoolean("Bluetooth.ChromeOS.FlossManagerClientInit.Result",
+                            success);
+}
 
 }  // namespace device

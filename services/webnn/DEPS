@@ -1,7 +1,4 @@
 include_rules = [
-  "+chromeos/services/machine_learning/public/cpp/fake_service_connection.h",
-  "+chromeos/services/machine_learning/public/cpp/service_connection.h",
-  "+components/ml/mojom",
   "+content/test/fuzzer/mojolpm_fuzzer_support.h",
   "+gpu/command_buffer/service/shared_context_state.h",
   "+gpu/config",

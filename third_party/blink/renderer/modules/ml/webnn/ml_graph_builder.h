@@ -28,8 +28,10 @@ class MLArgMinMaxOptions;
 class MLBatchNormalizationOptions;
 class MLContext;
 class MLClampOptions;
+class MLConstantOperand;
 class MLConv2dOptions;
 class MLConvTranspose2dOptions;
+class MLCumulativeSumOptions;
 class MLEluOptions;
 class MLGatherOptions;
 class MLGemmOptions;
@@ -86,10 +88,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   };
 
   // ml_graph_builder.idl
-  MLOperand* input(String name,
+  MLOperand* input(ScriptState* script_state,
+                   String name,
                    const MLOperandDescriptor* desc,
                    ExceptionState& exception_state);
-  MLOperand* constant(const MLOperandDescriptor* desc,
+  MLOperand* constant(ScriptState* script_state,
+                      const MLOperandDescriptor* desc,
                       NotShared<DOMArrayBufferView> buffer_view,
                       ExceptionState& exception_state);
 
@@ -127,6 +131,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                              const MLOperand* filter,
                              const MLConvTranspose2dOptions* options,
                              ExceptionState& exception_state);
+
+  MLOperand* cumulativeSum(const MLOperand* input,
+                           const uint32_t axis,
+                           const MLCumulativeSumOptions* options,
+                           ExceptionState& exception_state);
 
   // Element-wise binary operations
   MLOperand* add(const MLOperand* a,
@@ -254,6 +263,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                             const MLOperand* indices,
                             const MLGatherOptions* options,
                             ExceptionState& exception_state);
+
+  MLOperand* gatherND(const MLOperand* input,
+                      const MLOperand* indices,
+                      const MLOperatorOptions* options,
+                      ExceptionState& exception_state);
 
   MLOperand* gelu(const MLOperand* input,
                   const MLOperatorOptions* options,
@@ -403,6 +417,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                         const MLResample2dOptions* options,
                         ExceptionState& exception_state);
 
+  MLOperand* scatterND(const MLOperand* input,
+                       const MLOperand* indices,
+                       const MLOperand* updates,
+                       const MLOperatorOptions* options,
+                       ExceptionState& exception_state);
+
   MLOperand* sigmoid(const MLOperand* input,
                      const MLOperatorOptions* options,
                      ExceptionState& exception_state);
@@ -488,6 +508,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   [[nodiscard]] base::expected<void, String> ValidateInputs(
       const HeapVector<Member<const MLOperand>>& inputs);
 
+  // Releases the memory held by all constant operands associated with this
+  // builder. This should be called when the builder is no longer able to make a
+  // graph, to avoid keeping this data around unnecessarily.
+  void ReleaseConstantData();
+
   Member<MLContext> ml_context_;
 
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder> remote_;
@@ -495,6 +520,14 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   // Tracks whether `build()` has been called (with valid inputs). If so, `this`
   // is effectively invalid and all methods should reject.
   bool has_built_ = false;
+
+  // Tracks all the constant operands created by this builder. The constant data
+  // owned by these operands will be copied to the remote graph builder
+  // when `build()` is called, then can be released.
+  //
+  // TODO(crbug.com/349428379): Consider eagerly transferring constant data
+  // rather than waiting until build().
+  HeapVector<Member<MLConstantOperand>> constant_operands_;
 
   // Keep the unresolved `ScriptPromiseResolver` which will be rejected when the
   // Mojo pipe is unexpectedly disconnected.

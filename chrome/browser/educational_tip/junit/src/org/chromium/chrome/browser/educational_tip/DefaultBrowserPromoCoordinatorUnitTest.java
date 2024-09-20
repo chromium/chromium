@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -17,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
@@ -39,20 +39,20 @@ import org.chromium.ui.widget.ButtonCompat;
         shadows = {ShadowAppCompatResources.class})
 public class DefaultBrowserPromoCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Runnable mOnModuleClickedCallback;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private EducationTipModuleActionDelegate mActionDelegate;
 
     private DefaultBrowserPromoCoordinator mDefaultBrowserPromoCoordinator;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        when(mActionDelegate.getContext()).thenReturn(RuntimeEnvironment.application);
+        when(mActionDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
 
         mDefaultBrowserPromoCoordinator =
-                new DefaultBrowserPromoCoordinator(
-                        RuntimeEnvironment.application,
-                        mOnModuleClickedCallback,
-                        mBottomSheetController);
+                new DefaultBrowserPromoCoordinator(mOnModuleClickedCallback, mActionDelegate);
     }
 
     @Test

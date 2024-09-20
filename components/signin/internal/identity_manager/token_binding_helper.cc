@@ -13,7 +13,9 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/types/expected.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/background_task_priority.h"
@@ -32,26 +34,37 @@ constexpr std::string_view kTokenBindingNamespace = "TokenBinding";
 unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kBestEffort;
 
-std::string CreateAssertionToken(
+base::expected<std::string, TokenBindingHelper::Error> CreateAssertionToken(
     const std::string& header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> signature) {
   if (!signature.has_value()) {
-    // TODO(alexilin): Record a histogram.
-    return std::string();
+    return base::unexpected(TokenBindingHelper::Error::kSignAssertionFailure);
   }
 
-  return signin::AppendSignatureToHeaderAndPayload(header_and_payload,
-                                                   algorithm, *signature)
-      .value_or(std::string());
+  std::optional<std::string> signed_assertion =
+      signin::AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
+                                                *signature);
+  if (!signed_assertion.has_value()) {
+    return base::unexpected(TokenBindingHelper::Error::kAppendSignatureFailure);
+  }
+
+  return *signed_assertion;
 }
 
-// A helper to reorder callback parameters for `base::BindOnce()`.
-void RunGenerateAssertionCallback(
+// A helper to record a histogram value before running `callback`.
+// Also reorders callback parameters for chaining with `CreateAssertionToken()`.
+void RunCallbackAndRecordMetrics(
     TokenBindingHelper::GenerateAssertionCallback callback,
-    HybridEncryptionKey ephemeral_key,
-    std::string assertion_token) {
-  std::move(callback).Run(std::move(assertion_token), std::move(ephemeral_key));
+    std::optional<HybridEncryptionKey> ephemeral_key,
+    base::expected<std::string, TokenBindingHelper::Error>
+        assertion_token_or_error) {
+  base::UmaHistogramEnumeration("Signin.TokenBinding.GenerateAssertionResult",
+                                assertion_token_or_error.error_or(
+                                    TokenBindingHelper::kNoErrorForMetrics));
+  std::move(callback).Run(
+      std::move(assertion_token_or_error).value_or(std::string()),
+      std::move(ephemeral_key));
 }
 
 }  // namespace
@@ -92,7 +105,8 @@ void TokenBindingHelper::GenerateBindingKeyAssertion(
   CHECK(callback);
   auto it = binding_keys_.find(account_id);
   if (it == binding_keys_.end()) {
-    std::move(callback).Run(std::string(), std::nullopt);
+    RunCallbackAndRecordMetrics(std::move(callback), std::nullopt,
+                                base::unexpected(Error::kKeyNotFound));
     return;
   }
 
@@ -137,7 +151,8 @@ void TokenBindingHelper::SignAssertionToken(
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
         binding_key) {
   if (!binding_key.has_value()) {
-    std::move(callback).Run(std::string(), std::nullopt);
+    RunCallbackAndRecordMetrics(std::move(callback), std::nullopt,
+                                base::unexpected(Error::kLoadKeyFailure));
     return;
   }
 
@@ -152,8 +167,9 @@ void TokenBindingHelper::SignAssertionToken(
           destination_url, kTokenBindingNamespace, &ephemeral_key);
 
   if (!header_and_payload.has_value()) {
-    // TODO(alexilin): Record a histogram.
-    std::move(callback).Run(std::string(), std::nullopt);
+    RunCallbackAndRecordMetrics(
+        std::move(callback), std::nullopt,
+        base::unexpected(Error::kCreateAssertionFaiure));
     return;
   }
 
@@ -161,6 +177,6 @@ void TokenBindingHelper::SignAssertionToken(
       *binding_key, base::as_bytes(base::make_span(*header_and_payload)),
       kTokenBindingPriority,
       base::BindOnce(&CreateAssertionToken, *header_and_payload, algorithm)
-          .Then(base::BindOnce(&RunGenerateAssertionCallback,
+          .Then(base::BindOnce(&RunCallbackAndRecordMetrics,
                                std::move(callback), std::move(ephemeral_key))));
 }

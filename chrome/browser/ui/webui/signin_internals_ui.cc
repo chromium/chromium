@@ -4,15 +4,12 @@
 
 #include "chrome/browser/ui/webui/signin_internals_ui.h"
 
-#include <base/strings/cstring_view.h>
-
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/hash/hash.h"
 #include "base/i18n/time_formatting.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -54,13 +51,8 @@ void CreateAndAddSignInInternalsHTMLSource(Profile* profile) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 std::string GetBoundSessionExpirationString(base::Time expiration_time) {
-  static constexpr base::cstring_view kExpired = "Expired at %s";
-  static constexpr base::cstring_view kExpiresIn = "Expires at %s";
-
-  return base::StringPrintf(expiration_time > base::Time::Now()
-                                ? kExpiresIn.c_str()
-                                : kExpired.c_str(),
-                            base::TimeFormatAsIso8601(expiration_time).c_str());
+  return (expiration_time > base::Time::Now() ? "Expires at " : "Expired at ") +
+         base::TimeFormatAsIso8601(expiration_time);
 }
 
 void AppendBoundSessionInfo(

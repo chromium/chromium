@@ -37,7 +37,9 @@ class AsyncIterationSourceBase::RunNextStepsCallable final
       : AsyncIterationSourceBase::CallableCommon(iteration_source) {}
 
   ScriptValue Call(ScriptState* script_state, ScriptValue) override {
-    return iteration_source_->RunNextSteps(script_state).AsScriptValue();
+    return ScriptValue(
+        script_state->GetIsolate(),
+        iteration_source_->RunNextSteps(script_state).V8Promise());
   }
 };
 
@@ -74,8 +76,9 @@ class AsyncIterationSourceBase::RunReturnStepsCallable final
         value_(std::move(value)) {}
 
   ScriptValue Call(ScriptState* script_state, ScriptValue) override {
-    return iteration_source_->RunReturnSteps(script_state, value_)
-        .AsScriptValue();
+    return ScriptValue(
+        script_state->GetIsolate(),
+        iteration_source_->RunReturnSteps(script_state, value_).V8Promise());
   }
 
   void Trace(Visitor* visitor) const override {

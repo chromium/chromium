@@ -79,7 +79,9 @@ class MockProactiveNudgeTrackerDelegate
  public:
   MOCK_METHOD(void,
               ShowProactiveNudge,
-              (autofill::FormGlobalId, autofill::FieldGlobalId));
+              (autofill::FormGlobalId,
+               autofill::FieldGlobalId,
+               compose::ComposeEntryPoint));
   MOCK_METHOD(float, SegmentationFallbackShowResult, ());
   float SegmentationForceShowResult() override {
     return kSegmentationForceShowResult;
@@ -217,7 +219,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestWait) {
   auto field = CreateTestFormFieldData();
 
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(1);
 
   EXPECT_FALSE(
@@ -243,7 +246,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestWait) {
 TEST_P(ProactiveNudgeTrackerTest, TestFocusChangePreventsNudge) {
   auto field = CreateTestFormFieldData();
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(0);
 
   EXPECT_FALSE(
@@ -259,12 +263,14 @@ TEST_P(ProactiveNudgeTrackerTest, TestFocusChangePreventsNudge) {
 TEST_P(ProactiveNudgeTrackerTest, TestTrackingDifferentFormField) {
   auto field = CreateTestFormFieldData();
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(0);
 
   auto field2 = CreateTestFormFieldData();
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field2.renderer_form_id(), field2.global_id()))
+              ShowProactiveNudge(field2.renderer_form_id(), field2.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(1);
 
   EXPECT_FALSE(
@@ -280,7 +286,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestTrackingDifferentFormField) {
 TEST_P(ProactiveNudgeTrackerTest, TestFocusChangeInUninitializedState) {
   auto field = CreateTestFormFieldData();
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(0);
 
   nudge_tracker().FocusChangedInPage();
@@ -298,7 +305,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestNoNudgeDelay) {
         future;
     BindFutureToSegmentationRequest(future);
     EXPECT_CALL(delegate(),
-                ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+                ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                   compose::ComposeEntryPoint::kProactiveNudge))
         .Times(0);
     EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
         TestSignals(field)));
@@ -307,7 +315,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestNoNudgeDelay) {
         GetComposeConfig().proactive_nudge_focus_delay);
   } else {
     EXPECT_CALL(delegate(),
-                ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+                ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                   compose::ComposeEntryPoint::kProactiveNudge))
         .Times(0);
     EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
         TestSignals(field)));
@@ -322,7 +331,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestOneNudgeUntilCleared) {
   config.proactive_nudge_field_per_navigation = true;
   auto field = CreateTestFormFieldData();
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(1);
 
   ASSERT_FALSE(
@@ -343,7 +353,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestOneNudgeUntilCleared) {
 
   nudge_tracker().Clear();
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(1);
 
   ASSERT_FALSE(
@@ -369,7 +380,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestOneNudgePerFocus) {
 
   auto field = CreateTestFormFieldData();
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(2);
 
   ASSERT_FALSE(
@@ -412,7 +424,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, SegmentationDontShow) {
   BindFutureToSegmentationRequest(future);
 
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(0);
 
   ASSERT_FALSE(
@@ -498,7 +511,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, SegmentationRandomForceShow) {
   BindFutureToSegmentationRequest(future);
 
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(1);
 
   ASSERT_FALSE(
@@ -530,7 +544,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
   BindFutureToSegmentationRequest(future);
 
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(0);
 
   ASSERT_FALSE(
@@ -560,7 +575,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
   BindFutureToSegmentationRequest(future);
 
   EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                 compose::ComposeEntryPoint::kProactiveNudge))
       .Times(1);
 
   ASSERT_FALSE(
@@ -730,7 +746,8 @@ class ProactiveNudgeTrackerDerivedEngagementTest
       int request_number,
       const autofill::FormFieldData& field) {
     EXPECT_CALL(delegate(),
-                ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+                ShowProactiveNudge(field.renderer_form_id(), field.global_id(),
+                                   compose::ComposeEntryPoint::kProactiveNudge))
         .Times(1);
 
     EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(

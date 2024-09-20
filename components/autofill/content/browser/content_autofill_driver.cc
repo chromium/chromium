@@ -240,7 +240,7 @@ void RouteToManager(ContentAutofillDriver& source,
                         RouterArgs...),
                     void (AutofillManager::*manager_fun)(ManagerArgs...),
                     ActualArgs&&... args) {
-  if (!bad_message::CheckFieldInForm(args...) ||
+  if (!bad_message::CheckArgs(args...) ||
       !bad_message::CheckFrameNotPrerendering(source.render_frame_host())) {
     return;
   }
@@ -543,10 +543,6 @@ void ContentAutofillDriver::AskForValuesToFill(
     FieldRendererId field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
-  // `kPlusAddressUpdatedInBrowserProcess` should never be used by the renderer.
-  if (!bad_message::CheckValidTriggerSource(trigger_source)) {
-    return;
-  }
   RouteToManager(*this, router(), &AutofillDriverRouter::AskForValuesToFill,
                  &AutofillManager::OnAskForValuesToFill, form, field_id,
                  caret_bounds, trigger_source);

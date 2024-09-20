@@ -10,6 +10,8 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_V
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import android.view.View;
@@ -22,6 +24,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -92,6 +95,9 @@ public class HubToolbarMediator {
         }
 
         mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, this::consumeButtonLookup);
+
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, ChromeFeatureList.sAndroidHubSearch.isEnabled());
+        mPropertyModel.set(SEARCH_BOX_LISTENER, this::onSearchClicked);
     }
 
     /** Cleans up observers. */
@@ -212,5 +218,9 @@ public class HubToolbarMediator {
 
     private void consumeButtonLookup(PaneButtonLookup paneButtonLookup) {
         mPaneButtonLookup = paneButtonLookup;
+    }
+
+    private void onSearchClicked() {
+        // TODO(crbug.com/366234331): Launch search activity when this is clicked.
     }
 }

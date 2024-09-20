@@ -36,10 +36,12 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
           {
             sha256hashHex: 'deadbeef2',
             displayName: 'cert2',
+            isDeletable: false,
           },
         ],
       };
@@ -71,10 +73,12 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
           {
             sha256hashHex: 'deadbeef2',
             displayName: 'cert2',
+            isDeletable: false,
           },
         ],
       };
@@ -105,10 +109,12 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
           {
             sha256hashHex: 'deadbeef2',
             displayName: 'cert2',
+            isDeletable: false,
           },
         ],
       };
@@ -135,10 +141,12 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
           {
             sha256hashHex: 'deadbeef2',
             displayName: 'cert2',
+            isDeletable: false,
           },
         ],
       };
@@ -183,6 +191,7 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
         ],
       };
@@ -198,12 +207,50 @@ suite('CertificateListV2Test', () => {
 
     assertTrue(certList.$.certs.opened, 'list not opened');
     assertTrue(isVisible(certList.$.importCert));
+    assertFalse(isVisible(certList.$.importAndBindCert));
 
     certList.$.importCert.click();
 
     assertEquals(
         CertificateSource.kChromeRootStore,
         await testProxy.handler.whenCalled('importCertificate'),
+        'import click provided wrong source');
+
+    await microtasksFinished();
+    // Check that list of certs is still opened after import button click.
+    assertTrue(certList.$.certs.opened, 'list not opened after click');
+  });
+
+  test('importAndBind click', async () => {
+    testProxy.handler.setCertificatesCallback(() => {
+      return {
+        certs: [
+          {
+            sha256hashHex: 'deadbeef1',
+            displayName: 'cert1',
+            isDeletable: false,
+          },
+        ],
+      };
+    });
+
+    certList = document.createElement('certificate-list-v2');
+    certList.certSource = CertificateSource.kChromeRootStore;
+    certList.showImportAndBind = true;
+    document.body.appendChild(certList);
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertTrue(certList.$.certs.opened, 'list not opened');
+    assertFalse(isVisible(certList.$.importCert));
+    assertTrue(isVisible(certList.$.importAndBindCert));
+
+    certList.$.importAndBindCert.click();
+
+    assertEquals(
+        CertificateSource.kChromeRootStore,
+        await testProxy.handler.whenCalled('importAndBindCertificate'),
         'import click provided wrong source');
 
     await microtasksFinished();
@@ -218,6 +265,7 @@ suite('CertificateListV2Test', () => {
     await microtasksFinished();
 
     assertFalse(isVisible(certList.$.importCert));
+    assertFalse(isVisible(certList.$.importAndBindCert));
   });
 
   test('no certs', async () => {
@@ -254,10 +302,12 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
           {
             sha256hashHex: 'deadbeef2',
             displayName: 'cert2',
+            isDeletable: false,
           },
         ],
       };

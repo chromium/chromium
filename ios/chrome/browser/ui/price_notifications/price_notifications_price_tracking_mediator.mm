@@ -650,7 +650,7 @@ using PriceNotificationItems =
                permissionGranted:(BOOL)granted
                   showCompletion:(BOOL)showCompletion {
   if (!success) {
-    [self.priceInsightsConsumer presentStartPriceTrackingErrorAlert];
+    [self.priceInsightsConsumer presentStartPriceTrackingErrorSnackbar];
     return;
   }
 
@@ -667,7 +667,7 @@ using PriceNotificationItems =
 - (void)onPriceInsightsStopTrackingItem:(PriceInsightsItem*)item
                                 success:(BOOL)success {
   if (!success) {
-    [self.priceInsightsConsumer presentStopPriceTrackingErrorAlert];
+    [self.priceInsightsConsumer presentStopPriceTrackingErrorSnackbar];
     return;
   }
 

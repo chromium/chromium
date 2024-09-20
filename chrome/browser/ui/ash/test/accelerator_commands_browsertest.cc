@@ -24,6 +24,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -40,7 +41,7 @@ bool IsInImmersive(aura::Window* window) {
 }  // namespace
 
 class AcceleratorCommandsFullscreenBrowserTest
-    : public WithParamInterface<ui::WindowShowState>,
+    : public WithParamInterface<ui::mojom::WindowShowState>,
       public InProcessBrowserTest {
  public:
   AcceleratorCommandsFullscreenBrowserTest()
@@ -55,15 +56,16 @@ class AcceleratorCommandsFullscreenBrowserTest
 
   // Sets |widget|'s show state to |initial_show_state_|.
   void SetToInitialShowState(views::Widget* widget) {
-    if (initial_show_state_ == ui::SHOW_STATE_MAXIMIZED)
+    if (initial_show_state_ == ui::mojom::WindowShowState::kMaximized) {
       widget->Maximize();
-    else
+    } else {
       widget->Restore();
+    }
   }
 
   // Returns true if |widget|'s show state is |initial_show_state_|.
   bool IsInitialShowState(const views::Widget* widget) const {
-    if (initial_show_state_ == ui::SHOW_STATE_MAXIMIZED) {
+    if (initial_show_state_ == ui::mojom::WindowShowState::kMaximized) {
       return widget->IsMaximized();
     } else {
       return !widget->IsMaximized() && !widget->IsFullscreen() &&
@@ -72,7 +74,7 @@ class AcceleratorCommandsFullscreenBrowserTest
   }
 
  private:
-  ui::WindowShowState initial_show_state_;
+  ui::mojom::WindowShowState initial_show_state_;
 };
 
 // Test that toggling window fullscreen works properly.
@@ -173,13 +175,13 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(InitiallyRestored,
                          AcceleratorCommandsFullscreenBrowserTest,
-                         Values(ui::SHOW_STATE_NORMAL));
+                         Values(ui::mojom::WindowShowState::kNormal));
 INSTANTIATE_TEST_SUITE_P(InitiallyMaximized,
                          AcceleratorCommandsFullscreenBrowserTest,
-                         Values(ui::SHOW_STATE_MAXIMIZED));
+                         Values(ui::mojom::WindowShowState::kMaximized));
 
 class AcceleratorCommandsPlatformAppFullscreenBrowserTest
-    : public WithParamInterface<ui::WindowShowState>,
+    : public WithParamInterface<ui::mojom::WindowShowState>,
       public extensions::PlatformAppBrowserTest {
  public:
   AcceleratorCommandsPlatformAppFullscreenBrowserTest()
@@ -194,22 +196,24 @@ class AcceleratorCommandsPlatformAppFullscreenBrowserTest
 
   // Sets |app_window|'s show state to |initial_show_state_|.
   void SetToInitialShowState(extensions::AppWindow* app_window) {
-    if (initial_show_state_ == ui::SHOW_STATE_MAXIMIZED)
+    if (initial_show_state_ == ui::mojom::WindowShowState::kMaximized) {
       app_window->Maximize();
-    else
+    } else {
       app_window->Restore();
+    }
   }
 
   // Returns true if |app_window|'s show state is |initial_show_state_|.
   bool IsInitialShowState(extensions::AppWindow* app_window) const {
-    if (initial_show_state_ == ui::SHOW_STATE_MAXIMIZED)
+    if (initial_show_state_ == ui::mojom::WindowShowState::kMaximized) {
       return app_window->GetBaseWindow()->IsMaximized();
-    else
+    } else {
       return ui::BaseWindow::IsRestored(*app_window->GetBaseWindow());
+    }
   }
 
  private:
-  ui::WindowShowState initial_show_state_;
+  ui::mojom::WindowShowState initial_show_state_;
 };
 
 // Test the behavior of platform apps when ToggleFullscreen() is called.
@@ -270,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsPlatformAppFullscreenBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(InitiallyRestored,
                          AcceleratorCommandsPlatformAppFullscreenBrowserTest,
-                         Values(ui::SHOW_STATE_NORMAL));
+                         Values(ui::mojom::WindowShowState::kNormal));
 INSTANTIATE_TEST_SUITE_P(InitiallyMaximized,
                          AcceleratorCommandsPlatformAppFullscreenBrowserTest,
-                         Values(ui::SHOW_STATE_MAXIMIZED));
+                         Values(ui::mojom::WindowShowState::kMaximized));

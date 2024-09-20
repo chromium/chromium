@@ -218,11 +218,9 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
   }
 }
 
-void AppendToTabIdList(Browser* browser, base::Value::List& tab_ids) {
-  DCHECK(browser);
-  TabStripModel* tab_strip = browser->tab_strip_model();
-  for (int i = 0; i < tab_strip->count(); ++i) {
-    tab_ids.Append(ExtensionTabUtil::GetTabId(tab_strip->GetWebContentsAt(i)));
+void AppendToTabIdList(WindowController* window, base::Value::List& tab_ids) {
+  for (int i = 0; i < window->GetTabCount(); ++i) {
+    tab_ids.Append(ExtensionTabUtil::GetTabId(window->GetWebContentsAt(i)));
   }
 }
 
@@ -284,11 +282,18 @@ bool ValidateCrossSiteAncestor(
   // value of false.
   if (partition_key->top_level_site.value().empty()) {
     if (partition_key->has_cross_site_ancestor.has_value() &&
-        !partition_key->has_cross_site_ancestor.value()) {
+        partition_key->has_cross_site_ancestor.value()) {
       *error_out = "CookiePartitionKey.hasCrossSiteAncestor is invalid.";
       return false;
     }
     return true;
+  }
+
+  if (!partition_key->has_cross_site_ancestor.has_value()) {
+    *error_out =
+        "Can not validate an empty value for "
+        "hasCrossSiteAncestor.";
+    return false;
   }
 
   GURL url = GURL(url_string);
@@ -303,15 +308,14 @@ bool ValidateCrossSiteAncestor(
     return false;
   }
 
-  // has_cross_site_ancestor can not be true if url and top_level_site aren't
+  // has_cross_site_ancestor can not be false if url and top_level_site aren't
   // first party.
-  if (!net::SiteForCookies::FromUrl(GURL(url)).IsFirstParty(top_level_site)) {
-    if (!partition_key->has_cross_site_ancestor.value()) {
-      *error_out =
-          "partitionKey has a first party value for hasCrossSiteAncestor "
-          "when the url and the topLevelSite are not first party.";
-      return false;
-    }
+  if (!net::SiteForCookies::FromUrl(GURL(url)).IsFirstParty(top_level_site) &&
+      !partition_key->has_cross_site_ancestor.value()) {
+    *error_out =
+        "partitionKey has a first party value for hasCrossSiteAncestor "
+        "when the url and the topLevelSite are not first party.";
+    return false;
   }
   return true;
 }

@@ -1210,6 +1210,11 @@ public class BottomSheetControllerTest {
         }
 
         @Override
+        public int getSystemBottomInsetPx() {
+            return bottomInset;
+        }
+
+        @Override
         public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {}
 
         @Override

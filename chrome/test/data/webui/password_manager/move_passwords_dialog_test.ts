@@ -115,7 +115,7 @@ suite('AddPasswordDialogTest', function() {
     passwords.forEach(
         item => item.affiliatedDomains = [createAffiliatedDomain('test.com')]);
     passwordManager.setRequestCredentialsDetailsResponse(passwords);
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     syncProxy.accountInfo = {
       email: 'test@gmail.com',
@@ -146,7 +146,7 @@ suite('AddPasswordDialogTest', function() {
     });
 
     passwordManager.setRequestCredentialsDetailsResponse([password]);
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     syncProxy.accountInfo = {
       email: 'test@gmail.com',
@@ -177,7 +177,7 @@ suite('AddPasswordDialogTest', function() {
     passwords.forEach(
         item => item.affiliatedDomains = [createAffiliatedDomain('test.com')]);
     passwordManager.setRequestCredentialsDetailsResponse(passwords);
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     syncProxy.accountInfo = {
       email: 'test@gmail.com',
@@ -228,7 +228,7 @@ suite('AddPasswordDialogTest', function() {
     passwords.forEach(
         item => item.affiliatedDomains = [createAffiliatedDomain('test.com')]);
     passwordManager.setRequestCredentialsDetailsResponse(passwords);
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     syncProxy.accountInfo = {
       email: 'test@gmail.com',

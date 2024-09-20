@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -22,9 +23,9 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
@@ -39,6 +40,11 @@ namespace {
 using ::testing::ElementsAre;
 
 constexpr char kPinSetupScreen[] = "pin-setup";
+constexpr char kPinSetupScreenCompletionTime[] =
+    "OOBE.StepCompletionTime.Pin-setup";
+constexpr char kPinSetupScreenCompletionTimeByExitReason[] =
+    "OOBE.StepCompletionTimeByExitReason.Pin-setup.";
+constexpr char kPinSetupScreenUserAction[] = "OOBE.PinSetupScreen.UserActions";
 
 const test::UIPath kPinSetupScreenDoneStep = {kPinSetupScreen, "doneDialog"};
 
@@ -49,14 +55,48 @@ const test::UIPath kDoneButton = {kPinSetupScreen, "doneButton"};
 const test::UIPath kPinKeyboardInput = {kPinSetupScreen, "pinKeyboard",
                                         "pinKeyboard", "pinInput"};
 
+enum class PinPolicy {
+  kUnlock,
+  kWebAuthn,
+};
+
+enum class AllowlistStatus {
+  kPin,
+  kAll,
+  kNone,
+};
+
+// Utility function for setting relevant policy affecting PIN behavior.
+void SetPinPolicy(PinPolicy policy, AllowlistStatus desired_status) {
+  base::Value::List allowlist_status;
+  switch (desired_status) {
+    case AllowlistStatus::kPin:
+      allowlist_status.Append(base::Value("PIN"));
+      break;
+    case AllowlistStatus::kAll:
+      allowlist_status.Append(base::Value("all"));
+      break;
+    case AllowlistStatus::kNone:
+      break;
+  }
+
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  const auto* associated_pref = policy == PinPolicy::kWebAuthn
+                                    ? prefs::kWebAuthnFactors
+                                    : prefs::kQuickUnlockModeAllowlist;
+  prefs->SetList(associated_pref, std::move(allowlist_status));
+}
 }  // namespace
 
-// Fixture to prepare oobe and the PIN setup screen. By default with this
-// fixture, the PIN setup screen shouldn't be shown. There are child classes
-// which perform the necessary setup so that the PIN setup screen is shown.
+// Base class for testing the PIN setup screen. By default, this class simulates
+// "hardware support" (a.k.a. login support) for PIN as it is more common across
+// the fleet.
 class PinSetupScreenTest : public OobeBaseTest {
  public:
-  PinSetupScreenTest() { UserDataAuthClient::InitializeFake(); }
+  PinSetupScreenTest() {
+    UserDataAuthClient::InitializeFake();
+    SetHardwareSupport(true);
+  }
 
   ~PinSetupScreenTest() override = default;
 
@@ -126,6 +166,20 @@ class PinSetupScreenTest : public OobeBaseTest {
 
   void TapSkipButton() { test::OobeJS().TapOnPath(kSkipButton); }
 
+  void TapNextButton() {
+    test::OobeJS().TapOnPath(kNextButton);
+    // Wait until the back button is visible to ensure that the UI is showing
+    // the 'confirmation' step.
+    test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
+  }
+
+  void TapDoneButton() {
+    test::OobeJS()
+        .CreateVisibilityWaiter(true, kPinSetupScreenDoneStep)
+        ->Wait();
+    test::OobeJS().TapOnPath(kDoneButton);
+  }
+
   void WaitForScreenExit() {
     if (screen_exited_)
       return;
@@ -151,6 +205,28 @@ class PinSetupScreenTest : public OobeBaseTest {
                      ->extra_factors_token.has_value());
   }
 
+  void ExpectUserActionMetric(PinSetupScreen::UserAction user_action) {
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(kPinSetupScreenUserAction),
+        ElementsAre(base::Bucket(static_cast<int>(user_action), /*count=*/1)));
+  }
+
+  void ExpectExitResultAndMetric(PinSetupScreen::Result result) {
+    EXPECT_EQ(screen_result_.value(), result);
+
+    if (result == PinSetupScreen::Result::kNotApplicable) {
+      histogram_tester_.ExpectTotalCount(kPinSetupScreenCompletionTime,
+                                         /*expected_count=*/0);
+    } else {
+      const std::string metric_name =
+          kPinSetupScreenCompletionTimeByExitReason +
+          PinSetupScreen::GetResultString(result);
+      histogram_tester_.ExpectTotalCount(metric_name, 1);
+      histogram_tester_.ExpectTotalCount(kPinSetupScreenCompletionTime,
+                                         /*expected_count=*/1);
+    }
+  }
+
   std::optional<PinSetupScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
   bool screen_exited_ = false;
@@ -171,185 +247,173 @@ class PinSetupScreenTest : public OobeBaseTest {
   base::RepeatingClosure screen_exit_callback_;
 };
 
-// By default, oobe should skip the PIN setup screen.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, Skipped) {
-  ShowPinSetupScreen();
-  WaitForScreenExit();
-
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NOT_APPLICABLE);
-
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 0);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 0);
-}
-
-// If the PIN setup screen is skipped, auth session should be
-// cleared.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, SkippedClearsAuthSession) {
-  ConfigureUserContextForTest();
-
-  ShowPinSetupScreen();
-  WaitForScreenExit();
-
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NOT_APPLICABLE);
-  CheckCredentialsWereCleared();
-}
-
-// Oobe should show the PIN setup screen if the device is in tablet mode.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShowInTabletMode) {
-  SetTabletMode(true);
-
-  ShowPinSetupScreen();
-  TapSkipButton();
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
-}
-
-// If the PIN setup screen is shown, auth session should be
-// cleared.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShowClearsAuthSession) {
-  ConfigureUserContextForTest();
-  SetTabletMode(true);
-
-  ShowPinSetupScreen();
-  TapSkipButton();
-  WaitForScreenExit();
-
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
-  CheckCredentialsWereCleared();
-}
-
-// Fixture to pretend that we have hardware support for login.
-class PinSetupScreenTestLoginSupport : public PinSetupScreenTest {
- public:
-  PinSetupScreenTestLoginSupport() { SetHardwareSupport(true); }
-
-  ~PinSetupScreenTestLoginSupport() override = default;
-};
-
-// Oobe should show the PIN setup screen if the TPM supports PIN for login.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport,
-                       ShowWithHardwareSupport) {
+// By default, OOBE shows the PIN setup screen on supported hardware.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShownByDefault) {
   ShowPinSetupScreen();
   WaitForScreenShown();
-  test::OobeJS().TapOnPath(kSkipButton);
+
+  TapSkipButton();
   WaitForScreenExit();
 
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
+}
+
+// The screen should be skipped when the 'extra_factors_token' isn't present.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, SkipWhenExtraFactorsTokenMissing) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->extra_factors_token->clear();
+
+  ShowPinSetupScreen();
+  WaitForScreenExit();
+
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
+}
+
+// The screen should be skipped when the token is invalid.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, SkipWhenTokenInvalid) {
+  ash::AuthSessionStorage::Get()->Invalidate(LoginDisplayHost::default_host()
+                                                 ->GetWizardContextForTesting()
+                                                 ->extra_factors_token.value(),
+                                             base::DoNothing());
+
+  ShowPinSetupScreen();
+  WaitForScreenExit();
+
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
+}
+
+// If the PIN setup screen is shown, auth session should be cleared afterwards.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, AuthSessionIsClearedOnManualSkip) {
+  ConfigureUserContextForTest();
+
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+  TapSkipButton();
+  WaitForScreenExit();
+
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
+  CheckCredentialsWereCleared();
 }
 
 // Oobe should skip the PIN setup screen if policies are set such that PIN
 // cannot be used for both login/unlock and web authn.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, NoPinPolicy) {
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  prefs->SetList(prefs::kQuickUnlockModeAllowlist, base::Value::List());
-  prefs->SetList(prefs::kWebAuthnFactors, base::Value::List());
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, SkipWhenNotAllowedByPolicy) {
+  SetPinPolicy(PinPolicy::kUnlock, AllowlistStatus::kNone);
+  SetPinPolicy(PinPolicy::kWebAuthn, AllowlistStatus::kNone);
 
   ShowPinSetupScreen();
   WaitForScreenExit();
 
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NOT_APPLICABLE);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
 }
 
-// Oobe should show the PIN setup screen if the unlock factor policy allows
-// PIN.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, PinForUnlockPolicy) {
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  base::Value::List unlock_factors;
-  unlock_factors.Append(base::Value("PIN"));
-  prefs->SetList(prefs::kQuickUnlockModeAllowlist, std::move(unlock_factors));
-  prefs->SetList(prefs::kWebAuthnFactors, base::Value::List());
-
+// The PIN screen should be shown when policy allows PIN for unlock.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShowWhenPinAllowedForUnlock) {
+  SetPinPolicy(PinPolicy::kUnlock, AllowlistStatus::kPin);
+  SetPinPolicy(PinPolicy::kWebAuthn, AllowlistStatus::kNone);
   ShowPinSetupScreen();
+
   TapSkipButton();
   WaitForScreenExit();
 
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
 }
 
-// Oobe should show the PIN setup screen if the web authn factor policy allows
-// PIN.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, PinForWebAuthnPolicy) {
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  prefs->SetList(prefs::kQuickUnlockModeAllowlist, base::Value::List());
-  base::Value::List web_authn_factors;
-  web_authn_factors.Append(base::Value("all"));
-  prefs->SetList(prefs::kWebAuthnFactors, std::move(web_authn_factors));
-
+// The PIN screen should be shown when policy allows PIN for WebAuthN.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShowWhenPinAllowedForWebAuthn) {
+  SetPinPolicy(PinPolicy::kUnlock, AllowlistStatus::kNone);
+  SetPinPolicy(PinPolicy::kWebAuthn, AllowlistStatus::kAll);
   ShowPinSetupScreen();
+
   TapSkipButton();
   WaitForScreenExit();
 
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
 }
 
-// A series of test cases for skipping the PIN setup page at various stages in
-// the flow.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, SkipOnStart) {
+// Skip the flow in the beginning and expect the proper metrics.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ManualSkipOnStart) {
   ShowPinSetupScreen();
   WaitForScreenShown();
+
   TapSkipButton();
   WaitForScreenExit();
 
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Skipped", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
-      ElementsAre(base::Bucket(
-          static_cast<int>(
-              PinSetupScreen::UserAction::kSkipButtonClickedOnStart),
-          1)));
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
+  ExpectUserActionMetric(PinSetupScreen::UserAction::kSkipButtonClickedOnStart);
 }
 
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, SkipInFlow) {
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ManualSkipInFlow) {
   ShowPinSetupScreen();
   WaitForScreenShown();
 
   EnterPin();
-  test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
+  TapNextButton();
 
   TapSkipButton();
-
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Skipped", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
-      ElementsAre(base::Bucket(
-          static_cast<int>(
-              PinSetupScreen::UserAction::kSkipButtonClickedInFlow),
-          1)));
+
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
+  ExpectUserActionMetric(PinSetupScreen::UserAction::kSkipButtonClickedInFlow);
 }
 
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, FinishedFlow) {
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, FinishedFlow) {
   ShowPinSetupScreen();
   WaitForScreenShown();
 
   EnterPin();
-  test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
-
+  TapNextButton();
   EnterPin();
-  test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, kPinSetupScreenDoneStep)->Wait();
+  TapNextButton();
 
-  test::OobeJS().TapOnPath(kDoneButton);
-
+  TapDoneButton();
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::DONE);
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
-      ElementsAre(base::Bucket(
-          static_cast<int>(PinSetupScreen::UserAction::kDoneButtonClicked),
-          1)));
+
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kDone);
+  ExpectUserActionMetric(PinSetupScreen::UserAction::kDoneButtonClicked);
+}
+
+// Fixture to pretend that hardware support for login is not available.
+class PinSetupScreenTestWithoutLoginSupport : public PinSetupScreenTest {
+ public:
+  PinSetupScreenTestWithoutLoginSupport() { SetHardwareSupport(false); }
+
+  ~PinSetupScreenTestWithoutLoginSupport() override = default;
+};
+
+// By default, OOBE should skip the PIN setup screen when hardware support is
+// not available.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupport,
+                       SkippedByDefault) {
+  ShowPinSetupScreen();
+  WaitForScreenExit();
+
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
+}
+
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupport,
+                       AuthSessionIsClearedWhenSkipped) {
+  ConfigureUserContextForTest();
+  ShowPinSetupScreen();
+  WaitForScreenExit();
+
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
+  CheckCredentialsWereCleared();
+}
+
+// The screen should be shown for tablet devices, regardless of the hardware
+// support status.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupport,
+                       ShowInTabletMode) {
+  SetTabletMode(true);
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  TapSkipButton();
+  WaitForScreenExit();
+
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
 }
 
 }  // namespace ash

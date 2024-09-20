@@ -270,11 +270,15 @@ static_library("common") {
     "client_session.cc",
     "client_session.h",
     "client_session_events.h",
+    "cloud_heartbeat_service_client.cc",
+    "cloud_heartbeat_service_client.h",
     "config_file_watcher.cc",
     "config_file_watcher.h",
     "config_watcher.h",
     "continue_window.cc",
     "continue_window.h",
+    "corp_heartbeat_service_client.cc",
+    "corp_heartbeat_service_client.h",
     "corp_host_status_logger.cc",
     "corp_host_status_logger.h",
     "crash_process.cc",
@@ -316,6 +320,8 @@ static_library("common") {
     "ftl_signaling_connector.h",
     "heartbeat_sender.cc",
     "heartbeat_sender.h",
+    "heartbeat_service_client.cc",
+    "heartbeat_service_client.h",
     "host_attributes.cc",
     "host_attributes.h",
     "host_config.cc",
@@ -365,6 +371,8 @@ static_library("common") {
     "it2me_desktop_environment.h",
     "keyboard_layout_monitor.cc",
     "keyboard_layout_monitor.h",
+    "me2me_heartbeat_service_client.cc",
+    "me2me_heartbeat_service_client.h",
     "mojo_caller_security_checker.cc",
     "mojo_caller_security_checker.h",
     "mojo_video_capturer.cc",
@@ -432,6 +440,7 @@ static_library("common") {
     ":display_layout",
     ":host_main_headers",
     ":ipc_constants",
+    ":remoting_version",
     ":resources",
     ":settings",
     "//base:i18n",
@@ -455,6 +464,7 @@ static_library("common") {
     "//remoting/host/security_key",
     "//remoting/host/webauthn",
     "//remoting/proto/ftl/v1:ftl_messages",
+    "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/remoting/v1:chrome_os_enterprise_options",
     "//remoting/proto/remoting/v1:remote_support_host_messages",
     "//remoting/protocol",
@@ -727,12 +737,7 @@ static_library("common") {
 }
 
 source_set("display_layout") {
-  sources = [
-    "desktop_display_layout_util.cc",
-    "desktop_display_layout_util.h",
-    "desktop_geometry.cc",
-    "desktop_geometry.h",
-  ]
+  sources = [ "desktop_geometry.h" ]
   deps = [ "//ui/gfx" ]
 }
 
@@ -745,10 +750,6 @@ if (is_linux && (ozone_platform_x11 || remoting_use_x11)) {
       "linux/gnome_display_config_dbus_client.h",
       "linux/scoped_glib.cc",
       "linux/scoped_glib.h",
-      "x11_crtc_resizer.cc",
-      "x11_crtc_resizer.h",
-      "x11_desktop_resizer.cc",
-      "x11_desktop_resizer.h",
       "x11_display_util.cc",
       "x11_display_util.h",
     ]
@@ -761,6 +762,7 @@ if (is_linux && (ozone_platform_x11 || remoting_use_x11)) {
       "//ui/base",
       "//ui/base/x",
       "//ui/gfx/geometry",
+      "//ui/gfx/x",
     ]
   }
 }
@@ -828,7 +830,6 @@ source_set("unit_tests") {
     "corp_host_status_logger_unittest.cc",
     "daemon_process_unittest.cc",
     "desktop_display_info_unittest.cc",
-    "desktop_display_layout_util_unittest.cc",
     "desktop_process_unittest.cc",
     "desktop_session_agent_unittest.cc",
     "ftl_echo_message_listener_unittest.cc",
@@ -945,10 +946,7 @@ source_set("unit_tests") {
   }
 
   if (remoting_use_x11) {
-    sources += [
-      "x11_crtc_resizer_unittest.cc",
-      "x11_display_util_unittest.cc",
-    ]
+    sources += [ "x11_display_util_unittest.cc" ]
     deps += [
       ":x11_display_utils",
       "//ui/gfx/x",

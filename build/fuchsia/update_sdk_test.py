@@ -62,6 +62,7 @@ class TestGetSDKOverrideGCSPath(unittest.TestCase):
 @mock.patch('subprocess.run',
             return_value=CompletedProcess(args=['/bin'], returncode=0))
 @mock.patch('os.utime', return_value=None)
+@mock.patch('update_sdk.make_clean_directory')
 @mock.patch('update_sdk.DownloadAndUnpackFromCloudStorage')
 class TestGetTarballPath(unittest.TestCase):
 

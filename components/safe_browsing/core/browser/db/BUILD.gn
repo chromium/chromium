@@ -343,6 +343,7 @@ source_set("unit_tests_local_db") {
     "v4_update_protocol_manager_unittest.cc",
   ]
   deps = [
+    ":database_manager",
     ":unit_tests_shared",
     ":util",
     ":v4_database",

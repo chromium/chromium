@@ -59,8 +59,9 @@ void SyncCycle::SendSyncCycleEndEventNotification(
 
   DVLOG(1) << "Sending cycle end event with snapshot: "
            << event.snapshot.ToString();
-  for (SyncEngineEventListener& observer : *context_->listeners())
+  for (SyncEngineEventListener& observer : *context_->listeners()) {
     observer.OnSyncCycleEvent(event);
+  }
 }
 
 void SyncCycle::SendEventNotification(SyncCycleEvent::EventCause cause) {
@@ -68,13 +69,15 @@ void SyncCycle::SendEventNotification(SyncCycleEvent::EventCause cause) {
   event.snapshot = TakeSnapshot();
 
   DVLOG(1) << "Sending event with snapshot: " << event.snapshot.ToString();
-  for (SyncEngineEventListener& observer : *context_->listeners())
+  for (SyncEngineEventListener& observer : *context_->listeners()) {
     observer.OnSyncCycleEvent(event);
+  }
 }
 
 void SyncCycle::SendProtocolEvent(const ProtocolEvent& event) {
-  for (SyncEngineEventListener& observer : *context_->listeners())
+  for (SyncEngineEventListener& observer : *context_->listeners()) {
     observer.OnProtocolEvent(event);
+  }
 }
 
 }  // namespace syncer

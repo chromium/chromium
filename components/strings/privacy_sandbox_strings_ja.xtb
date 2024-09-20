@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1444443021901415601">Chrome はユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します</translation>
 <translation id="2252052615723281030">Chrome にログインしている間は、この設定により IP アドレスの秘匿性が守られます。サイトによるトラッキングの可能性が Chrome で検出された場合は、一部のトラフィックがプライバシー サーバーを経由して送信されることがあります。</translation>
+<translation id="2793385791865768072">Chromium はユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します</translation>
 <translation id="33479675708419823">Chrome にログイン中は、この設定により IP アドレスの秘匿性が守られます。サイトによるトラッキングの可能性が Chrome で検出された場合は、一部のトラフィックがプライバシー サーバーを通じて送信されることがあります。詳しくは、<ph name="LINK_BEGIN" />IP 保護の仕組み<ph name="LINK_END" />に関する記事をご覧ください、</translation>
 <translation id="3529311220178827364">IP アドレス秘匿の詳細</translation>
+<translation id="4041687306270459969">広告のトピックは、4 週間が経過すると自動的に削除されます。トピックには「スポーツ」、「アパレル」などがあります。</translation>
+<translation id="4177501066905053472">広告のトピック</translation>
 <translation id="4301151630239508244">広告のトピックは、サイトが広告をパーソナライズするために使用できることの 1 つにすぎません。広告のトピックをオフにしても、サイトでは引き続き広告が表示されますが、パーソナライズされたものでない可能性があります。<ph name="BEGIN_LINK_1" />広告のプライバシー管理について<ph name="END_LINK_1" /></translation>
+<translation id="453692855554576066">Chromium の設定で広告のトピックを確認し、サイトと共有したくないトピックをブロックすることができます</translation>
 <translation id="4598427486995631491">IP アドレスを隠す</translation>
+<translation id="4692439979815346597">Chrome の設定で広告のトピックを確認し、サイトと共有したくないトピックをブロックすることができます</translation>
+<translation id="5413586988657235240">アクセス先のサイトは Chromium にトピックをリクエストして、閲覧履歴や個人情報を保護しながら関連性の高い広告を表示することができます</translation>
+<translation id="6186536480878693792">アクセス先のサイトは Chrome にトピックをリクエストして、閲覧履歴や個人情報を保護しながら関連性の高い広告を表示することができます</translation>
 <translation id="6371812158043974664">Chromium にログイン中は、この設定により IP アドレスの秘匿性が守られます。サイトによるトラッキングの可能性が Chromium で検出された場合は、一部のトラフィックがプライバシー サーバーを通じて送信されることがあります。詳しくは、<ph name="LINK_BEGIN" />IP 保護の仕組み<ph name="LINK_END" />に関する記事をご覧ください、</translation>
 <translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP 保護の仕組み<ph name="END_LINK" />について</translation>
+<translation id="7475768947023614021">広告のトピックの設定を確認してください</translation>
 </translationbundle>

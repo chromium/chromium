@@ -4,152 +4,138 @@
 
 package org.chromium.chrome.browser.search_engines.choice_screen;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Promise;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 
 /**
  * Entry point to show a blocking choice dialog inviting users to finish their default app & search
  * engine choice in Android settings.
  */
-public class ChoiceDialogCoordinator {
-    @IntDef({DialogType.CHOICE_LAUNCH, DialogType.CHOICE_CONFIRM})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface DialogType {
-        int CHOICE_LAUNCH = 0;
-        int CHOICE_CONFIRM = 1;
+public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
+
+    // TODO(b/365100489): Refactor this coordinator to implement the dialog's custom view fully
+    // using the standard chromium MVC patterns. This class is a temporary shortcut.
+    interface ViewHolder {
+        View getView();
+
+        void updateViewForType(
+                @DialogType int dialogType, @Nullable Callback<Integer> actionButtonClickCallback);
     }
 
-    private final Context mContext;
-    private final ModalDialogManager mModalDialogManager;
-    private final View mView;
+    private final ViewHolder mViewHolder;
+    private final ChoiceDialogMediator mMediator;
     private final PropertyModel mModel;
+    private final ModalDialogManager mModalDialogManager;
+
+    private final ModalDialogManagerObserver mDialogAddedObserver =
+            new ModalDialogManagerObserver() {
+                @Override
+                public void onDialogAdded(PropertyModel model) {
+                    if (model != mModel) return;
+
+                    mMediator.onDialogAdded();
+                }
+
+                @Override
+                public void onDialogDismissed(PropertyModel model) {
+                    if (model != mModel) return;
+
+                    // TODO(b/365100489): Look into moving this (and maybe action button click?) to
+                    // the `ModalDialogProperties.CONTROLLER` instead.
+                    mMediator.onDialogDismissed();
+                }
+            };
+
     private final OnBackPressedCallback mEmptyBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {}
             };
-    private @DialogType int mType = DialogType.CHOICE_LAUNCH;
 
-    public static ChoiceDialogCoordinator maybeShow(
-            Context context, ModalDialogManager modalDialogManager) {
-        return maybeShowInternal(() -> new ChoiceDialogCoordinator(context, modalDialogManager));
+    public static boolean maybeShow(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        return maybeShowInternal(
+                searchEngineChoiceService ->
+                        new ChoiceDialogCoordinator(
+                                new ViewHolderImpl(context),
+                                modalDialogManager,
+                                lifecycleDispatcher,
+                                searchEngineChoiceService));
     }
 
     @VisibleForTesting
-    static ChoiceDialogCoordinator maybeShowInternal(
-            Supplier<ChoiceDialogCoordinator> coordinatorSupplier) {
+    static boolean maybeShowInternal(
+            Function<SearchEngineChoiceService, ChoiceDialogCoordinator> coordinatorFactory) {
         var searchEngineChoiceService = SearchEngineChoiceService.getInstance();
         if (searchEngineChoiceService == null
                 || !searchEngineChoiceService.isDeviceChoiceDialogEligible()) {
-            return null;
+            return false;
         }
 
-        var coordinator = coordinatorSupplier.get();
-        withUiThreadTimeout(searchEngineChoiceService.shouldShowDeviceChoiceDialog(), 1000)
-                .then(
-                        shouldShow -> {
-                            if (shouldShow) coordinator.show();
-                        },
-                        unused -> {
-                            /* timeout*/
-                        });
+        coordinatorFactory.apply(searchEngineChoiceService);
 
-        return coordinator;
-    }
-
-    /** Constructs and shows the dialog. */
-    public void show() {
-        mModalDialogManager.showDialog(
-                mModel,
-                ModalDialogManager.ModalDialogType.APP,
-                ModalDialogManager.ModalDialogPriority.VERY_HIGH);
+        return true;
     }
 
     @VisibleForTesting
-    ChoiceDialogCoordinator(Context context, ModalDialogManager modalDialogManager) {
-        mContext = context;
-        mModalDialogManager = modalDialogManager;
-        mView = LayoutInflater.from(context).inflate(R.layout.blocking_choice_dialog, null);
+    ChoiceDialogCoordinator(
+            ViewHolder viewHolder,
+            ModalDialogManager modalDialogManager,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            @NonNull SearchEngineChoiceService searchEngineChoiceService) {
+        mViewHolder = viewHolder;
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, mView)
-                        .with(ModalDialogProperties.CONTROLLER, createController())
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mViewHolder.getView())
+                        .with(
+                                ModalDialogProperties.CONTROLLER,
+                                new ModalDialogProperties.Controller() {
+                                    @Override
+                                    public void onClick(PropertyModel model, int buttonType) {}
+
+                                    @Override
+                                    public void onDismiss(
+                                            PropertyModel model, int dismissalCause) {}
+                                })
                         .build();
+        mModalDialogManager = modalDialogManager;
+        mMediator = new ChoiceDialogMediator(lifecycleDispatcher, searchEngineChoiceService);
 
-        prepareView();
-        ButtonCompat button = mView.findViewById(R.id.choice_dialog_button);
-        button.setOnClickListener(
-                view -> {
-                    // TODO(b/355054464): Remove after play api is ready and add test for the logic.
-                    switch (mType) {
-                        case DialogType.CHOICE_LAUNCH -> advance();
-                        case DialogType.CHOICE_CONFIRM -> mModalDialogManager.dismissDialog(
-                                mModel, DialogDismissalCause.ACTION_ON_CONTENT);
-                    }
-                });
+        mMediator.startObserving(/* delegate= */ this);
     }
 
-    private static <T> Promise<T> withUiThreadTimeout(Promise<T> promise, long delayMillis) {
-        if (!promise.isPending()) return promise;
+    @Override
+    public void updateDialogType(@DialogType int dialogType) {
+        mViewHolder.updateViewForType(
+                dialogType,
+                dialogType == DialogType.LOADING ? null : mMediator::onActionButtonClick);
 
-        Promise<T> timeoutPromise = new Promise<>();
-        promise.then(timeoutPromise::fulfill, timeoutPromise::reject);
-        ThreadUtils.postOnUiThreadDelayed(
-                () -> {
-                    if (timeoutPromise.isPending()) {
-                        timeoutPromise.reject(new TimeoutException());
-                    }
-                },
-                delayMillis);
-        return timeoutPromise;
-    }
-
-    private ModalDialogProperties.Controller createController() {
-        return new ModalDialogProperties.Controller() {
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {}
-
-            @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {
-                assert mType == DialogType.CHOICE_CONFIRM
-                        || dismissalCause == DialogDismissalCause.ACTIVITY_DESTROYED;
-            }
-        };
-    }
-
-    private void prepareView() {
-        View illustration = mView.findViewById(R.id.illustration);
-        TextView title = mView.findViewById(R.id.choice_dialog_title);
-        TextView message = mView.findViewById(R.id.choice_dialog_message);
-        ButtonCompat button = mView.findViewById(R.id.choice_dialog_button);
-        switch (mType) {
-            case DialogType.CHOICE_LAUNCH -> {
-                illustration.setBackgroundResource(R.drawable.blocking_choice_dialog_illustration);
-                title.setText(R.string.blocking_choice_dialog_first_title);
-                message.setText(R.string.blocking_choice_dialog_first_message);
-                button.setText(mContext.getString(R.string.blocking_choice_dialog_first_button));
-
+        switch (dialogType) {
+            case DialogType.LOADING, DialogType.CHOICE_LAUNCH -> {
                 mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false);
                 mModel.set(
                         ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
@@ -158,24 +144,76 @@ public class ChoiceDialogCoordinator {
                         mEmptyBackPressedCallback);
             }
             case DialogType.CHOICE_CONFIRM -> {
-                illustration.setBackgroundResource(R.drawable.blocking_choice_dialog_illustration);
-                title.setText(R.string.blocking_choice_dialog_second_title);
-                message.setText(R.string.blocking_choice_dialog_second_message);
-                button.setText(mContext.getString(R.string.blocking_choice_dialog_second_button));
-
                 mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true);
                 mEmptyBackPressedCallback.remove();
             }
-            default -> throw new IllegalArgumentException("Invalid DialogType: " + mType);
+            case DialogType.UNKNOWN -> throw new IllegalStateException();
         }
     }
 
-    public void advance() {
-        if (mType == DialogType.CHOICE_CONFIRM) {
-            return;
+    @Override
+    public void showDialog() {
+        mModalDialogManager.addObserver(mDialogAddedObserver);
+        mModalDialogManager.showDialog(
+                mModel,
+                ModalDialogManager.ModalDialogType.APP,
+                ModalDialogManager.ModalDialogPriority.VERY_HIGH);
+    }
+
+    @Override
+    public void dismissDialog() {
+        mModalDialogManager.dismissDialog(mModel, DialogDismissalCause.UNKNOWN);
+    }
+
+    @Override
+    public void onMediatorDestroyed() {
+        mModalDialogManager.removeObserver(mDialogAddedObserver);
+    }
+
+    private static class ViewHolderImpl implements ViewHolder {
+        private final View mView;
+
+        @SuppressLint("InflateParams")
+        ViewHolderImpl(Context context) {
+            mView = LayoutInflater.from(context).inflate(R.layout.blocking_choice_dialog, null);
         }
 
-        mType = DialogType.CHOICE_CONFIRM;
-        prepareView();
+        @Override
+        public View getView() {
+            return mView;
+        }
+
+        @Override
+        public void updateViewForType(
+                @DialogType int dialogType, @Nullable Callback<Integer> actionButtonClickCallback) {
+            View illustration = mView.findViewById(R.id.illustration);
+            TextView title = mView.findViewById(R.id.choice_dialog_title);
+            TextView message = mView.findViewById(R.id.choice_dialog_message);
+            ButtonCompat button = mView.findViewById(R.id.choice_dialog_button);
+
+            switch (dialogType) {
+                case DialogType.LOADING, DialogType.CHOICE_LAUNCH -> {
+                    illustration.setBackgroundResource(
+                            R.drawable.blocking_choice_dialog_illustration);
+                    title.setText(R.string.blocking_choice_dialog_first_title);
+                    message.setText(R.string.blocking_choice_dialog_first_message);
+                    button.setText(mView.getContext().getString(R.string.next));
+                }
+                case DialogType.CHOICE_CONFIRM -> {
+                    illustration.setBackgroundResource(
+                            R.drawable.blocking_choice_confirmation_illustration);
+                    title.setText(R.string.blocking_choice_dialog_second_title);
+                    message.setText(R.string.blocking_choice_dialog_second_message);
+                    button.setText(mView.getContext().getString(R.string.done));
+                }
+                case DialogType.UNKNOWN -> throw new IllegalStateException();
+            }
+
+            button.setOnClickListener(
+                    actionButtonClickCallback == null
+                            ? null
+                            : ignored -> actionButtonClickCallback.onResult(dialogType));
+            button.setEnabled(actionButtonClickCallback != null);
+        }
     }
 }

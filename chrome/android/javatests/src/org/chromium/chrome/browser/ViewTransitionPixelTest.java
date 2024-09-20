@@ -7,7 +7,10 @@ package org.chromium.chrome.browser;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
+import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
+import android.util.Size;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -26,6 +29,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -37,6 +44,8 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.util.WindowInsetsUtils;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -325,6 +334,30 @@ public class ViewTransitionPixelTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testVirtualKeyboardResizesContent() throws Throwable {
+        doTestVirtualKeyboardResizesContent();
+    }
+
+    /**
+     * Same as {@code #testVirtualKeyboardResizesContent()}, but with TabStripLayoutOptimization
+     * enabled. This tablet feature uses caption bar insets to draw custom app headers and is known
+     * to have caused regressions in bottom Chrome UI placement when OSK is visible.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @MinAndroidSdkLevel(VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    public void testVirtualKeyboardResizesContent_TSLOEnabled() throws Throwable {
+        // Simulate fullscreen window behavior in an environment that supports Android V custom app
+        // header APIs.
+        WindowInsetsUtils.setFrameForTesting(new Size(2560, 1600));
+        WindowInsetsUtils.setWidestUnoccludedRectForTesting(new Rect());
+
+        doTestVirtualKeyboardResizesContent();
+    }
+
+    private void doTestVirtualKeyboardResizesContent() throws Throwable {
         startKeyboardTest(VirtualKeyboardMode.RESIZES_CONTENT);
 
         showAndWaitForKeyboard();

@@ -51,7 +51,8 @@ enum class AttestationErasureOption;
 // https://w3c.github.io/webauthn/#enumdef-clientcapability
 namespace client_capabilities {
 
-inline constexpr char kConditionalCreate[] = "conditionalCreate";
+// This is the subset of client capabilities computed by the browser. See also
+// //third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc.
 inline constexpr char kConditionalGet[] = "conditionalGet";
 inline constexpr char kHybridTransport[] = "hybridTransport";
 inline constexpr char kPasskeyPlatformAuthenticator[] =
@@ -59,9 +60,6 @@ inline constexpr char kPasskeyPlatformAuthenticator[] =
 inline constexpr char kUserVerifyingPlatformAuthenticator[] =
     "userVerifyingPlatformAuthenticator";
 inline constexpr char kRelatedOrigins[] = "relatedOrigins";
-// TODO(crbug.com/360327828): Add following capabilities:
-// "signalAllAcceptedCredentials", "signalCurrentUserDetails",
-// "signalUnknownCredential".
 
 }  // namespace client_capabilities
 
@@ -283,6 +281,19 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::PublicKeyCredentialReportOptionsPtr options,
       blink::mojom::AuthenticatorStatus rp_id_validation_result);
 
+  void GetMetricsWrappedMakeCredentialCallback(
+      blink::mojom::Authenticator::MakeCredentialCallback callback,
+      blink::mojom::AuthenticatorStatus status,
+      blink::mojom::MakeCredentialAuthenticatorResponsePtr
+          authenticator_response,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
+
+  void GetMetricsWrappedGetAssertionCallback(
+      blink::mojom::Authenticator::GetAssertionCallback callback,
+      blink::mojom::AuthenticatorStatus status,
+      blink::mojom::GetAssertionAuthenticatorResponsePtr authenticator_response,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
+
   // Replaces the current |request_handler_| with a
   // |MakeCredentialRequestHandler|, effectively restarting the request.
   void StartMakeCredentialRequest(bool allow_skipping_pin_touch);
@@ -292,6 +303,12 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   void StartGetAssertionRequest(bool allow_skipping_pin_touch);
 
   bool IsFocused() const;
+
+  // Checks if hybrid transport is supported on this device, i.e. if it has a
+  // Bluetooth adapter that supports BLE. If so, runs |callback| with `true`.
+  // Otherwise, or if Bluetooth is disabled by Permissions Policy, runs
+  // |callback| with `false`.
+  void IsHybridTransportSupported(base::OnceCallback<void(bool)> callback);
 
   // `is_get_client_capabilities_call` is true if this call originated from the
   // `GetClientCapabilities` method. The UMA metric is only recorded if this is
@@ -312,13 +329,6 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       device::MakeCredentialStatus status_code,
       std::optional<device::AuthenticatorMakeCredentialResponse> response_data,
       const device::FidoAuthenticator* authenticator);
-
-  // Callback to complete the registration process once a decision about
-  // whether or not to return attestation data has been made.
-  void OnRegisterResponseAttestationDecided(
-      AttestationErasureOption attestation_erasure,
-      device::AuthenticatorMakeCredentialResponse response_data,
-      bool attestation_permitted);
 
   // Callback to handle the async response from a U2fDevice.
   void OnSignResponse(

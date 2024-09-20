@@ -406,12 +406,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void DeleteForStorageKey(const blink::StorageKey& key,
                            StatusCallback callback);
 
-  // Performs internal storage cleanup. Operations to the storage in the past
-  // (e.g. deletion) are usually recorded in disk for a certain period until
-  // compaction happens. This method wipes them out to ensure that the deleted
-  // entries and other traces like log files are removed.
-  void PerformStorageCleanup(base::OnceClosure callback);
-
   // Updates the service worker. If |force_bypass_cache| is true or 24 hours
   // have passed since the last update, bypasses the browser cache.
   // This is used for update requests where there is no associated execution

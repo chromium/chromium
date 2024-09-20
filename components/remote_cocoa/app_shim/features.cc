@@ -15,4 +15,10 @@ namespace remote_cocoa::features {
 BASE_FEATURE(kImmersiveFullscreenSpaceSwitchMitigation,
              "ImmersiveFullscreenSpaceSwitchMitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled the overlay windows become visible, allowing for visual
+// debugging of their position on screen.
+BASE_FEATURE(kImmersiveFullscreenOverlayWindowDebug,
+             "ImmersiveFullscreenOverlayWindowDebug",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace remote_cocoa::features

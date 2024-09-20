@@ -8,6 +8,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_progress_bar.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -21,7 +22,7 @@
 namespace {
 
 /// Top padding for the view content.
-const CGFloat kViewTopPadding = 19;
+const CGFloat kViewTopPadding = 22;
 
 /// Width of the back button.
 const CGFloat kBackButtonWidth = 44;
@@ -34,12 +35,14 @@ const CGFloat kCancelButtonHorizontalInset = 8;
 const CGFloat kCancelButtonFontSize = 15;
 
 /// Minimum leading and trailing padding for the omnibox container.
-const CGFloat kOmniboxContainerHorizontalPadding = 12;
+const CGFloat kOmniboxContainerHorizontalPadding = 10;
+
 /// Minimum height of the omnibox container.
-const CGFloat kOmniboxContainerMinimumHeight = 42;
-/// Minimum padding between the top of the view and the top of the web
-/// container.
-const CGFloat kWebContainerTopPadding = 8;
+const CGFloat kOmniboxContainerMinimumHeight = 52;
+/// Corner radius of the omnibox container.
+const CGFloat kOmniboxContainerCornerRadius = 26;
+/// Padding between the omnibox and the web container.
+const CGFloat kWebContainerTopPadding = 16;
 
 /// Height of the progress bar.
 const CGFloat kProgressBarHeight = 2.0f;
@@ -101,7 +104,7 @@ const CGFloat kProgressBarFull = 1.0f;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   CHECK(self.webViewContainer, kLensOverlayNotFatalUntil);
   // Webview container.
@@ -119,20 +122,29 @@ const CGFloat kProgressBarFull = 1.0f;
   [self.view addSubview:_omniboxPopupContainer];
 
   // Back Button.
-  _backButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  _backButton.translatesAutoresizingMaskIntoConstraints = NO;
-  _backButton.hidden = YES;
   UIImage* image =
       DefaultSymbolWithPointSize(kChevronBackwardSymbol, kBackButtonSize);
-  [_backButton setImage:image forState:UIControlStateNormal];
-  [_backButton addTarget:self
-                  action:@selector(didTapBackButton:)
-        forControlEvents:UIControlEventTouchUpInside];
+  UIButtonConfiguration* backButtonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  backButtonConfiguration.image = image;
+  // Constant to visually center the image as it's slightly left aligned.
+  backButtonConfiguration.contentInsets =
+      NSDirectionalEdgeInsetsMake(0, 4, 0, 0);
+  __weak id<LensToolbarMutator> weakToolbarMutator = self.toolbarMutator;
+  _backButton = [UIButton
+      buttonWithConfiguration:backButtonConfiguration
+                primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
+                  [weakToolbarMutator goBack];
+                }]];
+  _backButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _backButton.hidden = YES;
 
   // Omnibox container.
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  _omniboxContainer.backgroundColor = [UIColor colorNamed:kGrey200Color];
-  _omniboxContainer.layer.cornerRadius = 21;
+  _omniboxContainer.backgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+  _omniboxContainer.layer.cornerRadius = kOmniboxContainerCornerRadius;
+  _omniboxContainer.clipsToBounds = YES;
   [_omniboxContainer
       setContentHuggingPriority:UILayoutPriorityDefaultLow
                         forAxis:UILayoutConstraintAxisHorizontal];
@@ -183,7 +195,7 @@ const CGFloat kProgressBarFull = 1.0f;
   // Progress bar.
   _progressBar.translatesAutoresizingMaskIntoConstraints = NO;
   _progressBar.hidden = YES;
-  [self.view addSubview:_progressBar];
+  [_omniboxContainer addSubview:_progressBar];
 
   NSLayoutConstraint* omniboxLeadingConstraint =
       [_omniboxContainer.leadingAnchor
@@ -208,12 +220,12 @@ const CGFloat kProgressBarFull = 1.0f;
                        constant:kWebContainerTopPadding],
     [_omniboxPopupContainer.topAnchor
         constraintEqualToAnchor:_horizontalStackView.bottomAnchor],
-    [_progressBar.topAnchor
-        constraintEqualToAnchor:_webViewContainer.topAnchor],
     [_progressBar.leadingAnchor
-        constraintEqualToAnchor:_webViewContainer.leadingAnchor],
+        constraintEqualToAnchor:_omniboxContainer.leadingAnchor],
     [_progressBar.trailingAnchor
-        constraintEqualToAnchor:_webViewContainer.trailingAnchor],
+        constraintEqualToAnchor:_omniboxContainer.trailingAnchor],
+    [_progressBar.bottomAnchor
+        constraintEqualToAnchor:_omniboxContainer.bottomAnchor],
     [_progressBar.heightAnchor constraintEqualToConstant:kProgressBarHeight],
   ]];
   AddSameConstraintsToSides(
@@ -222,7 +234,26 @@ const CGFloat kProgressBarFull = 1.0f;
   AddSameConstraintsToSides(
       _omniboxPopupContainer, self.view,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
+
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.self ]
+                       withAction:@selector(updateMutatorDarkMode)];
+  }
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (self.traitCollection.userInterfaceStyle !=
+      previousTraitCollection.userInterfaceStyle) {
+    [self updateMutatorDarkMode];
+  }
+}
+#endif
 
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   CHECK(!_editView, kLensOverlayNotFatalUntil);
@@ -232,6 +263,11 @@ const CGFloat kProgressBarFull = 1.0f;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
   [_omniboxContainer insertSubview:_editView belowSubview:_omniboxTapTarget];
   AddSameConstraints(_editView, _omniboxContainer);
+}
+
+- (void)setMutator:(id<LensResultPageMutator>)mutator {
+  _mutator = mutator;
+  [self updateMutatorDarkMode];
 }
 
 #pragma mark - UIResponder
@@ -271,10 +307,6 @@ const CGFloat kProgressBarFull = 1.0f;
   AddSameConstraints(_webView, self.webViewContainer);
 }
 
-- (void)setBackgroundColor:(UIColor*)backgroundColor {
-  self.view.backgroundColor = backgroundColor;
-}
-
 - (void)setLoadingProgress:(float)progress {
   [self updateProgressBarVisibilityForProgress:progress];
   [_progressBar setProgress:progress animated:YES completion:nil];
@@ -300,6 +332,10 @@ const CGFloat kProgressBarFull = 1.0f;
 - (UIViewController*)popupParentViewControllerForPresenter:
     (OmniboxPopupPresenter*)presenter {
   return self;
+}
+
+- (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter {
+  return [UIColor colorNamed:kPrimaryBackgroundColor];
 }
 
 - (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter {
@@ -333,11 +369,6 @@ const CGFloat kProgressBarFull = 1.0f;
 
 #pragma mark - Private
 
-/// Handles back button taps.
-- (void)didTapBackButton:(UIView*)button {
-  [self.toolbarMutator goBack];
-}
-
 /// Handles omnibox tap target taps.
 - (void)didTapOmniboxTapTarget:(UIView*)view {
   [self.toolbarMutator focusOmnibox];
@@ -355,6 +386,12 @@ const CGFloat kProgressBarFull = 1.0f;
 
 - (void)updateBackButtonVisibility {
   _backButton.hidden = self.omniboxFocused || !self.canGoBack;
+}
+
+/// Updates the user interface style in the mutator.
+- (void)updateMutatorDarkMode {
+  [self.mutator setIsDarkMode:self.traitCollection.userInterfaceStyle ==
+                              UIUserInterfaceStyleDark];
 }
 
 @end

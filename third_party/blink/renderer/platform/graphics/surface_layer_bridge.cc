@@ -58,7 +58,6 @@ void SurfaceLayerBridge::SetLocalSurfaceId(
 }
 
 void SurfaceLayerBridge::EmbedSurface(const viz::SurfaceId& surface_id) {
-  surface_activated_ = true;
   if (solid_color_layer_) {
     if (observer_)
       observer_->UnregisterContentsLayer(solid_color_layer_.get());
@@ -83,7 +82,7 @@ void SurfaceLayerBridge::EmbedSurface(const viz::SurfaceId& surface_id) {
     observer_->OnSurfaceIdUpdated(surface_id);
   }
 
-  surface_layer_->SetContentsOpaque(opaque_);
+  UpdateSurfaceLayerOpacity();
 }
 
 void SurfaceLayerBridge::BindSurfaceEmbedder(
@@ -112,11 +111,8 @@ void SurfaceLayerBridge::ClearObserver() {
 }
 
 void SurfaceLayerBridge::SetContentsOpaque(bool opaque) {
-  // If the surface isn't activated, we have nothing to show, do not change
-  // opacity (defaults to false on surface_layer creation).
-  if (surface_layer_ && surface_activated_)
-    surface_layer_->SetContentsOpaque(opaque);
-  opaque_ = opaque;
+  embedder_expects_opaque_ = opaque;
+  UpdateSurfaceLayerOpacity();
 }
 
 void SurfaceLayerBridge::CreateSurfaceLayer() {
@@ -141,8 +137,10 @@ void SurfaceLayerBridge::CreateSurfaceLayer() {
   if (observer_) {
     observer_->RegisterContentsLayer(surface_layer_.get());
   }
-  // We ignore our opacity until we are sure that we have something to show,
-  // as indicated by getting an OnFirstSurfaceActivation call.
+  // We ignore our opacity until we are sure that we have something to show that
+  // is opaque.  If the embeddee has not pushed any frames yet, then we
+  // definitely do not want to claim to be opaque, else viz will fall back to
+  // the quad's default (transparent!) color.
   surface_layer_->SetContentsOpaque(false);
 }
 
@@ -152,6 +150,25 @@ void SurfaceLayerBridge::RegisterFrameSinkHierarchy() {
 
 void SurfaceLayerBridge::UnregisterFrameSinkHierarchy() {
   embedded_frame_sink_provider_->UnregisterFrameSinkHierarchy(frame_sink_id_);
+}
+
+void SurfaceLayerBridge::OnOpacityChanged(bool is_opaque) {
+  frames_are_opaque_ = is_opaque;
+  UpdateSurfaceLayerOpacity();
+}
+
+void SurfaceLayerBridge::UpdateSurfaceLayerOpacity() {
+  if (!surface_layer_) {
+    return;
+  }
+
+  // "Is not opaque" is safe, since cc will emit quads under the surface layer.
+  // If the surface layer turns out not to draw every pixel, this is fine.  If
+  // we are sure that the submitted frames are opaque, and the embedder
+  // (pipeline) expects this to continue, then allow the optimization of setting
+  // `surface_layer_` to opaque to elide emitted quads under it.
+  surface_layer_->SetContentsOpaque(embedder_expects_opaque_ &&
+                                    frames_are_opaque_);
 }
 
 }  // namespace blink

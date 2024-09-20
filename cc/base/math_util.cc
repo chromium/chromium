@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/base/math_util.h"
 
 #include <algorithm>
@@ -51,7 +46,7 @@ static HomogeneousCoordinate ProjectHomogeneousPoint(
     return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
 
   HomogeneousCoordinate result(p.x(), p.y(), z, 1.0);
-  transform.TransformVector4(result.vec);
+  transform.TransformVector4(result.vec.data());
   return result;
 }
 
@@ -68,7 +63,7 @@ static HomogeneousCoordinate MapHomogeneousPoint(
     const gfx::Transform& transform,
     const gfx::PointF& p) {
   HomogeneousCoordinate result(p.x(), p.y(), 0.0, 1.0);
-  transform.TransformVector4(result.vec);
+  transform.TransformVector4(result.vec.data());
   return result;
 }
 
@@ -245,10 +240,11 @@ static inline bool IsNearlyTheSame(const gfx::Point3F& lhs,
          IsNearlyTheSame(lhs.y(), rhs.y()) && IsNearlyTheSame(lhs.z(), rhs.z());
 }
 
-static inline void AddVertexToClippedQuad3d(const gfx::Point3F& new_vertex,
-                                            gfx::Point3F clipped_quad[6],
-                                            int* num_vertices_in_clipped_quad,
-                                            bool* need_to_clamp) {
+static inline void AddVertexToClippedQuad3d(
+    const gfx::Point3F& new_vertex,
+    base::span<gfx::Point3F, 6> clipped_quad,
+    int* num_vertices_in_clipped_quad,
+    bool* need_to_clamp) {
   if (*num_vertices_in_clipped_quad > 0 &&
       IsNearlyTheSame(clipped_quad[*num_vertices_in_clipped_quad - 1],
                       new_vertex))
@@ -374,7 +370,7 @@ gfx::Rect MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
 
 bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
                                 const gfx::QuadF& src_quad,
-                                gfx::Point3F clipped_quad[6],
+                                base::span<gfx::Point3F, 6> clipped_quad,
                                 int* num_vertices_in_clipped_quad) {
   // This is different from the 2D version because, when we clamp
   // coordinates to [-HomogeneousCoordinate::kInfiniteCoordinate,
@@ -587,18 +583,19 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
 }
 
 gfx::RectF MathUtil::ComputeEnclosingRectOfVertices(
-    const gfx::PointF vertices[],
-    int num_vertices) {
-  if (num_vertices < 2)
+    base::span<const gfx::PointF> vertices) {
+  if (vertices.size() < 2) {
     return gfx::RectF();
+  }
 
   float xmin = std::numeric_limits<float>::max();
   float xmax = -std::numeric_limits<float>::max();
   float ymin = std::numeric_limits<float>::max();
   float ymax = -std::numeric_limits<float>::max();
 
-  for (int i = 0; i < num_vertices; ++i)
-    ExpandBoundsToIncludePoint(&xmin, &xmax, &ymin, &ymax, vertices[i]);
+  for (auto& vertex : vertices) {
+    ExpandBoundsToIncludePoint(&xmin, &xmax, &ymin, &ymax, vertex);
+  }
 
   return gfx::RectF(gfx::PointF(xmin, ymin),
                     gfx::SizeF(xmax - xmin, ymax - ymin));

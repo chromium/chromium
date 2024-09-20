@@ -17,6 +17,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace base {
@@ -64,7 +65,7 @@ class SESSIONS_EXPORT LiveTabContext {
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) = 0;
   virtual const gfx::Rect GetRestoredBounds() const = 0;
-  virtual ui::WindowShowState GetRestoredState() const = 0;
+  virtual ui::mojom::WindowShowState GetRestoredState() const = 0;
   virtual std::string GetWorkspace() const = 0;
 
   // Note: |tab.platform_data| may be null (e.g., if restoring from last session

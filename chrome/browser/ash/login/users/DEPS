@@ -34,6 +34,7 @@ include_rules = [
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_select_file_policy.h",

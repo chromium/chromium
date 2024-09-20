@@ -129,7 +129,6 @@ class AutofillWebDataBackendImpl
 
   // Returns the Autofill profiles from the web database.
   std::unique_ptr<WDTypedResult> GetAutofillProfiles(
-      std::optional<AutofillProfile::RecordType> record_type,
       WebDatabase* db);
 
   // Returns the number of values such that all for autofill entries with that

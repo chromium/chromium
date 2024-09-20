@@ -5,13 +5,13 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TabOrganizationSelectorElement} from './tab_organization_selector.js';
-import {OrganizationFeature} from './tab_organization_selector.js';
+import {TabOrganizationFeature} from './tab_search.mojom-webui.js';
 
 export function getHtml(this: TabOrganizationSelectorElement) {
   // clang-format off
   return html`
 <!--_html_template_start_-->
-<div ?hidden=${this.selectedState_ !== OrganizationFeature.NONE}>
+<div ?hidden=${this.selectedState_ !== TabOrganizationFeature.kSelector}>
   <div id="buttonContainer">
     <tab-organization-selector-button id="autoTabGroupsButton"
         top="true"
@@ -31,11 +31,12 @@ export function getHtml(this: TabOrganizationSelectorElement) {
   </div>
 </div>
 
-<div ?hidden=${this.selectedState_ !== OrganizationFeature.AUTO_TAB_GROUPS}>
-  <auto-tab-groups-page></auto-tab-groups-page>
+<div ?hidden=${this.selectedState_ !== TabOrganizationFeature.kAutoTabGroups}>
+  <auto-tab-groups-page @back-click="${this.onBackClick_}">
+  </auto-tab-groups-page>
 </div>
 
-<div ?hidden=${this.selectedState_ !== OrganizationFeature.DECLUTTER}>
+<div ?hidden=${this.selectedState_ !== TabOrganizationFeature.kDeclutter}>
   <declutter-page @back-click="${this.onBackClick_}"></declutter-page>
 </div>
 <!--_html_template_end_-->`;

@@ -79,7 +79,7 @@ suite('LinksToggledIntegration', () => {
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
     app.enabledLangs = ['en-US'];
     const selectedVoice =
-        createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
+        createSpeechSynthesisVoice({lang: 'en-US', name: 'Google Kristi'});
     emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
     return microtasksFinished();
   });

@@ -3,8 +3,8 @@ of services that are all keyed off the same object (typically,
 content::BrowserContext or web::BrowserState), and whose teardown order is
 managed according to the expressed dependency order.
 
-KeyedService is a layered component
-(https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design)
+KeyedService is a
+[layered component](https://crsrc.org/docs/website/site/developers/design-documents/layered-components-design/index.md)
 to enable it to be shared cleanly on iOS.
 
 This component has the following structure:

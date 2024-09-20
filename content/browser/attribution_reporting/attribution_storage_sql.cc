@@ -237,10 +237,6 @@ int64_t GetStorageFileSizeKB(const base::FilePath& path_to_database) {
   return file_size;
 }
 
-void DeduplicateSourceIds(std::vector<StoredSource::Id>& ids) {
-  ids = base::flat_set<StoredSource::Id>(std::move(ids)).extract();
-}
-
 }  // namespace
 
 struct AttributionStorageSql::ReportCorruptionStatusSetAndIds {
@@ -273,9 +269,9 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   StoredSource::Id source_id(statement.ColumnInt64(col++));
   uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(col++));
   std::optional<SuitableOrigin> source_origin =
-      SuitableOrigin::Deserialize(statement.ColumnString(col++));
+      SuitableOrigin::Deserialize(statement.ColumnStringView(col++));
   std::optional<SuitableOrigin> reporting_origin =
-      SuitableOrigin::Deserialize(statement.ColumnString(col++));
+      SuitableOrigin::Deserialize(statement.ColumnStringView(col++));
   base::Time source_time = statement.ColumnTime(col++);
   base::Time expiry_time = statement.ColumnTime(col++);
   base::Time aggregatable_report_window_time = statement.ColumnTime(col++);
@@ -393,7 +389,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   std::vector<net::SchemefulSite> destination_sites;
   while (destination_sites_statement.Step()) {
     auto destination_site = net::SchemefulSite::Deserialize(
-        destination_sites_statement.ColumnString(0));
+        destination_sites_statement.ColumnStringView(0));
     destination_sites.push_back(std::move(destination_site));
   }
   if (!destination_sites_statement.Succeeded()) {
@@ -559,7 +555,7 @@ AttributionStorageSql::StartTransaction() {
 }
 
 bool AttributionStorageSql::DeactivateSources(
-    const std::vector<StoredSource::Id>& sources) {
+    base::span<const StoredSource::Id> sources) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(&db_);
@@ -586,7 +582,7 @@ bool AttributionStorageSql::DeactivateSources(
 }
 
 bool AttributionStorageSql::DeactivateSourcesForDestinationLimit(
-    const std::vector<StoredSource::Id>& sources,
+    base::span<const StoredSource::Id> sources,
     base::Time now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sources.empty()) {
@@ -914,6 +910,108 @@ bool AttributionStorageSql::UpdateOrRemoveSourcesWithIncompatibleScopeFields(
          DeactivateSources(source_ids_to_deactivate) && transaction.Commit();
 }
 
+namespace {
+
+struct ScopeData {
+  base::Time max_source_time = base::Time::Min();
+  std::vector<StoredSource::Id> sources_without_reports;
+  std::vector<StoredSource::Id> sources_with_reports;
+
+  ScopeData() = default;
+
+  ScopeData(const ScopeData&) = delete;
+  ScopeData& operator=(const ScopeData&) = delete;
+
+  ScopeData(ScopeData&&) = default;
+  ScopeData& operator=(ScopeData&&) = default;
+
+  void Assign(std::vector<StoredSource::Id>& source_ids_to_delete,
+              std::vector<StoredSource::Id>& source_ids_to_deactivate) && {
+    if (source_ids_to_delete.empty()) {
+      source_ids_to_delete = std::move(sources_without_reports);
+    } else {
+      source_ids_to_delete.insert(source_ids_to_delete.end(),
+                                  sources_without_reports.begin(),
+                                  sources_without_reports.end());
+    }
+
+    if (source_ids_to_deactivate.empty()) {
+      source_ids_to_deactivate = std::move(sources_with_reports);
+    } else {
+      source_ids_to_deactivate.insert(source_ids_to_deactivate.end(),
+                                      sources_with_reports.begin(),
+                                      sources_with_reports.end());
+    }
+  }
+};
+
+using ScopeDataMap = std::map<std::string, ScopeData>;
+
+// Assigns sources for all but the top `remaining_scopes_allowed` scopes to be
+// deleted or deactivated.
+void SelectScopes(ScopeDataMap scope_datas,
+                  size_t remaining_scopes_allowed,
+                  std::vector<StoredSource::Id>& source_ids_to_delete,
+                  std::vector<StoredSource::Id>& source_ids_to_deactivate) {
+  CHECK_GT(scope_datas.size(), remaining_scopes_allowed);
+
+  // It can be more efficient to find the bottom scopes than the top.
+  size_t to_select;
+  bool keep_selected;
+  if (size_t diff = scope_datas.size() - remaining_scopes_allowed;
+      remaining_scopes_allowed < diff) {
+    to_select = remaining_scopes_allowed;
+    keep_selected = true;
+  } else {
+    to_select = diff;
+    keep_selected = false;
+  }
+
+  const auto cmp = [keep_selected](const ScopeDataMap::node_type& a,
+                                   const ScopeDataMap::node_type& b) {
+    return (std::tie(a.mapped().max_source_time, a.key()) >
+            std::tie(b.mapped().max_source_time, b.key())) == keep_selected;
+  };
+
+  std::vector<ScopeDataMap::node_type> selected;
+  selected.reserve(to_select);
+
+  while (!scope_datas.empty() && selected.size() < to_select) {
+    selected.emplace_back(scope_datas.extract(scope_datas.begin()));
+  }
+
+  base::ranges::make_heap(selected, cmp);
+
+  while (!scope_datas.empty()) {
+    auto scope = scope_datas.extract(scope_datas.begin());
+
+    if (cmp(scope, selected.front())) {
+      // Unfortunately, there is no existing function for replacing the top
+      // of the heap, necessitating pop-then-push here.
+      base::ranges::pop_heap(selected, cmp);
+      std::swap(selected.back(), scope);
+      base::ranges::push_heap(selected, cmp);
+    }
+
+    if (keep_selected) {
+      std::move(scope.mapped())
+          .Assign(source_ids_to_delete, source_ids_to_deactivate);
+    }
+  }
+
+  if (!keep_selected) {
+    for (auto& scope : selected) {
+      std::move(scope.mapped())
+          .Assign(source_ids_to_delete, source_ids_to_deactivate);
+    }
+  }
+
+  DeduplicateSourceIds(source_ids_to_delete);
+  DeduplicateSourceIds(source_ids_to_deactivate);
+}
+
+}  // namespace
+
 // TODO(apaseltiner): This logic is very similar to that of
 // `UpdateOrRemoveSourcesWithIncompatibleScopeFields()`. Can we deduplicate some
 // of the logic?
@@ -921,18 +1019,6 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
     const StorableSource& source,
     base::Time source_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  struct Record {
-    std::string scope;
-    StoredSource::Id id;
-    bool has_reports;
-    base::Time source_time;
-
-    bool operator<(const Record& other) const {
-      return source_time > other.source_time ||
-             (source_time == other.source_time && scope > other.scope);
-    }
-  };
 
   const auto& registration = source.registration();
 
@@ -964,7 +1050,9 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
     PrepareGetMatchingSourcesStatement(statement,
                                        base::span_from_ref(destination));
 
-    std::vector<Record> records;
+    ScopeDataMap scope_datas;
+    std::vector<StoredSource::Id> source_ids_to_delete;
+    std::vector<StoredSource::Id> source_ids_to_deactivate;
 
     while (statement.Step()) {
       // Note: This causes a single corrupt source to fail every
@@ -994,35 +1082,37 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
           continue;
         }
 
-        records.emplace_back(std::move(scope), source_id, has_reports,
-                             this_source_time);
+        if (remaining_scopes_allowed == 0) {
+          AssignSourceForDeactivationOrDeletion(source_id, has_reports,
+                                                source_ids_to_delete,
+                                                source_ids_to_deactivate);
+          // Ensure that each source is only assigned once, avoiding the need to
+          // call `DeduplicateSourceIds()` below.
+          break;
+        }
+
+        auto [scope_data, _] =
+            scope_datas.try_emplace(std::move(scope), ScopeData());
+        scope_data->second.max_source_time =
+            std::max(scope_data->second.max_source_time, this_source_time);
+
+        AssignSourceForDeactivationOrDeletion(
+            source_id, has_reports,
+            /*source_ids_to_delete=*/scope_data->second.sources_without_reports,
+            /*source_ids_to_deactivate=*/
+            scope_data->second.sources_with_reports);
       }
     }
     if (!statement.Succeeded()) {
       return false;
     }
 
-    base::ranges::sort(records);
-
-    std::vector<StoredSource::Id> source_ids_to_delete;
-    std::vector<StoredSource::Id> source_ids_to_deactivate;
-
-    // We use a `std::set` here instead of `base::flat_set` because the number
-    // of insertions may be large. We use `std::string_view` to avoid having to
-    // move values out of `records`.
-    for (std::set<std::string_view> selected_scopes;
-         const auto& record : records) {
-      if (selected_scopes.size() < remaining_scopes_allowed) {
-        selected_scopes.insert(record.scope);
-      } else if (!selected_scopes.contains(record.scope)) {
-        AssignSourceForDeactivationOrDeletion(record.id, record.has_reports,
-                                              source_ids_to_delete,
-                                              source_ids_to_deactivate);
-      }
+    // It's only necessary to compute the top scopes when there are more scopes
+    // than allowed.
+    if (scope_datas.size() > remaining_scopes_allowed) {
+      SelectScopes(std::move(scope_datas), remaining_scopes_allowed,
+                   source_ids_to_delete, source_ids_to_deactivate);
     }
-
-    DeduplicateSourceIds(source_ids_to_delete);
-    DeduplicateSourceIds(source_ids_to_deactivate);
 
     if (!DeleteEventLevelReportsTriggeredLaterThanForSources(
             source_ids_to_deactivate, source_time) ||
@@ -1151,13 +1241,13 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   base::Time initial_report_time = statement.ColumnTime(col++);
   int failed_send_attempts = statement.ColumnInt(col++);
   base::Uuid external_report_id =
-      base::Uuid::ParseLowercase(statement.ColumnString(col++));
+      base::Uuid::ParseLowercase(statement.ColumnStringView(col++));
   std::optional<uint64_t> trigger_debug_key =
       ColumnUint64OrNull(statement, col++);
   auto context_origin =
-      SuitableOrigin::Deserialize(statement.ColumnString(col++));
+      SuitableOrigin::Deserialize(statement.ColumnStringView(col++));
   auto reporting_origin =
-      SuitableOrigin::Deserialize(statement.ColumnString(col++));
+      SuitableOrigin::Deserialize(statement.ColumnStringView(col++));
   std::optional<AttributionReport::Type> report_type =
       DeserializeReportType(statement.ColumnInt(col++));
 
@@ -1412,7 +1502,7 @@ bool AttributionStorageSql::DeleteReportInternal(
 }
 
 bool AttributionStorageSql::DeleteEventLevelReportsTriggeredLaterThanForSources(
-    const std::vector<StoredSource::Id>& sources,
+    base::span<const StoredSource::Id> sources,
     base::Time source_time) {
   DCHECK(db_.HasActiveTransactions());
   // Note that this may also delete true reports if the user configured the
@@ -1846,7 +1936,6 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
   }
 
   VerifyReports(/*deletion_counts=*/nullptr);
-  RecordSourcesPerSourceOrigin();
 
   return true;
 }
@@ -1892,9 +1981,9 @@ void AttributionStorageSql::VerifyReports(DeletionCounts* deletion_counts) {
         int num_aggregatable_reports_deleted = 0;
         bool ok = absl::visit(
             base::Overloaded{[](absl::monostate) { return true; },
-                             [&](StoredSource::Id id)
+                             [&](const StoredSource::Id id)
                                  VALID_CONTEXT_REQUIRED(sequence_checker_) {
-                                   const std::vector<StoredSource::Id> ids{id};
+                                   auto ids = base::span_from_ref(id);
                                    if (!DeleteSources(ids)) {
                                      return false;
                                    }
@@ -1925,54 +2014,6 @@ void AttributionStorageSql::VerifyReports(DeletionCounts* deletion_counts) {
   }
   base::UmaHistogramCounts1000("Conversions.ValidReportsInDatabase",
                                valid_reports);
-}
-
-void AttributionStorageSql::RecordSourcesPerSourceOrigin() {
-  static constexpr const char kGetAllSourcesOrigins[] =
-      "SELECT source_origin FROM sources";
-  sql::Statement statement(db_.GetUniqueStatement(kGetAllSourcesOrigins));
-
-  // Count number of sources per source origin.
-  std::map<std::string, int64_t> map;
-  while (statement.Step()) {
-    std::string source_origin = statement.ColumnString(0);
-    auto [it, _] = map.try_emplace(std::move(source_origin), 0);
-    ++it->second;
-  }
-  if (!statement.Succeeded()) {
-    return;
-  }
-
-  // Get the top k counts (up to 20).
-
-  // Workaround to use `base::ranges::partial_sort_copy` with a map<std:string,
-  // int64_t> input and vector<int64_t> output. Ideally, we'd use an iterator
-  // adaptor (e.g. std::ranges::views::values) but such utility is not
-  // available.
-  struct CountOnly {
-    CountOnly() : count(0) {}
-    // NOLINTNEXTLINE(google-explicit-constructor)
-    CountOnly(const std::pair<const std::string, int64_t>& p)
-        : count(p.second) {}
-
-    int64_t count;
-  };
-
-  size_t k = map.size() < 20 ? map.size() : 20;
-  std::vector<CountOnly> top_k(/*count=*/k, /*value=*/CountOnly());
-  base::ranges::partial_sort_copy(
-      map, top_k, base::ranges::greater(),
-      &std::pair<const std::string, int64_t>::second, &CountOnly::count);
-
-  // Record sampled top counts.
-  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin2.1st",
-                                k >= 1 ? top_k[0].count : 0);
-  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin2.3rd",
-                                k >= 3 ? top_k[2].count : 0);
-  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin2.7th",
-                                k >= 7 ? top_k[6].count : 0);
-  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin2.20th",
-                                k >= 20 ? top_k[19].count : 0);
 }
 
 bool AttributionStorageSql::InitializeSchema(bool db_empty) {
@@ -2317,7 +2358,7 @@ void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
 }
 
 bool AttributionStorageSql::DeleteSources(
-    const std::vector<StoredSource::Id>& source_ids) {
+    base::span<const StoredSource::Id> source_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -2380,7 +2421,7 @@ bool AttributionStorageSql::ClearReportsForOriginsInRange(
     return false;
   }
 
-  auto match_filter = [&](const std::string& str) {
+  auto match_filter = [&](std::string_view str) {
     return filter.is_null() || filter.Run(blink::StorageKey::CreateFirstParty(
                                    DeserializeOrigin(str)));
   };
@@ -2391,7 +2432,7 @@ bool AttributionStorageSql::ClearReportsForOriginsInRange(
   scan_sources_statement.BindTime(1, delete_end);
 
   while (scan_sources_statement.Step()) {
-    if (match_filter(scan_sources_statement.ColumnString(0))) {
+    if (match_filter(scan_sources_statement.ColumnStringView(0))) {
       source_ids_to_delete.emplace_back(scan_sources_statement.ColumnInt64(1));
     }
   }
@@ -2406,7 +2447,7 @@ bool AttributionStorageSql::ClearReportsForOriginsInRange(
   scan_reports_statement.BindTime(1, delete_end);
 
   while (scan_reports_statement.Step()) {
-    if (!match_filter(scan_reports_statement.ColumnString(0))) {
+    if (!match_filter(scan_reports_statement.ColumnStringView(0))) {
       continue;
     }
     source_ids_to_delete.emplace_back(scan_reports_statement.ColumnInt64(1));
@@ -2438,7 +2479,7 @@ bool AttributionStorageSql::ClearReportsForOriginsInRange(
 }
 
 bool AttributionStorageSql::ClearReportsForSourceIds(
-    const std::vector<StoredSource::Id>& source_ids,
+    base::span<const StoredSource::Id> source_ids,
     int& num_event_reports_deleted,
     int& num_aggregatable_reports_deleted) {
   sql::Transaction transaction(&db_);
@@ -2479,8 +2520,9 @@ bool AttributionStorageSql::ClearReportsForSourceIds(
   return transaction.Commit();
 }
 
-RateLimitResult
-AttributionStorageSql::AggregatableAttributionAllowedForBudgetLimit(
+namespace {
+
+RateLimitResult AggregatableAttributionAllowedForBudgetLimit(
     const AttributionReport::AggregatableAttributionData&
         aggregatable_attribution,
     int remaining_aggregatable_attribution_budget) {
@@ -2498,6 +2540,8 @@ AttributionStorageSql::AggregatableAttributionAllowedForBudgetLimit(
 
   return RateLimitResult::kAllowed;
 }
+
+}  // namespace
 
 bool AttributionStorageSql::AdjustBudgetConsumedForSource(
     StoredSource::Id source_id,
@@ -2701,7 +2745,7 @@ AttributionStorageSql::GetAllDataKeys() {
   const auto get_data_keys = [&](sql::Statement& statement) {
     while (statement.Step()) {
       url::Origin reporting_origin =
-          DeserializeOrigin(statement.ColumnString(0));
+          DeserializeOrigin(statement.ColumnStringView(0));
       if (reporting_origin.opaque()) {
         continue;
       }

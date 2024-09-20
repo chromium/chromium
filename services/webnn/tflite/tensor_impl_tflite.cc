@@ -24,17 +24,17 @@ base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
 TensorImplTflite::Create(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl* context,
-    mojom::BufferInfoPtr buffer_info) {
-  size_t size = buffer_info->descriptor.PackedByteLength();
+    mojom::TensorInfoPtr tensor_info) {
+  size_t size = tensor_info->descriptor.PackedByteLength();
 
   // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
   //
   // TODO(crbug.com/356670455): Consider moving this check to the renderer and
   // throwing a TypeError.
   if (!base::IsValueInRangeForNumericType<int>(size)) {
-    LOG(ERROR) << "[WebNN] Buffer is too large to create.";
+    LOG(ERROR) << "[WebNN] Tensor is too large to create.";
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
-                                              "Failed to create buffer."));
+                                              "Failed to create tensor."));
   }
 
   auto buffer_content = std::make_unique<BufferContent>(size);
@@ -42,17 +42,17 @@ TensorImplTflite::Create(
       base::MakeRefCounted<QueueableResourceState<BufferContent>>(
           std::move(buffer_content));
   return std::make_unique<TensorImplTflite>(
-      std::move(receiver), context, std::move(buffer_info),
+      std::move(receiver), context, std::move(tensor_info),
       std::move(buffer_state), base::PassKey<TensorImplTflite>());
 }
 
 TensorImplTflite::TensorImplTflite(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl* context,
-    mojom::BufferInfoPtr buffer_info,
+    mojom::TensorInfoPtr tensor_info,
     scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
     base::PassKey<TensorImplTflite>)
-    : WebNNTensorImpl(std::move(receiver), context, std::move(buffer_info)),
+    : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)),
       buffer_state_(std::move(buffer_state)) {}
 
 TensorImplTflite::~TensorImplTflite() {
@@ -65,7 +65,7 @@ TensorImplTflite::GetBufferState() const {
   return buffer_state_;
 }
 
-void TensorImplTflite::ReadBufferImpl(ReadBufferCallback callback) {
+void TensorImplTflite::ReadTensorImpl(ReadTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Lock the buffer contents as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources = {
@@ -78,12 +78,12 @@ void TensorImplTflite::ReadBufferImpl(ReadBufferCallback callback) {
       base::BindOnce(
           [](scoped_refptr<QueueableResourceState<BufferContent>>
                  content_handle,
-             ReadBufferCallback callback,
+             ReadTensorCallback callback,
              base::OnceClosure completion_closure) {
             // Memory copies are fast, avoid the overhead of posting a task
             // to the thread pool and do the work synchronously.
             std::move(callback).Run(
-                mojom::ReadBufferResult::NewBuffer(mojo_base::BigBuffer(
+                mojom::ReadTensorResult::NewBuffer(mojo_base::BigBuffer(
                     content_handle->GetSharedLockedResource().AsSpan())));
             std::move(completion_closure).Run();
           },
@@ -91,7 +91,7 @@ void TensorImplTflite::ReadBufferImpl(ReadBufferCallback callback) {
   task->Enqueue();
 }
 
-void TensorImplTflite::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
+void TensorImplTflite::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take an exclusive lock to the buffer contents while reading.
   std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {

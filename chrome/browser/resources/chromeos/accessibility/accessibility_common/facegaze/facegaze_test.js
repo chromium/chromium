@@ -1419,3 +1419,33 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinations', async function() {
   assertEquals(keyEvents[1].keyCode, KeyCode.C);
   assertObjectEquals(keyEvents[1].modifiers, {ctrl: true});
 });
+
+AX_TEST_F('FaceGazeTest', 'VelocityThreshold', async function() {
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withBufferSize(1)
+                     .withCursorControlEnabled(true)
+                     .withVelocityThreshold()
+                     .withSpeeds(1, 1, 1, 1);
+  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+  assertNullOrUndefined(
+      this.mockAccessibilityPrivate.getLatestCursorPosition());
+
+  // Manually set the velocity threshold to 1. This means that the mouse needs
+  // to move by more than one pixel before it will actually be moved.
+  this.getFaceGaze().mouseController_.velocityThreshold_ = 1;
+
+  // Small movement in head location (e.g. one pixel) doesn't trigger any
+  // mouse movement.
+  result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+      0.101, 0.201);
+  this.processFaceLandmarkerResult(result);
+  assertNullOrUndefined(
+      this.mockAccessibilityPrivate.getLatestCursorPosition());
+
+  // Large movement triggers mouse movement.
+  result =
+      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.11, 0.21);
+  this.processFaceLandmarkerResult(result);
+  this.assertLatestCursorPosition({x: 590, y: 406});
+});

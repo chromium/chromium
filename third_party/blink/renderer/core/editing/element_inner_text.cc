@@ -245,7 +245,7 @@ void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
   if (layout_text.HasEmptyText()) {
     return;
   }
-  if (layout_text.Style()->Visibility() != EVisibility::kVisible) {
+  if (layout_text.Style()->UsedVisibility() != EVisibility::kVisible) {
     // TODO(editing-dev): Once we make ::first-letter don't apply "visibility",
     // we should get rid of this if-statement. http://crbug.com/866744
     return;
@@ -283,8 +283,9 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
   // 3. If node's computed value of 'visibility' is not 'visible', then return
   // items.
   const ComputedStyle* style = node.GetComputedStyle();
-  if (style && style->Visibility() != EVisibility::kVisible)
+  if (style && style->UsedVisibility() != EVisibility::kVisible) {
     return ProcessChildren(node);
+  }
 
   // 4. If node is not being rendered, then return items. For the purpose of
   // this step, the following elements must act as described if the computed

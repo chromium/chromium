@@ -4,7 +4,6 @@
 
 package org.chromium.components.module_installer.builder;
 
-import com.google.auto.service.AutoService;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.ClassName;
@@ -16,6 +15,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.build.annotations.ServiceImpl;
 
 import java.util.Set;
 
@@ -31,7 +31,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
 /** Generates module classes for {@link ModuleInterface} annotations. */
-@AutoService(Processor.class)
+@ServiceImpl(Processor.class)
 public class ModuleInterfaceProcessor extends AbstractProcessor {
     private static final Class<ModuleInterface> MODULE_INTERFACE_CLASS = ModuleInterface.class;
 

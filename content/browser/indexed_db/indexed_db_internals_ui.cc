@@ -48,7 +48,7 @@
 
 using storage::mojom::IdbPartitionMetadataPtr;
 
-namespace content {
+namespace content::indexed_db {
 
 namespace {
 
@@ -430,4 +430,4 @@ void IndexedDBInternalsUI::OnDownloadStarted(
   std::move(callback).Run(std::nullopt);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

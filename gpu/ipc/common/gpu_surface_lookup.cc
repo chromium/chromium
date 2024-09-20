@@ -12,6 +12,18 @@ namespace {
 GpuSurfaceLookup* g_instance = nullptr;
 }  // anonymous namespace
 
+SurfaceRecord::SurfaceRecord(gl::ScopedJavaSurface surface,
+                             bool can_be_used_with_surface_control)
+    : surface_variant(std::move(surface)),
+      can_be_used_with_surface_control(can_be_used_with_surface_control) {}
+
+SurfaceRecord::SurfaceRecord(gl::ScopedJavaSurfaceControl surface_control)
+    : surface_variant(std::move(surface_control)),
+      can_be_used_with_surface_control(true) {}
+
+SurfaceRecord::~SurfaceRecord() = default;
+SurfaceRecord::SurfaceRecord(SurfaceRecord&&) = default;
+
 // static
 GpuSurfaceLookup* GpuSurfaceLookup::GetInstance() {
   DCHECK(g_instance);

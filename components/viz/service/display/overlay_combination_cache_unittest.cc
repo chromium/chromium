@@ -85,7 +85,7 @@ class OverlayCombinationCacheTest : public testing::Test {
     CompositorRenderPassId id{1};
     RenderPassBuilder pass_builder(id, gfx::Rect(0, 0, 100, 100));
     for (size_t i = 0; i < power_gains.size(); ++i) {
-      ResourceId resource_id(i);
+      ResourceId resource_id(i + 1);
       pass_builder.AddTextureQuad(gfx::Rect(0, 0, 10, 10), resource_id);
     }
     render_pass_ = pass_builder.Build();

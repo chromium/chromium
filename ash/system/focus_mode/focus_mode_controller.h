@@ -50,7 +50,7 @@ class ASH_EXPORT FocusModeController
    public:
     // Called whenever Focus Mode changes as a result of user action or when the
     // session duration expires.
-    virtual void OnFocusModeChanged(bool in_focus_session) = 0;
+    virtual void OnFocusModeChanged(FocusModeSession::State session_state) = 0;
 
     // Called every `timer_` tick for updating UI elements during a Focus Mode
     // session.
@@ -118,6 +118,7 @@ class ASH_EXPORT FocusModeController
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // FocusModeSoundsController::Observer:
   // Will close/create the media widget for an active focus session depending on
@@ -148,9 +149,9 @@ class ASH_EXPORT FocusModeController
   // This ensures that states are all reverted (especially DND and UI elements).
   void ResetFocusSession();
 
-  // Used when we want to extend the ending state indefinitely, and requires
-  // direct user action to terminate the ending moment.
-  void EnablePersistentEnding();
+  // Used to clear some controller states when the user clicks the tray icon to
+  // show the ending moment bubble.
+  void OnEndingBubbleShown();
 
   // Sets a specific value for `session_duration_`. We have two different
   // notions of a session, so this one is only in charge of updating the session
@@ -193,6 +194,18 @@ class ASH_EXPORT FocusModeController
   // This is currently only used in testing to trigger an ending moment
   // immediately if there is an ongoing session.
   void TriggerEndingMomentImmediately();
+
+  // Helper functions for enabling/disabling DND.
+  void MaybeEnableDND();
+
+  // Used during the ending moment to disable DND after a timeout, instead of
+  // waiting until the persistent ending moment is dismissed.
+  void MaybeDisableDND();
+
+  // When an active session ends, we bounce the tray icon and show the ending
+  // moment nudge. This is triggered every `kEndingMomentBounceAnimationDelay`
+  // as long as the ending moment hasn't been terminated by the user.
+  void BounceTrayIcon();
 
   // Get the request id for the media session played for Focus Sounds.
   const base::UnguessableToken& GetMediaSessionRequestId();

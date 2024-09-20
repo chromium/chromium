@@ -55,6 +55,8 @@ class UkmDatabaseBackend : public UkmDatabase {
                     const UmaMetricEntry& row) override;
   void RunReadOnlyQueries(QueryList&& queries, QueryCallback callback) override;
   void DeleteEntriesOlderThan(base::Time time) override;
+  void CleanupItems(const std::string& profile_id,
+                    std::vector<CleanupItem> cleanup_items) override;
   void CommitTransactionForTesting() override;
 
   sql::Database& db() { return db_; }

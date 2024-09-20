@@ -32,7 +32,7 @@ class BubbleSignInPromoSignInButtonView : public views::View {
   // |callback| is called every time the user interacts with this button.
   explicit BubbleSignInPromoSignInButtonView(
       views::Button::PressedCallback callback,
-      signin_metrics::AccessPoint access_point,
+      bool is_autofill_promo,
       ui::ButtonStyle button_style,
       std::u16string button_text);
 
@@ -41,7 +41,7 @@ class BubbleSignInPromoSignInButtonView : public views::View {
   BubbleSignInPromoSignInButtonView(const AccountInfo& account_info,
                                     const gfx::Image& account_icon,
                                     views::Button::PressedCallback callback,
-                                    signin_metrics::AccessPoint access_point,
+                                    bool is_autofill_promo,
                                     std::u16string button_text,
                                     std::u16string button_accessibility_text);
   BubbleSignInPromoSignInButtonView(const BubbleSignInPromoSignInButtonView&) =
@@ -57,9 +57,9 @@ class BubbleSignInPromoSignInButtonView : public views::View {
   // autofill sign in promo in order to avoid a direct action through
   // double click on the save button in the bubble before.
   void AddOrDelayCallbackForSignInButton(
-      signin_metrics::AccessPoint access_point,
       views::MdTextButton* text_button,
-      views::Button::PressedCallback& callback);
+      views::Button::PressedCallback& callback,
+      bool is_autofill_promo);
 
   void AddCallbackToSignInButton(views::MdTextButton* text_button,
                                  views::Button::PressedCallback callback);

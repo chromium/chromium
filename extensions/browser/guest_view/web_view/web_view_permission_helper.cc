@@ -308,6 +308,13 @@ void WebViewPermissionHelper::RequestFileSystemPermission(
       url, allowed_by_default, std::move(callback));
 }
 
+void WebViewPermissionHelper::RequestFullscreenPermission(
+    const url::Origin& requesting_origin,
+    PermissionResponseCallback callback) {
+  web_view_permission_helper_delegate_->RequestFullscreenPermission(
+      requesting_origin, std::move(callback));
+}
+
 int WebViewPermissionHelper::RequestPermission(
     WebViewPermissionType permission_type,
     base::Value::Dict request_info,

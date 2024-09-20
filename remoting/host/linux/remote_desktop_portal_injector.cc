@@ -33,7 +33,6 @@ constexpr int BUTTON_RIGHT_KEYCODE = 273;
 constexpr int BUTTON_MIDDLE_KEYCODE = 274;
 constexpr int BUTTON_FORWARD_KEYCODE = 277;
 constexpr int BUTTON_BACK_KEYCODE = 278;
-constexpr int BTN_UNKNOWN = -1;
 
 // See:
 // https://libinput.pages.freedesktop.org/libei/api/group__libei.html#gaf2ec4b04f6b3c706bad0f1cae66bea34
@@ -52,8 +51,7 @@ int EvdevCodeToMouseButton(int code) {
     case BUTTON_FORWARD_KEYCODE:
       return BTN_FORWARD;
     default:
-      NOTREACHED_IN_MIGRATION() << "Undefined code: " << code;
-      return BTN_UNKNOWN;
+      NOTREACHED() << "Undefined code: " << code;
   }
 }
 

@@ -137,10 +137,16 @@ std::string GetStringNameForOptimizationType(
       return "AmountExtractionAllowlist";
     case proto::OptimizationType::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST:
       return "AutofillPredictionImprovementsAllowlist";
-    case proto::OptimizationType::AMOUNT_EXTRACTION_ALLOWLIST_AFFIRM:
-      return "AmountExtractionAllowlistAffirm";
-    case proto::OptimizationType::AMOUNT_EXTRACTION_ALLOWLIST_ZIP:
-      return "AmountExtractionAllowlistZip";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM:
+      return "BuyNowPayLaterAllowlistAffirm";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP:
+      return "BuyNowPayLaterAllowlistZip";
+    case proto::OptimizationType::SAVED_TAB_GROUP:
+      return "SavedTabGroup";
+    case proto::OptimizationType::FORMS_ANNOTATIONS:
+      return "FormsAnnotations";
+    case proto::OptimizationType::TEXT_CLASSIFIER_ENTITY_DETECTION:
+      return "TextClassifierEntityDetection";
   }
 
   // The returned string is used to record histograms for the optimization type.

@@ -71,11 +71,10 @@ export class SummaryConsentCard extends ReactiveLitElement {
     settings.mutate((s) => {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
+    this.platformHandler.perfLogger.start({kind: 'summaryModelDownload'});
     this.platformHandler.summaryModelLoader.download();
-    // TODO(pihsun): This downloads the model used by title suggestion, and
-    // both model are downloaded together with the same toggle. This currently
-    // doesn't take extra time because it's the base model for summary. Change
-    // this to title suggestion specific model when we have LoRA for that.
+    // TODO: b/367285755 - Include title suggestion model when reporting the
+    // download progress.
     this.platformHandler.titleSuggestionModelLoader.download();
   }
 
@@ -88,7 +87,7 @@ export class SummaryConsentCard extends ReactiveLitElement {
   override render(): RenderResult {
     return html`<div id="container">
       <cra-icon name="summarize_auto"></cra-icon>
-      <div id="main">
+      <div id="main" role="dialog" aria-labelledby="header">
         <span id="header">${i18n.summaryDownloadModelHeader}</span>
         <span id="description">${i18n.summaryDownloadModelDescription}</span>
         <div id="actions">

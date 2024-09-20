@@ -23,8 +23,26 @@ class PaymentsWindowManager {
   using RedirectCompletionResult =
       base::StrongAlias<class RedirectCompletionResultTag, std::string>;
 
-  // The response fields for a VCN 3DS authentication, created once a response
-  // to the second UnmaskCardRequest has been received.
+  // The result of the VCN 3DS authentication.
+  enum class Vcn3dsAuthenticationResult {
+    // The authentication was a success.
+    kSuccess = 0,
+    // The authentication was a failure. If the authentication failed inside of
+    // the pop-up, the reason for the failure is unknown to Chrome, and can be
+    // due to any of several possible reasons. Some reasons can be that the user
+    // failed to authenticate, or there is a server error. This can also mean
+    // the authentication failed during the Payments server call to retrieve the
+    // card after the pop-up has closed.
+    kAuthenticationFailed = 1,
+    // The authentication did not complete. This occurs if the user closes the
+    // pop-up before finishing the authentication, and there are no query
+    // params. This can also occur if the user cancels any of the dialogs during
+    // the flow.
+    kAuthenticationNotCompleted = 2,
+  };
+
+  // The response fields for a VCN 3DS authentication, created once the flow is
+  // complete and a response to the caller is required.
   struct Vcn3dsAuthenticationResponse {
     Vcn3dsAuthenticationResponse();
     Vcn3dsAuthenticationResponse(const Vcn3dsAuthenticationResponse&);
@@ -34,9 +52,12 @@ class PaymentsWindowManager {
     Vcn3dsAuthenticationResponse& operator=(Vcn3dsAuthenticationResponse&&);
     ~Vcn3dsAuthenticationResponse();
 
+    // The result of the VCN 3DS authentication.
+    Vcn3dsAuthenticationResult result;
+
     // CreditCard representation of the data returned in the response of the
-    // UnmaskCardRequest after a VCN 3DS authentication has completed. The
-    // response is a success if `card` is present, it is a failure otherwise.
+    // UnmaskCardRequest after a VCN 3DS authentication has completed. Only
+    // present if `result` is a success.
     std::optional<CreditCard> card;
   };
 
@@ -68,20 +89,6 @@ class PaymentsWindowManager {
     // VCN 3DS authentication pop-up. If false, user consent must be achieved
     // before triggering a VCN 3DS authentication pop-up.
     bool user_consent_already_given = false;
-  };
-
-  // The result of the 3DS authentication inside of the pop-up if it was not a
-  // success.
-  enum class Vcn3dsAuthenticationPopupNonSuccessResult {
-    // The authentication inside of the 3DS pop-up was a failure. The reason for
-    // the failure is unknown to Chrome, and can be due to any of several
-    // possible reasons. Some reasons can be that the user failed to
-    // authenticate, or there is a server error.
-    kAuthenticationFailed = 0,
-    // The authentication inside of the 3DS pop-up did not complete. This occurs
-    // if the user closes the pop-up before finishing the authentication, and
-    // there are no query params.
-    kAuthenticationNotCompleted = 1,
   };
 
   virtual ~PaymentsWindowManager() = default;

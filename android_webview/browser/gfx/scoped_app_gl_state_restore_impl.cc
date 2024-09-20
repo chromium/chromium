@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/viz/common/features.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_stub.h"
@@ -182,14 +181,6 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
 }
 
 void ScopedAppGLStateRestoreImpl::SaveHWUIState(bool save_restore) {
-  absl::Cleanup uma_runner =
-      [start_time = base::TimeTicks::Now()] {
-        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-            "Android.WebView.Gfx.SaveHWUIStateNonANGLEMicroseconds",
-            base::TimeTicks::Now() - start_time, base::Microseconds(1),
-            base::Seconds(1), 100);
-      };
-
   if (g_supports_arm_shader_framebuffer_fetch)
     glGetBooleanv(GL_FETCH_PER_SAMPLE_ARM, &fetch_per_sample_arm_enabled_);
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_IMPL_TEST_API_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_IMPL_TEST_API_H_
 
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
@@ -37,6 +38,15 @@ class AutofillKeyboardAccessoryControllerImplTestApi {
 
   AutofillKeyboardAccessoryView* view() const {
     return controller_->view_.get();
+  }
+
+  void SetAccessLossWarningBridge(
+      std::unique_ptr<PasswordAccessLossWarningBridge> bridge) {
+    controller_->access_loss_warning_bridge_ = std::move(bridge);
+  }
+
+  PasswordAccessLossWarningBridge* access_loss_warning_bridge() {
+    return controller_->access_loss_warning_bridge_.get();
   }
 
  private:

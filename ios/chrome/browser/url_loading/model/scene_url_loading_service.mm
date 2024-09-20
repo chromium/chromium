@@ -23,7 +23,7 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
   DCHECK(delegate_);
 
   Browser* browser = delegate_.currentBrowserForURLLoading;
-  ChromeBrowserState* browser_state = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
 
   if (params.web_params.url.is_valid()) {
     UrlLoadParams saved_params = params;
@@ -32,9 +32,9 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
     if (params.from_chrome) {
       auto dismiss_completion = ^{
         ApplicationModeForTabOpening mode =
-            ((IsIncognitoModeForced(browser_state->GetPrefs()) ||
+            ((IsIncognitoModeForced(profile->GetPrefs()) ||
               saved_params.in_incognito) &&
-             !IsIncognitoModeDisabled(browser_state->GetPrefs()))
+             !IsIncognitoModeDisabled(profile->GetPrefs()))
                 ? ApplicationModeForTabOpening::INCOGNITO
                 : ApplicationModeForTabOpening::NORMAL;
         [delegate_ openSelectedTabInMode:mode
@@ -47,7 +47,7 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
       ApplicationMode mode = params.in_incognito ? ApplicationMode::INCOGNITO
                                                  : ApplicationMode::NORMAL;
 
-      PrefService* prefs = browser_state->GetPrefs();
+      PrefService* prefs = profile->GetPrefs();
       // Don't open the url in below situations:
       // 1. When the url is supposed to be opened in an incognito tab, but the
       // incognito mode is disabled by policy.
@@ -66,7 +66,7 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
                                     dismissOmnibox:YES];
     }
   } else {
-    if (browser_state->IsOffTheRecord() != params.in_incognito) {
+    if (profile->IsOffTheRecord() != params.in_incognito) {
       // Must take a snapshot of the tab before we switch the incognito mode
       // because the currentTab will change after the switch.
       web::WebState* currentWebState =
@@ -77,7 +77,7 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
             ->UpdateSnapshotWithCallback(nil);
       }
 
-      // Not for this browser state, switch and try again.
+      // Not for this profile, switch and try again.
       ApplicationMode mode = params.in_incognito ? ApplicationMode::INCOGNITO
                                                  : ApplicationMode::NORMAL;
       [delegate_ expectNewForegroundTabForMode:mode];

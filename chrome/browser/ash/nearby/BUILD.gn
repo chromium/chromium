@@ -123,6 +123,7 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/nearby/presence/credential_storage:unit_tests",
     "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/profiles:profile_attributes",
     "//chrome/services/sharing/nearby/test_support",
     "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//chromeos/ash/services/nearby/public/mojom",

@@ -5,6 +5,7 @@
 import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//media/media_options.gni")
+import("//rlz/buildflags/buildflags.gni")
 
 assert(is_chromeos_ash)
 
@@ -156,7 +157,6 @@ static_library("login") {
     "//chrome/browser/ash/login/oobe_quick_start",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
     "//chrome/browser/ash/login/quick_unlock",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/net/rollback_network_config",
@@ -168,11 +168,7 @@ static_library("login") {
     "//chrome/browser/profiles",
     "//chrome/browser/sync",
     "//chrome/browser/ui/ash/input_method",
-    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/aura/accessibility",
-    "//chrome/browser/ui/webui/ash/login",
-    "//chrome/browser/ui/webui/ash/login/osauth",
-    "//chrome/browser/ui/webui/ash/login/testapi",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
@@ -267,17 +263,12 @@ static_library("login") {
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/saml",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/system",
     "//chrome/browser/sync",
-    "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/webui/ash/login",
-    "//chrome/browser/ui/webui/ash/login/osauth",
-    "//chrome/browser/ui/webui/ash/login/testapi",
   ]
 }
 
@@ -308,7 +299,7 @@ static_library("test_support") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/session:test_support",
-    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ui/ash/login",
     "//chrome/test:test_support",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/userdataauth",
@@ -407,7 +398,6 @@ source_set("browser_tests") {
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/apps/app_discovery_service/recommended_arc_apps",
     "//chrome/browser/apps/app_discovery_service/recommended_arc_apps:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_mode:test_support",
@@ -434,8 +424,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/session:test_support",
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/login/ui",
-    "//chrome/browser/ash/login/ui:test_support",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/net",
@@ -453,8 +441,10 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/login:test_support",
     "//chrome/browser/ui/ash/shell_delegate",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/browser/ui/webui/signin",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos:test_utils",
@@ -498,7 +488,6 @@ source_set("browser_tests") {
     "//components/policy/core/common:test_support",
     "//components/policy/test_support",
     "//components/prefs:test_support",
-    "//components/rlz",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager:test_support",
     "//components/user_manager:test_support",
@@ -507,6 +496,7 @@ source_set("browser_tests") {
     "//net:test_support",
     "//net/traffic_annotation:test_support",
     "//remoting/host/chromeos:features",
+    "//rlz/buildflags",
     "//services/network:test_support",
     "//ui/chromeos",
     "//ui/display/manager",
@@ -525,9 +515,12 @@ source_set("browser_tests") {
     "screens:browser_tests",
     "session:browser_tests",
     "signin:browser_tests",
-    "ui:browser_tests",
     "users:browser_tests",
   ]
+
+  if (enable_rlz) {
+    deps += [ "//components/rlz" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -562,7 +555,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/enrollment:test_support",
     "//chrome/browser/ash/login/screens",
-    "//chrome/browser/ash/login/ui:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/net/rollback_network_config",
@@ -577,6 +569,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/ash/keyboard:ash_test_support",
+    "//chrome/browser/ui/ash/login:test_support",
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/ash/wallpaper:test_support",
     "//chrome/common:non_code_constants",
@@ -637,7 +630,6 @@ source_set("unit_tests") {
     "session:unit_tests",
     "signin:unit_tests",
     "smart_lock:unit_tests",
-    "ui:unit_tests",
     "users:unit_tests",
     "version_updater:unit_tests",
   ]

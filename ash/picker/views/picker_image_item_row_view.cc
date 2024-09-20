@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
@@ -86,11 +87,16 @@ PickerImageItemRowView::PickerImageItemRowView(
                                   std::move(more_items_accessible_name),
                                   /*is_togglable=*/false,
                                   /*has_border=*/false))
+                              // The kSubmenuArrowChromeRefreshIcon flips
+                              // itself, so don't flip it again.
+                              .SetFlipCanvasOnPaintForRTLUI(false)
                               .CopyAddressTo(&more_items_button_))))
       .BuildChildren();
   GetViewAccessibility().SetRole(ax::mojom::Role::kGrid);
   row_view->GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
   items_container_->GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
+  SetProperty(views::kElementIdentifierKey,
+              kPickerSearchResultsImageRowElementId);
 }
 
 PickerImageItemRowView::~PickerImageItemRowView() = default;
@@ -101,8 +107,10 @@ void PickerImageItemRowView::SetLeadingIcon(const ui::ImageModel& icon) {
 
 PickerImageItemView* PickerImageItemRowView::AddImageItem(
     std::unique_ptr<PickerImageItemView> image_item) {
-  return items_container_->AddChildView(CreateEmptyCell())
-      ->AddChildView(std::move(image_item));
+  auto* view = items_container_->AddChildView(CreateEmptyCell())
+                   ->AddChildView(std::move(image_item));
+  on_items_changed_.Notify();
+  return view;
 }
 
 gfx::Size PickerImageItemRowView::CalculatePreferredSize(
@@ -144,12 +152,17 @@ bool PickerImageItemRowView::ContainsItem(views::View* item) {
   return Contains(item);
 }
 
-views::View::Views PickerImageItemRowView::GetItemsForTesting() const {
+views::View::Views PickerImageItemRowView::GetItems() const {
   views::View::Views items;
   for (views::View* child : items_container_->children()) {
     items.push_back(child->children().front());
   }
   return items;
+}
+
+base::CallbackListSubscription PickerImageItemRowView::AddItemsChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return on_items_changed_.Add(std::move(callback));
 }
 
 views::View* PickerImageItemRowView::GetLeftmostItem() {

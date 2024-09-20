@@ -77,20 +77,25 @@ Browser* BrowserExtensionWindowController::GetBrowser() const {
   return browser_;
 }
 
-bool BrowserExtensionWindowController::GetActiveTab(
-    content::WebContents** contents,
-    int* optional_tab_id) const {
-  DCHECK(contents);
+bool BrowserExtensionWindowController::IsDeleteScheduled() const {
+  return browser_->is_delete_scheduled();
+}
 
-  *contents = browser_->tab_strip_model()->GetActiveWebContents();
-  if (*contents) {
-    if (optional_tab_id) {
-      *optional_tab_id = ExtensionTabUtil::GetTabId(*contents);
-    }
-    return true;
-  }
+content::WebContents* BrowserExtensionWindowController::GetActiveTab() const {
+  return browser_->tab_strip_model()->GetActiveWebContents();
+}
 
-  return false;
+bool BrowserExtensionWindowController::HasEditableTabStrip() const {
+  return browser_->window()->IsTabStripEditable();
+}
+
+int BrowserExtensionWindowController::GetTabCount() const {
+  return browser_->tab_strip_model()->count();
+}
+
+content::WebContents* BrowserExtensionWindowController::GetWebContentsAt(
+    int i) const {
+  return browser_->tab_strip_model()->GetWebContentsAt(i);
 }
 
 bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(

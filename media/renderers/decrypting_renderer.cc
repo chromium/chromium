@@ -116,9 +116,10 @@ void DecryptingRenderer::SetPreservesPitch(bool preserves_pitch) {
   renderer_->SetPreservesPitch(preserves_pitch);
 }
 
-void DecryptingRenderer::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
-  renderer_->SetWasPlayedWithUserActivation(was_played_with_user_activation);
+void DecryptingRenderer::SetWasPlayedWithUserActivationAndHighMediaEngagement(
+    bool was_played_with_user_activation_and_high_media_engagement) {
+  renderer_->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      was_played_with_user_activation_and_high_media_engagement);
 }
 
 void DecryptingRenderer::Flush(base::OnceClosure flush_cb) {

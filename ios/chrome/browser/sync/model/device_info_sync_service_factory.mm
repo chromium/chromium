@@ -146,9 +146,15 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 
 // static
 syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<syncer::DeviceInfoSyncService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

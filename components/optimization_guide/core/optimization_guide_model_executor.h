@@ -84,11 +84,17 @@ struct SamplingParams {
 struct SessionConfigParams {
   std::optional<SamplingParams> sampling_params;
 
-  // Whether to disable server fallback if on-device model is unavailable.
-  //
-  // This API will change but is done here quickly for simplicity while the
-  // capabilities API gets designed. Please ask owners before using this API.
-  bool disable_server_fallback = false;
+  enum class ExecutionMode {
+    // Allows for infrastructure to choose what is most appropriate.
+    kDefault,
+    // Only allows for on-device execution.
+    kOnDeviceOnly,
+    // Only allows for server execution.
+    kServerOnly,
+  };
+
+  // How the execution of this feature should be configured.
+  ExecutionMode execution_mode = ExecutionMode::kDefault;
 };
 
 // Reasons why the on-device model was not available for use.
@@ -207,8 +213,19 @@ class OptimizationGuideModelExecutor {
         const std::string& text,
         OptimizationGuideModelSizeInTokenCallback callback) = 0;
 
+    // Gets the size in tokens used by request_metadata as it would be formatted
+    // by a call to `AddContext()`. The result will be passed back through the
+    // callback.
+    virtual void GetContextSizeInTokens(
+        const google::protobuf::MessageLite& request_metadata,
+        OptimizationGuideModelSizeInTokenCallback callback) = 0;
+
     // Return the sampling params for the current session.
     virtual const SamplingParams GetSamplingParams() const = 0;
+
+    // Returns the feature_metadata from the
+    // OnDeviceModelExecutionFeatureConfig.
+    virtual const proto::Any& GetOnDeviceFeatureMetadata() const = 0;
   };
 
   // Whether an on-device session can be created for `feature`. An optional

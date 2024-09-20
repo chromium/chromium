@@ -7,6 +7,8 @@
 
 #include "content/common/content_export.h"
 
+class DIPSService;
+
 namespace content {
 
 class BrowserContext;
@@ -23,6 +25,12 @@ class CONTENT_EXPORT DipsDelegate {
 
   // DIPS will be enabled in browser contexts for which this returns true.
   virtual bool ShouldEnableDips(BrowserContext* browser_context) = 0;
+
+  // Called once for each DIPSService instance when it's created.
+  // DIPSService::Get() is guaranteed to return the given instance if called
+  // i.e., DIPSService::Get(browser_context) == dips_service.
+  virtual void OnDipsServiceCreated(BrowserContext* browser_context,
+                                    DIPSService* dips_service) = 0;
 };
 
 }  // namespace content

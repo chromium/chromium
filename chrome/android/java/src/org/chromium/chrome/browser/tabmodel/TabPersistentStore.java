@@ -32,6 +32,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -301,6 +302,7 @@ public class TabPersistentStore {
     private final TabModelSelector mTabModelSelector;
     private final TabCreatorManager mTabCreatorManager;
     private final TabWindowManager mTabWindowManager;
+    private final CipherFactory mCipherFactory;
     private final ObserverList<TabPersistentStoreObserver> mObservers;
 
     private final Deque<Tab> mTabsToSave;
@@ -342,18 +344,22 @@ public class TabPersistentStore {
      * @param clientTag The client tag used to record metrics.
      * @param modelSelector The {@link TabModelSelector} to restore to and save from.
      * @param tabCreatorManager The {@link TabCreatorManager} to use.
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      */
     public TabPersistentStore(
             String clientTag,
             TabPersistencePolicy policy,
             TabModelSelector modelSelector,
             TabCreatorManager tabCreatorManager,
-            TabWindowManager tabWindowManager) {
+            TabWindowManager tabWindowManager,
+            CipherFactory cipherFactory) {
         mClientTag = clientTag;
         mPersistencePolicy = policy;
         mTabModelSelector = modelSelector;
         mTabCreatorManager = tabCreatorManager;
         mTabWindowManager = tabWindowManager;
+        mCipherFactory = cipherFactory;
+
         mTabsToSave = new ArrayDeque<>();
         mTabsToMigrate = new ArrayDeque<>();
         mTabsToRestore = new ArrayDeque<>();
@@ -454,7 +460,8 @@ public class TabPersistentStore {
                 try {
                     TabState state = TabStateExtractor.from(tab);
                     if (state != null) {
-                        TabStateFileManager.saveState(getStateDirectory(), state, id, incognito);
+                        TabStateFileManager.saveState(
+                                getStateDirectory(), state, id, incognito, mCipherFactory);
                         if (isFlatBufferSchemaEnabled()
                                 && TabStateFileManager.isMigrated(
                                         getStateDirectory(), id, incognito)) {
@@ -462,7 +469,7 @@ public class TabPersistentStore {
                             // Otherwise if the user restarts and is in the experiment, they may
                             // have the Tab restored using an out of date FlatBuffer file.
                             TabStateFileManager.migrateTabState(
-                                    getStateDirectory(), state, id, incognito);
+                                    getStateDirectory(), state, id, incognito, mCipherFactory);
                             // No longer need to migrate the Tab as it was just migrated.
                             tabsToMigrateCopy.remove(tab);
                         }
@@ -503,7 +510,7 @@ public class TabPersistentStore {
                     TabState state = TabStateExtractor.from(tab);
                     if (state != null) {
                         TabStateFileManager.migrateTabState(
-                                getStateDirectory(), state, id, incognito);
+                                getStateDirectory(), state, id, incognito, mCipherFactory);
                         updatedMigrations.add(tab);
                     }
                 } catch (OutOfMemoryError e) {
@@ -753,16 +760,17 @@ public class TabPersistentStore {
             return mPrefetchTabStateActiveTabTask.get();
         }
         // Necessary to do on the UI thread as a last resort.
-        return TabStateFileManager.restoreTabState(getStateDirectory(), tabToRestore.id);
+        return TabStateFileManager.restoreTabState(
+                getStateDirectory(), tabToRestore.id, mCipherFactory);
     }
 
     /**
      * Handles restoring an individual tab.
      *
      * @param tabToRestore Meta data about the tab to be restored.
-     * @param tabState     The previously serialized state of the tab to be restored.
-     * @param setAsActive  Whether the tab should be set as the active tab as part of the
-     *                     restoration process.
+     * @param tabState The previously serialized state of the tab to be restored.
+     * @param setAsActive Whether the tab should be set as the active tab as part of the restoration
+     *     process.
      */
     @VisibleForTesting
     protected void restoreTab(
@@ -907,7 +915,7 @@ public class TabPersistentStore {
     public void clearState() {
         mPersistencePolicy.cancelCleanupInProgress();
 
-        mSequencedTaskRunner.postTask(
+        mSequencedTaskRunner.execute(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -1539,7 +1547,7 @@ public class TabPersistentStore {
             try {
                 mMigrationComplete =
                         TabStateFileManager.migrateTabState(
-                                getStateDirectory(), mState, mId, mEncrypted);
+                                getStateDirectory(), mState, mId, mEncrypted, mCipherFactory);
             } catch (Exception e) {
                 Log.d(TAG_MIGRATION, "Error MigrateTabTask#doInBackground", e);
                 throw e;
@@ -1643,7 +1651,8 @@ public class TabPersistentStore {
         if (state == null) return false;
 
         try {
-            TabStateFileManager.saveState(getStateDirectory(), state, tabId, encrypted);
+            TabStateFileManager.saveState(
+                    getStateDirectory(), state, tabId, encrypted, mCipherFactory);
             return true;
         } catch (OutOfMemoryError e) {
             android.util.Log.e(
@@ -1916,7 +1925,8 @@ public class TabPersistentStore {
         protected TabState doInBackground() {
             if (mDestroyed || isCancelled()) return null;
             try {
-                return TabStateFileManager.restoreTabState(getStateDirectory(), mTabToRestore.id);
+                return TabStateFileManager.restoreTabState(
+                        getStateDirectory(), mTabToRestore.id, mCipherFactory);
             } catch (Exception e) {
                 Log.w(TAG, "Unable to read state: " + e);
                 return null;
@@ -2032,7 +2042,7 @@ public class TabPersistentStore {
                     @Override
                     protected TabState doInBackground() {
                         return TabStateFileManager.restoreTabState(
-                                getStateDirectory(), activeTabId);
+                                getStateDirectory(), activeTabId, mCipherFactory);
                     }
                 }.executeOnTaskRunner(taskRunner);
     }

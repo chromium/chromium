@@ -5,12 +5,14 @@
 #ifndef UI_LATENCY_LATENCY_INFO_H_
 #define UI_LATENCY_LATENCY_INFO_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 
 #if BUILDFLAG(USE_BLINK)
@@ -103,6 +105,28 @@ class LatencyInfo {
       const std::vector<LatencyInfo>& latency_info,
       perfetto::protos::pbzero::ChromeLatencyInfo::Step step);
 
+  // Populates fields for the first `LatencyInfo.Flow` event in a flow, for
+  // `latency_trace_id` with `ctx`.
+  static void EmitFirstLatencyInfoStep(
+      perfetto::EventContext& ctx,
+      int64_t latency_trace_id,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type,
+      std::optional<
+          perfetto::protos::pbzero::ChromeLatencyInfo2::InputResultState>
+          input_result_state = std::nullopt);
+
+  // Populates fields for an intermediate (i.e. *not* the first)
+  // `LatencyInfo.Flow` event in a flow, for `latency_trace_id` with `ctx`.
+  static void EmitIntermediateLatencyInfoStep(
+      perfetto::EventContext& ctx,
+      int64_t latency_trace_id,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type,
+      std::optional<
+          perfetto::protos::pbzero::ChromeLatencyInfo2::InputResultState>
+          input_result_state = std::nullopt);
+
   // Add timestamps for components that are in |other| but not in |this|.
   void AddNewLatencyFrom(const LatencyInfo& other);
 
@@ -147,6 +171,17 @@ class LatencyInfo {
   void AddLatencyNumberWithTimestampImpl(LatencyComponentType component,
                                          base::TimeTicks time,
                                          const char* trace_name_str);
+
+  static void EmitLatencyInfoStep(
+      perfetto::EventContext& ctx,
+      int64_t latency_trace_id,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type,
+      std::optional<
+          perfetto::protos::pbzero::ChromeLatencyInfo2::InputResultState>
+          input_result_state,
+      perfetto::protos::pbzero::TrackEvent::LegacyEvent::FlowDirection
+          direction);
 
   LatencyMap latency_components_;
 

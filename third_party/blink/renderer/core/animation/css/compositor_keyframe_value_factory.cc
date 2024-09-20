@@ -68,10 +68,6 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
       return CreateFromTransformProperties(style.Scale(), style.EffectiveZoom(),
                                            nullptr);
     }
-    case CSSPropertyID::kBackgroundColor:
-    case CSSPropertyID::kClipPath: {
-      return MakeGarbageCollected<CompositorKeyframeDouble>(offset);
-    }
     case CSSPropertyID::kVariable: {
       if (!RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
         return nullptr;

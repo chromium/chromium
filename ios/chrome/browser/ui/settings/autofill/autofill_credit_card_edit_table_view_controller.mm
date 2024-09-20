@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -90,11 +91,41 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self loadModel];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  SettingsNavigationController* navigationController =
+      base::apple::ObjCCast<SettingsNavigationController>(
+          self.navigationController);
+  if (!navigationController) {
+    return;
+  }
+
+  // Add a "Done" button to the navigation bar if this view controller is the
+  // first in the navigation stack. This "Done" button's purpose being to
+  // dismiss the presented view.
+  if (navigationController.viewControllers.count > 0 &&
+      navigationController.viewControllers.firstObject == self) {
+    UIBarButtonItem* doneButton = [navigationController doneButton];
+
+    // If not in edit mode, set the newly created "Done" button as the left bar
+    // button item. Otherwise, don't override the "Cancel" button that's shown
+    // when in edit mode.
+    if (!self.tableView.editing) {
+      self.navigationItem.leftBarButtonItem = doneButton;
+    }
+
+    // Set `customLeftBarButtonItem` with the "Done" button, so that it'll be
+    // used as the left bar button item when exiting edit mode.
+    self.customLeftBarButtonItem = doneButton;
+  }
+}
+
 #pragma mark - SettingsRootTableViewController
 
 - (void)editButtonPressed {
   // Check if the card should be edited from the Payments web page.
-  if ([AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:&_creditCard]) {
+  if ([AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:_creditCard]) {
     GURL paymentsURL =
         autofill::payments::GetManageInstrumentUrl(_creditCard.instrument_id());
     OpenNewTabCommand* command =
@@ -145,6 +176,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self reconfigureCellsForItems:
             [self.tableViewModel
                 itemsInSectionWithIdentifier:SectionIdentifierFields]];
+}
+
+- (BOOL)showCancelDuringEditing {
+  return YES;
 }
 
 #pragma mark - LegacyChromeTableViewController

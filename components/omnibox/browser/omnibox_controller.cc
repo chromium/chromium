@@ -112,10 +112,11 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
       edit_model_->OnCurrentMatchChanged();
     } else {
       edit_model_->OnPopupResultChanged();
-      edit_model_->OnPopupDataChanged(
-          std::u16string(),
-          /*is_temporary_text=*/false, std::u16string(), std::u16string(),
-          std::u16string(), false, std::u16string(), AutocompleteMatch());
+      edit_model_->OnPopupDataChanged(std::u16string(),
+                                      /*is_temporary_text=*/false,
+                                      std::u16string(), std::u16string(),
+                                      std::u16string(), std::u16string(), false,
+                                      std::u16string(), AutocompleteMatch());
     }
   } else {
     edit_model_->OnPopupResultChanged();
@@ -123,7 +124,7 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
 
   const bool popup_is_open = edit_model_->PopupIsOpen();
   if (popup_was_open != popup_is_open) {
-    client_->OnPopupVisibilityChanged();
+    client_->OnPopupVisibilityChanged(popup_is_open);
   }
 
   if (popup_was_open && !popup_is_open) {

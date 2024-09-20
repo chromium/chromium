@@ -432,11 +432,16 @@ class DnsProbeCurrentSecureConfigFailingProbesTest
     content::FlushNetworkServiceInstanceForTesting();
 
     // Update prefs to enable Secure DNS in secure mode.
-    PrefService* local_state = g_browser_process->local_state();
-    local_state->SetString(prefs::kDnsOverHttpsMode,
-                           SecureDnsConfig::kModeSecure);
-    local_state->SetString(prefs::kDnsOverHttpsTemplates,
-                           "https://bar.test/dns-query{?dns}");
+    PrefService* pref_service = g_browser_process->local_state();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On Chrome OS, the local_state is shared between all users so the user-set
+    // pref is stored in the profile's pref service.
+    pref_service = browser()->profile()->GetPrefs();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    pref_service->SetString(prefs::kDnsOverHttpsMode,
+                            SecureDnsConfig::kModeSecure);
+    pref_service->SetString(prefs::kDnsOverHttpsTemplates,
+                            "https://bar.test/dns-query{?dns}");
 
     SetFakeHostResolverResults(
         {{net::ERR_NAME_NOT_RESOLVED,

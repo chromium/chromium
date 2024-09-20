@@ -391,6 +391,7 @@ blink_core_tests_editing = [
   "element_inner_text_test.cc",
   "ephemeral_range_test.cc",
   "finder/find_buffer_test.cc",
+  "finder/find_results_test.cc",
   "finder/text_finder_test.cc",
   "frame_caret_test.cc",
   "frame_selection_test.cc",

@@ -37,7 +37,8 @@ void FakeBaseProvider::RequestInternal(
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     manta::proto::Request& request,
     const MantaMetricType metric_type,
-    MantaProtoResponseCallback done_callback) {
+    MantaProtoResponseCallback done_callback,
+    const base::TimeDelta timeout) {
   if (!identity_manager_observation_.IsObserving()) {
     std::move(done_callback)
         .Run(nullptr, {MantaStatusCode::kNoIdentityManager});

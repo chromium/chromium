@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -15,6 +16,8 @@
 #include "build/build_config.h"
 #include "pdf/document_metadata.h"
 #include "services/screen_ai/buildflags/buildflags.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -22,8 +25,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include <optional>
-
 #include "pdf/flatten_pdf_result.h"
 #endif
 

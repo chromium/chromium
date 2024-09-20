@@ -113,7 +113,7 @@ void PerIsolateData::ClearIndexedPropertyInterceptor(
   if (it != indexed_interceptors_.end())
     indexed_interceptors_.erase(it);
   else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 }
 
 void PerIsolateData::ClearNamedPropertyInterceptor(
@@ -123,7 +123,7 @@ void PerIsolateData::ClearNamedPropertyInterceptor(
   if (it != named_interceptors_.end())
     named_interceptors_.erase(it);
   else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 }
 
 IndexedPropertyInterceptor* PerIsolateData::GetIndexedPropertyInterceptor(

@@ -56,6 +56,43 @@ TEST(StringTest, CreationFromHashTraits) {
   EXPECT_TRUE(empty.empty());
   EXPECT_FALSE(HashTraits<String>::IsEmptyValue(empty));
   EXPECT_NE(empty, HashTraits<String>::EmptyValue());
+
+  uint32_t hash = String("abc").Impl()->GetHash();
+  EXPECT_EQ(hash, HashTraits<String>::GetHash(String("abc")));
+  EXPECT_EQ(hash, HashTraits<String>::GetHash("abc"));
+  EXPECT_EQ(hash,
+            HashTraits<String>::GetHash(reinterpret_cast<const LChar*>("abc")));
+  const UChar abc_wide[] = {'a', 'b', 'c', 0};
+  EXPECT_EQ(hash, HashTraits<String>::GetHash(abc_wide));
+}
+
+TEST(StringTest, EqualHashTraits) {
+  String abc = "abc";
+  String def = "def";
+
+  EXPECT_TRUE(HashTraits<String>::Equal(abc, abc));
+  EXPECT_FALSE(HashTraits<String>::Equal(abc, def));
+
+  EXPECT_TRUE(HashTraits<String>::Equal(abc, "abc"));
+  EXPECT_FALSE(HashTraits<String>::Equal(abc, "def"));
+  EXPECT_TRUE(HashTraits<String>::Equal("abc", abc));
+  EXPECT_FALSE(HashTraits<String>::Equal("def", abc));
+
+  EXPECT_TRUE(
+      HashTraits<String>::Equal(abc, reinterpret_cast<const LChar*>("abc")));
+  EXPECT_FALSE(
+      HashTraits<String>::Equal(abc, reinterpret_cast<const LChar*>("def")));
+  EXPECT_TRUE(
+      HashTraits<String>::Equal(reinterpret_cast<const LChar*>("abc"), abc));
+  EXPECT_FALSE(
+      HashTraits<String>::Equal(reinterpret_cast<const LChar*>("def"), abc));
+
+  const UChar abc_wide[] = {'a', 'b', 'c', 0};
+  const UChar def_wide[] = {'d', 'e', 'f', 0};
+  EXPECT_TRUE(HashTraits<String>::Equal(abc, abc_wide));
+  EXPECT_FALSE(HashTraits<String>::Equal(abc, def_wide));
+  EXPECT_TRUE(HashTraits<String>::Equal(abc_wide, abc));
+  EXPECT_FALSE(HashTraits<String>::Equal(def_wide, abc));
 }
 
 TEST(StringTest, ASCII) {
@@ -303,9 +340,8 @@ TEST(StringTest, DeprecatedLower) {
   EXPECT_EQ("lin\xE1k", String("lIn\xC1k").DeprecatedLower().Latin1());
 
   // U+212A -> k
-  EXPECT_EQ(
-      "link",
-      String::FromUTF8("LIN\xE2\x84\xAA").DeprecatedLower().Utf8());
+  EXPECT_EQ("link",
+            String::FromUTF8("LIN\xE2\x84\xAA").DeprecatedLower().Utf8());
 }
 
 TEST(StringTest, Ensure16Bit) {

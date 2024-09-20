@@ -67,25 +67,22 @@ TEST_F(InputContextAndroidTest, FromJavaParams) {
   base::android::ScopedJavaLocalRef<jobjectArray> java_bool_keys =
       base::android::ToJavaArrayOfStrings(jni_env, bool_keys);
   base::android::ScopedJavaLocalRef<jbooleanArray> java_bool_values =
-      base::android::ToJavaBooleanArray(jni_env, bool_values,
-                                        std::size(bool_values));
+      base::android::ToJavaBooleanArray(jni_env, bool_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_int_keys =
       base::android::ToJavaArrayOfStrings(jni_env, int_keys);
   base::android::ScopedJavaLocalRef<jintArray> java_int_values =
-      base::android::ToJavaIntArray(jni_env, int_values, std::size(int_values));
+      base::android::ToJavaIntArray(jni_env, int_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_float_keys =
       base::android::ToJavaArrayOfStrings(jni_env, float_keys);
   base::android::ScopedJavaLocalRef<jfloatArray> java_float_values =
-      base::android::ToJavaFloatArray(jni_env, float_values,
-                                      std::size(float_values));
+      base::android::ToJavaFloatArray(jni_env, float_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_double_keys =
       base::android::ToJavaArrayOfStrings(jni_env, double_keys);
   base::android::ScopedJavaLocalRef<jdoubleArray> java_double_values =
-      base::android::ToJavaDoubleArray(jni_env, double_values,
-                                       std::size(double_values));
+      base::android::ToJavaDoubleArray(jni_env, double_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_string_keys =
       base::android::ToJavaArrayOfStrings(jni_env, string_keys);
@@ -96,14 +93,12 @@ TEST_F(InputContextAndroidTest, FromJavaParams) {
   base::android::ScopedJavaLocalRef<jobjectArray> java_time_keys =
       base::android::ToJavaArrayOfStrings(jni_env, time_keys);
   base::android::ScopedJavaLocalRef<jlongArray> java_time_values =
-      base::android::ToJavaLongArray(jni_env, time_values,
-                                     std::size(time_values));
+      base::android::ToJavaLongArray(jni_env, time_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_int64_keys =
       base::android::ToJavaArrayOfStrings(jni_env, int64_keys);
   base::android::ScopedJavaLocalRef<jlongArray> java_int64_values =
-      base::android::ToJavaLongArray(jni_env, int64_values,
-                                     std::size(int64_values));
+      base::android::ToJavaLongArray(jni_env, int64_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_url_keys =
       base::android::ToJavaArrayOfStrings(jni_env, url_keys);

@@ -177,7 +177,6 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
 // regular.
 TEST_F(SearchEngineChoiceServiceTest,
        DoNotShowChoiceScreenWithNotRegularProfile) {
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
                 policy_service(), /*is_regular_profile=*/false,
                 template_url_service()),
@@ -187,8 +186,6 @@ TEST_F(SearchEngineChoiceServiceTest,
 // Test that the choice screen gets displayed if the
 // `DefaultSearchProviderEnabled` policy is not set.
 TEST_F(SearchEngineChoiceServiceTest, ShowChoiceScreenIfPoliciesAreNotSet) {
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
-
   SearchEngineChoiceScreenConditions expected_choice_screen_condition =
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
@@ -214,7 +211,6 @@ TEST_F(SearchEngineChoiceServiceTest,
   pref_service()->SetList(prefs::kSearchProviderOverrides,
                           override_list.Clone());
 
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
                 policy_service(), /*is_regular_profile=*/true,
                 template_url_service()),
@@ -243,7 +239,6 @@ TEST_F(SearchEngineChoiceServiceTest, DoNotShowChoiceScreenIfPolicySetToFalse) {
   // Based on these policies, no DSE should be available.
   ASSERT_FALSE(template_url_service().GetDefaultSearchProvider());
 
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
                 policy_service(), /*is_regular_profile=*/true,
                 template_url_service()),
@@ -274,7 +269,6 @@ TEST_F(SearchEngineChoiceServiceTest,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
 
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
@@ -317,7 +311,6 @@ TEST_F(SearchEngineChoiceServiceTest,
   ASSERT_TRUE(template_url_service().GetDefaultSearchProvider());
   ASSERT_EQ("test", template_url_service().GetDefaultSearchProvider()->url());
 
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
                 policy_service(), /*is_regular_profile=*/true,
                 template_url_service()),
@@ -345,7 +338,6 @@ TEST_F(SearchEngineChoiceServiceTest,
 // screen.
 TEST_F(SearchEngineChoiceServiceTest,
        ShowChoiceScreenIfTheTimestampPrefIsNotSet) {
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
@@ -365,7 +357,6 @@ TEST_F(SearchEngineChoiceServiceTest,
   search_engine_choice_service().RecordChoiceMade(
       search_engines::ChoiceMadeLocation::kChoiceScreen,
       &template_url_service());
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
@@ -388,7 +379,6 @@ TEST_F(SearchEngineChoiceServiceTest,
        DoNotShowChoiceScreenIfCountryOutOfScope) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "US");
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
                 policy_service(), /*is_regular_profile=*/true,
                 template_url_service()),
@@ -409,7 +399,6 @@ TEST_F(SearchEngineChoiceServiceTest,
       switches::kForceSearchEngineChoiceScreen);
   search_engines::MarkSearchEngineChoiceCompletedForTesting(*pref_service());
 
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
@@ -430,7 +419,6 @@ TEST_F(SearchEngineChoiceServiceTest,
        ShowChoiceScreenWithForceCommandLineFlag_Counterfactual) {
   search_engines::MarkSearchEngineChoiceCompletedForTesting(*pref_service());
 
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
@@ -454,7 +442,6 @@ TEST_F(SearchEngineChoiceServiceTest,
        DoNotShowChoiceScreenWithDisableCommandLineFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableSearchEngineChoiceScreen);
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
                 policy_service(),
                 /*is_regular_profile=*/true, template_url_service()),
@@ -546,7 +533,7 @@ TEST_F(SearchEngineChoiceServiceTest, GetCountryIdPrefAlreadyWritten) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// On Android, Play API is used when kSearchEngineChoice is enabled.
+// On Android, internal device APIs are used to get the current country.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(SearchEngineChoiceServiceTest, GetCountryIdDefault) {
   // Remove the command line flag set by the test.
@@ -557,11 +544,7 @@ TEST_F(SearchEngineChoiceServiceTest, GetCountryIdDefault) {
   EXPECT_EQ(search_engine_choice_service().GetCountryId(),
             country_codes::GetCurrentCountryID());
 }
-#endif
 
-// On Android, Play API is used when kSearchEngineChoice is enabled.
-
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SearchEngineChoiceServiceTest, GetCountryIdFromPrefs) {
   // Remove the command line flag set by the test.
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -572,11 +555,7 @@ TEST_F(SearchEngineChoiceServiceTest, GetCountryIdFromPrefs) {
                              kBelgiumCountryId);
   EXPECT_EQ(search_engine_choice_service().GetCountryId(), kBelgiumCountryId);
 }
-#endif
 
-// On Android, Play API is used when kSearchEngineChoice is enabled.
-
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SearchEngineChoiceServiceTest, GetCountryIdChangesAfterReading) {
   // Remove the command line flag set by the test.
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -593,7 +572,7 @@ TEST_F(SearchEngineChoiceServiceTest, GetCountryIdChangesAfterReading) {
   // The value returned by `GetCountryId` shouldn't change.
   EXPECT_EQ(search_engine_choice_service().GetCountryId(), kBelgiumCountryId);
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(SearchEngineChoiceServiceTest, ChoiceScreenConditions_SkipFor3p) {
   // First, check the state with Google as the default search engine
@@ -601,7 +580,6 @@ TEST_F(SearchEngineChoiceServiceTest, ChoiceScreenConditions_SkipFor3p) {
       template_url_service().GetDefaultSearchProvider()->prepopulate_id() ==
       TemplateURLPrepopulateData::google.id);
 
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
@@ -625,7 +603,6 @@ TEST_F(SearchEngineChoiceServiceTest, ChoiceScreenConditions_SkipFor3p) {
       template_url_service().Add(
           std::make_unique<TemplateURL>(*template_url_data.get())));
 
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
@@ -654,7 +631,6 @@ TEST_F(SearchEngineChoiceServiceTest,
       template_url_service().Add(
           std::make_unique<TemplateURL>(template_url_data)));
 
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(

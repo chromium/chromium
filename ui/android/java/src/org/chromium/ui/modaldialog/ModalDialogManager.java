@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.UiSwitches;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
@@ -133,6 +134,13 @@ public class ModalDialogManager {
          * @param model The dialog model that needs to be removed.
          */
         protected abstract void removeDialogView(PropertyModel model);
+
+        /**
+         * An {@link InsetObserver} to get insets for the window associated with a modal dialog.
+         *
+         * @param insetObserver The observer to set.
+         */
+        protected void setInsetObserver(InsetObserver insetObserver) {}
     }
 
     // This affects only the dialog style. To define a priority, call showDialog with {@link
@@ -207,6 +215,10 @@ public class ModalDialogManager {
     /** True if the current dialog is in the process of being dismissed. */
     private boolean mDismissingCurrentDialog;
 
+    private ModalDialogManagerBridge mModalDialogManagerBridge;
+
+    private boolean mDestroyed;
+
     /** Observers of this manager. */
     private final ObserverList<ModalDialogManagerObserver> mObserverList = new ObserverList<>();
 
@@ -219,8 +231,12 @@ public class ModalDialogManager {
      */
     private final PendingDialogContainer mPendingDialogContainer = new PendingDialogContainer();
 
+    /** An {@link InsetObserver} to provide system window insets. */
+    private InsetObserver mInsetObserver;
+
     /**
      * Constructor for initializing default {@link Presenter}.
+     *
      * @param defaultPresenter The default presenter to be used when no presenter specified.
      * @param defaultType The dialog type of the default presenter.
      */
@@ -241,10 +257,16 @@ public class ModalDialogManager {
     public void destroy() {
         dismissAllDialogs(DialogDismissalCause.ACTIVITY_DESTROYED);
         mObserverList.clear();
+        if (mModalDialogManagerBridge != null) {
+            mModalDialogManagerBridge.destroyNative();
+            mModalDialogManagerBridge = null;
+        }
+        mDestroyed = true;
     }
 
     /**
      * Add an observer to this manager.
+     *
      * @param observer The observer to add.
      */
     public void addObserver(ModalDialogManagerObserver observer) {
@@ -253,6 +275,7 @@ public class ModalDialogManager {
 
     /**
      * Remove an observer of this manager.
+     *
      * @param observer The observer to remove.
      */
     public void removeObserver(ModalDialogManagerObserver observer) {
@@ -260,8 +283,21 @@ public class ModalDialogManager {
     }
 
     /**
+     * Set the {@link InsetObserver} to get insets for the window associated with a modal dialog.
+     *
+     * @param observer The observer to set.
+     */
+    public void setInsetObserver(InsetObserver observer) {
+        mInsetObserver = observer;
+        for (int i = 0; i < mPresenters.size(); i++) {
+            mPresenters.valueAt(i).setInsetObserver(observer);
+        }
+    }
+
+    /**
      * Register a {@link Presenter} that shows a specific type of dialog. Note that only one
      * presenter of each type can be registered.
+     *
      * @param presenter The {@link Presenter} to be registered.
      * @param dialogType The type of the dialog shown by the specified presenter.
      */
@@ -269,6 +305,9 @@ public class ModalDialogManager {
         assert mPresenters.get(dialogType) == null
                 : "Only one presenter can be registered for each type.";
         mPresenters.put(dialogType, presenter);
+        if (mInsetObserver != null) {
+            presenter.setInsetObserver(mInsetObserver);
+        }
     }
 
     /**
@@ -529,8 +568,19 @@ public class ModalDialogManager {
         mTokenHolders.get(dialogType).releaseToken(token);
     }
 
+    public long getOrCreateNativeBridge() {
+        // Prevents the bridge gets recreated after `destroy()` is called.
+        if (mDestroyed) return 0;
+
+        if (mModalDialogManagerBridge == null) {
+            mModalDialogManagerBridge = new ModalDialogManagerBridge(this);
+        }
+        return mModalDialogManagerBridge.getNativePtr();
+    }
+
     /**
      * Actually resumes showing the type of dialog after all tokens are released.
+     *
      * @param dialogType The specified type of dialogs to be resumed.
      */
     private void resumeTypeInternal(@ModalDialogType int dialogType) {

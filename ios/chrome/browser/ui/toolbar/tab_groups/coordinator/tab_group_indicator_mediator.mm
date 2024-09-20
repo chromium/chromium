@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
-#import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_consumer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -108,15 +108,6 @@
   [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
 }
 
-- (void)unGroup {
-  const TabGroup* tabGroup = [self currentTabGroup];
-  if (!tabGroup) {
-    return;
-  }
-  [_delegate showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
-                                                            kUngroupTabGroup];
-}
-
 - (void)closeGroup {
   const TabGroup* tabGroup = [self currentTabGroup];
   if (!tabGroup) {
@@ -125,12 +116,25 @@
   [self closeTabGroup:tabGroup andDeleteGroup:NO];
 }
 
-- (void)deleteGroup {
+- (void)unGroupWithConfirmation:(BOOL)confirmation {
   const TabGroup* tabGroup = [self currentTabGroup];
   if (!tabGroup) {
     return;
   }
-  if (IsTabGroupSyncEnabled()) {
+  if (confirmation) {
+    [_delegate showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
+                                                              kUngroupTabGroup];
+    return;
+  }
+  _webStateList->DeleteGroup(tabGroup);
+}
+
+- (void)deleteGroupWithConfirmation:(BOOL)confirmation {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup) {
+    return;
+  }
+  if (IsTabGroupSyncEnabled() && confirmation) {
     [_delegate showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
                                                               kDeleteTabGroup];
     return;

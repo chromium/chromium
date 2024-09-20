@@ -42,6 +42,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -88,6 +89,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
@@ -269,8 +271,7 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
 
   // If RealLostContext, it means the context was not lost due to surface
   // failure but rather due to a an eviction, which means image buffer exists.
-  if (context_lost_mode_ == kRealLostContext && IsPaintable() &&
-      canvas()->GetCanvas2DLayerBridge()->Restore()) {
+  if (context_lost_mode_ == kRealLostContext && IsPaintable() && Restore()) {
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
     return;
@@ -289,6 +290,41 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   }
 }
 
+bool CanvasRenderingContext2D::Restore() {
+  CanvasRenderingContextHost* host = Host();
+  CHECK(host);
+  CHECK(host->context_lost());
+  if (host->GetRasterMode() == RasterMode::kCPU) {
+    return false;
+  }
+  DCHECK(!host->ResourceProvider());
+
+  host->ClearLayerTexture();
+
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
+      SharedGpuContext::ContextProviderWrapper();
+
+  if (!context_provider_wrapper->ContextProvider()->IsContextLost()) {
+    CanvasResourceProvider* resource_provider =
+        host->GetOrCreateCanvasResourceProviderImpl(RasterModeHint::kPreferGPU);
+
+    // The current paradigm does not support switching from accelerated to
+    // non-accelerated, which would be tricky due to changes to the layer tree,
+    // which can only happen at specific times during the document lifecycle.
+    // Therefore, we can only accept the restored surface if it is accelerated.
+    if (resource_provider && host->GetRasterMode() == RasterMode::kCPU) {
+      host->ReplaceResourceProvider(nullptr);
+      // FIXME: draw sad canvas picture into new buffer crbug.com/243842
+    } else {
+      host->set_context_lost(false);
+    }
+  }
+
+  host->UpdateMemoryUsage();
+
+  return host->ResourceProvider();
+}
+
 void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source) const {
   canvas()->WillDrawImageTo2DContext(source);
 }
@@ -299,8 +335,41 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                            int x,
                                            int y) {
   DCHECK(IsPaintable());
-  return canvas()->GetCanvas2DLayerBridge()->WritePixels(orig_info, pixels,
-                                                         row_bytes, x, y);
+  CanvasRenderingContextHost* host = Host();
+  CHECK(host);
+
+  CanvasResourceProvider* provider =
+      canvas()->GetCanvas2DLayerBridge()->GetOrCreateResourceProvider();
+  if (provider == nullptr) {
+    return false;
+  }
+
+  if (x <= 0 && y <= 0 && x + orig_info.width() >= host->Size().width() &&
+      y + orig_info.height() >= host->Size().height()) {
+    MemoryManagedPaintRecorder& recorder = provider->Recorder();
+    if (recorder.HasSideRecording()) {
+      // Even with opened layers, WritePixels would write to the main canvas
+      // surface under the layers. We can therefore clear the paint ops recorded
+      // before the first `beginLayer`, but the layers themselves must be kept
+      // untouched. Note that this operation makes little sense and is actually
+      // disabled in `putImageData` by raising an exception if layers are
+      // opened. Still, it's preferable to handle this scenario here because the
+      // alternative would be to crash or leave the canvas in an invalid state.
+      recorder.ReleaseMainRecording();
+    } else {
+      recorder.RestartRecording();
+    }
+  } else {
+    host->FlushRecording(FlushReason::kWritePixels);
+
+    // Short-circuit out if an error occurred while flushing the recording.
+    if (!host->ResourceProvider()->IsValid()) {
+      return false;
+    }
+  }
+
+  return host->ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x,
+                                               y);
 }
 
 void CanvasRenderingContext2D::Reset() {

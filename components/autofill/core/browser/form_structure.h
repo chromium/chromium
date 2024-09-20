@@ -400,7 +400,7 @@ class FormStructure {
   // Assigns the best heuristic types from the `field_type_map` to the heuristic
   // types of the corresponding fields for the `pattern_source`.
   void AssignBestFieldTypes(const FieldCandidatesMap& field_type_map,
-                            PatternSource pattern_source);
+                            HeuristicSource heuristic_source);
 
   // Production code only uses the default parameters.
   // Unit tests also test other parameters.

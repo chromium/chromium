@@ -66,13 +66,22 @@ class FaceGazeTestSupport {
     this.notifyCcTests_();
   }
 
-  /** Instantiates the FaceLandmarker. */
-  async createFaceLandmarker() {
-    const webCamFaceLandmarker = this.getWebCamFaceLandmarker_();
-    await webCamFaceLandmarker.createFaceLandmarker_();
-    if (webCamFaceLandmarker.faceLandmarker_) {
-      this.notifyCcTests_();
-    }
+  /** @param {boolean} useWeights */
+  setLandmarkWeights(useWeights) {
+    this.getMouseController_().setLandmarkWeightsForTesting(useWeights);
+    this.notifyCcTests_();
+  }
+
+  /** @param {boolean} useThreshold */
+  setVelocityThreshold(useThreshold) {
+    this.getMouseController_().setVelocityThresholdForTesting(useThreshold);
+    this.notifyCcTests_();
+  }
+
+  /** Waits for a valid instance of the FaceLandmarker. */
+  async waitForFaceLandmarker() {
+    await this.getWebCamFaceLandmarker_().readyForTesting_;
+    this.notifyCcTests_();
   }
 
   /**

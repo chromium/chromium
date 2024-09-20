@@ -129,7 +129,7 @@ ScriptPromiseUntyped WebSocketStream::UnderlyingSource::Pull(
     ExceptionState&) {
   DVLOG(1) << "WebSocketStream::UnderlyingSource " << this << " Pull()";
   creator_->channel_->RemoveBackpressure();
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 ScriptPromiseUntyped WebSocketStream::UnderlyingSource::Cancel(
@@ -139,7 +139,7 @@ ScriptPromiseUntyped WebSocketStream::UnderlyingSource::Cancel(
   DVLOG(1) << "WebSocketStream::UnderlyingSource " << this << " Cancel()";
   closed_ = true;
   creator_->CloseMaybeWithReason(reason, exception_state);
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 void WebSocketStream::UnderlyingSource::DidReceiveTextMessage(

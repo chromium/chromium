@@ -24,7 +24,7 @@ namespace tabs {
 class TabCollection;
 class TabFeatures;
 
-class TabModel final : public SupportsHandles<const TabModel>,
+class TabModel final : public SupportsHandles<TabModel>,
                        public TabInterface,
                        public TabStripModelObserver {
  public:

@@ -1646,7 +1646,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Bluetooth.ChromeOS.Pairing.Result.UserErrorsFiltered"
+<histogram name="Bluetooth.ChromeOS.Pairing.Result.UserErrorsFiltered2"
     enum="BooleanSuccess" expires_after="2025-02-20">
   <owner>nikhilcn@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
@@ -1807,6 +1807,21 @@ chromium-metrics-reviews@google.com.
       variants="UserInitiatedReconnectionUISurfaces">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.UserErrorsFiltered"
+    enum="BooleanSuccess" expires_after="2025-08-20">
+  <owner>nikhilcn@google.com</owner>
+  <owner>tjohnsonkanu@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records success or failure of a user initiated reconnection to a peripheral
+    after the user taps that device in the list of discovered peripherals in
+    Bluetooth Settings or System Tray.
+
+    This metric excludes user errors such as kDeviceNotFound and kInprogress.
+  </summary>
 </histogram>
 
 <histogram

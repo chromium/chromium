@@ -5,8 +5,8 @@
 #include "ash/picker/metrics/picker_session_metrics.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_search_result.h"
 #include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"

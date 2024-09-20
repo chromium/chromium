@@ -10,7 +10,6 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
-
 // Class Accessors.
 #ifndef org_jni_1zero_SampleProxyEdgeCases_clazz_defined
 #define org_jni_1zero_SampleProxyEdgeCases_clazz_defined
@@ -67,8 +66,4 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_native
     JNIEnv* env,
     jclass jcaller);
 
-
-
-
 #endif  // TEMP_DIR_HEADER_
-

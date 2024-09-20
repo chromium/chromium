@@ -19,9 +19,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -112,10 +114,26 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
 
 const int kListenBacklog = 5;
 
-class TCPSocketTest : public PlatformTest, public WithTaskEnvironment {
+class TCPSocketTest : public PlatformTest,
+                      public WithTaskEnvironment,
+                      // The param indicates whether the
+                      // "TcpSocketIoCompletionPortWin" feature is enabled.
+                      public testing::WithParamInterface<bool> {
  protected:
-  TCPSocketTest()
-      : socket_(TCPSocket::Create(nullptr, nullptr, NetLogSource())) {}
+  TCPSocketTest() {
+#if BUILDFLAG(IS_WIN)
+    scoped_feature_list_.InitWithFeatureState(
+        features::kTcpSocketIoCompletionPortWin,
+        IsTcpSocketIoCompletionPortWinEnabled());
+#else
+    CHECK(!GetParam());
+#endif  // BUILDFLAG(IS_WIN)
+    socket_ = TCPSocket::Create(nullptr, nullptr, NetLogSource());
+  }
+
+#if BUILDFLAG(IS_WIN)
+  bool IsTcpSocketIoCompletionPortWinEnabled() { return GetParam(); }
+#endif  // BUILDFLAG(IS_WIN)
 
   void SetUpListenIPv4() {
     ASSERT_THAT(socket_->Open(ADDRESS_FAMILY_IPV4), IsOk());
@@ -137,6 +155,32 @@ class TCPSocketTest : public PlatformTest, public WithTaskEnvironment {
     }
     ASSERT_THAT(socket_->GetLocalAddress(&local_address_), IsOk());
     *success = true;
+  }
+
+  std::pair<std::unique_ptr<TCPSocket>, std::unique_ptr<TCPSocket>>
+  CreateIPv4SocketPair() {
+    TestCompletionCallback connect_callback;
+    std::unique_ptr<TCPSocket> connecting_socket =
+        TCPSocket::Create(nullptr, nullptr, NetLogSource());
+    int result = connecting_socket->Open(ADDRESS_FAMILY_IPV4);
+    EXPECT_THAT(result, IsOk());
+    int connect_result =
+        connecting_socket->Connect(local_address_, connect_callback.callback());
+
+    TestCompletionCallback accept_callback;
+    std::unique_ptr<TCPSocket> accepted_socket;
+    IPEndPoint accepted_address;
+    result = socket_->Accept(&accepted_socket, &accepted_address,
+                             accept_callback.callback());
+    EXPECT_THAT(accept_callback.GetResult(result), IsOk());
+    CHECK(accepted_socket.get());
+    EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
+
+    // Both sockets should be on the loopback network interface.
+    EXPECT_EQ(accepted_address.address(), local_address_.address());
+
+    return std::make_pair(std::move(connecting_socket),
+                          std::move(accepted_socket));
   }
 
   void TestAcceptAsync() {
@@ -239,12 +283,13 @@ class TCPSocketTest : public PlatformTest, public WithTaskEnvironment {
     return AddressList(local_address_);
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TCPSocket> socket_;
   IPEndPoint local_address_;
 };
 
 // Test listening and accepting with a socket bound to an IPv4 address.
-TEST_F(TCPSocketTest, Accept) {
+TEST_P(TCPSocketTest, Accept) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
 
   TestCompletionCallback connect_callback;
@@ -270,13 +315,13 @@ TEST_F(TCPSocketTest, Accept) {
 }
 
 // Test Accept() callback.
-TEST_F(TCPSocketTest, AcceptAsync) {
+TEST_P(TCPSocketTest, AcceptAsync) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
   TestAcceptAsync();
 }
 
 // Test AdoptConnectedSocket()
-TEST_F(TCPSocketTest, AdoptConnectedSocket) {
+TEST_P(TCPSocketTest, AdoptConnectedSocket) {
   std::unique_ptr<TCPSocket> accepting_socket =
       TCPSocket::Create(nullptr, nullptr, NetLogSource());
   ASSERT_THAT(accepting_socket->Open(ADDRESS_FAMILY_IPV4), IsOk());
@@ -315,7 +360,7 @@ TEST_F(TCPSocketTest, AdoptConnectedSocket) {
 }
 
 // Test Accept() for AdoptUnconnectedSocket.
-TEST_F(TCPSocketTest, AcceptForAdoptedUnconnectedSocket) {
+TEST_P(TCPSocketTest, AcceptForAdoptedUnconnectedSocket) {
   SocketDescriptor existing_socket =
       CreatePlatformSocket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
   ASSERT_THAT(socket_->AdoptUnconnectedSocket(existing_socket), IsOk());
@@ -332,7 +377,7 @@ TEST_F(TCPSocketTest, AcceptForAdoptedUnconnectedSocket) {
 }
 
 // Accept two connections simultaneously.
-TEST_F(TCPSocketTest, Accept2Connections) {
+TEST_P(TCPSocketTest, Accept2Connections) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
 
   TestCompletionCallback accept_callback;
@@ -376,7 +421,7 @@ TEST_F(TCPSocketTest, Accept2Connections) {
 }
 
 // Test listening and accepting with a socket bound to an IPv6 address.
-TEST_F(TCPSocketTest, AcceptIPv6) {
+TEST_P(TCPSocketTest, AcceptIPv6) {
   bool initialized = false;
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv6(&initialized));
   if (!initialized)
@@ -402,30 +447,9 @@ TEST_F(TCPSocketTest, AcceptIPv6) {
   EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
 }
 
-TEST_F(TCPSocketTest, ReadWrite) {
+TEST_P(TCPSocketTest, ReadWrite) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
-
-  TestCompletionCallback connect_callback;
-  std::unique_ptr<TCPSocket> connecting_socket =
-      TCPSocket::Create(nullptr, nullptr, NetLogSource());
-  int result = connecting_socket->Open(ADDRESS_FAMILY_IPV4);
-  ASSERT_THAT(result, IsOk());
-  int connect_result =
-      connecting_socket->Connect(local_address_, connect_callback.callback());
-
-  TestCompletionCallback accept_callback;
-  std::unique_ptr<TCPSocket> accepted_socket;
-  IPEndPoint accepted_address;
-  result = socket_->Accept(&accepted_socket, &accepted_address,
-                           accept_callback.callback());
-  ASSERT_THAT(accept_callback.GetResult(result), IsOk());
-
-  ASSERT_TRUE(accepted_socket.get());
-
-  // Both sockets should be on the loopback network interface.
-  EXPECT_EQ(accepted_address.address(), local_address_.address());
-
-  EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
 
   const std::string message("test message");
   std::vector<char> buffer(message.size());
@@ -468,27 +492,9 @@ TEST_F(TCPSocketTest, ReadWrite) {
 // Destroy a TCPSocket while there's a pending read, and make sure the read
 // IOBuffer that the socket was holding on to is destroyed.
 // See https://crbug.com/804868.
-TEST_F(TCPSocketTest, DestroyWithPendingRead) {
+TEST_P(TCPSocketTest, DestroyWithPendingRead) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
-
-  // Create a connected socket.
-
-  TestCompletionCallback connect_callback;
-  std::unique_ptr<TCPSocket> connecting_socket =
-      TCPSocket::Create(nullptr, nullptr, NetLogSource());
-  int result = connecting_socket->Open(ADDRESS_FAMILY_IPV4);
-  ASSERT_THAT(result, IsOk());
-  int connect_result =
-      connecting_socket->Connect(local_address_, connect_callback.callback());
-
-  TestCompletionCallback accept_callback;
-  std::unique_ptr<TCPSocket> accepted_socket;
-  IPEndPoint accepted_address;
-  result = socket_->Accept(&accepted_socket, &accepted_address,
-                           accept_callback.callback());
-  ASSERT_THAT(accept_callback.GetResult(result), IsOk());
-  ASSERT_TRUE(accepted_socket.get());
-  ASSERT_THAT(connect_callback.GetResult(connect_result), IsOk());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
 
   // Try to read from the socket, but never write anything to the other end.
   base::RunLoop run_loop;
@@ -509,27 +515,9 @@ TEST_F(TCPSocketTest, DestroyWithPendingRead) {
 
 // Destroy a TCPSocket while there's a pending write, and make sure the write
 // IOBuffer that the socket was holding on to is destroyed.
-TEST_F(TCPSocketTest, DestroyWithPendingWrite) {
+TEST_P(TCPSocketTest, DestroyWithPendingWrite) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
-
-  // Create a connected socket.
-
-  TestCompletionCallback connect_callback;
-  std::unique_ptr<TCPSocket> connecting_socket =
-      TCPSocket::Create(nullptr, nullptr, NetLogSource());
-  int result = connecting_socket->Open(ADDRESS_FAMILY_IPV4);
-  ASSERT_THAT(result, IsOk());
-  int connect_result =
-      connecting_socket->Connect(local_address_, connect_callback.callback());
-
-  TestCompletionCallback accept_callback;
-  std::unique_ptr<TCPSocket> accepted_socket;
-  IPEndPoint accepted_address;
-  result = socket_->Accept(&accepted_socket, &accepted_address,
-                           accept_callback.callback());
-  ASSERT_THAT(accept_callback.GetResult(result), IsOk());
-  ASSERT_TRUE(accepted_socket.get());
-  ASSERT_THAT(connect_callback.GetResult(connect_result), IsOk());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
 
   // Repeatedly write to the socket until an operation does not complete
   // synchronously.
@@ -540,9 +528,9 @@ TEST_F(TCPSocketTest, DestroyWithPendingWrite) {
   memset(write_buffer->data(), '1', write_buffer->size());
   TestCompletionCallback write_callback;
   while (true) {
-    result = connecting_socket->Write(write_buffer.get(), write_buffer->size(),
-                                      write_callback.callback(),
-                                      TRAFFIC_ANNOTATION_FOR_TESTS);
+    int result = connecting_socket->Write(
+        write_buffer.get(), write_buffer->size(), write_callback.callback(),
+        TRAFFIC_ANNOTATION_FOR_TESTS);
     if (result == ERR_IO_PENDING)
       break;
     ASSERT_LT(0, result);
@@ -556,26 +544,9 @@ TEST_F(TCPSocketTest, DestroyWithPendingWrite) {
 }
 
 // If a ReadIfReady is pending, it's legal to cancel it and start reading later.
-TEST_F(TCPSocketTest, CancelPendingReadIfReady) {
+TEST_P(TCPSocketTest, CancelPendingReadIfReady) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
-
-  // Create a connected socket.
-  TestCompletionCallback connect_callback;
-  std::unique_ptr<TCPSocket> connecting_socket =
-      TCPSocket::Create(nullptr, nullptr, NetLogSource());
-  int result = connecting_socket->Open(ADDRESS_FAMILY_IPV4);
-  ASSERT_THAT(result, IsOk());
-  int connect_result =
-      connecting_socket->Connect(local_address_, connect_callback.callback());
-
-  TestCompletionCallback accept_callback;
-  std::unique_ptr<TCPSocket> accepted_socket;
-  IPEndPoint accepted_address;
-  result = socket_->Accept(&accepted_socket, &accepted_address,
-                           accept_callback.callback());
-  ASSERT_THAT(accept_callback.GetResult(result), IsOk());
-  ASSERT_TRUE(accepted_socket.get());
-  ASSERT_THAT(connect_callback.GetResult(connect_result), IsOk());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
 
   // Try to read from the socket, but never write anything to the other end.
   base::RunLoop run_loop;
@@ -583,9 +554,19 @@ TEST_F(TCPSocketTest, CancelPendingReadIfReady) {
       base::MakeRefCounted<IOBufferWithDestructionCallback>(
           run_loop.QuitClosure()));
   TestCompletionCallback read_callback;
-  EXPECT_EQ(ERR_IO_PENDING, connecting_socket->ReadIfReady(
-                                read_buffer.get(), read_buffer->size(),
-                                read_callback.callback()));
+
+  int read_if_ready_result = connecting_socket->ReadIfReady(
+      read_buffer.get(), read_buffer->size(), read_callback.callback());
+
+#if BUILDFLAG(IS_WIN)
+  if (IsTcpSocketIoCompletionPortWinEnabled()) {
+    // TCPSocketIoCompletionPortWin does not support ReadIfReady().
+    EXPECT_EQ(ERR_READ_IF_READY_NOT_IMPLEMENTED, read_if_ready_result);
+    return;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  EXPECT_EQ(ERR_IO_PENDING, read_if_ready_result);
 
   // Now cancel the pending ReadIfReady().
   connecting_socket->CancelReadIfReady();
@@ -615,7 +596,7 @@ TEST_F(TCPSocketTest, CancelPendingReadIfReady) {
   ASSERT_EQ(0, memcmp(&kMsg, read_buffer->data(), msg_size));
 }
 
-TEST_F(TCPSocketTest, IsConnected) {
+TEST_P(TCPSocketTest, IsConnected) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
 
   TestCompletionCallback accept_callback;
@@ -691,7 +672,7 @@ TEST_F(TCPSocketTest, IsConnected) {
 // real sockets, socket options often have to be set before the connect() call,
 // and the BeforeConnectCallback is the only way to do that, with a
 // TCPClientSocket.
-TEST_F(TCPSocketTest, BeforeConnectCallback) {
+TEST_P(TCPSocketTest, BeforeConnectCallback) {
   // A receive buffer size that is between max and minimum buffer size limits,
   // and weird enough to likely not be a default value.
   const int kReceiveBufferSize = 32 * 1024 + 1117;
@@ -737,7 +718,7 @@ TEST_F(TCPSocketTest, BeforeConnectCallback) {
 #endif
 }
 
-TEST_F(TCPSocketTest, BeforeConnectCallbackFails) {
+TEST_P(TCPSocketTest, BeforeConnectCallbackFails) {
   // Setting up a server isn't strictly necessary, but it does allow checking
   // the server was never connected to.
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
@@ -767,7 +748,7 @@ TEST_F(TCPSocketTest, BeforeConnectCallbackFails) {
   EXPECT_FALSE(accept_callback.have_result());
 }
 
-TEST_F(TCPSocketTest, SetKeepAlive) {
+TEST_P(TCPSocketTest, SetKeepAlive) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
 
   TestCompletionCallback accept_callback;
@@ -799,7 +780,7 @@ TEST_F(TCPSocketTest, SetKeepAlive) {
       connecting_socket.SetKeepAlive(false /* enable */, 3 /* delay */));
 }
 
-TEST_F(TCPSocketTest, SetNoDelay) {
+TEST_P(TCPSocketTest, SetNoDelay) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
 
   TestCompletionCallback accept_callback;
@@ -833,13 +814,13 @@ TEST_F(TCPSocketTest, SetNoDelay) {
 #if defined(TCP_INFO) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // If SocketPerformanceWatcher::ShouldNotifyUpdatedRTT always returns false,
 // then the wtatcher should not receive any notifications.
-TEST_F(TCPSocketTest, SPWNotInterested) {
+TEST_P(TCPSocketTest, SPWNotInterested) {
   TestSPWNotifications(false, 2u, 0u, 0u);
 }
 
 // One notification should be received when the socket connects. One
 // additional notification should be received for each message read.
-TEST_F(TCPSocketTest, SPWNoAdvance) {
+TEST_P(TCPSocketTest, SPWNoAdvance) {
   TestSPWNotifications(true, 2u, 0u, 3u);
 }
 #endif  // defined(TCP_INFO) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -847,7 +828,7 @@ TEST_F(TCPSocketTest, SPWNoAdvance) {
 // On Android, where socket tagging is supported, verify that TCPSocket::Tag
 // works as expected.
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(TCPSocketTest, Tag) {
+TEST_P(TCPSocketTest, Tag) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";
     return;
@@ -906,7 +887,7 @@ TEST_F(TCPSocketTest, Tag) {
   socket_->Close();
 }
 
-TEST_F(TCPSocketTest, TagAfterConnect) {
+TEST_P(TCPSocketTest, TagAfterConnect) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";
     return;
@@ -962,7 +943,7 @@ TEST_F(TCPSocketTest, TagAfterConnect) {
   socket_->Close();
 }
 
-TEST_F(TCPSocketTest, BindToNetwork) {
+TEST_P(TCPSocketTest, BindToNetwork) {
   NetworkChangeNotifierFactoryAndroid ncn_factory;
   NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
   std::unique_ptr<NetworkChangeNotifier> ncn(ncn_factory.CreateInstance());
@@ -992,6 +973,109 @@ TEST_F(TCPSocketTest, BindToNetwork) {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Tests error handling in write.
+TEST_P(TCPSocketTest, WriteError) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [socket1, socket2] = CreateIPv4SocketPair();
+
+  // Disallow send operations to make the next `Write` fail.
+#if BUILDFLAG(IS_WIN)
+  shutdown(socket1->SocketDescriptorForTesting(), SD_SEND);
+#else
+  shutdown(socket1->SocketDescriptorForTesting(), SHUT_WR);
+#endif
+
+  // Attempt to write data. It should fail.
+  TestCompletionCallback write_callback;
+  auto buffer = base::MakeRefCounted<StringIOBuffer>("test");
+  int write_result =
+      socket1->Write(buffer.get(), buffer->size(), write_callback.callback(),
+                     TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_NE(write_result, net::OK);
+  write_callback.GetResult(write_result);
+}
+
+// Tests error handling in read.
+TEST_P(TCPSocketTest, ReadError) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [socket1, socket2] = CreateIPv4SocketPair();
+
+  // Disallow receive operations to make the next `Read` fail.
+#if BUILDFLAG(IS_WIN)
+  shutdown(socket1->SocketDescriptorForTesting(), SD_RECEIVE);
+#else
+  shutdown(socket1->SocketDescriptorForTesting(), SHUT_RD);
+#endif
+
+  // Attempt to read data. It should fail.
+  TestCompletionCallback read_callback;
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(10);
+  int read_result =
+      socket1->Read(buffer.get(), buffer->size(), read_callback.callback());
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(read_result, net::ERR_FAILED);
+#else
+  // Ideally, this test should make the read return a failure code.
+  // Unfortunately, we haven't found a good way to do that.
+  EXPECT_EQ(read_result, net::OK);
+#endif
+  read_callback.GetResult(read_result);
+}
+
+// Tests error in a read that returns `net::ERR_IO_PENDING`.
+TEST_P(TCPSocketTest, PendingReadError) {
+#if BUILDFLAG(IS_WIN)
+  if (!IsTcpSocketIoCompletionPortWinEnabled()) {
+    // With the default implementation, the read callback is not invoked after
+    // `CloseSocketDescriptorForTesting()` is invoked.
+    return;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [socket1, socket2] = CreateIPv4SocketPair();
+
+  // Attempt to read data. It should return `net::ERR_IO_PENDING` because no
+  // data was written at the other end yet.
+  TestCompletionCallback read_callback;
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(10);
+  int read_result =
+      socket1->Read(buffer.get(), buffer->size(), read_callback.callback());
+  EXPECT_EQ(read_result, net::ERR_IO_PENDING);
+
+#if BUILDFLAG(IS_WIN)
+  // Close the underlying socket to make the pending read fail.
+  socket1->CloseSocketDescriptorForTesting();
+#else
+  // Disallow receive operations to make the pending read fail.
+  shutdown(socket1->SocketDescriptorForTesting(), SHUT_RD);
+#endif
+
+  // The read operation should fail.
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(read_callback.GetResult(read_result), net::ERR_FAILED);
+#else
+  // Ideally, this test should make the read return a failure code.
+  // Unfortunately, we haven't found a good way to do that.
+  EXPECT_EQ(read_callback.GetResult(read_result), net::OK);
+#endif
+}
+
+INSTANTIATE_TEST_SUITE_P(Any,
+                         TCPSocketTest,
+                         ::testing::Values(false
+#if BUILDFLAG(IS_WIN)
+                                           ,
+                                           true
+#endif
+                                           ),
+                         [](::testing::TestParamInfo<bool> info) {
+                           if (info.param) {
+                             return "TcpSocketIoCompletionPortWin";
+                           }
+                           return "Base";
+                         });
 
 }  // namespace
 }  // namespace net

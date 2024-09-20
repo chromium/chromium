@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <jni.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -20,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/webapk/webapk_features.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -272,7 +274,7 @@ static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
 
   std::string update_request_path =
       ConvertJavaStringToUTF8(env, java_update_request_path);
-  WebApkInstallService::Get(profile)->UpdateAsync(
+  WebApkInstallServiceFactory::GetForBrowserContext(profile)->UpdateAsync(
       base::FilePath(update_request_path),
       base::BindOnce(&OnUpdated, callback_ref));
 }

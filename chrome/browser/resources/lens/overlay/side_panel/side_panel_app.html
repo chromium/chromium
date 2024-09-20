@@ -2,6 +2,7 @@
   :host {
     --cr-searchbox-height: 52px;
     --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+    --cr-searchbox-min-width: min(calc(100%), 768px);
   }
 
   .results-pane {
@@ -113,18 +114,12 @@
   }
 
   :host([is-back-arrow-visible]) #searchbox {
-    margin-block-start: 16px;
-    margin-inline-end: 14px;
-    margin-block-end: 8px;
     margin-inline-start: 0px;
-  }
-
-  :host([is-back-arrow-visible]) #searchboxContainer {
-    --cr-searchbox-min-width: min(calc(100vw - 60px), 768px);
   }
 
   #searchboxContainer {
     position: fixed;
+    width: 100%;
     --color-searchbox-results-background: #ffffffff;
   }
 

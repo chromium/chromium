@@ -891,6 +891,131 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
           .empty());
 }
 
+// Tests that non-history/reload navigations that potentially match an entry in
+// BFCache are logged in the relevant histogram.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+                       NewPageNavHasPotentialMatch) {
+  if (!IsBackForwardCacheEnabled()) {
+    return;
+  }
+  base::HistogramTester histogram_tester;
+  const char kNewPageNavHasPotentialMatchHistogram[] =
+      "BackForwardCache.NewPageNavHasPotentialMatch";
+  const char kNewPageNavHasPotentialMatchWithNoSubframesHistogram[] =
+      "BackForwardCache.NewPageNavHasPotentialMatchWithNoSubframes";
+  const char kHistoryNavHasPotentialMatchHistogram[] =
+      "BackForwardCache.HistoryNavHasPotentialMatch";
+  GURL url1(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  GURL url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // 1) Navigate to url1, which has a subframe.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  // There should be no matching entry for `url1` in the back/forward cache.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 1);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 0);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 1);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+
+  // 2) Navigate to url2. The `url1` page will be BFCached.
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  // There should be no matching entry for `url2` in the back/forward cache.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 0);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 2);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+
+  // 3) Navigate to url1 again as a new page.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  // There is a matching entry for `url1` in the back/forward cache. Note that
+  // because the entry has a subframe, it will be recorded as "no match" in the
+  // "no subframes" histogram.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 3);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+
+  // 4) Navigate back to url2, restoring it from back/forward cache.
+  EXPECT_TRUE(HistoryGoBack(web_contents()));
+  // As the navigation is a BFCache restore already, no entry is recorded in the
+  // histogram.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 3);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+
+  // Flush BFCached entries so that there are no BFCached pages.
+  web_contents()->GetController().GetBackForwardCache().Flush();
+
+  // 5) Navigate back to url1 without restoring from back/forward cache.
+  EXPECT_TRUE(HistoryGoBack(web_contents()));
+  // The navigation has no matching BFCached entry, but it's also a history
+  // navigation, so we will only record on the history histogram.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 3);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 1);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+
+  // 5) Reload `url1`.
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  // The navigation has no matching BFCached entry, but it's also a reload, so
+  // we don't record anything in the histograms.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 3);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 1);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+}
+
 class BackForwardCacheMetricsPrerenderingBrowserTest
     : public BackForwardCacheMetricsBrowserTest {
  public:

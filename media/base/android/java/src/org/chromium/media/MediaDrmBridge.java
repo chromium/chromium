@@ -19,6 +19,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.StrictModeContext;
 import org.chromium.media.MediaDrmSessionManager.SessionId;
 import org.chromium.media.MediaDrmSessionManager.SessionInfo;
 
@@ -352,7 +353,8 @@ public class MediaDrmBridge {
         Log.d(TAG, "MediaCrypto Session created: %s", mMediaCryptoSession);
 
         // Create MediaCrypto object.
-        try {
+        // MediaCrypto#isCryptoSchemeSupported may do a disk read.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             if (MediaCrypto.isCryptoSchemeSupported(mSchemeUUID)) {
                 mMediaCrypto = new MediaCrypto(mSchemeUUID, mMediaCryptoSession.drmId());
                 Log.d(TAG, "MediaCrypto successfully created!");
@@ -397,18 +399,20 @@ public class MediaDrmBridge {
     }
 
     /**
-     * Check whether the crypto scheme is supported for the given container.
-     * If |containerMimeType| is an empty string, we just return whether
-     * the crypto scheme is supported.
+     * Check whether the crypto scheme is supported for the given container. If |containerMimeType|
+     * is an empty string, we just return whether the crypto scheme is supported.
      *
-     * @return true if the container and the crypto scheme is supported, or
-     * false otherwise.
+     * @return true if the container and the crypto scheme is supported, or false otherwise.
      */
     @CalledByNative
     private static boolean isCryptoSchemeSupported(byte[] schemeUUID, String containerMimeType) {
         UUID cryptoScheme = getUUIDFromBytes(schemeUUID);
+        if (cryptoScheme == null) {
+            return false;
+        }
 
-        try {
+        // MediaDrm.isCryptoSchemeSupported reads from disk
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             if (containerMimeType.isEmpty()) {
                 return MediaDrm.isCryptoSchemeSupported(cryptoScheme);
             }
@@ -471,8 +475,9 @@ public class MediaDrmBridge {
                 securityOrigin,
                 message);
 
-        MediaDrmBridge mediaDrmBridge = null;
-        try {
+        MediaDrmBridge mediaDrmBridge;
+        // MediaDrm.isCryptoSchemeSupported reads from disk
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             UUID cryptoScheme = getUUIDFromBytes(schemeUUID);
             if (cryptoScheme == null || !MediaDrm.isCryptoSchemeSupported(cryptoScheme)) {
                 return null;

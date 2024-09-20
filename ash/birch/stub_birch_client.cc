@@ -135,4 +135,9 @@ void StubBirchClient::GetFaviconImage(
   did_get_favicon_image_ = true;
   std::move(callback).Run(ui::ImageModel());
 }
+
+ui::ImageModel StubBirchClient::GetChromeBackupIcon() {
+  return ui::ImageModel();
+}
+
 }  // namespace ash

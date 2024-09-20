@@ -7,8 +7,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cr_icon.css.js';
+import type {CrIconsetElement} from './cr_iconset.js';
 import {IconsetMap} from './iconset_map.js';
-import type {Iconset} from './iconset_map.js';
 
 export class CrIconElement extends CrLitElement {
   static get is() {
@@ -32,7 +32,7 @@ export class CrIconElement extends CrLitElement {
   icon: string = '';
   private iconsetName_: string = '';
   private iconName_: string = '';
-  private iconset_: Iconset|null = null;
+  private iconset_: CrIconsetElement|null = null;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
@@ -41,11 +41,11 @@ export class CrIconElement extends CrLitElement {
       const [iconsetName, iconName] = this.icon.split(':');
       this.iconName_ = iconName || '';
       this.iconsetName_ = iconsetName || '';
-      this.updateIcon();
+      this.updateIcon_();
     }
   }
 
-  updateIcon() {
+  private updateIcon_() {
     if (this.iconName_ === '' && this.iconset_) {
       this.iconset_.removeIcon(this);
     } else if (this.iconsetName_) {

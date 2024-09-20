@@ -84,7 +84,6 @@ group("resources") {
       "ash/inline_login:resources",
       "ash/settings:resources",
       "chromeos:resources",
-      "nearby_internals:resources",
     ]
   }
 
@@ -137,6 +136,10 @@ group("resources") {
       "signin/profile_picker:resources",
       "welcome:resources",
     ]
+  }
+
+  if (enable_dice_support) {
+    public_deps += [ "signin/batch_upload:resources" ]
   }
 
   if (enable_webui_tab_strip) {

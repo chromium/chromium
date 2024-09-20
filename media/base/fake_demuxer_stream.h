@@ -91,7 +91,7 @@ class FakeDemuxerStream : public DemuxerStream {
 
  private:
   void UpdateVideoDecoderConfig();
-  void DoRead();
+  void DoRead(int read_count = 1);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

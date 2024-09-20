@@ -403,28 +403,28 @@ ResponseAction PasswordsPrivateRequestExportProgressStatusFunction::Run() {
           GetDelegate(browser_context())->GetExportProgressStatus())));
 }
 
-// PasswordsPrivateIsOptedInForAccountStorageFunction
-ResponseAction PasswordsPrivateIsOptedInForAccountStorageFunction::Run() {
+// PasswordsPrivateIsAccountStorageEnabledFunction
+ResponseAction PasswordsPrivateIsAccountStorageEnabledFunction::Run() {
   if (!GetDelegate(browser_context())) {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  return RespondNow(WithArguments(
-      GetDelegate(browser_context())->IsOptedInForAccountStorage()));
+  return RespondNow(
+      WithArguments(GetDelegate(browser_context())->IsAccountStorageEnabled()));
 }
 
-// PasswordsPrivateOptInForAccountStorageFunction
-ResponseAction PasswordsPrivateOptInForAccountStorageFunction::Run() {
+// PasswordsPrivateSetAccountStorageEnabledFunction
+ResponseAction PasswordsPrivateSetAccountStorageEnabledFunction::Run() {
   if (!GetDelegate(browser_context())) {
     return RespondNow(Error(kNoDelegateError));
   }
 
   auto parameters =
-      api::passwords_private::OptInForAccountStorage::Params::Create(args());
+      api::passwords_private::SetAccountStorageEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
-      ->SetAccountStorageOptIn(parameters->opt_in, GetSenderWebContents());
+      ->SetAccountStorageEnabled(parameters->enabled, GetSenderWebContents());
   return RespondNow(NoArguments());
 }
 

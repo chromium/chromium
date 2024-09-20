@@ -85,7 +85,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       crosapi::mojom::VideoConferenceMediaDevice device) override;
   void FinalizeSavedFile(
       base::OnceCallback<void(bool, const base::FilePath&)> callback,
-      const base::FilePath& path) override;
+      const base::FilePath& path,
+      const gfx::Image& thumbnail) override;
   base::FilePath RedirectFilePath(const base::FilePath& path) override;
   std::unique_ptr<ash::AshWebView> CreateSearchResultsView() const override;
 

@@ -1691,7 +1691,8 @@ void FrameLoader::CancelClientNavigation(CancelNavigationReason reason) {
   ClearClientNavigation();
   if (WebPluginContainerImpl* plugin = frame_->GetWebPluginContainer())
     plugin->DidFailLoading(error);
-  Client()->AbortClientNavigation();
+  Client()->AbortClientNavigation(reason ==
+                                  CancelNavigationReason::kNewNavigation);
 }
 
 void FrameLoader::DispatchDocumentElementAvailable() {

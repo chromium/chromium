@@ -22,7 +22,9 @@
 #include "components/tpcd/metadata/browser/parser.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_devtools_protocol_client.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
@@ -40,7 +42,8 @@ class TpcdMetadataDevtoolsObserverBrowserTest
       public content::TestDevToolsProtocolClient {
  public:
   explicit TpcdMetadataDevtoolsObserverBrowserTest(
-      bool enable_metadata_feature = true)
+      bool enable_metadata_feature = true,
+      bool enable_staged_control = true)
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     enabled_features_.push_back(
         {content_settings::features::kTrackingProtection3pcd, {}});
@@ -51,6 +54,11 @@ class TpcdMetadataDevtoolsObserverBrowserTest
       enabled_features_.push_back({net::features::kTpcdMetadataGrants, {}});
     } else {
       disabled_features_.push_back(net::features::kTpcdMetadataGrants);
+    }
+
+    enable_staged_control_ = enable_staged_control;
+    if (!enable_staged_control) {
+      disabled_features_.push_back(net::features::kTpcdMetadataStageControl);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features_,
@@ -80,12 +88,19 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     const std::string third_party_pattern_spec_2 = "c.test";
 
     Metadata metadata;
+    // If staged control is enabled, DTRP values must be set to 0 to avoid
+    // flakiness if the entry is dropped. If staged control is disabled, the
+    // values can be tested.
+    std::optional<uint32_t> dtrp =
+        enable_staged_control_ ? std::nullopt : std::make_optional(50u);
+    std::optional<uint32_t> dtrp_override =
+        enable_staged_control_ ? std::nullopt : std::make_optional(20u);
     tpcd::metadata::helpers::AddEntryToMetadata(
         metadata, third_party_pattern_spec_1, first_party_pattern_spec,
-        Parser::kSource1pDt, /*dtrp=*/50u);
+        Parser::kSource1pDt, dtrp);
     tpcd::metadata::helpers::AddEntryToMetadata(
         metadata, third_party_pattern_spec_2, first_party_pattern_spec,
-        Parser::kSource3pDt, /*dtrp=*/50u, /*dtrp_override=*/20u);
+        Parser::kSource3pDt, dtrp, dtrp_override);
     tpcd::metadata::Parser::GetInstance()->ParseMetadata(
         metadata.SerializeAsString());
 
@@ -125,9 +140,9 @@ class TpcdMetadataDevtoolsObserverBrowserTest
         https_server_.GetURL(third_party_site, relative_url));
   }
 
-  void WaitForIssueAndCheck(const std::vector<std::string>& sites,
-                            uint32_t opt_out_percentage,
-                            bool is_opt_out_top_level) {
+  void WaitForMetadataIssueAndCheck(const std::vector<std::string>& sites,
+                                    uint32_t opt_out_percentage,
+                                    bool is_opt_out_top_level) {
     auto is_metadata_issue = [](const base::Value::Dict& params) {
       const std::string* issue_code =
           params.FindStringByDottedPath("issue.code");
@@ -173,10 +188,42 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     ClearNotifications();
   }
 
+  void WaitForCookieIssueAndCheck(std::string_view third_party_site,
+                                  std::string_view warning) {
+    auto is_cookie_issue = [](const base::Value::Dict& params) {
+      const std::string* issue_code =
+          params.FindStringByDottedPath("issue.code");
+      return issue_code && *issue_code == "CookieIssue";
+    };
+
+    // Wait for notification of a Cookie Issue.
+    base::Value::Dict params = WaitForMatchingNotification(
+        "Audits.issueAdded", base::BindRepeating(is_cookie_issue));
+
+    std::string partial_expected =
+        content::JsReplace(R"({
+            "cookie": {
+               "domain": $1,
+               "name": "name",
+               "path": "/"
+            },
+            "cookieWarningReasons": [ $2 ],
+            "operation": "ReadCookie",
+         })",
+                           third_party_site, warning);
+
+    // Find relevant fields from cookieIssueDetails
+    ASSERT_THAT(params.FindDictByDottedPath("issue.details.cookieIssueDetails"),
+                testing::Pointee(base::test::DictionaryHasValues(
+                    base::test::ParseJsonDict(partial_expected))));
+
+    ClearNotifications();
+  }
+
   void CheckNoAddedIssue() {
     ReportDummyIssue();
 
-    WaitForIssueAndCheck({"dummy.test"}, 0u, false);
+    WaitForMetadataIssueAndCheck({"dummy.test"}, 0u, false);
   }
 
  private:
@@ -197,6 +244,7 @@ class TpcdMetadataDevtoolsObserverBrowserTest
             std::move(details)));
   }
 
+  bool enable_staged_control_ = true;
   base::test::ScopedFeatureList feature_list_;
   std::vector<base::test::FeatureRefAndParams> enabled_features_;
   std::vector<base::test::FeatureRef> disabled_features_;
@@ -204,14 +252,43 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   raw_ptr<TpcdMetadataDevtoolsObserver> devtools_observer_ = nullptr;
 };
 
-// TODO(https://crbug.com/341211478): Flaky.
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
-                       DISABLED_EmitsDevtoolsIssues) {
+                       EmitsDevtoolsIssues) {
   AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
-  WaitForIssueAndCheck({"b.test"}, 50u, true);
+  WaitForMetadataIssueAndCheck({"b.test"}, 0u, true);
 
   AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
-  WaitForIssueAndCheck({"c.test"}, 20u, false);
+  WaitForMetadataIssueAndCheck({"c.test"}, 0u, false);
+}
+
+// Setting the DTRP values in the issue needs to be tested with the flag off.
+// Otherwise, a non-zero DTRP value might filter the entry and the issue will
+// never fire.
+class TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest
+    : public TpcdMetadataDevtoolsObserverBrowserTest {
+ public:
+  TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest()
+      : TpcdMetadataDevtoolsObserverBrowserTest(
+            /*enable_metadata_feature=*/true,
+            /*enable_staged_control=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest,
+                       EmitsDevtoolsIssuesWithDtrpValues) {
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForMetadataIssueAndCheck({"b.test"}, 50u, true);
+
+  AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
+  WaitForMetadataIssueAndCheck({"c.test"}, 20u, false);
+}
+
+IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
+                       EmitsDevtoolsIssuesForExemption) {
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForCookieIssueAndCheck("b.test", {"WarnDeprecationTrialMetadata"});
+
+  AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
+  WaitForCookieIssueAndCheck("c.test", {"WarnDeprecationTrialMetadata"});
 }
 
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,

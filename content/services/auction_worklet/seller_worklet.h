@@ -335,6 +335,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         PrivateAggregationRequests pa_requests,
         RealTimeReportingContributions real_time_contributions,
         base::TimeDelta scoring_latency,
+        bool script_timed_out,
         std::vector<std::string> errors)>;
     using ReportResultCallbackInternal =
         base::OnceCallback<void(std::optional<std::string> signals_for_winner,
@@ -342,6 +343,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
                                 base::flat_map<std::string, GURL> ad_beacon_map,
                                 PrivateAggregationRequests pa_requests,
                                 base::TimeDelta reporting_latency,
+                                bool script_timed_out,
                                 std::vector<std::string> errors)>;
 
     V8State(
@@ -440,6 +442,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     void PostScoreAdCallbackToUserThreadOnError(
         ScoreAdCallbackInternal callback,
         base::TimeDelta scoring_latency,
+        bool script_timed_out,
         std::vector<std::string> errors,
         PrivateAggregationRequests pa_requests = {},
         RealTimeReportingContributions real_time_contributions = {});
@@ -457,6 +460,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         PrivateAggregationRequests pa_requests,
         RealTimeReportingContributions real_time_contributions,
         base::TimeDelta scoring_latency,
+        bool script_timed_out,
         std::vector<std::string> errors);
 
     void PostReportResultCallbackToUserThread(
@@ -466,6 +470,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         base::flat_map<std::string, GURL> ad_beacon_map,
         PrivateAggregationRequests pa_requests,
         base::TimeDelta reporting_latency,
+        bool script_timed_out,
         std::vector<std::string> errors);
 
     static void PostResumeToUserThread(
@@ -557,6 +562,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       PrivateAggregationRequests pa_requests,
       RealTimeReportingContributions real_time_contributions,
       base::TimeDelta scoring_latency,
+      bool script_timed_out,
       std::vector<std::string> errors);
 
   // Removes `task` from `score_ad_tasks_` only. Used in case where the
@@ -587,6 +593,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       base::flat_map<std::string, GURL> ad_beacon_map,
       PrivateAggregationRequests pa_requests,
       base::TimeDelta reporting_latency,
+      bool script_timed_out,
       std::vector<std::string> errors);
 
   // Returns true if unpaused and the script has loaded.
@@ -633,6 +640,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
   // Deleted once load has completed.
   std::unique_ptr<WorkletLoader> worklet_loader_;
+  base::TimeTicks code_download_start_;
+  std::optional<base::TimeDelta> js_fetch_latency_;
 
   // Lives on `v8_runners_`. Since it's deleted there, tasks can be safely
   // posted from main thread to it with an Unretained pointer.

@@ -15,28 +15,6 @@ import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-struct PreviousWin {
-  // Approximate time a particular group won an auction.
-  //
-  // TODO(mmenke): Provide this as an integer time since an auction was won, in
-  // seconds, to reduce time resolution of cross-site information provided to an
-  // untrusted service.
-  //
-  // TODO(crbug.com/40765411): Decide what to do when wins are
-  // "in the future" due to clock changes.
-  mojo_base.mojom.Time time;
-
-  // A JSON serialized object corresponding to the ad that won the auction.
-  // This field is kept serialized to avoid deserializing unless we actually
-  // need the data inside. The internal message has the following structure:
-  // struct AdJSON {
-  //   string renderURL;
-  //   string adRenderId;
-  //   string metadata;  // JSON encoded metadata object
-  // };
-  string ad_json;
-};
-
 // Degree to which k-anonymity is enforced.
 enum KAnonymityBidMode {
   kNone,   // k-anonymity is ignored.
@@ -81,26 +59,6 @@ struct BidderWorkletNonSharedParams {
   // A key is present iff it is sufficiently k-anonymous to
   // be used as an ad or an ad component.
   array<KAnonKey> kanon_keys;
-};
-
-// Browser signals passed to the BidderWorklet's generateBid() method that are
-// stored on disk and updated by the browser, as opposed to coming from the
-// frame running the auction, or from the definition of the InterestGroup taking
-// part in an auction.
-struct BiddingBrowserSignals {
-  // How many times this interest group has been joined in the period history
-  // is maintained.
-  int32 join_count;
-
-  // How many times this interest group has made bids in auctions.
-  int32 bid_count;
-
-  // Previous times the group won auctions.
-  array<PreviousWin> prev_wins;
-
-  // Whether the browser is under lockout or the buyer's origin is under
-  // cooldown for sending forDebuggingOnly reports.
-  bool for_debugging_only_in_cooldown_or_lockout;
 };
 
 // The results of running a FLEDGE generateBid() script.
@@ -203,6 +161,23 @@ struct GenerateBidDependencyLatencies {
   mojo_base.mojom.TimeTicks generate_bid_finish_time;
 };
 
+// How long particular tasks took. Unlike GenerateBidDependencyLatencies this
+// doesn't denote how long things blocked for --- e.g. the fetch times are
+// how long the download took, even for later calls to generateBid() that
+// may not actually wait for the download since it's already in memory.
+struct BidderTimingMetrics {
+  mojo_base.mojom.TimeDelta? js_fetch_latency;
+  mojo_base.mojom.TimeDelta? wasm_fetch_latency;
+
+  // Time to run generateBid (including any k-anon re-run) or reportWin,
+  // respectively. For generateBid, this will also include any top-level
+  // execution which happened (which it might not have depending on the
+  // execution mode).
+  mojo_base.mojom.TimeDelta script_latency;
+
+  bool script_timed_out;
+};
+
 // Single use client for each GenerateBid() call. Allows deferring generating
 // bids until after a bidder's interest groups have all received priority
 // vectors, which allows for cancelling generate bid calls from lower priority
@@ -293,8 +268,8 @@ interface GenerateBidClient {
   //
   // `real_time_contributions` Real time reporting contributions.
   //
-  // `bidding_latency` The amount of time taken running all bids (note that
-  // there may be 2 bids if the first bid result was not k-anonymous).
+  // `generate_bid_timing_metrics` The amount of time some of the operations
+  // performed took.
   //
   // `generate_bid_dependency_latencies` The amount of time GenerateBid had to
   // wait for each of its dependencies to be fulfilled before it could be run.
@@ -318,7 +293,7 @@ interface GenerateBidClient {
       array<PrivateAggregationRequest> pa_requests,
       array<PrivateAggregationRequest> non_kanon_pa_requests,
       array<RealTimeReportingContribution> real_time_contributions,
-      mojo_base.mojom.TimeDelta bidding_latency,
+      BidderTimingMetrics generate_bid_timing_metrics,
       GenerateBidDependencyLatencies generate_bid_dependency_latencies,
       RejectReason reject_reason,
       array<string> errors);
@@ -472,7 +447,7 @@ interface BidderWorklet {
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
       mojo_base.mojom.TimeDelta browser_signal_recency,
-      BiddingBrowserSignals bidding_browser_signals,
+      blink.mojom.BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time,
       blink.mojom.AdSize? requested_ad_size,
       uint16 multi_bid_limit,
@@ -668,7 +643,7 @@ interface BidderWorklet {
           map<string, url.mojom.Url> ad_beacon_map,
           map<string, string> ad_macro_map,
           array<PrivateAggregationRequest> pa_requests,
-          mojo_base.mojom.TimeDelta reporting_latency,
+          BidderTimingMetrics timing_metrics,
           array<string> errors);
 
   // Establishes a debugger connection to the worklet thread.

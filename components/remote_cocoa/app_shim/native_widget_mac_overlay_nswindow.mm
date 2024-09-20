@@ -26,4 +26,11 @@ constexpr unsigned long kAllowedCollectionBehaviorMask =
                                kAllowedCollectionBehaviorMask];
 }
 
+// Paint the window a mostly opaque color.
+- (void)debugWithColor:(NSColor*)color {
+  self.backgroundColor = color;
+  self.alphaValue = 0.3;
+  self.contentView = [[NSView alloc] init];
+}
+
 @end

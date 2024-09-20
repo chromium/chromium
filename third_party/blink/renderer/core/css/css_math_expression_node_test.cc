@@ -336,7 +336,8 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
       ss << ")";
     }
 
-    CSSParserTokenStream stream(String(ss.str().c_str()));
+    std::string str = ss.str();
+    CSSParserTokenStream stream(str.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -344,7 +345,7 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
         kCSSAnchorQueryTypesNone);
 
     if (test_case.expected) {
-      EXPECT_TRUE(res);
+      ASSERT_TRUE(res);
       EXPECT_TRUE(!res->HasPercentage());
     } else {
       EXPECT_FALSE(res);
@@ -365,7 +366,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctions) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSParserTokenStream stream(String(test_case.input.c_str()));
+    CSSParserTokenStream stream(test_case.input.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -437,7 +438,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctions) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSParserTokenStream stream(String(test_case.input.c_str()));
+    CSSParserTokenStream stream(test_case.input.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -547,7 +548,7 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSParserTokenStream stream(String(test_case.input.c_str()));
+    CSSParserTokenStream stream(test_case.input.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -570,7 +571,7 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSParserTokenStream stream(String(test_case.input.c_str()));
+    CSSParserTokenStream stream(test_case.input.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -594,7 +595,7 @@ TEST(CSSMathExpressionNode, TestInvalidProgressNotation) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSParserTokenStream stream(String(test_case.c_str()));
+    CSSParserTokenStream stream(test_case.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -694,7 +695,7 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithInvalidChannelName) {
 }
 
 TEST(CSSMathExpressionNode, TestColorChannelExpressionWithoutSubstitution) {
-  const String input = "h / 2";
+  const String input = "(h / 360) * 360deg";
 
   const CSSColorChannelMap color_channel_map = {
       {CSSValueID::kH, std::nullopt},
@@ -710,14 +711,18 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithoutSubstitution) {
       CSSMathExpressionNode::ParseMathFunction(
           CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
           kCSSAnchorQueryTypesNone, color_channel_map);
-  EXPECT_EQ(css_node->Category(), CalculationResultCategory::kCalcNumber);
+  EXPECT_EQ(css_node->Category(), CalculationResultCategory::kCalcAngle);
   EXPECT_TRUE(css_node->IsOperation());
   const CSSMathExpressionOperation* css_op =
       To<CSSMathExpressionOperation>(css_node);
   const CSSMathExpressionNode* operand = css_op->GetOperands()[0];
-  EXPECT_TRUE(operand->IsKeywordLiteral());
+  EXPECT_TRUE(operand->IsOperation());
+  const CSSMathExpressionOperation* inner_css_op =
+      To<CSSMathExpressionOperation>(operand);
+  const CSSMathExpressionNode* inner_operand = inner_css_op->GetOperands()[0];
+  EXPECT_TRUE(inner_operand->IsKeywordLiteral());
   const CSSMathExpressionKeywordLiteral* keyword =
-      To<CSSMathExpressionKeywordLiteral>(operand);
+      To<CSSMathExpressionKeywordLiteral>(inner_operand);
   EXPECT_EQ(keyword->GetValue(), CSSValueID::kH);
   EXPECT_EQ(keyword->GetContext(),
             CSSMathExpressionKeywordLiteral::Context::kColorChannel);
@@ -732,13 +737,29 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithoutSubstitution) {
   const CalculationExpressionOperationNode::Children& operands =
       operation_node->GetChildren();
   EXPECT_EQ(operands.size(), 2u);
-  EXPECT_TRUE(operands[0]->IsColorChannelKeyword());
-  EXPECT_EQ(To<CalculationExpressionColorChannelKeywordNode>(operands[0].get())
-                ->Value(),
-            ColorChannelKeyword::kH);
-  EXPECT_TRUE(operands[1]->IsNumber());
-  EXPECT_EQ(To<CalculationExpressionNumberNode>(operands[1].get())->Value(),
-            0.5);
+  EXPECT_TRUE(operands[0]->IsOperation());
+
+  const CalculationExpressionOperationNode* inner_operation_node =
+      To<CalculationExpressionOperationNode>(operands[0].get());
+  const CalculationExpressionOperationNode::Children& inner_operands =
+      inner_operation_node->GetChildren();
+  EXPECT_EQ(inner_operation_node->GetOperator(),
+            CalculationOperator::kMultiply);
+  EXPECT_EQ(inner_operands.size(), 2u);
+  EXPECT_TRUE(inner_operands[0]->IsColorChannelKeyword());
+  EXPECT_EQ(
+      To<CalculationExpressionColorChannelKeywordNode>(inner_operands[0].get())
+          ->Value(),
+      ColorChannelKeyword::kH);
+  EXPECT_TRUE(inner_operands[1]->IsNumber());
+  EXPECT_EQ(
+      To<CalculationExpressionNumberNode>(inner_operands[1].get())->Value(),
+      (1.f / 360.f));
+
+  EXPECT_TRUE(operands[1]->IsPixelsAndPercent());
+  EXPECT_EQ(To<CalculationExpressionPixelsAndPercentNode>(operands[1].get())
+                ->Pixels(),
+            360.f);
 }
 
 }  // anonymous namespace

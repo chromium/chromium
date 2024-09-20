@@ -2953,11 +2953,17 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 #define MAYBE_SecureDnsCaptivePortal SecureDnsCaptivePortal
 #endif
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, MAYBE_SecureDnsCaptivePortal) {
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kDnsOverHttpsMode,
-                         SecureDnsConfig::kModeSecure);
-  local_state->SetString(prefs::kDnsOverHttpsTemplates,
-                         "https://bar.test/dns-query{?dns}");
+  PrefService* pref_service = g_browser_process->local_state();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Chrome OS, the local_state is shared between all users so the user-set
+  // pref is stored in the profile's pref service.
+  pref_service = browser()->profile()->GetPrefs();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  pref_service->SetString(prefs::kDnsOverHttpsMode,
+                          SecureDnsConfig::kModeSecure);
+  pref_service->SetString(prefs::kDnsOverHttpsTemplates,
+                          "https://bar.test/dns-query{?dns}");
 
   Browser* login_browser = nullptr;
   SlowLoadBehindCaptivePortal(browser(), true /* expect_open_login_tab */,
@@ -2998,11 +3004,16 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, MAYBE_SecureDnsCaptivePortal) {
 #endif
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
                        MAYBE_SecureDnsErrorTriggersCheck) {
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kDnsOverHttpsTemplates,
-                         "https://bar.test/dns-query{?dns}");
-  local_state->SetString(prefs::kDnsOverHttpsMode,
-                         SecureDnsConfig::kModeSecure);
+  PrefService* pref_service = g_browser_process->local_state();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Chrome OS, the local_state is shared between all users so the user-set
+  // pref is stored in the profile's pref service.
+  pref_service = browser()->profile()->GetPrefs();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  pref_service->SetString(prefs::kDnsOverHttpsTemplates,
+                          "https://bar.test/dns-query{?dns}");
+  pref_service->SetString(prefs::kDnsOverHttpsMode,
+                          SecureDnsConfig::kModeSecure);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   WebContents* broken_tab_contents = tab_strip_model->GetActiveWebContents();
@@ -3046,11 +3057,16 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
                        MAYBE_SlowLoadSecureDnsErrorWithCaptivePortal) {
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kDnsOverHttpsTemplates,
-                         "https://bar.test/dns-query{?dns}");
-  local_state->SetString(prefs::kDnsOverHttpsMode,
-                         SecureDnsConfig::kModeSecure);
+  PrefService* pref_service = g_browser_process->local_state();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Chrome OS, the local_state is shared between all users so the user-set
+  // pref is stored in the profile's pref service.
+  pref_service = browser()->profile()->GetPrefs();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  pref_service->SetString(prefs::kDnsOverHttpsTemplates,
+                          "https://bar.test/dns-query{?dns}");
+  pref_service->SetString(prefs::kDnsOverHttpsMode,
+                          SecureDnsConfig::kModeSecure);
 
   SlowLoadBehindCaptivePortal(browser(), true /* expect_open_login_tab */,
                               true /* expect_new_login_browser */);
@@ -3082,11 +3098,16 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
                        MAYBE_SlowLoadSecureDnsErrorAfterLogin) {
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kDnsOverHttpsTemplates,
-                         "https://bar.test/dns-query{?dns}");
-  local_state->SetString(prefs::kDnsOverHttpsMode,
-                         SecureDnsConfig::kModeSecure);
+  PrefService* pref_service = g_browser_process->local_state();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Chrome OS, the local_state is shared between all users so the user-set
+  // pref is stored in the profile's pref service.
+  pref_service = browser()->profile()->GetPrefs();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  pref_service->SetString(prefs::kDnsOverHttpsTemplates,
+                          "https://bar.test/dns-query{?dns}");
+  pref_service->SetString(prefs::kDnsOverHttpsMode,
+                          SecureDnsConfig::kModeSecure);
 
   Browser* login_browser = nullptr;
   SlowLoadBehindCaptivePortal(browser(), true /* expect_open_login_tab */,

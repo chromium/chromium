@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Policy to use: digital-credentials-get, is cross-origin: true, is allowed by policy: true
+  assert_equals: <iframe allow="digital-credentials-get" src="https://www1.web-platform.test:8444/digital-credentials/support/iframe.html" data-expect-is-allowed="true"></iframe> - The following credential operations can only occur in a document which is same-origin with all of its ancestors: storage/retrieval of 'PasswordCredential' and 'FederatedCredential', storage of 'PublicKeyCredential'. expected "TypeError" but got "NotAllowedError"
+[FAIL] Policy to use: digital-credentials-get *, is cross-origin: true, is allowed by policy: true
+  assert_equals: <iframe allow="digital-credentials-get *" src="https://www1.web-platform.test:8444/digital-credentials/support/iframe.html" data-expect-is-allowed="true"></iframe> - The following credential operations can only occur in a document which is same-origin with all of its ancestors: storage/retrieval of 'PasswordCredential' and 'FederatedCredential', storage of 'PublicKeyCredential'. expected "TypeError" but got "NotAllowedError"
+[FAIL] Policy to use: digital-credentials-get https://www1.web-platform.test:8444, is cross-origin: true, is allowed by policy: true
+  assert_equals: <iframe allow="digital-credentials-get https://www1.web-platform.test:8444" src="https://www1.web-platform.test:8444/digital-credentials/support/iframe.html" data-expect-is-allowed="true"></iframe> - The following credential operations can only occur in a document which is same-origin with all of its ancestors: storage/retrieval of 'PasswordCredential' and 'FederatedCredential', storage of 'PublicKeyCredential'. expected "TypeError" but got "NotAllowedError"
+Harness: the test ran to completion.
+

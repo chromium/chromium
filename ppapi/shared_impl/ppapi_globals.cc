@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace ppapi {
 
@@ -15,7 +14,7 @@ namespace {
 
 // Thread-local globals for testing. See SetPpapiGlobalsOnThreadForTest for more
 // information.
-ABSL_CONST_INIT thread_local PpapiGlobals* ppapi_globals_for_test = nullptr;
+constinit thread_local PpapiGlobals* ppapi_globals_for_test = nullptr;
 
 }  // namespace
 

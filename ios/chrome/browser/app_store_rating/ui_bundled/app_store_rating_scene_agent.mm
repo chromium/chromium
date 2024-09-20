@@ -57,7 +57,7 @@
   DCHECK(self.sceneState.browserProviderInterface.mainBrowserProvider.browser);
   PrefService* pref_service =
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState()
+          ->GetProfile()
           ->GetPrefs();
   return password_manager_util::IsCredentialProviderEnabledOnStartup(
       pref_service);

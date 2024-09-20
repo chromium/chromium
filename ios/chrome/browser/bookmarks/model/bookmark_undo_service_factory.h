@@ -15,13 +15,11 @@ class BookmarkUndoService;
 
 namespace ios {
 // Singleton that owns all FaviconServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class BookmarkUndoServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static BookmarkUndoService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static BookmarkUndoService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static BookmarkUndoService* GetForProfile(ProfileIOS* profile);
+  static BookmarkUndoService* GetForProfileIfExists(ProfileIOS* profile);
   static BookmarkUndoServiceFactory* GetInstance();
 
   BookmarkUndoServiceFactory(const BookmarkUndoServiceFactory&) = delete;

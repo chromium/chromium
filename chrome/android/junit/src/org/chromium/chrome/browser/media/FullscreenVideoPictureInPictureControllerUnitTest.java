@@ -15,7 +15,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +33,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.tab.Tab;
@@ -124,11 +122,6 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         mController =
                 new FullscreenVideoPictureInPictureControllerWithOverrides(
                         mActivity, mActivityTabProvider, mFullscreenManager);
-    }
-
-    @After
-    public void tearDown() {
-        AppHooks.setInstanceForTesting(null);
     }
 
     /** Set up the mocks to claim that there is / is not full screen video playback */

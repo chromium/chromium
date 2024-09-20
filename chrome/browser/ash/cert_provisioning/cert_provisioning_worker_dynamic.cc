@@ -61,6 +61,7 @@ namespace ash::cert_provisioning {
 namespace {
 
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
+constexpr char kEcNamedCurve[] = "P-256";
 
 constexpr base::TimeDelta kMinumumTryAgainLaterDelay = base::Seconds(10);
 
@@ -371,11 +372,22 @@ void CertProvisioningWorkerDynamic::GenerateKey() {
 }
 
 void CertProvisioningWorkerDynamic::GenerateRegularKey() {
-  platform_keys_service_->GenerateRSAKey(
-      GetPlatformKeysTokenId(cert_scope_), kNonVaKeyModulusLengthBits,
-      /*sw_backed=*/false,
-      base::BindOnce(&CertProvisioningWorkerDynamic::OnGenerateRegularKeyDone,
-                     weak_factory_.GetWeakPtr()));
+  switch (cert_profile_.key_type) {
+    case KeyType::kRsa:
+      platform_keys_service_->GenerateRSAKey(
+          GetPlatformKeysTokenId(cert_scope_), kNonVaKeyModulusLengthBits,
+          /*sw_backed=*/false,
+          base::BindOnce(
+              &CertProvisioningWorkerDynamic::OnGenerateRegularKeyDone,
+              weak_factory_.GetWeakPtr()));
+      break;
+    case KeyType::kEc:
+      platform_keys_service_->GenerateECKey(
+          GetPlatformKeysTokenId(cert_scope_), kEcNamedCurve,
+          base::BindOnce(
+              &CertProvisioningWorkerDynamic::OnGenerateRegularKeyDone,
+              weak_factory_.GetWeakPtr()));
+  }
 }
 
 void CertProvisioningWorkerDynamic::OnGenerateRegularKeyDone(
@@ -550,6 +562,12 @@ void CertProvisioningWorkerDynamic::OnProofOfPossessionInstructionReceived(
   if (proof_of_possession_instruction.has_signature_algorithm()) {
     signature_algorithm_ =
         proof_of_possession_instruction.signature_algorithm();
+  } else {
+    failure_message_ =
+        base::StrCat({"No signature algorithm provided", GetLogInfoBlock()});
+    FINAL_STATE_EXPECTED(
+        UpdateState(FROM_HERE, CertProvisioningWorkerState::kFailed));
+    return;
   }
 
   data_to_sign_ = StrToBytes(proof_of_possession_instruction.data_to_sign());
@@ -751,6 +769,14 @@ void CertProvisioningWorkerDynamic::BuildProofOfPossession() {
       platform_keys_service_->SignRSAPKCS1Raw(
           GetPlatformKeysTokenId(cert_scope_), std::move(data_to_sign_),
           public_key_,
+          base::BindRepeating(
+              &CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone,
+              weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+      break;
+    case em::CertProvSignatureAlgorithm::SIGNATURE_ALGORITHM_ECDSA_SHA256:
+      platform_keys_service_->SignEcdsa(
+          GetPlatformKeysTokenId(cert_scope_), std::move(data_to_sign_),
+          public_key_, chromeos::platform_keys::HASH_ALGORITHM_SHA256,
           base::BindRepeating(
               &CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone,
               weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
@@ -1141,6 +1167,8 @@ void CertProvisioningWorkerDynamic::InitAfterDeserialization() {
   // Only initialize TpmChallengeKeySubtle if any Verified Access operations can
   // still happen, i.e. if VA is enabled and the key has not been moved into the
   // PKCS#11 token ("registered") yet.
+  // TODO(b/364893005): Update to support ECC keys as well, once VA support is
+  // ready.
   if (cert_profile_.is_va_enabled &&
       key_location_ != KeyLocation::kPkcs11Token) {
     tpm_challenge_key_subtle_impl_ =

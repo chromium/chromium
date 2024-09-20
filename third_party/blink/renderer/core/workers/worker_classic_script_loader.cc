@@ -263,7 +263,7 @@ void WorkerClassicScriptLoader::DidReceiveData(base::span<const char> data) {
     return;
   }
 
-  source_text_.Append(decoder_->Decode(data.data(), data.size()));
+  source_text_.Append(decoder_->Decode(data));
 }
 
 void WorkerClassicScriptLoader::DidReceiveCachedMetadata(
@@ -301,7 +301,7 @@ void WorkerClassicScriptLoader::DidReceiveDataWorkerMainScript(
   }
   if (!span.size())
     return;
-  source_text_.Append(decoder_->Decode(span.data(), span.size()));
+  source_text_.Append(decoder_->Decode(span));
 }
 
 void WorkerClassicScriptLoader::OnFinishedLoadingWorkerMainScript() {

@@ -28,8 +28,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -77,7 +75,6 @@ public class ShareDelegateImplUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Activity mActivity;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
-    @Mock private AppHooksImpl mAppHooks;
     @Mock private Tracker mTracker;
 
     private ShareDelegateImpl mShareDelegate;
@@ -97,7 +94,6 @@ public class ShareDelegateImplUnitTest {
     @Before
     public void setup() {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
-        AppHooks.setInstanceForTesting(mAppHooks);
         TrackerFactory.setTrackerForTests(mTracker);
         Mockito.doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         createShareDelegate(false);

@@ -35,6 +35,9 @@ StateObserverElement::~StateObserverElement() = default;
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(StateObserverElement)
 
+// static
+bool InteractiveTestPrivate::allow_interactive_test_verbs_ = false;
+
 InteractiveTestPrivate::InteractiveTestPrivate(
     std::unique_ptr<InteractionTestUtil> test_util)
     : test_util_(std::move(test_util)) {}

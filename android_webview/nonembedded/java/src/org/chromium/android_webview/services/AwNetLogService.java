@@ -23,7 +23,6 @@ import java.util.Comparator;
 
 /** Service responsible for preparing a ParcelFileDescriptor for uploading NetLogs. */
 public class AwNetLogService extends Service {
-    private static final String EXCLUDE_NON_DECIMAL_CHARS = "[^0-9]+";
     private static final String TAG = "AwNetLogs";
     private static final String JSON_EXTENSION = ".json";
     private static final long MAX_TOTAL_CAPACITY = 1000L * 1024 * 1024; // 1 GB

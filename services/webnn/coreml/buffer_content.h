@@ -13,7 +13,7 @@
 
 namespace webnn::coreml {
 
-// The internal contents of a CoreML MLBuffer. Access should be managed by
+// The internal contents of a CoreML MLTensor. Access should be managed by
 // wrapping in a `QueueableResourceState`.
 class API_AVAILABLE(macos(12.3)) BufferContent {
  public:

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/scoped_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -35,6 +36,13 @@ namespace {
 
 // https://www.w3.org/TR/webauthn/#dom-publickeycredential-type-slot:
 constexpr char kPublicKeyCredentialType[] = "public-key";
+
+// This is the subset of client capabilities computed by the renderer. See also
+// //content/browser/webauth/authenticator_common_impl.h
+constexpr char kConditionalCreateCapability[] = "conditionalCreate";
+constexpr char kSignalAllAcceptedCredentials[] = "signalAllAcceptedCredentials";
+constexpr char kSignalCurrentUserDetails[] = "signalCurrentUserDetails";
+constexpr char kSignalUnknownCredential[] = "signalUnknownCredential";
 
 void OnIsUserVerifyingComplete(ScriptPromiseResolver<IDLBoolean>* resolver,
                                bool available) {
@@ -60,6 +68,15 @@ void OnGetClientCapabilitiesComplete(
   for (const auto& capability : capabilities) {
     results.emplace_back(std::move(capability->name), capability->supported);
   }
+  // Add renderer computed capabilities.
+  // TODO(crbug.com/360327828): Update when supported.
+  results.emplace_back(kConditionalCreateCapability, false);
+
+  const bool report_enabled =
+      RuntimeEnabledFeatures::CredentialManagerReportEnabled();
+  results.emplace_back(kSignalAllAcceptedCredentials, report_enabled);
+  results.emplace_back(kSignalCurrentUserDetails, report_enabled);
+  results.emplace_back(kSignalUnknownCredential, report_enabled);
 
   // Results should be sorted lexicographically based on the keys.
   std::sort(

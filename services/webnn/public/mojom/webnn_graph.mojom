@@ -202,6 +202,30 @@ struct Conv2d {
   string label;
 };
 
+// Represents the cumulativeSum operation that accumulates a sum along the
+// given axis.
+struct CumulativeSum {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
+  // The axis used to sum along.
+  uint32 axis;
+  // If true, performs the exclusive sum such that the i-th output element would
+  // be the sum of the first (i-1) elements, where an input of [1,2,3] yields
+  // [0,1,3]. Otherwise, performs the inclusive sum such that the i-th output
+  // element would be the sum of the first i elements, where an input of [1,2,3]
+  // yields [1,3,6].
+  bool exclusive = false;
+  // Indicates whether to reverse the summation direction.
+  bool reversed = false;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Represents an elementwise operator to scale a low precision integer
 // (typically uint8 with a zero-point bias) to floating point:
 //   output = (input - zeroPoint) * scale.
@@ -588,6 +612,47 @@ struct GatherElements {
   string label;
 };
 
+// Represents an operation of gathering elements from the first
+// `indices.shape[-1]` dimensions of input indexed by indices following the
+// equation below:
+//
+// output[dIndex0, ..., dIndex(N-1), ...] =
+//  input[indices[dIndex0, ...,dIndex(N-1), :], ...]
+//
+// This operation expects the tensors rank and shape as follows:
+// `input.rank` >= 1.
+// `indices.rank` >= 1, where `indices.shape[-1]` <= `input.rank`.
+// `output.shape` = `indices.shape[:-1]` + `input.shape[indices.shape[-1]:]`,
+// where `+` denotes the concatenation of shapes.
+//
+// For example, input = [[[ 0,  1,  2,  3],
+//                        [10, 11, 12, 13]],
+//                       [[20, 21, 22, 23],
+//                        [30, 31, 32, 33]]] with shape (2, 2, 4),
+// indices = [[1, 0],
+//            [0, 1],
+//            [1, 1]] with shape (3, 2),
+// output = [[20, 21, 22, 23],
+//           [10, 11, 12, 13],
+//           [30, 31, 32, 33]] with shape (3, 4).
+//
+// `GatherND` has the same out-of-bounds `indices` issue as `Gather`. A backend
+// implementation must guarantee index values do not cause invalid reads outside
+// the input tensor.
+// The out-of-bounds `indices` handling is being discussed in WG:
+// https://github.com/webmachinelearning/webnn/issues/486
+struct GatherND {
+  // The input operand (referenced by input_operand_id) and the indices operand
+  // (referenced by indices_operand_id) must be distinct from the output
+  // operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 indices_operand_id;
+  uint64 output_operand_id;
+
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Corresponds to `MLOperand gelu(MLOperand input)` that computes the gelu
 // function of the input tensor following the expression
 // 0.5 * x * (1 + erf(x / sqrt(2))).
@@ -955,6 +1020,71 @@ struct Reshape {
   string label;
 };
 
+// Represents ScatterND operation that first copies the values of `input` to
+// `output` tensor, and then overwrites the values of `output` tensor to values
+// specified by `updates` tensor at specific index positions specified by
+// `indices` tensor.
+//
+// Its calculation follows the pseudocode:
+// ```
+// output = input
+// // Let `q` denote the rank of `indices` tensor.
+// output[indices[i_{0}, ..., i_{q-2}]] = updates[i_{0}, ..., i_{q-2}]
+// ```
+//
+// The last dimension of `indices` tensor corresponds to indices of elements (if
+// `indices.shape[-1]` == `output.rank`) or slices (if `indices.shape[-1]` <
+// `output.rank`) along dimension `indices.shape[-1]` of `output.shape`.
+// The index value for `i`th dimension (0 <= `i` < `indices.shape[-1]`) must be
+// within the bounds [`-output.shape[i]`, `output.shape[i]` - 1] and a negative
+// index means indexing from the end of the dimension.
+//
+// This operation expects the tensors rank and shape as follows:
+// `input.rank` >= 1.
+// `indices.rank` >= 1, where `indices.shape[-1]` <= `input.rank`.
+// `updates.shape` = `indices.shape[:-1]` + `input.shape[indices.shape[-1]:]`,
+// where `+` denotes the concatenation of shapes.
+// `output.shape` == `input.shape`.
+//
+// Example 1: Insert individual elements in a tensor by index
+// data    = [1, 2, 3, 4, 5, 6, 7, 8]
+// indices = [[4], [3], [1], [7]]
+// updates = [9, 10, 11, 12]
+// output  = [1, 11, 3, 10, 9, 6, 7, 12]
+//
+// Example 2: Insert entire slices of a higher rank tensor
+// data    = [[[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
+//            [[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
+//            [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]],
+//            [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]]]
+// indices = [[0], [2]]
+// updates = [[[5, 5, 5, 5], [6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8]],
+//             [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [4, 4, 4, 4]]]
+// output  = [[[5, 5, 5, 5], [6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8]],
+//            [[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
+//            [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [4, 4, 4, 4]],
+//            [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]]]
+//
+// The values of `indices` tensor aren't known until graph execution, and may
+// cause out-of-bounds write issue. A backend implementation must guarantee the
+// index values do not cause invalid writes outside the output tensor, either by
+// the platform API (e.g. DML) or by introducing a `clamp` operator in the
+// compiled graph.
+// The out-of-bounds `indices` handling is being discussed in WG:
+// https://github.com/webmachinelearning/webnn/issues/486
+struct ScatterND {
+  // The operand id is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  // The `input`, `indices` and `updates` are scatterND operator input operands.
+  // Their id must be distinct from the output operand id.
+  uint64 input_operand_id;
+  uint64 indices_operand_id;
+  uint64 updates_operand_id;
+  uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Corresponds to `MLOperand sigmoid(MLOperand x)` that compute the sigmoid
 // function of the input tensor following the expression 1 / (exp(-x) + 1).
 struct Sigmoid {
@@ -1154,6 +1284,7 @@ union Operation {
   Clamp clamp;
   Concat concat;
   Conv2d conv2d;
+  CumulativeSum cumulative_sum;
   DequantizeLinear dequantize_linear;
   ElementWiseBinary element_wise_binary;
   Elu elu;
@@ -1161,6 +1292,7 @@ union Operation {
   Expand expand;
   Gather gather;
   GatherElements gather_elements;
+  GatherND gather_nd;
   Gelu gelu;
   Gemm gemm;
   Gru gru;
@@ -1182,6 +1314,7 @@ union Operation {
   Relu relu;
   Resample2d resample2d;
   Reshape reshape;
+  ScatterND scatter_nd;
   Sigmoid sigmoid;
   Slice slice;
   Softmax softmax;

@@ -63,8 +63,7 @@ String ToTextString(ArrayBufferContents raw_data,
   auto decoder = TextResourceDecoder(TextResourceDecoderOptions(
       TextResourceDecoderOptions::kPlainTextContent,
       encoding.IsValid() ? encoding : UTF8Encoding()));
-  builder.Append(decoder.Decode(static_cast<const char*>(raw_data.Data()),
-                                static_cast<size_t>(raw_data.DataLength())));
+  builder.Append(decoder.Decode(raw_data.ByteSpan()));
 
   builder.Append(decoder.Flush());
 

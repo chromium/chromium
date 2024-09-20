@@ -32,7 +32,6 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -150,6 +149,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               GetCoreAccountInfo,
               (),
               (override));
+  MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
   MOCK_METHOD(bool,
               ShowPixPaymentPrompt,
               (base::span<const autofill::BankAccount> pix_account_suggestions,
@@ -184,14 +184,6 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   void SetUp() override {
-    check_allowlist_attempt_count_ = 1;
-    // The default result is `kUnknown`. This can be updated asynchronously to
-    // simulate delay in receiving decision.
-    allowlist_result_ = optimization_guide::OptimizationGuideDecision::kUnknown;
-    // The default result is `kPixCodeNotFound`. This can be updated
-    // asynchronously to simulate delay in PIX code loading.
-    pix_code_detection_result_ =
-        mojom::PixCodeDetectionResult::kPixCodeNotFound;
     optimization_guide_decider_ =
         std::make_unique<MockOptimizationGuideDecider>();
     driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr);
@@ -212,102 +204,14 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
     payments_data_manager_->SetSyncServiceForTest(&sync_service_);
     ON_CALL(*client_, GetPaymentsDataManager)
         .WillByDefault(testing::Return(payments_data_manager_.get()));
-
     ON_CALL(*client_, GetFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(&payments_network_interface_));
+    ON_CALL(*client_, IsInLandscapeMode).WillByDefault(testing::Return(false));
   }
 
   void TearDown() override {
-    allowlist_decision_timer_.Stop();
-    page_load_timer_.Stop();
     payments_data_manager_->ClearAllServerDataForTesting();
     payments_data_manager_.reset();
-  }
-
-  // Sets the allowlist `decision` (true or false).
-  void SetAllowlistDecision(
-      optimization_guide::OptimizationGuideDecision decision) {
-    allowlist_result_ = decision;
-  }
-
-  // Sets allowlist `decision` after `delay`.
-  void SimulateDelayedAllowlistDecision(
-      base::TimeDelta delay,
-      optimization_guide::OptimizationGuideDecision decision) {
-    allowlist_decision_timer_.Start(
-        FROM_HERE, delay,
-        base::BindOnce(&FacilitatedPaymentsManagerTest::SetAllowlistDecision,
-                       base::Unretained(this), decision));
-  }
-
-  // Checks if allowlist decision (true or false) is made. If not,
-  // advances time by `kOptimizationGuideDeciderWaitTime` and checks again,
-  // `kMaxAttemptsForAllowlistCheck` times.
-  void AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached() {
-    while (allowlist_result_ ==
-               optimization_guide::OptimizationGuideDecision::kUnknown &&
-           check_allowlist_attempt_count_ <
-               manager_->kMaxAttemptsForAllowlistCheck) {
-      FastForwardBy(manager_->kOptimizationGuideDeciderWaitTime);
-      ++check_allowlist_attempt_count_;
-    }
-  }
-
-  // Advance to a point in time when PIX code detection should have been
-  // triggered.
-  void AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision() {
-    // The PIX code detection is triggered at least `kPageLoadWaitTime` after
-    // page load.
-    base::TimeDelta time_to_trigger_pix_code_detection = std::max(
-        base::Seconds(0), manager_->kPageLoadWaitTime -
-                              (check_allowlist_attempt_count_ - 1) *
-                                  manager_->kOptimizationGuideDeciderWaitTime);
-    FastForwardBy(time_to_trigger_pix_code_detection);
-  }
-
-  void SetPixCodeDetectionResult(mojom::PixCodeDetectionResult result) {
-    pix_code_detection_result_ = result;
-  }
-
-  // Sets PIX code detection `result` after `delay`.
-  void SimulateDelayedPageLoadWithPixCodeDetectionResult(
-      base::TimeDelta delay,
-      mojom::PixCodeDetectionResult result) {
-    page_load_timer_.Start(
-        FROM_HERE, delay,
-        base::BindOnce(
-            &FacilitatedPaymentsManagerTest::SetPixCodeDetectionResult,
-            base::Unretained(this), result));
-  }
-
-  // Checks if a PIX code is found. If not, advances time by
-  // `kRetriggerPixCodeDetectionWaitTime` and checks again
-  // `kMaxAttemptsForPixCodeDetection` times.
-  void AdvanceTimeToPixCodeFoundResultReceivedOrMaxAttemptsReached() {
-    while (pix_code_detection_result_ ==
-               mojom::PixCodeDetectionResult::kPixCodeNotFound &&
-           manager_->pix_code_detection_attempt_count_ <
-               manager_->kMaxAttemptsForPixCodeDetection) {
-      FastForwardBy(manager_->kRetriggerPixCodeDetectionWaitTime);
-    }
-  }
-
-  // Returns the number of attempts made at PIX code detection based on the
-  // `page_load_delay`.
-  int GetPixCodeDetectionAttemptCount(base::TimeDelta page_load_delay) {
-    // PIX code detection is triggered for the first time at least
-    // `kPageLoadWaitTime` after page load.
-    if (page_load_delay <= manager_->kPageLoadWaitTime) {
-      return 1;
-    }
-    // PIX code detection is attempted every
-    // `kRetriggerPixCodeDetectionWaitTime`, and the total attempts is capped at
-    // `kMaxAttemptsForPixCodeDetection`.
-    return std::min(
-        (int)std::ceil((page_load_delay - manager_->kPageLoadWaitTime) /
-                       manager_->kRetriggerPixCodeDetectionWaitTime) +
-            1,
-        manager_->kMaxAttemptsForPixCodeDetection);
   }
 
   void FastForwardBy(base::TimeDelta duration) {
@@ -321,10 +225,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   }
 
  protected:
-  optimization_guide::OptimizationGuideDecision allowlist_result_;
-  mojom::PixCodeDetectionResult pix_code_detection_result_;
   std::unique_ptr<MockOptimizationGuideDecider> optimization_guide_decider_;
-  ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::unique_ptr<MockFacilitatedPaymentsDriver> driver_;
   std::unique_ptr<MockFacilitatedPaymentsClient> client_;
   std::unique_ptr<FacilitatedPaymentsManager> manager_;
@@ -333,10 +234,6 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   MockFacilitatedPaymentsNetworkInterface payments_network_interface_;
 
  private:
-  // Number of attempts at checking the allowlist.
-  int check_allowlist_attempt_count_;
-  base::OneShotTimer allowlist_decision_timer_;
-  base::OneShotTimer page_load_timer_;
   syncer::TestSyncService sync_service_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
@@ -351,501 +248,6 @@ TEST_F(FacilitatedPaymentsManagerTest, RegisterPixAllowlist) {
       .Times(1);
 
   manager_->RegisterPixAllowlist();
-}
-
-// Test that the PIX code detection is triggered for webpages in the allowlist.
-TEST_F(FacilitatedPaymentsManagerTest,
-       DOMSearch_UrlInAllowlist_PixCodeDetectionTriggered) {
-  GURL url("https://example.com/");
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
-
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(1)
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(1);
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-}
-
-// Test that the PIX code detection is not triggered for webpages not in the
-// allowlist.
-TEST_F(FacilitatedPaymentsManagerTest,
-       DOMSearch_UrlNotInAllowlist_PixCodeDetectionNotTriggered) {
-  GURL url("https://example.com/");
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kFalse);
-
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(1)
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-}
-
-// Test that if the allowlist checking infra is not ready after
-// `kMaxAttemptsForAllowlistCheck` attempts, PIX code detection is not
-// triggered.
-TEST_F(FacilitatedPaymentsManagerTest,
-       DOMSearch_CheckAllowlistResultUnknown_PixCodeDetectionNotTriggered) {
-  GURL url("https://example.com/");
-
-  // The default decision is kUnknown.
-  // Allowlist check should be attempted once every
-  // `kOptimizationGuideDeciderWaitTime` until decision is received or
-  // `kMaxAttemptsForAllowlistCheck` attempts are made.
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(manager_->kMaxAttemptsForAllowlistCheck)
-      .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-}
-
-// Test that the allowlist decision infra is given some time (short) to start-up
-// and make decision.
-TEST_F(
-    FacilitatedPaymentsManagerTest,
-    DOMSearch_CheckAllowlistResultShortDelay_UrlInAllowlist_PixCodeDetectionTriggered) {
-  GURL url("https://example.com/");
-
-  // Simulate that the allowlist checking infra gets ready after 1.6s and
-  // returns positive decision.
-  base::TimeDelta decision_delay = base::Seconds(1.6);
-  SimulateDelayedAllowlistDecision(
-      decision_delay, optimization_guide::OptimizationGuideDecision::kTrue);
-
-  // Allowlist check should be attempted once every
-  // `kOptimizationGuideDeciderWaitTime` until decision is received.
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(std::ceil(decision_delay /
-                       manager_->kOptimizationGuideDeciderWaitTime) +
-             1)
-      .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(1);
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-}
-
-// Test that the allowlist decision infra is given some time (short) to start-up
-// and make decision.
-TEST_F(
-    FacilitatedPaymentsManagerTest,
-    DOMSearch_CheckAllowlistResultShortDelay_UrlNotInAllowlist_PixCodeDetectionNotTriggered) {
-  GURL url("https://example.com/");
-
-  // Simulate that the allowlist checking infra gets ready after 1.6s and
-  // returns negative decision.
-  base::TimeDelta decision_delay = base::Seconds(1.6);
-  SimulateDelayedAllowlistDecision(
-      decision_delay, optimization_guide::OptimizationGuideDecision::kFalse);
-
-  // Allowlist check should be attempted once every
-  // `kOptimizationGuideDeciderWaitTime` until decision is received.
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(std::ceil(decision_delay /
-                       manager_->kOptimizationGuideDeciderWaitTime) +
-             1)
-      .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-}
-
-// Test that the allowlist decision infra is given some time (short) to start-up
-// and make decision. If the infra does not get ready within the given time,
-// then PIX code detection is not run even if the infra eventually returns a
-// decision.
-TEST_F(
-    FacilitatedPaymentsManagerTest,
-    DOMSearch_CheckAllowlistResultLongDelay_UrlInAllowlist_PixCodeDetectionNotTriggered) {
-  GURL url("https://example.com/");
-
-  // Simulate that the allowlist checking infra gets ready after 3.6s and
-  // returns positive decision.
-  base::TimeDelta decision_delay = base::Seconds(3.6);
-  SimulateDelayedAllowlistDecision(
-      decision_delay, optimization_guide::OptimizationGuideDecision::kTrue);
-
-  // The default decision is kUnknown.
-  // Allowlist check should be attempted once every
-  // `kOptimizationGuideDeciderWaitTime` until decision is received or
-  // `kMaxAttemptsForAllowlistCheck` attempts are made.
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(manager_->kMaxAttemptsForAllowlistCheck)
-      .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-}
-
-// Test that if a PIX code does not exist on the page, multiple attempts are
-// made to find PIX code, and finally `kPixCodeNotFound` is logged.
-TEST_F(FacilitatedPaymentsManagerTest,
-       NoPixCode_PixCodeNotFoundLoggedAfterMaxAttempts) {
-  GURL url("https://example.com/");
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
-
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(1)
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
-  // Run the callback with the current result which can be updated
-  // asynchronously. In this test, the result is not updated, so the result is
-  // always the default `kPixCodeNotFound`.
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection)
-      .Times(manager_->kMaxAttemptsForPixCodeDetection)
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
-          testing::ByRef(pix_code_detection_result_), std::string()));
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-  AdvanceTimeToPixCodeFoundResultReceivedOrMaxAttemptsReached();
-
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kResultName,
-       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kAttemptsName});
-
-  // Verify that since the PIX code does not exist on the page,
-  // `kPixCodeNotFound` is logged after max attempts.
-  EXPECT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_EQ(
-      ukm_entries[0].metrics.at("Result"),
-      static_cast<uint8_t>(mojom::PixCodeDetectionResult::kPixCodeNotFound));
-  EXPECT_EQ(ukm_entries[0].metrics.at("Attempts"),
-            manager_->kMaxAttemptsForPixCodeDetection);
-}
-
-// Test UKM logging when the result of PIX code detection is received. This test
-// is for the case when PIX code was not found.
-TEST_F(FacilitatedPaymentsManagerTest, NoPixCode_NoUkm) {
-  // To set the attempts and start the latency measuring timer. This call
-  // actually doesn't trigger PIX code detection.
-  manager_->TriggerPixCodeDetection();
-  FastForwardBy(base::Milliseconds(200));
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kPixCodeNotFound, std::string());
-
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kResultName,
-       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kLatencyInMillisName,
-       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kAttemptsName});
-
-  // Verify that since there is no PIX code, no is UKM logged as PIX code
-  // detection gets re-triggered.
-  EXPECT_EQ(ukm_entries.size(), 0UL);
-}
-
-// When the renderer returns the result of the document scan for PIX codes, a
-// result of `kPixCodeNotFound` is treated differently when compared to other
-// possible results. This class helps test those other possible results in a
-// parametrized test.
-class FacilitatedPaymentsManagerTestWhenPixCodeExists
-    : public FacilitatedPaymentsManagerTest,
-      public ::testing::WithParamInterface<mojom::PixCodeDetectionResult> {};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FacilitatedPaymentsManagerTestWhenPixCodeExists,
-    testing::Values(mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun,
-                    mojom::PixCodeDetectionResult::kInvalidPixCodeFound,
-                    mojom::PixCodeDetectionResult::kValidPixCodeFound));
-
-// Test that if the page contents (specifically PIX code) have already loaded
-// when PIX code detection is run, the result is logged immediately.
-TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
-       PageAlreadyLoaded_ResultLoggedInSingleAttempt) {
-  GURL url("https://example.com/");
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
-
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(1)
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
-  // Run the callback with different results.
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection)
-      .Times(1)
-      .WillOnce(base::test::RunOnceCallback<0>(GetParam(), std::string()));
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kResultName,
-       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kAttemptsName});
-
-  // Verify that since the page contents (specifically PIX code) had already
-  // loaded when PIX code detection was run, they are logged in the first
-  // attempt.
-  EXPECT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
-            static_cast<uint8_t>(GetParam()));
-  EXPECT_EQ(ukm_entries[0].metrics.at("Attempts"), 1);
-}
-
-// Test that we allow a short duration (`kPageLoadWaitTime`) for page contents
-// (specifically PIX code) to load after the `WebContentsObserver` informs about
-// the page load event. If the contents load within this time, the result is
-// logged in the first attempt.
-TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
-       ShortPageLoadDelay_ResultLoggedInSingleAttempt) {
-  GURL url("https://example.com/");
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
-
-  // Simulate that the page contents take a short time (0.6s) to finish loading.
-  base::TimeDelta page_load_delay = base::Seconds(0.6);
-  SimulateDelayedPageLoadWithPixCodeDetectionResult(page_load_delay,
-                                                    GetParam());
-
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(1)
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
-  // Run the callback with the current result which can be updated
-  // asynchronously.
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection)
-      .Times(1)
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
-          testing::ByRef(pix_code_detection_result_), std::string()));
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-  AdvanceTimeToPixCodeFoundResultReceivedOrMaxAttemptsReached();
-
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kResultName,
-       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kAttemptsName});
-
-  // Verify that since the page contents (specifically PIX code) finished
-  // loading soon (within `kPageLoadWaitTime`), the result is logged in the
-  // first attempt.
-  EXPECT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
-            static_cast<uint8_t>(GetParam()));
-  EXPECT_EQ(ukm_entries[0].metrics.at("Attempts"), 1);
-}
-
-// Test that if the page contents do not load within `kPageLoadWaitTime`, then
-// we retry PIX code detection. If the page contents finish loading within a
-// reasonable time frame, the result is logged after a few attempts.
-TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
-       MediumPageLoadDelay_ResultLoggedAfterMultipleAttempts) {
-  GURL url("https://example.com/");
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
-
-  // Simulate that the page contents take a slightly longer time (5.6s) to
-  // finish loading.
-  base::TimeDelta page_load_delay = base::Seconds(5.6);
-  SimulateDelayedPageLoadWithPixCodeDetectionResult(page_load_delay,
-                                                    GetParam());
-
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(1)
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
-  // Run the callback with the current result which can be updated
-  // asynchronously.
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection)
-      .Times(GetPixCodeDetectionAttemptCount(page_load_delay))
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
-          testing::ByRef(pix_code_detection_result_), std::string()));
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-  AdvanceTimeToPixCodeFoundResultReceivedOrMaxAttemptsReached();
-
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kResultName,
-       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kAttemptsName});
-
-  // Verify that since the page contents (specifically PIX code) did not finish
-  // loading within `kPageLoadWaitTime`, but did finish shortly after, the
-  // result is logged after a few attempts.
-  EXPECT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
-            static_cast<uint8_t>(GetParam()));
-  EXPECT_EQ(ukm_entries[0].metrics.at("Attempts"),
-            GetPixCodeDetectionAttemptCount(page_load_delay));
-}
-
-// Test that if the page contents take a long time to load, and have not loaded
-// after repeated attempts at PIX code detection, `kPixCodeNotFound` is logged.
-TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
-       LongPageLoadDelay_PixCodeNotFoundLoggedAfterMaxAttempts) {
-  GURL url("https://example.com/");
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
-
-  // Simulate that the page contents take a long time (50.6s) to finish loading.
-  base::TimeDelta page_load_delay = base::Seconds(50.6);
-  SimulateDelayedPageLoadWithPixCodeDetectionResult(page_load_delay,
-                                                    GetParam());
-
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(1)
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
-  // Run the callback with the current result which can be updated
-  // asynchronously.
-  EXPECT_CALL(*driver_, TriggerPixCodeDetection)
-      .Times(manager_->kMaxAttemptsForPixCodeDetection)
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
-          testing::ByRef(pix_code_detection_result_), std::string()));
-
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
-      url, ukm::UkmRecorder::GetNewSourceID());
-  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
-  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
-  AdvanceTimeToPixCodeFoundResultReceivedOrMaxAttemptsReached();
-
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kResultName,
-       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kAttemptsName});
-
-  // Verify that since the page contents (specifically PIX code) took too long
-  // to load, `kPixCodeNotFound` is logged after max attempts.
-  EXPECT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_EQ(
-      ukm_entries[0].metrics.at("Result"),
-      static_cast<uint8_t>(mojom::PixCodeDetectionResult::kPixCodeNotFound));
-  EXPECT_EQ(ukm_entries[0].metrics.at("Attempts"),
-            manager_->kMaxAttemptsForPixCodeDetection);
-}
-
-// Test UKM logging when the result of PIX code detection is received.
-TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists, Ukm) {
-  // To set the attempts and start the latency measuring timer. This call
-  // actually doesn't trigger PIX code detection.
-  manager_->TriggerPixCodeDetection();
-  FastForwardBy(base::Milliseconds(200));
-  manager_->ProcessPixCodeDetectionResult(GetParam(), std::string());
-
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kResultName,
-       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kLatencyInMillisName,
-       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kAttemptsName});
-
-  // Verify that the UKM metrics are logged.
-  EXPECT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
-            static_cast<uint8_t>(GetParam()));
-  // Verify that the simulated latency is logged and is within a small time
-  // margin accounting for computation.
-  EXPECT_GE(ukm_entries[0].metrics.at("LatencyInMillis"), 200);
-  EXPECT_NEAR(ukm_entries[0].metrics.at("LatencyInMillis"), 200, 5);
-  EXPECT_EQ(ukm_entries[0].metrics.at("Attempts"), 1);
 }
 
 // If the facilitated payment API is not available, then the manager does not
@@ -898,31 +300,24 @@ TEST_F(FacilitatedPaymentsManagerTest, ShowsPixPaymentPrompt_HistogramLogged) {
       /*expected_bucket_count=*/1);
 }
 
-// If the API is not available, request for risk data is not made.
+// If the user does not select a payment account in the payment prompt, request
+// for risk data is not made.
 TEST_F(FacilitatedPaymentsManagerTest,
-       ApiClientNotAvailable_RiskDataNotLoaded_DoesNotTriggerLoadRiskData) {
+       PixPaymentPromptNotAccepted_LoadRiskDataNotTriggered) {
   EXPECT_CALL(*client_, LoadRiskData(testing::_)).Times(0);
 
-  manager_->OnApiAvailabilityReceived(false);
+  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
+                                     /*selected_instrument_id=*/0);
 }
 
-// If the API is available, and the risk data has already loaded from a previous
-// call, request for risk data is not made.
+// If the user selects a payment account in the payment prompt, request for risk
+// data is made.
 TEST_F(FacilitatedPaymentsManagerTest,
-       ApiClientAvailable_RiskDataLoaded_DoesNotTriggerLoadRiskData) {
-  EXPECT_CALL(*client_, LoadRiskData(testing::_)).Times(0);
-
-  manager_->OnRiskDataLoaded(base::TimeTicks::Now(), "seems pretty risky");
-  manager_->OnApiAvailabilityReceived(true);
-}
-
-// If the API is available, and the risk data is empty, request for risk data is
-// made.
-TEST_F(FacilitatedPaymentsManagerTest,
-       ApiClientAvailable_RiskDataNotLoaded_TriggersLoadRiskData) {
+       PixPaymentPromptAccepted_TriggersLoadRiskData) {
   EXPECT_CALL(*client_, LoadRiskData(testing::_));
 
-  manager_->OnApiAvailabilityReceived(true);
+  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                     /*selected_instrument_id=*/0);
 }
 
 // Verify risk data metrics are logged when risk data is fetched successfully.
@@ -963,35 +358,35 @@ TEST_F(FacilitatedPaymentsManagerTest, PaymentNotOfferedReason_RiskDataEmpty) {
       /*expected_bucket_count=*/1);
 }
 
-// If a user has rejected the PIX payment prompt, then the manager does not
-// retrieve a client token from the facilitated payments API client.
+// If the risk data is empty, then the manager does not retrieve a client token
+// from the facilitated payments API client.
 TEST_F(FacilitatedPaymentsManagerTest,
-       DoesNotRetrieveClientTokenIfPixPaymentPromptRejected) {
+       RiskDataEmpty_GetClientTokenNotCalled_ErrorScreenShown) {
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_)).Times(0);
+  EXPECT_CALL(*client_, ShowErrorScreen());
 
-  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
-                                     /*selected_instrument_id=*/-1);
+  manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
+                             /*risk_data=*/"");
 }
 
-// If a user has accepted the PIX payment prompt, then the manager retrieves a
-// client token from the facilitated payments API client.
-TEST_F(FacilitatedPaymentsManagerTest,
-       RetrievesClientTokenIfPixPaymentPromptAccepted) {
+// If the risk data is not empty, then the manager retrieves a client token from
+// the facilitated payments API client.
+TEST_F(FacilitatedPaymentsManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
 
-  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
-                                     /*selected_instrument_id=*/-1);
+  manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
+                             /*risk_data=*/"seems pretty risky");
 }
 
-// The GetClientToken async call is made after the user has accepted the payment
-// prompt. This test verifies that the result and latency of the GetClientToken
-// call is logged correctly.
+// The GetClientToken async call is made after fetching the risk data. This test
+// verifies that the result and latency of the GetClientToken call is logged
+// correctly.
 TEST_F(FacilitatedPaymentsManagerTest,
        GetClientTokenHistogram_ClientTokenNotEmpty) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
-  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
-                                     /*selected_instrument_id=*/-1);
+  manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
+                             /*risk_data=*/"seems pretty risky");
   FastForwardBy(base::Seconds(2));
 
   manager_->OnGetClientToken(std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'});
@@ -1006,15 +401,15 @@ TEST_F(FacilitatedPaymentsManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-// The GetClientToken async call is made after the user has accepted the payment
-// prompt. This test verifies that the result and latency of the GetClientToken
-// call is logged correctly.
+// The GetClientToken async call is made after fetching the risk data. This test
+// verifies that the result and latency of the GetClientToken call is logged
+// correctly.
 TEST_F(FacilitatedPaymentsManagerTest,
        GetClientTokenHistogram_ClientTokenEmpty) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
-  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
-                                     /*selected_instrument_id=*/-1);
+  manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
+                             /*risk_data=*/"seems pretty risky");
   FastForwardBy(base::Seconds(2));
 
   manager_->OnGetClientToken(std::vector<uint8_t>{});
@@ -1052,44 +447,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->OnGetClientToken(std::vector<uint8_t>{});
 }
 
-TEST_F(FacilitatedPaymentsManagerTest,
-       TriggerPixDetectionOnDomContentLoadedExpDisabled_Ukm) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kEnablePixDetectionOnDomContentLoaded);
-
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
-
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kDetectionTriggeredOnDomContentLoadedName});
-
-  // Verify that the UKM metrics are logged.
-  EXPECT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_EQ(ukm_entries[0].metrics.at("DetectionTriggeredOnDomContentLoaded"),
-            false);
-}
-
-TEST_F(FacilitatedPaymentsManagerTest,
-       TriggerPixDetectionOnDomContentLoadedExpEnabled_Ukm) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kEnablePixDetectionOnDomContentLoaded);
-
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
-
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
-           kDetectionTriggeredOnDomContentLoadedName});
-
-  // Verify that the UKM metrics are logged.
-  EXPECT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_EQ(ukm_entries[0].metrics.at("DetectionTriggeredOnDomContentLoaded"),
-            true);
-}
-
 TEST_F(FacilitatedPaymentsManagerTest, ResettingPreventsPayment) {
   manager_->initiate_payment_request_details_->risk_data_ =
       "seems pretty risky";
@@ -1115,7 +472,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
   GURL url("https://example.com/");
   // Mock allowlist check result.
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
   EXPECT_CALL(
       *optimization_guide_decider_,
       CanApplyOptimization(
@@ -1125,7 +481,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
           testing::Matcher<optimization_guide::OptimizationMetadata*>(
               testing::Eq(nullptr))))
       .Times(1)
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
   // If Pix validation is run, then IsAvailable should get called once.
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
@@ -1143,7 +500,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
   GURL url("https://example.com/");
   // Mock allowlist check result.
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kFalse);
   EXPECT_CALL(
       *optimization_guide_decider_,
       CanApplyOptimization(
@@ -1153,7 +509,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
           testing::Matcher<optimization_guide::OptimizationMetadata*>(
               testing::Eq(nullptr))))
       .Times(1)
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
 
   // If Pix validation is not run, then IsAvailable shouldn't get called.
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
@@ -1171,13 +528,13 @@ TEST_F(FacilitatedPaymentsManagerTest,
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
   GURL url("https://example.com/");
   // Mock allowlist check result.
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
   EXPECT_CALL(*optimization_guide_decider_,
               CanApplyOptimization(
                   testing::Eq(url), testing::_,
                   testing::Matcher<optimization_guide::OptimizationMetadata*>(
                       testing::Eq(nullptr))))
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
 
   // Even if there are multiple copy events, the payflow should be initiated
   // only once. This can be verified with a single IsAvailable call.
@@ -1192,35 +549,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
   // The DataDecoder (utility process) validates the PIX code string
   // asynchronously.
   task_environment_.RunUntilIdle();
-}
-
-// If the renderer indicates that a valid PIX code is detected, but sends an
-// invalid code to the browser, the manager does not proceed to check whether
-// the API is available.
-TEST_F(FacilitatedPaymentsManagerTest,
-       ValidPixCodeDetectionResult_InvalidPixCodeString_ApiClientNotTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
-
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
-
-  // The DataDecoder (utility process) validates the PIX code string
-  // asynchronously.
-  task_environment_.RunUntilIdle();
-}
-
-// When an invalid PIX code is detected, the manager does not check whether the
-// facilitated payment API is available.
-TEST_F(FacilitatedPaymentsManagerTest,
-       InvalidPixCodeDetectionResultDoesNotTriggerApiClient) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
-
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kInvalidPixCodeFound, std::string());
 }
 
 // The manager checks for API availability after validating the PIX code.
@@ -1685,6 +1013,63 @@ TEST_F(FacilitatedPaymentsManagerTest,
                                /*is_pix_code_valid=*/true);
 
   EXPECT_EQ(nullptr, manager_->api_client_.get());
+}
+
+// Test class for devices being used in the landscape mode.
+class FacilitatedPaymentsManagerTestInLandscapeMode
+    : public FacilitatedPaymentsManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FacilitatedPaymentsManagerTestInLandscapeMode() {
+    scoped_feature_list_.InitWithFeatureState(kEnablePixPaymentsInLandscapeMode,
+                                              GetParam());
+  }
+
+  void SetUp() override {
+    FacilitatedPaymentsManagerTest::SetUp();
+    ON_CALL(*client_, IsInLandscapeMode).WillByDefault(testing::Return(true));
+  }
+
+  bool IsPaymentEnabledInLandscapeMode() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FacilitatedPaymentsManagerTestInLandscapeMode,
+                         testing::Bool());
+
+TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
+       PixPayflowBlockedWhenFlagDisabled) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+
+  // In landscape mode, checking the API client's availability (which is part of
+  // Pix payflow) is only done if the `EnablePixPaymentsInLandscapeMode` flag is
+  // enabled.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_))
+      .Times(IsPaymentEnabledInLandscapeMode() ? 1 : 0);
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
+                               /*is_pix_code_valid=*/true);
+}
+
+TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
+       HistogramForPaymentNotOfferedReason) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
+                               /*is_pix_code_valid=*/true);
+
+  // In landscape mode, if the `EnablePixPaymentsInLandscapeMode` flag is
+  // disabled, Pix payment is not offered, and a histogram should be logged.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
+      /*sample=*/PaymentNotOfferedReason::kLandscapeScreenOrientation,
+      /*expected_bucket_count=*/IsPaymentEnabledInLandscapeMode() ? 0 : 1);
 }
 
 }  // namespace payments::facilitated

@@ -42,7 +42,7 @@ using ::blink::mojom::StorageType;
 // Declared to shorten the line lengths.
 static const StorageType kTemp = StorageType::kTemporary;
 
-namespace content {
+namespace content::indexed_db {
 
 // Base class for our test fixtures.
 class IndexedDBQuotaClientTest : public testing::Test,
@@ -508,4 +508,4 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
                               incognito_idb_context.get()));
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

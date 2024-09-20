@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,6 +40,7 @@ import java.util.Set;
 /** Generic dialog view for app modal or tab modal alert dialogs. */
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
     private static final String TAG_PREFIX = "ModalDialogViewButton";
+    static final int NOT_SPECIFIED = -1;
 
     private static boolean sDisableButtonTapProtectionForTesting;
 
@@ -71,9 +73,47 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     // this kind of tap-jacking protection.
     private long mButtonTapProtectionDurationMs;
 
+    private int mHorizontalMargin = NOT_SPECIFIED;
+    private int mVerticalMargin = NOT_SPECIFIED;
+
     /** Constructor for inflating from XML. */
     public ModalDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        if (ModalDialogFeatureMap.isEnabled(
+                ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS)) {
+            // Set new max width (600dp) for when feature is enabled. This can be added to the xml
+            // once the feature is default-enabled.
+            // TODO (crbug/359976267): Update new min / max width constraints properly.
+            getResources().getValue(R.dimen.modal_dialog_max_width, mMaxWidthLandscape, true);
+            getResources().getValue(R.dimen.modal_dialog_max_width, mMaxWidthPortrait, true);
+        }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (!ModalDialogFeatureMap.isEnabled(
+                        ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS)
+                || (mHorizontalMargin <= 0 && mVerticalMargin <= 0)) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        if (mHorizontalMargin > 0) {
+            int dialogWidth = MeasureSpec.getSize(widthMeasureSpec);
+            int maxWidth = metrics.widthPixels - 2 * mHorizontalMargin;
+            int width = Math.min(dialogWidth, maxWidth);
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+        }
+
+        if (mVerticalMargin > 0) {
+            int dialogHeight = MeasureSpec.getSize(heightMeasureSpec);
+            int maxHeight = metrics.heightPixels - 2 * mVerticalMargin;
+            int height = Math.min(dialogHeight, maxHeight);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
+        }
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
@@ -423,20 +463,34 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         updateButtonVisibility();
     }
 
-    /** @param drawable The icon drawable on the positive button. */
-    void setPositiveButtonIcon(Drawable drawable) {
-        Button button = getButton(ButtonType.POSITIVE);
-        button.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null);
-        button.setCompoundDrawablePadding(
-                getResources()
-                        .getDimensionPixelSize(R.dimen.modal_dialog_button_with_icon_text_padding));
-        button.setPaddingRelative(
-                getResources()
-                        .getDimensionPixelSize(R.dimen.modal_dialog_button_with_icon_start_padding),
-                button.getPaddingTop(),
-                button.getPaddingEnd(),
-                button.getPaddingBottom());
-        updateButtonVisibility();
+    /**
+     * Sets the minimum horizontal margin relative to the window that this view can assume. This
+     * method does not trigger a measure pass, and it is expected that this value is set before the
+     * view is measured.
+     *
+     * @param margin The horizontal margin (in px) that the dialog should use.
+     */
+    void setHorizontalMargin(int margin) {
+        mHorizontalMargin = margin;
+    }
+
+    int getHorizontalMarginForTesting() {
+        return mHorizontalMargin;
+    }
+
+    /**
+     * Sets the minimum vertical margin relative to the window that this view can assume. This
+     * method does not trigger a measure pass, and it is expected that this value is set before the
+     * view is measured.
+     *
+     * @param margin The vertical margin (in px) that the dialog should use.
+     */
+    void setVerticalMargin(int margin) {
+        mVerticalMargin = margin;
+    }
+
+    int getVerticalMarginForTesting() {
+        return mVerticalMargin;
     }
 
     /**

@@ -151,7 +151,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     NSArray<NSLayoutConstraint*>* pinnedTabsConstraints;
 // The configuration for tab grid pages.
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
-// Wether there is a search being performed in the tab grid or not.
+// Whether there is a search being performed in the tab grid or not.
 @property(nonatomic, assign) BOOL isPerformingSearch;
 // Pan gesture for when the search results view is scrolled during the search
 // mode.
@@ -1585,7 +1585,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)pinnedTabsViewController:(BaseGridViewController*)gridViewController
-             didRemoveItemWIthID:(web::WebStateID)itemID {
+             didRemoveItemWithID:(web::WebStateID)itemID {
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
@@ -1748,7 +1748,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
-       didRemoveItemWIthID:(web::WebStateID)itemID {
+       didRemoveItemWithID:(web::WebStateID)itemID {
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
@@ -1817,6 +1817,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // The searchBar must relinquish its status as first responder to become
   // interactable again.
   [self.topToolbar unfocusSearchBar];
+}
+
+- (void)gridViewControllerDropSessionDidEnter:
+    (BaseGridViewController*)gridViewController {
+  [self.mutator dragAndDropSessionStarted];
+}
+
+- (void)gridViewControllerDropSessionDidExit:
+    (BaseGridViewController*)gridViewController {
+  [self.mutator dragAndDropSessionEnded];
 }
 
 #pragma mark - TabGridToolbarsMainTabGridDelegate

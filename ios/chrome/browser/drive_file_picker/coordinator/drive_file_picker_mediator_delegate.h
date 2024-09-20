@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 @class DriveFilePickerMediator;
-@class DriveItemIdentifier;
 
 // Handles the browsing and searching a drive folder.
 @protocol DriveFilePickerMediatorDelegate
@@ -23,6 +22,12 @@
                           sortingCriteria:(DriveItemsSortingType)sortingCriteria
                          sortingDirection:
                              (DriveItemsSortingOrder)sortingDirection;
+
+// Called when the mediator has submitted file selection to the web page.
+- (void)mediatorDidSubmitFileSelection:(DriveFilePickerMediator*)mediator;
+
+// Returns to the parent coordinator.
+- (void)browseToParentWithMediator:(DriveFilePickerMediator*)mediator;
 
 @end
 

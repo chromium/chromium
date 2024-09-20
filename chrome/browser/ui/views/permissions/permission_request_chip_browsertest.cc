@@ -370,8 +370,9 @@ class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
+// Flaky b/40261456
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
-                       InvokeUi_geolocation) {
+                       DISABLED_InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }
 

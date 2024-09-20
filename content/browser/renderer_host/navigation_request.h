@@ -986,6 +986,12 @@ class CONTENT_EXPORT NavigationRequest
   // the BackForwardCache or Prerender)
   bool IsPageActivation() const override;
 
+  // Returns whether the navigation type is a restore navigation.
+  bool IsRestore() const;
+
+  // Returns whether the navigation type is a reload navigation.
+  bool IsReload() const;
+
   // Sets state pertaining to prerender activations. This is only called if
   // this navigation is a prerender activation.
   void SetPrerenderActivationNavigationState(
@@ -1359,6 +1365,9 @@ class CONTENT_EXPORT NavigationRequest
     navigation_discard_reason_ = navigation_discard_reason;
   }
 
+  // Returns the type of this navigation (e.g. history, browser-initiated, etc)
+  // to set as a discard reason on another navigation that is being discarded
+  // because this navigation is taking its place in the FrameTreeNode.
   NavigationDiscardReason GetTypeForNavigationDiscardReason();
 
   void set_force_no_https_upgrade() { force_no_https_upgrade_ = true; }
@@ -1445,9 +1454,6 @@ class CONTENT_EXPORT NavigationRequest
   // Note that an origin-keyed process may be used if this returns true, if
   // kOriginKeyedProcessesByDefault is enabled.
   bool IsIsolationImplied();
-
-  // Returns whether the navigation type is a restore navigation.
-  bool IsRestore() const;
 
   // The Origin-Agent-Cluster end result is determined early in the lifecycle of
   // a NavigationRequest, but used late. In particular, we want to trigger use
@@ -1551,20 +1557,18 @@ class CONTENT_EXPORT NavigationRequest
   void CommitPageActivation();
 
   // Checks if the specified CSP context's relevant CSP directive
-  // allows the navigation. This is called to perform the frame-src
-  // and navigate-to checks.
+  // allows the navigation. This is called to perform the frame-src check.
   bool IsAllowedByCSPDirective(
       const std::vector<network::mojom::ContentSecurityPolicyPtr>& policies,
       network::CSPContext* context,
       network::mojom::CSPDirectiveName directive,
       bool has_followed_redirect,
       bool url_upgraded_after_redirect,
-      bool is_response_check,
       bool is_opaque_fenced_frame,
       network::CSPContext::CheckCSPDisposition disposition);
 
-  // Checks if CSP allows the navigation. This will check the frame-src,
-  // fenced-frame-src and navigate-to directives. Returns net::OK if the checks
+  // Checks if CSP allows the navigation. This will check the frame-src and
+  // fenced-frame-src directives. Returns net::OK if the checks
   // pass, and net::ERR_ABORTED or net::ERR_BLOCKED_BY_CSP depending on which
   // checks fail.
   net::Error CheckCSPDirectives(

@@ -36,6 +36,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "media/base/media_switches.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
@@ -1024,10 +1025,6 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE},
       {"audioInputStyleTransferTitle",
        IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_TITLE},
-      {"audioInputStyleTransferBadge",
-       IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_BADGE},
-      {"audioInputStyleTransferDescription",
-       IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION},
       {"audioInputTitle", IDS_SETTINGS_AUDIO_INPUT_TITLE},
       {"audioMutedByPolicyTooltip", IDS_SETTINGS_AUDIO_MUTED_BY_POLICY_TOOLTIP},
       {"audioMutedExternallyTooltip",
@@ -1053,6 +1050,11 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
   };
 
   html_source->AddLocalizedStrings(kAudioStrings);
+  html_source->AddString(
+      "audioInputStyleTransferDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION,
+          DeviceSection::GetHelpUrlWithBoard(chrome::kVcLearnMoreURL)));
 }
 
 // Mirrors enum of the same name in enums.xml.

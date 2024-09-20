@@ -221,7 +221,8 @@ class FileSystemAccessManagerImplTest : public testing::Test {
     blink::mojom::FileSystemAccessEntryPtr entry =
         manager_->CreateDirectoryEntryFromPath(
             kBindingContext, FileSystemAccessEntryFactory::PathType::kLocal,
-            path, FileSystemAccessPermissionContext::UserAction::kOpen);
+            path, base::FilePath(),
+            FileSystemAccessPermissionContext::UserAction::kOpen);
     return mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle>(
         std::move(entry->entry_handle->get_directory()));
   }
@@ -252,7 +253,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
     mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
         token_remote;
     manager_->CreateFileSystemAccessDataTransferToken(
-        path_type, file_path, kBindingContext.process_id(),
+        path_type, file_path, base::FilePath(), kBindingContext.process_id(),
         token_remote.InitWithNewPipeAndPassReceiver());
 
     // Expect permission requests when the token is sent to be redeemed.
@@ -299,7 +300,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
     mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
         token_remote;
     manager_->CreateFileSystemAccessDataTransferToken(
-        path_type, dir_path, kBindingContext.process_id(),
+        path_type, dir_path, base::FilePath(), kBindingContext.process_id(),
         token_remote.InitWithNewPipeAndPassReceiver());
 
     if (base::FeatureList::IsEnabled(
@@ -609,7 +610,8 @@ TEST_F(FileSystemAccessManagerImplTest, CreateFileEntryFromPath_Permissions) {
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           kBindingContext, FileSystemAccessEntryFactory::PathType::kLocal,
-          kTestPath, FileSystemAccessPermissionContext::UserAction::kOpen);
+          kTestPath, base::FilePath(),
+          FileSystemAccessPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -637,7 +639,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           kBindingContext, FileSystemAccessEntryFactory::PathType::kLocal,
-          kTestPath, FileSystemAccessPermissionContext::UserAction::kSave);
+          kTestPath, base::FilePath(),
+          FileSystemAccessPermissionContext::UserAction::kSave);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -665,7 +668,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateDirectoryEntryFromPath(
           kBindingContext, FileSystemAccessEntryFactory::PathType::kLocal,
-          kTestPath, FileSystemAccessPermissionContext::UserAction::kOpen);
+          kTestPath, base::FilePath(),
+          FileSystemAccessPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> handle(
       std::move(entry->entry_handle->get_directory()));
   EXPECT_EQ(PermissionStatus::GRANTED,
@@ -1000,7 +1004,8 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_Native_SingleFile) {
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           kBindingContext, FileSystemAccessEntryFactory::PathType::kLocal,
-          kTestPath, FileSystemAccessPermissionContext::UserAction::kOpen);
+          kTestPath, base::FilePath(),
+          FileSystemAccessPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -1212,7 +1217,8 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_ExternalFile) {
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           kBindingContext, FileSystemAccessEntryFactory::PathType::kExternal,
-          kTestPath, FileSystemAccessPermissionContext::UserAction::kOpen);
+          kTestPath, base::FilePath(),
+          FileSystemAccessPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -1336,6 +1342,7 @@ TEST_F(FileSystemAccessManagerImplTest,
       token_remote;
   manager_->CreateFileSystemAccessDataTransferToken(
       FileSystemAccessEntryFactory::PathType::kLocal, file_path,
+      base::FilePath(),
       /*renderer_id=*/kBindingContext.process_id() - 1,
       token_remote.InitWithNewPipeAndPassReceiver());
 
@@ -1363,6 +1370,7 @@ TEST_F(FileSystemAccessManagerImplTest,
       token_remote;
   manager_->CreateFileSystemAccessDataTransferToken(
       FileSystemAccessEntryFactory::PathType::kLocal, kDirPath,
+      base::FilePath(),
       /*renderer_id=*/kBindingContext.process_id() - 1,
       token_remote.InitWithNewPipeAndPassReceiver());
 
@@ -1390,7 +1398,7 @@ TEST_F(FileSystemAccessManagerImplTest,
       token_remote;
   manager_->CreateFileSystemAccessDataTransferToken(
       FileSystemAccessEntryFactory::PathType::kLocal, file_path,
-      kBindingContext.process_id(),
+      base::FilePath(), kBindingContext.process_id(),
       token_remote.InitWithNewPipeAndPassReceiver());
 
   EXPECT_CALL(permission_context_,
@@ -1447,7 +1455,7 @@ TEST_F(FileSystemAccessManagerImplTest,
       token_remote;
   manager_->CreateFileSystemAccessDataTransferToken(
       FileSystemAccessEntryFactory::PathType::kLocal, kDirPath,
-      kBindingContext.process_id(),
+      base::FilePath(), kBindingContext.process_id(),
       token_remote.InitWithNewPipeAndPassReceiver());
 
   EXPECT_CALL(permission_context_,
@@ -1487,7 +1495,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   auto drag_drop_token_impl =
       std::make_unique<FileSystemAccessDataTransferTokenImpl>(
           manager_.get(), FileSystemAccessEntryFactory::PathType::kLocal,
-          kDirPath, kBindingContext.process_id(),
+          kDirPath, base::FilePath(), kBindingContext.process_id(),
           token_remote.InitWithNewPipeAndPassReceiver());
 
   // Try to redeem the FileSystemAccessDataTransferToken for a

@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.cookies;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,20 +11,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.util.TempDirectory;
 
 import org.chromium.base.ImportantFileWriterAndroid;
 import org.chromium.base.ImportantFileWriterAndroidJni;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
+import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 
@@ -37,10 +33,11 @@ import java.io.PrintWriter;
 
 /** Tests for CookiesFetcher. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowPostTask.class})
 public class CookiesFetcherTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule public PausedExecutorTestRule mExecutorRule = new PausedExecutorTestRule();
+
     @Rule public JniMocker jniMocker = new JniMocker();
 
     @Mock private Profile mProfile1;
@@ -50,30 +47,17 @@ public class CookiesFetcherTest {
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
     @Mock private ImportantFileWriterAndroid.Natives mImportantFileWriterJni;
 
+    private CipherFactory mCipherFactory;
+
     private CanonicalCookie mCookie0;
     private CanonicalCookie mCookie1;
     private CanonicalCookie mCookie2;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        ShadowPostTask.setTestImpl(
-                new ShadowPostTask.TestImpl() {
-                    final Handler mHandler = new Handler(Looper.getMainLooper());
-
-                    @Override
-                    public void postDelayedTask(
-                            @TaskTraits int taskTraits, Runnable task, long delay) {
-                        mHandler.postDelayed(task, delay);
-                    }
-                });
-
         Mockito.when(mProfile1.getOriginalProfile()).thenReturn(mProfile1);
         Mockito.when(mIncognitoProfile1.getOriginalProfile()).thenReturn(mProfile1);
         Mockito.when(mIncognitoProfile1.isPrimaryOTRProfile()).thenReturn(true);
-
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
 
         jniMocker.mock(CookiesFetcherJni.TEST_HOOKS, mCookiesFetcherJni);
 
@@ -99,6 +83,8 @@ public class CookiesFetcherTest {
                                 }
                             }
                         });
+
+        mCipherFactory = new CipherFactory();
 
         mCookie0 =
                 new CanonicalCookie(
@@ -164,15 +150,29 @@ public class CookiesFetcherTest {
                 .thenReturn(incognitoProfile);
     }
 
-    private void assertLegacyCookieFileExists(boolean exists) {
+    private static String fetchLegacyFileName() {
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
         String fileName = CookiesFetcher.fetchLegacyFileName();
+        ThreadUtils.setThreadAssertsDisabledForTesting(false);
+        return fileName;
+    }
+
+    private static String fetchAbsoluteFilePath(CookiesFetcher fetcher) {
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        String fileName = fetcher.fetchAbsoluteFilePath();
+        ThreadUtils.setThreadAssertsDisabledForTesting(false);
+        return fileName;
+    }
+
+    private void assertLegacyCookieFileExists(boolean exists) {
+        String fileName = fetchLegacyFileName();
 
         File cookieFile = new File(fileName);
         Assert.assertEquals(exists, cookieFile.exists());
     }
 
     private void assertCookieFileExists(CookiesFetcher fetcher, boolean exists) {
-        String fileName = fetcher.fetchFileName();
+        String fileName = fetchAbsoluteFilePath(fetcher);
 
         File cookieFile = new File(fileName);
         Assert.assertEquals(exists, cookieFile.exists());
@@ -181,13 +181,13 @@ public class CookiesFetcherTest {
     @Test
     public void testRestoreCookies_NoOtrProfile_NoExistingFile() throws Exception {
         setupProfileProvider(mProfile1, null);
-        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider);
+        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider, mCipherFactory);
 
         assertCookieFileExists(fetcher, false);
         assertLegacyCookieFileExists(false);
 
         fetcher.restoreCookies();
-        ShadowLooper.idleMainLooper();
+        mExecutorRule.runAllBackgroundAndUi();
 
         assertCookieFileExists(fetcher, false);
         assertLegacyCookieFileExists(false);
@@ -198,9 +198,9 @@ public class CookiesFetcherTest {
             throws Exception {
         setupProfileProvider(mProfile1, null);
         Mockito.when(mProfile1.isInitialProfile()).thenReturn(true);
-        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider);
+        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider, mCipherFactory);
 
-        File cookieFile = new File(CookiesFetcher.fetchLegacyFileName());
+        File cookieFile = new File(fetchLegacyFileName());
         try (PrintWriter writer = new PrintWriter(cookieFile)) {
             writer.println("Hey, I\"m a cookie!");
         }
@@ -209,7 +209,7 @@ public class CookiesFetcherTest {
         assertLegacyCookieFileExists(true);
 
         fetcher.restoreCookies();
-        ShadowLooper.idleMainLooper();
+        mExecutorRule.runAllBackgroundAndUi();
 
         assertCookieFileExists(fetcher, false);
         assertLegacyCookieFileExists(false);
@@ -219,9 +219,9 @@ public class CookiesFetcherTest {
     public void testRestoreCookies_NoOtrProfile_InitialProfile_ExistingFile() throws Exception {
         setupProfileProvider(mProfile1, null);
         Mockito.when(mProfile1.isInitialProfile()).thenReturn(true);
-        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider);
+        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider, mCipherFactory);
 
-        File cookieFile = new File(fetcher.fetchFileName());
+        File cookieFile = new File(fetchAbsoluteFilePath(fetcher));
         try (PrintWriter writer = new PrintWriter(cookieFile)) {
             writer.println("Hey, I\"m a cookie!");
         }
@@ -230,7 +230,7 @@ public class CookiesFetcherTest {
         assertLegacyCookieFileExists(false);
 
         fetcher.restoreCookies();
-        ShadowLooper.idleMainLooper();
+        mExecutorRule.runAllBackgroundAndUi();
 
         assertCookieFileExists(fetcher, false);
         assertLegacyCookieFileExists(false);
@@ -241,16 +241,16 @@ public class CookiesFetcherTest {
             throws Exception {
         setupProfileProvider(mProfile1, null);
         Mockito.when(mProfile1.isInitialProfile()).thenReturn(false);
-        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider);
+        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider, mCipherFactory);
 
-        File cookieFile = new File(CookiesFetcher.fetchLegacyFileName());
+        File cookieFile = new File(fetchLegacyFileName());
         try (PrintWriter writer = new PrintWriter(cookieFile)) {
             writer.println("Hey, I\"m a cookie!");
         }
 
         assertLegacyCookieFileExists(true);
         fetcher.restoreCookies();
-        ShadowLooper.idleMainLooper();
+        mExecutorRule.runAllBackgroundAndUi();
         assertLegacyCookieFileExists(
                 true); // Legacy file should not be deleted for non-initial profiles.
     }
@@ -258,17 +258,17 @@ public class CookiesFetcherTest {
     @Test
     public void testRestoreCookies_HasOtrProfile_NoExistingFile() throws Exception {
         setupProfileProvider(mProfile1, mIncognitoProfile1);
-        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider);
+        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider, mCipherFactory);
         assertLegacyCookieFileExists(false);
         fetcher.restoreCookies();
-        ShadowLooper.idleMainLooper();
+        mExecutorRule.runAllBackgroundAndUi();
         assertLegacyCookieFileExists(false);
     }
 
     @Test
     public void testPersistRestoreCookies() throws Exception {
         setupProfileProvider(mProfile1, mIncognitoProfile1);
-        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider);
+        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider, mCipherFactory);
 
         fetcher.persistCookies();
         Mockito.verify(mCookiesFetcherJni)
@@ -279,13 +279,13 @@ public class CookiesFetcherTest {
         cookies[1] = mCookie1;
         cookies[2] = mCookie2;
         fetcher.onCookieFetchFinished(cookies);
-        ShadowLooper.idleMainLooper();
+        mExecutorRule.runAllBackgroundAndUi();
 
         assertLegacyCookieFileExists(false);
         assertCookieFileExists(fetcher, true);
 
         fetcher.restoreCookies();
-        ShadowLooper.idleMainLooper();
+        mExecutorRule.runAllBackgroundAndUi();
 
         Mockito.verify(mCookiesFetcherJni, Mockito.times(3))
                 .restoreCookies(
@@ -315,20 +315,20 @@ public class CookiesFetcherTest {
     public void testRestoreCookies_InitialProfile_LegacyFile() throws Exception {
         setupProfileProvider(mProfile1, mIncognitoProfile1);
         Mockito.when(mProfile1.isInitialProfile()).thenReturn(true);
-        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider);
+        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider, mCipherFactory);
 
         CanonicalCookie[] cookies = new CanonicalCookie[3];
         cookies[0] = mCookie0;
         cookies[1] = mCookie1;
         cookies[2] = mCookie2;
-        CookiesFetcher.saveFetchedCookiesToDisk(CookiesFetcher.fetchLegacyFileName(), cookies);
-        ShadowLooper.idleMainLooper();
+        CookiesFetcher.saveFetchedCookiesToDisk(fetchLegacyFileName(), mCipherFactory, cookies);
+        mExecutorRule.runAllBackgroundAndUi();
 
         assertLegacyCookieFileExists(true);
         assertCookieFileExists(fetcher, false);
 
         fetcher.restoreCookies();
-        ShadowLooper.idleMainLooper();
+        mExecutorRule.runAllBackgroundAndUi();
 
         // The legacy file is not attempted to restore due to the cipher key being wiped out during
         // app upgrade.
@@ -360,20 +360,20 @@ public class CookiesFetcherTest {
     public void testRestoreCookies_NotInitialProfile_LegacyFile() throws Exception {
         setupProfileProvider(mProfile1, mIncognitoProfile1);
         Mockito.when(mProfile1.isInitialProfile()).thenReturn(false);
-        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider);
+        CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider, mCipherFactory);
 
         CanonicalCookie[] cookies = new CanonicalCookie[3];
         cookies[0] = mCookie0;
         cookies[1] = mCookie1;
         cookies[2] = mCookie2;
-        CookiesFetcher.saveFetchedCookiesToDisk(CookiesFetcher.fetchLegacyFileName(), cookies);
-        ShadowLooper.idleMainLooper();
+        CookiesFetcher.saveFetchedCookiesToDisk(fetchLegacyFileName(), mCipherFactory, cookies);
+        mExecutorRule.runAllBackgroundAndUi();
 
         assertLegacyCookieFileExists(true);
         assertCookieFileExists(fetcher, false);
 
         fetcher.restoreCookies();
-        ShadowLooper.idleMainLooper();
+        mExecutorRule.runAllBackgroundAndUi();
 
         Mockito.verify(mCookiesFetcherJni, Mockito.never())
                 .restoreCookies(

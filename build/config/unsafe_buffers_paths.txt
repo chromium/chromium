@@ -51,8 +51,6 @@
 # See `docs/unsafe_buffers.md`.
 
 -android_webview/
-# Check chromeos-libfuzzer-asan-rel bots when removing this.
--ash/quick_pair/fast_pair_handshake/
 -base/allocator
 -base/third_party
 -chrome/browser/ash/chromebox_for_meetings/
@@ -83,7 +81,6 @@
 -chromeos/ash/services/libassistant/
 -chromeos/components/kcer/kcer_nss
 -clank/
--codelabs/
 -components/allocation_recorder/
 -components/chromeos_camera
 -components/commerce/
@@ -113,7 +110,6 @@
 -gpu/ipc/service/
 -ios/
 -ios_internal/
--media/
 -native_client/
 -net/third_party/
 -printing/
@@ -146,3 +142,12 @@
 # Removing this directory may fail on the bot CI bot:
 # https://luci-milo.appspot.com/ui/p/chrome/builders/official/win-arm64-clang
 -chrome/installer/
+
+# Please check 'linux-v4l2-codec-rel' bot before removing this opt-out.
+-media/gpu/v4l2/
+
+# //codelabs is a directory that contains examples for developers to modify as
+# they learn about chromium development. This is indefinitely opt-out because
+# it is not part of the main build, and we don't want developers to be blocked
+# by this check.
+-codelabs/

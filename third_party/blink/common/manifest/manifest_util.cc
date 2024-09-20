@@ -41,6 +41,21 @@ bool IsDefaultManifest(const mojom::ManifestPtr& manifest,
   return manifest && IsDefaultManifest(*manifest, document_url);
 }
 
+std::optional<blink::mojom::Manifest_TextDirection> TextDirectionFromString(
+    const std::string& dir) {
+  using TextDirection = blink::mojom::Manifest_TextDirection;
+  if (base::EqualsCaseInsensitiveASCII(dir, "auto")) {
+    return TextDirection::kAuto;
+  }
+  if (base::EqualsCaseInsensitiveASCII(dir, "ltr")) {
+    return TextDirection::kLTR;
+  }
+  if (base::EqualsCaseInsensitiveASCII(dir, "rtl")) {
+    return TextDirection::kRTL;
+  }
+  return std::nullopt;
+}
+
 std::string DisplayModeToString(blink::mojom::DisplayMode display) {
   switch (display) {
     case blink::mojom::DisplayMode::kUndefined:

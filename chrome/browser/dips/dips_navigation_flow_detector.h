@@ -5,17 +5,31 @@
 #ifndef CHROME_BROWSER_DIPS_DIPS_NAVIGATION_FLOW_DETECTOR_H_
 #define CHROME_BROWSER_DIPS_DIPS_NAVIGATION_FLOW_DETECTOR_H_
 
+#include <optional>
 #include <string>
 
-#include "base/threading/sequence_bound.h"
-#include "chrome/browser/dips/dips_service.h"
-#include "content/public/browser/render_frame_host.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
+#include "url/gurl.h"
 
-namespace {
+class DIPSService;
+
+namespace content {
+struct CookieAccessDetails;
+class NavigationHandle;
+class RenderFrameHost;
+}  // namespace content
+
+namespace dips {
+
 struct PageVisitInfo {
   PageVisitInfo();
   PageVisitInfo(PageVisitInfo&& other);
@@ -30,7 +44,8 @@ struct PageVisitInfo {
   std::optional<bool> was_navigation_to_page_user_initiated;
   std::optional<bool> did_site_have_prior_activation_record;
 };
-}  // namespace
+
+}  // namespace dips
 
 // Detects possible navigation flows with the aim of discovering how to
 // distinguish user-interest navigation flows from navigational tracking.
@@ -45,17 +60,13 @@ class DipsNavigationFlowDetector
   static void MaybeCreateForWebContents(content::WebContents* web_contents);
 
   void SetClockForTesting(base::Clock* clock) {
-    CHECK(dips_service_);
     CHECK(clock);
-    dips_service_->storage()
-        ->AsyncCall(&DIPSStorage::SetClockForTesting)
-        .WithArgs(clock);
     clock_ = *clock;
   }
 
  protected:
   explicit DipsNavigationFlowDetector(content::WebContents* web_contents,
-                                      DIPSServiceImpl* dips_service);
+                                      DIPSService* dips_service);
 
   void MaybeEmitUkmForPreviousPage();
   bool CanEmitUkmForPreviousPage() {
@@ -107,12 +118,12 @@ class DipsNavigationFlowDetector
   // end WebContentsObserver overrides
 
   void CheckIfSiteHadPriorActivation(GURL url);
-  void GotDipsState(std::string site_read_state_for,
-                    const DIPSState dips_state);
+  void GotDipsInteraction(std::string site_read_state_for,
+                          bool had_interaction);
 
-  std::optional<PageVisitInfo> two_pages_ago_visit_info_;
-  std::optional<PageVisitInfo> previous_page_visit_info_;
-  std::optional<PageVisitInfo> current_page_visit_info_;
+  std::optional<dips::PageVisitInfo> two_pages_ago_visit_info_;
+  std::optional<dips::PageVisitInfo> previous_page_visit_info_;
+  std::optional<dips::PageVisitInfo> current_page_visit_info_;
 
   base::Time last_page_change_time_;
   long bucketized_previous_page_visit_duration_;
@@ -120,7 +131,7 @@ class DipsNavigationFlowDetector
   // raw_ptr<> is safe here because DIPSService is a KeyedService, associated
   // with the BrowserContext/Profile, which will outlive the WebContents that
   // DipsNavigationFlowDetector is observing.
-  raw_ptr<DIPSServiceImpl> dips_service_;
+  raw_ptr<DIPSService> dips_service_;
 
   raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
 

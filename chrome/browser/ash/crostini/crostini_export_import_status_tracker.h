@@ -57,6 +57,7 @@ class CrostiniExportImportStatusTracker {
       const std::string& architecture_container,
       const std::string& architecture_device);
   void SetStatusFailedInsufficientSpace(uint64_t additional_required_space);
+  void SetStatusFailedInsufficientSpaceUnknownAmount();
   void SetStatusFailedConcurrentOperation(
       ExportImportType in_progress_operation_type);
 

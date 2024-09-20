@@ -162,6 +162,19 @@ void RetroactivePairingDetectorImpl::OnDevicePaired(
     RemoveDeviceInformation(device->classic_address().value());
     return;
   }
+  // With the introduction of BLE Fast Pair devices, some devices could be
+  // paired with their BLE address. Check BLE address for false positives as
+  // well.
+  if (ash::features::IsFastPairKeyboardsEnabled() &&
+      base::Contains(potential_retroactive_addresses_, device->ble_address())) {
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__
+        << ": encountered a false positive for a potential retroactive pairing "
+           "device. Removing device at address = "
+        << device->ble_address();
+    RemoveDeviceInformation(device->ble_address());
+    return;
+  }
 }
 
 void RetroactivePairingDetectorImpl::DevicePairedChanged(

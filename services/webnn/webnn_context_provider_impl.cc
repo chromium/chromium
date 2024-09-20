@@ -34,11 +34,7 @@
 #endif
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
-#if BUILDFLAG(IS_CHROMEOS)
-#include "services/webnn/tflite/context_impl_cros.h"
-#else
 #include "services/webnn/tflite/context_impl_tflite.h"
-#endif
 #endif
 
 namespace webnn {
@@ -108,9 +104,6 @@ bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options) {
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS)
-WebNNContextProviderImpl::WebNNContextProviderImpl() = default;
-#else
 WebNNContextProviderImpl::WebNNContextProviderImpl(
     scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
@@ -118,20 +111,9 @@ WebNNContextProviderImpl::WebNNContextProviderImpl(
     : shared_context_state_(std::move(shared_context_state)),
       gpu_feature_info_(std::move(gpu_feature_info)),
       gpu_info_(std::move(gpu_info)) {}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 WebNNContextProviderImpl::~WebNNContextProviderImpl() = default;
 
-#if BUILDFLAG(IS_CHROMEOS)
-// static
-void WebNNContextProviderImpl::Create(
-    mojo::PendingReceiver<WebNNContextProvider> receiver
-) {
-  mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
-      base::WrapUnique(new WebNNContextProviderImpl()), std::move(receiver));
-}
-
-#else
 std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
     scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
@@ -147,17 +129,12 @@ void WebNNContextProviderImpl::BindWebNNContextProvider(
   provider_receivers_.Add(this, std::move(receiver));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // static
 void WebNNContextProviderImpl::CreateForTesting(
     mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
     WebNNStatus status) {
   CHECK_IS_TEST();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  WebNNContextProviderImpl::Create(std::move(receiver));
-#else
   gpu::GpuFeatureInfo gpu_feature_info;
   gpu::GPUInfo gpu_info;
 
@@ -182,7 +159,6 @@ void WebNNContextProviderImpl::CreateForTesting(
           /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
           std::move(gpu_info))),
       std::move(receiver));
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
@@ -275,14 +251,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
   if (!context_impl) {
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO: crbug.com/41486052 - Create the TFLite context using `options`.
-    context_impl = new tflite::ContextImplCrOS(std::move(receiver), this,
-                                               std::move(options));
-#else
     context_impl = new tflite::ContextImplTflite(std::move(receiver), this,
                                                  std::move(options));
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 

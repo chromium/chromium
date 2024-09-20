@@ -109,20 +109,11 @@ class NetStreamSocketAdapter : public net::StreamSocket {
                           traffic_annotation);
   }
 
-  int SetReceiveBufferSize(int32_t size) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_FAILED;
-  }
+  int SetReceiveBufferSize(int32_t size) override { NOTREACHED(); }
 
-  int SetSendBufferSize(int32_t size) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_FAILED;
-  }
+  int SetSendBufferSize(int32_t size) override { NOTREACHED(); }
 
-  int Connect(net::CompletionOnceCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_FAILED;
-  }
+  int Connect(net::CompletionOnceCallback callback) override { NOTREACHED(); }
   void Disconnect() override { socket_.reset(); }
   bool IsConnected() const override { return true; }
   bool IsConnectedAndIdle() const override { return true; }
@@ -131,23 +122,11 @@ class NetStreamSocketAdapter : public net::StreamSocket {
     *address = net::IPEndPoint(net::IPAddress::IPv4AllZeros(), 0);
     return net::OK;
   }
-  int GetLocalAddress(net::IPEndPoint* address) const override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_FAILED;
-  }
+  int GetLocalAddress(net::IPEndPoint* address) const override { NOTREACHED(); }
   const net::NetLogWithSource& NetLog() const override { return net_log_; }
-  bool WasEverUsed() const override {
-    NOTREACHED_IN_MIGRATION();
-    return true;
-  }
-  net::NextProto GetNegotiatedProtocol() const override {
-    NOTREACHED_IN_MIGRATION();
-    return net::kProtoUnknown;
-  }
-  bool GetSSLInfo(net::SSLInfo* ssl_info) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  bool WasEverUsed() const override { NOTREACHED(); }
+  net::NextProto GetNegotiatedProtocol() const override { NOTREACHED(); }
+  bool GetSSLInfo(net::SSLInfo* ssl_info) override { NOTREACHED(); }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
     return 0;

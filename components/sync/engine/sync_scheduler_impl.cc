@@ -148,8 +148,9 @@ void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::string thread_name = base::PlatformThread::GetName();
-  if (thread_name.empty())
+  if (thread_name.empty()) {
     thread_name = "<Main thread>";
+  }
   SDVLOG(2) << "Start called from thread " << thread_name << " with mode "
             << GetModeString(mode);
   if (!started_) {
@@ -199,8 +200,9 @@ void SyncSchedulerImpl::SendInitialSnapshot() {
 
   SyncCycleEvent event(SyncCycleEvent::STATUS_CHANGED);
   event.snapshot = SyncCycle(cycle_context_, this).TakeSnapshot();
-  for (SyncEngineEventListener& observer : *cycle_context_->listeners())
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
     observer.OnSyncCycleEvent(event);
+  }
 }
 
 void SyncSchedulerImpl::ScheduleConfiguration(
@@ -500,8 +502,9 @@ base::TimeDelta SyncSchedulerImpl::GetPollInterval() {
 void SyncSchedulerImpl::AdjustPolling(PollAdjustType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!started_)
+  if (!started_) {
     return;
+  }
 
   const base::Time now = base::Time::Now();
 
@@ -693,8 +696,9 @@ void SyncSchedulerImpl::ExponentialBackoffRetry() {
 }
 
 void SyncSchedulerImpl::NotifyRetryTime(base::Time retry_time) {
-  for (SyncEngineEventListener& observer : *cycle_context_->listeners())
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
     observer.OnRetryTimeChanged(retry_time);
+  }
 }
 
 void SyncSchedulerImpl::NotifyBlockedTypesChanged() {
@@ -798,8 +802,9 @@ void SyncSchedulerImpl::OnReceivedCustomNudgeDelays(
     const std::map<DataType, base::TimeDelta>& nudge_delays) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (force_short_nudge_delay_for_test_)
+  if (force_short_nudge_delay_for_test_) {
     return;
+  }
 
   for (const auto& [type, delay] : nudge_delays) {
     nudge_tracker_.UpdateLocalChangeDelay(type, delay);
@@ -816,8 +821,9 @@ void SyncSchedulerImpl::OnSyncProtocolError(
   }
   if (IsActionableProtocolError(sync_protocol_error)) {
     SDVLOG(2) << "OnActionableProtocolError";
-    for (SyncEngineEventListener& observer : *cycle_context_->listeners())
+    for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
       observer.OnActionableProtocolError(sync_protocol_error);
+    }
   }
 }
 
@@ -832,8 +838,9 @@ void SyncSchedulerImpl::OnReceivedGuRetryDelay(const base::TimeDelta& delay) {
 void SyncSchedulerImpl::OnReceivedMigrationRequest(DataTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (SyncEngineEventListener& observer : *cycle_context_->listeners())
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
     observer.OnMigrationRequested(types);
+  }
 }
 
 void SyncSchedulerImpl::OnReceivedQuotaParamsForExtensionTypes(
@@ -848,10 +855,11 @@ void SyncSchedulerImpl::SetNotificationsEnabled(bool notifications_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cycle_context_->set_notifications_enabled(notifications_enabled);
-  if (notifications_enabled)
+  if (notifications_enabled) {
     nudge_tracker_.OnInvalidationsEnabled();
-  else
+  } else {
     nudge_tracker_.OnInvalidationsDisabled();
+  }
 }
 
 bool SyncSchedulerImpl::IsEarlierThanCurrentPendingJob(

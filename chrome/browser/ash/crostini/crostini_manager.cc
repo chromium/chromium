@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
@@ -15,10 +16,12 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
@@ -50,6 +53,7 @@
 #include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_remover.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
@@ -121,6 +125,17 @@ void InvokeAndErasePendingCallbacks(
     std::move(it->second).Run(result);
   }
   vm_callbacks->erase(range.first, range.second);
+}
+
+void EraseCommandUuid(std::map<std::string, guest_os::GuestId>* uuid_map,
+                      const std::string& vm_name) {
+  for (auto it = uuid_map->begin(); it != uuid_map->end();) {
+    if (it->second.vm_name == vm_name) {
+      uuid_map->erase(it++);
+    } else {
+      ++it;
+    }
+  }
 }
 
 // Find any container callbacks for the specified |container_id|, invoke them
@@ -1236,6 +1251,7 @@ CrostiniManager::CrostiniManager(Profile* profile)
   DCHECK(!profile_->IsOffTheRecord());
   GetCiceroneClient()->AddObserver(this);
   GetConciergeClient()->AddVmObserver(this);
+  GetConciergeClient()->AddDiskImageObserver(this);
   if (ash::AnomalyDetectorClient::Get()) {  // May be null in tests.
     ash::AnomalyDetectorClient::Get()->AddObserver(this);
   }
@@ -1839,6 +1855,133 @@ void CrostiniManager::SetUpLxdContainerUser(guest_os::GuestId container_id,
                      std::move(callback)));
 }
 
+void CrostiniManager::ExportDiskImage(guest_os::GuestId vm_id,
+                                      std::string user_id_hash,
+                                      base::FilePath export_path,
+                                      bool force,
+                                      CrostiniResultCallback callback) {
+  if (vm_id.vm_name.empty()) {
+    LOG(ERROR) << "vm_name is required";
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    return;
+  }
+  if (user_id_hash.empty()) {
+    LOG(ERROR) << "vm_name is required";
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    return;
+  }
+
+  if (disk_image_callbacks_.find(vm_id) != disk_image_callbacks_.end()) {
+    LOG(ERROR) << "Disk image export currently running for " << vm_id;
+    std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
+  }
+  disk_image_callbacks_.emplace(vm_id, std::move(callback));
+
+  vm_tools::concierge::ExportDiskImageRequest request;
+  request.set_vm_name(vm_id.vm_name);
+  request.set_cryptohome_id(user_id_hash);
+  // Digest file is only used for pluginVM which will be deprecated soon.
+  request.set_generate_sha256_digest(false);
+  request.set_force(force);
+
+  std::vector<base::ScopedFD> fds;
+  base::File file(export_path,
+                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  if (!file.IsValid()) {
+    LOG(ERROR) << "Failed to open " << export_path;
+    return;
+  }
+
+  fds.emplace_back(file.TakePlatformFile());
+
+  GetConciergeClient()->ExportDiskImage(
+      std::move(fds), std::move(request),
+      base::BindOnce(&CrostiniManager::OnExportDiskImage,
+                     weak_ptr_factory_.GetWeakPtr(), vm_id));
+}
+
+void CrostiniManager::OnExportDiskImage(
+    guest_os::GuestId vm_id,
+    std::optional<vm_tools::concierge::ExportDiskImageResponse> response) {
+  auto it = disk_image_callbacks_.find(vm_id);
+  if (it == disk_image_callbacks_.end()) {
+    LOG(ERROR) << "No export callback for " << vm_id;
+    return;
+  }
+
+  if (!response) {
+    LOG(ERROR) << "Failed to export disk image. Empty response.";
+    std::move(it->second).Run(CrostiniResult::DISK_IMAGE_FAILED);
+    disk_image_callbacks_.erase(it);
+    return;
+  }
+
+  // If export has started, the callback will be invoked when the
+  // DiskImageProgressSignal signal indicates that export is
+  // complete, otherwise this is an error.
+  if (response->status() != vm_tools::concierge::DISK_STATUS_IN_PROGRESS) {
+    LOG(ERROR) << "Failed to export disk image: status=" << response->status()
+               << ", failure_reason=" << response->failure_reason();
+    std::move(it->second).Run(CrostiniResult::DISK_IMAGE_FAILED);
+    disk_image_callbacks_.erase(it);
+  }
+
+  disk_image_uuid_to_guest_id_.emplace(response->command_uuid(), vm_id);
+}
+
+void CrostiniManager::OnDiskImageProgress(
+    const vm_tools::concierge::DiskImageStatusResponse& signal) {
+  bool call_observers = false;
+  bool call_original_callback = false;
+  CrostiniResult result;
+  DiskImageProgressStatus status;
+  switch (signal.status()) {
+    case vm_tools::concierge::DISK_STATUS_IN_PROGRESS:
+      status = DiskImageProgressStatus::IN_PROGRESS;
+      call_observers = true;
+      break;
+    case vm_tools::concierge::DISK_STATUS_NOT_ENOUGH_SPACE:
+      status = DiskImageProgressStatus::FAILURE_SPACE;
+      result = CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE;
+      call_observers = true;
+      call_original_callback = true;
+      break;
+    case vm_tools::concierge::DISK_STATUS_CREATED:
+      call_original_callback = true;
+      result = CrostiniResult::SUCCESS;
+      break;
+    default:
+      call_original_callback = true;
+      result = CrostiniResult::DISK_IMAGE_FAILED;
+      LOG(ERROR) << "Failed during disk image export: " << signal.status()
+                 << ", " << signal.failure_reason();
+  }
+
+  auto uuid_it = disk_image_uuid_to_guest_id_.find(signal.command_uuid());
+  if (uuid_it == disk_image_uuid_to_guest_id_.end()) {
+    LOG(ERROR) << "No GuestId mapping for command uuid: "
+               << signal.command_uuid();
+    return;
+  }
+
+  if (call_observers) {
+    for (auto& observer : disk_image_progress_observers_) {
+      observer.OnDiskImageProgress(uuid_it->second, status, signal.progress());
+    }
+  }
+
+  if (call_original_callback) {
+    auto it = disk_image_callbacks_.find(uuid_it->second);
+    if (it == disk_image_callbacks_.end()) {
+      LOG(ERROR) << "No export callbacks for " << uuid_it->second;
+    }
+    std::move(it->second).Run(result);
+    // The callback and its uuid mapping are done now, remove
+    disk_image_callbacks_.erase(it);
+    disk_image_uuid_to_guest_id_.erase(uuid_it);
+  }
+}
+
 void CrostiniManager::ExportLxdContainer(
     guest_os::GuestId container_id,
     base::FilePath export_path,
@@ -1914,6 +2057,29 @@ void CrostiniManager::ImportLxdContainer(guest_os::GuestId container_id,
       std::move(request),
       base::BindOnce(&CrostiniManager::OnImportLxdContainer,
                      weak_ptr_factory_.GetWeakPtr(), std::move(container_id)));
+}
+
+void CrostiniManager::CancelDiskImageOp(guest_os::GuestId key) {
+  auto it = disk_image_callbacks_.find(key);
+  if (it == disk_image_callbacks_.end()) {
+    LOG(ERROR) << "No disk image operation currently in progress for " << key;
+    return;
+  }
+
+  auto uuid_it = std::find_if(
+      disk_image_uuid_to_guest_id_.begin(), disk_image_uuid_to_guest_id_.end(),
+      [&key](const auto& p) { return p.second == key; });
+  if (uuid_it == disk_image_uuid_to_guest_id_.end()) {
+    LOG(ERROR) << "No associated command UUID for " << key;
+    return;
+  }
+
+  vm_tools::concierge::CancelDiskImageRequest request;
+  request.set_command_uuid(uuid_it->first);
+  GetConciergeClient()->CancelDiskImageOperation(
+      std::move(request),
+      base::BindOnce(&CrostiniManager::OnCancelDiskImageOp,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(key)));
 }
 
 void CrostiniManager::CancelExportLxdContainer(guest_os::GuestId key) {
@@ -2397,6 +2563,16 @@ void CrostiniManager::RemoveImportContainerProgressObserver(
   import_container_progress_observers_.RemoveObserver(observer);
 }
 
+void CrostiniManager::AddDiskImageProgressObserver(
+    DiskImageProgressObserver* observer) {
+  disk_image_progress_observers_.AddObserver(observer);
+}
+
+void CrostiniManager::RemoveDiskImageProgressObserver(
+    DiskImageProgressObserver* observer) {
+  disk_image_progress_observers_.RemoveObserver(observer);
+}
+
 void CrostiniManager::AddUpgradeContainerProgressObserver(
     UpgradeContainerProgressObserver* observer) {
   upgrade_container_progress_observers_.AddObserver(observer);
@@ -2490,9 +2666,13 @@ void CrostiniManager::OnStartTerminaVm(
   InvokeAndErasePendingCallbacks(
       &export_lxd_container_callbacks_, vm_name,
       CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STARTED, 0, 0);
+  InvokeAndErasePendingCallbacks(&disk_image_callbacks_, vm_name,
+                                 CrostiniResult::DISK_IMAGE_FAILED);
   InvokeAndErasePendingCallbacks(
       &import_lxd_container_callbacks_, vm_name,
       CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STARTED);
+  // Same for mappings, no longer valid.
+  EraseCommandUuid(&disk_image_uuid_to_guest_id_, vm_name);
 
   if (response->status() == vm_tools::concierge::VM_STATUS_FAILURE ||
       response->status() == vm_tools::concierge::VM_STATUS_UNKNOWN) {
@@ -2624,9 +2804,12 @@ void CrostiniManager::OnVmStoppedCleanup(const std::string& vm_name) {
 
   // Remove from running_vms_, and other vm-keyed state.
   running_vms_.erase(vm_name);
+  EraseCommandUuid(&disk_image_uuid_to_guest_id_, vm_name);
   InvokeAndErasePendingCallbacks(
       &export_lxd_container_callbacks_, vm_name,
       CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STOPPED, 0, 0);
+  InvokeAndErasePendingCallbacks(&disk_image_callbacks_, vm_name,
+                                 CrostiniResult::DISK_IMAGE_FAILED);
   InvokeAndErasePendingCallbacks(
       &import_lxd_container_callbacks_, vm_name,
       CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STOPPED);
@@ -3620,6 +3803,36 @@ void CrostiniManager::OnImportLxdContainerProgress(
     std::move(it->second).Run(result);
     import_lxd_container_callbacks_.erase(it);
   }
+}
+
+void CrostiniManager::OnCancelDiskImageOp(
+    const guest_os::GuestId& key,
+    std::optional<vm_tools::concierge::CancelDiskImageResponse> response) {
+  auto it = disk_image_callbacks_.find(key);
+  if (it == disk_image_callbacks_.end()) {
+    LOG(ERROR) << "No export callback for " << key;
+    return;
+  }
+
+  if (!response) {
+    LOG(ERROR) << "Failed to cancel disk image operation. Empty response.";
+    return;
+  }
+
+  if (!response->success()) {
+    LOG(ERROR) << "Failed to cancel disk image operation, failure_reason="
+               << response->failure_reason();
+  }
+
+  auto cb_it = disk_image_callbacks_.find(key);
+  if (cb_it == disk_image_callbacks_.end()) {
+    LOG(ERROR) << "No export callback for " << key;
+    return;
+  }
+
+  std::move(cb_it->second).Run(CrostiniResult::DISK_IMAGE_CANCELLED);
+  disk_image_callbacks_.erase(cb_it);
+  EraseCommandUuid(&disk_image_uuid_to_guest_id_, key.vm_name);
 }
 
 void CrostiniManager::OnCancelExportLxdContainer(

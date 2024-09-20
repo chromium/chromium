@@ -95,8 +95,9 @@ class FileUploadDataSource : public UploadDataSource {
 bool CreateUploadDataSourcesFromResourceRequest(
     const network::ResourceRequest& request,
     std::vector<std::unique_ptr<UploadDataSource>>* data_sources) {
-  if (!request.request_body)
+  if (!request.request_body) {
     return false;
+  }
 
   for (auto& element : *request.request_body->elements()) {
     switch (element.type()) {
@@ -128,8 +129,9 @@ std::optional<base::Value::Dict> CreateRequestBodyData(
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
     const std::vector<std::unique_ptr<UploadDataSource>>& data_sources) {
-  if (method != "POST" && method != "PUT")
+  if (method != "POST" && method != "PUT") {
     return std::nullopt;
+  }
 
   base::Value::Dict request_body_data;
 
@@ -146,8 +148,9 @@ std::optional<base::Value::Dict> CreateRequestBodyData(
   bool some_succeeded = false;
   if (!data_sources.empty()) {
     for (size_t i = 0; i < std::size(presenters); ++i) {
-      for (auto& source : data_sources)
+      for (auto& source : data_sources) {
         source->FeedToPresenter(presenters[i]);
+      }
       if (presenters[i]->Succeeded()) {
         request_body_data.Set(kKeys[i], presenters[i]->TakeResult().value());
         some_succeeded = true;
@@ -213,9 +216,11 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
     const ExtensionNavigationUIData* navigation_ui_data) {
   if (navigation_ui_data) {
     is_web_view = navigation_ui_data->is_web_view();
-    web_view_instance_id = navigation_ui_data->web_view_instance_id();
-    web_view_rules_registry_id =
-        navigation_ui_data->web_view_rules_registry_id();
+    if (is_web_view) {
+      web_view_instance_id = navigation_ui_data->web_view_instance_id();
+      web_view_rules_registry_id =
+          navigation_ui_data->web_view_rules_registry_id();
+    }
     frame_data = navigation_ui_data->frame_data();
     parent_routing_id = navigation_ui_data->parent_routing_id();
   } else if (frame_routing_id != MSG_ROUTING_NONE) {
@@ -265,8 +270,9 @@ WebRequestInfo::~WebRequestInfo() = default;
 void WebRequestInfo::AddResponseInfoFromResourceResponse(
     const network::mojom::URLResponseHead& response) {
   response_headers = response.headers;
-  if (response_headers)
+  if (response_headers) {
     response_code = response_headers->response_code();
+  }
   response_ip = response.remote_endpoint.ToStringWithoutPort();
   response_from_cache = response.was_fetched_via_cache;
 }

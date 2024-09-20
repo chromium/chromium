@@ -7,11 +7,13 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -80,6 +82,8 @@ using extensions::mojom::APIPermissionID;
 namespace extensions {
 
 namespace {
+
+constexpr char kGroupNotFoundError[] = "No group with id: *.";
 
 // This enum is used for counting schemes used via a navigation triggered by
 // extensions.
@@ -224,9 +228,13 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // windowId defaults to "current" window.
   int window_id = params.window_id.value_or(extension_misc::kCurrentWindowId);
 
+  Browser* browser = nullptr;
   std::string error;
-  Browser* browser = GetBrowserFromWindowID(chrome_details, window_id, &error);
-  if (!browser) {
+  if (WindowController* controller =
+          GetControllerFromWindowID(chrome_details, window_id, &error)) {
+    browser = controller->GetBrowser();
+  } else {
+    // No matching window.
     if (!params.create_browser_if_needed)
       return base::unexpected(error);
 
@@ -248,10 +256,9 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   WebContents* opener = nullptr;
   Browser* opener_browser = nullptr;
   if (params.opener_tab_id) {
-    if (!ExtensionTabUtil::GetTabById(*params.opener_tab_id, profile,
-                                      function->include_incognito_information(),
-                                      &opener_browser, nullptr, &opener,
-                                      nullptr)) {
+    if (!GetTabById(*params.opener_tab_id, profile,
+                    function->include_incognito_information(), &opener_browser,
+                    nullptr, &opener, nullptr)) {
       return base::unexpected(ErrorUtils::FormatErrorMessage(
           tabs_constants::kTabNotFoundError,
           base::NumberToString(*params.opener_tab_id)));
@@ -264,9 +271,9 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
 
   GURL url(chrome::kChromeUINewTabURL);
   if (params.url) {
-    ASSIGN_OR_RETURN(url, ExtensionTabUtil::PrepareURLForNavigation(
-                              *params.url, function->extension(),
-                              function->browser_context()));
+    ASSIGN_OR_RETURN(url,
+                     PrepareURLForNavigation(*params.url, function->extension(),
+                                             function->browser_context()));
   }
 
   // Default to foreground for the new tab. The presence of 'active' property
@@ -355,26 +362,26 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
       .ToValue();
 }
 
-Browser* ExtensionTabUtil::GetBrowserFromWindowID(
+WindowController* ExtensionTabUtil::GetControllerFromWindowID(
     const ChromeExtensionFunctionDetails& details,
     int window_id,
     std::string* error) {
   if (window_id == extension_misc::kCurrentWindowId) {
-    Browser* result = details.GetCurrentBrowser();
-    if (!result || !result->window()) {
-      if (error)
-        *error = tabs_constants::kNoCurrentWindowError;
-      return nullptr;
+    if (WindowController* window_controller =
+            details.GetCurrentWindowController()) {
+      return window_controller;
     }
-    return result;
-  } else {
-    return GetBrowserInProfileWithId(
-        Profile::FromBrowserContext(details.function()->browser_context()),
-        window_id, details.function()->include_incognito_information(), error);
+    if (error) {
+      *error = tabs_constants::kNoCurrentWindowError;
+    }
+    return nullptr;
   }
+  return GetControllerInProfileWithId(
+      Profile::FromBrowserContext(details.function()->browser_context()),
+      window_id, details.function()->include_incognito_information(), error);
 }
 
-Browser* ExtensionTabUtil::GetBrowserInProfileWithId(
+WindowController* ExtensionTabUtil::GetControllerInProfileWithId(
     Profile* profile,
     int window_id,
     bool also_match_incognito_profile,
@@ -385,10 +392,11 @@ Browser* ExtensionTabUtil::GetBrowserInProfileWithId(
           : nullptr;
   for (Browser* browser : *BrowserList::GetInstance()) {
     if ((browser->profile() == profile ||
-         browser->profile() == incognito_profile) &&
-        ExtensionTabUtil::GetWindowId(browser) == window_id &&
-        browser->window()) {
-      return browser;
+         browser->profile() == incognito_profile)) {
+      WindowController* controller = WindowControllerFromBrowser(browser);
+      if (controller->GetWindowId() == window_id) {
+        return controller;
+      }
     }
   }
 
@@ -453,7 +461,7 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     std::optional<tab_groups::TabGroupId> group =
         tab_strip->GetTabGroupForTab(tab_index);
     if (group.has_value()) {
-      tab_object.group_id = tab_groups_util::GetGroupId(group.value());
+      tab_object.group_id = GetGroupId(group.value());
     }
   }
 
@@ -640,11 +648,8 @@ bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
   return false;
 }
 
-bool ExtensionTabUtil::GetActiveTab(Browser* browser,
-                                    WebContents** contents,
-                                    int* optional_tab_id) {
-  return WindowControllerFromBrowser(browser)->GetActiveTab(contents,
-                                                            optional_tab_id);
+content::WebContents* ExtensionTabUtil::GetActiveTab(Browser* browser) {
+  return WindowControllerFromBrowser(browser)->GetActiveTab();
 }
 
 // static
@@ -762,6 +767,165 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
                                   WebContents** contents) {
   return GetTabById(tab_id, browser_context, include_incognito, nullptr,
                     nullptr, contents, nullptr);
+}
+
+// static
+int ExtensionTabUtil::GetGroupId(const tab_groups::TabGroupId& id) {
+  uint32_t hash = base::PersistentHash(id.ToString());
+  return std::abs(static_cast<int>(hash));
+}
+
+// static
+int ExtensionTabUtil::GetWindowIdOfGroup(const tab_groups::TabGroupId& id) {
+  Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
+  if (browser) {
+    return browser->session_id().id();
+  }
+  return -1;
+}
+
+// static
+bool ExtensionTabUtil::GetGroupById(
+    int group_id,
+    content::BrowserContext* browser_context,
+    bool include_incognito,
+    Browser** browser,
+    tab_groups::TabGroupId* id,
+    const tab_groups::TabGroupVisualData** visual_data,
+    std::string* error) {
+  if (group_id == -1) {
+    return false;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  Profile* incognito_profile =
+      include_incognito && profile->HasPrimaryOTRProfile()
+          ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          : nullptr;
+  for (Browser* target_browser : *BrowserList::GetInstance()) {
+    if (target_browser->profile() == profile ||
+        target_browser->profile() == incognito_profile) {
+      TabStripModel* target_tab_strip = target_browser->tab_strip_model();
+      if (!target_tab_strip->SupportsTabGroups()) {
+        continue;
+      }
+      for (tab_groups::TabGroupId target_group :
+           target_tab_strip->group_model()->ListTabGroups()) {
+        if (ExtensionTabUtil::GetGroupId(target_group) == group_id) {
+          if (browser) {
+            *browser = target_browser;
+          }
+          if (id) {
+            *id = target_group;
+          }
+          if (visual_data) {
+            *visual_data = target_tab_strip->group_model()
+                               ->GetTabGroup(target_group)
+                               ->visual_data();
+          }
+          return true;
+        }
+      }
+    }
+  }
+
+  *error = ErrorUtils::FormatErrorMessage(kGroupNotFoundError,
+                                          base::NumberToString(group_id));
+
+  return false;
+}
+
+// static
+api::tab_groups::TabGroup ExtensionTabUtil::CreateTabGroupObject(
+    const tab_groups::TabGroupId& id,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  api::tab_groups::TabGroup tab_group_object;
+  tab_group_object.id = GetGroupId(id);
+  tab_group_object.collapsed = visual_data.is_collapsed();
+  tab_group_object.color = ColorIdToColor(visual_data.color());
+  tab_group_object.title = base::UTF16ToUTF8(visual_data.title());
+  tab_group_object.window_id = GetWindowIdOfGroup(id);
+
+  return tab_group_object;
+}
+
+// static
+std::optional<api::tab_groups::TabGroup> ExtensionTabUtil::CreateTabGroupObject(
+    const tab_groups::TabGroupId& id) {
+  Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
+  if (!browser) {
+    return std::nullopt;
+  }
+
+  CHECK(browser->tab_strip_model()->SupportsTabGroups());
+  TabGroupModel* group_model = browser->tab_strip_model()->group_model();
+  const tab_groups::TabGroupVisualData* visual_data =
+      group_model->GetTabGroup(id)->visual_data();
+
+  DCHECK(visual_data);
+
+  return CreateTabGroupObject(id, *visual_data);
+}
+
+// static
+api::tab_groups::Color ExtensionTabUtil::ColorIdToColor(
+    const tab_groups::TabGroupColorId& color_id) {
+  switch (color_id) {
+    case tab_groups::TabGroupColorId::kGrey:
+      return api::tab_groups::Color::kGrey;
+    case tab_groups::TabGroupColorId::kBlue:
+      return api::tab_groups::Color::kBlue;
+    case tab_groups::TabGroupColorId::kRed:
+      return api::tab_groups::Color::kRed;
+    case tab_groups::TabGroupColorId::kYellow:
+      return api::tab_groups::Color::kYellow;
+    case tab_groups::TabGroupColorId::kGreen:
+      return api::tab_groups::Color::kGreen;
+    case tab_groups::TabGroupColorId::kPink:
+      return api::tab_groups::Color::kPink;
+    case tab_groups::TabGroupColorId::kPurple:
+      return api::tab_groups::Color::kPurple;
+    case tab_groups::TabGroupColorId::kCyan:
+      return api::tab_groups::Color::kCyan;
+    case tab_groups::TabGroupColorId::kOrange:
+      return api::tab_groups::Color::kOrange;
+    case tab_groups::TabGroupColorId::kNumEntries:
+      NOTREACHED_IN_MIGRATION() << "kNumEntries is not a support color enum.";
+      return api::tab_groups::Color::kGrey;
+  }
+
+  NOTREACHED_IN_MIGRATION();
+  return api::tab_groups::Color::kCyan;
+}
+
+// static
+tab_groups::TabGroupColorId ExtensionTabUtil::ColorToColorId(
+    api::tab_groups::Color color) {
+  switch (color) {
+    case api::tab_groups::Color::kGrey:
+      return tab_groups::TabGroupColorId::kGrey;
+    case api::tab_groups::Color::kBlue:
+      return tab_groups::TabGroupColorId::kBlue;
+    case api::tab_groups::Color::kRed:
+      return tab_groups::TabGroupColorId::kRed;
+    case api::tab_groups::Color::kYellow:
+      return tab_groups::TabGroupColorId::kYellow;
+    case api::tab_groups::Color::kGreen:
+      return tab_groups::TabGroupColorId::kGreen;
+    case api::tab_groups::Color::kPink:
+      return tab_groups::TabGroupColorId::kPink;
+    case api::tab_groups::Color::kPurple:
+      return tab_groups::TabGroupColorId::kPurple;
+    case api::tab_groups::Color::kCyan:
+      return tab_groups::TabGroupColorId::kCyan;
+    case api::tab_groups::Color::kOrange:
+      return tab_groups::TabGroupColorId::kOrange;
+    case api::tab_groups::Color::kNone:
+      NOTREACHED_IN_MIGRATION();
+  }
+
+  NOTREACHED_IN_MIGRATION();
+  return tab_groups::TabGroupColorId::kGrey;
 }
 
 // static
@@ -1009,8 +1173,10 @@ api::tabs::TabStatus ExtensionTabUtil::GetLoadingStatus(WebContents* contents) {
     return api::tabs::TabStatus::kLoading;
   }
 
-  // Anything that isn't backed by a process is considered unloaded.
-  if (!HasValidMainFrameProcess(contents)) {
+  // Anything that isn't backed by a process is considered unloaded. Discarded
+  // tabs should also be considered unloaded as the tab itself may be retained
+  // but the hosted document discarded to reclaim resources.
+  if (!HasValidMainFrameProcess(contents) || contents->WasDiscarded()) {
     return api::tabs::TabStatus::kUnloaded;
   }
 

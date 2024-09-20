@@ -83,6 +83,14 @@ AtomicString ConsumeStringOrURI(CSSParserTokenStream& stream) {
   AtomicString result;
   {
     CSSParserTokenStream::BlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    // If the block doesn't start with a quote, then the tokenizer
+    // would return a kUrlToken or kBadUrlToken instead of a
+    // kFunctionToken. Note also that this Peek() placates the
+    // DCHECK that we Peek() before Consume().
+    DCHECK(stream.Peek().GetType() == kStringToken ||
+           stream.Peek().GetType() == kBadStringToken)
+        << "Got unexpected token " << stream.Peek();
     const CSSParserToken& uri = stream.ConsumeIncludingWhitespace();
     if (uri.GetType() != kBadStringToken && stream.UncheckedAtEnd()) {
       DCHECK_EQ(uri.GetType(), kStringToken);
@@ -557,11 +565,12 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ParseKeyframeKeyList(
 
 String CSSParserImpl::ParseCustomPropertyName(StringView name_text) {
   CSSParserTokenStream stream(name_text);
-  const CSSParserToken name_token = stream.ConsumeIncludingWhitespace();
-  if (!stream.AtEnd()) {
+  const CSSParserToken name_token = stream.Peek();
+  if (!CSSVariableParser::IsValidVariableName(name_token)) {
     return {};
   }
-  if (!CSSVariableParser::IsValidVariableName(name_token)) {
+  stream.ConsumeIncludingWhitespace();
+  if (!stream.AtEnd()) {
     return {};
   }
   return name_token.Value().ToString();
@@ -570,7 +579,7 @@ String CSSParserImpl::ParseCustomPropertyName(StringView name_text) {
 bool CSSParserImpl::ConsumeSupportsDeclaration(CSSParserTokenStream& stream) {
   DCHECK(parsed_properties_.empty());
   // Even though we might use an observer here, this is just to test if we
-  // successfully parse the range, so we can temporarily remove the observer.
+  // successfully parse the stream, so we can temporarily remove the observer.
   CSSParserObserver* observer_copy = observer_;
   observer_ = nullptr;
   ConsumeDeclaration(stream, StyleRule::kStyle);
@@ -2575,8 +2584,6 @@ static bool MayContainNestedRules(const String& text,
     return false;
   }
 
-  size_t char_size = text.Is8Bit() ? sizeof(LChar) : sizeof(UChar);
-
   // Strip away the outer {} pair (the { would always give us a false positive).
   DCHECK_EQ(text[offset], '{');
   if (text[offset + length - 1] != '}') {
@@ -2587,9 +2594,10 @@ static bool MayContainNestedRules(const String& text,
   ++offset;
   length -= 2;
 
-  return memchr(
-             reinterpret_cast<const char*>(text.Bytes()) + offset * char_size,
-             '{', length * char_size) != nullptr;
+  size_t char_size = text.Is8Bit() ? sizeof(LChar) : sizeof(UChar);
+  auto text_bytes = base::as_chars(
+      text.RawByteSpan().subspan(offset * char_size, length * char_size));
+  return memchr(text_bytes.data(), '{', text_bytes.size()) != nullptr;
 }
 
 StyleRule* CSSParserImpl::ConsumeStyleRule(

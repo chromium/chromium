@@ -17,7 +17,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 bool IsKeyBeforeEndOfRange(const leveldb::Comparator* comparator,
                            const leveldb::Slice& key,
@@ -329,4 +329,4 @@ leveldb::Status RevertScopeTask::Run() {
   return s;
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

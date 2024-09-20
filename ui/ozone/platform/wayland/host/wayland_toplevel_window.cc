@@ -858,7 +858,8 @@ void WaylandToplevelWindow::HideTooltip() {
 bool WaylandToplevelWindow::IsClientControlledWindowMovementSupported() const {
   auto* window_drag_controller = connection()->window_drag_controller();
   DCHECK(window_drag_controller);
-  return window_drag_controller->IsExtendedDragAvailable();
+  return window_drag_controller->IsExtendedDragAvailable() ||
+         window_drag_controller->IsXdgToplevelDragAvailable();
 }
 
 bool WaylandToplevelWindow::ShouldReleaseCaptureForDrag(
@@ -882,11 +883,11 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
     ui::mojom::DragEventSource event_source,
     bool allow_system_drag) {
   DCHECK(connection()->window_drag_controller());
-  // If extended drag is not available and |allow_system_drag| is set, this is
-  // no-op and WaylandDataDragController is assumed to be used instead. i.e:
-  // Fallback to a simpler window drag UX based on regular system drag-and-drop.
-  if (!connection()->window_drag_controller()->IsExtendedDragAvailable() &&
-      allow_system_drag) {
+  // If extended-drag and xdg-toplevel-drag are not available and
+  // |allow_system_drag| is set, this is no-op and WaylandDataDragController is
+  // assumed to be used instead. i.e: Fallback to a simpler window drag UX based
+  // on regular system drag-and-drop.
+  if (!IsClientControlledWindowMovementSupported() && allow_system_drag) {
     return;
   }
   connection()->window_drag_controller()->StartDragSession(this, event_source);

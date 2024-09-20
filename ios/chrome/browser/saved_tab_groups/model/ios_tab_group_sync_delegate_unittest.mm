@@ -46,6 +46,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 #import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -428,7 +429,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroup) {
   EXPECT_EQ(kFirstTabURL, first_web_state->GetVisibleURL());
   EXPECT_EQ(kFirstTabTitle, first_web_state->GetTitle());
   EXPECT_EQ(1, tab_group->range().count());
-  EXPECT_TRUE([tab_group->GetTitle() isEqual:@"my group"]);
+  EXPECT_NSEQ(tab_group->GetTitle(), @"my group");
   EXPECT_TRUE([tab_group->GetColor()
       isEqual:TabGroup::ColorForTabGroupColorId(TabGroupColorId::kPink)]);
 
@@ -525,7 +526,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroupOneTab) {
   EXPECT_EQ(kFirstTabURL, first_web_state->GetVisibleURL());
   EXPECT_EQ(kFirstTabTitle, first_web_state->GetTitle());
   EXPECT_EQ(1, tab_group->range().count());
-  EXPECT_TRUE([tab_group->GetTitle() isEqual:@"my group"]);
+  EXPECT_NSEQ(tab_group->GetTitle(), @"my group");
   EXPECT_TRUE([tab_group->GetColor()
       isEqual:TabGroup::ColorForTabGroupColorId(TabGroupColorId::kPink)]);
 }

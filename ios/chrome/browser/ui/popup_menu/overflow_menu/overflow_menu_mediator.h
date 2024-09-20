@@ -48,6 +48,7 @@ class ReadingListBrowserAgent;
 class ReadingListModel;
 @protocol SettingsCommands;
 class TabBasedIPHBrowserAgent;
+class TemplateURLService;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
 class WebStateList;
@@ -139,6 +140,9 @@ class WebStateList;
 
 // The TabBasedIPHBrowserAgent to handle tab based in-product help bubbles.
 @property(nonatomic, assign) TabBasedIPHBrowserAgent* tabBasedIPHBrowserAgent;
+
+// TemplateURLService to observe default search engine change.
+@property(nonatomic, assign) TemplateURLService* templateURLService;
 
 // If settings destination has a blue dot.
 @property(nonatomic, assign) bool hasSettingsBlueDot;

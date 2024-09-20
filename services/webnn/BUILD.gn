@@ -136,37 +136,21 @@ component("webnn_service") {
     sources += [
       "tflite/buffer_content.cc",
       "tflite/buffer_content.h",
+      "tflite/context_impl_tflite.cc",
+      "tflite/context_impl_tflite.h",
+      "tflite/graph_impl_tflite.cc",
+      "tflite/graph_impl_tflite.h",
+      "tflite/op_resolver.cc",
+      "tflite/op_resolver.h",
       "tflite/tensor_impl_tflite.cc",
       "tflite/tensor_impl_tflite.h",
     ]
 
-    if (is_chromeos) {
-      sources += [
-        "tflite/context_impl_cros.cc",
-        "tflite/context_impl_cros.h",
-        "tflite/graph_impl_cros.cc",
-        "tflite/graph_impl_cros.h",
-      ]
-
-      deps += [ "//chromeos/services/machine_learning/public/cpp" ]
-    } else {
-      sources += [
-        "tflite/context_impl_tflite.cc",
-        "tflite/context_impl_tflite.h",
-        "tflite/graph_impl_tflite.cc",
-        "tflite/graph_impl_tflite.h",
-        "tflite/op_resolver.cc",
-        "tflite/op_resolver.h",
-      ]
-
-      deps += [ "//third_party/tflite:tflite_builtin_op_resolver" ]
-    }
-
     deps += [
       ":tflite_graph_builder",
-      "//components/ml/mojom",
       "//third_party/tflite",
       "//third_party/tflite:buildflags",
+      "//third_party/tflite:tflite_builtin_op_resolver",
     ]
 
     if (build_tflite_with_xnnpack) {
@@ -189,6 +173,8 @@ component("webnn_service") {
 
 component("webnn_utils") {
   sources = [
+    "webnn_constant_operand.cc",
+    "webnn_constant_operand.h",
     "webnn_utils.cc",
     "webnn_utils.h",
   ]
@@ -250,13 +236,6 @@ source_set("tests") {
     deps += [
       "//ui/gl",
       "//ui/gl/init",
-    ]
-  }
-
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/services/machine_learning/public/cpp",
-      "//chromeos/services/machine_learning/public/cpp:stub",
     ]
   }
 }

@@ -108,6 +108,11 @@ The `linux-blink-rel` builder can provide results for rebaselining.
 
 ## Running Web Platform Tests with Chrome Android
 
+*** note
+Android support is currently experimental and not on CQ/CI yet.
+See https://crbug.com/40279492 for updates.
+***
+
 See [here](./run_web_platform_tests_with_chrome_android.md) for Android specific instructions.
 
 ## Running Web Platform Tests with WebView
@@ -125,11 +130,25 @@ For other use cases, see [these debugging tips].
 
 [these debugging tips]: /docs/linux/debugging.md
 
+## FAQ
+
+* Do headless shell and Chrome support MojoJS bindings?
+    * Yes.
+      `run_wpt_tests.py` enables the `MojoJS` and `MojoJSTest` features and
+      serves `//out/<target>/gen/` as `/gen/` in wptserve.
+      However, in the public WPT suite, testdriver.js APIs backed by standard
+      WebDriver endpoints should be preferred over polyfills backed by MojoJS,
+      which are Chromium-specific.
+      See https://github.com/web-platform-tests/rfcs/issues/172 for additional
+      discussion.
+
 ## Known Issues
 
-Please [file bugs and feature requests](https://crbug.com/new) against
-[`Blink>Infra` with the `wptrunner`
-label](https://bugs.chromium.org/p/chromium/issues/list?q=component%3ABlink%3EInfra%20label%3Awptrunner&can=2).
+The [`wptrunner-migration`
+hostlist](https://issues.chromium.org/hotlists/6224346) tracks test results
+where headless shell and content shell differ.
+For runner bugs and feature requests, please file [an issue against
+`Blink>Infra`](https://issues.chromium.org/issues/new?component=1456928&template=1923166).
 
 [protocol mode]: /content/web_test/browser/test_info_extractor.h
 [debug renderer]: /third_party/blink/tools/debug_renderer

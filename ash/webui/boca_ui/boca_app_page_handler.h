@@ -10,6 +10,7 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "components/account_id/account_id.h"
 #include "content/public/browser/web_ui.h"
@@ -42,6 +43,7 @@ class BocaAppHandler : public mojom::PageHandler {
                     ListStudentsCallback callback) override;
   void CreateSession(mojom::ConfigPtr config,
                      CreateSessionCallback callback) override;
+  void GetSession(GetSessionCallback callback) override;
 
   void NotifyLocalConfigUpdate(mojom::ConfigPtr config);
 
@@ -50,7 +52,7 @@ class BocaAppHandler : public mojom::PageHandler {
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;
   std::unique_ptr<SessionClientImpl> session_client_impl_;
   // Track the identity of the current app user.
-  AccountId user_identity_;
+  ::boca::UserIdentity user_identity_;
   mojo::Receiver<boca::mojom::PageHandler> receiver_;
   mojo::Remote<boca::mojom::Page> remote_;
   raw_ptr<BocaUI> boca_ui_;  // Owns |this|.

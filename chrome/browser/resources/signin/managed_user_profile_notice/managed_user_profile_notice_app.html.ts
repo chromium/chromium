@@ -12,6 +12,13 @@ ${this.useUpdatedUi_ ? html`
     <img class="tangible-sync-style-left-banner" alt="">
     <img class="tangible-sync-style-right-banner" alt="">
     <div id="content-container">
+      ${this.showValueProposition_ ? html`
+        <managed-user-profile-notice-value-prop id="value-prop"
+            title="$i18n{signinIntoChrome}" subtitle="$i18n{valuePropSubtitle}"
+            picture-url="${this.pictureUrl_}"
+            email="${this.email_}" account-name="${this.accountName_}">
+        ` : ''}
+        </managed-user-profile-notice-value-prop>
       ${this.showDisclosure_ ? html`
         <managed-user-profile-notice-disclosure id="disclosure"
             title="${this.title_}" subtitle="${this.subtitle_}"
@@ -21,7 +28,7 @@ ${this.useUpdatedUi_ ? html`
       ` : ''}
       ${this.showProcessing_ ? html`
         <managed-user-profile-notice-state id="processing"
-            subtitle="$i18n{processingSubtitle}" icon="cr:domain">
+            subtitle="${this.processingSubtitle_}" icon="cr:domain">
               <paper-spinner-lite active class="thick">
               </paper-spinner-lite>
         </managed-user-profile-notice-state>
@@ -44,18 +51,25 @@ ${this.useUpdatedUi_ ? html`
           <img class="error-icon" alt="">
         </managed-user-profile-notice-state>
       ` : ''}
+      ${this.showUserDataHandling_ ? html`
+        <managed-user-profile-notice-data-handling id="user-data-handling"
+            title="$i18n{separateBrowsingDataTitle}"
+            .selectedDataHandling="${this.selectedDataHandling_}"
+            @selected-data-handling-changed="${this.onDataHandlingChanged_}">
+        </managed-user-profile-notice-data-handling>
+      ` : ''}
     </div>
   </div>
   <div class="action-container tangible-sync-style">
     <cr-button id="proceed-button" class="action-button"
         @click="${this.onProceed_}" ?autofocus="${this.isModalDialog_}"
-        ?disabled="${this.disableProceedButton_}"
+        ?disabled="${!this.allowProceedButton_()}"
         ?hidden="${this.showProcessing_}">
       ${this.proceedLabel_}
     </cr-button>
     <cr-button id="cancel-button" @click="${this.onCancel_}"
         ?hidden="${!this.allowCancel_()}">
-      $i18n{cancelLabel}
+      ${this.cancelLabel_}
     </cr-button>
   </div>
 ` : ''}

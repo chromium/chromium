@@ -246,8 +246,9 @@ bool ValueHasSpecifics(const base::Value::Dict& value,
   }
 
   const base::Value& entry_dictionary_value = (*entities_list)[0];
-  if (!entry_dictionary_value.is_dict())
+  if (!entry_dictionary_value.is_dict()) {
     return false;
+  }
 
   const base::Value::Dict& entry_dictionary = entry_dictionary_value.GetDict();
   return entry_dictionary.FindDict("specifics") != nullptr;

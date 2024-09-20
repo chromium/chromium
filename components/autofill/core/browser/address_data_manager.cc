@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
+#include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -178,6 +179,17 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfiles(
     ProfileOrder order) const {
   std::vector<const AutofillProfile*> profiles =
       base::ToVector(profiles_, [](const AutofillProfile& p) { return &p; });
+  // Filter incomplete H/W addresses.
+  std::erase_if(profiles, [&](const AutofillProfile* p) {
+    switch (p->record_type()) {
+      case AutofillProfile::RecordType::kLocalOrSyncable:
+      case AutofillProfile::RecordType::kAccount:
+        return false;
+      case AutofillProfile::RecordType::kAccountHome:
+      case AutofillProfile::RecordType::kAccountWork:
+        return !IsMinimumAddress(*p);
+    }
+  });
   OrderProfiles(profiles, order);
   return profiles;
 }
@@ -346,8 +358,7 @@ void AddressDataManager::LoadProfiles() {
     return;
   }
   CancelPendingQuery(pending_profile_query_);
-  pending_profile_query_ =
-      webdata_service_->GetAutofillProfiles(/*record_type=*/std::nullopt, this);
+  pending_profile_query_ = webdata_service_->GetAutofillProfiles(this);
 }
 
 void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {

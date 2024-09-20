@@ -251,11 +251,10 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   std::string va_challenge_response_;
 
   // Instruction payload and response for "Proof Of Possession".
-  // DMServer might not send any signature algorithm, in which case
-  // SIGNATURE_ALGORITHM_RSA_PKCS1_V1_5_NO_HASH is implied.
+  // Must be provided by DMServer.
   enterprise_management::CertProvSignatureAlgorithm signature_algorithm_ =
       enterprise_management::CertProvSignatureAlgorithm::
-          SIGNATURE_ALGORITHM_RSA_PKCS1_V1_5_NO_HASH;
+          SIGNATURE_ALGORITHM_UNSPECIFIED;
   std::vector<uint8_t> data_to_sign_;
   std::vector<uint8_t> signature_;
 

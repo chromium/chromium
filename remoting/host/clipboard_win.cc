@@ -48,8 +48,7 @@ class ScopedClipboard {
     const base::TimeDelta kSleepTimeBetweenAttempts = base::Milliseconds(5);
 
     if (opened_) {
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
     }
 
     // This code runs on the UI thread, so we can block only very briefly.
@@ -67,16 +66,14 @@ class ScopedClipboard {
 
   BOOL Empty() {
     if (!opened_) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     return ::EmptyClipboard();
   }
 
   void SetData(UINT uFormat, HANDLE hMem) {
     if (!opened_) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     // The caller must not close the handle that ::SetClipboardData returns.
     ::SetClipboardData(uFormat, hMem);
@@ -87,8 +84,7 @@ class ScopedClipboard {
   // before this ScopedClipboard is destroyed.
   HANDLE GetData(UINT format) {
     if (!opened_) {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
     return ::GetClipboardData(format);
   }

@@ -6,8 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
+#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-blink.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -42,9 +42,9 @@ HeapMojoRemote<mojom::blink::AIManager>& AITextSessionFactory::GetAIRemote() {
   return ai_remote_;
 }
 
-void AITextSessionFactory::CanCreateTextSession(
+void AITextSessionFactory::CanCreateAssistant(
     AIMetrics::AISessionType session_type,
-    CanCreateTextSessionCallback callback) {
+    CanCreateAssistantCallback callback) {
   base::UmaHistogramEnumeration(
       AIMetrics::GetAIAPIUsageMetricName(session_type),
       AIMetrics::AIAPI::kCanCreateSession);
@@ -55,9 +55,9 @@ void AITextSessionFactory::CanCreateTextSession(
     return;
   }
 
-  GetAIRemote()->CanCreateTextSession(WTF::BindOnce(
+  GetAIRemote()->CanCreateAssistant(WTF::BindOnce(
       [](AITextSessionFactory* factory, AIMetrics::AISessionType session_type,
-         CanCreateTextSessionCallback callback,
+         CanCreateAssistantCallback callback,
          mojom::blink::ModelAvailabilityCheckResult result) {
         AICapabilityAvailability availability =
             HandleModelAvailabilityCheckResult(factory->GetExecutionContext(),
@@ -67,11 +67,12 @@ void AITextSessionFactory::CanCreateTextSession(
       WrapWeakPersistent(this), session_type, std::move(callback)));
 }
 
-void AITextSessionFactory::CreateTextSession(
+void AITextSessionFactory::CreateAssistant(
     AIMetrics::AISessionType session_type,
-    mojom::blink::AITextSessionSamplingParamsPtr sampling_params,
+    mojom::blink::AIAssistantSamplingParamsPtr sampling_params,
     const WTF::String& system_prompt,
-    CreateTextSessionCallback callback) {
+    Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts,
+    CreateAssistantCallback callback) {
   base::UmaHistogramEnumeration(
       AIMetrics::GetAIAPIUsageMetricName(session_type),
       AIMetrics::AIAPI::kCreateSession);
@@ -82,12 +83,12 @@ void AITextSessionFactory::CreateTextSession(
   }
   AITextSession* text_session =
       MakeGarbageCollected<AITextSession>(GetExecutionContext(), task_runner_);
-  GetAIRemote()->CreateTextSession(
+  GetAIRemote()->CreateAssistant(
       text_session->GetModelSessionReceiver(), std::move(sampling_params),
-      system_prompt,
+      system_prompt, std::move(initial_prompts),
       WTF::BindOnce(
-          [](CreateTextSessionCallback callback, AITextSession* text_session,
-             blink::mojom::blink::AITextSessionInfoPtr info) {
+          [](CreateAssistantCallback callback, AITextSession* text_session,
+             blink::mojom::blink::AIAssistantInfoPtr info) {
             if (info) {
               text_session->SetInfo(base::PassKey<AITextSessionFactory>(),
                                     std::move(info));

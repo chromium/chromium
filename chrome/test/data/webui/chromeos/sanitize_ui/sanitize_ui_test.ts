@@ -33,7 +33,7 @@ suite('SanitizeUITest', function() {
     // Verify the header element exists
     assert(titleDiv);
     // Check the header content
-    assertEquals('Your device is sanitized', titleDiv!.textContent);
+    assertEquals('Safety reset has been completed', titleDiv!.textContent);
   });
 
   test('SanitizeDoneAccordionsAndLinksTest', async () => {
@@ -41,7 +41,7 @@ suite('SanitizeUITest', function() {
     // Check accordions exist
     const extensionsAccordion =
         doneElement.shadowRoot!.querySelector<CrExpandButtonElement>(
-            '#expandExtensions');
+            '#expandExtensionsInfo');
     assert(!!extensionsAccordion);
     const chromeOSSettingsAccordion =
         doneElement.shadowRoot!.querySelector<CrExpandButtonElement>(

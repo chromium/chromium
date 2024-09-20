@@ -371,6 +371,12 @@
   [self.delegate magicStackRankingModel:self didInsertItem:card atIndex:0];
 }
 
+- (void)removePriceTrackingPromo {
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_priceTrackingPromoMediator
+                                            .priceTrackingPromoItemToShow];
+}
+
 // Starts a fetch of the Segmentation module ranking.
 - (void)fetchMagicStackModuleRankingFromSegmentationPlatform {
   if (!base::FeatureList::IsEnabled(segmentation_platform::features::

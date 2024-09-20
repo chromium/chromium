@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 
 #include <memory>
@@ -440,8 +435,6 @@ String BuildBlockedReason(ResourceRequestBlockedReason reason) {
       // is marked as successful and no blocking reason is reported.
       NOTREACHED_IN_MIGRATION();
       return protocol::Network::BlockedReasonEnum::Other;
-    case blink::ResourceRequestBlockedReason::kSupervisedUserUrlBlocked:
-      return protocol::Network::BlockedReasonEnum::Other;
   }
   NOTREACHED_IN_MIGRATION();
   return protocol::Network::BlockedReasonEnum::Other;
@@ -665,17 +658,14 @@ String GetReferrerPolicy(network::mojom::ReferrerPolicy policy) {
 std::unique_ptr<protocol::Network::WebSocketFrame> WebSocketMessageToProtocol(
     int op_code,
     bool masked,
-    const char* payload,
-    size_t payload_length) {
+    base::span<const char> payload) {
   return protocol::Network::WebSocketFrame::create()
       .setOpcode(op_code)
       .setMask(masked)
       // Only interpret the payload as UTF-8 when it's a text message
-      .setPayloadData(
-          op_code == 1
-              ? String::FromUTF8WithLatin1Fallback(payload, payload_length)
-              : Base64Encode(
-                    base::as_bytes(base::make_span(payload, payload_length))))
+      .setPayloadData(op_code == 1 ? String::FromUTF8WithLatin1Fallback(
+                                         payload.data(), payload.size())
+                                   : Base64Encode(base::as_bytes(payload)))
       .build();
 }
 
@@ -1564,8 +1554,9 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
   // following didReceiveResponse as there will be no calls to didReceiveData
   // from the network stack.
   if (is_not_modified && cached_resource && cached_resource->EncodedSize()) {
-    DidReceiveData(identifier, loader, nullptr,
-                   static_cast<int>(cached_resource->EncodedSize()));
+    DidReceiveData(
+        identifier, loader,
+        base::SpanOrSize<const char>(cached_resource->EncodedSize()));
   }
 }
 
@@ -1601,16 +1592,7 @@ protocol::Response InspectorNetworkAgent::streamResourceContent(
 
 void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
                                            DocumentLoader* loader,
-                                           const char* data_ptr,
-                                           uint64_t data_length) {
-  auto data = data_ptr
-                  ? base::SpanOrSize<const char>(
-                        // DidReceiveData should receive a base::SpanOrSize
-                        // instead of a pointer
-                        // and size.
-                        UNSAFE_TODO(base::span(
-                            data_ptr, base::checked_cast<size_t>(data_length))))
-                  : base::SpanOrSize<const char>(data_length);
+                                           base::SpanOrSize<const char> data) {
   String request_id = RequestId(loader, identifier);
   Maybe<protocol::Binary> binary_data;
 
@@ -1622,8 +1604,7 @@ void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
          resource_data->CachedResource()->GetDataBufferingPolicy() ==
              kDoNotBufferData ||
          IsErrorStatusCode(resource_data->HttpStatusCode()))) {
-      resources_data_->MaybeAddResourceData(request_id, data_span->data(),
-                                            data_span->size());
+      resources_data_->MaybeAddResourceData(request_id, *data_span);
     }
 
     if (streaming_request_ids_.Contains(request_id)) {
@@ -1679,7 +1660,8 @@ void InspectorNetworkAgent::DidFinishLoading(
        resource_data->CachedResource()->GetDataBufferingPolicy() ==
            kDoNotBufferData ||
        IsErrorStatusCode(resource_data->HttpStatusCode()))) {
-    resources_data_->MaybeAddResourceData(request_id, "", 0);
+    resources_data_->MaybeAddResourceData(request_id,
+                                          base::span_from_cstring(""));
   }
 
   resources_data_->MaybeDecodeDataToContent(request_id);
@@ -2026,19 +2008,18 @@ void InspectorNetworkAgent::DidReceiveWebSocketMessage(
   GetFrontend()->webSocketFrameReceived(
       IdentifiersFactory::SubresourceRequestId(identifier),
       base::TimeTicks::Now().since_origin().InSecondsF(),
-      WebSocketMessageToProtocol(op_code, masked, flatten.data(),
-                                 flatten.size()));
+      WebSocketMessageToProtocol(op_code, masked, flatten));
 }
 
-void InspectorNetworkAgent::DidSendWebSocketMessage(uint64_t identifier,
-                                                    int op_code,
-                                                    bool masked,
-                                                    const char* payload,
-                                                    size_t payload_length) {
+void InspectorNetworkAgent::DidSendWebSocketMessage(
+    uint64_t identifier,
+    int op_code,
+    bool masked,
+    base::span<const char> payload) {
   GetFrontend()->webSocketFrameSent(
       IdentifiersFactory::SubresourceRequestId(identifier),
       base::TimeTicks::Now().since_origin().InSecondsF(),
-      WebSocketMessageToProtocol(op_code, masked, payload, payload_length));
+      WebSocketMessageToProtocol(op_code, masked, payload));
 }
 
 void InspectorNetworkAgent::DidReceiveWebSocketMessageError(

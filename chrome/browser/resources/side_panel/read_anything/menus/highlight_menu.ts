@@ -36,10 +36,10 @@ export class HighlightMenu extends HighlightMenuBase {
       title: loadTimeData.getString('wordHighlightTitle'),
       data: chrome.readingMode.wordHighlighting,
     },
-    ...(chrome.readingMode.isPhraseHighlightingEnabled?[{
+    {
       title: loadTimeData.getString('phraseHighlightTitle'),
       data: chrome.readingMode.phraseHighlighting,
-    }]: []),
+    },
     {
       title: loadTimeData.getString('sentenceHighlightTitle'),
       data: chrome.readingMode.sentenceHighlighting,
@@ -71,17 +71,6 @@ export class HighlightMenu extends HighlightMenuBase {
 
   open(anchor: HTMLElement) {
     this.$.menu.open(anchor);
-  }
-
-  private onHighlightChange_(event: CustomEvent<{data: number}>) {
-    const changedHighlight = event.detail.data;
-    if (!chrome.readingMode.isPhraseHighlightingEnabled &&
-        changedHighlight === chrome.readingMode.phraseHighlighting) {
-      return;
-    } else {
-      chrome.readingMode.onHighlightGranularityChanged(event.detail.data);
-    }
-    // TODO(crbug.com/364546547): Log these highlight granularity changes.
   }
 
   private restoredHighlightIndex_(): number {

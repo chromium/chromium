@@ -17,6 +17,9 @@
 - (void)consentViewController:(LensOverlayConsentViewController*)viewController
     didFinishWithTermsAccepted:(BOOL)accepted;
 
+/// Called when the user asks to learn more about lens.
+- (void)didPressLearnMore;
+
 @end
 
 /// View controller that contains the ToS and prompts the user for acceptance.

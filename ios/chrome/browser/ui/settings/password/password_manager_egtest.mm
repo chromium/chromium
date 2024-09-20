@@ -1401,6 +1401,60 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_nil()];
 }
 
+// Check that tapping on empty note in password details switches to editing when
+// the view is not in editing mode.
+- (void)testTappingEmptyNoteInPasswordDetailsWhenNotEditing {
+  SavePasswordFormToProfileStore();
+
+  OpenPasswordManager();
+
+  [GetInteractionForPasswordEntry(@"example.com") performAction:grey_tap()];
+
+  // Check that view switches to editing on empty note tap.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      performAction:grey_replaceText(@"note")];
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+
+  // Check that view remains in non-editing state on non-empty note tap.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Check that after deleting a note tapping on its field in non-editing mode
+// switches to editing mode.
+- (void)testTappingEmptyNoteAfterDeleting {
+  SaveExamplePasswordFormToProfileStoreWithNote();
+
+  OpenPasswordManager();
+
+  [GetInteractionForPasswordEntry(@"example.com") performAction:grey_tap()];
+
+  TapNavigationBarEditButton();
+
+  // Delete the note.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      performAction:grey_replaceText(@"")];
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+
+  // Check that the view is in non-editing state.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that it switches to editing on empty note tap.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      assertWithMatcher:grey_notVisible()];
+}
+
 // Checks the order of the elements in the detail view layout for a blocked
 // credential.
 - (void)testLayoutForBlockedCredential {
@@ -2393,8 +2447,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
@@ -2854,8 +2907,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
@@ -3373,8 +3425,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                     ReauthenticationResult::kSuccess];
   // Delay the auth result to be able to validate that the passwords are not
   // visible until the result is emitted.
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   OpenPasswordManager();
 
@@ -3407,8 +3458,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                     ReauthenticationResult::kFailure];
   // Delay the auth result to be able to validate that the passwords are not
   // visible until the result is emitted.
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   OpenPasswordManager();
 

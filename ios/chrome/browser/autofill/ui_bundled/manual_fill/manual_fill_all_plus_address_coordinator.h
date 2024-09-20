@@ -16,6 +16,10 @@
 - (void)manualFillAllPlusAddressCoordinatorWantsToBeDismissed:
     (ManualFillAllPlusAddressCoordinator*)coordinator;
 
+// Requests the delegate to dismiss the coordinator and then open the manage
+// plus address view.
+- (void)dismissManualFillAllPlusAddressAndOpenManagePlusAddress;
+
 @end
 
 // Creates and manages a view controller to present all the plus addresses. The

@@ -9,6 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/content_extraction/inner_html.h"
+#include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
@@ -217,7 +219,7 @@ class LensOverlayController : public LensSearchboxClient,
   // searchbox WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and has bound the handler. Takes ownership of
   // `handler`.
-  void SetSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
+  void SetSidePanelSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
 
   // Passes ownership of the realbox handler to the search bubble controller.
   // This is called by the WebUIController when the WebUI is executing
@@ -227,7 +229,7 @@ class LensOverlayController : public LensSearchboxClient,
   // This method is used to release the owned `SearchboxHandler`. It should be
   // called before the embedding web contents is destroyed since it contains a
   // reference to that web contents.
-  void ResetSearchboxHandler();
+  void ResetSidePanelSearchboxHandler();
 
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
@@ -423,6 +425,9 @@ class LensOverlayController : public LensSearchboxClient,
       const std::string& source_language,
       const std::string& target_language);
 
+  // Testing function to end translate mode.
+  void IssueEndTranslateModeRequestForTesting();
+
   // Testing function to issue a searchbox request.
   void IssueSearchBoxRequestForTesting(
       const std::string& search_box_text,
@@ -554,9 +559,13 @@ class LensOverlayController : public LensSearchboxClient,
     // The page title, if it is allowed to be shared.
     std::optional<std::string> page_title_;
 
-    // The bytes of the PDF the user is viewing, if the user is looking at a PDF
-    // and the bytes are able to be retrieved.
-    std::vector<uint8_t> pdf_bytes_;
+    // The bytes of the content the user is viewing, if the bytes are able to be
+    // retrieved.
+    std::vector<uint8_t> page_content_bytes_;
+
+    // The mime type of page_content_bytes_. Empty if
+    // page_content_bytes_is empty.
+    std::string page_content_type_;
 
     // Bounding boxes for significant regions identified in the screenshot.
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
@@ -637,9 +646,20 @@ class LensOverlayController : public LensSearchboxClient,
   // them in initialization data.
   void OnPdfBytesReceived(const std::vector<uint8_t>& bytes);
 
+  // Callback for when the inner text is retrieved from the underlying page.
+  void OnInnerTextReceived(
+      std::unique_ptr<content_extraction::InnerTextResult> result);
+
+  // Callback for when the inner HTML is retrieved from the underlying page.
+  void OnInnerHtmlReceived(const std::optional<std::string>& result);
+
   // Adds bounding boxes to the initialization data.
   void AddBoundingBoxesToInitializationData(
       const std::vector<gfx::Rect>& bounds);
+
+  // Enables/disables the background blur updating live. This should be used to
+  // save resources on blurring the background when not needed.
+  void SetLiveBlur(bool enabled);
 
   // Called when the UI needs to show the overlay via a view that is a child of
   // the tab contents view.
@@ -687,8 +707,10 @@ class LensOverlayController : public LensSearchboxClient,
 
   // OmniboxTabHelper::Observer:
   void OnOmniboxInputStateChanged() override {}
+  void OnOmniboxInputInProgress(bool in_progress) override {}
   void OnOmniboxFocusChanged(OmniboxFocusState state,
                              OmniboxFocusChangeReason reason) override;
+  void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override {}
 
   // find_in_page::FindResultObserver:
   void OnFindEmptyText(content::WebContents* web_contents) override;
@@ -771,6 +793,7 @@ class LensOverlayController : public LensSearchboxClient,
   void IssueTranslateFullPageRequest(
       const std::string& source_language,
       const std::string& target_language) override;
+  void IssueEndTranslateModeRequest() override;
   void IssueTranslateSelectionRequest(const std::string& text_query,
                                       const std::string& content_language,
                                       int selection_start_index,
@@ -994,7 +1017,16 @@ class LensOverlayController : public LensSearchboxClient,
   // that:
   //      1) searchbox_handler_ exists and
   //      2) searchbox_handler_->IsRemoteBound() is true.
-  std::unique_ptr<RealboxHandler> searchbox_handler_;
+  std::unique_ptr<RealboxHandler> side_panel_searchbox_handler_;
+
+  // Handler for the contextual searchbox in the overlay . The handler is
+  // null if the WebUI containing the searchbox has not been initialized yet.
+  // In addition, the handler may be initialized, but the remote not yet set
+  // because the WebUI calls SetPage() once it is ready to receive data from
+  // C++. Therefore, we must always check that:
+  //      1) contextual_searchbox_handler_ exists and
+  //      2) contextual_searchbox_handler_->IsRemoteBound() is true.
+  std::unique_ptr<RealboxHandler> overlay_searchbox_handler_;
 
   // General side panel coordinator responsible for all side panel interactions.
   // Separate from the results_side_panel_coordinator because this controls

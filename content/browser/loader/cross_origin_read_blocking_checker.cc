@@ -53,8 +53,9 @@ class CrossOriginReadBlockingChecker::BlobIOState {
   void DidCalculateSize(int result) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     size_t buf_size = net::kMaxBytesToSniff;
-    if (buf_size > blob_reader_->total_size())
+    if (buf_size > blob_reader_->total_size()) {
       buf_size = blob_reader_->total_size();
+    }
     buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(buf_size);
     int bytes_read;
     const storage::BlobReader::Status status = blob_reader_->Read(

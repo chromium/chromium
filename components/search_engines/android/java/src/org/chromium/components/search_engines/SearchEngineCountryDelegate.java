@@ -18,6 +18,9 @@ import java.lang.annotation.RetentionPolicy;
 /** Placeholder delegate class to get device country. Implemented in the internal code. */
 public abstract class SearchEngineCountryDelegate {
     @MainThread
+    public SearchEngineCountryDelegate() {}
+
+    @MainThread
     public SearchEngineCountryDelegate(Context context) {}
 
     /**
@@ -46,6 +49,10 @@ public abstract class SearchEngineCountryDelegate {
         return new ObservableSupplierImpl<>(false);
     }
 
+    /** Proxy for {@link SearchEngineChoiceService#refreshDeviceChoiceRequiredNow}. */
+    @MainThread
+    public void refreshDeviceChoiceRequiredNow(int reason) {}
+
     /** Proxy for {@link SearchEngineChoiceService#launchDeviceChoiceScreens()}. */
     @MainThread
     public void launchDeviceChoiceScreens() {}
@@ -68,5 +75,5 @@ public abstract class SearchEngineCountryDelegate {
      * {@link DeviceChoiceEventType} values for more details.
      */
     @MainThread
-    public void log(@DeviceChoiceEventType int eventType) {}
+    public void notifyDeviceChoiceEvent(@DeviceChoiceEventType int eventType) {}
 }

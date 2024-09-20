@@ -354,8 +354,7 @@ LayoutUnit MenuListIntrinsicBlockSize(const HTMLSelectElement& select,
     return kIndefiniteSize;
   const SimpleFontData* font_data = box.StyleRef().GetFont().PrimaryFont();
   DCHECK(font_data);
-  const LayoutBox* inner_box =
-      select.InnerElementForAppearanceAuto().GetLayoutBox();
+  const LayoutBox* inner_box = select.InnerElement().GetLayoutBox();
   return (font_data ? font_data->GetFontMetrics().Height() : 0) +
          (inner_box ? inner_box->BorderAndPaddingLogicalHeight()
                     : LayoutUnit());
@@ -1105,14 +1104,16 @@ PhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {
   return PhysicalBoxStrut();
 }
 
-void LayoutBox::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                              MapCoordinatesFlags mode) const {
+void LayoutBox::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
+                                        const LayoutBoxModelObject* ancestor,
+                                        MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock()) {
-    flow_thread->AbsoluteQuadsForDescendant(*this, quads, mode);
+    flow_thread->QuadsInAncestorForDescendant(*this, quads, ancestor, mode);
     return;
   }
-  quads.push_back(LocalRectToAbsoluteQuad(PhysicalBorderBoxRect(), mode));
+  quads.push_back(
+      LocalRectToAncestorQuad(PhysicalBorderBoxRect(), ancestor, mode));
 }
 
 gfx::RectF LayoutBox::LocalBoundingBoxRectForAccessibility() const {
@@ -2036,9 +2037,10 @@ static bool IsCandidateForOpaquenessTest(const LayoutBox& child_box) {
   if (child_box.HasLayer())
     return false;
   const ComputedStyle& child_style = child_box.StyleRef();
-  if (child_style.Visibility() != EVisibility::kVisible ||
-      child_style.ShapeOutside())
+  if (child_style.UsedVisibility() != EVisibility::kVisible ||
+      child_style.ShapeOutside()) {
     return false;
+  }
   if (child_box.Size().IsZero())
     return false;
   // A replaced element with border-radius always clips the content.

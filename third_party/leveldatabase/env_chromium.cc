@@ -12,6 +12,8 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -136,13 +138,14 @@ class ChromiumSequentialFile : public leveldb::SequentialFile {
   // Note: This method is relatively hot during leveldb database
   // compaction. Please avoid making them slower.
   Status Read(size_t n, Slice* result, char* scratch) override {
-    int bytes_read = file_.ReadAtCurrentPosNoBestEffort(scratch, n);
-    if (bytes_read == -1) {
+    std::optional<size_t> bytes_read = file_.ReadAtCurrentPosNoBestEffort(
+        base::as_writable_bytes(UNSAFE_TODO(base::span(scratch, n))));
+    if (!bytes_read.has_value()) {
       base::File::Error error = base::File::GetLastFileError();
       return MakeIOError(filename_, base::File::ErrorToString(error),
                          kSequentialFileRead, error);
     }
-    *result = Slice(scratch, bytes_read);
+    *result = Slice(scratch, *bytes_read);
     return Status::OK();
   }
 

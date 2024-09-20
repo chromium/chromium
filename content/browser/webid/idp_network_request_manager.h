@@ -35,6 +35,8 @@ class SimpleURLLoader;
 
 namespace content {
 
+using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
+using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
 class RenderFrameHostImpl;
 
 // Manages network requests and maintains relevant state for interaction with
@@ -215,9 +217,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kMaxValue = kCrossSite
   };
 
-  using AccountList = std::vector<IdentityRequestAccount>;
   using AccountsRequestCallback =
-      base::OnceCallback<void(FetchStatus, AccountList)>;
+      base::OnceCallback<void(FetchStatus,
+                              std::vector<IdentityRequestAccountPtr>)>;
   using DownloadCallback =
       base::OnceCallback<void(std::unique_ptr<std::string> response_body,
                               int response_code,

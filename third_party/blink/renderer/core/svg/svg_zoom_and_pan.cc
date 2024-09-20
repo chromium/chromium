@@ -43,10 +43,10 @@ bool SVGZoomAndPan::ParseAttribute(const QualifiedName& name,
     return false;
   zoom_and_pan_ = kSVGZoomAndPanUnknown;
   if (!value.empty()) {
-    zoom_and_pan_ =
-        WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
-          return Parse(chars, chars + length);
-        });
+    zoom_and_pan_ = WTF::VisitCharacters(value, [&](auto chars) {
+      const auto* start = chars.data();
+      return Parse(start, start + chars.size());
+    });
   }
   return true;
 }

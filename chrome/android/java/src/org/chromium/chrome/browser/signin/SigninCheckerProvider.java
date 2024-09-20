@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 
 /** This class is used to get a singleton instance of {@link SigninChecker}. */
 public final class SigninCheckerProvider {
@@ -33,10 +32,7 @@ public final class SigninCheckerProvider {
         // SyncErrorNotifier must be explicitly initialized.
         // TODO(crbug.com/40736034): Move the initializations elsewhere.
         SyncErrorNotifier.getForProfile(profile);
-        return new SigninChecker(
-                IdentityServicesProvider.get().getSigninManager(profile),
-                IdentityServicesProvider.get().getAccountTrackerService(profile),
-                SyncServiceFactory.getForProfile(profile));
+        return new SigninChecker(IdentityServicesProvider.get().getSigninManager(profile));
     }
 
     @MainThread

@@ -119,7 +119,7 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   std::vector<AutofillProfile> GetAllDataFromTable() {
     std::vector<AutofillProfile> profiles;
     EXPECT_TRUE(table_.GetAutofillProfiles(
-        AutofillProfile::RecordType::kAccount, profiles));
+        {AutofillProfile::RecordType::kAccount}, profiles));
     return profiles;
   }
 

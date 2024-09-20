@@ -4,6 +4,9 @@
 
 #include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 
+#include <memory>
+
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -36,8 +39,8 @@ DeviceInfoManagerFactory::~DeviceInfoManagerFactory() = default;
 std::unique_ptr<KeyedService>
 DeviceInfoManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<DeviceInfoManager>(
-      Profile::FromBrowserContext(context));
+  return base::WrapUnique<DeviceInfoManager>(
+      new DeviceInfoManager(Profile::FromBrowserContext(context)));
 }
 
 }  // namespace apps

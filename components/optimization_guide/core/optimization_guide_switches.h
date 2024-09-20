@@ -72,6 +72,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOptimizationGuideLanguageOverride[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kGoogleApiKeyConfigurationCheckOverride[];
 
 // The API key for the ModelQualityLoggingService.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -169,6 +171,10 @@ bool IsDebugLogsEnabled();
 // model eligibility check.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask();
+
+// Returns true if Google API key configuration check should be skipped.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool ShouldSkipGoogleApiKeyConfigurationCheck();
 
 }  // namespace switches
 }  // namespace optimization_guide

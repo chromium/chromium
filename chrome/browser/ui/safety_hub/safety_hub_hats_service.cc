@@ -7,11 +7,15 @@
 #include <utility>
 
 #include "base/strings/strcat.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/safety_hub/card_data_helper.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/common/chrome_features.h"
 
 SafetyHubHatsService::SafetyHubHatsService(
     TrustSafetySentimentService* tss_service,
@@ -25,23 +29,27 @@ void SafetyHubHatsService::SafetyHubModuleInteracted() {
   has_interacted_with_module_ = true;
   TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea::kSafetyHubInteracted);
+  TriggerOneOffSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction);
 }
 
 void SafetyHubHatsService::SafetyHubNotificationClicked() {
   has_clicked_notification_ = true;
   TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea::kSafetyHubInteracted);
+  TriggerOneOffSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction);
 }
 
 void SafetyHubHatsService::SafetyHubVisited() {
   has_visited_ = true;
   TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea::kSafetyHubInteracted);
+  TriggerOneOffSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction);
 }
 
 void SafetyHubHatsService::SafetyHubNotificationSeen() {
   TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea::kSafetyHubNotification);
+  TriggerOneOffSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentNotification);
 }
 
 void SafetyHubHatsService::TriggerTrustSafetySentimentSurvey(
@@ -50,6 +58,22 @@ void SafetyHubHatsService::TriggerTrustSafetySentimentSurvey(
     tss_service_->TriggerSafetyHubSurvey(area,
                                          GetSafetyHubProductSpecificData());
   }
+}
+
+void SafetyHubHatsService::TriggerOneOffSurvey(const std::string& trigger) {
+  if (!base::FeatureList::IsEnabled(features::kSafetyHubHaTSOneOffSurvey)) {
+    return;
+  }
+
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      &*profile_, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+  hats_service->LaunchSurvey(trigger,
+                             /*success_callback=*/base::DoNothing(),
+                             /*failure_callback=*/base::DoNothing(),
+                             GetSafetyHubProductSpecificData());
 }
 
 std::map<std::string, bool>

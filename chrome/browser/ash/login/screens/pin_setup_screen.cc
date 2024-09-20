@@ -75,13 +75,13 @@ void RecordUserAction(const std::string& action_id) {
 std::string PinSetupScreen::GetResultString(Result result) {
   // LINT.IfChange(UsageMetrics)
   switch (result) {
-    case Result::DONE:
+    case Result::kDone:
       return "Done";
-    case Result::USER_SKIP:
+    case Result::kUserSkip:
       return "Skipped";
-    case Result::TIMED_OUT:
+    case Result::kTimedOut:
       return "TimedOut";
-    case Result::NOT_APPLICABLE:
+    case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
@@ -140,7 +140,7 @@ bool PinSetupScreen::ShouldBeSkipped(const WizardContext& context) const {
 bool PinSetupScreen::MaybeSkip(WizardContext& context) {
   if (ShouldBeSkipped(context)) {
     ClearAuthData(context);
-    exit_callback_.Run(Result::NOT_APPLICABLE);
+    exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
   return false;
@@ -176,14 +176,14 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionDoneButtonClicked) {
     RecordUserAction(action_id);
     token_lifetime_timeout_.Stop();
-    exit_callback_.Run(Result::DONE);
+    exit_callback_.Run(Result::kDone);
     return;
   }
   if (action_id == kUserActionSkipButtonClickedOnStart ||
       action_id == kUserActionSkipButtonClickedInFlow) {
     RecordUserAction(action_id);
     token_lifetime_timeout_.Stop();
-    exit_callback_.Run(Result::USER_SKIP);
+    exit_callback_.Run(Result::kUserSkip);
     return;
   }
   BaseScreen::OnUserAction(args);
@@ -206,7 +206,7 @@ void PinSetupScreen::OnHasLoginSupport(bool login_available) {
 
 void PinSetupScreen::OnTokenTimedOut() {
   ClearAuthData(*context());
-  exit_callback_.Run(Result::TIMED_OUT);
+  exit_callback_.Run(Result::kTimedOut);
 }
 
 }  // namespace ash

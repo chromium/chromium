@@ -120,6 +120,7 @@ void HttpStreamPool::AttemptManager::StartJob(
     Job* job,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    RespectLimits respect_limits,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
@@ -142,6 +143,10 @@ void HttpStreamPool::AttemptManager::StartJob(
     return;
   }
 
+  if (respect_limits == RespectLimits::kIgnore) {
+    respect_limits_ = RespectLimits::kIgnore;
+  }
+
   if (!enable_ip_based_pooling) {
     enable_ip_based_pooling_ = enable_ip_based_pooling;
   }
@@ -153,18 +158,17 @@ void HttpStreamPool::AttemptManager::StartJob(
   MaybeChangeServiceEndpointRequestPriority();
 
   // Check idle streams. If found, notify the job that an HttpStream is ready.
-  // Use PostTask() since the job doesn't expect this method to finish
-  // synchronously.
   std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
   if (stream_socket) {
     CHECK(!group_->force_quic());
     const StreamSocketHandle::SocketReuseType reuse_type =
         GetReuseTypeFromIdleStreamSocket(*stream_socket);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AttemptManager::CreateTextBasedStreamAndNotify,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(stream_socket),
-                       reuse_type, LoadTimingInfo::ConnectTiming()));
+    // It's important to create an HttpBasicStream synchronously because we
+    // already took the ownership of the idle stream socket. If we don't create
+    // an HttpBasicStream here, another call of this method might exceed the
+    // per-group limit.
+    CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
+                                   LoadTimingInfo::ConnectTiming());
     return;
   }
 
@@ -186,13 +190,10 @@ int HttpStreamPool::AttemptManager::Preconnect(
   CHECK(!spdy_session_);
   CHECK(!spdy_session_pool()->HasAvailableSession(spdy_session_key(),
                                                   /*is_websocket=*/false));
+  CHECK(group_->ActiveStreamSocketCount() < num_streams);
 
   if (is_failing_) {
     return error_to_notify_;
-  }
-
-  if (group_->ActiveStreamSocketCount() >= num_streams) {
-    return OK;
   }
 
   auto entry =
@@ -206,7 +207,12 @@ int HttpStreamPool::AttemptManager::Preconnect(
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
-  ProcessServiceEndpointChanges();
+  // For plain HTTP request, we need to wait for HTTPS RR because we could
+  // trigger HTTP -> HTTPS upgrade when HTTPS RR is received during the endpoint
+  // resolution.
+  if (UsingTls() || service_endpoint_request_->EndpointsCryptoReady()) {
+    ProcessServiceEndpointChanges();
+  }
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
@@ -250,6 +256,17 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
     return;
   }
 
+  // Try to assign an idle stream to a job.
+  if (jobs_.size() > 0 && group_->IdleStreamSocketCount() > 0) {
+    std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
+    CHECK(stream_socket);
+    const StreamSocketHandle::SocketReuseType reuse_type =
+        GetReuseTypeFromIdleStreamSocket(*stream_socket);
+    CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
+                                   LoadTimingInfo::ConnectTiming());
+    return;
+  }
+
   const size_t pending_job_count = PendingJobCount();
   const size_t pending_preconnect_count = PendingPreconnectCount();
 
@@ -259,18 +276,6 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
 
   CHECK(!CanUseExistingQuicSession());
   CHECK(!spdy_session_);
-
-  // Try to assign an idle stream to a job.
-  if (pending_job_count > 0) {
-    std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
-    if (stream_socket) {
-      const StreamSocketHandle::SocketReuseType reuse_type =
-          GetReuseTypeFromIdleStreamSocket(*stream_socket);
-      CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
-                                     LoadTimingInfo::ConnectTiming());
-      return;
-    }
-  }
 
   MaybeAttemptConnection(/*max_attempts=*/1);
 }
@@ -698,15 +703,19 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
   const bool using_tls = UsingTls();
   while (IsConnectionAttemptReady()) {
     std::unique_ptr<StreamAttempt> attempt;
+    // Set to non-null if the attempt is a TLS attempt.
+    TlsStreamAttempt* tls_attempt_ptr = nullptr;
     if (using_tls) {
       attempt = std::make_unique<TlsStreamAttempt>(
           pool()->stream_attempt_params(), *ip_endpoint,
           HostPortPair::FromSchemeHostPort(stream_key().destination()),
           /*ssl_config_provider=*/this);
+      tls_attempt_ptr = static_cast<TlsStreamAttempt*>(attempt.get());
     } else {
       attempt = std::make_unique<TcpStreamAttempt>(
           pool()->stream_attempt_params(), *ip_endpoint);
     }
+
     net_log().AddEventReferencingSource(
         NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START,
         attempt->net_log().source());
@@ -744,11 +753,10 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
           FROM_HERE, kConnectionAttemptDelay,
           base::BindOnce(&AttemptManager::OnInFlightAttemptSlow,
                          base::Unretained(this), raw_attempt));
-      if (using_tls) {
-        static_cast<TlsStreamAttempt*>(raw_attempt->attempt.get())
-            ->SetTcpHandshakeCompletionCallback(base::BindOnce(
-                &AttemptManager::OnInFlightAttemptTcpHandshakeComplete,
-                base::Unretained(this), raw_attempt));
+      if (tls_attempt_ptr && !tls_attempt_ptr->IsTcpHandshakeCompleted()) {
+        tls_attempt_ptr->SetTcpHandshakeCompletionCallback(base::BindOnce(
+            &AttemptManager::OnInFlightAttemptTcpHandshakeComplete,
+            base::Unretained(this), raw_attempt));
       }
     }
 
@@ -814,12 +822,14 @@ HttpStreamPool::AttemptManager::CanAttemptConnection() {
     return CanAttemptResult::kBlockedStreamAttempt;
   }
 
-  if (group_->ReachedMaxStreamLimit()) {
-    return CanAttemptResult::kReachedGroupLimit;
-  }
+  if (respect_limits_ == RespectLimits::kRespect) {
+    if (group_->ReachedMaxStreamLimit()) {
+      return CanAttemptResult::kReachedGroupLimit;
+    }
 
-  if (pool()->ReachedMaxStreamLimit()) {
-    return CanAttemptResult::kReachedPoolLimit;
+    if (pool()->ReachedMaxStreamLimit()) {
+      return CanAttemptResult::kReachedPoolLimit;
+    }
   }
 
   return CanAttemptResult::kAttempt;
@@ -1031,16 +1041,31 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
 
   std::unique_ptr<HttpStream> http_stream = group_->CreateTextBasedStream(
       std::move(stream_socket), reuse_type, std::move(connect_timing));
+  CHECK(respect_limits_ == RespectLimits::kIgnore ||
+        group_->ActiveStreamSocketCount() <=
+            pool()->max_stream_sockets_per_group())
+      << "active=" << group_->ActiveStreamSocketCount()
+      << ", limit=" << pool()->max_stream_sockets_per_group();
+
   NotifyStreamReady(std::move(http_stream), negotiated_protocol);
   // `this` may be deleted.
 }
 
 void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify() {
-  // TODO(crbug.com/346835898): Handle `spdy_session_` becaming unavailable.
-  CHECK(spdy_session_);
-  CHECK(spdy_session_->IsAvailable());
   CHECK(!is_canceling_jobs_);
   CHECK(!is_failing_);
+
+  if (!spdy_session_ || !spdy_session_->IsAvailable()) {
+    // There was an available SPDY session but the session has gone while
+    // notifying to jobs. Do another attempt.
+
+    spdy_session_.reset();
+    // We may not have calculated SSLConfig yet. Try to calculate it before
+    // attempting connections.
+    MaybeCalculateSSLConfig();
+    MaybeAttemptConnection();
+    return;
+  }
 
   // If there are more than one remaining job, post a task to create
   // HttpStreams for these jobs.

@@ -27,6 +27,9 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE,
     FeatureConstants.CCT_HISTORY_FEATURE,
     FeatureConstants.CCT_MINIMIZED_FEATURE,
+    FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK,
+    FeatureConstants.DEFAULT_BROWSER_PROMO_MESSAGES,
+    FeatureConstants.DEFAULT_BROWSER_PROMO_SETTING_CARD,
     FeatureConstants.DOWNLOAD_PAGE_FEATURE,
     FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE,
     FeatureConstants.DOWNLOAD_HOME_FEATURE,
@@ -49,6 +52,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
+    FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_DISABLED_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION,
     FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE,
@@ -59,7 +63,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
     FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE,
     FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
-    FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
     FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON,
@@ -72,6 +75,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.QUIET_NOTIFICATION_PROMPTS_FEATURE,
     FeatureConstants.FEED_HEADER_MENU_FEATURE,
     FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
+    FeatureConstants.GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE,
     FeatureConstants.WEB_FEED_AWARENESS_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
@@ -105,7 +109,9 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE,
     FeatureConstants.PRICE_DROP_NTP_FEATURE,
     FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE,
+    FeatureConstants.IPH_RTL_GESTURE_NAVIGATION,
     FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE,
+    FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
@@ -132,6 +138,9 @@ public @interface FeatureConstants {
     String CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT = "IPH_ContextualPageActions_QuietVariant";
     String CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP = "IPH_ContextualPageActions_ActionChip";
     String COOKIE_CONTROLS_FEATURE = "IPH_CookieControls";
+    String DEFAULT_BROWSER_PROMO_MAGIC_STACK = "IPH_DefaultBrowserPromoMagicStack";
+    String DEFAULT_BROWSER_PROMO_MESSAGES = "IPH_DefaultBrowserPromoMessages";
+    String DEFAULT_BROWSER_PROMO_SETTING_CARD = "IPH_DefaultBrowserPromoSettingCard";
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";
     String DOWNLOAD_PAGE_SCREENSHOT_FEATURE = "IPH_DownloadPageScreenshot";
     String DOWNLOAD_HOME_FEATURE = "IPH_DownloadHome";
@@ -218,9 +227,6 @@ public @interface FeatureConstants {
 
     /** An IPH feature to show when tab group is synced across devices. */
     String TAB_GROUP_SYNC_ON_STRIP_FEATURE = "IPH_TabGroupSyncOnStrip";
-
-    /** An IPH feature to show on tab switcher cards with multiple tab thumbnails. */
-    String TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE = "IPH_TabGroupsYourTabsTogether";
 
     /** An IPH feature to prompt users to open the tab switcher after a navigation. */
     String TAB_SWITCHER_BUTTON_FEATURE = "IPH_TabSwitcherButton";

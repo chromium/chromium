@@ -51,7 +51,8 @@ class It2MeCliHost final : public extensions::NativeMessageHost::Client {
 
   void StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
                               const std::string& user_email,
-                              const std::string& access_token);
+                              const std::string& access_token,
+                              const std::string& scopes);
 
   // Shuts down host in a separate task.
   void ShutdownHost();

@@ -5,6 +5,7 @@ Version: 4.3
 License: BSD
 License File: LICENSE
 Shipped: yes
+Security Critical: yes
 
 Description:
 Binary diff/patch utility. This is used by the Mac diff updaters, not Chrome

@@ -25,12 +25,12 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_data_source.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mutator.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -44,9 +44,15 @@ namespace {
 constexpr CGFloat kErrorSymbolSize = 22.;
 
 // Height and width of the buttons.
-constexpr CGFloat kButtonSize = 22;
+constexpr CGFloat kButtonSize = 30.;
 
-constexpr CGFloat kHalfSheetCornerRadius = 20.0;
+// Per Apple guidelines, touch targets should be at least 44x44.
+constexpr CGFloat kMinimumTouchTargetSize = 44.0;
+// Move navigation buttons towards the "out side" by this much, so they visually
+// align with the table views.
+constexpr CGFloat kButtonExtraSpacingOnOutside = 3.0;
+
+constexpr CGFloat kHalfSheetCornerRadius = 10.0;
 
 // Sections used in the account menu.
 typedef NS_ENUM(NSUInteger, SectionIdentifier) {
@@ -84,7 +90,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.layer.cornerRadius = 10.;
   self.tableView.accessibilityIdentifier = kAccountMenuTableViewId;
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
@@ -118,24 +123,62 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   self.preferredContentSize = CGSize(self.preferredContentSize.width, height);
 }
 
+// Creates a button for the navigation bar.
+- (UIButton*)navigationButtonWithSymbolName:(NSString*)symbolName
+                        symbolConfiguration:
+                            (UIImageSymbolConfiguration*)symbolConfiguration
+                                  isLeading:(BOOL)isLeading {
+  NSArray<UIColor*>* colors = @[
+    [UIColor colorNamed:kTextSecondaryColor],
+    [UIColor colorNamed:kUpdatedTertiaryBackgroundColor]
+  ];
+
+  UIImage* image = SymbolWithPalette(
+      DefaultSymbolWithConfiguration(symbolName, symbolConfiguration), colors);
+
+  // Add padding on all sides of the button, to make it a 44x44 touch target.
+  CGFloat verticalInsets = (kMinimumTouchTargetSize - image.size.height) / 2.0;
+  CGFloat horizontalInsets = (kMinimumTouchTargetSize - image.size.width) / 2.0;
+  CGFloat outsideInsets = horizontalInsets - kButtonExtraSpacingOnOutside;
+  CGFloat insideInsets = horizontalInsets + kButtonExtraSpacingOnOutside;
+
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      verticalInsets, isLeading ? outsideInsets : insideInsets, verticalInsets,
+      isLeading ? insideInsets : outsideInsets);
+  UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
+                                         primaryAction:nil];
+  [button setImage:image forState:UIControlStateNormal];
+
+  return button;
+}
+
 // Sets up the navigation controller’s buttons.
 - (void)setUpNavigationController {
+  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kButtonSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
   // Stop button
   UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
   if (idiom != UIUserInterfaceIdiomPad) {
-    UIBarButtonItem* closeButton = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemClose
-                             target:self
-                             action:@selector(userTappedOnClose)];
-    closeButton.accessibilityIdentifier = kAccountMenuCloseButtonId;
-    self.navigationItem.rightBarButtonItem = closeButton;
+    UIButton* closeButton =
+        [self navigationButtonWithSymbolName:kXMarkCircleFillSymbol
+                         symbolConfiguration:symbolConfiguration
+                                   isLeading:NO];
+    [closeButton addTarget:self
+                    action:@selector(userTappedOnClose)
+          forControlEvents:UIControlEventTouchUpInside];
+    // We could use -initWithImage: instead of -initWithCustomView:, but this
+    // looks wrong for non-20x20 images.
+    UIBarButtonItem* closeButtonItem =
+        [[UIBarButtonItem alloc] initWithCustomView:closeButton];
+    closeButtonItem.accessibilityIdentifier = kAccountMenuCloseButtonId;
+    self.navigationItem.rightBarButtonItem = closeButtonItem;
   }
 
   // Ellipsis button
-  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kButtonSize
-                          weight:UIImageSymbolWeightSemibold
-                           scale:UIImageSymbolScaleMedium];
   UIAction* manageYourAccountAction = [UIAction
       actionWithTitle:
           l10n_util::GetNSString(
@@ -147,9 +190,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
                     "Signin_AccountMenu_ManageAccount"));
-                [self.delegate didTapManageYourGoogleAccount];
+                [self.mutator didTapManageYourGoogleAccount];
               }];
-  // TODO(crbug.com/336719423): Add the primary account email as subtitle.
+  manageYourAccountAction.subtitle = [self.dataSource primaryAccountEmail];
 
   UIAction* editAccountListAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(
@@ -160,22 +203,25 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
                     "Signin_AccountMenu_EditAccountList"));
-                [self.delegate didTapEditAccountList];
+                [self.mutator didTapEditAccountList];
               }];
 
   UIMenu* ellipsisMenu = [UIMenu
       menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
-  UIImage* ellipsisImage = SymbolWithPalette(
-      DefaultSymbolWithConfiguration(@"ellipsis.circle.fill",
-                                     symbolConfiguration),
-      @[
-        [UIColor colorNamed:kGrey500Color], [UIColor colorNamed:kGrey300Color]
-      ]);
-  UIBarButtonItem* ellipsisButton =
-      [[UIBarButtonItem alloc] initWithImage:ellipsisImage menu:ellipsisMenu];
-  ellipsisButton.accessibilityIdentifier =
+
+  UIButton* ellipsisButton =
+      [self navigationButtonWithSymbolName:kEllipsisCircleFillSymbol
+                       symbolConfiguration:symbolConfiguration
+                                 isLeading:YES];
+  ellipsisButton.menu = ellipsisMenu;
+  ellipsisButton.showsMenuAsPrimaryAction = true;
+  // We could use -initWithImage: instead of -initWithCustomView:, but this
+  // looks wrong for non-20x20 images.
+  UIBarButtonItem* ellipsisButtonItem =
+      [[UIBarButtonItem alloc] initWithCustomView:ellipsisButton];
+  ellipsisButtonItem.accessibilityIdentifier =
       kAccountMenuSecondaryActionMenuButtonId;
-  self.navigationItem.leftBarButtonItem = ellipsisButton;
+  self.navigationItem.leftBarButtonItem = ellipsisButtonItem;
 }
 
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
@@ -184,10 +230,15 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   NSString* gaiaID = base::apple::ObjCCast<NSString>(itemIdentifier);
   if (gaiaID) {
     // `itemIdentifier` is a gaia id.
-    TableViewAccountItem* item = [self.dataSource identityItemForGaiaID:gaiaID];
     TableViewAccountCell* cell =
         DequeueTableViewCell<TableViewAccountCell>(tableView);
-    [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+    cell.accessibilityTraits = UIAccessibilityTraitButton;
+
+    cell.imageView.image = [self.dataSource imageForGaiaID:gaiaID];
+    cell.textLabel.text = [self.dataSource nameForGaiaID:gaiaID];
+    cell.detailTextLabel.text = [self.dataSource emailForGaiaID:gaiaID];
+    cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    cell.userInteractionEnabled = YES;
     cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
     BOOL lastSecondaryIdentity =
         (indexPath.row == [_accountMenuDataSource tableView:self.tableView
@@ -209,8 +260,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
           DequeueTableViewCell<SettingsImageDetailTextCell>(tableView);
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       cell.accessibilityIdentifier = kAccountMenuErrorMessageId;
-      cell.backgroundColor =
-          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
       cell.detailTextLabel.text =
           l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
       cell.image =
@@ -273,7 +322,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)userTappedOnClose {
   base::RecordAction(base::UserMetricsAction("Signin_AccountMenu_Close"));
-  [self.delegate viewControllerWantsToBeClosed:self];
+  [self.mutator viewControllerWantsToBeClosed:self];
 }
 
 - (void)setUpTableContent {
@@ -359,7 +408,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       case RowIdentifierAddAccount:
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_AddAccount"));
-        [self.delegate didTapAddAccount];
+        [self.mutator didTapAddAccount];
         break;
       case RowIdentifierErrorExplanation:
         break;
@@ -372,11 +421,35 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_Signout"));
         CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
-        [self.delegate signOutFromTargetRect:cellRect callback:nil];
+        [self.mutator signOutFromTargetRect:cellRect];
         break;
     }
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  return 0;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  if (section == [self.tableView numberOfSections] - 1) {
+    //  No footer space for last section.
+    return 0;
+  }
+  return 16;
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  return [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  return [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 #pragma mark - AccountMenuConsumer
@@ -387,7 +460,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
           avatarImage:self.dataSource.primaryAccountAvatar
                  name:self.dataSource.primaryAccountUserFullName
                 email:self.dataSource.primaryAccountEmail
-      managementState:self.dataSource.managementState];
+      managementState:self.dataSource.managementState
+      useLargeMargins:NO];
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
 }
@@ -449,7 +523,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [self.delegate viewControllerWantsToBeClosed:self];
+  [self.mutator viewControllerWantsToBeClosed:self];
 }
 
 @end

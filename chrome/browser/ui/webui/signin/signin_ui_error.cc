@@ -17,6 +17,8 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 
+// ------------------------------ SigninUIError --------------------------------
+
 // static
 SigninUIError SigninUIError::Ok() {
   return SigninUIError(Type::kOk, std::string(), std::u16string());
@@ -144,30 +146,77 @@ SigninUIError::SigninUIError(Type type,
                              const std::u16string& error_message)
     : type_(type), email_(base::UTF8ToUTF16(email)), message_(error_message) {}
 
-ReauthUIErrorMessages GetReauthUIErrorMessages(ReauthUIError error,
-                                               const std::string& email) {
-  CHECK_NE(error, ReauthUIError::kNone);
-  switch (error) {
-    case ReauthUIError::kNotAllowed:
+// ---------------------------- ForceSigninUIError -----------------------------
+
+ForceSigninUIError::ForceSigninUIError(const ForceSigninUIError& other) =
+    default;
+ForceSigninUIError& ForceSigninUIError::operator=(
+    const ForceSigninUIError& other) = default;
+
+// static
+ForceSigninUIError ForceSigninUIError::ErrorNone() {
+  return ForceSigninUIError(Type::kNone, std::string());
+}
+
+// static
+ForceSigninUIError ForceSigninUIError::ReauthNotAllowed() {
+  return ForceSigninUIError(Type::kReauthNotAllowed, std::string());
+}
+
+// static
+ForceSigninUIError ForceSigninUIError::ReauthWrongAccount(
+    const std::string& email) {
+  CHECK(!email.empty());
+  return ForceSigninUIError(Type::kReauthWrongAccount, email);
+}
+
+// static
+ForceSigninUIError ForceSigninUIError::ReauthTimeout() {
+  return ForceSigninUIError(Type::kReauthTimeout, std::string());
+}
+
+// static
+ForceSigninUIError ForceSigninUIError::SigninPatternNotMatching(
+    const std::string& email) {
+  CHECK(!email.empty());
+  return ForceSigninUIError(Type::kSigninPatternNotMatching, email);
+}
+
+ForceSigninUIError::UiTexts ForceSigninUIError::GetErrorTexts() const {
+  CHECK_NE(type_, Type::kNone);
+  switch (type_) {
+    case Type::kReauthNotAllowed:
       return {
           l10n_util::GetStringUTF16(
               IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_TITLE),
           l10n_util::GetStringUTF16(
               IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_BODY)};
-    case ReauthUIError::kWrongAccount:
-      CHECK(!email.empty());
+    case Type::kReauthWrongAccount:
+      CHECK(!email_.empty());
       return {
           l10n_util::GetStringUTF16(
               IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_TITLE),
           l10n_util::GetStringFUTF16(
               IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_BODY,
-              base::UTF8ToUTF16(email))};
-    case ReauthUIError::kTimeout:
+              base::UTF8ToUTF16(email_))};
+    case Type::kReauthTimeout:
       return {l10n_util::GetStringUTF16(
                   IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_TITLE),
               l10n_util::GetStringUTF16(
                   IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_BODY)};
-    case ReauthUIError::kNone:
+    case Type::kSigninPatternNotMatching:
+      CHECK(!email_.empty());
+      return {l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE,
+                                         base::UTF8ToUTF16(email_)),
+              l10n_util::GetStringUTF16(IDS_SYNC_LOGIN_NAME_PROHIBITED)};
+    case Type::kNone:
       NOTREACHED();
   }
 }
+
+ForceSigninUIError::Type ForceSigninUIError::type() const {
+  return type_;
+}
+
+ForceSigninUIError::ForceSigninUIError(Type type, const std::string& email)
+    : type_(type), email_(email) {}

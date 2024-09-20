@@ -1604,7 +1604,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   } else {
     // The user journey to bring recent tabs on Android to iOS has finished.
     // Reload the service to update/clear the tabs.
-    BringAndroidTabsToIOSServiceFactory::GetForBrowserStateIfExists(
+    BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(
         self.regularBrowser->GetBrowserState())
         ->LoadTabs();
   }
@@ -1844,7 +1844,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   return self.baseViewController.view.bounds;
 }
 
-// Returns wether there is a selected pinned cell.
+// Returns whether there is a selected pinned cell.
 - (BOOL)isPinnedCellSelected {
   if (!IsPinnedTabsEnabled() ||
       self.baseViewController.currentPage != TabGridPageRegularTabs) {

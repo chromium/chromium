@@ -545,7 +545,10 @@ enum InvalidCapacity : size_t {
   kAboveMaxValidCapacity = ~size_t{} - 100,
   kReentrance,
   kDestroyed,
+
+  // These two must be last because we use `>= kMovedFrom` to mean moved-from.
   kMovedFrom,
+  kSelfMovedFrom,
 };
 
 // Returns a pointer to a control byte group that can be used by empty tables.
@@ -699,10 +702,8 @@ struct GroupSse2Impl {
   // Returns a bitmask representing the positions of slots that match hash.
   BitMask<uint16_t, kWidth> Match(h2_t hash) const {
     auto match = _mm_set1_epi8(static_cast<char>(hash));
-    BitMask<uint16_t, kWidth> result = BitMask<uint16_t, kWidth>(0);
-    result = BitMask<uint16_t, kWidth>(
+    return BitMask<uint16_t, kWidth>(
         static_cast<uint16_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
-    return result;
   }
 
   // Returns a bitmask representing the positions of empty slots.
@@ -1244,6 +1245,12 @@ constexpr size_t SooCapacity() { return 1; }
 struct soo_tag_t {};
 // Sentinel type to indicate SOO CommonFields construction with full size.
 struct full_soo_tag_t {};
+// Sentinel type to indicate non-SOO CommonFields construction.
+struct non_soo_tag_t {};
+// Sentinel value to indicate non-SOO construction for moved-from values.
+struct moved_from_non_soo_tag_t {};
+// Sentinel value to indicate an uninitialized CommonFields for use in swapping.
+struct uninitialized_tag_t {};
 
 // Suppress erroneous uninitialized memory errors on GCC. For example, GCC
 // thinks that the call to slot_array() in find_or_prepare_insert() is reading
@@ -1325,10 +1332,15 @@ union HeapOrSoo {
 // of this state to helper functions as a single argument.
 class CommonFields : public CommonFieldsGenerationInfo {
  public:
-  CommonFields() : capacity_(0), size_(0), heap_or_soo_(EmptyGroup()) {}
   explicit CommonFields(soo_tag_t) : capacity_(SooCapacity()), size_(0) {}
   explicit CommonFields(full_soo_tag_t)
       : capacity_(SooCapacity()), size_(size_t{1} << HasInfozShift()) {}
+  explicit CommonFields(non_soo_tag_t)
+      : capacity_(0), size_(0), heap_or_soo_(EmptyGroup()) {}
+  // For non-SOO moved-from values, we only need to initialize capacity_.
+  explicit CommonFields(moved_from_non_soo_tag_t) : capacity_(0) {}
+  // For use in swapping.
+  explicit CommonFields(uninitialized_tag_t) {}
 
   // Not copyable
   CommonFields(const CommonFields&) = delete;
@@ -1340,7 +1352,12 @@ class CommonFields : public CommonFieldsGenerationInfo {
 
   template <bool kSooEnabled>
   static CommonFields CreateDefault() {
-    return kSooEnabled ? CommonFields{soo_tag_t{}} : CommonFields{};
+    return kSooEnabled ? CommonFields{soo_tag_t{}}
+                       : CommonFields{non_soo_tag_t{}};
+  }
+  template <bool kSooEnabled>
+  static CommonFields CreateMovedFrom() {
+    return CreateDefault<kSooEnabled>();
   }
 
   // The inline data for SOO is written on top of control_/slots_.
@@ -1441,6 +1458,12 @@ class CommonFields : public CommonFieldsGenerationInfo {
   size_t alloc_size(size_t slot_size, size_t slot_align) const {
     return RawHashSetLayout(capacity(), slot_align, has_infoz())
         .alloc_size(slot_size);
+  }
+
+  // Initialize fields that are left uninitialized by moved-from constructor.
+  void reinitialize_moved_from_non_soo() {
+    size_ = 0;
+    heap_or_soo_ = HeapOrSoo(EmptyGroup());
   }
 
   // Move fields other than heap_or_soo_.
@@ -2747,6 +2770,7 @@ class raw_hash_set {
   raw_hash_set(const raw_hash_set& that, const allocator_type& a)
       : raw_hash_set(GrowthToLowerboundCapacity(that.size()), that.hash_ref(),
                      that.eq_ref(), a) {
+    that.AssertNotDebugCapacity();
     const size_t size = that.size();
     if (size == 0) {
       return;
@@ -2826,7 +2850,7 @@ class raw_hash_set {
     if (!PolicyTraits::transfer_uses_memcpy() && that.is_full_soo()) {
       transfer(soo_slot(), that.soo_slot());
     }
-    that.common() = CommonFields::CreateDefault<SooEnabled()>();
+    that.common() = CommonFields::CreateMovedFrom<SooEnabled()>();
     annotate_for_bug_detection_on_move(that);
   }
 
@@ -2842,6 +2866,7 @@ class raw_hash_set {
   }
 
   raw_hash_set& operator=(const raw_hash_set& that) {
+    that.AssertNotDebugCapacity();
     if (ABSL_PREDICT_FALSE(this == &that)) return *this;
     constexpr bool propagate_alloc =
         AllocTraits::propagate_on_container_copy_assignment::value;
@@ -2883,6 +2908,7 @@ class raw_hash_set {
     return it;
   }
   iterator end() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    AssertNotDebugCapacity();
     return iterator(common().generation_ptr());
   }
 
@@ -2890,7 +2916,7 @@ class raw_hash_set {
     return const_cast<raw_hash_set*>(this)->begin();
   }
   const_iterator end() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return iterator(common().generation_ptr());
+    return const_cast<raw_hash_set*>(this)->end();
   }
   const_iterator cbegin() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return begin();
@@ -2898,7 +2924,10 @@ class raw_hash_set {
   const_iterator cend() const ABSL_ATTRIBUTE_LIFETIME_BOUND { return end(); }
 
   bool empty() const { return !size(); }
-  size_t size() const { return common().size(); }
+  size_t size() const {
+    AssertNotDebugCapacity();
+    return common().size();
+  }
   size_t capacity() const {
     const size_t cap = common().capacity();
     // Compiler complains when using functions in ASSUME so use local variable.
@@ -2911,7 +2940,7 @@ class raw_hash_set {
 
   ABSL_ATTRIBUTE_REINITIALIZES void clear() {
     if (SwisstableGenerationsEnabled() &&
-        capacity() == InvalidCapacity::kMovedFrom) {
+        capacity() >= InvalidCapacity::kMovedFrom) {
       common().set_capacity(DefaultCapacity());
     }
     AssertNotDebugCapacity();
@@ -2924,7 +2953,7 @@ class raw_hash_set {
     // past that we simply deallocate the array.
     const size_t cap = capacity();
     if (cap == 0) {
-      // Already guaranteed to be empty; so nothing to do.
+      common().reinitialize_moved_from_non_soo();
     } else if (is_soo()) {
       if (!empty()) destroy(soo_slot());
       common().set_empty_soo();
@@ -3210,6 +3239,8 @@ class raw_hash_set {
   // If the element already exists in `this`, it is left unmodified in `src`.
   template <typename H, typename E>
   void merge(raw_hash_set<Policy, H, E, Alloc>& src) {  // NOLINT
+    AssertNotDebugCapacity();
+    src.AssertNotDebugCapacity();
     assert(this != &src);
     // Returns whether insertion took place.
     const auto insert_slot = [this](slot_type* src_slot) {
@@ -3260,6 +3291,8 @@ class raw_hash_set {
       IsNoThrowSwappable<hasher>() && IsNoThrowSwappable<key_equal>() &&
       IsNoThrowSwappable<allocator_type>(
           typename AllocTraits::propagate_on_container_swap{})) {
+    AssertNotDebugCapacity();
+    that.AssertNotDebugCapacity();
     using std::swap;
     swap_common(that);
     swap(hash_ref(), that.hash_ref());
@@ -3348,7 +3381,7 @@ class raw_hash_set {
   // specific benchmarks indicating its importance.
   template <class K = key_type>
   void prefetch(const key_arg<K>& key) const {
-    if (SooEnabled() ? is_soo() : capacity() == 0) return;
+    if (capacity() == DefaultCapacity()) return;
     (void)key;
     // Avoid probing if we won't be able to prefetch the addresses received.
 #ifdef ABSL_HAVE_PREFETCH
@@ -3596,7 +3629,7 @@ class raw_hash_set {
 
   inline void destructor_impl() {
     if (SwisstableGenerationsEnabled() &&
-        capacity() == InvalidCapacity::kMovedFrom) {
+        capacity() >= InvalidCapacity::kMovedFrom) {
       return;
     }
     if (capacity() == 0) return;
@@ -3764,7 +3797,7 @@ class raw_hash_set {
       swap(common(), that.common());
       return;
     }
-    CommonFields tmp = CommonFields::CreateDefault<SooEnabled()>();
+    CommonFields tmp = CommonFields(uninitialized_tag_t{});
     const bool that_is_full_soo = that.is_full_soo();
     move_common(that_is_full_soo, that.alloc_ref(), tmp,
                 std::move(that.common()));
@@ -3778,7 +3811,8 @@ class raw_hash_set {
     // than using NDEBUG) to avoid issues in which NDEBUG is enabled in some
     // translation units but not in others.
     if (SwisstableGenerationsEnabled()) {
-      that.common().set_capacity(InvalidCapacity::kMovedFrom);
+      that.common().set_capacity(this == &that ? InvalidCapacity::kSelfMovedFrom
+                                               : InvalidCapacity::kMovedFrom);
     }
     if (!SwisstableGenerationsEnabled() || capacity() == DefaultCapacity() ||
         capacity() > kAboveMaxValidCapacity) {
@@ -3802,7 +3836,7 @@ class raw_hash_set {
     eq_ref() = that.eq_ref();
     CopyAlloc(alloc_ref(), that.alloc_ref(),
               std::integral_constant<bool, propagate_alloc>());
-    that.common() = CommonFields::CreateDefault<SooEnabled()>();
+    that.common() = CommonFields::CreateMovedFrom<SooEnabled()>();
     annotate_for_bug_detection_on_move(that);
     return *this;
   }
@@ -3816,7 +3850,7 @@ class raw_hash_set {
       that.destroy(it.slot());
     }
     if (!that.is_soo()) that.dealloc();
-    that.common() = CommonFields::CreateDefault<SooEnabled()>();
+    that.common() = CommonFields::CreateMovedFrom<SooEnabled()>();
     annotate_for_bug_detection_on_move(that);
     return *this;
   }
@@ -3902,13 +3936,22 @@ class raw_hash_set {
 
   // Asserts that the capacity is not a sentinel invalid value.
   void AssertNotDebugCapacity() const {
+    if (ABSL_PREDICT_TRUE(capacity() <
+                          InvalidCapacity::kAboveMaxValidCapacity)) {
+      return;
+    }
     assert(capacity() != InvalidCapacity::kReentrance &&
            "Reentrant container access during element construction/destruction "
            "is not allowed.");
     assert(capacity() != InvalidCapacity::kDestroyed &&
            "Use of destroyed hash table.");
     if (SwisstableGenerationsEnabled() &&
-        ABSL_PREDICT_FALSE(capacity() == InvalidCapacity::kMovedFrom)) {
+        ABSL_PREDICT_FALSE(capacity() >= InvalidCapacity::kMovedFrom)) {
+      if (capacity() == InvalidCapacity::kSelfMovedFrom) {
+        // If this log triggers, then a hash table was move-assigned to itself
+        // and then used again later without being reinitialized.
+        ABSL_RAW_LOG(FATAL, "Use of self-move-assigned hash table.");
+      }
       ABSL_RAW_LOG(FATAL, "Use of moved-from hash table.");
     }
   }

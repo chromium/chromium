@@ -49,7 +49,6 @@
 #include "chrome/browser/lacros/launcher_search/search_controller_lacros.h"
 #include "chrome/browser/lacros/media_app_lacros.h"
 #include "chrome/browser/lacros/multitask_menu_nudge_delegate_lacros.h"
-#include "chrome/browser/lacros/net/network_change_manager_bridge.h"
 #include "chrome/browser/lacros/net/network_settings_observer.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
 #include "chrome/browser/lacros/suggestion_service_lacros.h"
@@ -223,8 +222,6 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
       std::make_unique<FullscreenControllerClientLacros>();
   kiosk_session_service_ = std::make_unique<KioskSessionServiceLacros>();
   media_app_ = std::make_unique<crosapi::MediaAppLacros>();
-  network_change_manager_bridge_ =
-      std::make_unique<NetworkChangeManagerBridge>();
   screen_orientation_delegate_ =
       std::make_unique<ScreenOrientationDelegateLacros>();
   search_controller_ = std::make_unique<crosapi::SearchControllerLacros>(

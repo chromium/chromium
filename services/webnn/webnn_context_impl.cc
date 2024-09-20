@@ -80,51 +80,51 @@ void WebNNContextImpl::CreateGraphBuilder(
   graph_builder_ptr->SetId(id, base::PassKey<WebNNContextImpl>());
 }
 
-void WebNNContextImpl::CreateBuffer(
-    mojom::BufferInfoPtr buffer_info,
-    mojom::WebNNContext::CreateBufferCallback callback) {
+void WebNNContextImpl::CreateTensor(
+    mojom::TensorInfoPtr tensor_info,
+    mojom::WebNNContext::CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ValidateBuffer(properties_, buffer_info->descriptor).has_value()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+  if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
   mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
-  CreateBufferImpl(
-      std::move(receiver), std::move(buffer_info),
+  CreateTensorImpl(
+      std::move(receiver), std::move(tensor_info),
       base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl, AsWeakPtr(),
                      std::move(callback), std::move(remote)));
 }
 
 void WebNNContextImpl::DidCreateWebNNTensorImpl(
-    mojom::WebNNContext::CreateBufferCallback callback,
+    mojom::WebNNContext::CreateTensorCallback callback,
     mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
     base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result) {
   if (!result.has_value()) {
     std::move(callback).Run(
-        mojom::CreateBufferResult::NewError(std::move(result.error())));
+        mojom::CreateTensorResult::NewError(std::move(result.error())));
     return;
   }
 
-  auto success = mojom::CreateBufferSuccess::New(std::move(remote),
+  auto success = mojom::CreateTensorSuccess::New(std::move(remote),
                                                  result.value()->handle());
   std::move(callback).Run(
-      mojom::CreateBufferResult::NewSuccess(std::move(success)));
+      mojom::CreateTensorResult::NewSuccess(std::move(success)));
 
   // Associates a `WebNNTensor` instance with this context so the WebNN service
   // can access the implementation.
-  buffer_impls_.emplace(*std::move(result));
+  tensor_impls_.emplace(*std::move(result));
 }
 
 void WebNNContextImpl::DisconnectAndDestroyWebNNTensorImpl(
     const blink::WebNNTensorToken& handle) {
-  const auto it = buffer_impls_.find(handle);
-  CHECK(it != buffer_impls_.end());
+  const auto it = tensor_impls_.find(handle);
+  CHECK(it != tensor_impls_.end());
   // Upon calling erase, the handle will no longer refer to a valid
   // `WebNNTensorImpl`.
-  buffer_impls_.erase(it);
+  tensor_impls_.erase(it);
 }
 
 void WebNNContextImpl::OnLost(std::string_view message) {
@@ -133,10 +133,10 @@ void WebNNContextImpl::OnLost(std::string_view message) {
 }
 
 base::optional_ref<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
-    const blink::WebNNTensorToken& buffer_handle) {
-  const auto it = buffer_impls_.find(buffer_handle);
-  if (it == buffer_impls_.end()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    const blink::WebNNTensorToken& tensor_handle) {
+  const auto it = tensor_impls_.find(tensor_handle);
+  if (it == tensor_impls_.end()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return std::nullopt;
   }
   return it->get();
@@ -159,6 +159,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.cos_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.cumulative_sum_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Ints32To64);
   backend_context_properties.data_type_limits.dequantize_linear_input.RetainAll(
       DataTypeConstraint::kInts8);
   backend_context_properties.data_type_limits.dequantize_linear_scale.RetainAll(
@@ -186,9 +188,11 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.elu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gather_indices.RetainAll(
-      DataTypeConstraint::kGatherIndicesSupportedDataTypes);
+      DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.gather_elements_indices.RetainAll(
-      DataTypeConstraint::kGatherIndicesSupportedDataTypes);
+      DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
+  backend_context_properties.data_type_limits.gather_nd_indices.RetainAll(
+      DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.gelu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gemm_input.RetainAll(
@@ -245,6 +249,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32Int8To32);
   backend_context_properties.data_type_limits.resample2d_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.scatter_nd_indices.RetainAll(
+      DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.sigmoid_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.softmax_input.RetainAll(

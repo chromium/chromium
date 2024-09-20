@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"  // nogncheck
@@ -37,15 +36,15 @@ TaskAnnotator::ObserverForTesting* g_task_annotator_observer = nullptr;
 // The PendingTask currently in progress on each thread. Used to allow creating
 // a breadcrumb of program counters on the stack to help identify a task's
 // origin in crashes.
-ABSL_CONST_INIT thread_local PendingTask* current_pending_task = nullptr;
+constinit thread_local PendingTask* current_pending_task = nullptr;
 
 // Scoped IPC-related data (IPC hash and/or IPC interface name). IPC hash or
 // interface name can be known before the associated task object is created;
 // thread-local so that this data can be affixed to the associated task.
-ABSL_CONST_INIT thread_local TaskAnnotator::ScopedSetIpcHash*
+constinit thread_local TaskAnnotator::ScopedSetIpcHash*
     current_scoped_ipc_hash = nullptr;
 
-ABSL_CONST_INIT thread_local TaskAnnotator::LongTaskTracker*
+constinit thread_local TaskAnnotator::LongTaskTracker*
     current_long_task_tracker = nullptr;
 
 // These functions can be removed, and the calls below replaced with direct

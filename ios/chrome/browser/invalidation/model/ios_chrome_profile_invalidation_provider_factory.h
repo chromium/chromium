@@ -20,11 +20,12 @@ class ProfileInvalidationProvider;
 class IOSChromeProfileInvalidationProviderFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the ProfileInvalidationProvider for the given `browser_state`,
-  // lazily creating one first if required.
+  // TODO(crbug.com/358301380): remove this method.
   static invalidation::ProfileInvalidationProvider* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 
+  static invalidation::ProfileInvalidationProvider* GetForProfile(
+      ProfileIOS* profile);
   static IOSChromeProfileInvalidationProviderFactory* GetInstance();
 
   IOSChromeProfileInvalidationProviderFactory(

@@ -1,0 +1,40 @@
+<Boolean> = true
+<Boolean> = false
+
+<UnsignedShort> = <int min=0 max=65536>
+
+<Double> = 1.1
+
+<AV1> = "av01.00.04.08"
+<AV1> = "av01.00.04.10"
+<AV1> = "av01.00.05.08"
+<AV1> = "av01.00.05.10"
+<AV1> = "av01.01.04.08"
+<AV1> = "av01.01.04.10"
+<AV1> = "av01.01.05.08"
+<AV1> = "av01.01.05.10"
+<VP8> = "vp8"
+<VP9> = "vp09.00.10.08"
+<VP9> = "vp09.00.10.10"
+<VP9> = "vp09.00.10.12"
+<VP9> = "vp09.01.10.08"
+<VP9> = "vp09.01.10.10"
+<VP9> = "vp09.01.10.12"
+<VP9> = "vp09.02.10.08"
+<VP9> = "vp09.02.10.10"
+<VP9> = "vp09.02.10.12"
+<HEVC> = "hev1.1.6.L120.90"
+<HEVC> = "hvc1.1.6.L120.90"
+<HEVC> = "hev1.1.6.L120.91"
+<HEVC> = "hvc1.1.6.L120.91"
+
+<FLAC> = "flac"
+<MP3> = "mp3"
+<AAC> = "mp4a.40"
+<AAC> = "mp4a.41"
+<OPUS> = "opus"
+<VORBIS> = "vorbis"
+<ULAW> = "ulaw"
+<ALAW> = "alaw"
+<PCM> = "pcm-f32le"
+<PCM> = "pcm-s16le"

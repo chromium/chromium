@@ -49,9 +49,14 @@ const ROLE_ATTRIBUTE_PRESENTATION = 0;
 const RENDERER_ID_NOT_SET = '0';
 
 /**
+ Name of the html attribute used for storing stable unique form and field IDs.
+ */
+const UNIQUE_ID_ATTRIBUTE = '__gChrome_uniqueID';
+
+/**
  * The JS Symbol object used to set stable unique form and field IDs.
  */
-const ID_SYMBOL = window.Symbol.for('__gChrome~uniqueID');
+const ID_SYMBOL = window.Symbol.for(UNIQUE_ID_ATTRIBUTE);
 
 export {
   FormControlElement,
@@ -60,6 +65,7 @@ export {
   MAX_EXTRACTABLE_FIELDS,
   ROLE_ATTRIBUTE_PRESENTATION,
   RENDERER_ID_NOT_SET,
+  UNIQUE_ID_ATTRIBUTE,
 };
 
 gCrWeb.fill.ID_SYMBOL = ID_SYMBOL;

@@ -124,6 +124,7 @@ class SharingMessageSender {
   };
 
   void OnMessageSent(const std::string& message_guid,
+                     sharing_message::MessageType message_type,
                      SharingSendMessageResult result,
                      std::optional<std::string> message_id,
                      SharingChannelType channel_type);

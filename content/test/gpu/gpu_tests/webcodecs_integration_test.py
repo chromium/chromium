@@ -162,6 +162,19 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                'acceleration': acc
            }])
 
+    codec = 'av01.0.04M.08'
+    acc = 'prefer-software'
+    for layers in range(4):
+      args = (codec, acc, layers)
+      yield ('WebCodecs_ManualSVC_%s_%s_layers_%d' % args, 'manual-svc.html', [{
+          'codec':
+          codec,
+          'acceleration':
+          acc,
+          'layers':
+          layers
+      }])
+
     for source_type in frame_sources:
       for codec in video_codecs:
         for acc in accelerations:

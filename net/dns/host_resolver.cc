@@ -323,9 +323,6 @@ std::unique_ptr<HostResolver> HostResolver::Factory::CreateStandaloneResolver(
 
 HostResolver::ResolveHostParameters::ResolveHostParameters() = default;
 
-HostResolver::ResolveHostParameters::ResolveHostParameters(
-    const ResolveHostParameters& other) = default;
-
 HostResolver::~HostResolver() = default;
 
 std::unique_ptr<HostResolver::ProbeRequest>

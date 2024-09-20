@@ -159,6 +159,8 @@ class CORE_EXPORT ComputedStyleUtils {
                                          const ComputedStyle&,
                                          bool force_computed_value = false);
   static CSSValue* ValueForGridPosition(const GridPosition&);
+  static CSSValue* ValueForMasonrySlack(const std::optional<Length>&,
+                                        const ComputedStyle&);
   static CSSValue* ValueForMasonryTrackList(const LayoutObject*,
                                             const ComputedStyle&);
   static gfx::SizeF UsedBoxSize(const LayoutObject&);

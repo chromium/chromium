@@ -525,25 +525,27 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
                              id<FormSuggestionProvider> delegate) {
     suggestion_array_size = suggestions.count;
     virtual_card_suggestion = [FormSuggestion
-               suggestionWithValue:[suggestions[0].value copy]
-                        minorValue:[suggestions[0].minorValue copy]
-                displayDescription:[suggestions[0].displayDescription copy]
-                              icon:[suggestions[0].icon copy]
-                              type:suggestions[0].type
-                 backendIdentifier:suggestions[0].backendIdentifier
-                    requiresReauth:suggestions[0].requiresReauth
-        acceptanceA11yAnnouncement:[suggestions[0]
-                                           .acceptanceA11yAnnouncement copy]];
+                suggestionWithValue:[suggestions[0].value copy]
+                         minorValue:[suggestions[0].minorValue copy]
+                 displayDescription:[suggestions[0].displayDescription copy]
+                               icon:[suggestions[0].icon copy]
+                               type:suggestions[0].type
+                  backendIdentifier:suggestions[0].backendIdentifier
+        fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                     requiresReauth:suggestions[0].requiresReauth
+         acceptanceA11yAnnouncement:[suggestions[0]
+                                            .acceptanceA11yAnnouncement copy]];
     credit_card_suggestion = [FormSuggestion
-               suggestionWithValue:[suggestions[1].value copy]
-                        minorValue:[suggestions[1].minorValue copy]
-                displayDescription:[suggestions[1].displayDescription copy]
-                              icon:[suggestions[1].icon copy]
-                              type:suggestions[1].type
-                 backendIdentifier:suggestions[1].backendIdentifier
-                    requiresReauth:suggestions[1].requiresReauth
-        acceptanceA11yAnnouncement:[suggestions[1]
-                                           .acceptanceA11yAnnouncement copy]];
+                suggestionWithValue:[suggestions[1].value copy]
+                         minorValue:[suggestions[1].minorValue copy]
+                 displayDescription:[suggestions[1].displayDescription copy]
+                               icon:[suggestions[1].icon copy]
+                               type:suggestions[1].type
+                  backendIdentifier:suggestions[1].backendIdentifier
+        fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                     requiresReauth:suggestions[1].requiresReauth
+         acceptanceA11yAnnouncement:[suggestions[1]
+                                            .acceptanceA11yAnnouncement copy]];
   };
 
   // Make credit card suggestion.

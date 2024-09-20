@@ -20,10 +20,6 @@
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
           {
-            "match": "android.webkit.cts.WebViewTest#testFindNext",
-            "_bug_id": "crbug.com/1486129"
-          },
-          {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
           },
@@ -84,10 +80,6 @@
       {
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
-          {
-            "match": "android.webkit.cts.WebViewTest#testFindNext",
-            "_bug_id": "crbug.com/1486129"
-          },
           {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
@@ -157,10 +149,6 @@
       {
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
-          {
-            "match": "android.webkit.cts.WebViewTest#testFindNext",
-            "_bug_id": "crbug.com/1486129"
-          },
           {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
@@ -257,10 +245,6 @@
       {
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
-          {
-            "match": "android.webkit.cts.WebViewTest#testFindNext",
-            "_bug_id": "crbug.com/1486129"
-          },
           {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
@@ -401,10 +385,6 @@
       {
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
-          {
-            "match": "android.webkit.cts.WebViewTest#testFindNext",
-            "_bug_id": "crbug.com/1486129"
-          },
           {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
@@ -573,10 +553,6 @@
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
           {
-            "match": "android.webkit.cts.WebViewTest#testFindNext",
-            "_bug_id": "crbug.com/1486129"
-          },
-          {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
           },
@@ -720,12 +696,18 @@
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
           {
-            "match": "android.webkit.cts.WebViewTest#testFindNext",
-            "_bug_id": "crbug.com/1486129"
+            "match": "android.webkit.cts.PacProcessorTest#testSetNetwork",
+            "arch": "arm64",
+            "_bug_id": "crbug.com/352385377"
           },
           {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testSetNetworkAvailable",
+            "arch": "arm64",
+            "_bug_id": "crbug.com/352385377"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",

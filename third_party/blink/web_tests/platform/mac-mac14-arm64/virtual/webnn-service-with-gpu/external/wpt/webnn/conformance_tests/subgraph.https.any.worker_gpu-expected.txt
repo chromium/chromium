@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] conv2d default + prelu
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] conv2d default + gelu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] convTranspose2d default + gelu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] convTranspose2d default + prelu
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] batchNormalization default + relu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + leakyRelu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + sigmoid
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + clamp
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + prelu
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] batchNormalization default + elu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization options.axis=0 + gelu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+[FAIL] batchNormalization default + hardSigmoid
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + hardSwish
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + linear
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization options.axis=0 + softplus
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+[FAIL] batchNormalization default + softsign
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization options.axis=0  + softmax
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+Harness: the test ran to completion.
+

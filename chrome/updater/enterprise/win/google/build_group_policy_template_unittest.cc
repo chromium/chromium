@@ -27,6 +27,8 @@ TEST(BuildGroupPolicyTemplateTest, AdmxFilesEqual) {
   const base::FilePath test_enterprise_dir = test::GetTestFilePath("enterprise")
                                                  .AppendASCII("win")
                                                  .AppendASCII("google");
+  command.AppendSwitchPath("--test_gold_adm_file",
+                           test_enterprise_dir.AppendASCII("test_gold.adm"));
   command.AppendSwitchPath("--test_gold_admx_file",
                            test_enterprise_dir.AppendASCII("test_gold.admx"));
   command.AppendSwitchPath("--test_gold_adml_file",
@@ -34,7 +36,8 @@ TEST(BuildGroupPolicyTemplateTest, AdmxFilesEqual) {
   base::ScopedTempDir output_path;
   ASSERT_TRUE(output_path.CreateUniqueTempDir());
   command.AppendSwitchPath("--output_path", output_path.GetPath());
-  EXPECT_EQ(test::RunVPythonCommand(command), 0);
+  EXPECT_EQ(test::RunVPythonCommand(command), 0)
+      << "command: " << command.GetCommandLineString();
 }
 
 }  // namespace updater

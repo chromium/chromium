@@ -38,7 +38,7 @@
 @end
 
 @implementation ProfileState {
-  base::WeakPtr<ChromeBrowserState> _browserState;
+  base::WeakPtr<ProfileIOS> _profile;
 
   // Agents attached to this profile state.
   NSMutableArray<id<ProfileStateAgent>>* _agents;
@@ -65,13 +65,13 @@
 
 #pragma mark - Properties
 
-- (ChromeBrowserState*)browserState {
-  return _browserState.get();
+- (ProfileIOS*)profile {
+  return _profile.get();
 }
 
-- (void)setBrowserState:(ChromeBrowserState*)browserState {
-  CHECK(browserState);
-  _browserState = browserState->AsWeakPtr();
+- (void)setProfile:(ProfileIOS*)profile {
+  CHECK(profile);
+  _profile = profile->AsWeakPtr();
 }
 
 - (NSArray<id<ProfileStateAgent>>*)connectedAgents {

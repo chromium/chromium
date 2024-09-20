@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserOIDCAccountTest,
   DiceWebSigninInterceptorDelegate delegate;
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC,
-      AccountInfo(), AccountInfo());
+      account_info, account_info);
 
   auto handle = delegate.ShowOidcInterceptionDialog(
       browser()->tab_strip_model()->GetActiveWebContents(), bubble_parameters,

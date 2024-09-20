@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">ඔබ <ph name="RECENCY" /> පැමිණ ඇත</translation>
 <translation id="5039804452771397117">ඉඩදෙන්න</translation>
 <translation id="5048398596102334565">වෙබ් අඩවිවලට චලන සංවේදකවලට ප්‍රවේශ වීමට ඉඩ දෙන්න (නිර්දේශිතයි)</translation>
+<translation id="5048841907079026162">ඔබේ බ්‍රවුස් කිරීමේ දත්ත කළමනාකරණය කරන්න</translation>
 <translation id="5050380848339752099">මෙම අඩවිය අප්‍රසිද්ධ ප්‍රකාරයෙන් පිටත යෙදුමක් සමග තොරතුරු බෙදා ගැනීමට සූදානම්ය.</translation>
 <translation id="5063480226653192405">භාවිතය</translation>
 <translation id="5091013926750941408">ජංගම අඩවිය</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">ජාවාස්ක්‍රිප්ට් ධාවනය කිරීමට අඩවි වලට ඉඩ දෙන්න (නිර්දේශිතයි)</translation>
 <translation id="534295439873310000">NFC උපාංග</translation>
 <translation id="5344522958567249764">දැන්වීම් පෞද්ගලිකත්වය කළමනාකරණය කරන්න</translation>
+<translation id="5373874281522292782">ඔබේ පටිති සමූහ සුරැකී ඇත</translation>
 <translation id="5389626883706033615">අඩවි ඔවුන් ඔබ ගැන සුරැකී ඇති තොරතුරු භාවිත කිරීමට ඉල්ලීමෙන් අවහිර කරනු ලැබේ</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(තවත් + 1ක්)}one{(තවත් + #ක්)}other{(තවත් + #ක්)}}</translation>
 <translation id="5403592356182871684">නම්</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">සැමවිටම</translation>
 <translation id="757524316907819857">ආරක්ෂිත අන්තර්ගත වාදනය කරමින් තිබෙන අඩවි තහනම් කිරීම</translation>
 <translation id="7594634374516752650">බ්ලූටූත් උපාංගයකට සම්බන්ධ කර ඇත</translation>
+<translation id="7617547684249261169">ඔබට ඔබේ ඉතිහාසය, කුකී, අඩවි දත්ත සහ තවත් දේ හෝ සියල්ල මකා දැමිය හැක</translation>
 <translation id="7649070708921625228">උදවු</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>

@@ -31,24 +31,9 @@
 #include "chrome/browser/media/webrtc/delegated_source_list_capturer.h"
 #include "chrome/browser/media/webrtc/desktop_capturer_wrapper.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
+#include "media/base/media_switches.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/mac/desktop_frame_utils.h"
-
-#if BUILDFLAG(IS_MAC)
-// Use the built-in MacOS screen-sharing picker (SCContentSharingPicker). This
-// flag will only use the built-in picker on MacOS 15 Sequoia and later where it
-// is required to avoid recurring permission dialogs.
-BASE_FEATURE(kUseSCContentSharingPicker,
-             "UseSCContentSharingPicker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Use the built-in MacOS screen-sharing picker (SCContentSharingPicker) on
-// MacOS 14 Sonoma and later. This flag will use the built-in picker for all
-// MacOS versions where it is supported.
-BASE_FEATURE(kUseSCContentSharingPickerSonoma,
-             "UseSCContentSharingPickerSonoma",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 using SampleCallback =
     base::RepeatingCallback<void(base::apple::ScopedCFTypeRef<CGImageRef> image,
@@ -1008,12 +993,7 @@ void ThumbnailCapturerMac::OnCapturedFrame(
 
 bool ShouldUseSCContentSharingPicker() {
   if (@available(macOS 15.0, *)) {
-    if (base::FeatureList::IsEnabled(kUseSCContentSharingPicker)) {
-      return true;
-    }
-  }
-  if (@available(macOS 14.4, *)) {
-    if (base::FeatureList::IsEnabled(kUseSCContentSharingPickerSonoma)) {
+    if (base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker)) {
       return true;
     }
   }

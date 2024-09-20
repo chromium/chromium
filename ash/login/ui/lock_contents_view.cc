@@ -795,7 +795,8 @@ void LockContentsView::OnUserAvatarChanged(const AccountId& account_id,
 
 void LockContentsView::OnUserAuthFactorsChanged(
     const AccountId& user,
-    cryptohome::AuthFactorsSet auth_factors) {
+    cryptohome::AuthFactorsSet auth_factors,
+    cryptohome::PinLockAvailability pin_available_at) {
   UserState* state = FindStateForUser(user);
   if (!state) {
     LOG(ERROR) << "Unable to find user when updating auth factors";
@@ -808,14 +809,23 @@ void LockContentsView::OnUserAuthFactorsChanged(
   const bool enable_smart_card =
       auth_factors.Has(cryptohome::AuthFactorType::kSmartCard);
 
-  if (!enable_password && !enable_pin && !enable_smart_card) {
+  // If PIN is enabled, or PIN is disabled and permanently locked, reset
+  // the `pin_available_at` as it's meaningless.
+  if (enable_pin || !IsTimeInFuture(pin_available_at)) {
+    pin_available_at = std::nullopt;
+  }
+
+  if (!enable_password && !enable_pin && !enable_smart_card &&
+      !pin_available_at.has_value()) {
     LOG(ERROR) << "Unable to update auth factors, neither password, PIN or "
                   "smart card auth is configured";
     return;
   }
+
   if (state->show_password == enable_password &&
       state->show_pin == enable_pin &&
-      state->show_challenge_response_auth == enable_smart_card) {
+      state->show_challenge_response_auth == enable_smart_card &&
+      state->pin_available_at == pin_available_at) {
     LOG(WARNING)
         << "Unexpected call to OnUserAuthFactorsChanged; state unchanged.";
     return;
@@ -826,11 +836,7 @@ void LockContentsView::OnUserAuthFactorsChanged(
   state->autosubmit_pin_length =
       user_manager::KnownUser(Shell::Get()->local_state())
           .GetUserPinLength(user);
-  // If PIN is enabled, or PIN is disabled and permanently locked, reset
-  // the `pin_available_at` as it's meaningless.
-  if (enable_pin || !IsTimeInFuture(state->pin_available_at)) {
-    state->pin_available_at = std::nullopt;
-  }
+  state->pin_available_at = pin_available_at;
   state->show_challenge_response_auth = enable_smart_card;
 
   LoginBigUserView* big_user =
@@ -1922,9 +1928,17 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         // Currently the challenge-response authentication can't be combined
         // with the password or PIN based one.
         to_update_auth = LoginAuthUserView::AUTH_CHALLENGE_RESPONSE;
+      } else if (!state->show_password && !state->show_pin) {
+        CHECK(IsTimeInFuture(state->pin_available_at))
+            << "Password or pin factor must be present, if pin is not locked";
+        to_update_auth = LoginAuthUserView::AUTH_RECOVERY;
+        auth_metadata.pin_available_at = state->pin_available_at;
+        // The auth error message might be shown at the moment due to previous
+        // wrong attempts. We will hide it as it shows similar content as the
+        // recover button and the pin delay message.
+        HideAuthErrorMessage();
       } else {
         if (features::IsAllowPasswordlessSetupEnabled()) {
-          CHECK(state->show_password || state->show_pin);
           to_update_auth = LoginAuthUserView::AUTH_NONE;
         } else {
           to_update_auth = LoginAuthUserView::AUTH_PASSWORD;
@@ -2075,6 +2089,13 @@ void LockContentsView::ShowAuthErrorMessage() {
   int unlock_attempt = unlock_attempt_by_user_[account_id];
   UserState* user_state = FindStateForUser(account_id);
 
+  // Do not show the auth error message when there's no password or pin factor
+  // configured. This usually occurs when pin is soft-locked due to multiple
+  // wrong attempts.
+  if (!user_state->show_password && !user_state->show_pin) {
+    return;
+  }
+
   auth_error_bubble_->ShowAuthError(
       /*anchor_view = */ big_view->auth_user()->GetActiveInputView(),
       /*unlock_attempt = */ unlock_attempt,
@@ -2178,6 +2199,8 @@ std::unique_ptr<LoginBigUserView> LockContentsView::AllocateLoginBigUserView(
           base::Unretained(this), user.basic_user_info.account_id);
   auth_user_callbacks.on_pin_unlock = base::BindRepeating(
       &LockContentsView::OnPinUnlock, base::Unretained(this), is_primary);
+  auth_user_callbacks.on_recover_button_pressed = base::BindRepeating(
+      &LockContentsView::RecoverUserButtonPressed, base::Unretained(this));
 
   LoginPublicAccountUserView::Callbacks public_account_callbacks;
   public_account_callbacks.on_tap = auth_user_callbacks.on_tap;
@@ -2417,7 +2440,7 @@ void LockContentsView::OnPinUnlock(bool is_primary) {
       is_primary ? primary_big_view_.get() : opt_secondary_big_view_.get();
   AccountId user = to_update->GetCurrentUser().basic_user_info.account_id;
   data_dispatcher_->SetPinEnabledForUser(user, true,
-                                         /*avaiable_at*/ std::nullopt);
+                                         /*avaiable_at=*/ std::nullopt);
   HideAuthErrorMessage();
 }
 

@@ -4,11 +4,15 @@
 
 #include "services/network/cors/cors_url_loader_factory.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -333,6 +337,16 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
   TRACE_EVENT("loading", "CorsURLLoaderFactory::CreateLoaderAndStart",
               perfetto::Flow::FromPointer(this));
 
+  std::optional<base::ElapsedTimer> timer;
+  std::optional<base::ElapsedThreadTimer> thread_timer;
+
+  if (metrics_subsampler_.ShouldSample(0.001)) {
+    timer.emplace();
+    if (base::ThreadTicks::IsSupported()) {
+      thread_timer.emplace();
+    }
+  }
+
   debug::ScopedResourceRequestCrashKeys request_crash_keys(resource_request);
   SCOPED_CRASH_KEY_NUMBER("net", "traffic_annotation_hash",
                           traffic_annotation.unique_id_hash_code);
@@ -392,8 +406,12 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
   }
 
   if (!disable_web_security_) {
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer =
-        GetDevToolsObserver(resource_request);
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
+    const bool always_clone = !base::FeatureList::IsEnabled(
+        network::features::kCloneDevToolsConnectionOnlyIfRequested);
+    if (always_clone || resource_request.devtools_request_id.has_value()) {
+      devtools_observer = GetDevToolsObserver(resource_request);
+    }
 
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage =
         shared_dictionary_storage_;
@@ -457,6 +475,19 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     inner_url_loader_factory->CreateLoaderAndStart(
         std::move(receiver), request_id, options, resource_request,
         std::move(client), traffic_annotation);
+  }
+
+  if (timer.has_value()) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2.Duration",
+        timer->Elapsed(), base::Microseconds(1), base::Milliseconds(16), 100);
+  }
+  if (thread_timer.has_value()) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2."
+        "ThreadDuration",
+        thread_timer->Elapsed(), base::Microseconds(1), base::Milliseconds(16),
+        100);
   }
 }
 

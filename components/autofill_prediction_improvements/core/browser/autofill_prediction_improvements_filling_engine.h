@@ -22,7 +22,8 @@ namespace autofill_prediction_improvements {
 class AutofillPredictionImprovementsFillingEngine {
  public:
   using PredictionsReceivedCallback =
-      base::OnceCallback<void(base::expected<autofill::FormData, bool>)>;
+      base::OnceCallback<void(base::expected<autofill::FormData, bool>,
+                              std::optional<std::string> feedback_id)>;
 
   virtual ~AutofillPredictionImprovementsFillingEngine() = default;
 

@@ -172,12 +172,13 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
       mojom::blink::WebFeature property_access_from_other_page,
       mojom::blink::WindowProxyAccessType access_type) const;
 
-  // Returns whether access should be limited by Cross-Origin-Opener-Policy:
-  // restrict-properties. This is the case for pages in the same
-  // CoopRelatedGroup that can reach each other WindowProxies but do not belong
-  // to the same browsing context group. `isolate` represents the isolate in
-  // which the Window access is taking place.
-  bool IsAccessBlockedByCoopRestrictProperties(v8::Isolate* isolate) const;
+  // We need to check proxy access to see if it's blocked, and if so whether
+  // it's for COOP-RP issues or Partitioned Popin issues.
+  enum class ProxyAccessBlockedReason { kCoopRp, kPartitionedPopins };
+  std::optional<ProxyAccessBlockedReason> GetProxyAccessBlockedReason(
+      v8::Isolate* isolate) const;
+  static String GetProxyAccessBlockedExceptionMessage(
+      ProxyAccessBlockedReason reason);
 
  protected:
   explicit DOMWindow(Frame&);

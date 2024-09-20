@@ -155,15 +155,18 @@ TEST_F(PaneTitleHandlerTest, CreateAndEvents) {
   children.at(1)->Serialize(&data);
   int32_t virtual_node_id = data.id;
   std::string val;
-  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kName, &val));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  val = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("", val);
 
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus, &val));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kLiveStatus));
+  val = data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus);
   ASSERT_EQ("polite", val);
 
-  ASSERT_TRUE(data.GetStringAttribute(
-      ax::mojom::StringAttribute::kContainerLiveStatus, &val));
+  ASSERT_TRUE(data.HasStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus));
+  val =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus);
   ASSERT_EQ("polite", val);
 
   ASSERT_FALSE(handler.ShouldDestroy(tree_source()));
@@ -180,15 +183,18 @@ TEST_F(PaneTitleHandlerTest, CreateAndEvents) {
   data = ui::AXNodeData();
   children.at(1)->Serialize(&data);
   ASSERT_EQ(virtual_node_id, data.id);
-  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kName, &val));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  val = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("test window pane", val);
 
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus, &val));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kLiveStatus));
+  val = data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus);
   ASSERT_EQ("polite", val);
 
-  ASSERT_TRUE(data.GetStringAttribute(
-      ax::mojom::StringAttribute::kContainerLiveStatus, &val));
+  ASSERT_TRUE(data.HasStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus));
+  val =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus);
   ASSERT_EQ("polite", val);
 
   ASSERT_FALSE(handler.ShouldDestroy(tree_source()));
@@ -209,7 +215,8 @@ TEST_F(PaneTitleHandlerTest, CreateAndEvents) {
   data = ui::AXNodeData();
   children.at(1)->Serialize(&data);
   ASSERT_EQ(virtual_node_id, data.id);
-  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kName, &val));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  val = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("updated title", val);
 
   ASSERT_FALSE(handler.ShouldDestroy(tree_source()));

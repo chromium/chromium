@@ -8,8 +8,10 @@
 
 #include "base/uuid.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "components/saved_tab_groups/saved_tab_group_model.h"
-#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
+#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -37,15 +39,15 @@ SyncEntitiesToSavedTabGroupSpecifics(
 // --- SavedTabOrGroupExistsChecker ---
 // ====================================
 SavedTabOrGroupExistsChecker::SavedTabOrGroupExistsChecker(
-    SavedTabGroupModel* model,
+    TabGroupSyncService* service,
     const base::Uuid& uuid)
-    : uuid_(uuid), model_(model) {
-  CHECK(model_);
-  model_->AddObserver(this);
+    : uuid_(uuid), service_(service) {
+  CHECK(service_);
+  service_->AddObserver(this);
 }
 
 SavedTabOrGroupExistsChecker::~SavedTabOrGroupExistsChecker() {
-  model_->RemoveObserver(this);
+  service_->RemoveObserver(this);
 }
 
 bool SavedTabOrGroupExistsChecker::IsExitConditionSatisfied(std::ostream* os) {
@@ -53,7 +55,7 @@ bool SavedTabOrGroupExistsChecker::IsExitConditionSatisfied(std::ostream* os) {
              "' to be added.";
 
   // Expect that `uuid_` exists in the SavedTabGroupModel.
-  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+  for (const SavedTabGroup& group : service_->GetAllGroups()) {
     if (group.saved_guid() == uuid_ || group.ContainsTab(uuid_)) {
       return true;
     }
@@ -62,14 +64,21 @@ bool SavedTabOrGroupExistsChecker::IsExitConditionSatisfied(std::ostream* os) {
   return false;
 }
 
-void SavedTabOrGroupExistsChecker::SavedTabGroupAddedFromSync(
-    const base::Uuid& uuid) {
+void SavedTabOrGroupExistsChecker::OnTabGroupAdded(const SavedTabGroup& group,
+                                                   TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
-void SavedTabOrGroupExistsChecker::SavedTabGroupUpdatedFromSync(
-    const base::Uuid& group_uuid,
-    const std::optional<base::Uuid>& tab_uuid) {
+void SavedTabOrGroupExistsChecker::OnTabGroupUpdated(const SavedTabGroup& group,
+                                                     TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
@@ -77,15 +86,15 @@ void SavedTabOrGroupExistsChecker::SavedTabGroupUpdatedFromSync(
 // --- SavedTabOrGroupDoesNotExistChecker ---
 // ==========================================
 SavedTabOrGroupDoesNotExistChecker::SavedTabOrGroupDoesNotExistChecker(
-    SavedTabGroupModel* model,
+    TabGroupSyncService* service,
     const base::Uuid& uuid)
-    : uuid_(uuid), model_(model) {
-  CHECK(model_);
-  model_->AddObserver(this);
+    : uuid_(uuid), service_(service) {
+  CHECK(service_);
+  service_->AddObserver(this);
 }
 
 SavedTabOrGroupDoesNotExistChecker::~SavedTabOrGroupDoesNotExistChecker() {
-  model_->RemoveObserver(this);
+  service_->RemoveObserver(this);
 }
 
 bool SavedTabOrGroupDoesNotExistChecker::IsExitConditionSatisfied(
@@ -94,7 +103,7 @@ bool SavedTabOrGroupDoesNotExistChecker::IsExitConditionSatisfied(
              "' to be deleted.";
 
   // Expect that `uuid_` does not exist in the SavedTabGroupModel.
-  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+  for (const SavedTabGroup& group : service_->GetAllGroups()) {
     if (group.saved_guid() == uuid_ || group.ContainsTab(uuid_)) {
       return false;
     }
@@ -103,14 +112,23 @@ bool SavedTabOrGroupDoesNotExistChecker::IsExitConditionSatisfied(
   return true;
 }
 
-void SavedTabOrGroupDoesNotExistChecker::SavedTabGroupRemovedFromSync(
-    const SavedTabGroup& removed_group) {
+void SavedTabOrGroupDoesNotExistChecker::OnTabGroupUpdated(
+    const SavedTabGroup& group,
+    TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
-void SavedTabOrGroupDoesNotExistChecker::SavedTabGroupUpdatedFromSync(
-    const base::Uuid& group_uuid,
-    const std::optional<base::Uuid>& tab_uuid) {
+void SavedTabOrGroupDoesNotExistChecker::OnTabGroupRemoved(
+    const base::Uuid& sync_id,
+    TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
@@ -118,15 +136,15 @@ void SavedTabOrGroupDoesNotExistChecker::SavedTabGroupUpdatedFromSync(
 // --- SavedTabGroupMatchesChecker ---
 // ===================================
 SavedTabGroupMatchesChecker::SavedTabGroupMatchesChecker(
-    SavedTabGroupModel* model,
+    TabGroupSyncService* service,
     SavedTabGroup group)
-    : group_(group), model_(model) {
-  CHECK(model_);
-  model_->AddObserver(this);
+    : group_(group), service_(service) {
+  CHECK(service_);
+  service_->AddObserver(this);
 }
 
 SavedTabGroupMatchesChecker::~SavedTabGroupMatchesChecker() {
-  model_->RemoveObserver(this);
+  service_->RemoveObserver(this);
 }
 
 bool SavedTabGroupMatchesChecker::IsExitConditionSatisfied(std::ostream* os) {
@@ -135,7 +153,7 @@ bool SavedTabGroupMatchesChecker::IsExitConditionSatisfied(std::ostream* os) {
 
   // Expect that a group exists in the model with the same synced data as
   // `group_`.
-  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+  for (const SavedTabGroup& group : service_->GetAllGroups()) {
     if (group.IsSyncEquivalent(group_)) {
       return true;
     }
@@ -144,29 +162,33 @@ bool SavedTabGroupMatchesChecker::IsExitConditionSatisfied(std::ostream* os) {
   return false;
 }
 
-void SavedTabGroupMatchesChecker::SavedTabGroupAddedFromSync(
-    const base::Uuid& uuid) {
+void SavedTabGroupMatchesChecker::OnTabGroupAdded(const SavedTabGroup& group,
+                                                  TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
   CheckExitCondition();
 }
-
-void SavedTabGroupMatchesChecker::SavedTabGroupUpdatedFromSync(
-    const base::Uuid& group_uuid,
-    const std::optional<base::Uuid>& tab_uuid) {
+void SavedTabGroupMatchesChecker::OnTabGroupUpdated(const SavedTabGroup& group,
+                                                    TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
   CheckExitCondition();
 }
 
 // ==============================
 // --- SavedTabMatchesChecker ---
 // ==============================
-SavedTabMatchesChecker::SavedTabMatchesChecker(SavedTabGroupModel* model,
+SavedTabMatchesChecker::SavedTabMatchesChecker(TabGroupSyncService* service,
                                                SavedTabGroupTab tab)
-    : tab_(tab), model_(model) {
-  CHECK(model_);
-  model_->AddObserver(this);
+    : tab_(tab), service_(service) {
+  CHECK(service_);
+  service_->AddObserver(this);
 }
 
 SavedTabMatchesChecker::~SavedTabMatchesChecker() {
-  model_->RemoveObserver(this);
+  service_->RemoveObserver(this);
 }
 
 bool SavedTabMatchesChecker::IsExitConditionSatisfied(std::ostream* os) {
@@ -174,7 +196,7 @@ bool SavedTabMatchesChecker::IsExitConditionSatisfied(std::ostream* os) {
              tab_.saved_tab_guid().AsLowercaseString() + "' to be updated.";
 
   // Expect that a tab exists in the model with the same synced data as `tab_`.
-  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+  for (const SavedTabGroup& group : service_->GetAllGroups()) {
     for (const SavedTabGroupTab& tab : group.saved_tabs()) {
       if (tab.IsSyncEquivalent(tab_)) {
         return true;
@@ -185,42 +207,49 @@ bool SavedTabMatchesChecker::IsExitConditionSatisfied(std::ostream* os) {
   return false;
 }
 
-void SavedTabMatchesChecker::SavedTabGroupAddedFromSync(
-    const base::Uuid& uuid) {
+void SavedTabMatchesChecker::OnTabGroupAdded(const SavedTabGroup& group,
+                                             TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
-void SavedTabMatchesChecker::SavedTabGroupUpdatedFromSync(
-    const base::Uuid& group_uuid,
-    const std::optional<base::Uuid>& tab_uuid) {
+void SavedTabMatchesChecker::OnTabGroupUpdated(const SavedTabGroup& group,
+                                               TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
 // =========================
 // --- GroupOrderChecker ---
 // =========================
-GroupOrderChecker::GroupOrderChecker(SavedTabGroupModel* model,
+GroupOrderChecker::GroupOrderChecker(TabGroupSyncService* service,
                                      std::vector<base::Uuid> group_ids)
-    : group_ids_(group_ids), model_(model) {
-  CHECK(model_);
-  model_->AddObserver(this);
+    : group_ids_(group_ids), service_(service) {
+  CHECK(service_);
+  service_->AddObserver(this);
 }
 
 GroupOrderChecker::~GroupOrderChecker() {
-  model_->RemoveObserver(this);
+  service_->RemoveObserver(this);
 }
 
 bool GroupOrderChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for saved group ordering to be updated.";
 
-  if (model_->saved_tab_groups().size() != group_ids_.size()) {
+  if (service_->GetAllGroups().size() != group_ids_.size()) {
     return false;
   }
 
   // Expect that the model has the same groups in the same order as
   // `group_ids_`.
   for (size_t i = 0; i < group_ids_.size(); i++) {
-    if (model_->saved_tab_groups()[i].saved_guid() != group_ids_[i]) {
+    if (service_->GetAllGroups()[i].saved_guid() != group_ids_[i]) {
       return false;
     }
   }
@@ -228,34 +257,46 @@ bool GroupOrderChecker::IsExitConditionSatisfied(std::ostream* os) {
   return true;
 }
 
-void GroupOrderChecker::SavedTabGroupAddedFromSync(const base::Uuid& uuid) {
+void GroupOrderChecker::OnTabGroupAdded(const SavedTabGroup& group,
+                                        TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
-void GroupOrderChecker::SavedTabGroupRemovedFromSync(
-    const SavedTabGroup& removed_group) {
+void GroupOrderChecker::OnTabGroupUpdated(const SavedTabGroup& group,
+                                          TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
-void GroupOrderChecker::SavedTabGroupUpdatedFromSync(
-    const base::Uuid& group_uuid,
-    const std::optional<base::Uuid>& tab_uuid) {
+void GroupOrderChecker::OnTabGroupRemoved(const base::Uuid& sync_id,
+                                          TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
 // =======================
 // --- TabOrderChecker ---
 // =======================
-TabOrderChecker::TabOrderChecker(SavedTabGroupModel* model,
+TabOrderChecker::TabOrderChecker(TabGroupSyncService* service,
                                  base::Uuid group_id,
                                  std::vector<base::Uuid> tab_ids)
-    : group_id_(group_id), tab_ids_(tab_ids), model_(model) {
-  CHECK(model_);
-  model_->AddObserver(this);
+    : group_id_(group_id), tab_ids_(tab_ids), service_(service) {
+  CHECK(service_);
+  service_->AddObserver(this);
 }
 
 TabOrderChecker::~TabOrderChecker() {
-  model_->RemoveObserver(this);
+  service_->RemoveObserver(this);
 }
 
 bool TabOrderChecker::IsExitConditionSatisfied(std::ostream* os) {
@@ -263,7 +304,7 @@ bool TabOrderChecker::IsExitConditionSatisfied(std::ostream* os) {
       << group_id_.AsLowercaseString();
 
   // Expect that a group with the saved id exists.
-  const SavedTabGroup* const group = model_->Get(group_id_);
+  const std::optional<SavedTabGroup> group = service_->GetGroup(group_id_);
   if (!group) {
     return false;
   }
@@ -282,16 +323,27 @@ bool TabOrderChecker::IsExitConditionSatisfied(std::ostream* os) {
   return true;
 }
 
-void TabOrderChecker::SavedTabGroupAddedFromSync(const base::Uuid& uuid) {
+void TabOrderChecker::OnTabGroupAdded(const SavedTabGroup& group,
+                                      TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
-void TabOrderChecker::SavedTabGroupUpdatedFromSync(
-    const base::Uuid& group_uuid,
-    const std::optional<base::Uuid>& tab_uuid) {
+void TabOrderChecker::OnTabGroupUpdated(const SavedTabGroup& group,
+                                        TriggerSource source) {
+  if (TriggerSource::LOCAL == source) {
+    return;
+  }
+
   CheckExitCondition();
 }
 
+// =======================================
+// --- ServerSavedTabGroupMatchChecker ---
+// =======================================
 ServerSavedTabGroupMatchChecker::ServerSavedTabGroupMatchChecker(
     const Matcher& matcher)
     : matcher_(matcher) {}

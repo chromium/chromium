@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Ukjent produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /> (serienummer: <ph name="SERIAL_NUMBER" /> )</translation>
 <translation id="3144135466825225871">Kunne ikke erstatte .crx-fil. Kontroller om filen er i bruk.</translation>
 <translation id="3163201441334626963">Ukjent produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Kan ikke pakke ut utvidelse. For å kunne pakke ut en utvidelse på en sikker måte, må det finnes en bane til profilkatalogen din som begynner med en harddiskbokstav og som ikke inneholder en forbindelse, et innsettingspunkt eller en symlink. Det finnes ingen slik bane for profilen din.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serienummer: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> fra leverandøren <ph name="VENDOR_ID" /> (serienummer: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inndataverdien for privatnøkkelen må være en gyldig bane.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Administratoren for denne maskinen krever at <ph name="EXTENSION_NAME" /> installeres. Denne utvidelsen kan ikke avinstalleres.</translation>
 <translation id="6027032947578871493">Ukjent produkt, <ph name="PRODUCT_ID" />, fra <ph name="VENDOR_NAME" /> (serienummer: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> fra leverandøren <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Kan ikke pakke ut utvidelse. For å kunne pakke ut en utvidelse på en sikker måte, må det finnes en bane til profilkatalogen din som ikke inneholder en symlink. Det finnes ingen slik bane for profilen din.</translation>
 <translation id="6322279351188361895">Kan ikke lese privatnøkkelen.</translation>
 <translation id="6391538222494443604">Inndatakatalogen må eksistere.</translation>
 <translation id="641087317769093025">Kunne ikke pakke ut utvidelsen</translation>

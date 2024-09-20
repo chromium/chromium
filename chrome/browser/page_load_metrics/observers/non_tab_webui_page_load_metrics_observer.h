@@ -7,8 +7,6 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
-namespace chrome {
-
 extern const char kNonTabWebUIRequestToFCPHistogramName[];
 
 // Records Page Load Metrics for non-tab chrome:// pages such as side-panel
@@ -38,7 +36,5 @@ class NonTabPageLoadMetricsObserver
  private:
   std::string webui_name_;
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NON_TAB_WEBUI_PAGE_LOAD_METRICS_OBSERVER_H_

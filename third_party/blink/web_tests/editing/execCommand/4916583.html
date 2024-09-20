@@ -1,22 +1,29 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <p>This tests for a bug when outdenting an indented list item.  You should see 'foo' and 'bar' each in their own list item below.</p>
-<div id="div" contenteditable="true"><ul><li>foo</li><ul><li id="li">bar<br></li></ul></ul></div>
-<p id="console"></p>
 <script>
 
-if (window.testRunner)
-    testRunner.dumpAsText();
-
-function log(message) {
-    var console = document.getElementById("console");
-    var text = document.createTextNode(message);
-    console.appendChild(text);
-}
-
-var li = document.getElementById("li");
-var sel = window.getSelection();
-
-sel.collapse(li, 0);
-document.execCommand("Outdent");
-
-log(document.getElementById('div').innerHTML);
+selection_test(
+    [
+      '<div contenteditable="true">',
+        '<ul>',
+          '<li>foo</li>',
+          '<ul>',
+            '<li id="li">|bar<br></li>',
+          '</ul>',
+        '</ul>',
+      '</div>',
+    ],
+    'Outdent',
+    [
+      '<div contenteditable="true">',
+        '<ul>',
+          '<li>foo</li>',
+          '<li>|bar</li>',
+        '</ul>',
+      '</div>',
+    ],
+    'Outdent nested item');
 </script>

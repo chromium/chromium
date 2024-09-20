@@ -7,6 +7,7 @@
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
 #include <optional>
+#include <tuple>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -22,8 +23,77 @@
 
 using SampleCallback = base::RepeatingCallback<void(gfx::ScopedInUseIOSurface,
                                                     std::optional<gfx::Size>,
-                                                    std::optional<gfx::Rect>)>;
+                                                    std::optional<gfx::Rect>,
+                                                    bool)>;
 using ErrorCallback = base::RepeatingClosure;
+
+namespace {
+API_AVAILABLE(macos(12.3))
+std::tuple<std::optional<gfx::Rect>, std::optional<gfx::Size>>
+GetVisibleRectAndContentSize(CFDictionaryRef attachment) {
+  std::optional<gfx::Rect> visibleRect;
+  std::optional<gfx::Size> contentSize;
+
+  CFDictionaryRef contentRectValue = base::apple::CFCast<CFDictionaryRef>(
+      CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
+                                           SCStreamFrameInfoContentRect)));
+  CFNumberRef scaleFactorValue = base::apple::CFCast<CFNumberRef>(
+      CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
+                                           SCStreamFrameInfoScaleFactor)));
+  CFNumberRef contentScaleValue = base::apple::CFCast<CFNumberRef>(
+      CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
+                                           SCStreamFrameInfoContentScale)));
+
+  if (contentRectValue && scaleFactorValue && contentScaleValue) {
+    CGRect contentRect = {};
+    bool succeed =
+        CGRectMakeWithDictionaryRepresentation(contentRectValue, &contentRect);
+    float scaleFactor = 1.0f;
+    succeed &=
+        CFNumberGetValue(scaleFactorValue, kCFNumberFloatType, &scaleFactor);
+    float contentScale = 1.0f;
+    succeed &=
+        CFNumberGetValue(contentScaleValue, kCFNumberFloatType, &contentScale);
+    if (succeed) {
+      contentRect.size.width *= scaleFactor;
+      contentRect.size.height *= scaleFactor;
+      visibleRect.emplace(contentRect);
+      contentSize.emplace(round(contentRect.size.width / contentScale),
+                          round(contentRect.size.height / contentScale));
+    }
+  }
+  return std::make_tuple(visibleRect, contentSize);
+}
+
+bool IsPresenterOverlayLargeActive(CFDictionaryRef attachment) {
+  if (@available(macOS 14.2, *)) {
+    CFDictionaryRef overlayContentRectValue =
+        base::apple::CFCast<CFDictionaryRef>(CFDictionaryGetValue(
+            attachment, base::apple::NSToCFPtrCast(
+                            SCStreamFrameInfoPresenterOverlayContentRect)));
+    if (!overlayContentRectValue) {
+      return false;
+    }
+
+    CGRect overlayContentRect = {};
+    bool succeed = CGRectMakeWithDictionaryRepresentation(
+        overlayContentRectValue, &overlayContentRect);
+    // From local testing:
+    // height > 0 and width > 0 signal that the presenter overlay is active.
+    // x == y == 0 is used for the small overlay, where the capture size is the
+    // same as the original content size.
+    // x > 0 and y > 0 signal that the large overlay that is causing problems is
+    // active. In this case the original screen capture is overlayed on the
+    // frames captured by the camera with the presenter in the foreground.
+    if (succeed && overlayContentRect.size.width > 0 &&
+        overlayContentRect.size.height > 0 && overlayContentRect.origin.x > 0 &&
+        overlayContentRect.origin.y > 0) {
+      return true;
+    }
+  }
+  return false;
+}
+}  // namespace
 
 API_AVAILABLE(macos(12.3))
 @interface ScreenCaptureKitDeviceHelper
@@ -62,40 +132,16 @@ API_AVAILABLE(macos(12.3))
   // is needed because the IOSurface may be larger than the captured content.
   std::optional<gfx::Size> contentSize;
   std::optional<gfx::Rect> visibleRect;
+  bool isPresenterOverlayLargeActive = false;
   CFArrayRef attachmentsArray = CMSampleBufferGetSampleAttachmentsArray(
       sampleBuffer, /*createIfNecessary=*/false);
   if (attachmentsArray && CFArrayGetCount(attachmentsArray) > 0) {
     CFDictionaryRef attachment = base::apple::CFCast<CFDictionaryRef>(
         CFArrayGetValueAtIndex(attachmentsArray, 0));
     if (attachment) {
-      CFDictionaryRef contentRectValue = base::apple::CFCast<CFDictionaryRef>(
-          CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
-                                               SCStreamFrameInfoContentRect)));
-      CFNumberRef scaleFactorValue = base::apple::CFCast<CFNumberRef>(
-          CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
-                                               SCStreamFrameInfoScaleFactor)));
-      CFNumberRef contentScaleValue = base::apple::CFCast<CFNumberRef>(
-          CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
-                                               SCStreamFrameInfoContentScale)));
-
-      if (contentRectValue && scaleFactorValue && contentScaleValue) {
-        CGRect contentRect = {};
-        bool succeed = CGRectMakeWithDictionaryRepresentation(contentRectValue,
-                                                              &contentRect);
-        float scaleFactor = 1.0f;
-        succeed &= CFNumberGetValue(scaleFactorValue, kCFNumberFloatType,
-                                    &scaleFactor);
-        float contentScale = 1.0f;
-        succeed &= CFNumberGetValue(contentScaleValue, kCFNumberFloatType,
-                                    &contentScale);
-        if (succeed) {
-          contentRect.size.width *= scaleFactor;
-          contentRect.size.height *= scaleFactor;
-          visibleRect.emplace(contentRect);
-          contentSize.emplace(round(contentRect.size.width / contentScale),
-                              round(contentRect.size.height / contentScale));
-        }
-      }
+      std::tie(visibleRect, contentSize) =
+          GetVisibleRectAndContentSize(attachment);
+      isPresenterOverlayLargeActive = IsPresenterOverlayLargeActive(attachment);
     }
   }
   IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
@@ -103,7 +149,7 @@ API_AVAILABLE(macos(12.3))
     return;
   _sampleCallback.Run(
       gfx::ScopedInUseIOSurface(ioSurface, base::scoped_policy::RETAIN),
-      contentSize, visibleRect);
+      contentSize, visibleRect, isPresenterOverlayLargeActive);
 }
 
 - (void)stream:(SCStream*)stream didStopWithError:(NSError*)error {
@@ -297,7 +343,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   }
   void OnStreamSample(gfx::ScopedInUseIOSurface io_surface,
                       std::optional<gfx::Size> content_size,
-                      std::optional<gfx::Rect> visible_rect) {
+                      std::optional<gfx::Rect> visible_rect,
+                      bool is_presenter_overlay_large_active) {
     DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
 
     if (requested_capture_format_) {
@@ -334,10 +381,21 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
         gfx::Size new_frame_size;
         ComputeFrameSizeAndDestRect(stream_config_content_size_, new_frame_size,
                                     dest_rect_in_frame);
-        if (new_frame_size.width() !=
-                actual_capture_format_.frame_size.width() ||
-            new_frame_size.height() !=
-                actual_capture_format_.frame_size.height()) {
+
+        // There's a small variation in the reported content size when the large
+        // presenter overlay is active which may result in updateConfiguration()
+        // being repeatedly called at a high frequency toggling between two
+        // different sizes. Avoid this by not reacting on too small changes.
+        // The threshold was determined by local testing.
+        constexpr int kDefaultThreshold = 1;
+        constexpr int kPresenterOverlayLargeThreshold = 4;
+        int threshold = is_presenter_overlay_large_active
+                            ? kPresenterOverlayLargeThreshold
+                            : kDefaultThreshold;
+        if (std::abs(new_frame_size.width() -
+                     actual_capture_format_.frame_size.width()) >= threshold ||
+            std::abs(new_frame_size.height() -
+                     actual_capture_format_.frame_size.height()) >= threshold) {
           DVLOG(3) << "Calling updateConfiguration with new frame size: "
                    << new_frame_size.width() << " x "
                    << new_frame_size.height();

@@ -35,9 +35,9 @@ class MockTailoredSecurityService : public ChromeTailoredSecurityService {
       : ChromeTailoredSecurityService(/*state=*/nullptr,
                                       /*identity_manager=*/nullptr,
                                       /*sync_service=*/nullptr) {}
-  MockTailoredSecurityService(ChromeBrowserState* browser_state,
+  MockTailoredSecurityService(ProfileIOS* profile,
                               signin::IdentityManager* identity_manager)
-      : ChromeTailoredSecurityService(browser_state,
+      : ChromeTailoredSecurityService(profile,
                                       identity_manager,
                                       /*sync_service=*/nullptr) {}
   MOCK_METHOD0(RemoveQueryRequest, void());
@@ -75,22 +75,22 @@ class TailoredSecurityTabHelperTest : public PlatformTest {
     RegisterBrowserStatePrefs(registry.get());
     sync_preferences::PrefServiceMockFactory factory;
 
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(factory.CreateSyncable(registry.get()));
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    web_state_.SetBrowserState(chrome_browser_state_.get());
+    profile_ = std::move(test_cbs_builder).Build();
+    web_state_.SetBrowserState(profile_.get());
     // Needed to create InfoBarManager.
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     mock_service_ = std::make_unique<MockTailoredSecurityService>(
-        chrome_browser_state_.get(), GetIdentityManager());
+        profile_.get(), GetIdentityManager());
     TailoredSecurityTabHelper::CreateForWebState(&web_state_,
                                                  mock_service_.get());
     tab_helper_ = TailoredSecurityTabHelper::FromWebState(&web_state_);
   }
 
   signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(profile_.get());
   }
 
   size_t GetActiveQueryRequest() {
@@ -102,7 +102,7 @@ class TailoredSecurityTabHelperTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   std::unique_ptr<MockTailoredSecurityService> mock_service_;
   raw_ptr<TailoredSecurityTabHelper> tab_helper_;
@@ -139,9 +139,8 @@ TEST_F(TailoredSecurityTabHelperTest,
   // When a sync notification request is sent and the user is synced, the
   // SafeBrowsingState should automatically change to Enhanced Protection.
   tab_helper_->OnSyncNotificationMessageRequest(/*is_enabled=*/true);
-  EXPECT_TRUE(
-      safe_browsing::GetSafeBrowsingState(*chrome_browser_state_->GetPrefs()) ==
-      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  EXPECT_TRUE(safe_browsing::GetSafeBrowsingState(*profile_->GetPrefs()) ==
+              safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
 }
 
 // Tests how the tab helper responds an observer call for a consented and
@@ -151,9 +150,8 @@ TEST_F(TailoredSecurityTabHelperTest,
   // When a sync notification request is sent and the user is synced, the
   // SafeBrowsingState should automatically change to Standard Protection.
   tab_helper_->OnSyncNotificationMessageRequest(/*is_enabled=*/false);
-  EXPECT_TRUE(
-      safe_browsing::GetSafeBrowsingState(*chrome_browser_state_->GetPrefs()) ==
-      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_TRUE(safe_browsing::GetSafeBrowsingState(*profile_->GetPrefs()) ==
+              safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 }
 
 // Tests that method early returns if the WebState is hidden and doesn't change
@@ -164,9 +162,8 @@ TEST_F(TailoredSecurityTabHelperTest, OnSyncNotificationRequestEarlyReturn) {
   // When a sync notification request is sent and the user is synced, the
   // SafeBrowsingState should automatically change to Standard Protection.
   tab_helper_->OnSyncNotificationMessageRequest(/*is_enabled=*/true);
-  EXPECT_TRUE(
-      safe_browsing::GetSafeBrowsingState(*chrome_browser_state_->GetPrefs()) ==
-      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_TRUE(safe_browsing::GetSafeBrowsingState(*profile_->GetPrefs()) ==
+              safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 }
 
 // Tests that an infobar is created when the tailored security bit is changed to
@@ -183,7 +180,7 @@ TEST_F(TailoredSecurityTabHelperTest,
   tab_helper_->OnTailoredSecurityBitChanged(/*enabled=*/true,
                                             base::Time::Now());
   EXPECT_EQ(infobar_manager->infobars().size(), 1u);
-  EXPECT_TRUE(chrome_browser_state_->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
 }
 
@@ -199,7 +196,7 @@ TEST_F(TailoredSecurityTabHelperTest, InfobarNotCreatedOnHiddenWebState) {
   tab_helper_->OnTailoredSecurityBitChanged(/*enabled=*/true,
                                             base::Time::Now());
   EXPECT_EQ(infobar_manager->infobars().size(), 0u);
-  EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
 }
 
@@ -213,7 +210,7 @@ TEST_F(TailoredSecurityTabHelperTest, EarlyReturnOnTailoredSecurityBitChanged) {
   tab_helper_->OnTailoredSecurityBitChanged(/*enabled=*/false,
                                             base::Time::Now());
   EXPECT_EQ(infobar_manager->infobars().size(), 0u);
-  EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
 }
 
@@ -229,7 +226,7 @@ TEST_F(TailoredSecurityTabHelperTest,
       /*enabled=*/true,
       base::Time::Now() - (kThresholdForInFlowNotification + base::Minutes(1)));
   EXPECT_EQ(infobar_manager->infobars().size(), 0u);
-  EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
 }
 

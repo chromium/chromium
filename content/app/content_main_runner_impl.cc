@@ -1032,6 +1032,10 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   }
 #endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
+#if BUILDFLAG(IS_POSIX)
+  base::CheckPThreadStackMinIsSafe();
+#endif  // BUILDFLAG(IS_POSIX)
+
 #if BUILDFLAG(IS_WIN)
   if (!sandbox::policy::Sandbox::Initialize(
           sandbox::policy::SandboxTypeFromCommandLine(command_line),

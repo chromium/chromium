@@ -22,26 +22,6 @@
 
 namespace security_interstitials {
 
-void JNI_CaptivePortalHelper_SetCaptivePortalCertificateForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jhash) {
-  auto default_proto =
-      SSLErrorAssistant::GetErrorAssistantProtoFromResourceBundle();
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(SSLErrorHandler::SetErrorAssistantProto,
-                                std::move(default_proto)));
-
-  const std::string hash = base::android::ConvertJavaStringToUTF8(env, jhash);
-  auto config_proto =
-      std::make_unique<chrome_browser_ssl::SSLErrorAssistantConfig>();
-  config_proto->set_version_id(INT_MAX);
-  config_proto->add_captive_portal_cert()->set_sha256_hash(hash);
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(SSLErrorHandler::SetErrorAssistantProto,
-                                std::move(config_proto)));
-}
-
 void JNI_CaptivePortalHelper_SetOSReportsCaptivePortalForTesting(
     JNIEnv* env,
     jboolean os_reports_captive_portal) {

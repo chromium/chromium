@@ -20,6 +20,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace {
 
@@ -45,11 +46,12 @@ AppWindowGeometryCache* AppWindowGeometryCache::Get(
   return Factory::GetForContext(context, true /* create */);
 }
 
-void AppWindowGeometryCache::SaveGeometry(const ExtensionId& extension_id,
-                                          const std::string& window_id,
-                                          const gfx::Rect& bounds,
-                                          const gfx::Rect& screen_bounds,
-                                          ui::WindowShowState window_state) {
+void AppWindowGeometryCache::SaveGeometry(
+    const ExtensionId& extension_id,
+    const std::string& window_id,
+    const gfx::Rect& bounds,
+    const gfx::Rect& screen_bounds,
+    ui::mojom::WindowShowState window_state) {
   ExtensionData& extension_data = cache_[extension_id];
 
   // If we don't have any unsynced changes and this is a duplicate of what's
@@ -112,7 +114,8 @@ void AppWindowGeometryCache::SyncToStorage() {
       const gfx::Rect& screen_bounds = data_it->second.screen_bounds;
       DCHECK(!bounds.IsEmpty());
       DCHECK(!screen_bounds.IsEmpty());
-      DCHECK(data_it->second.window_state != ui::SHOW_STATE_DEFAULT);
+      DCHECK(data_it->second.window_state !=
+             ui::mojom::WindowShowState::kDefault);
       value.Set("x", bounds.x());
       value.Set("y", bounds.y());
       value.Set("w", bounds.width());
@@ -121,7 +124,7 @@ void AppWindowGeometryCache::SyncToStorage() {
       value.Set("screen_bounds_y", screen_bounds.y());
       value.Set("screen_bounds_w", screen_bounds.width());
       value.Set("screen_bounds_h", screen_bounds.height());
-      value.Set("state", data_it->second.window_state);
+      value.Set("state", static_cast<int>(data_it->second.window_state));
       value.Set("ts", base::TimeToValue(data_it->second.last_change));
       dict.Set(data_it->first, std::move(value));
 
@@ -133,11 +136,12 @@ void AppWindowGeometryCache::SyncToStorage() {
   }
 }
 
-bool AppWindowGeometryCache::GetGeometry(const ExtensionId& extension_id,
-                                         const std::string& window_id,
-                                         gfx::Rect* bounds,
-                                         gfx::Rect* screen_bounds,
-                                         ui::WindowShowState* window_state) {
+bool AppWindowGeometryCache::GetGeometry(
+    const ExtensionId& extension_id,
+    const std::string& window_id,
+    gfx::Rect* bounds,
+    gfx::Rect* screen_bounds,
+    ui::mojom::WindowShowState* window_state) {
   std::map<ExtensionId, ExtensionData>::const_iterator extension_data_it =
       cache_.find(extension_id);
 
@@ -160,8 +164,10 @@ bool AppWindowGeometryCache::GetGeometry(const ExtensionId& extension_id,
   // Check for and do not return corrupt data.
   if ((bounds && window_data.bounds.IsEmpty()) ||
       (screen_bounds && window_data.screen_bounds.IsEmpty()) ||
-      (window_state && window_data.window_state == ui::SHOW_STATE_DEFAULT))
+      (window_state &&
+       window_data.window_state == ui::mojom::WindowShowState::kDefault)) {
     return false;
+  }
 
   if (bounds)
     *bounds = window_data.bounds;
@@ -175,7 +181,7 @@ bool AppWindowGeometryCache::GetGeometry(const ExtensionId& extension_id,
 void AppWindowGeometryCache::Shutdown() { SyncToStorage(); }
 
 AppWindowGeometryCache::WindowData::WindowData()
-    : window_state(ui::SHOW_STATE_DEFAULT) {}
+    : window_state(ui::mojom::WindowShowState::kDefault) {}
 
 AppWindowGeometryCache::WindowData::~WindowData() = default;
 
@@ -244,7 +250,7 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
       window_data.screen_bounds.set_height(*i);
     }
     if (std::optional<int> i = stored_window->FindInt("state")) {
-      window_data.window_state = static_cast<ui::WindowShowState>(*i);
+      window_data.window_state = static_cast<ui::mojom::WindowShowState>(*i);
     }
     if (const std::string* ts_as_string = stored_window->FindString("ts")) {
       int64_t ts;

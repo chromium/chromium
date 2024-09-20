@@ -17,8 +17,6 @@
 
 namespace blink {
 
-namespace {
-
 class MockAudioCapturerSource : public media::AudioCapturerSource {
  public:
   MockAudioCapturerSource() = default;
@@ -34,8 +32,6 @@ class MockAudioCapturerSource : public media::AudioCapturerSource {
  protected:
   ~MockAudioCapturerSource() override = default;
 };
-
-}  // namespace
 
 // Test Platform implementation that overrides the known methods needed
 // by the tests, including creation of AudioCapturerSource instances.

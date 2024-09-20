@@ -61,7 +61,7 @@ static_library("config") {
     "//chrome/browser/ash/system_web_apps/apps/vc_background_ui",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/holding_space",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/account_manager",
     "//chrome/browser/ui/webui/ash/add_supervision",
     "//chrome/browser/ui/webui/ash/app_install",
@@ -106,6 +106,7 @@ static_library("config") {
     "//chrome/browser/ui/webui/ash/sys_internals",
     "//chrome/browser/ui/webui/ash/vc_tray_tester",
     "//chrome/browser/ui/webui/ash/vm",
+    "//chrome/browser/ui/webui/nearby_share",
     "//chromeos/ash/components/kiosk/vision/webui",
     "//components/cross_device/logging",
   ]

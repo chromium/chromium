@@ -15,8 +15,13 @@ source_set("toasts") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/omnibox:omnibox",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/toasts/api:toasts",
+    "//components/omnibox/common:common",
     "//content/public/browser",
     "//ui/base",
     "//ui/views",
@@ -40,6 +45,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/side_panel",
     "//components/vector_icons:vector_icons",
     "//ui/base/metadata",
+    "//ui/compositor",
   ]
 }
 
@@ -51,8 +57,10 @@ source_set("interactive_ui_tests") {
     ":toasts",
     "//base",
     "//base/test:test_support",
+    "//chrome/app:command_ids",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui",
     "//chrome/test:test_support",
     "//components/vector_icons",
@@ -60,9 +68,11 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base:base",
+    "//ui/base:test_support",
     "//ui/gfx",
     "//ui/strings:ui_strings_grit",
     "//ui/views",
+    "//ui/views:test_support",
   ]
 }
 

@@ -643,6 +643,9 @@
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_PROCESSING_SUBTITLE" desc="Subtitle of a section telling the user that a work profile is being created for them.">
       Setting up your work profile ...
     </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_LONG_PROCESSING_SUBTITLE" desc="Subtitle of a section telling the user that work profile creation is ongoing and taking longer than expected.">
+      Setup may take a little longer ...
+    </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_SUCCESS_TITLE" desc="Title of a section telling the user that their work profile has been created..">
       You're all set!
     </message>
@@ -657,6 +660,24 @@
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
       You can try again or contact your administrator for help
+    </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
+      Sign in to securely separate your work and personal browsing. Increase your productivity while protecting sensitive company data.
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the work profile they will create or keep it separate.">
+      Keep existing browsing data separate from your work profile?
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep it separate (recommended)
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Your existing browsing data will remain in the old profile. Your work profile will not contain any previous browsing data.
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created work profile.">
+      No, move it into your work profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      This includes bookmarks, extensions and your browsing history of sites.
     </message>
 
     <!-- Supervised user profile signin IPH -->
@@ -916,5 +937,23 @@
       Skip
     </message>
 
+    <!-- Batch Upload Desktop -->
+    <!-- TODO(b/365954368): All batch upload strings to be finalized and translated. -->
+    <message translateable="false" name="IDS_BATCH_UPLOAD_TITLE" desc="">
+      Save data to account
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SUBTITLE" desc="">
+      <!-- TODO(b/365954465): Incomplete string that might get more complex. -->
+      N items are saved only to this device. To use them on your other devices, save them in your Google Account.
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS" desc="">
+      Passwords
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES" desc="">
+      Addresses
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL" desc="">
+      Save in account
+    </message>
   </if>
 </grit-part>

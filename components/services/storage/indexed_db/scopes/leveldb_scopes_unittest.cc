@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 class LevelDBScopesStartupTest : public LevelDBScopesTestBase {
@@ -140,4 +140,4 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace content::indexed_db

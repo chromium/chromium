@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.PersonalDataManagerObserver;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -170,7 +171,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                     mPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
                             bankAccount.getDisplayIconUrl(),
                             AutofillUiUtils.CardIconSpecs.create(
-                                    getStyledContext(), AutofillUiUtils.CardIconSize.LARGE));
+                                    getStyledContext(), ImageSize.LARGE));
         }
         Drawable displayIconBitmapDrawable =
                 displayIconOptional.isPresent()

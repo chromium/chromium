@@ -190,7 +190,7 @@ enum class ItemType {
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
-  if (self.noDataItemsToShowHeaderItem &&
+  if (self.noRegularDataItemsToShowHeaderItem &&
       [self.tableViewModel
           hasSectionForSectionIdentifier:NoDataItemsSectionIdentifier] &&
       section ==
@@ -461,15 +461,16 @@ enum class ItemType {
   }
 }
 
-// Adds or removes the `noDataItemsToShowHeaderItem` if needed. This header item
-// is displayed to let the user know that there are no data items to show.
+// Adds or removes the `noRegularDataItemsToShowHeaderItem` if needed. This
+// header item is displayed to let the user know that there are no data items
+// amongst passwords, cards and addresses to show. However, plus address can
+// still be shown.
 - (void)updateEmptyStateMessage {
   if (!IsKeyboardAccessoryUpgradeEnabled()) {
     return;
   }
 
-  BOOL needsEmptyStateHeader =
-      !self.queuedDataItems.count && self.noDataItemsToShowHeaderItem;
+  BOOL needsEmptyStateHeader = self.noRegularDataItemsToShowHeaderItem;
   BOOL hasEmptyStateSection = [self.tableViewModel
       hasSectionForSectionIdentifier:NoDataItemsSectionIdentifier];
   BOOL hasEmptyStateHeader =
@@ -483,12 +484,12 @@ enum class ItemType {
 
   if (needsEmptyStateHeader) {
     [self.tableViewModel addSectionWithIdentifier:NoDataItemsSectionIdentifier];
-    [self.tableViewModel setHeader:self.noDataItemsToShowHeaderItem
+    [self.tableViewModel setHeader:self.noRegularDataItemsToShowHeaderItem
           forSectionWithIdentifier:NoDataItemsSectionIdentifier];
   } else {
     [self.tableViewModel
         removeSectionWithIdentifier:NoDataItemsSectionIdentifier];
-    self.noDataItemsToShowHeaderItem = nil;
+    self.noRegularDataItemsToShowHeaderItem = nil;
   }
 }
 

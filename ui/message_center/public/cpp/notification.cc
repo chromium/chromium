@@ -79,14 +79,19 @@ NotificationItem::NotificationItem(const std::u16string& title,
   icon_.emplace(std::move(icon));
 }
 
-NotificationItem::NotificationItem(const NotificationItem& other) = default;
-
 NotificationItem::NotificationItem() = default;
 
-NotificationItem::~NotificationItem() = default;
+NotificationItem::NotificationItem(const NotificationItem& other) = default;
+
+NotificationItem::NotificationItem(NotificationItem&& other) = default;
 
 NotificationItem& NotificationItem::operator=(const NotificationItem& other) =
     default;
+
+NotificationItem& NotificationItem::operator=(NotificationItem&& other) =
+    default;
+
+NotificationItem::~NotificationItem() = default;
 
 ButtonInfo::ButtonInfo(const std::u16string& title) : title(title) {}
 
@@ -94,13 +99,17 @@ ButtonInfo::ButtonInfo(const gfx::VectorIcon* vector_icon,
                        const std::u16string& accessible_name)
     : vector_icon(vector_icon), accessible_name(accessible_name) {}
 
-ButtonInfo::ButtonInfo(const ButtonInfo& other) = default;
-
 ButtonInfo::ButtonInfo() = default;
 
-ButtonInfo::~ButtonInfo() = default;
+ButtonInfo::ButtonInfo(const ButtonInfo& other) = default;
+
+ButtonInfo::ButtonInfo(ButtonInfo&& other) = default;
 
 ButtonInfo& ButtonInfo::operator=(const ButtonInfo& other) = default;
+
+ButtonInfo& ButtonInfo::operator=(ButtonInfo&& other) = default;
+
+ButtonInfo::~ButtonInfo() = default;
 
 RichNotificationData::RichNotificationData() : timestamp(base::Time::Now()) {}
 
@@ -144,7 +153,11 @@ Notification::Notification(const std::string& id, const Notification& other)
 
 Notification::Notification(const Notification& other) = default;
 
+Notification::Notification(Notification&& other) = default;
+
 Notification& Notification::operator=(const Notification& other) = default;
+
+Notification& Notification::operator=(Notification&& other) = default;
 
 Notification::~Notification() = default;
 

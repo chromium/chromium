@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 /**
  * A model class that parses the incoming intent for Auth Tab specific data.
@@ -33,11 +35,19 @@ import org.chromium.components.browser_ui.widget.TintedDrawable;
  */
 @OptIn(markerClass = ExperimentalAuthTab.class)
 public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider {
+    // TODO(b/358167556): Move these to AndroidX AuthTabIntent.
+    public static final String EXTRA_HTTPS_REDIRECT_HOST =
+            "androidx.browser.auth.extra.HTTPS_REDIRECT_HOST";
+    public static final String EXTRA_HTTPS_REDIRECT_PATH =
+            "androidx.browser.auth.extra.HTTPS_REDIRECT_PATH";
+
     private final @NonNull Intent mIntent;
     private final @Nullable String mClientPackageName;
     private final @NonNull ColorProvider mColorProvider;
     private final @NonNull Drawable mCloseButtonIcon;
     private final @Nullable String mRedirectScheme;
+    private final @Nullable String mRedirectHost;
+    private final @Nullable String mRedirectPath;
 
     @Nullable private String mUrlToLoad;
 
@@ -65,6 +75,21 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
         // might want to disallow more.
         mRedirectScheme =
                 IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_REDIRECT_SCHEME);
+        String host = IntentUtils.safeGetStringExtra(intent, EXTRA_HTTPS_REDIRECT_HOST);
+        String path = IntentUtils.safeGetStringExtra(intent, EXTRA_HTTPS_REDIRECT_PATH);
+        GURL redirectUrl = new GURL(UrlConstants.HTTPS_URL_PREFIX + host + path);
+        mRedirectHost = redirectUrl.getHost();
+        mRedirectPath = redirectUrl.getPath();
+    }
+
+    @Override
+    public String getAuthRedirectHost() {
+        return mRedirectHost;
+    }
+
+    @Override
+    public String getAuthRedirectPath() {
+        return mRedirectPath;
     }
 
     @Override

@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/picker/model/picker_emoji_history_model.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_search_result.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_service.h"

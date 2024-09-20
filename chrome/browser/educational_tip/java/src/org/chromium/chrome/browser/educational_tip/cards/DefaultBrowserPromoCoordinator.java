@@ -14,6 +14,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -22,32 +23,37 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /** Coordinator for the default browser promo card. */
 public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvider {
-    private final Context mContext;
-
     // For the default browser promo card specifically, it is triggered only when the user clicks on
     // the bottom sheet, directing them to the default app settings page.
     private final Runnable mOnModuleClickedCallback;
+    private final EducationTipModuleActionDelegate mActionDelegate;
 
-    private final BottomSheetController mBottomSheetController;
     private DefaultBrowserPromoBottomSheetContent mDefaultBrowserBottomSheetContent;
 
+    /**
+     * @param onModuleClickedCallback The callback to be called when the bottom sheet is clicked.
+     * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
+     */
     public DefaultBrowserPromoCoordinator(
-            @NonNull Context context,
             @NonNull Runnable onModuleClickedCallback,
-            @NonNull BottomSheetController bottomSheetController) {
-        mContext = context;
+            @NonNull EducationTipModuleActionDelegate actionDelegate) {
         mOnModuleClickedCallback = onModuleClickedCallback;
-        mBottomSheetController = bottomSheetController;
+        mActionDelegate = actionDelegate;
     }
 
+    // EducationalTipCardProvider implementation.
     @Override
     public String getCardTitle() {
-        return mContext.getString(R.string.educational_tip_default_browser_title);
+        return mActionDelegate
+                .getContext()
+                .getString(R.string.educational_tip_default_browser_title);
     }
 
     @Override
     public String getCardDescription() {
-        return mContext.getString(R.string.educational_tip_default_browser_description);
+        return mActionDelegate
+                .getContext()
+                .getString(R.string.educational_tip_default_browser_description);
     }
 
     @Override
@@ -57,26 +63,36 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
 
     @Override
     public void onCardClicked() {
+        Context context = mActionDelegate.getContext();
         View defaultBrowserBottomSheetView =
-                LayoutInflater.from(mContext)
+                LayoutInflater.from(context)
                         .inflate(
                                 R.layout.educational_tip_default_browser_bottom_sheet,
                                 /* root= */ null);
         mDefaultBrowserBottomSheetContent =
                 new DefaultBrowserPromoBottomSheetContent(defaultBrowserBottomSheetView);
-        mBottomSheetController.requestShowContent(mDefaultBrowserBottomSheetContent, true);
+        BottomSheetController bottomSheetController = mActionDelegate.getBottomSheetController();
+        bottomSheetController.requestShowContent(mDefaultBrowserBottomSheetContent, true);
         ButtonCompat bottomSheetButton =
                 defaultBrowserBottomSheetView.findViewById(
                         R.id.default_browser_bottom_sheet_button);
         bottomSheetButton.setOnClickListener(
                 (v) -> {
-                    IntentUtils.safeStartActivity(mContext, createBottomSheetOnClickIntent());
-                    mBottomSheetController.hideContent(
+                    IntentUtils.safeStartActivity(context, createBottomSheetOnClickIntent());
+                    bottomSheetController.hideContent(
                             mDefaultBrowserBottomSheetContent,
                             /* animate= */ true,
                             StateChangeReason.INTERACTION_COMPLETE);
                     mOnModuleClickedCallback.run();
                 });
+    }
+
+    @Override
+    public void destroy() {
+        if (mDefaultBrowserBottomSheetContent != null) {
+            mDefaultBrowserBottomSheetContent.destroy();
+            mDefaultBrowserBottomSheetContent = null;
+        }
     }
 
     private Intent createBottomSheetOnClickIntent() {

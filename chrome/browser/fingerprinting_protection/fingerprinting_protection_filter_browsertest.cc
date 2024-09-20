@@ -23,10 +23,6 @@
 // functionality once blocking is fully implemented.
 namespace fingerprinting_protection_filter {
 
-// The path to a multi-frame document used for tests.
-static constexpr const char kTestFrameSetPath[] =
-    "/subresource_filter/frame_set.html";
-
 // =================================== Tests ==================================
 //
 // Note: Similar to the FPF component, these tests leverage Subresource Filter
@@ -34,6 +30,78 @@ static constexpr const char kTestFrameSetPath[] =
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        SubframeDocumentLoadFiltering) {
+  // TODO(https://crbug.com/358371545): Test console messaging for subframe
+  // blocking once its implementation is resolved.
+  base::HistogramTester histogram_tester;
+  GURL url(GetTestUrl(kTestFrameSetPath));
+
+  // Disallow loading child frame documents that in turn would end up
+  // loading included_script.js, unless the document is loaded from an allowed
+  // (not in the blocklist) domain. This enables the third part of this test
+  // disallowing a load only after the first redirect.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Now navigate the first subframe to an allowed URL and ensure that the load
+  // successfully commits and the frame gets restored (no longer collapsed).
+  GURL allowed_subdocument_url(
+      GetTestUrl("subresource_filter/frame_with_allowed_script.html"));
+  NavigateFrame(kSubframeNames[0], allowed_subdocument_url);
+
+  const std::vector<bool> kExpectFirstAndSecondSubframe{true, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectFirstAndSecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectFirstAndSecondSubframe);
+
+  // Navigate the first subframe to a document that does not load the probe JS.
+  GURL allowed_empty_subdocument_url(
+      GetTestUrl("subresource_filter/frame_with_no_subresources.html"));
+  NavigateFrame(kSubframeNames[0], allowed_empty_subdocument_url);
+
+  // Finally, navigate the first subframe to an allowed URL that redirects to a
+  // disallowed URL, and verify that the navigation gets blocked and the frame
+  // collapsed.
+  const char kAllowedDomain[] = "allowed.com";
+  GURL disallowed_subdocument_url(
+      GetTestUrl("subresource_filter/frame_with_included_script.html"));
+  GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
+      kAllowedDomain, "/server-redirect?" + disallowed_subdocument_url.spec()));
+  NavigateFrame(kSubframeNames[0], redirect_to_disallowed_subdocument_url);
+
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+
+  content::RenderFrameHost* frame = FindFrameByName(kSubframeNames[0]);
+  const auto last_committed_url = frame->GetLastCommittedURL();
+
+  ASSERT_TRUE(frame);
+  AssertUrlContained(last_committed_url,
+                     redirect_to_disallowed_subdocument_url);
+  AssertUrlContained(last_committed_url, disallowed_subdocument_url);
+
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // TODO(https://crbug.com/366267410): Add UKM testing.
+  // TODO(https://crbug.com/358371545): Add PageLoad.SubresourceLoads histogram
+  // testing.
+  histogram_tester.ExpectBucketCount(
+      ActivationDecisionHistogramName,
+      subresource_filter::ActivationDecision::ACTIVATED, 1);
+  histogram_tester.ExpectBucketCount(
+      ActivationLevelHistogramName,
+      subresource_filter::mojom::ActivationLevel::kEnabled, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    FingerprintingProtectionFilterEnabledInIncognitoBrowserTest,
+    SubframeDocumentLoadFiltering) {
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   base::HistogramTester histogram_tester;

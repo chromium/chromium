@@ -76,6 +76,8 @@ extern const char kManagementOnPrintEvent[];
 extern const char kManagementOnPrintVisibleData[];
 extern const char kManagementOnPageVisitedEvent[];
 extern const char kManagementOnPageVisitedVisibleData[];
+extern const char kManagementOnExtensionTelemetryEvent[];
+extern const char kManagementOnExtensionTelemetryVisibleData[];
 
 extern const char kManagementLegacyTechReport[];
 extern const char kManagementLegacyTechReportNoLink[];
@@ -104,5 +106,6 @@ extern const char kProfileReportingUsername[];
 extern const char kProfileReportingBrowser[];
 extern const char kProfileReportingExtension[];
 extern const char kProfileReportingPolicy[];
+extern const char kProfileReportingLearnMore[];
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_CONSTANTS_H_

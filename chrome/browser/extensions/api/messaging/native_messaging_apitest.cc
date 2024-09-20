@@ -15,6 +15,8 @@
 #include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_test_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -53,6 +55,14 @@ class NativeMessagingApiTestBase : public ExtensionApiTest {
       delete;
 
  protected:
+  size_t GetTotalTabCount() const {
+    size_t tabs = 0;
+    for (WindowController* window : *WindowControllerList::GetInstance()) {
+      tabs += window->GetTabCount();
+    }
+    return tabs;
+  }
+
   extensions::ScopedTestNativeMessagingHost test_host_;
 };
 
@@ -227,11 +237,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, Success) {
   if (!catcher.GetNextResult()) {
     FAIL() << catcher.message();
   }
-  size_t tabs = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    tabs += browser->tab_strip_model()->count();
-  }
-  EXPECT_EQ(1u, tabs);
+  EXPECT_EQ(1u, GetTotalTabCount());
 }
 
 // Test that a natively-initiated connection from a host not supporting
@@ -264,11 +270,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, UnsupportedByNativeHost) {
   if (!catcher.GetNextResult()) {
     FAIL() << catcher.message();
   }
-  size_t tabs = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    tabs += browser->tab_strip_model()->count();
-  }
-  EXPECT_EQ(1u, tabs);
+  EXPECT_EQ(1u, GetTotalTabCount());
 }
 
 class TestKeepAliveStateObserver : public KeepAliveStateObserver {
@@ -481,11 +483,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
   if (!catcher_->GetNextResult()) {
     FAIL() << catcher_->message();
   }
-  size_t tabs = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    tabs += browser->tab_strip_model()->count();
-  }
-  EXPECT_EQ(0u, tabs);
+  EXPECT_EQ(0u, GetTotalTabCount());
 
   ASSERT_NO_FATAL_FAILURE(TestKeepAliveStateObserver().WaitForNoKeepAlive());
 }

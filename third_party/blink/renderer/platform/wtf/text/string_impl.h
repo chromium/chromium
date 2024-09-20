@@ -223,6 +223,10 @@ class WTF_EXPORT StringImpl {
   ALWAYS_INLINE const void* Bytes() const {
     return reinterpret_cast<const void*>(this + 1);
   }
+  ALWAYS_INLINE base::span<const uint8_t> RawByteSpan() const {
+    return {reinterpret_cast<const uint8_t*>(this + 1),
+            CharactersSizeInBytes()};
+  }
 
   template <typename CharType>
   ALWAYS_INLINE const CharType* GetCharacters() const;
@@ -961,9 +965,9 @@ inline void StringImpl::AppendTo(BufferType& result,
   if (!number_of_characters_to_copy)
     return;
   if (Is8Bit())
-    result.Append(Characters8() + start, number_of_characters_to_copy);
+    result.AppendSpan(Span8().subspan(start, number_of_characters_to_copy));
   else
-    result.Append(Characters16() + start, number_of_characters_to_copy);
+    result.AppendSpan(Span16().subspan(start, number_of_characters_to_copy));
 }
 
 template <typename BufferType>

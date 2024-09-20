@@ -118,6 +118,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -278,6 +279,8 @@
   AccountMenuCoordinator* _accountMenuCoordinator;
   // Coordinator for presenting the Home customization menu.
   HomeCustomizationCoordinator* _customizationCoordinator;
+  // Coordinator for the tab group indicator.
+  TabGroupIndicatorCoordinator* _tabGroupIndicatorCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -371,6 +374,9 @@
   [self configureContentSuggestionsCoordinator];
   [self configureFeedMetricsRecorder];
   [self configureNTPViewController];
+  if (IsTabGroupIndicatorEnabled()) {
+    [self configureTabGroupIndicator];
+  }
 
   self.started = YES;
 }
@@ -395,6 +401,11 @@
   // browsers!
 
   [sceneState.appState removeObserver:self];
+
+  if (IsTabGroupIndicatorEnabled()) {
+    [_tabGroupIndicatorCoordinator stop];
+    _tabGroupIndicatorCoordinator = nil;
+  }
 
   [self.feedManagementCoordinator stop];
   self.feedManagementCoordinator = nil;
@@ -538,14 +549,7 @@
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
-  if (![self isFollowingFeedAvailable] ||
-      !IsDotEnabledForNewFollowedContent()) {
-    return;
-  }
-  if ([self doesFollowingFeedHaveContent]) {
-    [self.feedHeaderViewController
-        updateFollowingDotForUnseenContent:hasUnseenContent];
-  }
+  // No-op.
 }
 
 - (void)handleFeedModelOfType:(FeedType)feedType
@@ -621,15 +625,12 @@
 
 // Gets all NTP services from the browser state.
 - (void)initializeServices {
-  self.authService = AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-  self.templateURLService = ios::TemplateURLServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-  self.discoverFeedService = DiscoverFeedServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-  self.prefService =
-      ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
-          ->GetPrefs();
+  ProfileIOS* profile = self.browser->GetProfile();
+  self.authService = AuthenticationServiceFactory::GetForBrowserState(profile);
+  self.templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(profile);
+  self.discoverFeedService = DiscoverFeedServiceFactory::GetForProfile(profile);
+  self.prefService = profile->GetPrefs();
 }
 
 // Starts all NTP observers.
@@ -692,17 +693,8 @@
   CHECK(self.NTPViewController);
 
   if (!self.feedHeaderViewController) {
-    BOOL followingDotVisible = NO;
-    if (IsDotEnabledForNewFollowedContent() && IsWebChannelsEnabled()) {
-      // Only show the dot if the user follows available publishers.
-      followingDotVisible =
-          [self doesFollowingFeedHaveContent] &&
-          self.discoverFeedService->GetFollowingFeedHasUnseenContent() &&
-          self.selectedFeed != FeedTypeFollowing;
-    }
-
-    self.feedHeaderViewController = [self.componentFactory
-        feedHeaderViewControllerWithFollowingDotVisible:followingDotVisible];
+    self.feedHeaderViewController =
+        [self.componentFactory feedHeaderViewController];
     self.feedMenuCoordinator = [[FeedMenuCoordinator alloc]
         initWithBaseViewController:self.NTPViewController
                            browser:self.browser];
@@ -832,6 +824,21 @@
   self.NTPViewController.helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
   self.NTPViewController.mutator = self.NTPMediator;
+}
+
+// Configures the `_tabGroupIndicatorCoordinator` and sets the
+// `tabGroupIndicatorView` to the `headerViewController`.
+- (void)configureTabGroupIndicator {
+  // The `_tabGroupIndicatorCoordinator` should be configured after the
+  // `AdaptiveToolbarCoordinator` to gain access to the `NTPViewController`.
+  _tabGroupIndicatorCoordinator = [[TabGroupIndicatorCoordinator alloc]
+      initWithBaseViewController:self.NTPViewController
+                         browser:self.browser];
+  _tabGroupIndicatorCoordinator.toolbarHeightDelegate = nil;
+  _tabGroupIndicatorCoordinator.displayedOnNTP = YES;
+  [_tabGroupIndicatorCoordinator start];
+  [self.headerViewController
+      setTabGroupIndicatorView:_tabGroupIndicatorCoordinator.view];
 }
 
 // Configures the main ViewController managed by this Coordinator.
@@ -1023,13 +1030,6 @@
   // Saves scroll position before changing feed.
   CGFloat scrollPosition = [self.NTPViewController scrollPosition];
 
-  if (feedType == FeedTypeFollowing && IsDotEnabledForNewFollowedContent()) {
-    // Clears dot and notifies service that the Following feed content has
-    // been seen.
-    [self.feedHeaderViewController updateFollowingDotForUnseenContent:NO];
-    self.discoverFeedService->SetFollowingFeedContentSeen();
-  }
-
   [self handleChangeInModules];
 
   // Scroll position resets when changing the feed, so we set it back to what it
@@ -1202,12 +1202,6 @@
 }
 
 #pragma mark - NewTabPageContentDelegate
-
-- (BOOL)isContentHeaderSticky {
-  return [self isFollowingFeedAvailable] &&
-         self.NTPMediator.feedHeaderVisible &&
-         !IsStickyHeaderDisabledForFollowingFeed();
-}
 
 - (void)signinPromoHasChangedVisibility:(BOOL)visible {
   [self.feedTopSectionCoordinator signinPromoHasChangedVisibility:visible];
@@ -1595,8 +1589,7 @@
 - (void)updateStartForVisibilityChange:(BOOL)visible {
   if (visible && NewTabPageTabHelper::FromWebState(self.webState)
                      ->ShouldShowStartSurface()) {
-    DiscoverFeedServiceFactory::GetForBrowserState(
-        self.browser->GetBrowserState())
+    DiscoverFeedServiceFactory::GetForProfile(self.browser->GetProfile())
         ->SetIsShownOnStartSurface(true);
   }
   if (!visible && NewTabPageTabHelper::FromWebState(self.webState)

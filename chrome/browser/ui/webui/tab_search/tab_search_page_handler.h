@@ -32,6 +32,11 @@ class Browser;
 class MetricsReporter;
 class TabOrganizationService;
 class OptimizationGuideKeyedService;
+class TabSearchUI;
+
+namespace tabs {
+class TabDeclutterController;
+}
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -61,7 +66,7 @@ class TabSearchPageHandler
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
       mojo::PendingRemote<tab_search::mojom::Page> page,
       content::WebUI* web_ui,
-      TopChromeWebUIController* webui_controller,
+      TabSearchUI* webui_controller,
       MetricsReporter* metrics_reporter);
   TabSearchPageHandler(const TabSearchPageHandler&) = delete;
   TabSearchPageHandler& operator=(const TabSearchPageHandler&) = delete;
@@ -73,13 +78,17 @@ class TabSearchPageHandler
   void AcceptTabOrganization(
       int32_t session_id,
       int32_t organization_id,
-      const std::u16string& name,
       std::vector<tab_search::mojom::TabPtr> tabs) override;
   void RejectTabOrganization(int32_t session_id,
                              int32_t organization_id) override;
+  void RenameTabOrganization(int32_t session_id,
+                             int32_t organization_id,
+                             const std::u16string& name) override;
   void ExcludeFromStaleTabs(int32_t tab_id) override;
   void GetProfileData(GetProfileDataCallback callback) override;
   void GetStaleTabs(GetStaleTabsCallback callback) override;
+  void GetTabOrganizationFeature(
+      GetTabOrganizationFeatureCallback callback) override;
   void GetTabOrganizationSession(
       GetTabOrganizationSessionCallback callback) override;
   void GetTabOrganizationModelStrategy(
@@ -95,6 +104,8 @@ class TabSearchPageHandler
   void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void SetTabIndex(int32_t index) override;
+  void SetOrganizationFeature(
+      tab_search::mojom::TabOrganizationFeature feature) override;
   void StartTabGroupTutorial() override;
   void TriggerFeedback(int32_t session_id) override;
   void TriggerSignIn() override;
@@ -118,6 +129,8 @@ class TabSearchPageHandler
 
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;
+
+  void TabDeclutterControllerInstalled();
 
   // Returns true if the WebContents hosting the WebUI is visible to the user
   // (in either a fully visible or partially occluded state).
@@ -174,6 +187,8 @@ class TabSearchPageHandler
   std::vector<tab_search::mojom::TabPtr> FindStaleTabs(
       int32_t excluded_id = -1);
 
+  tabs::TabDeclutterController* GetTabDeclutterController();
+
   // Adds recently closed tabs and tab groups.
   void AddRecentlyClosedEntries(
       std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
@@ -214,12 +229,14 @@ class TabSearchPageHandler
 
   void NotifyTabIndexPrefChanged(const Profile* profile);
 
+  void NotifyOrganizationFeaturePrefChanged(const Profile* profile);
+
   void NotifyShowFREPrefChanged(const Profile* profile);
 
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
   const raw_ptr<content::WebUI> web_ui_;
-  const raw_ptr<TopChromeWebUIController, DanglingUntriaged> webui_controller_;
+  const raw_ptr<TabSearchUI, DanglingUntriaged> webui_controller_;
   const raw_ptr<MetricsReporter> metrics_reporter_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;

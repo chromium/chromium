@@ -69,6 +69,94 @@ void GPURenderPassEncoder::setBlendConstant(const V8GPUColor* color,
   GetHandle().SetBlendConstant(&dawn_color);
 }
 
+void GPURenderPassEncoder::multiDrawIndirect(
+    const DawnObject<wgpu::Buffer>* indirectBuffer,
+    uint64_t indirectOffset,
+    uint32_t maxDrawCount,
+    ExceptionState& exception_state) {
+  multiDrawIndirect(indirectBuffer, indirectOffset, maxDrawCount, nullptr, 0,
+                    exception_state);
+}
+
+void GPURenderPassEncoder::multiDrawIndirect(
+    const DawnObject<wgpu::Buffer>* indirectBuffer,
+    uint64_t indirectOffset,
+    uint32_t maxDrawCount,
+    DawnObject<wgpu::Buffer>* drawCountBuffer,
+    ExceptionState& exception_state) {
+  multiDrawIndirect(indirectBuffer, indirectOffset, maxDrawCount,
+                    drawCountBuffer, 0, exception_state);
+}
+
+void GPURenderPassEncoder::multiDrawIndirect(
+    const DawnObject<wgpu::Buffer>* indirectBuffer,
+    uint64_t indirectOffset,
+    uint32_t maxDrawCount,
+    DawnObject<wgpu::Buffer>* drawCountBuffer,
+    uint64_t drawCountBufferOffset,
+    ExceptionState& exception_state) {
+  V8GPUFeatureName::Enum requiredFeatureEnum =
+      V8GPUFeatureName::Enum::kChromiumExperimentalMultiDrawIndirect;
+
+  if (!device_->features()->has(requiredFeatureEnum)) {
+    exception_state.ThrowTypeError(
+        String::Format("Use of the multiDrawIndirect() method on render pass "
+                       "requires the '%s' "
+                       "feature to be enabled on %s.",
+                       V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
+                       device_->formattedLabel().c_str()));
+    return;
+  }
+  GetHandle().MultiDrawIndirect(
+      indirectBuffer->GetHandle(), indirectOffset, maxDrawCount,
+      drawCountBuffer ? drawCountBuffer->GetHandle() : wgpu::Buffer(nullptr),
+      drawCountBufferOffset);
+}
+
+void GPURenderPassEncoder::multiDrawIndexedIndirect(
+    const DawnObject<wgpu::Buffer>* indirectBuffer,
+    uint64_t indirectOffset,
+    uint32_t maxDrawCount,
+    ExceptionState& exception_state) {
+  multiDrawIndexedIndirect(indirectBuffer, indirectOffset, maxDrawCount,
+                           nullptr, 0, exception_state);
+}
+
+void GPURenderPassEncoder::multiDrawIndexedIndirect(
+    const DawnObject<wgpu::Buffer>* indirectBuffer,
+    uint64_t indirectOffset,
+    uint32_t maxDrawCount,
+    DawnObject<wgpu::Buffer>* drawCountBuffer,
+    ExceptionState& exception_state) {
+  multiDrawIndexedIndirect(indirectBuffer, indirectOffset, maxDrawCount,
+                           drawCountBuffer, 0, exception_state);
+}
+
+void GPURenderPassEncoder::multiDrawIndexedIndirect(
+    const DawnObject<wgpu::Buffer>* indirectBuffer,
+    uint64_t indirectOffset,
+    uint32_t maxDrawCount,
+    DawnObject<wgpu::Buffer>* drawCountBuffer,
+    uint64_t drawCountBufferOffset,
+    ExceptionState& exception_state) {
+  V8GPUFeatureName::Enum requiredFeatureEnum =
+      V8GPUFeatureName::Enum::kChromiumExperimentalMultiDrawIndirect;
+
+  if (!device_->features()->has(requiredFeatureEnum)) {
+    exception_state.ThrowTypeError(String::Format(
+        "Use of the multiDrawIndexedIndirect() method on render pass "
+        "requires the '%s' "
+        "feature to be enabled on %s.",
+        V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
+        device_->formattedLabel().c_str()));
+    return;
+  }
+  GetHandle().MultiDrawIndexedIndirect(
+      indirectBuffer->GetHandle(), indirectOffset, maxDrawCount,
+      drawCountBuffer ? drawCountBuffer->GetHandle() : wgpu::Buffer(nullptr),
+      drawCountBufferOffset);
+}
+
 void GPURenderPassEncoder::executeBundles(
     const HeapVector<Member<GPURenderBundle>>& bundles) {
   std::unique_ptr<wgpu::RenderBundle[]> dawn_bundles = AsDawnType(bundles);

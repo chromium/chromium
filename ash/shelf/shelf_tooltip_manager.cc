@@ -16,6 +16,8 @@
 #include "ash/wm/desks/desk_button/desk_button_container.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -27,6 +29,15 @@ namespace ash {
 namespace {
 
 const int kTooltipAppearanceDelay = 250;  // msec
+
+void RecordGrowthCampaignsHoverEvent() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  // Campaigns manager may be null in tests.
+  if (campaigns_manager) {
+    campaigns_manager->RecordEvent(growth::kGrowthCampaignsEventHotseatHover,
+                                   /*trigger_campaigns=*/true);
+  }
+}
 
 }  // namespace
 
@@ -64,6 +75,10 @@ views::View* ShelfTooltipManager::GetCurrentAnchorView() const {
 }
 
 void ShelfTooltipManager::ShowTooltip(views::View* view) {
+  if (!IsVisible()) {
+    RecordGrowthCampaignsHoverEvent();
+  }
+
   // Hide the old bubble immediately, skipping the typical closing animation.
   Close(false /*animate*/);
 

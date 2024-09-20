@@ -55,9 +55,9 @@ class PasswordsPrivateEventRouter : public KeyedService {
       const std::string& file_path,
       const std::string& folder_name);
 
-  // Notifies listeners about a (possible) change to the opt-in state for the
+  // Notifies listeners about a (possible) change to the enabled state for the
   // account-scoped password storage.
-  void OnAccountStorageOptInStateChanged(bool opted_in);
+  void OnAccountStorageEnabledStateChanged(bool enabled);
 
   // Notifies listeners about a change to the information about insecure
   // credentials.

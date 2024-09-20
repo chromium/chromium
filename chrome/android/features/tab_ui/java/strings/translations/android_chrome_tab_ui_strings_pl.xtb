@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Dodano <ph name="ONE_ADDED" /> kartę, zmieniono <ph name="ANY_CHANGED" />}few{Dodano <ph name="MANY_ADDED" /> karty, zmieniono <ph name="ANY_CHANGED" />}many{Dodano <ph name="MANY_ADDED" /> kart, zmieniono <ph name="ANY_CHANGED" />}other{Dodano <ph name="MANY_ADDED" /> karty, zmieniono <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Otrzymasz alert, gdy cena na otwartej karcie będzie niższa</translation>
-<translation id="3322827343001922122">Otwórz menu czynności grupy kart <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Sugestia: liczba prawdopodobnie powiązanych kart wynosi <ph name="NUMBER_OF_TABS" />. Czy chcesz je pogrupować?</translation>
 <translation id="3547352561153509682">Spowoduje to usunięcie grupy ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Ukryj okno Nieaktywne karty</translation>
@@ -80,7 +79,6 @@
 <translation id="4460014764210899310">Rozgrupuj</translation>
 <translation id="4590027107044272416">Tutaj możesz otworzyć nową kartę</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Zamknąć 1 nieaktywną kartę?}few{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywne karty?}many{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywnych kart?}other{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywnej karty?}}</translation>
-<translation id="4648718555153979859">Tutaj są zgrupowane Twoje karty</translation>
 <translation id="4686942373615810936">Utworzono przed chwilą</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zamknij po 1 dniu}few{Zamknij po <ph name="DAY_COUNT_MANY" /> dniach}many{Zamknij po <ph name="DAY_COUNT_MANY" /> dniach}other{Zamknij po <ph name="DAY_COUNT_MANY" /> dnia}}</translation>
 <translation id="4777866634702576038">Usunąć grupę kart?</translation>
@@ -136,6 +134,7 @@
 <translation id="6694634756612002311">Zarządzaj udostępnianiem</translation>
 <translation id="6744956528665271406">Edytuj kolor grupy</translation>
 <translation id="6856809498882026482">Ukryj tryb wielokrotnego wyboru</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Udostępnij kartę}few{Udostępnij karty}many{Udostępnij karty}other{Udostępnij karty}}</translation>
 <translation id="7129458170538955174">Informacje o tym sklepie zostały otwarte na połowę wysokości</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Zamknij grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą.}few{Zamknij grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zamknij grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zamknij grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
@@ -171,6 +170,7 @@
 <translation id="8205266828577616993">Przesuń kartę w górę</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8338427544764842461">Tutaj są zapisywane grupy kart. Będą one aktualizowane na wszystkich urządzeniach, na których się zalogujesz</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Rozwiń udostępnioną grupę kart z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Rozwiń udostępnioną grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Rozwiń udostępnioną grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Rozwiń udostępnioną grupę kart z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zamknij <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Zamknij <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Zamknij <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Zamknij <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="8398929769197326728">Nowy folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ustawienia</translation>

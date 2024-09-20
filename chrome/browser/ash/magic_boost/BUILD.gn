@@ -22,6 +22,7 @@ static_library("magic_boost") {
     "//ash",
     "//ash/constants",
     "//base",
+    "//chrome/browser/ash/mahi:mahi_availability",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/crosapi/mojom",

@@ -12,10 +12,15 @@
 
 // static
 supervised_user::SupervisedUserSettingsService*
-SupervisedUserSettingsServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+SupervisedUserSettingsServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+supervised_user::SupervisedUserSettingsService*
+SupervisedUserSettingsServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<supervised_user::SupervisedUserSettingsService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

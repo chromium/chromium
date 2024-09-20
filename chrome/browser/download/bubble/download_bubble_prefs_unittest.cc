@@ -62,7 +62,7 @@ class DownloadBubblePrefsTest : public testing::Test {
     policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidToken("fake-token"));
     profile_->GetPrefs()->SetInteger(
-        ConnectorScopePref(
+        AnalysisConnectorScopePref(
             enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED),
         policy::POLICY_SCOPE_MACHINE);
   }
@@ -88,12 +88,12 @@ TEST_F(DownloadBubblePrefsTest, IsDownloadBubbleEnabled) {
 TEST_F(DownloadBubblePrefsTest, DoesDownloadConnectorBlock) {
   EXPECT_FALSE(DoesDownloadConnectorBlock(profile_, GURL()));
   profile_->GetPrefs()->Set(
-      enterprise_connectors::ConnectorPref(
+      enterprise_connectors::AnalysisConnectorPref(
           enterprise_connectors::FILE_DOWNLOADED),
       *base::JSONReader::Read(kDownloadConnectorEnabledNonBlockingPref));
   EXPECT_FALSE(DoesDownloadConnectorBlock(profile_, GURL()));
   profile_->GetPrefs()->Set(
-      enterprise_connectors::ConnectorPref(
+      enterprise_connectors::AnalysisConnectorPref(
           enterprise_connectors::FILE_DOWNLOADED),
       *base::JSONReader::Read(kDownloadConnectorEnabledBlockingPref));
   EXPECT_TRUE(DoesDownloadConnectorBlock(profile_, GURL()));

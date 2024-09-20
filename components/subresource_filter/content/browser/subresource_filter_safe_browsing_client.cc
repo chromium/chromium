@@ -35,17 +35,16 @@ SubresourceFilterSafeBrowsingClient::CheckResult::ToTracedValue() const {
 
 SubresourceFilterSafeBrowsingClient::SubresourceFilterSafeBrowsingClient(
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
-    base::WeakPtr<SafeBrowsingPageActivationThrottle> throttle,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    SafeBrowsingPageActivationThrottle* throttle,
     scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner)
     : database_manager_(std::move(database_manager)),
-      throttle_(std::move(throttle)),
-      io_task_runner_(std::move(io_task_runner)),
+      throttle_(throttle),
       throttle_task_runner_(std::move(throttle_task_runner)) {
   CHECK(database_manager_, base::NotFatalUntil::M129);
 }
 
-SubresourceFilterSafeBrowsingClient::~SubresourceFilterSafeBrowsingClient() {}
+SubresourceFilterSafeBrowsingClient::~SubresourceFilterSafeBrowsingClient() =
+    default;
 
 void SubresourceFilterSafeBrowsingClient::CheckUrl(const GURL& url,
                                                    size_t request_id,
@@ -54,7 +53,7 @@ void SubresourceFilterSafeBrowsingClient::CheckUrl(const GURL& url,
   CHECK(!url.is_empty(), base::NotFatalUntil::M129);
 
   auto request = std::make_unique<SubresourceFilterSafeBrowsingClientRequest>(
-      request_id, start_time, database_manager_, io_task_runner_, this);
+      request_id, start_time, database_manager_, this);
   auto* raw_request = request.get();
   CHECK(requests_.find(raw_request) == requests_.end(),
         base::NotFatalUntil::M129);
@@ -74,11 +73,13 @@ void SubresourceFilterSafeBrowsingClient::OnCheckBrowseUrlResult(
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       TRACE_DISABLED_BY_DEFAULT("loading"), "SubresourceFilterSBCheck",
       TRACE_ID_LOCAL(request), "check_result", check_result.ToTracedValue());
-  if (throttle_) {
-    throttle_->OnCheckUrlResultOnUI(check_result);
-  }
   CHECK(requests_.find(request) != requests_.end(), base::NotFatalUntil::M129);
   requests_.erase(request);
+  if (throttle_) {
+    throttle_->OnCheckUrlResultOnUI(check_result);
+    // `this` may be deleted now. The only safe thing to do is return.
+    return;
+  }
 }
 
 }  // namespace subresource_filter

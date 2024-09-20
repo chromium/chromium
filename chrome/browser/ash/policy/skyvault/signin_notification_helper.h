@@ -17,6 +17,8 @@ inline constexpr char kDownloadSignInNotificationPrefix[] =
     "skyvault-download-signin-";
 
 inline constexpr char kMigrationSignInNotification[] = "skyvault-migration";
+inline constexpr char kScreenCaptureSignInNotificationIdPrefix[] =
+    "skyvault-screencapture-signin-";
 
 // The notification button index.
 enum NotificationButtonIndex {
@@ -29,8 +31,9 @@ void ShowSignInNotification(
     Profile* profile,
     int64_t id,
     ash::cloud_upload::OdfsSkyvaultUploader::FileType file_type,
-    const std::string& file_name,
-    base::OnceCallback<void(base::File::Error)> signin_callback);
+    const base::FilePath& file_path,
+    base::OnceCallback<void(base::File::Error)> signin_callback,
+    std::optional<const gfx::Image> thumbnail = std::nullopt);
 
 }  // namespace policy::skyvault_ui_utils
 

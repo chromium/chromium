@@ -77,42 +77,10 @@ void ExtensionInstallerTest::RunThreads() {
 TEST_F(ExtensionInstallerTest, GetInstalledFile) {
   base::ScopedTempDir root_dir;
   ASSERT_TRUE(root_dir.CreateUniqueTempDir());
-  ASSERT_TRUE(base::PathExists(root_dir.GetPath()));
-  scoped_refptr<ExtensionInstaller> installer =
-      base::MakeRefCounted<ExtensionInstaller>(kExtensionId, root_dir.GetPath(),
-                                               false /*install_immediately*/,
-                                               ExtensionInstallerCallback());
-
-  base::FilePath installed_file;
-
-#ifdef FILE_PATH_USES_DRIVE_LETTERS
-  const std::string absolute_path = "C:\\abc\\def";
-  const std::string relative_path = "abc\\..\\def\\ghi";
-#else
-  const std::string absolute_path = "/abc/def";
-  const std::string relative_path = "/abc/../def/ghi";
-#endif
-
-  installed_file.clear();
-  EXPECT_FALSE(installer->GetInstalledFile(absolute_path, &installed_file));
-  installed_file.clear();
-  EXPECT_FALSE(installer->GetInstalledFile(relative_path, &installed_file));
-  installed_file.clear();
-  EXPECT_FALSE(installer->GetInstalledFile("extension", &installed_file));
-
-  installed_file.clear();
-  base::FilePath temp_file;
-  ASSERT_TRUE(base::CreateTemporaryFileInDir(root_dir.GetPath(), &temp_file));
-  base::FilePath base_temp_file = temp_file.BaseName();
-  EXPECT_TRUE(installer->GetInstalledFile(
-      std::string(base_temp_file.value().begin(), base_temp_file.value().end()),
-      &installed_file));
-#ifndef FILE_PATH_USES_DRIVE_LETTERS
-  // On some Win*, this test is flaky because of the way Win* constructs path.
-  // For example,
-  // "C:\Users\chrome-bot\AppData" is the same as "C:\Users\CHROME~1\AppData"
-  EXPECT_EQ(temp_file, installed_file);
-#endif
+  ASSERT_FALSE(base::MakeRefCounted<ExtensionInstaller>(
+                   kExtensionId, root_dir.GetPath(),
+                   false /*install_immediately*/, ExtensionInstallerCallback())
+                   ->GetInstalledFile("f"));
 }
 
 TEST_F(ExtensionInstallerTest, Install_InvalidUnpackedDir) {

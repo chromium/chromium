@@ -333,13 +333,14 @@ void HistoryTabHelper::WebStateDestroyed(web::WebState* web_state) {
 }
 
 history::HistoryService* HistoryTabHelper::GetHistoryService() {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  if (browser_state->IsOffTheRecord())
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (profile->IsOffTheRecord()) {
     return nullptr;
+  }
 
-  return ios::HistoryServiceFactory::GetForBrowserState(
-      browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+  return ios::HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::IMPLICIT_ACCESS);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(HistoryTabHelper)

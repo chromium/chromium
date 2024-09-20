@@ -130,8 +130,8 @@ void FileSystemWritableFileStream::Trace(Visitor* visitor) const {
   visitor->Trace(underlying_sink_);
 }
 
-const char* FileSystemWritableFileStream::mode() const {
-  return lock_mode_.AsCStr();
+String FileSystemWritableFileStream::mode() const {
+  return lock_mode_.AsString();
 }
 
 }  // namespace blink

@@ -9,6 +9,13 @@
 
 namespace whats_new {
 using BrowserCommand = browser_command::mojom::Command;
+
+namespace features {
+BASE_FEATURE(kSafetyAwareness,
+             "SafetyAwareness",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
+
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // Register modules here.
   // 129
@@ -19,6 +26,9 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
   // Register editions here.
+  // 130
+  registry->RegisterEdition(
+      WhatsNewEdition(features::kSafetyAwareness, "mickeyburks@google.com"));
 }
 
 std::unique_ptr<WhatsNewRegistry> CreateWhatsNewRegistry() {

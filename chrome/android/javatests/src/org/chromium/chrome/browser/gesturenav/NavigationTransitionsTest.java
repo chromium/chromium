@@ -72,6 +72,8 @@ import java.util.concurrent.atomic.AtomicInteger;
     "hide-scrollbars"
 })
 @Batch(Batch.PER_CLASS)
+@DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/337886037")
+@DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/337886037")
 public class NavigationTransitionsTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -357,8 +359,6 @@ public class NavigationTransitionsTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/354197164")
-    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/354197164")
     public void startBackNavWithTopControlHidden() throws Throwable {
         // The top control's offset is -top_controls_height when controls are fully hidden, 0 when
         // fully shown.

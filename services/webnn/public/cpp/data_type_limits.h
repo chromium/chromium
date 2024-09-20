@@ -23,6 +23,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes concat_inputs,
                  SupportedDataTypes conv2d_input,
                  SupportedDataTypes conv_transpose2d_input,
+                 SupportedDataTypes cumulative_sum_input,
                  SupportedDataTypes dequantize_linear_input,
                  SupportedDataTypes dequantize_linear_scale,
                  SupportedDataTypes add_input,
@@ -59,6 +60,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes gather_indices,
                  SupportedDataTypes gather_elements_input,
                  SupportedDataTypes gather_elements_indices,
+                 SupportedDataTypes gather_nd_input,
+                 SupportedDataTypes gather_nd_indices,
                  SupportedDataTypes gelu_input,
                  SupportedDataTypes gemm_input,
                  SupportedDataTypes gru_input,
@@ -92,6 +95,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes relu_input,
                  SupportedDataTypes resample2d_input,
                  SupportedDataTypes reshape_input,
+                 SupportedDataTypes scatter_nd_input,
+                 SupportedDataTypes scatter_nd_indices,
                  SupportedDataTypes sigmoid_input,
                  SupportedDataTypes slice_input,
                  SupportedDataTypes softmax_input,
@@ -125,6 +130,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes concat_inputs;
   SupportedDataTypes conv2d_input;
   SupportedDataTypes conv_transpose2d_input;
+  SupportedDataTypes cumulative_sum_input;
   SupportedDataTypes dequantize_linear_input;
   SupportedDataTypes dequantize_linear_scale;
   SupportedDataTypes add_input;
@@ -161,6 +167,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes gather_indices;
   SupportedDataTypes gather_elements_input;
   SupportedDataTypes gather_elements_indices;
+  SupportedDataTypes gather_nd_input;
+  SupportedDataTypes gather_nd_indices;
   SupportedDataTypes gelu_input;
   SupportedDataTypes gemm_input;
   SupportedDataTypes gru_input;
@@ -194,6 +202,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes relu_input;
   SupportedDataTypes resample2d_input;
   SupportedDataTypes reshape_input;
+  SupportedDataTypes scatter_nd_input;
+  SupportedDataTypes scatter_nd_indices;
   SupportedDataTypes sigmoid_input;
   SupportedDataTypes slice_input;
   SupportedDataTypes softmax_input;
@@ -220,6 +230,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.concat_inputs == rhs.concat_inputs &&
          lhs.conv2d_input == rhs.conv2d_input &&
          lhs.conv_transpose2d_input == rhs.conv_transpose2d_input &&
+         lhs.cumulative_sum_input == rhs.cumulative_sum_input &&
          lhs.dequantize_linear_input == rhs.dequantize_linear_input &&
          lhs.dequantize_linear_scale == rhs.dequantize_linear_scale &&
          lhs.add_input == rhs.add_input &&
@@ -256,6 +267,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.gather_indices == rhs.gather_indices &&
          lhs.gather_elements_input == rhs.gather_elements_input &&
          lhs.gather_elements_indices == rhs.gather_elements_indices &&
+         lhs.gather_nd_input == rhs.gather_nd_input &&
+         lhs.gather_nd_indices == rhs.gather_nd_indices &&
          lhs.gelu_input == rhs.gelu_input &&
          lhs.gemm_input == rhs.gemm_input &&
          lhs.gru_input == rhs.gru_input &&
@@ -289,6 +302,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.relu_input == rhs.relu_input &&
          lhs.resample2d_input == rhs.resample2d_input &&
          lhs.reshape_input == rhs.reshape_input &&
+         lhs.scatter_nd_input == rhs.scatter_nd_input &&
+         lhs.scatter_nd_indices == rhs.scatter_nd_indices &&
          lhs.sigmoid_input == rhs.sigmoid_input &&
          lhs.slice_input == rhs.slice_input &&
          lhs.softmax_input == rhs.softmax_input &&

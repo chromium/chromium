@@ -127,8 +127,7 @@ public class SigninSignoutIntegrationTest {
                         "Signin.SyncOptIn.Completed", SigninAccessPoint.SETTINGS);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         CoreAccountInfo coreAccountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(
-                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
 
         SyncConsentActivity syncConsentActivity =
                 ActivityTestUtils.waitForActivity(
@@ -174,7 +173,6 @@ public class SigninSignoutIntegrationTest {
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
 
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        mSigninTestRule.waitForSeeding();
         SyncConsentActivity syncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),

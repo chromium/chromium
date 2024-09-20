@@ -60,7 +60,7 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
       password_feature_manager_(
           GetPrefs(),
           GetLocalStatePrefs(),
-          SyncServiceFactory::GetForBrowserStateIfExists(bridge_.browserState)),
+          SyncServiceFactory::GetForProfileIfExists(bridge_.browserState)),
       credentials_filter_(this),
       helper_(this) {
   saving_passwords_enabled_.Init(
@@ -161,7 +161,7 @@ PrefService* IOSChromePasswordManagerClient::GetLocalStatePrefs() const {
 
 const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()
     const {
-  return SyncServiceFactory::GetForBrowserStateIfExists(bridge_.browserState);
+  return SyncServiceFactory::GetForProfileIfExists(bridge_.browserState);
 }
 
 affiliations::AffiliationService*

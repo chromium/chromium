@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -621,7 +622,13 @@ void PWAHandler::ChangeAppUserSettings(
       base::BindOnce(
           [](const webapps::AppId& app_id, web_app::AppLock& app_lock,
              base::Value::Dict& debug_value) -> std::optional<std::string> {
-            if (app_lock.registrar().IsLocallyInstalled(app_id)) {
+            // Only consider apps that are installed with or without OS
+            // integration. Apps coming via sync should not be considered.
+            if (app_lock.registrar().IsInstallState(
+                    app_id, {web_app::proto::InstallState::
+                                 INSTALLED_WITH_OS_INTEGRATION,
+                             web_app::proto::InstallState::
+                                 INSTALLED_WITHOUT_OS_INTEGRATION})) {
               return std::nullopt;
             }
             return "WebApp is not installed";

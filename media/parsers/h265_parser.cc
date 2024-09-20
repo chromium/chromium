@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/parsers/h265_parser.h"
 
 #include <stddef.h>
@@ -920,8 +925,6 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
   *pps_id = -1;
   std::unique_ptr<H265PPS> pps = std::make_unique<H265PPS>();
 
-  pps->temporal_id = nalu.nuh_temporal_id_plus1 - 1;
-
   // Set these defaults if they are not present here.
   pps->uniform_spacing_flag = true;
   pps->loop_filter_across_tiles_enabled_flag = true;
@@ -1144,6 +1147,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
   shdr->nal_unit_type = nalu.nal_unit_type;
   shdr->nalu_data = nalu.data.get();
   shdr->nalu_size = nalu.size;
+  shdr->temporal_id = nalu.nuh_temporal_id_plus1 - 1;
 
   READ_BOOL_OR_RETURN(&shdr->first_slice_segment_in_pic_flag);
   shdr->irap_pic = (shdr->nal_unit_type >= H265NALU::BLA_W_LP &&
@@ -1183,7 +1187,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     // We also need to validate the fields that have conditions that depend on
     // anything unique in this slice (i.e. anything already parsed).
     if ((shdr->irap_pic ||
-         sps->sps_max_dec_pic_buffering_minus1[pps->temporal_id] == 0) &&
+         sps->sps_max_dec_pic_buffering_minus1[shdr->temporal_id] == 0) &&
         nalu.nuh_layer_id == 0) {
       TRUE_OR_RETURN(shdr->slice_type == 2);
     }
@@ -1207,7 +1211,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     SKIP_BITS_OR_RETURN(pps->num_extra_slice_header_bits);
     READ_UE_OR_RETURN(&shdr->slice_type);
     if ((shdr->irap_pic ||
-         sps->sps_max_dec_pic_buffering_minus1[pps->temporal_id] == 0) &&
+         sps->sps_max_dec_pic_buffering_minus1[shdr->temporal_id] == 0) &&
         nalu.nuh_layer_id == 0) {
       TRUE_OR_RETURN(shdr->slice_type == 2);
     }
@@ -1257,7 +1261,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
         if (nalu.nuh_layer_id == 0) {
           TRUE_OR_RETURN(
               shdr->num_long_term_pics <=
-              (sps->sps_max_dec_pic_buffering_minus1[pps->temporal_id] -
+              (sps->sps_max_dec_pic_buffering_minus1[shdr->temporal_id] -
                shdr->GetStRefPicSet(sps).num_negative_pics -
                shdr->GetStRefPicSet(sps).num_positive_pics -
                shdr->num_long_term_sps));

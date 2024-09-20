@@ -22,6 +22,7 @@ namespace manta {
 namespace {
 
 constexpr char kOauthConsumerName[] = "manta_orca";
+constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 }  // namespace
 
@@ -44,7 +45,8 @@ void AnchovyProvider::GetImageDescription(
       traffic_annotation, proto_request, MantaMetricType::kAnchovy,
       base::BindOnce(
           &anchovy::AnchovyProtoHelper::HandleImageDescriptionResponse,
-          std::move(done_callback)));
+          std::move(done_callback)),
+      kTimeout);
 }
 
 }  // namespace manta

@@ -908,8 +908,9 @@ EncryptedReportingClient::PayloadSizePerHourUmaReporter::
     PayloadSizePerHourUmaReporter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  timer_.Start(FROM_HERE, kReportingInterval, this,
-               &PayloadSizePerHourUmaReporter::Report);
+  timer_.Start(FROM_HERE, kReportingInterval,
+               base::BindRepeating(&PayloadSizePerHourUmaReporter::Report,
+                                   GetWeakPtr()));
 }
 
 EncryptedReportingClient::PayloadSizePerHourUmaReporter::

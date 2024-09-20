@@ -232,6 +232,16 @@ id<GREYMatcher> SearchHistorySuggestedActionWithMatches(size_t matches_count) {
                     grey_sufficientlyVisible(), nil);
 }
 
+id<GREYMatcher> SelectedStateTitleSelection(int selection_count) {
+  NSString* title =
+      selection_count == 0
+          ? l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_TABS_TITLE)
+          : l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE,
+                                          selection_count);
+  return grey_allOf(grey_accessibilityLabel(title),
+                    grey_kindOfClassName(@"_UIButtonBarButton"), nil);
+}
+
 // Returns a matcher for the "Search history (`matches_count` Found)" suggested
 // action on the recent tabs page.
 id<GREYMatcher> RecentTabsSearchHistorySuggestedActionWithMatches(
@@ -718,8 +728,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests that the user interface style is respected after a drag and drop.
-// TODO(crbug.com/332714545): Test is flaky.
-- (void)FLAKY_testTraitCollection {
+// TODO(crbug.com/368385383): Test flaky on iOS.
+- (void)DISABLED_testTraitCollection {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
   [ChromeEarlGrey openNewTab];
@@ -1168,7 +1178,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 #pragma mark - Drag and drop in Multiwindow
 
 // Tests that dragging a tab grid item to the edge opens a new window and that
-// the tab is properly transferred, incuding navigation stack.
+// the tab is properly transferred, including navigation stack.
 - (void)testDragAndDropAtEdgeToCreateNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
@@ -1271,14 +1281,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging tab grid item between windows.
-- (void)testDragAndDropBetweenWindows {
+// TODO(crbug.com/40868899): Flaky on iPad devices and simulators.
+- (void)FLAKY_testDragAndDropBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
-
-  // TODO(crbug.com/40868899): Test is failing on iPad devices and simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
 
   // Setup first window with tabs 1 and 2.
   [ChromeEarlGrey loadURL:_URL1];
@@ -1417,6 +1423,117 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
   [ChromeEarlGrey waitForMainTabCount:4 inWindowWithNumber:1];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Tests dragging a selection of tab grid items between windows.
+- (void)testDragAndDropSelectionBetweenWindows {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
+  }
+
+  // Setup first window with tabs 1 and 2.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey waitForMainTabCount:2 inWindowWithNumber:0];
+
+  // Open second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Setup second window with tabs 3 and 4.
+  [ChromeEarlGrey loadURL:_URL3 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3
+                             inWindowWithNumber:1];
+
+  [ChromeEarlGrey openNewTabInWindowWithNumber:1];
+  [ChromeEarlGrey loadURL:_URL4 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse4
+                             inWindowWithNumber:1];
+
+  [ChromeEarlGrey waitForMainTabCount:2 inWindowWithNumber:1];
+
+  // Open tab grid in both windows.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [ChromeEarlGreyUI openTabGrid];
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Enter Select mode.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SelectedStateTitleSelection(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap tab to select.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SelectedStateTitleSelection(1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // DnD first tab of left window to left edge of first tab in second window.
+  // Note: move to left half of the destination tile, to avoid unwanted
+  // scrolling that would happen closer to the left edge.
+  GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0,
+                                            IdentifierForCellAtIndex(0), 1,
+                                            CGVectorMake(0.5, 0.5)),
+             @"Failed to DND cell on cell");
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForMainTabCount:3 inWindowWithNumber:1];
+
+  // Check the original tab grid selection state title mentions no selection.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:SelectedStateTitleSelection(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Move third cell of second window as second cell in first window.
+  GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(2), 1,
+                                            IdentifierForCellAtIndex(0), 0,
+                                            CGVectorMake(1.0, 0.5)),
+             @"Failed to DND cell on cell");
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Check the original tab grid selection state title still mentions no
+  // selection.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:SelectedStateTitleSelection(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGrey waitForMainTabCount:2 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForMainTabCount:2 inWindowWithNumber:1];
+
+  // Exit Select mode.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Check content and order of tabs.
+  [self fromGridCheckTabAtIndex:0 inWindowNumber:0 containsText:kResponse2];
+  [self fromGridCheckTabAtIndex:1 inWindowNumber:0 containsText:kResponse4];
+  [self fromGridCheckTabAtIndex:0 inWindowNumber:1 containsText:kResponse1];
+  [self fromGridCheckTabAtIndex:1 inWindowNumber:1 containsText:kResponse3];
 
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]

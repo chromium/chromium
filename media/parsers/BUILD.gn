@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//media/media_options.gni")
+import("//third_party/libgav1/options.gni")
 
 source_set("parsers") {
   sources = [
@@ -67,6 +68,7 @@ source_set("parsers") {
   deps = [
     "//base",
     "//media/base",
+    "//third_party/libgav1:libgav1_parser",
   ]
 }
 
@@ -119,7 +121,10 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//media:test_support",
     "//testing/gtest",
+    "//third_party/libgav1:libgav1_parser",
   ]
+
+  data = [ "//media/test/data/" ]
 }
 
 fuzzer_test("media_h264_parser_fuzzer") {

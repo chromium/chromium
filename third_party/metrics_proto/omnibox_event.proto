@@ -214,6 +214,9 @@ message OmniboxEventProto {
     // Equivalent of OTHER for CCT.
     OTHER_ON_CCT = 28;
 
+    // The searchbox in the Android Hub.
+    HUB = 29;
+
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
     // so that these new options are displayed on about:omnibox.
@@ -646,6 +649,10 @@ message OmniboxEventProto {
     REMOTE_SECONDARY_ZERO_SUGGEST = 9;
     ML_URL_SCORING = 10;
     COMPANY_ENTITY_ADJUSTMENT = 11;
+    // Whether history embeddings model was ran in the omnibox. Logged even if
+    // the model returned 0 matches or its matches were hidden. Suffixed with
+    // '_FEATURE' to avoid name conflict with 'ProviderType.HISTORY_EMBEDDINGS'.
+    HISTORY_EMBEDDINGS_FEATURE = 12;
   }
   // The set of features triggered in the most recent query. Each element is a
   // value of `Features` enum.

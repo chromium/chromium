@@ -6,14 +6,17 @@
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class BrowserList;
 class Profile;
 
 // This per-profile class holds profile-scoped state for the read anything
 // feature.
-class ReadAnythingService : public KeyedService {
+class ReadAnythingService : public KeyedService, public BrowserListObserver {
  public:
   explicit ReadAnythingService(Profile* profile);
   ~ReadAnythingService() override;
@@ -29,6 +32,9 @@ class ReadAnythingService : public KeyedService {
   void RemoveGDocsHelperExtension();
   void OnLocalSidePanelSwitchDelayTimeout();
 
+  // BrowserListObserver:
+  void OnBrowserSetLastActive(Browser* browser) override;
+
   // The number of active local side panels that are currently shown. If there
   // is no active local side panel (count is 0) after a timeout, we can safely
   // remove the gdocs helper extension.
@@ -39,6 +45,9 @@ class ReadAnythingService : public KeyedService {
   // otherwise, uninstall it. This prevents frequent
   // installations/uninstallations.
   base::RetainingOneShotTimer local_side_panel_switch_delay_timer_;
+
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observer_{this};
 
   raw_ptr<Profile> profile_;
   base::WeakPtrFactory<ReadAnythingService> weak_ptr_factory_{this};

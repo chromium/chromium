@@ -11,7 +11,7 @@
 #include "media/base/channel_layout.h"
 #include "media/base/video_codecs.h"
 #include "media/cast/openscreen/config_conversions.h"
-#include "third_party/openscreen/src/cast/streaming/constants.h"
+#include "third_party/openscreen/src/cast/streaming/public/constants.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cast_streaming {

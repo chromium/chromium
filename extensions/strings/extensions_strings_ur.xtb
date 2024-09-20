@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">وینڈر <ph name="VENDOR_ID" /> کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">‏crx فائل کو بدلنے میں ناکام۔ چیک کر کے دیکھیں کہ آیا فائل زیر استعمال ہے۔</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> وینڈر کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">ایکسٹینشن کو ان پیک نہیں کیا جا سکتا۔ اس ایکسٹینشن کو محفوظ طریقہ سے ان پیک کرنے کیلئے آپ کی پروفائل ڈائرکٹری میں ایک ایسا پاتھ ہونا چاہیے جو ڈرائیو لیٹر سے شروع ہوتا ہو اور جنکشن، ماؤنٹ پوائنٹ یا سملنک پر مشتمل نہ ہو۔  آپ کے پروفائل کیلئے ایسا کوئی پاتھ موجود نہیں ہے۔</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">وینڈر <ph name="VENDOR_ID" /> کی جانب سے <ph name="PRODUCT_NAME" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">نجی کلید کیلئے ان پٹ قدر ایک درست پاتھ ہونا ضروری ہے۔</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">اس مشین کے منتظم کا تقاضہ ہے کہ <ph name="EXTENSION_NAME" /> کو انسٹال کیا جائے۔ اسے ان انسٹال نہیں کیا جا سکتا۔</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">وینڈر <ph name="VENDOR_ID" /> کی جانب سے <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">ایکسٹینشن کو پیکنگ سے نکالا نہیں جا سکتا ہے۔  کسی ایکسٹینشن کو محفوظ طریقہ سے پیکنگ سے نکالنے کیلئے، آپ کے پروفائل ڈائرکٹری کا ایک پاتھ ہونا ضروری ہے جس میں سم لنک شامل نہ ہو۔  آپ کے پروفائل کیلئے ایسا کوئی پاتھ موجود نہیں ہے۔</translation>
 <translation id="6322279351188361895">نجی کلید کو پڑھنے میں ناکام۔</translation>
 <translation id="6391538222494443604">ان پٹ ڈائرکٹری موجود ہونا ضروری ہے۔</translation>
 <translation id="641087317769093025">ایکسٹینشن کو زپ سے نہیں نکالا نہیں جا سکا</translation>

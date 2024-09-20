@@ -117,8 +117,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
                       const NetErrorDetails& net_error_details,
                       const ProxyInfo& used_proxy_info,
                       ResolveErrorInfo resolve_error_info) override;
-  void OnCertificateError(int status,
-                          const SSLInfo& ssl_info) override;
+  void OnCertificateError(int status, const SSLInfo& ssl_info) override;
   void OnNeedsProxyAuth(const HttpResponseInfo& response_info,
                         const ProxyInfo& used_proxy_info,
                         HttpAuthController* auth_controller) override;
@@ -127,9 +126,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void OnQuicBroken() override;
 
   void OnSwitchesToHttpStreamPool(
-      HttpStreamKey stream_key,
-      const AlternativeServiceInfo& alternative_service_info,
-      quic::ParsedQuicVersion quic_version) override;
+      HttpStreamPoolSwitchingInfo switching_info) override;
 
   ConnectionAttempts GetConnectionAttempts() const override;
 
@@ -445,6 +442,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Total number of bytes sent on all destroyed HttpStreams for this
   // transaction.
   int64_t total_sent_bytes_ = 0;
+
+  // When the transaction started creating a stream.
+  base::TimeTicks create_stream_start_time_;
 
   // When the transaction started / finished sending the request, including
   // the body, if present. |send_start_time_| is set to |base::TimeTicks()|

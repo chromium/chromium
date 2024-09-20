@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
+import {isReadOnlyForDelete} from '../../common/js/entry_utils.js';
 import {isEncrypted} from '../../common/js/file_type.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
@@ -49,9 +50,9 @@ export class FileSelection {
       }
       this.totalCount++;
 
-      if (!this.hasReadOnlyEntry_) {
-        const locationInfo = volumeManager.getLocationInfo(entry);
-        this.hasReadOnlyEntry_ = !!(locationInfo && locationInfo.isReadOnly);
+      if (!this.hasReadOnlyEntry_ &&
+          isReadOnlyForDelete(volumeManager, entry)) {
+        this.hasReadOnlyEntry_ = true;
       }
     });
   }

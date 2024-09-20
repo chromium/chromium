@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,6 +38,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.prefs.PrefService;
@@ -63,6 +65,7 @@ public class SurveyClientUnitTest {
     @Mock private PrefService mPrefServiceMock;
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;
+    @Mock private PrivacyPreferencesManager mPrivacyPreferencesManager;
     @Captor private ArgumentCaptor<PauseResumeWithNativeObserver> mLifecycleObserverCaptor;
 
     @Before
@@ -72,12 +75,14 @@ public class SurveyClientUnitTest {
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED)).thenReturn(true);
 
-        mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>();
-        mCrashUploadPermissionSupplier.set(true);
+        mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>(true);
+        doReturn(mCrashUploadPermissionSupplier)
+                .when(mPrivacyPreferencesManager)
+                .getUsageAndCrashReportingPermittedObservableSupplier();
 
         mSurveyUiDelegate = new TestSurveyUtils.TestSurveyUiDelegate();
         mSurveyController = new TestSurveyUtils.TestSurveyController();
-        SurveyClientFactory.initialize(mCrashUploadPermissionSupplier);
+        SurveyClientFactory.initialize(mPrivacyPreferencesManager);
         SurveyMetadata.initializeForTesting(new InMemorySharedPreferences(), null);
 
         ShadowPostTask.setTestImpl(

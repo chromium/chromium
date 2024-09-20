@@ -13,7 +13,6 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
@@ -24,6 +23,24 @@ import java.util.List;
 
 /** Interface for {@link AccountManagerFacadeImpl}. */
 public interface AccountManagerFacade {
+    /** A callback for getAccessToken. */
+    interface GetAccessTokenCallback {
+        /**
+         * Invoked on the UI thread if a token is provided.
+         *
+         * @param token Access token, guaranteed not to be null.
+         */
+        void onGetTokenSuccess(AccessTokenData token);
+
+        /**
+         * Invoked on the UI thread if no token is available.
+         *
+         * @param isTransientError Indicates if the error is transient (network timeout or
+         *     unavailable, etc) or persistent (bad credentials, permission denied, etc).
+         */
+        void onGetTokenFailure(boolean isTransientError);
+    }
+
     // TODO(crbug.com/40201126): consider refactoring this interface to use Promises.
     /** Listener for whether the account is a child one. */
     interface ChildAccountStatusListener {
@@ -63,24 +80,37 @@ public interface AccountManagerFacade {
     Promise<List<CoreAccountInfo>> getCoreAccountInfos();
 
     /**
-     * Synchronously gets an OAuth2 access token. May return a cached version, use {@link
-     * #invalidateAccessToken} to invalidate a token in the cache.
+     * Asynchronously gets OAuth2 access token for the given account and scope. May return a cached
+     * version, use {@link #invalidateAccessToken} to invalidate a token in the cache. Please note
+     * that this method expects a scope with 'oauth2:' prefix.
      *
-     * @param coreAccountInfo The {@link CoreAccountInfo} for which the token is requested.
-     * @param scope OAuth2 scope for which the requested token should be valid.
-     * @return The OAuth2 access token as an AccessTokenData with a string and an expiration time.
-     */
-    @WorkerThread
-    AccessTokenData getAccessToken(CoreAccountInfo coreAccountInfo, String scope)
-            throws AuthException;
-
-    /**
-     * Removes an OAuth2 access token from the cache with retries asynchronously.
-     * Uses {@link #getAccessToken} to issue a new token after invalidating the old one.
-     * @param accessToken The access token to invalidate.
+     * @param account the account to get the access token for.
+     * @param scope The scope to get an auth token for (with Android-style 'oauth2:' prefix).
+     * @param callback called on successful and unsuccessful fetching of auth token.
      */
     @MainThread
-    void invalidateAccessToken(String accessToken);
+    void getAccessToken(
+            CoreAccountInfo coreAccountInfo, String scope, GetAccessTokenCallback callback);
+
+    /**
+     * Removes an OAuth2 access token from the cache with retries asynchronously. Uses {@link
+     * #getAccessToken} to issue a new token after invalidating the old one.
+     *
+     * @param accessToken The access token to invalidate.
+     * @param completedRunnable The callback to run after the operation is complete. Can be null.
+     */
+    @MainThread
+    void invalidateAccessToken(String accessToken, @Nullable Runnable completedRunnable);
+
+    /**
+     * Wait for all pending token requests and invokes the passed callback. If there are no pending
+     * requests, the callback is invoked immediately. Currently, can only be called once - the
+     * behavior for subsequent calls is not specified.
+     *
+     * @param requestsCompletedCallback callback to call when all pending token requests complete.
+     */
+    @MainThread
+    void waitForPendingTokenRequestsToComplete(Runnable requestsCompletedCallback);
 
     /**
      * Checks the child account status of the given account.
@@ -111,25 +141,12 @@ public interface AccountManagerFacade {
     void createAddAccountIntent(Callback<Intent> callback);
 
     /**
-     * Asks the user to enter a new password for an account, updating the saved credentials for
-     * the account.
+     * Asks the user to enter a new password for an account, updating the saved credentials for the
+     * account.
      */
     @MainThread
     void updateCredentials(
             Account account, Activity activity, @Nullable Callback<Boolean> callback);
-
-    /**
-     * Returns the Gaia id for the account associated with the given email address.
-     * If an account with the given email address is not installed on the device
-     * then null is returned.
-     *
-     * This method will throw IllegalStateException if called on the main thread.
-     *
-     * @param accountEmail The email address of a Google account.
-     */
-    @WorkerThread
-    @Nullable
-    String getAccountGaiaId(String accountEmail);
 
     /**
      * Asks the user to confirm their knowledge of the password to the given account.

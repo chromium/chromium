@@ -17,22 +17,21 @@ class ImageSearchParamGeneratorTest : public PlatformTest {
 
  protected:
   void SetUp() override {
-    // Set up a TestChromeBrowserState instance.
-    TestChromeBrowserState::Builder test_cbs_builder;
+    // Set up a TestProfileIOS instance.
+    TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_cbs_builder).Build();
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 TEST_F(ImageSearchParamGeneratorTest, TestNilImage) {
   TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          chrome_browser_state_.get());
+      ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
   web::NavigationManager::WebLoadParams load_params =
       ImageSearchParamGenerator::LoadParamsForImageData(nil, GURL(),
                                                         template_url_service);

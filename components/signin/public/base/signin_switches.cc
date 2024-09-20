@@ -13,11 +13,6 @@ namespace switches {
 // All switches in alphabetical order.
 
 #if BUILDFLAG(IS_ANDROID)
-// Feature to refactor how and when accounts are seeded on Android.
-BASE_FEATURE(kSeedAccountsRevamp,
-             "SeedAccountsRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature to bypass double-checking that signin callers have correctly gotten
 // the user to accept account management. This check is slow and not strictly
 // necessary, so disable it while we work on adding caching.
@@ -37,7 +32,7 @@ BASE_FEATURE(kUseConsentLevelSigninForLegacyAccountEmailPref,
 
 BASE_FEATURE(kDontFallbackToDefaultImplementationInAccountManagerFacade,
              "DontFallbackToDefaultImplementationInAccountManagerFacade",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -145,11 +140,10 @@ bool IsImprovedSigninUIOnDesktopEnabled() {
 
 BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,
              "MinorModeRestrictionsForHistorySyncOptIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Based on Signin.AccountCapabilities.UserVisibleLatency
-constexpr int kMinorModeRestrictionsFetchDeadlineDefaultValueMs =
-    1000;
+constexpr int kMinorModeRestrictionsFetchDeadlineDefaultValueMs = 500;
 
 const base::FeatureParam<int> kMinorModeRestrictionsFetchDeadlineMs{
     &kMinorModeRestrictionsForHistorySyncOptIn,

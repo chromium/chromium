@@ -145,7 +145,11 @@ ContentSettingsType kPermissionType[] = {
 #if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::KEYBOARD_LOCK,
     ContentSettingsType::POINTER_LOCK,
+    ContentSettingsType::WEB_APP_INSTALLATION,
 #endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
+    ContentSettingsType::WEB_PRINTING,
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 // The list of setting types which request permission for a pair of requesting
@@ -1276,6 +1280,13 @@ bool PageInfo::ShouldShowPermission(
     return false;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (info.type == ContentSettingsType::WEB_PRINTING &&
+      !base::FeatureList::IsEnabled(blink::features::kWebPrinting)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   const bool is_incognito =
       web_contents_->GetBrowserContext()->IsOffTheRecord();
 #if BUILDFLAG(IS_ANDROID)
@@ -1336,6 +1347,13 @@ bool PageInfo::ShouldShowPermission(
   if (!PageInfo::IsPermissionFactoryDefault(info, is_incognito)) {
     return true;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (info.type == ContentSettingsType::WEB_APP_INSTALLATION &&
+      base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
+    return true;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return false;
 }

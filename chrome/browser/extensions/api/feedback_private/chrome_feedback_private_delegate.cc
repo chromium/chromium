@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -24,6 +23,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -107,7 +107,8 @@ base::Value::Dict ChromeFeedbackPrivateDelegate::GetStrings(
   SET_STRING("logsMapPageStatusLoading", IDS_FEEDBACK_SYSINFO_PAGE_LOADING);
 #undef SET_STRING
 
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &dict);
 
   return dict;

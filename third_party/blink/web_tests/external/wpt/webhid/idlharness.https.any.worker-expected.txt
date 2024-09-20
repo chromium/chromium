@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] HID interface: existence and properties of interface object
+  assert_false: expected false got true
+[FAIL] HID interface: navigator.hid must not have property "onconnect"
+  assert_false: expected false got true
+[FAIL] HID interface: navigator.hid must not have property "ondisconnect"
+  assert_false: expected false got true
+[FAIL] HID interface: navigator.hid must not have property "getDevices"
+  assert_false: expected false got true
+[FAIL] HIDDevice interface: existence and properties of interface object
+  assert_false: expected false got true
+[FAIL] HIDConnectionEvent interface: existence and properties of interface object
+  assert_false: expected false got true
+[FAIL] HIDInputReportEvent interface: existence and properties of interface object
+  assert_false: expected false got true
+[FAIL] WorkerNavigator interface: member hid
+  assert_false: The prototype object must not have a property "hid" expected false got true
+[FAIL] WorkerNavigator interface: navigator must not have property "hid"
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

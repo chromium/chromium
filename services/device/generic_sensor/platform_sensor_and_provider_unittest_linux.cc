@@ -354,7 +354,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, SensorIsNotImplemented) {
   InitializeSupportedSensor(SensorType::AMBIENT_LIGHT, kZero, kZero, kZero,
                             sensor_value);
   SetServiceStart();
-  EXPECT_FALSE(CreateSensor(SensorType::PROXIMITY));
+  EXPECT_FALSE(CreateSensor(SensorType::ACCELEROMETER));
 }
 
 // Tests sensor is not returned if not supported by hardware.

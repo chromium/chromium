@@ -12,11 +12,13 @@
 class FollowService;
 
 // Singleton that owns all FollowServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class FollowServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static FollowService* GetForBrowserState(ChromeBrowserState* browser_state);
 
+  static FollowService* GetForProfile(ProfileIOS* profile);
   static FollowServiceFactory* GetInstance();
 
   FollowServiceFactory(const FollowServiceFactory&) = delete;

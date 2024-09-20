@@ -60,7 +60,6 @@ TEST_P(WatermarkTest, MAYBE_PageRenderedWithWatermark) {
   bitmap.allocN32Pixels(kWidth, kHeight);
   SkCanvas canvas(bitmap);
   canvas.clear(GetParam().color);
-
   SkSize size(kWidth, kHeight);
   DrawWatermark(&canvas, size, kWatermarkText, kBlockWidth, kTextSize);
 

@@ -123,6 +123,30 @@ source_set("extensions") {
   }
 }
 
+# TODO(zturner): Enable this on Windows. See
+# BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
+# broken.
+if (is_chromeos) {
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [
+      "api/file_browser_handlers/file_browser_handler_manifest_unittest.cc",
+      "api/file_system_provider/file_system_provider_handler_unittest.cc",
+    ]
+
+    deps = [
+      ":extensions",
+      "//base",
+      "//chrome/test:test_support",
+      "//extensions:test_support",
+      "//extensions/common",
+      "//extensions/common:common_constants",
+      "//testing/gtest",
+    ]
+  }
+}
+
 json_features("extension_features_unittest") {
   feature_type = "APIFeature"
   method_name = "AddUnittestAPIFeatures"

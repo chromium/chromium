@@ -287,6 +287,13 @@ bool IsByteNEncrypted(off_t byte,
 
 }  // namespace
 
+Vp9FrameHeader::Vp9FrameHeader() = default;
+Vp9FrameHeader::Vp9FrameHeader(const Vp9FrameHeader&) = default;
+Vp9FrameHeader::Vp9FrameHeader(Vp9FrameHeader&&) = default;
+Vp9FrameHeader& Vp9FrameHeader::operator=(const Vp9FrameHeader&) = default;
+Vp9FrameHeader& Vp9FrameHeader::operator=(Vp9FrameHeader&&) = default;
+Vp9FrameHeader::~Vp9FrameHeader() = default;
+
 bool Vp9FrameHeader::IsKeyframe() const {
   // When show_existing_frame is true, the frame header does not precede an
   // actual frame to be decoded, so frame_type does not apply (and is not read
@@ -338,28 +345,15 @@ VideoColorSpace Vp9FrameHeader::GetColorSpace() const {
 
 Vp9Parser::FrameInfo::FrameInfo() = default;
 
-Vp9Parser::FrameInfo::~FrameInfo() = default;
-
 Vp9Parser::FrameInfo::FrameInfo(const uint8_t* ptr, off_t size)
     : ptr(ptr), size(size) {}
 
-Vp9Parser::FrameInfo::FrameInfo(const FrameInfo& copy_from)
-    : ptr(copy_from.ptr),
-      size(copy_from.size),
-      allocate_size(copy_from.allocate_size),
-      decrypt_config(copy_from.decrypt_config
-                         ? copy_from.decrypt_config->Clone()
-                         : nullptr) {}
+Vp9Parser::FrameInfo::FrameInfo(FrameInfo&& other) = default;
 
-Vp9Parser::FrameInfo& Vp9Parser::FrameInfo::operator=(
-    const FrameInfo& copy_from) {
-  this->ptr = copy_from.ptr;
-  this->size = copy_from.size;
-  this->allocate_size = copy_from.allocate_size;
-  this->decrypt_config =
-      copy_from.decrypt_config ? copy_from.decrypt_config->Clone() : nullptr;
-  return *this;
-}
+Vp9Parser::FrameInfo& Vp9Parser::FrameInfo::operator=(FrameInfo&& other) =
+    default;
+
+Vp9Parser::FrameInfo::~FrameInfo() = default;
 
 bool Vp9FrameContext::IsValid() const {
   // probs should be in [1, 255] range.
@@ -580,7 +574,7 @@ Vp9Parser::Result Vp9Parser::ParseNextFrame(
   // compressed header parsing.
   if (curr_frame_info_.IsValid()) {
     DCHECK(parsing_compressed_header_);
-    frame_info = curr_frame_info_;
+    frame_info = std::move(curr_frame_info_);
     curr_frame_info_.Reset();
   } else {
     if (frames_.empty()) {
@@ -604,7 +598,7 @@ Vp9Parser::Result Vp9Parser::ParseNextFrame(
       }
     }
 
-    frame_info = frames_.front();
+    frame_info = std::move(frames_.front());
     frames_.pop_front();
     if (frame_decrypt_config) {
       if (frame_info.decrypt_config) {

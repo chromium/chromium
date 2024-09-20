@@ -273,7 +273,7 @@ INSTANTIATE_TEST_SUITE_P(HarfBuzzShaperTest,
 TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsLatin) {
   Font font(font_description);
 
-  String latin_common = To16Bit("ABC DEF.", 8);
+  String latin_common = To16Bit("ABC DEF.");
   HarfBuzzShaper shaper(latin_common);
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
@@ -288,7 +288,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsLatin) {
 TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsLeadingCommon) {
   Font font(font_description);
 
-  String leading_common = To16Bit("... test", 8);
+  String leading_common = To16Bit("... test");
   HarfBuzzShaper shaper(leading_common);
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
@@ -1101,7 +1101,7 @@ TEST_P(OffsetForPositionTest, Data) {
 TEST_F(HarfBuzzShaperTest, PositionForOffsetLatin) {
   Font font(font_description);
 
-  String string = To16Bit("Hello World!", 12);
+  String string = To16Bit("Hello World!");
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -1157,7 +1157,7 @@ TEST_P(IncludePartialGlyphsTest,
        OffsetForPositionMatchesPositionForOffsetLatin) {
   Font font(font_description);
 
-  String string = To16Bit("Hello World!", 12);
+  String string = To16Bit("Hello World!");
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -1246,7 +1246,7 @@ TEST_P(IncludePartialGlyphsTest,
 TEST_F(HarfBuzzShaperTest, CachedOffsetPositionMappingForOffsetLatin) {
   Font font(font_description);
 
-  String string = To16Bit("Hello World!", 12);
+  String string = To16Bit("Hello World!");
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -1462,7 +1462,7 @@ TEST_P(ShapeResultCopyRangeTest, ShapeRange) {
 TEST_F(HarfBuzzShaperTest, ShapeResultCopyRangeIntoLatin) {
   Font font(font_description);
 
-  String string = To16Bit("Testing ShapeResult::createSubRun", 33);
+  String string = To16Bit("Testing ShapeResult::createSubRun");
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -1611,7 +1611,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinCommonLigatures) {
           "third_party/MEgalopolis/MEgalopolisExtra.woff"),
       16, &ligatures);
 
-  String string = To16Bit("ffi ff", 6);
+  String string = To16Bit("ffi ff");
   HarfBuzzShaper shaper(string);
   const ShapeResult* result = shaper.Shape(&testFont, TextDirection::kLtr);
 
@@ -1650,7 +1650,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakPreviousLatinCommonLigatures) {
           "third_party/MEgalopolis/MEgalopolisExtra.woff"),
       16, &ligatures);
 
-  String string = To16Bit("ffi ff", 6);
+  String string = To16Bit("ffi ff");
   HarfBuzzShaper shaper(string);
   const ShapeResult* result = shaper.Shape(&testFont, TextDirection::kLtr);
 

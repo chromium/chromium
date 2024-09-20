@@ -28,32 +28,43 @@ namespace {
 // displaying the last run "just now" text.
 constexpr base::TimeDelta kDisplayTimestampThreshold = base::Minutes(1);
 
-// Returns the number of unique warning types found in `counts`.
+// Returns the number of unique warning types found in
+// `insecure_password_counts`.
+//
+// NOTE: Only considers compromised, reused, and weak passwords. (Does not
+// consider dismissed passwords.)
+int UniqueWarningTypeCount(
+    password_manager::InsecurePasswordCounts insecure_password_counts) {
+  int type_count = 0;
+
+  if (insecure_password_counts.compromised_count > 0) {
+    type_count++;
+  }
+
+  if (insecure_password_counts.reused_count > 0) {
+    type_count++;
+  }
+
+  if (insecure_password_counts.weak_count > 0) {
+    type_count++;
+  }
+
+  return type_count;
+}
+
+// Returns the number of unique warning types found in
+// `insecure_credentials`.
 //
 // NOTE: Only considers compromised, reused, and weak passwords. (Does not
 // consider dismissed passwords.)
 int UniqueWarningTypeCount(
     const std::vector<password_manager::CredentialUIEntry>&
-        compromised_credentials) {
-  password_manager::InsecurePasswordCounts counts =
+        insecure_credentials) {
+  password_manager::InsecurePasswordCounts insecure_password_counts =
       password_manager::CountInsecurePasswordsPerInsecureType(
-          compromised_credentials);
+          insecure_credentials);
 
-  int type_count = 0;
-
-  if (counts.compromised_count > 0) {
-    type_count++;
-  }
-
-  if (counts.reused_count > 0) {
-    type_count++;
-  }
-
-  if (counts.weak_count > 0) {
-    type_count++;
-  }
-
-  return type_count;
+  return UniqueWarningTypeCount(insecure_password_counts);
 }
 
 }  // namespace
@@ -82,34 +93,40 @@ void HandleSafetyCheckUpdateChromeTap(
 }
 
 void HandleSafetyCheckPasswordTap(
-    std::vector<password_manager::CredentialUIEntry>& compromised_credentials,
+    std::vector<password_manager::CredentialUIEntry>& insecure_credentials,
+    password_manager::InsecurePasswordCounts insecure_password_counts,
     id<ApplicationCommands> applicationHandler,
     id<SettingsCommands> settingsHandler) {
   // If there's only one compromised credential, navigate users to the detail
   // view for that particular credential.
-  if (compromised_credentials.size() == 1) {
+  if (insecure_credentials.size() == 1) {
     password_manager::CredentialUIEntry credential =
-        compromised_credentials.front();
-    [settingsHandler showPasswordDetailsForCredential:credential
-                                           inEditMode:NO
-                                     showCancelButton:YES];
+        insecure_credentials.front();
+    [settingsHandler showPasswordDetailsForCredential:credential inEditMode:NO];
     return;
   }
 
   int unique_warning_type_count =
-      UniqueWarningTypeCount(compromised_credentials);
+      insecure_credentials.empty()
+          ? UniqueWarningTypeCount(insecure_password_counts)
+          : UniqueWarningTypeCount(insecure_credentials);
 
   // If there are multiple passwords (of the same warning type),
   // navigate users to the Password Checkup overview screen for that particular
   // warning type.
   if (unique_warning_type_count == 1) {
-    WarningType type =
-        password_manager::GetWarningOfHighestPriority(compromised_credentials);
+    WarningType type = insecure_credentials.empty()
+                           ? password_manager::GetWarningOfHighestPriority(
+                                 insecure_password_counts)
+                           : password_manager::GetWarningOfHighestPriority(
+                                 insecure_credentials);
+
     [applicationHandler
         showPasswordIssuesWithWarningType:type
                                  referrer:password_manager::
                                               PasswordCheckReferrer::
                                                   kSafetyCheckMagicStack];
+
     return;
   }
 

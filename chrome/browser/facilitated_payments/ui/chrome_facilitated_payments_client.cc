@@ -74,6 +74,10 @@ ChromeFacilitatedPaymentsClient::GetCoreAccountInfo() {
   return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 }
 
+bool ChromeFacilitatedPaymentsClient::IsInLandscapeMode() {
+  return facilitated_payments_controller_->IsInLandscapeMode();
+}
+
 bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
@@ -92,6 +96,12 @@ void ChromeFacilitatedPaymentsClient::ShowErrorScreen() {
 
 void ChromeFacilitatedPaymentsClient::DismissPrompt() {
   facilitated_payments_controller_->Dismiss();
+}
+
+payments::facilitated::ContentFacilitatedPaymentsDriver*
+ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsDriverForFrame(
+    content::RenderFrameHost* render_frame_host) {
+  return &driver_factory_.GetOrCreateForFrame(render_frame_host);
 }
 
 void ChromeFacilitatedPaymentsClient::

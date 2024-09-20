@@ -126,6 +126,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
+
+  // Registrar for local pref changes notifications.
+  PrefChangeRegistrar _localStateChangeRegistrar;
 }
 
 // Accessor for the incognito reauth pref.
@@ -168,6 +171,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     PrefService* prefService = _browserState->GetPrefs();
 
     _prefChangeRegistrar.Init(prefService);
+    _localStateChangeRegistrar.Init(GetApplicationContext()->GetLocalState());
+
     _prefObserverBridge.reset(new PrefObserverBridge(self));
     // Register to observe any changes on Perf backed values displayed by the
     // screen.
@@ -178,7 +183,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kSafeBrowsingEnhanced, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kBrowserLockdownModeEnabled, &_prefChangeRegistrar);
+        prefs::kBrowserLockdownModeEnabled, &_localStateChangeRegistrar);
     _syncObserver.reset(new SyncObserverBridge(
         self, SyncServiceFactory::GetForBrowserState(_browserState)));
 
@@ -419,10 +424,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 }
 
 - (TableViewItem*)lockdownModeDetailItem {
-  NSString* detailText =
-      _browserState->GetPrefs()->GetBoolean(prefs::kBrowserLockdownModeEnabled)
-          ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-          : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  NSString* detailText = GetApplicationContext()->GetLocalState()->GetBoolean(
+                             prefs::kBrowserLockdownModeEnabled)
+                             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   _lockdownModeDetailItem =
       [self detailItemWithType:ItemTypeLockdownMode
                           titleId:IDS_IOS_LOCKDOWN_MODE_TITLE
@@ -504,6 +509,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   // Remove pref changes registrations.
   _prefChangeRegistrar.RemoveAll();
+  _localStateChangeRegistrar.Reset();
 
   // Remove observer bridges.
   _prefObserverBridge.reset();
@@ -632,9 +638,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   }
 
   if (preferenceName == prefs::kBrowserLockdownModeEnabled) {
-    NSString* detailText = _browserState->GetPrefs()->GetBoolean(preferenceName)
-                               ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                               : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    NSString* detailText =
+        GetApplicationContext()->GetLocalState()->GetBoolean(preferenceName)
+            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
     _lockdownModeDetailItem.detailText = detailText;
     [self reconfigureCellsForItems:@[ _lockdownModeDetailItem ]];
     return;

@@ -73,7 +73,10 @@ class PLATFORM_EXPORT HeapObserverList final {
   void ForEachObserver(const ForEachCallable& callable) const {
     base::AutoReset<MutationState> scope(&mutation_state_, kNoMutationAllowed);
     for (ObserverType* observer : observers_) {
-      callable(observer);
+      // See CleanupDeadObservers() for why we can receive nullptr here.
+      if (observer) {
+        callable(observer);
+      }
     }
   }
 
@@ -89,15 +92,30 @@ class PLATFORM_EXPORT HeapObserverList final {
   using ObserverList = HeapVector<UntracedMember<ObserverType>>;
 
   void CleanupDeadObservers(const LivenessBroker& broker) {
-    // Must not allocate. Backing store reallocations will happen during
-    // addition and removal.
-    observers_.erase(
-        std::remove_if(observers_.begin(), observers_.end(),
-                       [broker](auto& observer) {
-                         return !broker.IsHeapObjectAlive(observer);
-                       }),
-        observers_.end());
-    check_capacity_ = true;
+    // This method must not allocate.
+
+    // The GC currently does not strongify UntracedMember, even during
+    // iteration. This implies that we must not move around items as using the
+    // erase/remove_if pattern may move a valid object in a slot where we just
+    // retrieved a nullptr.
+    if (mutation_state_ == kNoMutationAllowed) {
+      for (auto& observer : observers_) {
+        if (!broker.IsHeapObjectAlive(observer)) {
+          observer.Clear();
+        }
+      }
+    } else {
+      // We are not iterating, so we we can prepare the backing store by moving
+      // dead slots to the end. Backing store reallocations will happen during
+      // addition and removal.
+      observers_.erase(
+          std::remove_if(observers_.begin(), observers_.end(),
+                         [broker](auto& observer) {
+                           return !broker.IsHeapObjectAlive(observer);
+                         }),
+          observers_.end());
+      check_capacity_ = true;
+    }
   }
 
   // TODO(keishi): Clean up iteration state once transition from

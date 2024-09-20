@@ -30,11 +30,25 @@ namespace lens {
 
 LensOverlayBlurLayerDelegate::LensOverlayBlurLayerDelegate(
     ui::Layer* layer,
-    content::RenderWidgetHostView* background_view)
-    : layer_(layer), background_view_(background_view) {
+    content::RenderWidgetHost* background_view_host)
+    : layer_(layer), background_view_host_(background_view_host) {
   CHECK(layer);
   layer->set_delegate(this);
 
+  render_widget_host_observer_.Observe(background_view_host);
+
+  // Fetch the initial screenshot to be used for blurring.
+  FetchBackgroundImage();
+}
+
+LensOverlayBlurLayerDelegate::~LensOverlayBlurLayerDelegate() = default;
+
+void LensOverlayBlurLayerDelegate::StartBackgroundImageCapture() {
+  // If there is no background_view_host_, there is nothing to take a screenshot
+  // of, so we should exit early.
+  if (screenshot_timer_.IsRunning() || !background_view_host_) {
+    return;
+  }
   // Start taking screenshots to render on the layer.
   screenshot_timer_.Start(
       FROM_HERE,
@@ -43,11 +57,16 @@ LensOverlayBlurLayerDelegate::LensOverlayBlurLayerDelegate(
                           weak_factory_.GetWeakPtr()));
 }
 
-LensOverlayBlurLayerDelegate::~LensOverlayBlurLayerDelegate() = default;
+void LensOverlayBlurLayerDelegate::StopBackgroundImageCapture() {
+  if (!screenshot_timer_.IsRunning()) {
+    return;
+  }
+  screenshot_timer_.Stop();
+}
 
 void LensOverlayBlurLayerDelegate::OnPaintLayer(
     const ui::PaintContext& context) {
-  if (background_screenshot_.empty()) {
+  if (background_screenshot_.drawsNothing()) {
     return;
   }
 
@@ -81,16 +100,27 @@ void LensOverlayBlurLayerDelegate::OnPaintLayer(
 void LensOverlayBlurLayerDelegate::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {
-  // Do nothing. We will automatically repaint with a new image.
+  // Do nothing. OnPaintLayer will automatically repaint with a new image.
+}
+
+void LensOverlayBlurLayerDelegate::RenderWidgetHostDestroyed(
+    content::RenderWidgetHost* widget_host) {
+  CHECK(widget_host == background_view_host_);
+  render_widget_host_observer_.Reset();
+  background_view_host_ = nullptr;
+  // If the host view was destroyed, stop updating the background blur.
+  StopBackgroundImageCapture();
 }
 
 void LensOverlayBlurLayerDelegate::FetchBackgroundImage() {
-  if (!background_view_) {
+  if (!background_view_host_ || !background_view_host_->GetView()) {
     return;
   }
-  auto size = background_view_->GetViewBounds().size();
+
+  auto* view = background_view_host_->GetView();
+  auto size = view->GetViewBounds().size();
   auto quality = lens::features::GetLensOverlayCustomBlurQuality();
-  background_view_->CopyFromSurface(
+  view->CopyFromSurface(
       /*src_rect=*/gfx::Rect(),
       /*output_size=*/
       gfx::Size(size.width() * quality, size.height() * quality),
@@ -100,7 +130,8 @@ void LensOverlayBlurLayerDelegate::FetchBackgroundImage() {
 
 void LensOverlayBlurLayerDelegate::UpdateBackgroundImage(
     const SkBitmap& bitmap) {
-  if (AreBitmapsEqual(background_screenshot_, bitmap)) {
+  if (bitmap.drawsNothing() ||
+      AreBitmapsEqual(background_screenshot_, bitmap)) {
     return;
   }
   background_screenshot_ = bitmap;

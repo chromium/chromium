@@ -12,13 +12,13 @@ public class GEN_JNI {
     public static final boolean TESTING_ENABLED = false;
     public static final boolean REQUIRE_MOCK = false;
 
+public static boolean org_jni_1zero_TinySample_bar(int a, Object b) {
+  throw new RuntimeException("Native method not present");
+}
+
+public static void org_jni_1zero_TinySample_foo(Object a, int b) {
+  throw new RuntimeException("Native method not present");
+}
 
 
-    public static boolean org_jni_1zero_TinySample_bar(int a, Object b) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
-
-    public static void org_jni_1zero_TinySample_foo(Object a, int b) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
 }

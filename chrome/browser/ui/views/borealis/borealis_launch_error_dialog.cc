@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -190,7 +191,8 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
                            // Technically "retry" should re-do whatever the user
                            // originally tried. For simplicity we just retry the
                            // client app.
-                           ::borealis::BorealisService::GetForProfile(profile)
+                           ::borealis::BorealisServiceFactory::GetForProfile(
+                               profile)
                                ->AppLauncher()
                                .Launch(::borealis::kClientAppId,
                                        ::borealis::BorealisLaunchSource::
@@ -219,8 +221,9 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
 void ShowBorealisLaunchErrorView(Profile* profile,
                                  BorealisStartupResult error) {
   if (error == BorealisStartupResult::kDisallowed) {
-    ::borealis::BorealisService::GetForProfile(profile)->Features().IsAllowed(
-        base::BindOnce(&ShowLauncherDisallowedDialog));
+    ::borealis::BorealisServiceFactory::GetForProfile(profile)
+        ->Features()
+        .IsAllowed(base::BindOnce(&ShowLauncherDisallowedDialog));
     return;
   }
 

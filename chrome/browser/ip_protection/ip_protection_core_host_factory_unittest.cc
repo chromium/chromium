@@ -44,9 +44,8 @@ class ScopedInitCommandLine {
 
 class IpProtectionCoreHostFactoryTest : public testing::Test {
  protected:
-  explicit IpProtectionCoreHostFactoryTest(
-      bool feature_enabled = true,
-      const char* command_line_switch = "")
+  explicit IpProtectionCoreHostFactoryTest(bool feature_enabled = true,
+                                           const char* command_line_switch = "")
       // Note that the order of initialization is important here - we want to
       // set the value of the feature before anything else since it's used by
       // the `IpProtectionCoreHostFactory` logic. Same for the command
@@ -54,9 +53,9 @@ class IpProtectionCoreHostFactoryTest : public testing::Test {
       : scoped_feature_(net::features::kEnableIpProtectionProxy,
                         feature_enabled),
         scoped_command_line_(command_line_switch),
-        profile_selections_(IpProtectionCoreHostFactory::GetInstance(),
-                            IpProtectionCoreHostFactory::
-                                CreateProfileSelectionsForTesting()) {}
+        profile_selections_(
+            IpProtectionCoreHostFactory::GetInstance(),
+            IpProtectionCoreHostFactory::CreateProfileSelectionsForTesting()) {}
 
   void SetUp() override {
     TestingProfile::Builder builder;

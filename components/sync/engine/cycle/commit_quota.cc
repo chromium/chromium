@@ -20,6 +20,11 @@ CommitQuota::CommitQuota(int max_tokens, base::TimeDelta refill_interval)
   DCHECK_GT(refill_interval_, base::TimeDelta());
 }
 
+CommitQuota::CommitQuota(const CommitQuota&) = default;
+CommitQuota& CommitQuota::operator=(const CommitQuota&) = default;
+CommitQuota::CommitQuota(CommitQuota&&) = default;
+CommitQuota& CommitQuota::operator=(CommitQuota&&) = default;
+
 CommitQuota::~CommitQuota() = default;
 
 void CommitQuota::SetParams(int new_max_tokens,

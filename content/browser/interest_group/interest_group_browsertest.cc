@@ -1635,7 +1635,7 @@ function provideAdditionalBids(seller, nonce, bidStringList,
           name: 'cars',
           owner: $1,
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -3417,7 +3417,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           name: 'cars',
           owner: 'https://invalid^&',
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -3447,7 +3447,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           prioritySignalsOverrides: "Not an object",
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -3545,7 +3545,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           sellerCapabilities: {'https://example.test': ['non-valid-capability']},
           executionMode: 'non-valid-execution-mode',
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -3883,7 +3883,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           biddingLogicURL: 'https://invalid^&',
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -3904,7 +3904,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           biddingWasmHelperURL: 'https://invalid^&',
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -3946,7 +3946,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           updateURL: 'https://invalid^&',
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -3980,7 +3980,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           dailyUpdateUrl: 'https://invalid^&',
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4015,7 +4015,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           updateURL: $1 + '/foo',
           dailyUpdateUrl:  $1 + '/bar',
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4047,7 +4047,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           trustedBiddingSignalsURL: 'https://invalid^&',
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4079,7 +4079,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           userBiddingSignals: function() {},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4111,7 +4111,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           ads: [{renderURL:"https://invalid^&"}],
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4147,7 +4147,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           ads: [{renderURL:"https://test.com", metadata:x}],
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4226,7 +4226,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           ads: [{renderURL: "https://test.com", sizeGroup: ""}],
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4259,7 +4259,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           ads: [{renderURL: "https://test.com", sizeGroup: "nonexistent"}],
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4295,7 +4295,7 @@ IN_PROC_BROWSER_TEST_F(
           adSizes: {"size_1": {"width": "50px", "height": "50px"}},
           sizeGroups: {"group_1": ["size_1"]},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4328,7 +4328,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           ads: [{renderURL: "https://test.com", sizeGroup: "group_1"}],
           sizeGroups: {"group_1": ["nonexistent"]},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4360,7 +4360,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           adComponents: [{renderURL: "https://test.com", sizeGroup: ""}],
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4394,7 +4394,7 @@ IN_PROC_BROWSER_TEST_F(
           owner: $1,
           adComponents: [{renderURL: "https://test.com", sizeGroup: "nonexistent"}],
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4430,7 +4430,7 @@ IN_PROC_BROWSER_TEST_F(
           adSizes: {"size_1": {"width": "50px", "height": "50px"}},
           sizeGroups: {"group_1": ["size_1"]},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4463,7 +4463,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           adComponents: [{renderURL: "https://test.com", sizeGroup: "group_1"}],
           sizeGroups: {"group_1": ["nonexistent"]},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4496,7 +4496,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           adSizes: {"my_size": {"width": "0px", "height": "50px"}},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4529,7 +4529,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           adSizes: {"my_size": {"width": "500px", "height": "400bad"}},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4562,7 +4562,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           adSizes: {"my_size": {"width": "500px", "height": "px"}},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4595,7 +4595,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           adSizes: {"size_1": {"width": "300px", "height": "150px"}},
           sizeGroups: {"": ["size_1"]},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4628,7 +4628,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           adSizes: {"size_1": {"width": "300px", "height": "150px"}},
           sizeGroups: {"my_group": ["nonexistant"]},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -4660,7 +4660,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           ads: [{renderURL: "https://test.com", adRenderId: "ThisIsTooLong"}],
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -5131,7 +5131,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: '%s',
           %s
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -5175,7 +5175,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             aggregationCoordinatorOrigin: 'https://invalid^&'
           }
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -5206,7 +5206,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             aggregationCoordinatorOrigin: $2,
           }
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -5238,7 +5238,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             aggregationCoordinatorOrigin: 'http://coordinator.test/',
           }
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -5270,7 +5270,7 @@ IN_PROC_BROWSER_TEST_F(
             aggregationCoordinatorOrigin: 'https://coordinator.test/',
           }
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -6507,7 +6507,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NonFiniteValuesRejected) {
           owner: '%s',
           priority: %s,
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -6529,7 +6529,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NonFiniteValuesRejected) {
           owner: '%s',
           priorityVector: {'foo': %s},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -6551,7 +6551,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NonFiniteValuesRejected) {
           owner: '%s',
           prioritySignalsOverrides: {'foo': %s},
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -10886,7 +10886,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               owner: $1,
               ads: [{name:"foo",renderURL:$2}],
             },
-            /*joinDurationSec=*/1);
+            /*joinDurationSec=*/1000);
       } catch (e) {
         return e.toString();
       }
@@ -16006,7 +16006,7 @@ function validateAuctionConfig(auctionConfig) {
           userBiddingSignals: 1,
           ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -20887,8 +20887,7 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
   InterestGroupBiddingAndAuctionServerBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFledgeBiddingAndAuctionServer,
-          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
-         {blink::features::kFledgeBiddingAndAuctionServerAPI, {}}},
+          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}}},
         {});
   }
 

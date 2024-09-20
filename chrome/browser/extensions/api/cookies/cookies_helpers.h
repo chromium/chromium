@@ -23,7 +23,6 @@
 #include "net/cookies/cookie_options.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
-class Browser;
 class Profile;
 
 namespace net {
@@ -33,6 +32,7 @@ class CanonicalCookie;
 namespace extensions {
 
 class Extension;
+class WindowController;
 
 namespace cookies_helpers {
 
@@ -95,7 +95,7 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
 
 // Appends the IDs of all tabs belonging to the given browser to the
 // given list.
-void AppendToTabIdList(Browser* browser, base::Value::List& tab_ids);
+void AppendToTabIdList(WindowController* window, base::Value::List& tab_ids);
 
 // The extensions API allows the caller to provide an incomplete
 // partitionKey that does not contain a hasCrossSiteAncestor value. If the key

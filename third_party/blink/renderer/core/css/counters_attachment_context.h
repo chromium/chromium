@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -21,9 +22,16 @@ class Element;
 class CORE_EXPORT CountersAttachmentContext {
   STACK_ALLOCATED();
 
-  using CounterStack = HeapVector<Member<const Element>>;
-  using CounterValues = HeapHashMap<Member<const Element>, int>;
-  using CounterValueTable = HeapHashMap<AtomicString, Member<CounterValues>>;
+  struct CounterEntry : public GarbageCollected<CounterEntry> {
+    CounterEntry(const Element& element, int value)
+        : element(&element), value(value) {}
+    Member<const Element> element;
+    int value;
+
+    void Trace(Visitor*) const;
+  };
+
+  using CounterStack = HeapVector<Member<CounterEntry>>;
   using CounterInheritanceTable =
       HeapHashMap<AtomicString, Member<CounterStack>>;
 
@@ -58,10 +66,6 @@ class CORE_EXPORT CountersAttachmentContext {
                            const AtomicString& counter_name);
   void RemoveCounterIfAncestorExists(const Element& element,
                                      const AtomicString& counter_name);
-  void SetCounterValue(const Element& element,
-                       const AtomicString& counter_name,
-                       int value);
-  int GetCounterValue(const Element& element, const AtomicString& counter_name);
   void UpdateCounterValue(const Element& element,
                           const AtomicString& counter_name,
                           unsigned counter_type,
@@ -74,9 +78,6 @@ class CORE_EXPORT CountersAttachmentContext {
   // True if attachment started from documentElement. If true, counters
   // calculations are done as part of layout tree attachment.
   bool attachment_root_is_document_element_ = false;
-  // Hash table of counter name <-> {Hash table of element <-> current value},
-  // for keeping track of current counter value.
-  CounterValueTable* counter_value_table_ = nullptr;
   // Hash table of counter name <-> counters stack, for inheritance.
   CounterInheritanceTable* counter_inheritance_table_ = nullptr;
 };

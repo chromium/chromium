@@ -31,8 +31,12 @@ String InnerHtmlBuilder::Build(HTMLElement& body) {
   return SerializeNodes<EditingStrategy>(body, kIncludeNode);
 }
 
-bool InnerHtmlBuilder::ShouldIgnoreElement(const Element& e) const {
-  return e.IsScriptElement();
+MarkupAccumulator::EmitChoice InnerHtmlBuilder::WillProcessElement(
+    const Element& e) {
+  if (e.IsScriptElement()) {
+    return EmitChoice::kIgnore;
+  }
+  return MarkupAccumulator::WillProcessElement(e);
 }
 
 }  // namespace blink

@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_data_source.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mutator.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
@@ -74,23 +73,29 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 }
 
 // The only acceptable argument is the ID of a secondary id.
-- (TableViewAccountItem*)identityItemForGaiaID:(NSString*)gaiaID {
-  const FakeSystemIdentity* identity;
+- (const FakeSystemIdentity*)identityForGaiaID:(NSString*)gaiaID {
   if (gaiaID == kSecondaryIdentity.gaiaID) {
-    identity = kSecondaryIdentity;
+    return kSecondaryIdentity;
   } else if (gaiaID == kSecondaryIdentity2.gaiaID) {
-    identity = kSecondaryIdentity2;
+    return kSecondaryIdentity2;
   } else {
     NOTREACHED();
   }
-  TableViewAccountItem* item =
-      [[TableViewAccountItem alloc] initWithType:SettingsItemTypeAccount];
-  item.text = identity.userFullName;
-  item.detailText = identity.userEmail;
-  item.image = _accountManagerService->GetIdentityAvatarWithIdentity(
-      identity, IdentityAvatarSize::Regular);
-  return item;
 }
+
+- (NSString*)nameForGaiaID:(NSString*)gaiaID {
+  return [self identityForGaiaID:gaiaID].userFullName;
+}
+
+- (NSString*)emailForGaiaID:(NSString*)gaiaID {
+  return [self identityForGaiaID:gaiaID].userEmail;
+}
+
+- (UIImage*)imageForGaiaID:(NSString*)gaiaID {
+  return _accountManagerService->GetIdentityAvatarWithIdentity(
+      [self identityForGaiaID:gaiaID], IdentityAvatarSize::TableViewIcon);
+}
+
 @end
 
 class AccountMenuViewControllerTest : public PlatformTest {
@@ -118,14 +123,11 @@ class AccountMenuViewControllerTest : public PlatformTest {
     AddSecondaryIdentity();
 
     view_controller_ = [[AccountMenuViewController alloc]
-        initWithStyle:ChromeTableViewStyle()];
-    delegate_ = OCMStrictProtocolMock(
-        @protocol(AccountMenuViewControllerPresentationDelegate));
+        initWithStyle:UITableViewStyleInsetGrouped];
     mutator_ = OCMStrictProtocolMock(@protocol(AccountMenuMutator));
 
     view_controller_.dataSource = data_source_;
     view_controller_.mutator = mutator_;
-    view_controller_.delegate = delegate_;
     [view_controller_ viewDidLoad];
   }
 
@@ -136,7 +138,6 @@ class AccountMenuViewControllerTest : public PlatformTest {
 
  protected:
   AccountMenuViewController* view_controller_;
-  id<AccountMenuViewControllerPresentationDelegate> delegate_;
   ChromeAccountManagerService* account_manager_service_;
   id<AccountMenuMutator> mutator_;
   FakeAccountMenuDataSource* data_source_ =
@@ -152,7 +153,6 @@ class AccountMenuViewControllerTest : public PlatformTest {
 
   // Verify that all mocks expectation are fulfilled.
   void VerifyMock() {
-    EXPECT_OCMOCK_VERIFY((id)delegate_);
     EXPECT_OCMOCK_VERIFY((id)mutator_);
   }
 
@@ -241,15 +241,14 @@ TEST_F(AccountMenuViewControllerTest, TestTapSecondaryAccount) {
 
 // Tests tapping on the add account cell.
 TEST_F(AccountMenuViewControllerTest, TestTapAddAccount) {
-  OCMExpect([delegate_ didTapAddAccount]);
+  OCMExpect([mutator_ didTapAddAccount]);
   SelectCell(path_for_add_account_);
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_AddAccount"));
 }
 
 // Tests tapping on the sign-out cell.
 TEST_F(AccountMenuViewControllerTest, TestTapSignOut) {
-  OCMExpect([delegate_ signOutFromTargetRect:CGRect() callback:nil])
-      .ignoringNonObjectArgs();
+  OCMExpect([mutator_ signOutFromTargetRect:CGRect()]).ignoringNonObjectArgs();
   SelectCell(path_for_sign_out_);
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_Signout"));
 }
@@ -261,12 +260,12 @@ TEST_F(AccountMenuViewControllerTest, TestTapClose) {
     // There is no close button on ipad.
     return;
   }
-  UIBarButtonItem* closeButton =
-      view_controller_.navigationItem.rightBarButtonItem;
-  OCMExpect([delegate_ viewControllerWantsToBeClosed:view_controller_]);
+  UIButton* closeButton = static_cast<UIButton*>(
+      view_controller_.navigationItem.rightBarButtonItem.customView);
+  OCMExpect([mutator_ viewControllerWantsToBeClosed:view_controller_]);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-  [closeButton.target performSelector:closeButton.action];
+  [closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
 #pragma clang diagnostic pop
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_Close"));
 }
@@ -275,14 +274,14 @@ TEST_F(AccountMenuViewControllerTest, TestTapClose) {
 TEST_F(AccountMenuViewControllerTest, TestTapManageYourAccount) {
   UIBarButtonItem* ellipsisButton =
       view_controller_.navigationItem.leftBarButtonItem;
-  UIMenu* ellipsisMenu = ellipsisButton.menu;
+  UIMenu* ellipsisMenu = static_cast<UIButton*>(ellipsisButton.customView).menu;
   UIAction* manageYourAccountAction =
       static_cast<UIAction*>(ellipsisMenu.children[0]);
   // Cast the handler block into a form that we can execute
   void (^manageYourAccountHandler)(id obj) =
       [manageYourAccountAction valueForKey:@"handler"];
   // Execute the block
-  OCMExpect([delegate_ didTapManageYourGoogleAccount]);
+  OCMExpect([mutator_ didTapManageYourGoogleAccount]);
   manageYourAccountHandler(manageYourAccountAction);
   EXPECT_EQ(1,
             user_actions_.GetActionCount("Signin_AccountMenu_ManageAccount"));
@@ -292,14 +291,14 @@ TEST_F(AccountMenuViewControllerTest, TestTapManageYourAccount) {
 TEST_F(AccountMenuViewControllerTest, TestTapEditAccountsList) {
   UIBarButtonItem* ellipsisButton =
       view_controller_.navigationItem.leftBarButtonItem;
-  UIMenu* ellipsisMenu = ellipsisButton.menu;
+  UIMenu* ellipsisMenu = static_cast<UIButton*>(ellipsisButton.customView).menu;
   UIAction* editAccountsListAction =
       static_cast<UIAction*>(ellipsisMenu.children[1]);
   // Cast the handler block into a form that we can execute
   void (^editAccountsListHandler)(id obj) =
       [editAccountsListAction valueForKey:@"handler"];
   // Execute the block
-  OCMExpect([delegate_ didTapEditAccountList]);
+  OCMExpect([mutator_ didTapEditAccountList]);
   editAccountsListHandler(editAccountsListAction);
   EXPECT_EQ(1,
             user_actions_.GetActionCount("Signin_AccountMenu_EditAccountList"));

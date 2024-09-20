@@ -15,12 +15,13 @@ class LogRouter;
 
 namespace ios {
 // Singleton that owns all PasswordStores and associates them with
-// ChromeBrowserState.
+// profile.
 class PasswordManagerLogRouterFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static autofill::LogRouter* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static autofill::LogRouter* GetForBrowserState(ProfileIOS* profile);
 
+  static autofill::LogRouter* GetForProfile(ProfileIOS* profile);
   static PasswordManagerLogRouterFactory* GetInstance();
 
   PasswordManagerLogRouterFactory(const PasswordManagerLogRouterFactory&) =

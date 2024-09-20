@@ -220,17 +220,20 @@ if (enable_pdf) {
         "pdf_ink_cursor.h",
         "pdf_ink_module.cc",
         "pdf_ink_module.h",
+        "pdf_ink_module_client.h",
         "pdf_ink_transform.cc",
         "pdf_ink_transform.h",
         "pdf_ink_undo_redo_model.cc",
         "pdf_ink_undo_redo_model.h",
       ]
 
-      public_deps += [ "//pdf/ink" ]
+      public_deps += [ "//third_party/ink" ]
     }
 
     if (enable_screen_ai_service) {
       sources += [
+        "pdfium/pdfium_progressive_searchifier.cc",
+        "pdfium/pdfium_progressive_searchifier.h",
         "pdfium/pdfium_searchify.cc",
         "pdfium/pdfium_searchify.h",
         "pdfium/pdfium_searchify_font.cc",
@@ -348,10 +351,6 @@ if (enable_pdf) {
       "//ui/gfx/range",
       "//v8",
     ]
-
-    if (enable_pdf_ink2) {
-      deps += [ "//pdf/ink" ]
-    }
   }
 
   source_set("pdf_test_utils") {
@@ -484,6 +483,8 @@ if (enable_pdf) {
         "test/pdf_ink_test_helpers.cc",
         "test/pdf_ink_test_helpers.h",
       ]
+
+      deps += [ "//third_party/ink" ]
     }
 
     if (enable_screen_ai_service) {

@@ -397,6 +397,12 @@ void ShowToast(const std::string& id,
 void EnterImageCaptureMode(CaptureModeSource source,
                            CaptureModeEntryType entry_type) {
   auto* capture_mode_controller = CaptureModeController::Get();
+  if (!capture_mode_controller->SupportsBehaviorChange(entry_type)) {
+    // If capture mode session is already active with the default behavior,
+    // disallow changing the source. This is needed even if `Start()` is a
+    // no-op, since the session is already active. See http://b/252343022.
+    return;
+  }
   capture_mode_controller->SetSource(source);
   capture_mode_controller->SetType(CaptureModeType::kImage);
   capture_mode_controller->Start(entry_type);
@@ -914,10 +920,6 @@ void LockScreen() {
 }
 
 void MaybeTakePartialScreenshot() {
-  // If a capture mode session is already running, this shortcut will be treated
-  // as a no-op.
-  if (CaptureModeController::Get()->IsActive())
-    return;
   base::RecordAction(base::UserMetricsAction("Accel_Take_Partial_Screenshot"));
   EnterImageCaptureMode(CaptureModeSource::kRegion,
                         CaptureModeEntryType::kAccelTakePartialScreenshot);

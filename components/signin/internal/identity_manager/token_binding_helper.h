@@ -32,6 +32,24 @@ struct CoreAccountId;
 // Keys needs to be loaded into the helper on every startup.
 class TokenBindingHelper {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(Error)
+  enum class Error {
+    // Reserved for histograms.
+    // kNone = 0
+    kKeyNotFound = 1,
+    kLoadKeyFailure = 2,
+    kCreateAssertionFaiure = 3,
+    kSignAssertionFailure = 4,
+    kAppendSignatureFailure = 5,
+    kMaxValue = kAppendSignatureFailure
+  };
+
+  static constexpr Error kNoErrorForMetrics = static_cast<Error>(0);
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:TokenBindingGenerateAssertionResult)
+
   using GenerateAssertionCallback =
       base::OnceCallback<void(std::string, std::optional<HybridEncryptionKey>)>;
 

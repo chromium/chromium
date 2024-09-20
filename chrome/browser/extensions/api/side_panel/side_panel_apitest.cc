@@ -4,7 +4,6 @@
 
 #include <optional>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -14,20 +13,12 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
 
 class SidePanelApiTest : public ExtensionApiTest {
- public:
-  SidePanelApiTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionSidePanelIntegration);
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
   ScopedCurrentChannel current_channel_{version_info::Channel::CANARY};
 };
 

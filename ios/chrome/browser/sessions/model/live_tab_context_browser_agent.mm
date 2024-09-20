@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/mojom/window_show_state.mojom.h"
 
 BROWSER_USER_DATA_KEY_IMPL(LiveTabContextBrowserAgent)
 
@@ -117,9 +118,10 @@ const gfx::Rect LiveTabContextBrowserAgent::GetRestoredBounds() const {
   return gfx::Rect();
 }
 
-ui::WindowShowState LiveTabContextBrowserAgent::GetRestoredState() const {
+ui::mojom::WindowShowState LiveTabContextBrowserAgent::GetRestoredState()
+    const {
   // Not supported by iOS.
-  return ui::SHOW_STATE_NORMAL;
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 std::string LiveTabContextBrowserAgent::GetWorkspace() const {

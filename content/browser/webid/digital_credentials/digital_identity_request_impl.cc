@@ -342,6 +342,12 @@ void DigitalIdentityRequestImpl::Request(
 }
 
 void DigitalIdentityRequestImpl::Abort() {
+  if (!callback_) {
+    // Renderer sent abort request after the browser sent the callback but
+    // before the renderer received it.
+    return;
+  }
+
   if (update_interstitial_on_abort_callback_) {
     std::move(update_interstitial_on_abort_callback_).Run();
   }

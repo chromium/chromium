@@ -50,8 +50,8 @@ class SideSwipeMediatorTest : public PlatformTest {
     [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
     original_web_state->SetWebViewProxy(web_view_proxy_mock);
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     browser_->GetWebStateList()->InsertWebState(std::move(original_web_state));
 
@@ -69,7 +69,7 @@ class SideSwipeMediatorTest : public PlatformTest {
   ~SideSwipeMediatorTest() override { [side_swipe_mediator_ disconnect]; }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   UIView* view_;
   SideSwipeMediator* side_swipe_mediator_;

@@ -48,15 +48,6 @@ using ::ash::string_matching::TokenizedStringMatch;
 // The default relevance returned by CalculateRelevance.
 constexpr double kDefaultRelevance = 0.5;
 
-// Parameters for FuzzyTokenizedStringMatch.
-constexpr bool kUseWeightedRatio = false;
-
-// Flag to enable/disable diacritics stripping
-constexpr bool kStripDiacritics = true;
-
-// Flag to enable/disable acronym matcher.
-constexpr bool kUseAcronymMatcher = true;
-
 // The maximum penalty applied to a relevance by PenalizeRelevanceByAccessTime,
 // which will multiply the relevance by a number in [`kMaxPenalty`, 1].
 constexpr double kMaxPenalty = 0.6;
@@ -258,15 +249,8 @@ double FileResult::CalculateRelevance(
                         use_default_relevance);
   if (use_default_relevance)
     return kDefaultRelevance;
-  double relevance;
-  if (search_features::IsLauncherFuzzyMatchAcrossProvidersEnabled()) {
-    FuzzyTokenizedStringMatch fuzzy_match;
-    relevance = fuzzy_match.Relevance(query.value(), title, kUseWeightedRatio,
-                                      kStripDiacritics, kUseAcronymMatcher);
-  } else {
-    TokenizedStringMatch match;
-    relevance = match.Calculate(query.value(), title);
-  }
+  TokenizedStringMatch match;
+  double relevance = match.Calculate(query.value(), title);
   if (!last_accessed) {
     return relevance;
   }

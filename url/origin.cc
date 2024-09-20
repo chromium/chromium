@@ -355,7 +355,7 @@ std::optional<std::string> Origin::SerializeWithNonceImpl() const {
 }
 
 // static
-std::optional<Origin> Origin::Deserialize(const std::string& value) {
+std::optional<Origin> Origin::Deserialize(std::string_view value) {
   std::string data;
   if (!base::Base64Decode(value, &data))
     return std::nullopt;

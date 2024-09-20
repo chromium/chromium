@@ -87,7 +87,6 @@ class MockBocaAppClient : public BocaAppClient {
 
 constexpr char kTestGaiaId[] = "123";
 constexpr char kTestUserEmail[] = "cat@gmail.com";
-}  // namespace
 
 class BocaSessionManagerTest : public testing::Test {
  public:
@@ -649,4 +648,5 @@ TEST_F(BocaSessionManagerTest, NotifyLocalCaptionConfigWhenLocalChange) {
   BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(config);
 }
 
+}  // namespace
 }  // namespace ash::boca

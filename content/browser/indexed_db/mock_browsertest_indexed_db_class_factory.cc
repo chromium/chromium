@@ -18,7 +18,6 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_iterator.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
-#include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
@@ -52,7 +51,7 @@ class FunctionTracer {
 
 }  // namespace
 
-namespace content {
+namespace content::indexed_db {
 
 class LevelDBTestDatabase : public TransactionalLevelDBDatabase {
  public:
@@ -278,7 +277,7 @@ class LevelDBTraceIterator : public TransactionalLevelDBIterator {
   mutable FunctionTracer value_tracer_;
 };
 
-class LevelDBTestIterator : public content::TransactionalLevelDBIterator {
+class LevelDBTestIterator : public TransactionalLevelDBIterator {
  public:
   LevelDBTestIterator(std::unique_ptr<leveldb::Iterator> iterator,
                       base::WeakPtr<TransactionalLevelDBDatabase> db,
@@ -416,4 +415,4 @@ void MockBrowserTestIndexedDBClassFactory::FailOperation(
   instance_count_.clear();
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

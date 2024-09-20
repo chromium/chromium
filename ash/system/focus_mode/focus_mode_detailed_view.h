@@ -12,7 +12,6 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view_observer.h"
 
 namespace views {
 class BoxLayoutView;
@@ -20,6 +19,10 @@ class Label;
 }  // namespace views
 
 namespace ash {
+
+namespace {
+class PanelRowAnimator;
+}
 
 class FocusModeCountdownView;
 class FocusModeSoundsView;
@@ -33,7 +36,6 @@ class SystemTextfield;
 // This view displays the focus panel settings that a user can set.
 class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
                                          public FocusModeController::Observer,
-                                         public views::ViewObserver,
                                          public ClockObserver {
   METADATA_HEADER(FocusModeDetailedView, TrayDetailedView)
 
@@ -53,9 +55,6 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   FocusModeDetailedView& operator=(const FocusModeDetailedView&) = delete;
   ~FocusModeDetailedView() override;
 
-  // views::ViewObserver:
-  void OnViewBoundsChanged(View* observed_view) override;
-
   // ClockObserver:
   void OnDateFormatChanged() override;
   void OnSystemClockTimeUpdated() override;
@@ -72,7 +71,7 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   void AddedToWidget() override;
 
   // FocusModeController::Observer:
-  void OnFocusModeChanged(bool in_focus_session) override;
+  void OnFocusModeChanged(FocusModeSession::State session_state) override;
   void OnTimerTick(const FocusModeSession::Snapshot& session_snapshot) override;
   void OnActiveSessionDurationChanged(
       const FocusModeSession::Snapshot& session_snapshot) override;
@@ -106,9 +105,10 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // selected saved task item view and the header.
   void CreateTaskView(bool is_network_connected);
 
-  // Performs an animation to shift the visible container views below
-  // `task_view_container_`.
-  void OnTaskViewAnimate(const int shift_height);
+  // Creates the container `focus_mode_sounds_view_`.
+  void CreateSoundsView(
+      const base::flat_set<focus_mode_util::SoundType>& sound_sections,
+      bool is_network_connected);
 
   // Creates the DND rounded container. This view will be visible only when
   // there is no active focus session. The toggle button in this view will
@@ -167,12 +167,12 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // not active.
   raw_ptr<views::Label> end_time_label_ = nullptr;
 
-  // Records the height of the `task_view_container_`.
-  int task_view_container_height_ = 0;
   // The view contains a header view and a `focus_mode_task_view_`.
   raw_ptr<RoundedContainer> task_view_container_ = nullptr;
+  std::unique_ptr<PanelRowAnimator> task_view_animator_;
   raw_ptr<FocusModeTaskView> focus_mode_task_view_ = nullptr;
   raw_ptr<FocusModeSoundsView> focus_mode_sounds_view_ = nullptr;
+  std::unique_ptr<PanelRowAnimator> sounds_view_animator_;
 
   // This view contains a toggle for turning on/off DND.
   raw_ptr<RoundedContainer> do_not_disturb_view_ = nullptr;

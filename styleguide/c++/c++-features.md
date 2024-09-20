@@ -1743,6 +1743,28 @@ Banned since workaround for lack of RTTI
 `std::any`.
 ***
 
+### Attributes <sup>[banned]</sup>
+
+```c++
+T* data() ABSL_ATTRIBUTE_LIFETIME_BOUND { return data_; }
+ABSL_ATTRIBUTE_NO_TAIL_CALL ReturnType Loop();
+struct S { bool b; int32_t i; } ABSL_ATTRIBUTE_PACKED;
+```
+
+**Description:** Cross-platform macros to expose compiler-specific
+functionality.
+
+**Documentation:** [attributes.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/attributes.h)
+
+**Notes:**
+*** promo
+Long names discourage use. Use standardized attributes over macros where
+possible, and otherwise prefer shorter alternatives in
+`base/compiler_specific.h`.
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/lVQOJTng1RU)
+***
+
 ### bind_front <sup>[banned]</sup>
 
 ```c++
@@ -1923,24 +1945,6 @@ explaining why such a value is not present.
 Overlaps with `base::expected`.
 ***
 
-### String Formatting <sup>[banned]</sup>
-
-```c++
-absl::StrFormat
-```
-
-**Description:** A typesafe replacement for the family of printf() string
-formatting routines.
-
-**Documentation:**
-[String Formatting](https://abseil.io/docs/cpp/guides/format)
-
-**Notes:**
-*** promo
-Overlaps with `base::StringPrintf()`. See
-[migration bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1371963).
-***
-
 ### string_view <sup>[banned]</sup>
 
 ```c++
@@ -1981,7 +1985,8 @@ Overlaps with `base/strings`. We
 [should re-evalute](https://bugs.chromium.org/p/chromium/issues/detail?id=1371966)
 when we've
 [migrated](https://bugs.chromium.org/p/chromium/issues/detail?id=691162) from
-`base::StringPiece` to `std::string_view`.
+`base::StringPiece` to `std::string_view`. Also note that `absl::StrFormat()` is
+not considered part of this group, and is explicitly allowed.
 ***
 
 ### Synchronization <sup>[banned]</sup>

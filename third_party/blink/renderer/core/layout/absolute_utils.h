@@ -59,6 +59,7 @@ struct LogicalAlignment {
 
 LogicalAlignment ComputeAlignment(
     const ComputedStyle& style,
+    bool is_containing_block_scrollable,
     WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction);
 
@@ -109,6 +110,12 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
   std::optional<InsetBias> inline_safe_inset_bias;
   std::optional<InsetBias> block_safe_inset_bias;
 
+  // If non-normal alignment is specified (e.g. "align-self: center") we'll
+  // adjust the position so that it doesn't overflow the containing block.
+  // This field indicates the "start" edge of the containing block.
+  std::optional<InsetBias> inline_default_inset_bias;
+  std::optional<InsetBias> block_default_inset_bias;
+
   LayoutUnit InlineEndOffset() const {
     return available_size.inline_size - inline_end;
   }
@@ -133,7 +140,6 @@ CORE_EXPORT InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
     const LogicalAlignment&,
     const LogicalOofInsets&,
     const LogicalStaticPosition&,
-    const LogicalAnchorCenterPosition&,
     WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction);
 
@@ -168,9 +174,11 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
     const ComputedStyle& style,
     const ConstraintSpace&,
     const InsetModifiedContainingBlock&,
+    const LogicalAnchorCenterPosition&,
     const LogicalAlignment&,
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
+    const BoxStrut& container_insets,
     WritingDirectionMode container_writing_direction,
     LogicalOofDimensions* dimensions);
 
@@ -181,9 +189,11 @@ CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const ComputedStyle& style,
     const ConstraintSpace&,
     const InsetModifiedContainingBlock&,
+    const LogicalAnchorCenterPosition&,
     const LogicalAlignment&,
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
+    const BoxStrut& container_insets,
     WritingDirectionMode container_writing_direction,
     LogicalOofDimensions* dimensions);
 

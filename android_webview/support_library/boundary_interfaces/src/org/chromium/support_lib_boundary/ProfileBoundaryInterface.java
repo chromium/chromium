@@ -11,7 +11,6 @@ import android.webkit.ValueCallback;
 import android.webkit.WebStorage;
 
 import java.lang.reflect.InvocationHandler;
-import java.util.concurrent.Executor;
 
 /** Boundary interface for Profile. */
 public interface ProfileBoundaryInterface {
@@ -27,8 +26,19 @@ public interface ProfileBoundaryInterface {
 
     void prefetchUrl(
             String url,
-            /* PrefetchCallbackBoundaryInterface */ InvocationHandler prefetchCallback,
-            Executor callbackExecutor);
+            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
+                    callback);
 
-    void clearPrefetch(String url, ValueCallback<Void> callback);
+    void prefetchUrl(
+            String url,
+            /* PrefetchParamsBoundaryInterface */ InvocationHandler prefetchParams,
+            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
+                    callback);
+
+    void cancelPrefetch(String url);
+
+    void clearPrefetch(
+            String url,
+            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
+                    callback);
 }

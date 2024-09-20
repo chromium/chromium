@@ -5,11 +5,15 @@
 #ifndef CONTENT_BROWSER_WEBID_TEST_MOCK_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
 #define CONTENT_BROWSER_WEBID_TEST_MOCK_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
 
 namespace content {
+
+using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
+using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
 
 class MockIdentityRequestDialogController
     : public IdentityRequestDialogController {
@@ -26,10 +30,11 @@ class MockIdentityRequestDialogController
   MOCK_METHOD(bool,
               ShowAccountsDialog,
               (const std::string&,
-               const std::vector<content::IdentityProviderData>&,
+               const std::vector<IdentityProviderDataPtr>&,
+               const std::vector<IdentityRequestAccountPtr>&,
                IdentityRequestAccount::SignInMode,
-               blink::mojom::RpMode rp_mode,
-               const std::optional<content::IdentityProviderData>&,
+               blink::mojom::RpMode,
+               const std::vector<IdentityRequestAccountPtr>&,
                AccountSelectionCallback,
                LoginToIdPCallback,
                DismissCallback,

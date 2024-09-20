@@ -72,11 +72,9 @@ interface PageHandler {
   // specified by `model_id`.
   // The list of possible IDs are listed in core/platform_handler.ts, and
   // corresponds to the DLC ID on platform side.
-  LoadModel(
-      mojo_base.mojom.Uuid model_id,
-      pending_receiver<on_device_model.mojom.OnDeviceModel> model)
+  LoadModel(mojo_base.mojom.Uuid model_id,
+            pending_receiver<on_device_model.mojom.OnDeviceModel> model)
       => (on_device_model.mojom.LoadModelResult result);
-
 
   // Formats the input fields with the model uuid and feature combination.
   // The `fields` will represent the corresponding input key value pairs for
@@ -87,32 +85,29 @@ interface PageHandler {
   // For example, a feature may need "name" & "something" & "action" to complete
   // the following string: "I'm {name}, I have {something}, please {action} for
   // me.". And different feature may require different sets of key value pairs.
-  FormatModelInput(
-      mojo_base.mojom.Uuid uuid,
-      on_device_model.mojom.FormatFeature feature,
-      map<string, string> fields)
-      => (string? result);
+  FormatModelInput(mojo_base.mojom.Uuid uuid,
+                   on_device_model.mojom.FormatFeature feature,
+                   map<string, string> fields) => (string? result);
 
   // Validates the `text` is safe or not with the given `safety_feature` and
   // `safety_info`. The `safety_info` should be the result returned by
   // `ClassifyTextSafety()` from `on_device_model.mojom.OnDeviceModel`. Returns
   // true if the `text` is safe.
-  ValidateSafetyResult(
-      on_device_model.mojom.SafetyFeature safety_feature,
-      string text,
-      on_device_model.mojom.SafetyInfo safety_info)
+  ValidateSafetyResult(on_device_model.mojom.SafetyFeature safety_feature,
+                       string text,
+                       on_device_model.mojom.SafetyInfo safety_info)
       => (bool is_safe);
 
   // Adds a new monitor for model state change.
   // Returns the current state.
-  AddModelMonitor(
-      mojo_base.mojom.Uuid model_id,
-      pending_remote<ModelStateMonitor> monitor)
+  AddModelMonitor(mojo_base.mojom.Uuid model_id,
+                  pending_remote<ModelStateMonitor> monitor)
       => (ModelState state);
 
   // Adds a new monitor for SODA state change.
   // Returns the current state.
-  AddSodaMonitor(pending_remote<ModelStateMonitor> monitor) => (ModelState state);
+  AddSodaMonitor(pending_remote<ModelStateMonitor> monitor)
+      => (ModelState state);
 
   // Requests installation for SODA.
   InstallSoda() => ();
@@ -134,8 +129,7 @@ interface PageHandler {
   LoadSpeechRecognizer(
       pending_remote<chromeos.machine_learning.mojom.SodaClient> soda_client,
       pending_receiver<chromeos.machine_learning.mojom.SodaRecognizer>
-          soda_recognizer)
-      => (bool result);
+          soda_recognizer) => (bool result);
 
   // Opens the chrome feedback dialog for AI and show `description_template` in
   // the description field.
@@ -147,8 +141,8 @@ interface PageHandler {
 
   // Adds a new monitor for system quiet mode change. Returns the current
   // state.
-  AddQuietModeMonitor(
-      pending_remote<QuietModeMonitor> monitor) => (bool in_quiet_mode);
+  AddQuietModeMonitor(pending_remote<QuietModeMonitor> monitor)
+      => (bool in_quiet_mode);
 
   // Sets the system quiet mode.
   SetQuietMode(bool quiet_mode);
@@ -165,8 +159,13 @@ interface PageHandler {
   // consent_description_names and consent_confirmation_name corresponds to the
   // name (camelCase, without the IDS_RECORDER prefix) in the resources.h, and
   // will be converted back to the corresponding numbered resource IDs.
-  RecordSpeakerLabelConsent(
-      bool consent_given,
-      array<string> consent_description_names,
-      string consent_confirmation_name);
+  RecordSpeakerLabelConsent(bool consent_given,
+                            array<string> consent_description_names,
+                            string consent_confirmation_name);
+
+  // Gets whether the system audio will be captured by audio loopback.
+  // If returns true, users can use UI switch to include/exclude system audio
+  // via `getDisplayMedia`. Otherwise, microphone echo cancellation should be
+  // turned off to capture the system audio.
+  CanCaptureSystemAudioWithLoopback() => (bool supported);
 };

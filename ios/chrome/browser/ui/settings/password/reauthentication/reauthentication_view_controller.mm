@@ -63,22 +63,7 @@
 
   if (_reauthUponPresentation) {
     [self recordAuthenticationEvent:ReauthenticationEvent::kAttempt];
-    if (@available(iOS 18, *)) {
-      // TODO(crbug.com/347330366): Mock reauth will make
-      // -triggerLocalAuthentication return immediately, which means a VC is
-      // pushed and popped, following by pushing another VC. When doing this on
-      // iOS18, the top accessory views are not visible. This is either unsafe
-      // in UIKit and needs to be changed, or is a bug in iOS18, and may still
-      // require a workaround. During this investigation, simply defer calling
-      // -triggerLocalAuthentication to the next runloop on iOS18. This may be
-      // unsafe and is a short-term only solution to greening a large number of
-      // tests in one place.
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [self triggerLocalAuthentication];
-      });
-    } else {
-      [self triggerLocalAuthentication];
-    }
+    [self triggerLocalAuthentication];
   }
 }
 

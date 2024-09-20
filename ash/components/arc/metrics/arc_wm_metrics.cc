@@ -22,6 +22,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -82,7 +83,7 @@ class ArcWmMetrics::WindowStateChangeObserver
     : public ash::WindowStateObserver {
  public:
   WindowStateChangeObserver(aura::Window* window,
-                            ui::WindowShowState old_window_show_state,
+                            ui::mojom::WindowShowState old_window_show_state,
                             base::OnceClosure callback)
       : window_(window),
         old_window_show_state_(old_window_show_state),
@@ -151,7 +152,7 @@ class ArcWmMetrics::WindowStateChangeObserver
   }
 
   const raw_ptr<aura::Window> window_;
-  const ui::WindowShowState old_window_show_state_;
+  const ui::mojom::WindowShowState old_window_show_state_;
 
   // Tracks the elapsed time from the window operation happens until the window
   // state is changed.
@@ -342,7 +343,8 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
 
   const auto new_window_show_state =
       window->GetProperty(aura::client::kShowStateKey);
-  const auto old_window_show_state = static_cast<ui::WindowShowState>(old);
+  const auto old_window_show_state =
+      static_cast<ui::mojom::WindowShowState>(old);
 
   // We do not measure the case that window state is maximized on the app is
   // launched.
@@ -359,9 +361,9 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
   const bool from_normal_to_maximized =
       IsNormalWindowStateType(
           chromeos::ToWindowStateType(old_window_show_state)) &&
-      new_window_show_state == ui::WindowShowState::SHOW_STATE_MAXIMIZED;
+      new_window_show_state == ui::mojom::WindowShowState::kMaximized;
   const bool from_any_to_minimized =
-      new_window_show_state == ui::WindowShowState::SHOW_STATE_MINIMIZED;
+      new_window_show_state == ui::mojom::WindowShowState::kMinimized;
   if (from_normal_to_maximized || from_any_to_minimized) {
     state_change_observing_windows_.emplace(
         window, std::make_unique<WindowStateChangeObserver>(

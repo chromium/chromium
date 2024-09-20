@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_database.h"
@@ -24,11 +25,23 @@ WebDatabaseTable::TypeKey GetKey() {
 }
 
 // Entries in the |Signin.TokenTable.ReadTokenFromDBResult| histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum ReadOneTokenResult {
   READ_ONE_TOKEN_SUCCESS,
   READ_ONE_TOKEN_DB_SUCCESS_DECRYPT_FAILED,
   READ_ONE_TOKEN_DB_FAILED_BAD_ENTRY,
   READ_ONE_TOKEN_MAX_VALUE
+};
+
+// Entries in the |Signin.TokenTable.SetTokenResult| histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SetTokenResult {
+  kSuccess = 0,
+  kEncryptionFailure = 1,
+  kSqlFailure = 2,
+  kMaxValue = kSqlFailure,
 };
 
 }  // namespace
@@ -106,28 +119,34 @@ bool TokenServiceTable::SetTokenForService(
     const std::string& token,
     const std::vector<uint8_t>& wrapped_binding_key) {
   std::string encrypted_token;
+  SetTokenResult result = SetTokenResult::kSuccess;
   bool encrypted = encryptor()->EncryptString(token, &encrypted_token);
   if (!encrypted) {
+    result = SetTokenResult::kEncryptionFailure;
     LOG(ERROR) << "Failed to encrypt token (token will not be saved to DB).";
-    return false;
+  } else {
+    // Don't bother with a cached statement since this will be a relatively
+    // infrequent operation.
+    sql::Statement s(db()->GetUniqueStatement(
+        "INSERT OR REPLACE INTO token_service "
+        "(service, encrypted_token, binding_key) VALUES (?, ?, ?)"));
+    s.BindString(0, service);
+    s.BindBlob(1, encrypted_token);
+    s.BindBlob(2, wrapped_binding_key);
+
+    if (!s.Run()) {
+      LOG(ERROR) << "Failed to insert or replace token for " << service;
+      result = SetTokenResult::kSqlFailure;
+    }
   }
-
-  // Don't bother with a cached statement since this will be a relatively
-  // infrequent operation.
-  sql::Statement s(db()->GetUniqueStatement(
-      "INSERT OR REPLACE INTO token_service "
-      "(service, encrypted_token, binding_key) VALUES (?, ?, ?)"));
-  s.BindString(0, service);
-  s.BindBlob(1, encrypted_token);
-  s.BindBlob(2, wrapped_binding_key);
-
-  bool result = s.Run();
-  LOG_IF(ERROR, !result) << "Failed to insert or replace token for " << service;
-  return result;
+  base::UmaHistogramEnumeration("Signin.TokenTable.SetTokenResult", result);
+  return result == SetTokenResult::kSuccess;
 }
 
 TokenServiceTable::Result TokenServiceTable::GetAllTokens(
-    std::map<std::string, TokenWithBindingKey>* tokens) {
+    std::map<std::string, TokenWithBindingKey>* tokens,
+    bool& should_reencrypt) {
+  should_reencrypt = false;
   sql::Statement s(db()->GetUniqueStatement(
       "SELECT service, encrypted_token, binding_key FROM token_service"));
 
@@ -154,7 +173,12 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
                     s.ColumnBlobAsString(1, &encrypted_token) &&
                     s.ColumnBlobAsVector(2, &wrapped_binding_key);
     if (entry_ok) {
-      if (encryptor()->DecryptString(encrypted_token, &decrypted_token)) {
+      os_crypt_async::Encryptor::DecryptFlags flags;
+      if (encryptor()->DecryptString(encrypted_token, &decrypted_token,
+                                     &flags)) {
+        if (flags.should_reencrypt) {
+          should_reencrypt = true;
+        }
         (*tokens)[service] = TokenServiceTable::TokenWithBindingKey(
             std::move(decrypted_token), std::move(wrapped_binding_key));
         read_token_result = READ_ONE_TOKEN_SUCCESS;

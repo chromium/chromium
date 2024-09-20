@@ -261,11 +261,6 @@ void SearchEngineChoiceDialogService::SetDialogDisabledForTests(
 // static
 search_engines::ChoiceData
 SearchEngineChoiceDialogService::GetChoiceDataFromProfile(Profile& profile) {
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    return {};
-  }
-
   PrefService* pref_service = profile.GetPrefs();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(&profile);
@@ -284,11 +279,6 @@ SearchEngineChoiceDialogService::GetChoiceDataFromProfile(Profile& profile) {
 void SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(
     Profile& profile,
     const search_engines::ChoiceData& choice_data) {
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    return;
-  }
-
   PrefService* pref_service = profile.GetPrefs();
   if (choice_data.timestamp != 0) {
     pref_service->SetInt64(
@@ -344,12 +334,6 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
 
     return search_engines::SearchEngineChoiceScreenConditions::
         kAlreadyCompleted;
-  }
-
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kDialog)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kFeatureSuppressed;
   }
 
   if (web_app::AppBrowserController::IsWebApp(&browser)) {

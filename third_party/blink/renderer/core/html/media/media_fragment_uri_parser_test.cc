@@ -4,13 +4,15 @@
 
 #include "third_party/blink/renderer/core/html/media/media_fragment_uri_parser.h"
 
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
 
 struct ParseNPTTimeTestCase {
   std::string test_name;
-  const char* time_string;
+  std::string_view time_string;
   double expected_time;
   bool expected_result;
 };
@@ -20,12 +22,11 @@ using ParseNPTTimeTest = ::testing::TestWithParam<ParseNPTTimeTestCase>;
 TEST_P(ParseNPTTimeTest, TestParseNPTTime) {
   const ParseNPTTimeTestCase& test_case = GetParam();
   double time = -1;
-  unsigned offset = 0;
-  const unsigned length = (unsigned)strlen(test_case.time_string);
+  size_t offset = 0;
 
   MediaFragmentURIParser parser(KURL("http://dummy-url.com/"));
 
-  ASSERT_EQ(parser.ParseNPTTime(test_case.time_string, length, offset, time),
+  ASSERT_EQ(parser.ParseNPTTime(test_case.time_string, offset, time),
             test_case.expected_result);
   ASSERT_EQ(time, test_case.expected_time);
 }

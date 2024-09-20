@@ -60,7 +60,8 @@ extern const char kSportsNotificationKey[];
 // Key of tips notification used in pref `kFeaturePushNotificationPermissions`.
 extern const char kTipsNotificationKey[];
 
-// Key of tips notification used in pref `kFeaturePushNotificationPermissions`.
+// Key of send tab notification used in pref
+// `kFeaturePushNotificationPermissions`.
 extern const char kSendTabNotificationKey[];
 
 // Key of Safety Check notification used in pref
@@ -90,5 +91,9 @@ extern const char kContentNotificationActionHistogramName[];
 
 // The max amount of NAU sends per session.
 extern const int kDeliveredNAUMaxSendsPerSession;
+
+// Key for the Push Notification Client Id type in notification payload. Used
+// for Send Tab notifications.
+extern NSString* const kPushNotificationClientIdKey;
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_CONSTANTS_H_

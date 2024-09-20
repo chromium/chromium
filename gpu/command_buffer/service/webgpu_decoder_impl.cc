@@ -61,7 +61,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/webgpu_blocklist.h"
 #include "gpu/webgpu/callback.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
@@ -1005,7 +1004,7 @@ constexpr WebGPUDecoderImpl::CommandInfo WebGPUDecoderImpl::command_info[] = {
 
 // This variable is set to DawnWireServer's parent decoder during execution of
 // HandleCommands. It is cleared to nullptr after.
-ABSL_CONST_INIT thread_local WebGPUDecoderImpl* parent_decoder = nullptr;
+constinit thread_local WebGPUDecoderImpl* parent_decoder = nullptr;
 
 // DawnWireServer is a wrapper around dawn::wire::WireServer which allows
 // overriding some of the WGPU procs the server delegates calls to.
@@ -1254,6 +1253,7 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::ChromiumExperimentalSubgroups:
     case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
     case wgpu::FeatureName::ClipDistances:
+    case wgpu::FeatureName::MultiDrawIndirect:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     case wgpu::FeatureName::AdapterPropertiesD3D:
     case wgpu::FeatureName::AdapterPropertiesVk:
@@ -1466,10 +1466,9 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
   std::vector<const char*> require_device_disabled_toggles;
 
   // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
-  // is secure), unless --enable-unsafe-webgpu is used.
-  if (safety_level_ != webgpu::SafetyLevel::kUnsafe) {
-    require_device_enabled_toggles.push_back("disallow_spirv");
-  }
+  // is secure).
+  require_device_enabled_toggles.push_back("disallow_spirv");
+
   // Enable timestamp quantization by default for privacy, unless
   // --enable-webgpu-developer-features is used.
   if (safety_level_ == webgpu::SafetyLevel::kSafe) {

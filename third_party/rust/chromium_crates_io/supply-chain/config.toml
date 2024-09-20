@@ -53,7 +53,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."anstyle:1.0.8"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."anyhow:1.0.86"]
+[policy."anyhow:1.0.89"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."base64:0.13.1"]
@@ -65,16 +65,19 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."bitflags:2.6.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."bytemuck:1.17.1"]
+[policy."bytemuck:1.18.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."bytemuck_derive:1.7.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."byteorder:1.5.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."bytes:1.7.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cc:1.1.16"]
+[policy."cc:1.1.20"]
 criteria = []
 
 [policy."cfg-if:1.0.0"]
@@ -113,13 +116,13 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."fdeflate:0.3.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."fend-core:1.5.1"]
+[policy."fend-core:1.5.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."flate2:1.0.33"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."font-types:0.6.0"]
+[policy."font-types:0.7.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."getrandom:0.2.15"]
@@ -170,7 +173,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."png:0.17.13"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."ppv-lite86:0.2.17"]
+[policy."ppv-lite86:0.2.20"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."proc-macro2:1.0.86"]
@@ -200,7 +203,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rand_pcg:0.3.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."read-fonts:0.20.0"]
+[policy."read-fonts:0.22.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."regex-automata:0.4.7"]
@@ -239,10 +242,10 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."semver:1.0.23"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."serde:1.0.209"]
+[policy."serde:1.0.210"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_derive:1.0.209"]
+[policy."serde_derive:1.0.210"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."serde_json:1.0.128"]
@@ -257,7 +260,7 @@ criteria = []
 [policy."simd-adler32:0.3.7"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."skrifa:0.20.0"]
+[policy."skrifa:0.22.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."small_ctor:0.1.2"]
@@ -287,7 +290,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."tinyvec:1.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."unicode-ident:1.0.12"]
+[policy."unicode-ident:1.0.13"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-linebreak:0.1.5"]
@@ -335,9 +338,15 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."wycheproof:0.4.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
+[policy."zerocopy-derive:0.7.35"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."zerocopy:0.7.35"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [[exemptions.cxx]]
 version = "1.0.128"
-criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
@@ -355,7 +364,7 @@ Exemption updated to 1.0.128 in September 2024.
 
 [[exemptions.cxxbridge-macro]]
 version = "1.0.128"
-criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
@@ -440,4 +449,20 @@ Exemption updated to 2.0.72 when updating the crate in July 2024.
 Exemption updated to 2.0.74 when updating the crate in August 2024.
 Exemption updated to 2.0.76 when updating the crate in August 2024.
 Exemption updated to 2.0.77 when updating the crate in September 2024.
+"""
+
+[[exemptions.zerocopy]]
+version = "0.7.35"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
+
+https://crbug.com/366411886
+"""
+
+[[exemptions.zerocopy-derive]]
+version = "0.7.35"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
 """

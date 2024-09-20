@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
@@ -32,6 +33,7 @@
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 
+using extensions::AccountExtensionTracker;
 using extensions::AppSorting;
 using extensions::Extension;
 using extensions::ExtensionManagement;
@@ -127,10 +129,21 @@ ExtensionSyncService* ExtensionSyncService::Get(
   return ExtensionSyncServiceFactory::GetForBrowserContext(context);
 }
 
+// static
+bool ExtensionSyncService::ShouldSync(content::BrowserContext* browser_context,
+                                      const Extension& extension) {
+  // Themes are handled by the ThemeSyncableService.
+  return extensions::util::ShouldSync(&extension, browser_context) &&
+         !extension.is_theme() &&
+         !extensions::blocklist_prefs::IsExtensionBlocklisted(
+             extension.id(), ExtensionPrefs::Get(browser_context));
+}
+
 void ExtensionSyncService::SyncExtensionChangeIfNeeded(
     const Extension& extension) {
-  if (ignore_updates_ || !ShouldSync(extension))
+  if (ignore_updates_ || !ShouldSync(profile_, extension)) {
     return;
+  }
 
   syncer::DataType type =
       extension.is_app() ? syncer::APPS : syncer::EXTENSIONS;
@@ -312,8 +325,9 @@ void ExtensionSyncService::ApplySyncData(
   // (non-default-installed) installation. We can't apply the sync data because
   // it would always override the local state (which would never get sync'd).
   // See crbug.com/731824.
-  if (extension && !ShouldSync(*extension))
+  if (extension && !ShouldSync(profile_, *extension)) {
     return;
+  }
 
   // Ignore any pref change notifications etc. while we're applying incoming
   // sync data, so that we don't end up notifying ourselves.
@@ -483,6 +497,11 @@ void ExtensionSyncService::ApplySyncData(
     }
   }
 
+  // Notify the AccountExtensionTracker of an incoming extension via sync.
+  if (!extension_sync_data.is_app() && state != NOT_INSTALLED) {
+    AccountExtensionTracker::Get(profile_)->OnExtensionSyncDataApplied(id);
+  }
+
   // Finally, trigger installation/update as required.
   bool check_for_updates = false;
   if (state == INSTALLED_OUTDATED) {
@@ -556,7 +575,7 @@ void ExtensionSyncService::OnExtensionUninstalled(
   DCHECK_EQ(profile_, browser_context);
   // Don't bother syncing if the extension will be re-installed momentarily.
   if (reason == extensions::UNINSTALL_REASON_REINSTALL ||
-      !ShouldSync(*extension)) {
+      !ShouldSync(profile_, *extension)) {
     return;
   }
 
@@ -637,18 +656,11 @@ void ExtensionSyncService::FillSyncDataList(
     syncer::DataType type,
     std::vector<ExtensionSyncData>* sync_data_list) const {
   for (const scoped_refptr<const Extension>& extension : extensions) {
-    if (IsCorrectSyncType(*extension, type) && ShouldSync(*extension)) {
+    if (IsCorrectSyncType(*extension, type) &&
+        ShouldSync(profile_, *extension)) {
       // We should never have pending data for an installed extension.
       DCHECK(!GetSyncBundle(type)->HasPendingExtensionData(extension->id()));
       sync_data_list->push_back(CreateSyncData(*extension));
     }
   }
-}
-
-bool ExtensionSyncService::ShouldSync(const Extension& extension) const {
-  // Themes are handled by the ThemeSyncableService.
-  return extensions::util::ShouldSync(&extension, profile_) &&
-         !extension.is_theme() &&
-         !extensions::blocklist_prefs::IsExtensionBlocklisted(
-             extension.id(), ExtensionPrefs::Get(profile_));
 }

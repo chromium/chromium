@@ -80,6 +80,9 @@ extern NSString* const kCreatePlusAddressAccessibilityIdentifier;
 // Accessibility identifier for the select plus address action.
 extern NSString* const kSelectPlusAddressAccessibilityIdentifier;
 
+// Accessibility identifier for the overflow menu in plus address cell.
+extern NSString* const kExpandedManualFillPlusAddressOverflowMenuID;
+
 // Accessibility Identifier for the done button in the select plus address
 // sheet.
 extern NSString* const kPlusAddressDoneButtonAccessibilityIdentifier;

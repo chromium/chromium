@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <set>
+
 #include "build/build_config.h"
 #include "chrome/browser/controlled_frame/controlled_frame_permission_request_test_base.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace controlled_frame {
 
@@ -59,6 +62,8 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestInteractiveTest,
     })();
   )";
   test_case.permission_name = "fullscreen";
+  test_case.policy_features.insert(
+      {blink::mojom::PermissionsPolicyFeature::kFullscreen});
 
   PermissionRequestTestParam test_param = GetParam();
   VerifyEnabledPermission(test_case, test_param);

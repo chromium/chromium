@@ -69,7 +69,7 @@ TextDecoder::TextDecoder(const WTF::TextEncoding& encoding,
 TextDecoder::~TextDecoder() = default;
 
 String TextDecoder::encoding() const {
-  String name = String(encoding_.GetName()).DeprecatedLower();
+  String name = encoding_.GetName().GetString().DeprecatedLower();
   // Where possible, encoding aliases should be handled by changes to Chromium's
   // ICU or Blink's WTF.  The same codec is used, but WTF maintains a different
   // name/identity for these.
@@ -90,13 +90,10 @@ String TextDecoder::decode(std::optional<base::span<const uint8_t>> input,
     return String();
   }
 
-  return decode(reinterpret_cast<const char*>(input_span.data()),
-                static_cast<uint32_t>(input_span.size()), options,
-                exception_state);
+  return Decode(input_span, options, exception_state);
 }
 
-String TextDecoder::decode(const char* start,
-                           uint32_t length,
+String TextDecoder::Decode(base::span<const uint8_t> input,
                            const TextDecodeOptions* options,
                            ExceptionState& exception_state) {
   DCHECK(options);
@@ -119,7 +116,7 @@ String TextDecoder::decode(const char* start,
                                            : WTF::FlushBehavior::kDataEOF;
 
   bool saw_error = false;
-  String s = codec_->Decode(start, length, flush, fatal_, saw_error);
+  String s = codec_->Decode(input, flush, fatal_, saw_error);
 
   if (fatal_ && saw_error) {
     if (!do_not_flush_) {
@@ -133,7 +130,7 @@ String TextDecoder::decode(const char* start,
   if (!ignore_bom_ && !bom_seen_ && !s.empty()) {
     bom_seen_ = true;
     if (s[0] == 0xFEFF) {
-      std::string_view name = encoding_.GetName();
+      const AtomicString& name = encoding_.GetName();
       if ((name == "UTF-8" || name == "UTF-16LE" || name == "UTF-16BE")) {
         s.Remove(0);
       }
@@ -145,7 +142,7 @@ String TextDecoder::decode(const char* start,
 
 String TextDecoder::decode(ExceptionState& exception_state) {
   TextDecodeOptions* options = TextDecodeOptions::Create();
-  return decode(nullptr, 0, options, exception_state);
+  return Decode({}, options, exception_state);
 }
 
 }  // namespace blink

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/cast/encoding/encoding_support.h"
+
+#include <algorithm>
+#include <bitset>
+
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -11,6 +16,18 @@
 
 namespace media::cast::encoding_support {
 namespace {
+
+using VideoCodecBitset =
+    std::bitset<static_cast<size_t>(VideoCodec::kMaxValue) + 1>;
+
+static VideoCodecBitset& GetHardwareCodecDenyList() {
+  static VideoCodecBitset* const kInstance = new VideoCodecBitset();
+  return *kInstance;
+}
+
+bool IsHardwareDenyListed(VideoCodec codec) {
+  return GetHardwareCodecDenyList().test(static_cast<size_t>(codec));
+}
 
 bool IsCastStreamingAv1Enabled() {
 #if BUILDFLAG(ENABLE_LIBAOM)
@@ -71,12 +88,7 @@ bool IsHardwareVP9EncodingEnabled(
 // Scan profiles for hardware H.264 encoder support.
 bool IsHardwareH264EncodingEnabled(
     const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
-#if BUILDFLAG(IS_MAC)
-  if (!base::FeatureList::IsEnabled(kCastStreamingMacHardwareH264)) {
-    return false;
-  }
-#endif
-
+  // Force disabling takes precedent over other flags.
   const base::CommandLine& command_line =
     *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(
@@ -84,11 +96,21 @@ bool IsHardwareH264EncodingEnabled(
     return false;
   }
 
+#if BUILDFLAG(IS_MAC)
+  if (!command_line.HasSwitch(
+          switches::kCastStreamingForceEnableHardwareH264) &&
+      !base::FeatureList::IsEnabled(kCastStreamingMacHardwareH264)) {
+    return false;
+  }
+#endif
+
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/40653760): the hardware encoder is broken on Windows.
-  const bool is_force_enabled =
-      command_line.HasSwitch(switches::kCastStreamingForceEnableHardwareH264);
-  if (!is_force_enabled) {
+  // TODO(crbug.com/40653760): Now that we have software fallback for hardware
+  // encoders, it is okay to enable hardware H264 for windows, as the one to
+  // two percent of sessions that fail can gracefully fallback.
+  if (!command_line.HasSwitch(
+          switches::kCastStreamingForceEnableHardwareH264) &&
+      !base::FeatureList::IsEnabled(kCastStreamingWinHardwareH264)) {
     return false;
   }
 #endif
@@ -122,6 +144,10 @@ bool IsSoftwareEnabled(VideoCodec codec) {
 bool IsHardwareEnabled(
     VideoCodec codec,
     const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
+  if (IsHardwareDenyListed(codec)) {
+    return false;
+  }
+
   switch (codec) {
     case VideoCodec::kVP8:
       return IsHardwareVP8EncodingEnabled(profiles);
@@ -135,6 +161,17 @@ bool IsHardwareEnabled(
     default:
       return false;
   }
+}
+
+void DenyListHardwareCodec(VideoCodec codec) {
+  // Codecs should not be disabled multiple times. This likely means that we
+  // offered it again when we shouldn't have, somehow.
+  CHECK(!IsHardwareDenyListed(codec));
+  GetHardwareCodecDenyList().set(static_cast<size_t>(codec));
+}
+
+void ClearHardwareCodecDenyListForTesting() {
+  GetHardwareCodecDenyList().reset();
 }
 
 }  //  namespace media::cast::encoding_support

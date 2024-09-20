@@ -232,12 +232,11 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
                        ProgressCallback progress_callback,
                        Callback callback) = 0;
 
-  // Sets |installed_file| to the full path to the installed |file|. |file| is
-  // the filename of the file in this CRX. Returns false if this is
-  // not possible (the file has been removed or modified, or its current
-  // location is unknown). Otherwise, it returns true.
-  virtual bool GetInstalledFile(const std::string& file,
-                                base::FilePath* installed_file) = 0;
+  // Returns the path to the installed `file`. If there is no such path (for
+  // example because no version of the item is installed), returns nullopt.
+  // Called on the main sequence, can't block.
+  virtual std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) = 0;
 
   // Called when a CRX has been unregistered and all versions should
   // be uninstalled from disk. Returns true if uninstallation is supported,

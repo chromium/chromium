@@ -8,7 +8,6 @@
 #include "gpu/command_buffer/service/scheduler.h"
 
 #if DCHECK_IS_ON()
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #endif
 
 namespace gpu {
@@ -16,7 +15,7 @@ namespace gpu {
 namespace {
 
 #if DCHECK_IS_ON()
-ABSL_CONST_INIT thread_local bool schedule_task_disallowed = false;
+constinit thread_local bool schedule_task_disallowed = false;
 #endif  // DCHECK_IS_ON()
 
 }  // namespace

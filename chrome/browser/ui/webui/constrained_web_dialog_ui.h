@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
@@ -22,6 +23,14 @@ class WebContents;
 namespace ui {
 class WebDialogDelegate;
 }
+
+class ConstrainedWebDialogUI;
+
+class ConstrainedWebDialogUIConfig
+    : public content::DefaultWebUIConfig<ConstrainedWebDialogUI> {
+ public:
+  ConstrainedWebDialogUIConfig();
+};
 
 class ConstrainedWebDialogDelegate {
  public:

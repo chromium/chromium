@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/location.h"
@@ -23,8 +24,35 @@
 
 namespace growth {
 
+class LogMessage;
+
 // Used to specify the detail level for logging.
 enum LogLevel { kERROR = 0, kSYSLOG = 1, kVLOG = 2, kDEBUG = 3 };
+
+// A logger for growth campaigns.
+// This logger stores logs in memory and send to LOG/SYSLOG/VLOG as needed.
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsLogger {
+ public:
+  static CampaignsLogger* Get();
+
+  CampaignsLogger();
+  CampaignsLogger(const CampaignsLogger&) = delete;
+  CampaignsLogger& operator=(const CampaignsLogger&) = delete;
+  ~CampaignsLogger();
+
+  std::vector<std::string> GetLogs();
+
+  bool HasLogForTesting();
+
+ private:
+  friend LogMessage;
+
+  void Log(LogLevel level,
+           const base::Location& location,
+           std::string_view log_string);
+
+  std::deque<std::string> logs_;
+};
 
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) LogMessage {
  public:
@@ -39,29 +67,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) LogMessage {
   LogLevel level_;
   const base::Location location_;
   std::ostringstream stream_;
-};
-
-// A logger for growth campaigns.
-// This logger stores logs in memory and send to LOG/SYSLOG/VLOG as needed.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsLogger {
- public:
-  static CampaignsLogger* Get();
-
-  CampaignsLogger();
-  CampaignsLogger(const CampaignsLogger&) = delete;
-  CampaignsLogger& operator=(const CampaignsLogger&) = delete;
-  ~CampaignsLogger();
-
-  bool HasLogForTesting();
-
- private:
-  friend LogMessage;
-
-  void Log(LogLevel level,
-           const base::Location& location,
-           std::string_view log_string);
-
-  std::deque<std::string> logs_;
 };
 
 }  // namespace growth

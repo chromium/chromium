@@ -16,8 +16,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -88,7 +89,7 @@ class IpProtectionCoreHost
 
   static IpProtectionCoreHost* Get(Profile* profile);
 
-mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
+  mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
   receivers_for_testing() {
     return receivers_;
   }
@@ -103,8 +104,6 @@ mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
   // `bsa` is moved onto a separate sequence when initializing
   // `ip_protection_token_direct_fetcher_`.
   void SetUpForTesting(
-      std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
-          ip_protection_proxy_config_retriever,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
@@ -151,6 +150,11 @@ mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
   std::optional<base::TimeDelta> CalculateBackoff(
       ip_protection::TryGetAuthTokensResult result);
 
+  void AuthenticateCallback(
+      std::unique_ptr<network::ResourceRequest>,
+      ip_protection::IpProtectionProxyConfigDirectFetcher::
+          AuthenticateDoneCallback);
+
   // Creating a generic callback in order for `RequestOAuthToken()` to work for
   // `TryGetAuthTokens()` and `GetProxyList()`.
   using RequestOAuthTokenCallback =
@@ -178,7 +182,9 @@ mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
       signin::AccessTokenInfo access_token_info);
 
   void OnRequestOAuthTokenCompletedForGetProxyConfig(
-      GetProxyListCallback callback,
+      std::unique_ptr<network::ResourceRequest> resource_request,
+      ip_protection::IpProtectionProxyConfigDirectFetcher::
+          AuthenticateDoneCallback callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
@@ -219,7 +225,7 @@ mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
   void OnIpProtectionEnabledChanged() override;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<ip_protection::IpProtectionProxyConfigFetcher>
+  std::unique_ptr<ip_protection::IpProtectionProxyConfigDirectFetcher>
       ip_protection_proxy_config_fetcher_;
 
   // The thread pool task runner on which async calls are made to
@@ -267,6 +273,9 @@ mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
   // The `mojo::RemoteSetElementId` of the most recently added `mojo::Remote`,
   // for testing.
   mojo::RemoteSetElementId remote_id_for_testing_;
+
+  // True if this class is being tested.
+  bool for_testing_ = false;
 
   // This must be the last member in this class.
   base::WeakPtrFactory<IpProtectionCoreHost> weak_ptr_factory_{this};

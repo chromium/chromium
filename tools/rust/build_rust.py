@@ -55,8 +55,8 @@ sys.path.append(
                  'scripts'))
 
 from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo, CopyFile,
-                   DownloadDebianSysroot, GetLibXml2Dirs, LLVM_BUILD_TOOLS_DIR,
-                   RunCommand)
+                   DownloadDebianSysroot, GetLibXml2Dirs, GitCherryPick,
+                   LLVM_BUILD_TOOLS_DIR, RunCommand)
 from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
                     GetDefaultHostOs, RmTree, UpdatePackage)
 
@@ -551,25 +551,6 @@ def BuildLLVMLibraries(skip_build):
             '--build-dir', RUST_HOST_LLVM_BUILD_DIR, '--install-dir',
             RUST_HOST_LLVM_INSTALL_DIR
         ])
-
-
-def GitCherryPick(git_repository, git_remote, commit):
-    print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
-    git_cmd = ['git', '-C', git_repository]
-    RunCommand(git_cmd + ['remote', 'add', 'github', git_remote],
-               fail_hard=False)
-    RunCommand(git_cmd +
-               ['fetch', '--recurse-submodules=no', 'github', commit])
-    is_ancestor = RunCommand(git_cmd +
-                             ['merge-base', '--is-ancestor', commit, 'HEAD'],
-                             fail_hard=False)
-    if is_ancestor:
-        print('Commit already an ancestor; skipping.')
-        return
-    RunCommand([
-        'git', '-C', git_repository, 'cherry-pick', '--keep-redundant-commits',
-        commit
-    ])
 
 
 # Move a git submodule to point to a different branch.

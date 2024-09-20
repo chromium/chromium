@@ -10,7 +10,7 @@
 -All/ImageTransferCacheEntryTest.HardwareDecodedMipsAtCreation/Y_V_U
 -OopPixelTest.ClearingOpaqueCornerExactEdge
 -OopPixelTest.ClearingTransparentCornerPartialRaster
--OopPixelTest.ConvertNV12ToRGB
+-OopPixelTest.CopyNV12SharedImage
 -OopPixelTest.CopySharedImage
 -OopPixelTest.DrawGainmapImage
 -OopPixelTest.DrawGainmapImageFiltering
@@ -141,7 +141,5 @@
 -P/OopTextBlobPixelTest.Config/RecordShader_NoFilter_PerspectiveCTM_NoLCD
 -P/OopTextBlobPixelTest.Config/RecordShader_NoFilter_ScaledCTM_LCD
 -P/OopTextBlobPixelTest.Config/RecordShader_NoFilter_ScaledCTM_NoLCD
--P/OopYUVToRGBPixelTest.ConvertYUVToRGB/0
--P/OopYUVToRGBPixelTest.ConvertYUVToRGB/1
--P/OopYUVToRGBPixelTest.ConvertYUVToRGB/2
--P/OopYUVToRGBPixelTest.ConvertYUVToRGB/3
+-P/OopYUVToRGBPixelTest.CopyI420SharedImage/0
+-P/OopYUVToRGBPixelTest.CopyI420SharedImage/1

@@ -24,12 +24,14 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_soundscape_delegate.h"
 #include "ash/system/focus_mode/sounds/focus_mode_youtube_music_delegate.h"
+#include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -42,7 +44,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kPlaylistNum = 4;
+constexpr size_t kMaxAttemptToDownloadThumbnail = 3;
 
 // Arrays for histogram records.
 constexpr focus_mode_histogram_names::FocusModePlaylistChosen
@@ -94,16 +96,36 @@ constexpr net::NetworkTrafficAnnotationTag kFocusModeSoundsThumbnailTag =
         })");
 
 // Invoked upon completion of the `thumbnail` download. `thumbnail` can be a
-// null image if the download attempt from the url failed.
+// null image if the download attempt from the url failed. A simple retry will
+// be applied until `attempt_counter` reaches the maximum.
 void OnOneThumbnailDownloaded(
+    const base::Time start_time,
     base::OnceCallback<void(
         std::unique_ptr<FocusModeSoundsController::Playlist>)> barrier_callback,
-    std::string id,
-    std::string title,
+    const FocusModeSoundsDelegate::Playlist& playlist,
+    const size_t attempt_counter,
     const gfx::ImageSkia& thumbnail) {
+  const std::string method = "ImageDownload.PlaylistThumbnail";
+  focus_mode_util::RecordHistogramForApiLatency(method,
+                                                base::Time::Now() - start_time);
+
+  if (thumbnail.isNull() && attempt_counter < kMaxAttemptToDownloadThumbnail) {
+    FocusModeSoundsController::DownloadTrackThumbnail(
+        playlist.thumbnail_url, base::BindOnce(&OnOneThumbnailDownloaded,
+                                               /*start_time=*/base::Time::Now(),
+                                               std::move(barrier_callback),
+                                               playlist, attempt_counter + 1));
+    return;
+  }
+
+  focus_mode_util::RecordHistogramForApiResult(
+      method, /*successful=*/!thumbnail.isNull());
+  focus_mode_util::RecordHistogramForApiRetryCount(
+      method, static_cast<int>(attempt_counter) - 1);
+
   std::move(barrier_callback)
-      .Run(std::make_unique<FocusModeSoundsController::Playlist>(id, title,
-                                                                 thumbnail));
+      .Run(std::make_unique<FocusModeSoundsController::Playlist>(
+          playlist.id, playlist.title, thumbnail));
 }
 
 // Re-order `playlists` according to the order of `data`.
@@ -148,22 +170,23 @@ void DispatchRequests(
     return;
   }
 
-  CHECK_EQ(static_cast<int>(data.size()), kPlaylistNum);
+  CHECK_EQ(data.size(), kFocusModePlaylistViewsNum);
 
   // TODO(b/340304748): Currently, when opening the focus panel, we will clean
   // up all saved data and then download all playlists. In the future, we can
   // keep this cached and update if there are new playlists.
   using BarrierReturn = std::unique_ptr<FocusModeSoundsController::Playlist>;
   auto barrier_callback = base::BarrierCallback<BarrierReturn>(
-      /*num_callbacks=*/kPlaylistNum,
+      /*num_callbacks=*/kFocusModePlaylistViewsNum,
       /*done_callback=*/base::BindOnce(&ReorderPlaylists, data,
                                        std::move(sorted_playlists_callback)));
 
   for (const auto& item : data) {
     FocusModeSoundsController::DownloadTrackThumbnail(
         item.thumbnail_url,
-        base::BindOnce(&OnOneThumbnailDownloaded, barrier_callback, item.id,
-                       item.title));
+        base::BindOnce(&OnOneThumbnailDownloaded,
+                       /*start_time=*/base::Time::Now(), barrier_callback, item,
+                       /*attempt_counter=*/1));
   }
 }
 
@@ -282,14 +305,12 @@ void RecordPlaylistChosenHistogram(
 
 }  // namespace
 
-FocusModeSoundsController::FocusModeSoundsController()
-    : soundscape_delegate_(FocusModeSoundscapeDelegate::Create("en-US")),
-      youtube_music_delegate_(
+FocusModeSoundsController::FocusModeSoundsController(const std::string& locale)
+    : youtube_music_delegate_(
           std::make_unique<FocusModeYouTubeMusicDelegate>()) {
-  // TODO(b/341176182): Plumb the locale here and replace the default
-  // locale.
-  soundscape_playlists_.reserve(kPlaylistNum);
-  youtube_music_playlists_.reserve(kPlaylistNum);
+  soundscape_delegate_ = FocusModeSoundscapeDelegate::Create(locale);
+  soundscape_playlists_.reserve(kFocusModePlaylistViewsNum);
+  youtube_music_playlists_.reserve(kFocusModePlaylistViewsNum);
 
   // Default sound sections to enabled.
   enabled_sound_sections_ = {focus_mode_util::SoundType::kSoundscape,
@@ -353,6 +374,12 @@ void FocusModeSoundsController::GetNextTrack(GetNextTrackCallback callback) {
 
   delegate->GetNextTrack(selected_playlist_.id,
                          base::BindOnce(&OnTrackFetched, std::move(callback)));
+}
+
+void FocusModeSoundsController::ReportPlayerError() {
+  for (auto& observer : observers_) {
+    observer.OnPlayerError();
+  }
 }
 
 void FocusModeSoundsController::AddObserver(Observer* observer) {
@@ -591,6 +618,58 @@ void FocusModeSoundsController::ReportYouTubeMusicPlayback(
   youtube_music_delegate_->ReportPlayback(playback_data);
 }
 
+bool FocusModeSoundsController::ShouldDisplayYouTubeMusicOAuth() const {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    return active_user_prefs->GetBoolean(
+        prefs::kFocusModeYTMDisplayOAuthConsent);
+  }
+  CHECK_IS_TEST();
+  return true;
+}
+
+void FocusModeSoundsController::SavePrefForDisplayYouTubeMusicOAuth() {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    active_user_prefs->SetBoolean(prefs::kFocusModeYTMDisplayOAuthConsent,
+                                  false);
+  }
+}
+
+bool FocusModeSoundsController::ShouldDisplayYouTubeMusicFreeTrial() const {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    return active_user_prefs->GetBoolean(prefs::kFocusModeYTMDisplayFreeTrial);
+  }
+  CHECK_IS_TEST();
+  return true;
+}
+
+void FocusModeSoundsController::SavePrefForDisplayYouTubeMusicFreeTrial() {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    active_user_prefs->SetBoolean(prefs::kFocusModeYTMDisplayFreeTrial, false);
+  }
+}
+
+bool FocusModeSoundsController::IsMinorUser() {
+  // `ChromeFocusModeDelegate::IsMinorUser` doesn't work in browsertest, since
+  // it always returns true. `can_use_manta_service()` is
+  // `signin::Tribool::kUnknown`.
+  if (is_minor_user_for_testing_.has_value()) {
+    CHECK_IS_TEST();
+    return is_minor_user_for_testing_.value();
+  }
+
+  return FocusModeController::Get()->delegate()->IsMinorUser();
+}
+
+void FocusModeSoundsController::SetIsMinorUserForTesting(bool is_minor_user) {
+  CHECK_IS_TEST();
+  is_minor_user_for_testing_ = is_minor_user;
+  OnPrefChanged();
+}
+
 bool FocusModeSoundsController::IsPlaylistAllowed(
     const focus_mode_util::SelectedPlaylist& playlist) const {
   return base::Contains(enabled_sound_sections_, playlist.type);
@@ -652,11 +731,14 @@ void FocusModeSoundsController::OnAllThumbnailsDownloaded(
     bool is_soundscape_type,
     UpdateSoundsViewCallback update_sounds_view_callback,
     std::vector<std::unique_ptr<Playlist>> sorted_playlists) {
-  // For the case that the `selected_playlist_` is missing from the list of
-  // playlists fetched from backend, we will show the cached playlist info if
-  // the selected playlist is currently playing; otherwise, we will clear the
-  // selected playlist in the controller.
-  if (!MayContainsSelectedPlaylist(selected_playlist_, is_soundscape_type,
+  // Please note, `sorted_playlists` can be empty, so it's important to check if
+  // the number of playlists is expected before manipulating the list. For the
+  // case that the `selected_playlist_` is missing from the list of playlists
+  // fetched from backend, we will show the cached playlist info if the selected
+  // playlist is currently playing; otherwise, we will clear the selected
+  // playlist in the controller.
+  if (sorted_playlists.size() == kFocusModePlaylistViewsNum &&
+      !MayContainsSelectedPlaylist(selected_playlist_, is_soundscape_type,
                                    sorted_playlists)) {
     if (selected_playlist_.state == focus_mode_util::SoundState::kPlaying) {
       sorted_playlists.pop_back();
@@ -686,6 +768,11 @@ void FocusModeSoundsController::OnPrefChanged() {
   PrefService* active_user_prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
   enabled_sound_sections_ = ReadSoundSectionPolicy(active_user_prefs);
+
+  // TODO: If we want to block the whole YTM section, we should make changes
+  // here. And remove the calls to `FocusModeSoundsController::IsMinorUser()` in
+  // `FocusModeSoundsView`.
+
   // Hide the YTM sound section if the flag isn't enabled.
   if (!features::IsFocusModeYTMEnabled()) {
     enabled_sound_sections_.erase(focus_mode_util::SoundType::kYouTubeMusic);

@@ -59,9 +59,6 @@ class PaletteToolManagerTest : public ::testing::Test,
   void HidePaletteImmediately() override {}
   void OnActiveToolChanged() override { ++tool_changed_count_; }
   aura::Window* GetWindow() override { NOTREACHED(); }
-  void RecordPaletteOptionsUsage(PaletteTrayOptions option,
-                                 PaletteInvocationMethod method) override {}
-  void RecordPaletteModeCancellation(PaletteModeCancelType type) override {}
 
   // PaletteTool::Delegate:
   void EnableTool(PaletteToolId tool_id) override {}

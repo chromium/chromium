@@ -81,6 +81,10 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenFreeformPromptingGuide", IDS_SEA_PEN_FREEFORM_PROMPTING_GUIDE},
       {"seaPenFreeformNavigationDescription",
        IDS_SEA_PEN_FREEFORM_NAVIGATION_DESCRIPTION},
+      {"seaPenIntroductionDialogFirstParagraph",
+       IDS_SEA_PEN_INTRODUCTION_DIALOG_FIRST_PARAGRAPH},
+      {"seaPenFreeformIntroductionDialogFirstParagraph",
+       IDS_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG_FIRST_PARAGRAPH},
 
       {"seaPenDismissError", IDS_PERSONALIZATION_APP_DISMISS},
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},

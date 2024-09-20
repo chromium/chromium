@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/views_delegate.h"
 
 class Profile;
@@ -31,11 +32,12 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
   void SaveWindowPlacement(const views::Widget* window,
                            const std::string& window_name,
                            const gfx::Rect& bounds,
-                           ui::WindowShowState show_state) override;
-  bool GetSavedWindowPlacement(const views::Widget* widget,
-                               const std::string& window_name,
-                               gfx::Rect* bounds,
-                               ui::WindowShowState* show_state) const override;
+                           ui::mojom::WindowShowState show_state) override;
+  bool GetSavedWindowPlacement(
+      const views::Widget* widget,
+      const std::string& window_name,
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ProcessMenuAcceleratorResult ProcessAcceleratorWhileMenuShowing(
       const ui::Accelerator& accelerator) override;

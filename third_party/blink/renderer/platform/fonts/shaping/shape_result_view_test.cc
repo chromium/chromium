@@ -88,7 +88,7 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
   Font font(font_description);
 
   String string =
-      To16Bit("Test run with multiple words and breaking opportunities.", 56);
+      To16Bit("Test run with multiple words and breaking opportunities.");
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -139,7 +139,7 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
 TEST_F(ShapeResultViewTest, ArabicSingleView) {
   Font font(font_description);
 
-  String string = To16Bit("عربى نص", 7);
+  String string = To16Bit("عربى نص");
   TextDirection direction = TextDirection::kRtl;
 
   HarfBuzzShaper shaper(string);
@@ -158,7 +158,7 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
   EXPECT_EQ(first_word->NumGlyphs(), 4u);
   EXPECT_EQ(first_glyphs.size(), 4u);
 
-  String first_reference_string = To16Bit("عربى", 4);
+  String first_reference_string = To16Bit("عربى");
   HarfBuzzShaper first_reference_shaper(first_reference_string);
   const ShapeResult* first_wortd_reference =
       first_reference_shaper.Shape(&font, direction);
@@ -230,10 +230,10 @@ TEST_F(ShapeResultViewTest, LatinMultiRun) {
   Font font(font_description);
 
   TextDirection direction = TextDirection::kLtr;
-  HarfBuzzShaper shaper_a(To16Bit("hello", 5));
-  HarfBuzzShaper shaper_b(To16Bit(" w", 2));
-  HarfBuzzShaper shaper_c(To16Bit("orld", 4));
-  HarfBuzzShaper shaper_d(To16Bit("!", 1));
+  HarfBuzzShaper shaper_a(To16Bit("hello"));
+  HarfBuzzShaper shaper_b(To16Bit(" w"));
+  HarfBuzzShaper shaper_c(To16Bit("orld"));
+  HarfBuzzShaper shaper_d(To16Bit("!"));
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs: "hello world!"
@@ -266,13 +266,13 @@ TEST_F(ShapeResultViewTest, LatinMultiRun) {
   EXPECT_EQ(composite_view->NumGlyphs(), 16u);
   EXPECT_EQ(view_glyphs.size(), 16u);
 
-  HarfBuzzShaper shaper2(To16Bit("hello world!", 12));
+  HarfBuzzShaper shaper2(To16Bit("hello world!"));
   const ShapeResult* result2 = shaper2.Shape(&font, direction);
   Vector<ShapeResultTestGlyphInfo> glyphs2;
   result2->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs2));
   EXPECT_TRUE(CompareResultGlyphs(result_glyphs, glyphs2, 0u, 12u));
 
-  HarfBuzzShaper reference_shaper(To16Bit("hello wood wold!", 16));
+  HarfBuzzShaper reference_shaper(To16Bit("hello wood wold!"));
   const ShapeResult* reference_result =
       reference_shaper.Shape(&font, direction);
   Vector<ShapeResultTestGlyphInfo> reference_glyphs;
@@ -301,7 +301,7 @@ TEST_F(ShapeResultViewTest, LatinCompositeView) {
   Font font(font_description);
 
   String string =
-      To16Bit("Test run with multiple words and breaking opportunities.", 56);
+      To16Bit("Test run with multiple words and breaking opportunities.");
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -309,7 +309,7 @@ TEST_F(ShapeResultViewTest, LatinCompositeView) {
   Vector<ShapeResultTestGlyphInfo> glyphs;
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
-  String reference_string = To16Bit("multiple breaking opportunities Test", 36);
+  String reference_string = To16Bit("multiple breaking opportunities Test");
   HarfBuzzShaper reference_shaper(reference_string);
   const ShapeResult* reference_result =
       reference_shaper.Shape(&font, direction);
@@ -355,8 +355,8 @@ TEST_F(ShapeResultViewTest, LatinCompositeView) {
 TEST_F(ShapeResultViewTest, MixedScriptsCompositeView) {
   Font font(font_description);
 
-  String string_a = To16Bit("Test with multiple 字体 ", 22);
-  String string_b = To16Bit("and 本書.", 7);
+  String string_a = To16Bit("Test with multiple 字体 ");
+  String string_b = To16Bit("and 本書.");
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper_a(string_a);
@@ -364,7 +364,7 @@ TEST_F(ShapeResultViewTest, MixedScriptsCompositeView) {
   HarfBuzzShaper shaper_b(string_b);
   const ShapeResult* result_b = shaper_b.Shape(&font, direction);
 
-  String reference_string = To16Bit("Test with multiple 字体 and 本書.", 29);
+  String reference_string = To16Bit("Test with multiple 字体 and 本書.");
   HarfBuzzShaper reference_shaper(reference_string);
   const ShapeResult* reference_result =
       reference_shaper.Shape(&font, direction);
@@ -401,7 +401,7 @@ TEST_F(ShapeResultViewTest, MixedScriptsCompositeView) {
 TEST_F(ShapeResultViewTest, TrimEndOfView) {
   Font font(font_description);
 
-  String string = To16Bit("12345678901234567890", 20);
+  String string = To16Bit("12345678901234567890");
   TextDirection direction = TextDirection::kLtr;
   HarfBuzzShaper shaper(string);
   const ShapeResult* result = shaper.Shape(&font, direction);

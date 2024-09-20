@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,6 +28,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/base/interaction/state_observer.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -180,6 +182,8 @@ class InteractiveTestTest : public InteractiveTest {
     auto simulator = std::make_unique<TestSimulator>();
     simulator_ = simulator.get();
     test_util().AddSimulator(std::move(simulator));
+    internal::InteractiveTestPrivate::set_interactive_test_verbs_allowed(
+        base::PassKey<InteractiveTestTest>());
   }
 
  protected:

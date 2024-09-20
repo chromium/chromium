@@ -1,0 +1,24 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/webui/nearby_share",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/nearby_sharing/common",
+  "+chrome/browser/nearby_sharing/contacts",
+  "+chrome/browser/nearby_sharing",
+  "+chrome/browser/profiles",
+  "+chrome/browser/sharesheet",
+  "+chrome/browser/ui",
+  "+chrome/browser/ui/tabs",
+  "+chrome/browser/ui/webui",
+  "+chrome/common",
+  "+chrome/grit",
+  "+chrome/test/base",
+]

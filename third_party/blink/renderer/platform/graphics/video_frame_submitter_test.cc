@@ -166,6 +166,13 @@ class MockVideoFrameResourceProvider
                void(Vector<viz::ReturnedResource> transferable_resources));
   MOCK_METHOD0(ObtainContextProvider, void());
 };
+
+class MockSurfaceEmbedder : public mojom::blink::SurfaceEmbedder {
+ public:
+  MOCK_METHOD1(SetLocalSurfaceId, void(const viz::LocalSurfaceId&));
+  MOCK_METHOD1(OnOpacityChanged, void(bool));
+  mojo::Receiver<mojom::blink::SurfaceEmbedder> receiver_{this};
+};
 }  // namespace
 
 // Supports testing features::OnBeginFrameAcks, which changes the expectations
@@ -213,9 +220,11 @@ class VideoFrameSubmitterTest : public testing::Test,
     submitter_->SetIsSurfaceVisible(true);
     submitter_->remote_frame_sink_.Bind(std::move(submitter_sink));
     submitter_->compositor_frame_sink_ = submitter_->remote_frame_sink_.get();
-    mojo::Remote<mojom::blink::SurfaceEmbedder> embedder;
-    std::ignore = embedder.BindNewPipeAndPassReceiver();
-    submitter_->surface_embedder_ = std::move(embedder);
+    surface_embedder_ = std::make_unique<StrictMock<MockSurfaceEmbedder>>();
+    EXPECT_CALL(*surface_embedder_, SetLocalSurfaceId(_)).Times(AnyNumber());
+    EXPECT_CALL(*surface_embedder_, OnOpacityChanged(_)).Times(AnyNumber());
+    submitter_->surface_embedder_.Bind(
+        surface_embedder_->receiver_.BindNewPipeAndPassRemote());
     auto surface_id = viz::SurfaceId(
         viz::FrameSinkId(1, 1),
         viz::LocalSurfaceId(
@@ -241,6 +250,14 @@ class VideoFrameSubmitterTest : public testing::Test,
   }
 
   gfx::Size frame_size() const { return submitter_->frame_size_; }
+
+  // Replacement for RunUntilIdle().  Post a quit closure to the end of the main
+  // thread queue and wait for it.
+  void DrainMainThread() {
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, task_environment_.QuitClosure());
+    task_environment_.RunUntilQuit();
+  }
 
   void OnReceivedContextProvider(
       bool use_gpu_compositing,
@@ -275,6 +292,7 @@ class VideoFrameSubmitterTest : public testing::Test,
   std::unique_ptr<viz::FakeExternalBeginFrameSource> begin_frame_source_;
   std::unique_ptr<StrictMock<VideoMockCompositorFrameSink>> sink_;
   std::unique_ptr<StrictMock<MockVideoFrameProvider>> video_frame_provider_;
+  std::unique_ptr<StrictMock<MockSurfaceEmbedder>> surface_embedder_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
   std::unique_ptr<VideoFrameSubmitter> submitter_;
   raw_ptr<StrictMock<MockVideoFrameResourceProvider>> resource_provider_;
@@ -1131,6 +1149,50 @@ TEST_P(VideoFrameSubmitterTest, ProcessTimingDetails) {
   }
   submitter_->StopRendering();
   EXPECT_EQ(reports, 1);
+}
+
+TEST_P(VideoFrameSubmitterTest, OpaqueFramesNotifyEmbedder) {
+  // Verify that the submitter notifies the embedder about opacity changes in
+  // the video frames.
+
+  const gfx::Size size(8, 8);
+  EXPECT_CALL(*video_frame_provider_, PutCurrentFrame()).Times(AnyNumber());
+  EXPECT_CALL(*sink_, DoSubmitCompositorFrame(_, _)).Times(AnyNumber());
+  EXPECT_CALL(*resource_provider_, AppendQuads(_, _, _, _)).Times(AnyNumber());
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(*resource_provider_, ReleaseFrameResources()).Times(AnyNumber());
+
+  // Send an opaque frame, and expect a callback immediately.
+  EXPECT_CALL(*video_frame_provider_, GetCurrentFrame())
+      .WillOnce(Return(media::VideoFrame::CreateBlackFrame(size)));
+  EXPECT_CALL(*surface_embedder_, OnOpacityChanged(true));
+  submitter_->DidReceiveFrame();
+  DrainMainThread();
+  AckSubmittedFrame();
+
+  // Send a second frame and expect no call since opacity didn't change.
+  EXPECT_CALL(*video_frame_provider_, GetCurrentFrame())
+      .WillOnce(Return(media::VideoFrame::CreateBlackFrame(size)));
+  EXPECT_CALL(*surface_embedder_, OnOpacityChanged(true)).Times(0);
+  submitter_->DidReceiveFrame();
+  DrainMainThread();
+  AckSubmittedFrame();
+
+  // Send a non-opaque frame and expect a call back.
+  EXPECT_CALL(*video_frame_provider_, GetCurrentFrame())
+      .WillOnce(Return(media::VideoFrame::CreateTransparentFrame(size)));
+  EXPECT_CALL(*surface_embedder_, OnOpacityChanged(false));
+  submitter_->DidReceiveFrame();
+  DrainMainThread();
+  AckSubmittedFrame();
+
+  // Send a second non-opaque frame and expect no call back.
+  EXPECT_CALL(*video_frame_provider_, GetCurrentFrame())
+      .WillOnce(Return(media::VideoFrame::CreateTransparentFrame(size)));
+  EXPECT_CALL(*surface_embedder_, OnOpacityChanged(false)).Times(0);
+  submitter_->DidReceiveFrame();
+  DrainMainThread();
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -48,19 +48,22 @@ BoringsslTrustTokenRedemptionCryptographer::BeginRedemption(
   std::optional<std::vector<uint8_t>> maybe_client_data =
       CanonicalizeTrustTokenClientDataForRedemption(redemption_timestamp,
                                                     top_level_origin);
-  if (!maybe_client_data)
+  if (!maybe_client_data) {
     return std::nullopt;
+  }
 
   ScopedBoringsslBytes raw_redemption_request;
 
   bssl::UniquePtr<TRUST_TOKEN> boringssl_token(
       TRUST_TOKEN_new(base::as_bytes(base::make_span(token.body())).data(),
                       token.body().size()));
-  if (!boringssl_token)
+  if (!boringssl_token) {
     return std::nullopt;
+  }
 
   if (!TRUST_TOKEN_CLIENT_begin_redemption(
-          state_->Get(), raw_redemption_request.mutable_ptr(),
+          state_->Get(),
+          &raw_redemption_request.mutable_ptr()->AsEphemeralRawAddr(),
           raw_redemption_request.mutable_len(), boringssl_token.get(),
           maybe_client_data->data(), maybe_client_data->size(),
           (redemption_timestamp - base::Time::UnixEpoch()).InSeconds())) {

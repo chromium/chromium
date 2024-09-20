@@ -7,18 +7,19 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/barrier_closure.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/memory/ptr_util.h"
-#include "base/run_loop.h"
+#import "base/barrier_closure.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/memory/ptr_util.h"
+#import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/net/cookies/cookie_store_ios_test_util.h"
+#import "ios/net/cookies/cookie_store_ios_test_util.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "net/base/apple/url_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace net {
 
@@ -151,8 +152,8 @@ TYPED_TEST_P(SystemCookieStoreTest, GetCookiesAsync) {
 
     EXPECT_EQ(1u, result_cookies.count);
     NSHTTPCookie* result_cookie = result_cookies[0];
-    EXPECT_TRUE([input_cookie.name isEqualToString:result_cookie.name]);
-    EXPECT_TRUE([input_cookie.value isEqualToString:result_cookie.value]);
+    EXPECT_NSEQ(input_cookie.name, result_cookie.name);
+    EXPECT_NSEQ(input_cookie.value, result_cookie.value);
   }
 
   // Test GetAllCookies
@@ -169,9 +170,9 @@ TYPED_TEST_P(SystemCookieStoreTest, GetCookiesAsync) {
     for (NSHTTPCookie* cookie in result_cookies) {
       NSHTTPCookie* existing_cookie = [input_cookies valueForKey:cookie.name];
       EXPECT_TRUE(existing_cookie);
-      EXPECT_TRUE([existing_cookie.name isEqualToString:cookie.name]);
-      EXPECT_TRUE([existing_cookie.value isEqualToString:cookie.value]);
-      EXPECT_TRUE([existing_cookie.domain isEqualToString:cookie.domain]);
+      EXPECT_NSEQ(existing_cookie.name, cookie.name);
+      EXPECT_NSEQ(existing_cookie.value, cookie.value);
+      EXPECT_NSEQ(existing_cookie.domain, cookie.domain);
     }
   }
 }

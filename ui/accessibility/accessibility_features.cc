@@ -46,7 +46,7 @@ bool IsAccessibilityPruneRedundantInlineConnectivityEnabled() {
 
 BASE_FEATURE(kImageDescriptionsAlternateRouting,
              "ImageDescriptionsAlternateRouting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsImageDescriptionsAlternateRoutingEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kImageDescriptionsAlternateRouting);
@@ -340,19 +340,20 @@ bool IsPdfOcrEnabled() {
 
 BASE_FEATURE(kReadAnythingReadAloud,
              "ReadAnythingReadAloud",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsReadAnythingReadAloudEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud);
-}
-
-BASE_FEATURE(kReadAloudAutoVoiceSwitching,
-             "ReadAloudAutoVoiceSwitching",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 );
+
+bool IsReadAnythingReadAloudEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud);
+}
+
+BASE_FEATURE(kReadAloudAutoVoiceSwitching,
+             "ReadAloudAutoVoiceSwitching",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAloudAutoVoiceSwitchingEnabled() {
   return IsReadAnythingReadAloudEnabled() &&
          base::FeatureList::IsEnabled(::features::kReadAloudAutoVoiceSwitching);
@@ -360,12 +361,7 @@ bool IsReadAloudAutoVoiceSwitchingEnabled() {
 
 BASE_FEATURE(kReadAloudLanguagePackDownloading,
              "ReadAloudLanguagePackDownloading",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAloudLanguagePackDownloadingEnabled() {
   return IsReadAnythingReadAloudEnabled() &&
          base::FeatureList::IsEnabled(
@@ -419,7 +415,8 @@ BASE_FEATURE(kReadAnythingDocsIntegration,
              "ReadAnythingDocsIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingDocsIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingDocsIntegration);
+  return base::FeatureList::IsEnabled(
+      ax::mojom::features::kReadAnythingDocsIntegration);
 }
 
 BASE_FEATURE(kReadAnythingDocsLoadMoreButton,
@@ -450,6 +447,15 @@ bool IsScreenAITestModeEnabled() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
+// Enables the switchover to the newer NSAccessibility property-based API.
+BASE_FEATURE(kMacAccessibilityAPIMigration,
+             "MacAccessibilityAPIMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsMacAccessibilityAPIMigrationEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kMacAccessibilityAPIMigration);
+}
+
 BASE_FEATURE(kAccessibilityRemoteUIApp,
              "AccessibilityRemoteUIApp",
              base::FEATURE_ENABLED_BY_DEFAULT);

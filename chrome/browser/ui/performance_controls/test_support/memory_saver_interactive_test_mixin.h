@@ -58,8 +58,7 @@ class MemorySaverInteractiveTestMixin : public MemorySaverBrowserTestMixin<T> {
     return T::Steps(  // This has to be done on a fresh message loop to prevent
                       // a tab being discarded while it is notifying its
                       // observers
-        TryDiscardTab(tab_index), T::WaitForHide(contents_id),
-        T::SelectTab(kTabStripElementId, tab_index),
+        TryDiscardTab(tab_index), T::SelectTab(kTabStripElementId, tab_index),
         T::WaitForShow(contents_id));
   }
 };

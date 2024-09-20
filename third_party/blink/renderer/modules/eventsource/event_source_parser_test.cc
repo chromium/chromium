@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/eventsource/event_source_parser.h"
 
 #include <string.h>
 
+#include <string_view>
+
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/eventsource/event_source.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -98,13 +96,11 @@ class EventSourceParserTest : public testing::Test {
             MakeGarbageCollected<EventSourceParser>(AtomicString(), client_)) {}
   ~EventSourceParserTest() override = default;
 
-  void Enqueue(const char* data) {
-    parser_->AddBytes(data, static_cast<uint32_t>(strlen(data)));
-  }
-  void EnqueueOneByOne(const char* data) {
-    const char* p = data;
-    while (*p != '\0')
-      parser_->AddBytes(p++, 1);
+  void Enqueue(std::string_view chars) { parser_->AddBytes(chars); }
+  void EnqueueOneByOne(std::string_view chars) {
+    for (char c : chars) {
+      parser_->AddBytes(base::span_from_ref(c));
+    }
   }
 
   const Vector<EventOrReconnectionTimeSetting>& Events() {
@@ -387,7 +383,7 @@ TEST(EventSourceParserStoppingTest, StopWhileParsing) {
   client->SetParser(parser);
 
   const char kInput[] = "data:hello\nid:99\n\nid:44\ndata:bye\n\n";
-  parser->AddBytes(kInput, static_cast<uint32_t>(strlen(kInput)));
+  parser->AddBytes(base::span_from_cstring(kInput));
 
   const auto& events = client->Events();
 
@@ -403,7 +399,7 @@ TEST_F(EventSourceParserTest, IgnoreIdHavingNullCharacter) {
       "id:99\ndata:hello\n\nid:4\x0"
       "23\ndata:bye\n\n";
   // We can't use Enqueue because it relies on strlen.
-  parser_->AddBytes(input, sizeof(input) - 1);
+  parser_->AddBytes(base::span_from_cstring(input));
 
   EXPECT_EQ("99", Parser()->LastEventId());
   ASSERT_EQ(2u, Events().size());

@@ -223,7 +223,7 @@ TEST_F(CertProvisioningSchedulerTest, Success) {
 
   // One worker will be created on prefs update.
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
-                           kCertProfileVersion,
+                           kCertProfileVersion, KeyType::kRsa,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                            ProtocolVersion::kStatic);
   MockCertProvisioningWorker* worker =
@@ -279,7 +279,7 @@ TEST_F(CertProvisioningSchedulerTest, WorkerFailed) {
 
   // One worker will be created on prefs update.
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
-                           kCertProfileVersion,
+                           kCertProfileVersion, KeyType::kRsa,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                            ProtocolVersion::kStatic);
   MockCertProvisioningWorker* worker =
@@ -328,7 +328,7 @@ TEST_F(CertProvisioningSchedulerTest, InitialAndDailyUpdates) {
   const CertScope kCertScope = CertScope::kUser;
 
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
-                           kCertProfileVersion,
+                           kCertProfileVersion, KeyType::kRsa,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                            ProtocolVersion::kStatic);
 
@@ -408,21 +408,21 @@ TEST_F(CertProvisioningSchedulerTest, MultipleWorkers) {
   const char kCertProfileName0[] = "Certificate Profile 0";
   const char kCertProfileVersion0[] = "cert_profile_version_0";
   CertProfile cert_profile0(kCertProfileId0, kCertProfileName0,
-                            kCertProfileVersion0,
+                            kCertProfileVersion0, KeyType::kRsa,
                             /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                             ProtocolVersion::kStatic);
   const char kCertProfileId1[] = "cert_profile_id_1";
   const char kCertProfileName1[] = "Certificate Profile 1";
   const char kCertProfileVersion1[] = "cert_profile_version_1";
   CertProfile cert_profile1(kCertProfileId1, kCertProfileName1,
-                            kCertProfileVersion1,
+                            kCertProfileVersion1, KeyType::kRsa,
                             /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                             ProtocolVersion::kStatic);
   const char kCertProfileId2[] = "cert_profile_id_2";
   const char kCertProfileName2[] = "Certificate Profile 2";
   const char kCertProfileVersion2[] = "cert_profile_version_2";
   CertProfile cert_profile2(kCertProfileId2, kCertProfileName2,
-                            kCertProfileVersion2,
+                            kCertProfileVersion2, KeyType::kRsa,
                             /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                             ProtocolVersion::kStatic);
   MockCertProvisioningWorker* worker0 =
@@ -520,7 +520,7 @@ TEST_F(CertProvisioningSchedulerTest, DeserializeWorkers) {
   const CertScope kCertScope = CertScope::kUser;
 
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
-                           kCertProfileVersion,
+                           kCertProfileVersion, KeyType::kRsa,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                            ProtocolVersion::kStatic);
 
@@ -589,7 +589,7 @@ TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
   VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   CertProfile cert_profile_v1(kCertProfileId, kCertProfileName,
-                              kCertProfileVersion1,
+                              kCertProfileVersion1, KeyType::kRsa,
                               /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                               ProtocolVersion::kStatic);
 
@@ -641,7 +641,7 @@ TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
 
   // Add a new worker to the factory.
   CertProfile cert_profile_v2(kCertProfileId, kCertProfileName,
-                              kCertProfileVersion2,
+                              kCertProfileVersion2, KeyType::kRsa,
                               /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                               ProtocolVersion::kStatic);
   worker = mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile_v2);
@@ -690,7 +690,7 @@ TEST_F(CertProvisioningSchedulerTest, RetryAfterNoInternetConnection) {
   SetWifiNetworkState(shill::kStateIdle);
 
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
-                           kCertProfileVersion,
+                           kCertProfileVersion, KeyType::kRsa,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                            ProtocolVersion::kStatic);
   // Add 1 certificate profile to the policy (the values are the same as
@@ -729,7 +729,7 @@ TEST_F(CertProvisioningSchedulerTest, DeleteWorkerWithoutPolicy) {
   const CertScope kCertScope = CertScope::kDevice;
 
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
-                           kCertProfileVersion,
+                           kCertProfileVersion, KeyType::kRsa,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                            ProtocolVersion::kStatic);
   // Add 1 certificate profile to the policy (the values are the same as
@@ -796,7 +796,7 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
 
   {
     CertProfile cert_profile(kCertProfileId, kCertProfileName,
-                             kCertProfileVersion,
+                             kCertProfileVersion, KeyType::kRsa,
                              /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                              ProtocolVersion::kStatic);
 
@@ -849,7 +849,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneWorker) {
       MakeFakeInvalidationFactory());
 
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
-                           kCertProfileVersion,
+                           kCertProfileVersion, KeyType::kRsa,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                            ProtocolVersion::kStatic);
 
@@ -943,7 +943,7 @@ TEST_F(CertProvisioningSchedulerTest, CertRenewal) {
   const base::TimeDelta kRenewalPeriod = base::Days(1);
 
   CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kRenewalPeriod, ProtocolVersion::kStatic);
 
   const Time t1 = Time::Now() - base::Days(1);
@@ -1016,7 +1016,7 @@ TEST_F(CertProvisioningSchedulerTest, PlatformKeysServiceShutDown) {
 
   // Same as in the policy.
   CertProfile cert_profile{kCertProfileId,          kCertProfileName,
-                           kCertProfileVersion,
+                           kCertProfileVersion,     KeyType::kRsa,
                            /*is_va_enabled=*/true,  kCertProfileRenewalPeriod,
                            ProtocolVersion::kStatic};
 
@@ -1067,14 +1067,14 @@ TEST_F(CertProvisioningSchedulerTest, StateChangeNotifications) {
   const char kCertProfileName0[] = "Certificate Profile 0";
   const char kCertProfileVersion0[] = "cert_profile_version_0";
   CertProfile cert_profile0(kCertProfileId0, kCertProfileName0,
-                            kCertProfileVersion0,
+                            kCertProfileVersion0, KeyType::kRsa,
                             /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                             ProtocolVersion::kStatic);
   const char kCertProfileId1[] = "cert_profile_id_1";
   const char kCertProfileName1[] = "Certificate Profile 1";
   const char kCertProfileVersion1[] = "cert_profile_version_1";
   CertProfile cert_profile1(kCertProfileId1, kCertProfileName1,
-                            kCertProfileVersion1,
+                            kCertProfileVersion1, KeyType::kRsa,
                             /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                             ProtocolVersion::kStatic);
 
@@ -1221,7 +1221,7 @@ TEST_F(CertProvisioningSchedulerTest, ResetOneWorker) {
       MakeFakeInvalidationFactory());
 
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
-                           kCertProfileVersion,
+                           kCertProfileVersion, KeyType::kRsa,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
                            ProtocolVersion::kStatic);
 

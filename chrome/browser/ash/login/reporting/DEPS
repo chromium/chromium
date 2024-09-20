@@ -25,5 +25,6 @@ include_rules = [
   "+chrome/browser/extensions/browsertest_util.h",
   "+chrome/browser/policy/messaging_layer/proto/synced",
   "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/login",
   "+chrome/test/base",
 ]

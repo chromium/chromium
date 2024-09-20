@@ -646,7 +646,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
   }
 
   if (!data.empty()) {
-    base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
+    base::android::JavaByteBufferToMutableSpan(env, j_buffer)
         .copy_from_nonoverlapping(data);
   }
 
@@ -708,10 +708,10 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
     }
   }
 
-  ScopedJavaLocalRef<jintArray> clear_array = base::android::ToJavaIntArray(
-      env, native_clear_array.data(), num_subsamples);
-  ScopedJavaLocalRef<jintArray> cypher_array = base::android::ToJavaIntArray(
-      env, native_cypher_array.data(), num_subsamples);
+  ScopedJavaLocalRef<jintArray> clear_array =
+      base::android::ToJavaIntArray(env, native_clear_array);
+  ScopedJavaLocalRef<jintArray> cypher_array =
+      base::android::ToJavaIntArray(env, native_cypher_array);
 
   MediaCodecStatus status = static_cast<MediaCodecStatus>(
       Java_MediaCodecBridge_queueSecureInputBuffer(

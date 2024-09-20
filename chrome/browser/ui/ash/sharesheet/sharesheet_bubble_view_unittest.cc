@@ -31,6 +31,7 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -86,8 +87,8 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     params.context = GetContext();
     widget->Init(std::move(params));
     widget->Show();
-    widget->GetNativeWindow()->SetProperty(aura::client::kShowStateKey,
-                                           ui::SHOW_STATE_FULLSCREEN);
+    widget->GetNativeWindow()->SetProperty(
+        aura::client::kShowStateKey, ui::mojom::WindowShowState::kFullscreen);
     gfx::Size window_size = widget->GetWindowBoundsInScreen().size();
     auto* content_view = new views::NativeViewHost();
     content_view->SetBounds(0, 0, window_size.width(), window_size.height());

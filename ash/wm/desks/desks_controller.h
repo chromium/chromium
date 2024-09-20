@@ -196,8 +196,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // -1 if no match is found.
   int GetDeskIndexByUuid(const base::Uuid& desk_uuid) const;
 
-  // Creates a new desk. CanCreateDesks() must be checked before calling this.
+  // Creates a new desk. `CanCreateDesks()` must be checked before calling this.
   void NewDesk(DesksCreationRemovalSource source);
+  void NewDesk(DesksCreationRemovalSource source, std::u16string name);
 
   bool HasDesk(const Desk* desk) const;
 

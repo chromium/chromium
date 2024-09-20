@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 
+#include <memory>
+
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
@@ -26,7 +28,8 @@ AutofillField* FindFirstFieldWithValue(const FormStructure& form_structure,
                                        const std::u16string& value) {
   for (const auto& field : form_structure) {
     std::u16string trimmed_value;
-    base::TrimWhitespace(field->value(), base::TRIM_ALL, &trimmed_value);
+    base::TrimWhitespace(field->value(ValueSemantics::kCurrent), base::TRIM_ALL,
+                         &trimmed_value);
     if (trimmed_value == value) {
       return field.get();
     }
@@ -82,7 +85,8 @@ AutofillField* HeuristicallyFindCVCFieldForUpload(
     DCHECK_EQ(1u, type_set.size());
 
     std::u16string trimmed_value;
-    base::TrimWhitespace(field->value(), base::TRIM_ALL, &trimmed_value);
+    base::TrimWhitespace(field->value(ValueSemantics::kCurrent), base::TRIM_ALL,
+                         &trimmed_value);
 
     // Skip the field if it can be confused with a expiration year.
     if (!found_explicit_expiration_year_field &&
@@ -141,25 +145,20 @@ void FindAndSetPossibleFieldTypesForField(
   // Currently, only <select> elements may have a selected option.
   base::optional_ref<const SelectOption> selected_option =
       field.selected_option();
-  std::u16string value =
-      selected_option ? selected_option->text : field.value();
+  std::u16string value = selected_option
+                             ? selected_option->text
+                             : field.value(ValueSemantics::kCurrent);
   base::TrimWhitespace(value, base::TRIM_ALL, &value);
 
   for (const AutofillProfile& profile : profiles) {
     profile.GetMatchingTypesWithProfileSources(value, app_locale,
-                                               &matching_types);
+                                               &matching_types, nullptr);
   }
   for (const CreditCard& card : credit_cards) {
-    card.GetMatchingTypesWithProfileSources(value, app_locale, &matching_types);
+    card.GetMatchingTypesWithProfileSources(value, app_locale, &matching_types,
+                                            nullptr);
   }
-  // If the input's content matches a valid email format, include email
-  // address as one of the possible matching types.
-  if (field.IsTextInputElement() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillUploadVotesForFieldsWithEmail) &&
-      !matching_types.contains(EMAIL_ADDRESS) && IsValidEmailAddress(value)) {
-    matching_types.insert(EMAIL_ADDRESS);
-  }
+
   if (field.state_is_a_matching_type()) {
     matching_types.insert(ADDRESS_HOME_STATE);
   }
@@ -202,6 +201,11 @@ void DeterminePossibleFieldTypesForUpload(
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
     FormStructure* form) {
+  for (const std::unique_ptr<AutofillField>& field : *form) {
+    // DeterminePossibleFieldTypesForUpload may be called multiple times. Reset
+    // the values so that the first call does not affect later calls.
+    field->set_possible_types({});
+  }
   FindAndSetPossibleFieldTypes(
       profiles, credit_cards, last_unlocked_credit_card_cvc, app_locale, *form);
   DisambiguatePossibleFieldTypes(*form);

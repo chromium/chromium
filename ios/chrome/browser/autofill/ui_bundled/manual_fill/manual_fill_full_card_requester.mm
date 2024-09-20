@@ -26,8 +26,8 @@ class CreditCard;
 
 @interface ManualFillFullCardRequester ()
 
-// The ChromeBrowserState instance passed to the initializer.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+// The ProfileIOS instance passed to the initializer.
+@property(nonatomic, readonly) ProfileIOS* profile;
 
 // The WebStateList for this instance. Used to instantiate the child
 // coordinators lazily.
@@ -41,13 +41,13 @@ class CreditCard;
   __weak id<FullCardRequestResultDelegateObserving> _delegate;
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ProfileIOS*)profile
                         webStateList:(WebStateList*)webStateList
                       resultDelegate:
                           (id<FullCardRequestResultDelegateObserving>)delegate {
   self = [super init];
   if (self) {
-    _browserState = browserState;
+    _profile = profile;
     _webStateList = webStateList;
     _delegate = delegate;
   }

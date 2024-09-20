@@ -265,8 +265,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      if (self.authService->IsAccountSwitchInProgress()) {
+        break;
+      }
+      [[fallthrough]];
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
       [self updateAccountImage];
       [self updateAccountErrorBadge];
       break;
@@ -379,7 +383,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   BOOL primaryIdentityHasError =
       identity && _syncService->GetUserActionableError() !=
                       syncer::SyncService::UserActionableError::kNone;
-  [self.headerConsumer updateADPBadgeWithErrorFound:primaryIdentityHasError];
+  [self.headerConsumer updateADPBadgeWithErrorFound:primaryIdentityHasError
+                                               name:identity.userFullName
+                                              email:identity.userEmail];
 }
 
 @end

@@ -55,7 +55,8 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionInitializing() {
   enter_presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
       Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
       kEnterOverviewPresentationHistogram, "",
-      kOverviewEnterExitPresentationMaxLatency, /*emit_trace_event=*/true);
+      GetOverviewPresentationTimeBucketParams(),
+      /*emit_trace_event=*/true);
   enter_presentation_time_recorder_->RequestNext();
 
   base::UmaHistogramCounts100("Ash.Overview.DeskCount",
@@ -87,7 +88,7 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionEnding() {
       CreatePresentationTimeHistogramRecorder(
           Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
           kExitOverviewPresentationHistogram, "",
-          kOverviewEnterExitPresentationMaxLatency,
+          GetOverviewPresentationTimeBucketParams(),
           /*emit_trace_event=*/true);
   exit_presentation_time_recorder->RequestNext();
 

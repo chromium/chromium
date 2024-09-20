@@ -111,6 +111,10 @@ struct SearchResult {
   // a log entry yet, for example after initial search and before answering.
   SearchResult Clone();
 
+  // Returns true if this search result is related to the given `other`
+  // result returned by HistoryEmbeddingsService::Search (same session/query).
+  bool IsContinuationOf(const SearchResult& other);
+
   // Gets the answer text from within the `answerer_result`.
   const std::string& AnswerText() const;
 
@@ -144,6 +148,11 @@ using QualityLogEntry =
 class HistoryEmbeddingsService : public KeyedService,
                                  public history::HistoryServiceObserver {
  public:
+  // Number of low-order bits to use in session_id for sequence number.
+  static constexpr uint64_t kSessionIdSequenceBits = 16;
+  static constexpr uint64_t kSessionIdSequenceBitMask =
+      (1 << kSessionIdSequenceBits) - 1;
+
   // `history_service` is never nullptr and must outlive `this`.
   // Storage uses its `history_dir() location for the database.
   HistoryEmbeddingsService(
@@ -180,10 +189,16 @@ class HistoryEmbeddingsService : public KeyedService,
   // The `callback` may be called back later with another search result
   // containing an answer. This two-phase result callback scheme lets callers
   // receive initial search results without having to wait longer for answers.
-  virtual void Search(std::string query,
-                      std::optional<base::Time> time_range_start,
-                      size_t count,
-                      SearchResultCallback callback);
+  // The `previous_search_result` may be nullptr to signal the beginning of a
+  // completely new search session; if it is non-null and the session_id was
+  // set, the new session_id is set based on the previous to indicate a
+  // continuing search session. Returns a stub result that can be used to detect
+  // if a later published SearchResult instance is related to this search.
+  virtual SearchResult Search(SearchResult* previous_search_result,
+                              std::string query,
+                              std::optional<base::Time> time_range_start,
+                              size_t count,
+                              SearchResultCallback callback);
 
   // Weak `this` provider method.
   base::WeakPtr<HistoryEmbeddingsService> AsWeakPtr();
@@ -383,9 +398,6 @@ class HistoryEmbeddingsService : public KeyedService,
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.
   base::SequenceBound<Storage> storage_;
-
-  // Hashes for phrases of one or two words to be filtered.
-  std::unordered_set<uint32_t> filter_hashes_;
 
   // Callback called when `ProcessAndStorePassages` completes. Needed for tests
   // as the blink dependency doesn't have a 'wait for pending requests to

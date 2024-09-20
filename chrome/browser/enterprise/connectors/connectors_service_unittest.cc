@@ -197,9 +197,9 @@ class ConnectorsServiceReportingFeatureTest
   ReportingConnector connector() const { return std::get<0>(GetParam()); }
   const char* pref_value() const { return std::get<1>(GetParam()); }
 
-  const char* pref() const { return ConnectorPref(connector()); }
+  const char* pref() const { return kOnSecurityEventPref; }
 
-  const char* scope_pref() const { return ConnectorScopePref(connector()); }
+  const char* scope_pref() const { return kOnSecurityEventScopePref; }
 
   PrefService* pref_service() const { return profile_->GetPrefs(); }
 
@@ -341,9 +341,9 @@ class ConnectorsServiceExemptURLsTest
 
   void SetUp() override {
     profile_->GetPrefs()->Set(
-        ConnectorPref(connector()),
+        AnalysisConnectorPref(connector()),
         *base::JSONReader::Read(kWildcardAnalysisSettingsPref));
-    profile_->GetPrefs()->SetInteger(ConnectorScopePref(connector()),
+    profile_->GetPrefs()->SetInteger(AnalysisConnectorScopePref(connector()),
                                      policy::POLICY_SCOPE_MACHINE);
   }
 
@@ -390,7 +390,7 @@ TEST_P(ConnectorsServiceExemptURLsTest, BlobAndFilesystem) {
 
   // Test against a specific pattern policy to validate the correct inner URL is
   // used.
-  profile_->GetPrefs()->Set(ConnectorPref(connector()),
+  profile_->GetPrefs()->Set(AnalysisConnectorPref(connector()),
                             *base::JSONReader::Read(R"([
         {
           "service_provider": "google",

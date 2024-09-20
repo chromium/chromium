@@ -60,10 +60,10 @@ TEST_F(BookmarksEditorViewControllerTest, CanSyncBeforeLoad) {
       initWithBookmarkModel:bookmark_model_
                bookmarkNode:bookmark
                       prefs:nullptr
-      authenticationService:AuthenticationServiceFactory::GetForBrowserState(
-                                chrome_browser_state_.get())
+      authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                profile_.get())
                 syncService:nullptr
-               browserState:chrome_browser_state_.get()];
+                    profile:profile_.get()];
   _controller.mutator = mediator;
   [_controller updateSync];
   [mediator disconnect];

@@ -34,8 +34,8 @@ class MockClient final : public GarbageCollected<MockClient>,
     responses_.push_back(response);
     data_.push_back(Vector<char>());
   }
-  void MultipartDataReceived(const char* bytes, size_t size) override {
-    data_.back().Append(bytes, base::checked_cast<wtf_size_t>(size));
+  void MultipartDataReceived(base::span<const uint8_t> bytes) override {
+    data_.back().AppendSpan(bytes);
   }
 
   Vector<ResourceResponse> responses_;

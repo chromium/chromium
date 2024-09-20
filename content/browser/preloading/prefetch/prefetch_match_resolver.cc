@@ -372,14 +372,20 @@ void PrefetchMatchResolver2::OnDeterminedHead(
   }
 
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
-    case PrefetchContainer::ServableState::kServable:
-      // Proceed.
-      break;
+    // `kShouldBlockUntilHeadReceived` case occurs if a prefetch is redirected
+    // and the redirect is not eligible.
+    //
+    //    PrefetchService::OnGotEligibilityForRedirect()
+    // -> PrefetchStreamingURLLoader::HandleRedirect(kFail)
+    // -> PrefetchContainer::OnDeterminedHead2()
+    // -> here
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-      NOTREACHED_NORETURN();
     case PrefetchContainer::ServableState::kNotServable:
       MaybeUnblockForUnmatch(prefetch_container.key());
       return;
+    case PrefetchContainer::ServableState::kServable:
+      // Proceed.
+      break;
   }
 
   // Non-redirect header is received and now the value of

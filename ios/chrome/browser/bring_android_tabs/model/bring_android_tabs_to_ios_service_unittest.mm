@@ -250,8 +250,8 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
     FirstRun::RemoveSentinel();
     FirstRun::ClearStateForTesting();
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
@@ -355,7 +355,7 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<bring_android_tabs::MockOpenTabsUIDelegate> open_ui_delegate_;
   std::unique_ptr<BringAndroidTabsToIOSService> bring_android_tabs_service_;

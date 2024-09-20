@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -65,6 +66,35 @@ public class TabShareUtils {
     }
 
     /**
+     * @param outcome The result of a group read.
+     * @return The state of the group.
+     */
+    public static @GroupSharedState int discernSharedGroupState(
+            @Nullable GroupDataOrFailureOutcome outcome) {
+        if (outcome == null || outcome.actionFailure != PeopleGroupActionFailure.UNKNOWN) {
+            return GroupSharedState.NOT_SHARED;
+        } else {
+            return discernSharedGroupState(outcome.groupData);
+        }
+    }
+
+    /**
+     * @param groupData The shared group data.
+     * @return The state of the group.
+     */
+    public static @GroupSharedState int discernSharedGroupState(@Nullable GroupData groupData) {
+        if (groupData == null) {
+            return GroupSharedState.NOT_SHARED;
+        } else {
+            if (groupData.members == null || groupData.members.size() <= 1) {
+                return GroupSharedState.COLLABORATION_ONLY;
+            } else {
+                return GroupSharedState.HAS_OTHER_USERS;
+            }
+        }
+    }
+
+    /**
      * Tries to figure out if the signed in user account has a role in a given group, and if so,
      * which role they have.
      *
@@ -75,24 +105,20 @@ public class TabShareUtils {
     public static @MemberRole int getSelfMemberRole(
             @Nullable GroupDataOrFailureOutcome outcome,
             @Nullable IdentityManager identityManager) {
-        if (identityManager == null) return MemberRole.UNKNOWN;
+        if (outcome == null || identityManager == null) return MemberRole.UNKNOWN;
 
         @Nullable
         CoreAccountInfo account = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (account == null) return MemberRole.UNKNOWN;
 
-        return getSelfMemberRole(outcome, account.getGaiaId());
+        return getSelfMemberRole(outcome.groupData, account.getGaiaId());
     }
 
     /**
      * Same as {@link #getSelfMemberRole(GroupDataOrFailureOutcome, IdentityManager)} but with a
      * supplied gaiaId.
      */
-    public static @MemberRole int getSelfMemberRole(
-            @Nullable GroupDataOrFailureOutcome outcome, String gaiaId) {
-        if (outcome == null) return MemberRole.UNKNOWN;
-
-        @Nullable GroupData groupData = outcome.groupData;
+    public static @MemberRole int getSelfMemberRole(@Nullable GroupData groupData, String gaiaId) {
         if (groupData == null || groupData.members == null) {
             return MemberRole.UNKNOWN;
         }

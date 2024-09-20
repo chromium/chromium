@@ -61,6 +61,9 @@ const URLVisitAggregate::TabData* GetTabDataIfExists(
 const URLVisitAggregate::Tab* GetTabIfExists(
     const URLVisitAggregate& url_visit_aggregate);
 
+const URLVisitAggregate::HistoryData* GetHistoryDataIfExists(
+    const URLVisitAggregate& url_visit_aggregate);
+
 // Returns a history entry if it exists for a `URLVisitAggregate`.
 const history::AnnotatedVisit* GetHistoryEntryVisitIfExists(
     const URLVisitAggregate& url_visit_aggregate);
@@ -68,6 +71,15 @@ const history::AnnotatedVisit* GetHistoryEntryVisitIfExists(
 // Returns the highest priority decorator for a `URLVisitAggregate`.
 const Decoration& GetMostRelevantDecoration(
     const URLVisitAggregate& url_visit_aggregate);
+
+// Returns the decoration string for the given `type`.
+std::u16string GetStringForDecoration(DecorationType type,
+                                      bool visited_recently = false);
+
+// Returns the decoration string for a recent visit at given `last_visit_time`.
+std::u16string GetStringForRecencyDecorationWithTime(
+    base::Time last_visit_time,
+    base::TimeDelta recently_visited_minutes_threshold = base::Minutes(1));
 
 }  // namespace visited_url_ranking
 

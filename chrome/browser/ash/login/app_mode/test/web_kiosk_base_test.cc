@@ -10,12 +10,15 @@
 #include <vector>
 
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"  // IWYU pragma: keep
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "url/gurl.h"
@@ -44,6 +47,18 @@ WebKioskBaseTest::WebKioskBaseTest()
 }
 
 WebKioskBaseTest::~WebKioskBaseTest() = default;
+
+Profile* WebKioskBaseTest::profile() const {
+  return kiosk_app_browser()->profile();
+}
+
+Browser* WebKioskBaseTest::kiosk_app_browser() const {
+  return BrowserList::GetInstance()->get(0);
+}
+
+KioskSystemSession* WebKioskBaseTest::kiosk_system_session() const {
+  return KioskController::Get().GetKioskSystemSession();
+}
 
 void WebKioskBaseTest::TearDownOnMainThread() {
   settings_.reset();

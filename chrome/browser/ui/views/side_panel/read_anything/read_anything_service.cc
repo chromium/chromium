@@ -9,7 +9,12 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service_factory.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "extensions/browser/extension_system.h"
@@ -40,6 +45,9 @@ ReadAnythingService::ReadAnythingService(Profile* profile) : profile_(profile) {
         base::BindRepeating(
             &ReadAnythingService::OnLocalSidePanelSwitchDelayTimeout,
             weak_ptr_factory_.GetWeakPtr()));
+  }
+  if (features::IsDataCollectionModeForScreen2xEnabled()) {
+    browser_list_observer_.Observe(BrowserList::GetInstance());
   }
 }
 
@@ -128,4 +136,22 @@ void ReadAnythingService::OnLocalSidePanelSwitchDelayTimeout() {
   }
 
   RemoveGDocsHelperExtension();
+}
+
+void ReadAnythingService::OnBrowserSetLastActive(Browser* browser) {
+  if (!features::IsDataCollectionModeForScreen2xEnabled() ||
+      browser->profile() != profile_) {
+    return;
+  }
+
+  // This code is called as part of a screen2x data generation workflow, where
+  // the browser is opened by a CLI and the read-anything side panel is
+  // automatically opened. Therefore we force the UI to show right away, as in
+  // tests.
+  // TODO(https://crbug.com/358191922): Remove this code.
+  auto* side_panel_ui = browser->GetFeatures().side_panel_ui();
+  if (side_panel_ui->GetCurrentEntryId() != SidePanelEntryId::kReadAnything) {
+    side_panel_ui->SetNoDelaysForTesting(true);  // IN-TEST
+    side_panel_ui->Show(SidePanelEntryId::kReadAnything);
+  }
 }

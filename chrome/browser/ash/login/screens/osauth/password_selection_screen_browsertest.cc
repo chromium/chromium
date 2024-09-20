@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "content/public/test/browser_test.h"
+#include "password_selection_screen.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -65,6 +66,7 @@ class PasswordSelectionScreenTest : public OobeBaseTest {
   ~PasswordSelectionScreenTest() override = default;
 
   void SetUpOnMainThread() override {
+    fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
     recovery_original_callback_ =
         GetRecoveryScreen()->get_exit_callback_for_testing();
     GetRecoveryScreen()->set_exit_callback_for_testing(base::BindRepeating(
@@ -177,9 +179,7 @@ class PasswordSelectionScreenTest : public OobeBaseTest {
   base::RepeatingClosure recovery_screen_exit_callback_;
 };
 
-// TODO(crbug.com/337798763): Flaky.
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
-                       DISABLED_GaiaPasswordChoice) {
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, GaiaPasswordChoice) {
   StartLogin();
   WaitForScreen();
   test::OobeJS().ExpectVisiblePath(kGaiaPasswordButton);
@@ -190,9 +190,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
             PasswordSelectionScreen::Result::GAIA_PASSWORD_CHOICE);
 }
 
-// TODO(crbug.com/337798763): Flaky.
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
-                       DISABLED_LocalPasswordChoice) {
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, LocalPasswordChoice) {
   StartLogin();
   WaitForScreen();
   test::OobeJS().ExpectVisiblePath(kLocalPasswordButton);
@@ -206,8 +204,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
                    ->knowledge_factor_setup.local_password_forced);
 }
 
-// crbug.com/337379954: Managed is excessively flaky on linux-chromeos-chrome.
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, DISABLED_Managed) {
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, Managed) {
   StartLogin();
   ProfileManager::GetPrimaryUserProfile()
       ->GetProfilePolicyConnector()
@@ -218,8 +215,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, DISABLED_Managed) {
             PasswordSelectionScreen::Result::GAIA_PASSWORD_ENTERPRISE);
 }
 
-// TODO(crbug.com/337379954): Flaky on linux-chromeos-chrome.
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, DISABLED_SmartCard) {
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, SmartCard) {
   StartLogin();
   auto user_context = BorrowUserContext();
   user_context->SetAuthFactorsConfiguration(GetFakeAuthFactorConfiguration(
@@ -231,9 +227,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, DISABLED_SmartCard) {
   EXPECT_EQ(result_.value(), PasswordSelectionScreen::Result::NOT_APPLICABLE);
 }
 
-// TODO(crbug.com/337379954): Flaky on linux-chromeos-chrome.
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
-                       DISABLED_RecoveryLocalPassword) {
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, RecoveryLocalPassword) {
   StartLogin();
   auto user_context = BorrowUserContext();
   LoginDisplayHost::default_host()
@@ -250,9 +244,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
             PasswordSelectionScreen::Result::LOCAL_PASSWORD_FORCED);
 }
 
-// TODO(crbug.com/337379954): Flaky on linux-chromeos-chrome.
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
-                       DISABLED_RecoveryGaiaPassword) {
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, RecoveryGaiaPassword) {
   StartLogin();
   auto user_context = BorrowUserContext();
   LoginDisplayHost::default_host()
@@ -267,6 +259,42 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
   WaitForScreenExit();
   EXPECT_EQ(result_.value(),
             PasswordSelectionScreen::Result::GAIA_PASSWORD_FALLBACK);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
+                       RecoveryWithNoPasswordGAIAChoice) {
+  StartLogin();
+  auto user_context = BorrowUserContext();
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->knowledge_factor_setup.auth_setup_flow =
+      WizardContext::AuthChangeFlow::kRecovery;
+  StoreUserContext(std::move(user_context));
+  WaitForScreen();
+  test::OobeJS().ExpectVisiblePath(kGaiaPasswordButton);
+  test::OobeJS().ClickOnPath(kGaiaPasswordButton);
+  test::OobeJS().ClickOnPath(kNextButton);
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(),
+            PasswordSelectionScreen::Result::GAIA_PASSWORD_CHOICE);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
+                       RecoveryWithNoPasswordLocalChoice) {
+  StartLogin();
+  auto user_context = BorrowUserContext();
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->knowledge_factor_setup.auth_setup_flow =
+      WizardContext::AuthChangeFlow::kRecovery;
+  StoreUserContext(std::move(user_context));
+  WaitForScreen();
+  test::OobeJS().ExpectVisiblePath(kLocalPasswordButton);
+  test::OobeJS().ClickOnPath(kLocalPasswordButton);
+  test::OobeJS().ClickOnPath(kNextButton);
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(),
+            PasswordSelectionScreen::Result::LOCAL_PASSWORD_CHOICE);
 }
 
 }  // namespace ash

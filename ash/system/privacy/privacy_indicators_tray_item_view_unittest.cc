@@ -41,8 +41,6 @@ constexpr char kCountAppsAccessCameraHistogramName[] =
     "Ash.PrivacyIndicators.NumberOfAppsAccessingCamera";
 constexpr char kCountAppsAccessMicrophoneHistogramName[] =
     "Ash.PrivacyIndicators.NumberOfAppsAccessingMicrophone";
-constexpr char kRepeatedShowsHistogramName[] =
-    "Ash.PrivacyIndicators.NumberOfRepeatedShows";
 constexpr char kVisibilityDurationHistogramName[] =
     "Ash.PrivacyIndicators.IndicatorShowsDuration";
 
@@ -206,6 +204,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 
@@ -626,18 +627,67 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false, /*app_id=*/"app_id2");
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_TRUE(privacy_indicators_view()->GetVisible());
 
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false, /*app_id=*/"app_id3");
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_TRUE(privacy_indicators_view()->GetVisible());
 
   // Indicator should hide when removing all apps.
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+}
+
+TEST_F(PrivacyIndicatorsTrayItemViewTest,
+       HidingDelayTimerEnabledWithMultipleAppsAccess) {
+  EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_FALSE(microphone_icon()->GetVisible());
+
+  // When a new app accessing cam, we will show the icons according to the
+  // access state of that particular app.
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, /*app_id=*/"app_id2");
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
+
+  // Indicator should still show app 2 after removing app 2 not app 1.
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/false, /*app_id=*/"app_id2");
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
+
+  // When the app retries, the visibility remains the same.
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, /*app_id=*/"app_id2");
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
 }
 
 TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
@@ -692,16 +742,22 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
   int expected_count = 1;
 
   // Show the indicator in the given `show_count` number of times.
-  auto trigger_show_indicator = [](int show_count) {
-    // Update the state of camera/microphone access so that the indicators on
-    // all displays show, then hide for `show_count` times.
-    for (auto i = 0; i < show_count; i++) {
-      UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/true,
-                                     /*is_microphone_used=*/true);
-      UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/false,
-                                     /*is_microphone_used=*/false);
-    }
-  };
+  auto trigger_show_indicator =
+      [](int show_count, base::test::TaskEnvironment* task_environment) {
+        // Update the state of camera/microphone access so that the indicators
+        // on all displays show, then hide for `show_count` times.
+        for (auto i = 0; i < show_count; i++) {
+          UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/true,
+                                         /*is_microphone_used=*/true);
+          UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/false,
+                                         /*is_microphone_used=*/false);
+          // Fast forward by the minimum duration the privacy indicator should
+          // be held.
+          task_environment->FastForwardBy(
+              ash::PrivacyIndicatorsController::
+                  kPrivacyIndicatorsMinimumHoldDuration);
+        }
+      };
 
   base::HistogramTester histograms;
 
@@ -709,7 +765,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
       session_manager::SessionState::ACTIVE);
 
   int expected_sample = 1;
-  trigger_show_indicator(expected_sample);
+  trigger_show_indicator(expected_sample, task_environment());
 
   // After session changed, metrics should be recorded.
   GetSessionControllerClient()->SetSessionState(
@@ -718,7 +774,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
                                expected_sample, expected_count);
 
   expected_sample = 6;
-  trigger_show_indicator(expected_sample);
+  trigger_show_indicator(expected_sample, task_environment());
 
   // After session changed, metrics should be recorded.
   GetSessionControllerClient()->SetSessionState(
@@ -727,7 +783,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
                                expected_sample, expected_count);
 
   expected_sample = 10;
-  trigger_show_indicator(expected_sample);
+  trigger_show_indicator(expected_sample, task_environment());
 
   // After session changed, metrics should be recorded.
   GetSessionControllerClient()->SetSessionState(
@@ -760,53 +816,6 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordAppAccessSimultaneously) {
   histograms.ExpectBucketCount(kCountAppsAccessMicrophoneHistogramName, 2, 1);
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordRepeatedShows) {
-  // Set up 2 displays. Note that only one instance should be recorded for the
-  // primary display when session changes.
-  UpdateDisplay("100x200,300x400");
-
-  base::HistogramTester histograms;
-
-  auto flicker_indicator = [](int number_of_flicker,
-                              base::test::TaskEnvironment* task_environment) {
-    // Makes the view flicker (show then hide) for `number_of_flicker` of times.
-    for (auto i = 0; i < number_of_flicker; i++) {
-      UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/true,
-                                     /*is_microphone_used=*/true);
-      UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/false,
-                                     /*is_microphone_used=*/false);
-      task_environment->FastForwardBy(base::Milliseconds(80));
-    }
-    task_environment->FastForwardBy(base::Milliseconds(100));
-  };
-
-  int expected_sample = 6;
-  flicker_indicator(expected_sample, task_environment());
-  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, expected_sample, 1);
-
-  // Makes one more flickering after 100ms. This flicker should not count
-  // towards the previous ones, but this will be counted in a bucket for 1 show.
-  UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/true,
-                                 /*is_microphone_used=*/true);
-  UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/false,
-                                 /*is_microphone_used=*/false);
-  task_environment()->FastForwardBy(base::Milliseconds(100));
-
-  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, expected_sample + 1,
-                               0);
-  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 1, 1);
-
-  // Make sure it works again.
-  flicker_indicator(8, task_environment());
-  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 8, 1);
-
-  flicker_indicator(2, task_environment());
-  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 2, 1);
-
-  flicker_indicator(1, task_environment());
-  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 1, 2);
-}
-
 TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordVisibilityDuration) {
   // Set up 2 displays. Note that only one instance should be recorded for the
   // primary display.
@@ -824,7 +833,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordVisibilityDuration) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
-
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   auto expected_sample1 = base::Time::Now() - start_time;
   histograms.ExpectTimeBucketCount(kVisibilityDurationHistogramName,
                                    expected_sample1, 1);
@@ -839,6 +850,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordVisibilityDuration) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   histograms.ExpectTimeBucketCount(kVisibilityDurationHistogramName,
                                    base::Time::Now() - start_time, 1);
 

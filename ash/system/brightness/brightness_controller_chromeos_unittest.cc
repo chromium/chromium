@@ -969,6 +969,7 @@ TEST_F(BrightnessControllerChromeosTest,
   request.set_sensor_enabled(true);
   power_manager_client()->SetAmbientLightSensorEnabled(request);
   power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+  run_loop_.RunUntilIdle();
 
   // Clear user sessions and reset to the primary login screen.
   ClearLogin();
@@ -1114,6 +1115,7 @@ TEST_F(BrightnessControllerChromeosTest,
   request.set_sensor_enabled(true);
   power_manager_client()->SetAmbientLightSensorEnabled(request);
   power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+  run_loop_.RunUntilIdle();
 
   // Clear user sessions and reset to the primary login screen.
   ClearLogin();
@@ -1207,6 +1209,7 @@ TEST_F(BrightnessControllerChromeosTest,
   request.set_sensor_enabled(true);
   power_manager_client()->SetAmbientLightSensorEnabled(request);
   power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+  run_loop_.RunUntilIdle();
 
   // Log in
   ClearLogin();
@@ -1241,6 +1244,8 @@ TEST_F(BrightnessControllerChromeosTest,
       GetAmbientLightSensorDisabledReasonPrefValue(known_user, account_id));
 
   // Simulate reboot, and log in again.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   known_user.SetPath(account_id, prefs::kInternalDisplayScreenBrightnessPercent,
                      std::make_optional<base::Value>(30.0));
   login_data_dispatcher()->NotifyFocusPod(account_id);
@@ -1251,6 +1256,8 @@ TEST_F(BrightnessControllerChromeosTest,
   ExpectBrightnessPercent(30.0, "Brightness percent should be restored.");
 
   // Simulate reboot, and log in the third time.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   login_data_dispatcher()->NotifyFocusPod(account_id);
 
   // ALS and brightness should remain the same as last reboot.
@@ -1267,6 +1274,7 @@ TEST_F(BrightnessControllerChromeosTest,
   request.set_sensor_enabled(true);
   power_manager_client()->SetAmbientLightSensorEnabled(request);
   power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+  run_loop_.RunUntilIdle();
 
   // Log in
   ClearLogin();
@@ -1301,6 +1309,8 @@ TEST_F(BrightnessControllerChromeosTest,
       GetAmbientLightSensorDisabledReasonPrefValue(known_user, account_id));
 
   // Simulate reboot, and log in again.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   known_user.SetPath(account_id, prefs::kInternalDisplayScreenBrightnessPercent,
                      std::make_optional<base::Value>(30.0));
   login_data_dispatcher()->NotifyFocusPod(account_id);
@@ -1309,11 +1319,56 @@ TEST_F(BrightnessControllerChromeosTest,
   ExpectAmbientLightSensorEnabled(true, "ALS is re-enabled.");
 
   // Simulate reboot, and log in the third time.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   login_data_dispatcher()->NotifyFocusPod(account_id);
 
   // ALS should remain enabled.
   ExpectAmbientLightSensorEnabled(
       true, "ALS should remain enabled after re-enabled in last reboot.");
+}
+
+TEST_F(BrightnessControllerChromeosTest,
+       BrightnessSettingsUnchanged_DeviceLocked) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableBrightnessControlInSettings);
+
+  // Set initial ALS status and brightness level.
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetAmbientLightSensorEnabled(request);
+  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+  run_loop_.RunUntilIdle();
+
+  // Log in
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Disable ALS using the brightness key.
+  SetAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+
+  // Current status: Als is turned off, and current brightness is
+  // kInitialBrightness.
+  ExpectAmbientLightSensorEnabled(
+      false,
+      "Ambient light sensor is disabled, the request is from brightness key.");
+  ExpectBrightnessPercent(kInitialBrightness,
+                          "Current brightness should be kInitialBrightness.");
+
+  // Simulate device lock and re-login.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  // Als should not be re-enabled, although it was not previously disabled from
+  // settings app. The brightness percent should still be kInitialBrightness.
+  ExpectAmbientLightSensorEnabled(false, "ALS remain disabled.");
+  ExpectBrightnessPercent(kInitialBrightness,
+                          "Brightness should remain unchanged.");
 }
 
 TEST_F(BrightnessControllerChromeosTest,
@@ -1326,6 +1381,7 @@ TEST_F(BrightnessControllerChromeosTest,
   request.set_sensor_enabled(true);
   power_manager_client()->SetAmbientLightSensorEnabled(request);
   power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+  run_loop_.RunUntilIdle();
 
   // Clear user sessions and reset to the primary login screen.
   ClearLogin();
@@ -1428,6 +1484,7 @@ TEST_F(BrightnessControllerChromeosTest,
   request.set_sensor_enabled(true);
   power_manager_client()->SetAmbientLightSensorEnabled(request);
   power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+  run_loop_.RunUntilIdle();
 
   // Clear user sessions and reset to the primary login screen.
   ClearLogin();
@@ -1527,6 +1584,7 @@ TEST_F(BrightnessControllerChromeosTest,
   request.set_sensor_enabled(true);
   power_manager_client()->SetAmbientLightSensorEnabled(request);
   power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+  run_loop_.RunUntilIdle();
 
   // Log in
   ClearLogin();
@@ -1548,6 +1606,8 @@ TEST_F(BrightnessControllerChromeosTest,
   EXPECT_EQ(GetBrightnessPrefValue(known_user, account_id), 10.0);
 
   // Simulate reboot.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   LoginScreenFocusAccount(account_id);
 
   // Expect the brightness is restored to 10%.
@@ -1564,6 +1624,7 @@ TEST_F(BrightnessControllerChromeosTest,
   request.set_sensor_enabled(true);
   power_manager_client()->SetAmbientLightSensorEnabled(request);
   power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+  run_loop_.RunUntilIdle();
 
   // Log in
   ClearLogin();
@@ -1597,7 +1658,9 @@ TEST_F(BrightnessControllerChromeosTest,
   SetBatteryPower();
 
   // Simulate reboot, and log in.
-  LoginScreenFocusAccount(account_id);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  SimulateUserLogin(kUserEmail);
 
   // Expect the brightness is not restored to 10%.
   brightness_control_delegate()->GetBrightnessPercent(
@@ -1632,6 +1695,113 @@ TEST_F(BrightnessControllerChromeosTest,
   LoginScreenFocusAccount(first_account);
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Display.Startup.AmbientLightSensorEnabled", 1);
+}
+
+TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettings_NoSensor) {
+  // Test case: Disable ALS via brightness key and restore brightness settings.
+  // When the device has no sensor. ALS should not be re-enabled after login.
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableBrightnessControlInSettings);
+
+  // Set initial ALS status and brightness level.
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetAmbientLightSensorEnabled(request);
+  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+
+  // Log in
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Disable ALS
+  SetAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+  ExpectAmbientLightSensorEnabled(false, "ALS is disabled.");
+
+  // Set the device to have no ambient light sensor.
+  power_manager_client()->set_has_ambient_light_sensor(false);
+
+  // Reinitialize controller to apply updates.
+  auto controller = std::make_unique<system::BrightnessControllerChromeos>(
+      local_state(), Shell::Get()->session_controller());
+  run_loop_.RunUntilIdle();
+
+  // Before reboot, set saved prefs: ALS disabled
+  // reason (BRIGHTNESS_USER_REQUEST) and brightness percent (30.0).
+  known_user.SetPath(
+      account_id, prefs::kAmbientLightSensorDisabledReason,
+      std::make_optional<base::Value>(
+          power_manager::
+              AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST));
+  known_user.SetPath(account_id, prefs::kInternalDisplayScreenBrightnessPercent,
+                     std::make_optional<base::Value>(30.0));
+
+  // Simulate reboot, and log in again.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  // Verify ALS is not re-enabled, brightness percent is restored to 30.0.
+  ExpectAmbientLightSensorEnabled(false, "ALS is not re-enabled.");
+  ExpectBrightnessPercent(30.0, "brighntess is restored");
+}
+
+TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettings_HasSensor) {
+  // Test case: Disable ALS via brightness key and restore brightness settings.
+  // When the device has a sensor. ALS should be re-enabled after login.
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableBrightnessControlInSettings);
+
+  // Set initial ALS status and brightness level.
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetAmbientLightSensorEnabled(request);
+  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+
+  // Log in
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Disable ALS
+  SetAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+  ExpectAmbientLightSensorEnabled(false, "ALS is disabled");
+
+  // Set the device to have ambient light sensor.
+  power_manager_client()->set_has_ambient_light_sensor(true);
+
+  // Reinitialize controller to apply updates.
+  auto controller = std::make_unique<system::BrightnessControllerChromeos>(
+      local_state(), Shell::Get()->session_controller());
+  run_loop_.RunUntilIdle();
+
+  // Before reboot, set saved prefs: ALS disabled
+  // reason (BRIGHTNESS_USER_REQUEST) and brightness percent (30.0).
+  known_user.SetPath(
+      account_id, prefs::kAmbientLightSensorDisabledReason,
+      std::make_optional<base::Value>(
+          power_manager::
+              AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST));
+  known_user.SetPath(account_id, prefs::kAmbientLightSensorDisabledReason,
+                     std::make_optional<base::Value>(30.0));
+
+  // Simulate reboot, and log in again.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  // Verify ambient light sensor is re-enabled, because als was disabled by
+  // brightness key, and the brightness percent should be
+  // kInitialKeyboardBrightness instead of 30.0.
+  ExpectAmbientLightSensorEnabled(true, "ALS is re-enabled.");
+  ExpectBrightnessPercent(kInitialBrightness,
+                          "Brightness percent should not be restored.");
 }
 
 }  // namespace ash

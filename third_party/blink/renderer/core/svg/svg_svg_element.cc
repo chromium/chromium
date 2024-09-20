@@ -25,7 +25,6 @@
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -131,7 +130,7 @@ class SVGCurrentTranslateTearOff : public SVGPointTearOff {
   SVGCurrentTranslateTearOff(SVGSVGElement* context_element)
       : SVGPointTearOff(context_element->translation_, context_element) {}
 
-  void CommitChange() override {
+  void CommitChange(SVGPropertyCommitReason) override {
     DCHECK(ContextElement());
     To<SVGSVGElement>(ContextElement())->UpdateUserTransform();
   }
@@ -214,33 +213,14 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
-  if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
-                                            x_->CssValue());
-  } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
-                                            y_->CssValue());
-  } else if (IsOutermostSVGSVGElement() &&
-             (property == width_ || property == height_)) {
-    // SVG allows negative numbers for these attributes but CSS doesn't allow
-    // negative <length> values for the corresponding CSS properties. So remove
-    // negative values here.
-    if (property == width_) {
-      if (const CSSValue* width = width_->NonNegativeCssValue()) {
-        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
-                                                *width);
-      }
-    } else if (property == height_) {
-      if (const CSSValue* height = height_->NonNegativeCssValue()) {
-        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
-                                                *height);
-      }
-    }
-  } else {
-    SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value,
-                                                             style);
+  // We shouldn't collect style for 'width' and 'height' on inner <svg>, so
+  // bail here in that case to avoid having the generic logic in SVGElement
+  // picking it up.
+  if ((name == svg_names::kWidthAttr || name == svg_names::kHeightAttr) &&
+      !IsOutermostSVGSVGElement()) {
+    return;
   }
+  SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value, style);
 }
 
 void SVGSVGElement::SvgAttributeChanged(
@@ -264,18 +244,12 @@ void SVGSVGElement::SvgAttributeChanged(
       // be) an outermost root, so always mark presentation attributes dirty in
       // that case.
       if (!layout_object || layout_object->IsSVGRoot()) {
-        InvalidateSVGPresentationAttributeStyle();
-        SetNeedsStyleRecalc(kLocalStyleChange,
-                            StyleChangeReasonForTracing::Create(
-                                style_change_reason::kSVGContainerSizeChange));
+        UpdatePresentationAttributeStyle(attr_name);
         if (layout_object)
           To<LayoutSVGRoot>(layout_object)->IntrinsicSizingInfoChanged();
       }
     } else {
-      InvalidateSVGPresentationAttributeStyle();
-      SetNeedsStyleRecalc(
-          kLocalStyleChange,
-          StyleChangeReasonForTracing::FromAttribute(attr_name));
+      UpdatePresentationAttributeStyle(attr_name);
     }
   }
 
@@ -849,14 +823,9 @@ void SVGSVGElement::SynchronizeAllSVGAttributes() const {
 
 void SVGSVGElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  for (auto* property : (SVGAnimatedPropertyBase*[]){
-           x_.Get(), y_.Get(), width_.Get(), height_.Get()}) {
-    DCHECK(property->HasPresentationAttributeMapping());
-    if (property->IsAnimating()) {
-      CollectStyleForPresentationAttribute(property->AttributeName(),
-                                           g_empty_atom, style);
-    }
-  }
+  auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
+      {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
+  AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
   SVGGraphicsElement::CollectExtraStyleForPresentationAttribute(style);
 }
 

@@ -11,11 +11,15 @@
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
+#include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/widget/widget_observer.h"
 
+using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+using IdentityRequestAccountPtr =
+    scoped_refptr<content::IdentityRequestAccount>;
 using TokenError = content::IdentityCredentialTokenError;
 
 class AccountSelectionViewBase;
@@ -33,21 +37,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // safe_zone_diameter/icon_size as defined in
   // https://www.w3.org/TR/appmanifest/#icon-masks
   static constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
-
-  // This enum is used for histograms. Do not remove or modify existing values,
-  // but you may add new values at the end and increase COUNT. This enum should
-  // be kept in sync with SheetType in
-  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
-  // with FedCmSheetType in tools/metrics/histograms/enums.xml.
-  enum SheetType {
-    ACCOUNT_SELECTION = 0,
-    VERIFYING = 1,
-    AUTO_REAUTHN = 2,
-    SIGN_IN_TO_IDP_STATIC = 3,
-    SIGN_IN_ERROR = 4,
-    LOADING = 5,
-    COUNT = 6
-  };
 
   enum class DialogType {
     // FedCM dialog inherits a bubble dialog, which is typically shown on the
@@ -67,11 +56,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // AccountSelectionView:
   bool Show(
       const std::string& rp_for_display,
-      const std::vector<content::IdentityProviderData>& identity_provider_data,
+      const std::vector<IdentityProviderDataPtr>& idp_list,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
       Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      const std::optional<content::IdentityProviderData>& new_accounts_idp)
-      override;
+      const std::vector<IdentityRequestAccountPtr>& new_accounts) override;
   bool ShowFailureDialog(
       const std::string& rp_for_display,
       const std::string& idp_etld_plus_one,
@@ -271,7 +260,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // AccountSelectionBubbleView::Observer:
   void OnAccountSelected(const Account& account,
-                         const content::IdentityProviderData& idp_display_data,
+                         const content::IdentityProviderData& idp_data,
                          const ui::Event& event) override;
   void OnLinkClicked(LinkType link_type,
                      const GURL& url,
@@ -287,15 +276,14 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Returns false if `this` got deleted. In that case, the caller should not
   // access any further member variables.
-  bool ShowVerifyingSheet(
-      const Account& account,
-      const content::IdentityProviderData& idp_display_data);
+  bool ShowVerifyingSheet(const Account& account,
+                          const content::IdentityProviderData& idp_data);
 
   // Shows the dialog widget.
   void ShowDialogWidget();
 
   // Returns the SheetType to be used for metrics reporting.
-  SheetType GetSheetType();
+  AccountSelectionView::SheetType GetSheetType();
 
   // Notify the delegate that the widget was closed with reason
   // `dismiss_reason`.
@@ -327,18 +315,20 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Shows the multi account picker and updates the internal state.
   void ShowMultiAccountPicker(
-      const std::vector<content::IdentityProviderData>& idp_data_list,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      const std::vector<IdentityProviderDataPtr>& idp_list,
       bool show_back_button,
       bool is_choose_an_account);
 
-  std::vector<content::IdentityProviderData> idp_data_list_;
+  std::vector<IdentityProviderDataPtr> idp_list_;
+
+  std::vector<IdentityRequestAccountPtr> accounts_;
 
   // This class needs to own the IDP display data for a newly logged in account
   // since the AccountSelectionBubbleView does not take ownership. This is a
   // vector so it is easy to pass to CreateMultipleAccountChooser in case there
-  // are multiple accounts, but it is size 0 when there are no new accounts and
-  // size 1 when there are new accounts.
-  std::vector<content::IdentityProviderData> new_accounts_idp_display_data_;
+  // are multiple accounts, but it is size 0 when there are no new accounts.
+  std::vector<IdentityRequestAccountPtr> new_accounts_;
 
   std::u16string rp_for_display_;
 

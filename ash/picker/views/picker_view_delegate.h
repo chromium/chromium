@@ -12,8 +12,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_mode_type.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_search_result.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 
 namespace ash {

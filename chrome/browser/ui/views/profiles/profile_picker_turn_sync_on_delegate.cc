@@ -88,11 +88,15 @@ ProfilePickerTurnSyncOnDelegate::~ProfilePickerTurnSyncOnDelegate() = default;
 void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
     const SigninUIError& error) {
   LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::kLoginError);
+
+  // If the controller is null we cannot treat the error.
+  if (!controller_) {
+    return;
+  }
+
   if (IsLacrosPrimaryProfileFirstRun(profile_)) {
     // The primary profile onboarding is silently skipped if there's any error.
-    if (controller_) {
-      controller_->FinishAndOpenBrowser(PostHostClearedCallback());
-    }
+    controller_->FinishAndOpenBrowser(PostHostClearedCallback());
     return;
   }
 
@@ -101,17 +105,26 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
   // profile.
   if (error.type() ==
       SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
-    if (controller_) {
-      controller_->SwitchToProfileSwitch(error.another_profile_path());
-    }
+    controller_->SwitchToProfileSwitch(error.another_profile_path());
+    return;
+  }
+
+  // Abort the flow completely and reset the host in case of ForceSignin if the
+  // user is not allowed to sign in by policy with this account. In
+  // non-ForceSignin, the user can still browse and be signed in but cannot
+  // enable sync.
+  if (signin_util::IsForceSigninEnabled() &&
+      error.type() ==
+          SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs) {
+    controller_->ResetHostAndShowErrorDialog(
+        ForceSigninUIError::SigninPatternNotMatching(
+            base::UTF16ToUTF8(error.email())));
     return;
   }
 
   // Open the browser and when it's done, show the login error.
-  if (controller_) {
-    controller_->FinishAndOpenBrowser(PostHostClearedCallback(base::BindOnce(
-        &TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error)));
-  }
+  controller_->FinishAndOpenBrowser(PostHostClearedCallback(base::BindOnce(
+      &TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error)));
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowMergeSyncDataConfirmation(

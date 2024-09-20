@@ -101,7 +101,7 @@ class AuthenticatorInsertAndActivateUsbSheetModel
   bool IsActivityIndicatorVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  std::u16string GetAdditionalDescription() const override;
+  std::vector<std::u16string> GetAdditionalDescriptions() const override;
 };
 
 class AuthenticatorTimeoutErrorModel : public AuthenticatorSheetModelBase {
@@ -354,7 +354,7 @@ class AuthenticatorClientPinTapAgainSheetModel
   bool IsActivityIndicatorVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  std::u16string GetAdditionalDescription() const override;
+  std::vector<std::u16string> GetAdditionalDescriptions() const override;
 };
 
 class AuthenticatorBioEnrollmentSheetModel
@@ -498,52 +498,15 @@ class AuthenticatorSelectAccountSheetModel
   size_t selected_ = 0;
 };
 
-class AttestationPermissionRequestSheetModel
-    : public AuthenticatorSheetModelBase {
- public:
-  explicit AttestationPermissionRequestSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
-  ~AttestationPermissionRequestSheetModel() override;
-
-  // AuthenticatorSheetModelBase:
-  void OnAccept() override;
-  void OnCancel() override;
-
- private:
-  // AuthenticatorSheetModelBase:
-  std::u16string GetStepTitle() const override;
-  std::u16string GetStepDescription() const override;
-  bool IsAcceptButtonVisible() const override;
-  std::u16string GetAcceptButtonLabel() const override;
-  bool IsCancelButtonVisible() const override;
-  std::u16string GetCancelButtonLabel() const override;
-};
-
-class EnterpriseAttestationPermissionRequestSheetModel
-    : public AttestationPermissionRequestSheetModel {
- public:
-  explicit EnterpriseAttestationPermissionRequestSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
-
- private:
-  // AuthenticatorSheetModelBase:
-  std::u16string GetStepTitle() const override;
-  std::u16string GetStepDescription() const override;
-};
-
 class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorQRSheetModel(
       AuthenticatorRequestDialogModel* dialog_model);
   ~AuthenticatorQRSheetModel() override;
 
-  // Returns true if a label indicating the user that a security key may be used
-  // should be shown.
-  bool ShowSecurityKeyLabel() const;
-
-  // Returns the label that indicates the user they can insert and activate a
-  // hardware security key.
-  std::u16string GetSecurityKeyLabel() const;
+  // Returns the labels that indicate to the user they can insert and activate
+  // a hardware security key. If empty then a security key cannot be used.
+  std::vector<std::u16string> GetSecurityKeyLabels() const;
 
  private:
   // AuthenticatorSheetModelBase:

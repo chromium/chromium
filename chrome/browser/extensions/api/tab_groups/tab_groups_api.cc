@@ -11,8 +11,6 @@
 
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_constants.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -41,6 +39,11 @@ namespace extensions {
 
 namespace {
 
+constexpr char kCannotMoveGroupIntoMiddleOfOtherGroupError[] =
+    "Cannot move the group to an index that is in the middle of another group.";
+constexpr char kCannotMoveGroupIntoMiddleOfPinnedTabsError[] =
+    "Cannot move the group to an index that is in the middle of pinned tabs.";
+
 // Returns true if a group could be moved into the |target_index| of the given
 // |tab_strip|. Sets the |error| string otherwise.
 bool IndexSupportsGroupMove(TabStripModel* tab_strip,
@@ -52,7 +55,7 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
   }
 
   if (tab_strip->IsTabPinned(target_index)) {
-    *error = tab_groups_constants::kCannotMoveGroupIntoMiddleOfPinnedTabsError;
+    *error = kCannotMoveGroupIntoMiddleOfPinnedTabsError;
     return false;
   }
 
@@ -62,7 +65,7 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
       tab_strip->GetTabGroupForTab(target_index - 1);
 
   if (target_group.has_value() && target_group == adjacent_group) {
-    *error = tab_groups_constants::kCannotMoveGroupIntoMiddleOfOtherGroupError;
+    *error = kCannotMoveGroupIntoMiddleOfOtherGroupError;
     return false;
   }
 
@@ -80,16 +83,16 @@ ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
   tab_groups::TabGroupId id = tab_groups::TabGroupId::CreateEmpty();
   const tab_groups::TabGroupVisualData* visual_data = nullptr;
   std::string error;
-  if (!tab_groups_util::GetGroupById(group_id, browser_context(),
-                                     include_incognito_information(), nullptr,
-                                     &id, &visual_data, &error)) {
+  if (!ExtensionTabUtil::GetGroupById(group_id, browser_context(),
+                                      include_incognito_information(), nullptr,
+                                      &id, &visual_data, &error)) {
     return RespondNow(Error(std::move(error)));
   }
 
   DCHECK(!id.is_empty());
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
-      tab_groups_util::CreateTabGroupObject(id, *visual_data))));
+      ExtensionTabUtil::CreateTabGroupObject(id, *visual_data))));
 }
 
 ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
@@ -99,8 +102,14 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
 
   base::Value::List result_list;
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  Browser* current_browser =
-      ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
+
+  WindowController* window_controller =
+      ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
+  if (!window_controller) {
+    return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
+  }
+  Browser* current_browser = window_controller->GetBrowser();
+
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (!profile->IsSameOrParent(browser->profile()))
       continue;
@@ -150,12 +159,12 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
 
       if (params->query_info.color != api::tab_groups::Color::kNone &&
           params->query_info.color !=
-              tab_groups_util::ColorIdToColor(visual_data->color())) {
+              ExtensionTabUtil::ColorIdToColor(visual_data->color())) {
         continue;
       }
 
       result_list.Append(
-          tab_groups_util::CreateTabGroupObject(id, *visual_data).ToValue());
+          ExtensionTabUtil::CreateTabGroupObject(id, *visual_data).ToValue());
     }
   }
 
@@ -172,9 +181,9 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   tab_groups::TabGroupId id = tab_groups::TabGroupId::CreateEmpty();
   const tab_groups::TabGroupVisualData* visual_data = nullptr;
   std::string error;
-  if (!tab_groups_util::GetGroupById(group_id, browser_context(),
-                                     include_incognito_information(), &browser,
-                                     &id, &visual_data, &error)) {
+  if (!ExtensionTabUtil::GetGroupById(group_id, browser_context(),
+                                      include_incognito_information(), &browser,
+                                      &id, &visual_data, &error)) {
     return RespondNow(Error(std::move(error)));
   }
 
@@ -186,7 +195,7 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
 
   tab_groups::TabGroupColorId color = visual_data->color();
   if (params->update_properties.color != api::tab_groups::Color::kNone) {
-    color = tab_groups_util::ColorToColorId(params->update_properties.color);
+    color = ExtensionTabUtil::ColorToColorId(params->update_properties.color);
   }
 
   std::u16string title = visual_data->title();
@@ -209,8 +218,8 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
     return RespondNow(NoArguments());
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
-      tab_groups_util::CreateTabGroupObject(tab_group->id(),
-                                            *tab_group->visual_data()))));
+      ExtensionTabUtil::CreateTabGroupObject(tab_group->id(),
+                                             *tab_group->visual_data()))));
 }
 
 ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
@@ -234,7 +243,7 @@ ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
     return RespondNow(NoArguments());
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
-      *tab_groups_util::CreateTabGroupObject(group))));
+      *ExtensionTabUtil::CreateTabGroupObject(group))));
 }
 
 bool TabGroupsMoveFunction::MoveGroup(int group_id,
@@ -244,7 +253,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
                                       std::string* error) {
   Browser* source_browser = nullptr;
   const tab_groups::TabGroupVisualData* visual_data = nullptr;
-  if (!tab_groups_util::GetGroupById(
+  if (!ExtensionTabUtil::GetGroupById(
           group_id, browser_context(), include_incognito_information(),
           &source_browser, group, &visual_data, error)) {
     return false;
@@ -269,13 +278,13 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   }
 
   if (window_id) {
-    Browser* target_browser = nullptr;
-
-    if (!windows_util::GetBrowserFromWindowID(
+    WindowController* window_controller = nullptr;
+    if (!windows_util::GetControllerFromWindowID(
             this, *window_id, WindowController::GetAllWindowFilter(),
-            &target_browser, error)) {
+            &window_controller, error)) {
       return false;
     }
+    Browser* target_browser = window_controller->GetBrowser();
 
     // TODO(crbug.com/40638654): Rather than calling is_type_normal(), should
     // this call SupportsWindowFeature(Browser::FEATURE_TABSTRIP)?

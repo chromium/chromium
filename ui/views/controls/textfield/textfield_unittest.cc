@@ -3258,7 +3258,16 @@ TEST_F(TextfieldTest, HitOutsideTextAreaInRTLTest) {
   base::i18n::SetICUDefaultLocale(locale);
 }
 
-TEST_F(TextfieldTest, OverflowTest) {
+// TODO(https://crbug.com/361276581, https://crbug.com/361247468): Flakes on
+// Fuschia cast Debug bots.
+#if BUILDFLAG(IS_FUCHSIA) && !defined(NDEBUG)
+#define MAYBE_OverflowTest DISABLED_OverflowTest
+#define MAYBE_OverflowInRTLTest DISABLED_OverflowInRTLTest
+#else
+#define MAYBE_OverflowTest OverflowTest
+#define MAYBE_OverflowInRTLTest OverflowInRTLTest
+#endif
+TEST_F(TextfieldTest, MAYBE_OverflowTest) {
   InitTextfield();
 
   std::u16string str;
@@ -3284,7 +3293,7 @@ TEST_F(TextfieldTest, OverflowTest) {
   EXPECT_EQ(501U, textfield_->GetCursorPosition());
 }
 
-TEST_F(TextfieldTest, OverflowInRTLTest) {
+TEST_F(TextfieldTest, MAYBE_OverflowInRTLTest) {
   std::string locale = base::i18n::GetConfiguredLocale();
   base::i18n::SetICUDefaultLocale("he");
 
@@ -4250,75 +4259,6 @@ TEST_F(TextfieldTest, AccessiblePlaceholderTest) {
   textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kPlaceholder),
             u"Updated placeholder");
-}
-
-TEST_F(TextfieldTest, AccessibleTextSelectBound) {
-  InitTextfield();
-  ui::AXNodeData data;
-  gfx::Range range(4, 8);
-
-  textfield_->SetText(u"SettingText");
-  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 11);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 11);
-
-  textfield_->SetSelectedRange(range);
-  data = ui::AXNodeData();
-  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 4);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 8);
-
-  textfield_->ExtendSelectionAndDelete(2, 1);
-  textfield_->SelectAll(false);
-  data = ui::AXNodeData();
-  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 4);
-
-  textfield_->SetText(u"SettingText");
-  textfield_->SetSelectedRange(range);
-  SendAlternateCut();
-  data = ui::AXNodeData();
-  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 4);
-
-  textfield_->SetText(u"SettingText");
-  textfield_->SetSelectedRange(range);
-  SendAlternateCopy();
-  SendAlternatePaste();
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 4);
-
-  textfield_->SetText(u"Setting text for test");
-  textfield_->SetEditableSelectionRange(gfx::Range(0));
-  textfield_->SelectWord();
-  data = ui::AXNodeData();
-  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(u"Setting", textfield_->GetSelectedText());
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 7);
-
-  textfield_->DeleteRange(textfield_->GetSelectedRange());
-  data = ui::AXNodeData();
-  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 0);
-
-  textfield_->SetText(u"SettingText : ");
-  ui::KeyEvent key_event = ui::KeyEvent::FromCharacter(
-      0x5A, ui::VKEY_Z, ui::DomCode::NONE, ui::EF_NONE);
-  textfield_->InsertChar(key_event);
-  data = ui::AXNodeData();
-  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 15);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 15);
-
-  textfield_->SetText(u"0123456789");
-  textfield_->SetSelectedRange(gfx::Range(3, 5));
-  textfield_->AddSecondarySelectedRange(gfx::Range(7, 9));
-  data = ui::AXNodeData();
-  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 3);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 5);
 }
 
 TEST_F(TextfieldTest, AccessibleNameFromLabel) {

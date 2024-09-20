@@ -47,6 +47,20 @@ auto-tab-groups-failure:not([shown]) {
              slideOut 250ms var(--standard-curve) forwards;
 }
 
+.auto-tab-groups-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  padding-bottom: 16px;
+}
+
+.back-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 20px;
+}
+
 #body {
   margin: var(--mwb-list-item-horizontal-margin);
 }

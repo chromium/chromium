@@ -152,7 +152,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-blink.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -1967,7 +1967,7 @@ mojom::blink::DisplayMode WebFrameWidgetImpl::DisplayMode() const {
   return display_mode_;
 }
 
-ui::WindowShowState WebFrameWidgetImpl::WindowShowState() const {
+ui::mojom::blink::WindowShowState WebFrameWidgetImpl::WindowShowState() const {
   return window_show_state_;
 }
 
@@ -2651,42 +2651,6 @@ WebFrameWidgetImpl::GetBeginMainFrameMetrics() {
       ->GetBeginMainFrameMetrics();
 }
 
-std::unique_ptr<cc::WebVitalMetrics> WebFrameWidgetImpl::GetWebVitalMetrics() {
-  if (!LocalRootImpl())
-    return nullptr;
-
-  // This class should be called at most once per commit.
-  WebPerformanceMetricsForReporting perf =
-      LocalRootImpl()->PerformanceMetricsForReporting();
-  auto metrics = std::make_unique<cc::WebVitalMetrics>();
-  if (perf.FirstInputDelay().has_value()) {
-    metrics->first_input_delay = perf.FirstInputDelay().value();
-    metrics->has_fid = true;
-  }
-
-  base::TimeTicks start = perf.NavigationStartAsMonotonicTime();
-  base::TimeTicks largest_contentful_paint =
-      perf.LargestContentfulDetailsForMetrics().paint_time;
-  if (largest_contentful_paint >= start) {
-    metrics->largest_contentful_paint = largest_contentful_paint - start;
-    metrics->has_lcp = true;
-  }
-
-  double layout_shift = LocalRootImpl()
-                            ->GetFrame()
-                            ->View()
-                            ->GetLayoutShiftTracker()
-                            .WeightedScore();
-  if (layout_shift > 0.f) {
-    metrics->layout_shift = layout_shift;
-    metrics->has_cls = true;
-  }
-
-  if (!metrics->HasValue())
-    return nullptr;
-
-  return metrics;
-}
 
 void WebFrameWidgetImpl::BeginUpdateLayers() {
   if (LocalRootImpl())
@@ -2827,7 +2791,8 @@ void WebFrameWidgetImpl::SetDisplayMode(mojom::blink::DisplayMode mode) {
   }
 }
 
-void WebFrameWidgetImpl::SetWindowShowState(ui::WindowShowState state) {
+void WebFrameWidgetImpl::SetWindowShowState(
+    ui::mojom::blink::WindowShowState state) {
   if (state == window_show_state_) {
     return;
   }

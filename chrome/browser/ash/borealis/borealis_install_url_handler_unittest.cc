@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
@@ -72,8 +73,9 @@ class BorealisInstallUrlHandlerTest : public testing::Test {
     scoped_allowance_ =
         std::make_unique<ScopedAllowBorealis>(&profile_, /*also_enable=*/false);
 
-    ASSERT_FALSE(
-        BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
+    ASSERT_FALSE(BorealisServiceFactory::GetForProfile(&profile_)
+                     ->Features()
+                     .IsEnabled());
   }
 
   content::BrowserTaskEnvironment task_environment_;

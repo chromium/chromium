@@ -4,6 +4,9 @@
 
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 
+#include <string>
+
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "url/gurl.h"
@@ -81,15 +84,40 @@ std::string PlaybackContext::ToString() const {
       queue_name.c_str());
 }
 
-PlaybackData::PlaybackData(
-    const PlaybackState state,
-    const std::string& title,
-    const GURL& url,
-    const base::flat_set<std::pair<int, int>>& media_segments,
-    bool initial_playback)
+MediaSegment::MediaSegment(int media_start,
+                           int media_end,
+                           const base::Time client_start_time)
+    : media_start(media_start),
+      media_end(media_end),
+      client_start_time(client_start_time) {}
+
+MediaSegment::MediaSegment(const MediaSegment&) = default;
+
+MediaSegment& MediaSegment::operator=(const MediaSegment&) = default;
+
+MediaSegment::~MediaSegment() = default;
+
+std::string MediaSegment::ToString() const {
+  return base::StringPrintf(
+      "MediaSegment(media_start=%d, media_end=%d, client_start_time=\"%s\")",
+      media_start, media_end,
+      base::TimeFormatAsIso8601(client_start_time).c_str());
+}
+
+PlaybackData::PlaybackData(const PlaybackState state,
+                           const std::string& title,
+                           const GURL& url,
+                           const base::Time client_current_time,
+                           int playback_start_offset,
+                           int media_time_current,
+                           const MediaSegments& media_segments,
+                           bool initial_playback)
     : state(state),
       title(title),
       url(url),
+      client_current_time(client_current_time),
+      playback_start_offset(playback_start_offset),
+      media_time_current(media_time_current),
       media_segments(media_segments),
       initial_playback(initial_playback) {}
 
@@ -102,13 +130,15 @@ PlaybackData::~PlaybackData() = default;
 std::string PlaybackData::ToString() const {
   std::string segments_str;
   for (auto it = media_segments.begin(); it != media_segments.end(); it++) {
-    segments_str += (it == media_segments.begin() ? "" : ", ") +
-                    base::StringPrintf("{%d, %d}", it->first, it->second);
+    segments_str += (it == media_segments.begin() ? "" : ", ") + it->ToString();
   }
   return base::StringPrintf(
-      "PlaybackData(state=%d, title=\"%s\", url=\"%s\", media_segments=[%s], "
-      "initial_playback=%d)",
-      state, title.c_str(), url.spec().c_str(), segments_str.c_str(),
+      "PlaybackData(state=%d, title=\"%s\", url=\"%s\", "
+      "client_current_time=\"%s\", playback_start_offset=%d, "
+      "media_time_current=%d, media_segments=[%s], initial_playback=%d)",
+      state, title.c_str(), url.spec().c_str(),
+      base::TimeFormatAsIso8601(client_current_time).c_str(),
+      playback_start_offset, media_time_current, segments_str.c_str(),
       initial_playback);
 }
 
@@ -118,6 +148,10 @@ bool PlaybackData::CanAggregateWithNewData(const PlaybackData& new_data) const {
 
 void PlaybackData::AggregateWithNewData(const PlaybackData& new_data) {
   CHECK(CanAggregateWithNewData(new_data));
+  state = new_data.state;
+  client_current_time = new_data.client_current_time;
+  playback_start_offset = new_data.playback_start_offset;
+  media_time_current = new_data.media_time_current;
   for (const auto& media_segment : new_data.media_segments) {
     media_segments.insert(media_segment);
   }

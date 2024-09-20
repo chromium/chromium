@@ -41,9 +41,15 @@ std::unique_ptr<KeyedService> BuildLargeIconService(
 
 // static
 favicon::LargeIconService* IOSChromeLargeIconServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+favicon::LargeIconService* IOSChromeLargeIconServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<favicon::LargeIconService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

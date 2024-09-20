@@ -13,6 +13,7 @@
 #include "components/ip_protection/android/android_auth_client_lib/cpp/byte_array_callback_listener.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/jni_headers/IpProtectionAuthClient_jni.h"
+#include "components/ip_protection/get_proxy_config.pb.h"
 
 namespace ip_protection::android {
 
@@ -88,6 +89,17 @@ void IpProtectionAuthClient::AuthAndSign(
       ByteArrayCallbackListener::Create(
           ConvertProtoCallback<privacy::ppn::AuthAndSignResponse>(
               std::move(callback))));
+}
+
+void IpProtectionAuthClient::GetProxyConfig(
+    const GetProxyConfigRequest& request,
+    GetProxyConfigResponseCallback callback) const {
+  Java_IpProtectionAuthClient_getProxyConfig(
+      base::android::AttachCurrentThread(), ip_protection_auth_client_,
+      base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
+                                     request.SerializeAsString()),
+      ByteArrayCallbackListener::Create(
+          ConvertProtoCallback<GetProxyConfigResponse>(std::move(callback))));
 }
 
 base::WeakPtr<IpProtectionAuthClientInterface>

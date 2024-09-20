@@ -13763,6 +13763,94 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWithMainFrameThresholdDevToolsTest,
   ASSERT_NE(main_frame->GetProcess(), second_frame->GetProcess());
 }
 
+// Helper class to enable subframe process reuse thresholds and set the total
+// allowed memory limit to 8 bytes.
+class SitePerProcessWithSubframeProcessReuseThresholdsTest
+    : public SitePerProcessBrowserTestBase,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  SitePerProcessWithSubframeProcessReuseThresholdsTest() {
+    size_t total_memory_limit = 8;
+    base::FieldTrialParams params = {
+        {"SubframeProcessReuseMemoryThreshold",
+         base::StringPrintf("%zu", total_memory_limit)}};
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kSubframeProcessReuseThresholds, params);
+  }
+  ~SitePerProcessWithSubframeProcessReuseThresholdsTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verify that a subframe will only reuse an existing process if adding
+// another subframe to that process won't exceed the memory threshold.
+IN_PROC_BROWSER_TEST_P(SitePerProcessWithSubframeProcessReuseThresholdsTest,
+                       SubframeReuseRespectsMemoryThreshold) {
+  base::HistogramTester histograms;
+
+  // Start with a simple a(b) page.
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImpl* main_frame1 =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryMainFrame();
+  RenderFrameHostImpl* subframe1 =
+      main_frame1->child_at(0)->current_frame_host();
+  auto* subframe_process =
+      static_cast<RenderProcessHostImpl*>(subframe1->GetProcess());
+  ASSERT_NE(main_frame1->GetProcess(), subframe_process);
+
+  // Ignore private memory footprint updates from the renderer, and pretend
+  // that the subframe process's PMF is currently 5 bytes.
+  RendererHostInterceptor interceptor(subframe_process);
+  subframe_process->SetPrivateMemoryFootprintForTesting(5);
+
+  // Create an unrelated tab and navigate it to a(b).
+  Shell* shell2 = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(shell2, main_url));
+  RenderFrameHostImpl* main_frame2 =
+      static_cast<WebContentsImpl*>(shell2->web_contents())
+          ->GetPrimaryMainFrame();
+  RenderFrameHostImpl* subframe2 =
+      main_frame2->child_at(0)->current_frame_host();
+  ASSERT_NE(main_frame2->GetProcess(), subframe2->GetProcess());
+
+  // The new b.com subframe should reuse the available b.com process from the
+  // first tab. This is because the process uses 5 bytes of memory, which is
+  // below the reuse threshold of 8 bytes.
+  EXPECT_EQ(subframe2->GetProcess(), subframe_process);
+
+  // Update the subframe process's PMF to 10, pretending that the second
+  // subframe also takes up 5 bytes.
+  subframe_process->SetPrivateMemoryFootprintForTesting(10);
+
+  // Create a third tab and navigate it to a(b).
+  Shell* shell3 = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(shell3, main_url));
+  RenderFrameHostImpl* main_frame3 =
+      static_cast<WebContentsImpl*>(shell3->web_contents())
+          ->GetPrimaryMainFrame();
+  RenderFrameHostImpl* subframe3 =
+      main_frame3->child_at(0)->current_frame_host();
+  ASSERT_NE(main_frame3->GetProcess(), subframe3->GetProcess());
+
+  // This time, the new b.com subframe should not reuse the available b.com
+  // process from the first two tabs. This is because the process is consuming
+  // 10 bytes of memory, which is above the reuse threshold of 8 bytes.
+  EXPECT_NE(subframe3->GetProcess(), subframe_process);
+
+  // Check that the histogram was recorded when the memory threshold was
+  // exceeded for `subframe_process`. At that time, the process should've had
+  // two total frames.
+  histograms.ExpectTotalCount(
+      "BrowserRenderProcessHost.SubframeProcessReuseThreshold.TotalFrames", 1);
+  histograms.ExpectBucketCount(
+      "BrowserRenderProcessHost.SubframeProcessReuseThreshold.TotalFrames", 2,
+      1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          RequestDelayingSitePerProcessBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
@@ -13810,5 +13898,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessWithMainFrameThresholdLocalhostTest,
                          testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessWithSubframeProcessReuseThresholdsTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 
 }  // namespace content

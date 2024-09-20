@@ -7,6 +7,7 @@
 #ifndef BASE_PROCESS_LAUNCH_H_
 #define BASE_PROCESS_LAUNCH_H_
 
+#include <limits.h>
 #include <stddef.h>
 
 #include <string>
@@ -41,6 +42,31 @@
 #endif
 
 namespace base {
+
+#if BUILDFLAG(IS_POSIX)
+// Some code (e.g. the sandbox) relies on PTHREAD_STACK_MIN
+// being async-signal-safe, which is no longer guaranteed by POSIX
+// (it may call sysconf, which is not safe).
+// To work around this, use a hardcoded value unless it's already
+// defined as a constant.
+
+// These constants are borrowed from glibc’s (arch)/bits/pthread_stack_min.h.
+#if defined(ARCH_CPU_ARM64)
+#define PTHREAD_STACK_MIN_CONST \
+  (__builtin_constant_p(PTHREAD_STACK_MIN) ? PTHREAD_STACK_MIN : 131072)
+#else
+#define PTHREAD_STACK_MIN_CONST \
+  (__builtin_constant_p(PTHREAD_STACK_MIN) ? PTHREAD_STACK_MIN : 16384)
+#endif  // defined(ARCH_CPU_ARM64)
+
+static_assert(__builtin_constant_p(PTHREAD_STACK_MIN_CONST),
+              "must be constant");
+
+// Make sure our hardcoded value is large enough to accommodate the
+// actual minimum stack size. This function will run a one-time CHECK
+// and so should be called at some point, preferably during startup.
+BASE_EXPORT void CheckPThreadStackMinIsSafe();
+#endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_APPLE)
 class MachRendezvousPort;

@@ -173,17 +173,19 @@ class SafeBrowsingDatabaseManager
   virtual bool CheckUrlForSubresourceFilter(const GURL& url,
                                             Client* client) = 0;
 
-  // Helper struct for |CheckUrlForHighConfidenceAllowlist| method callback.
-  // If used, this should be used for logging purposes only.
+  // Passed to CheckUrlForHighConfidenceAllowlist() callback. Should be used for
+  // logging purposes only.
   struct HighConfidenceAllowlistCheckLoggingDetails {
-    HighConfidenceAllowlistCheckLoggingDetails(
-        bool were_all_stores_available,
-        bool was_allowlist_size_too_small);
     // Whether the database stores were available when the check ran.
-    bool were_all_stores_available;
+    bool were_all_stores_available = false;
     // Whether the allowlist store was too small when the check ran.
-    bool was_allowlist_size_too_small;
+    bool was_allowlist_size_too_small = false;
   };
+
+  using CheckUrlForHighConfidenceAllowlistCallback = base::OnceCallback<void(
+      bool url_on_high_confidence_allowlist,
+      std::optional<HighConfidenceAllowlistCheckLoggingDetails>)>;
+
   // Checks whether |url| is safe by checking if it appears on a high-confidence
   // allowlist. `callback` is run asynchronously with true if it matches the
   // allowlist, and is false if it does not. The high confidence allowlist is a
@@ -192,10 +194,9 @@ class SafeBrowsingDatabaseManager
   // performed. The returned value includes some details about the store state
   // when the call was made. If used, it should be used for logging purposes
   // only. This should be called on the UI thread.
-  virtual std::optional<HighConfidenceAllowlistCheckLoggingDetails>
-  CheckUrlForHighConfidenceAllowlist(
+  virtual void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
-      base::OnceCallback<void(bool)> callback) = 0;
+      CheckUrlForHighConfidenceAllowlistCallback callback) = 0;
 
   //
   // Match*(): Methods to synchronously check if various types are safe.

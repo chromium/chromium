@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
@@ -99,6 +100,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
@@ -626,12 +628,28 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
   }
 }
 
+// g-issues.chromium.org/issues/349835587
+// https://github.com/WICG/canvas-place-element
+static bool IsCanvasPlacedElement(const Element* element) {
+  if (RuntimeEnabledFeatures::CanvasPlaceElementEnabled() && element) {
+    // Only want to do the different layout if placeElement has been called.
+    if (const auto* canvas =
+            DynamicTo<HTMLCanvasElement>(element->parentElement())) {
+      return canvas->HasPlacedElements();
+    }
+  }
+
+  return false;
+}
+
 static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
                                   const ComputedStyle& layout_parent_style,
                                   const Element* element,
                                   Document* document) {
-  // Blockify the children of flex, grid, math or LayoutCustom containers.
-  if (layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) {
+  bool is_canvas_placed_element = IsCanvasPlacedElement(element);
+
+  if ((layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) ||
+      is_canvas_placed_element) {
     builder.SetIsInBlockifyingDisplay();
     if (builder.Display() != EDisplay::kContents) {
       builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
@@ -640,8 +658,12 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
       }
     }
     if (layout_parent_style.IsDisplayFlexibleOrGridBox() ||
-        layout_parent_style.IsDisplayMathType()) {
+        layout_parent_style.IsDisplayMathType() || is_canvas_placed_element) {
       builder.SetIsInsideDisplayIgnoringFloatingChildren();
+    }
+
+    if (is_canvas_placed_element) {
+      builder.SetPosition(EPosition::kStatic);
     }
   }
 
@@ -859,8 +881,8 @@ static void AdjustStyleForInert(ComputedStyleBuilder& builder,
   }
 
   if (element->IsInertRoot()) {
-    builder.SetIsInert(true);
-    builder.SetIsInertIsInherited(false);
+    builder.SetIsHTMLInert(true);
+    builder.SetIsHTMLInertIsInherited(false);
     return;
   }
 
@@ -870,13 +892,13 @@ static void AdjustStyleForInert(ComputedStyleBuilder& builder,
     modal_element = Fullscreen::FullscreenElementFrom(document);
   }
   if (modal_element == element) {
-    builder.SetIsInert(false);
-    builder.SetIsInertIsInherited(false);
+    builder.SetIsHTMLInert(false);
+    builder.SetIsHTMLInertIsInherited(false);
     return;
   }
   if (modal_element && element == document.documentElement()) {
-    builder.SetIsInert(true);
-    builder.SetIsInertIsInherited(false);
+    builder.SetIsHTMLInert(true);
+    builder.SetIsHTMLInertIsInherited(false);
     return;
   }
 
@@ -884,8 +906,8 @@ static void AdjustStyleForInert(ComputedStyleBuilder& builder,
     if (base_data->GetBaseComputedStyle()->Display() == EDisplay::kNone) {
       // Elements which are transitioning to display:none should become inert:
       // https://github.com/w3c/csswg-drafts/issues/8389
-      builder.SetIsInert(true);
-      builder.SetIsInertIsInherited(false);
+      builder.SetIsHTMLInert(true);
+      builder.SetIsHTMLInertIsInherited(false);
       return;
     }
   }

@@ -7,6 +7,7 @@ from typing import Dict
 from typing import Optional
 from typing import Tuple
 
+import common
 import java_lang_classes
 
 _CPP_TYPE_BY_JAVA_TYPE = {
@@ -124,6 +125,9 @@ class JavaClass:
     # Empty resolver used to shorted java.lang classes.
     type_resolver = type_resolver or _EMPTY_TYPE_RESOLVER
     return type_resolver.contextualize(self)
+
+  def to_cpp(self):
+    return common.escape_class_name(self.full_name_with_slashes)
 
   def as_type(self):
     return JavaType(java_class=self)
@@ -256,6 +260,9 @@ class JavaParam:
       return f'_{self.name}'
     return self.name
 
+  def to_java_declaration(self, type_resolver=None):
+    return '%s %s' % (self.java_type.to_java(type_resolver), self.name)
+
 
 class JavaParamList(tuple):
   """Represents a parameter list."""
@@ -264,8 +271,8 @@ class JavaParamList(tuple):
     return JavaParamList(p.to_proxy() for p in self)
 
   def to_java_declaration(self, type_resolver=None):
-    return ', '.join('%s %s' % (p.java_type.to_java(type_resolver), p.name)
-                     for p in self)
+    return ', '.join(
+        p.to_java_declaration(type_resolver=type_resolver) for p in self)
 
   def to_call_str(self):
     return ', '.join(p.name for p in self)

@@ -235,6 +235,19 @@ const CGFloat kFeedContainerExtraHeight = 500;
   DCHECK(self.identityDiscButton);
 
   self.viewDidFinishLoading = YES;
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitUserInterfaceStyle.self, UITraitHorizontalSizeClass.self,
+      UITraitPreferredContentSizeCategory.self
+    ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateUIOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -387,43 +400,16 @@ const CGFloat kFeedContainerExtraHeight = 500;
                       }];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    [self updateModularHomeBackgroundColorForUserInterfaceStyle:
-              self.traitCollection.userInterfaceStyle];
+  if (@available(iOS 17, *)) {
+    return;
   }
 
-  if (previousTraitCollection.horizontalSizeClass !=
-      self.traitCollection.horizontalSizeClass) {
-    // Update header constant to cover rotation instances. When the omnibox is
-    // pinned to the top, the fake omnibox is the one shown only in portrait
-    // mode, so if the NTP is opened in landscape mode, a rotation to portrait
-    // mode needs to update the top anchor constant based on the correct header
-    // height.
-    self.headerTopAnchor.constant =
-        -([self stickyOmniboxHeight] + [self feedHeaderHeight]);
-    [self.contentSuggestionsViewController.view setNeedsLayout];
-    [self.contentSuggestionsViewController.view layoutIfNeeded];
-    [self updateOverscrollActionsState];
-    [self updateHeightAboveFeed];
-  }
-
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateFakeOmniboxForScrollPosition];
-    [self updateOverscrollActionsState];
-    // Subviews will receive traitCollectionDidChange after this call, so the
-    // only way to ensure that the scrollview isn't scrolled up too far is to
-    // circle back afterwards and adjust if needed.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [self updateHeightAboveFeed];
-        }));
-  }
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - Public
 
@@ -638,9 +624,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
   // TODO(crbug.com/40252945): Constraint updating should not be necessary since
   // scrollViewDidScroll: calls this if needed.
   [self setInitialFakeOmniboxConstraints];
-  if ([self.NTPContentDelegate isContentHeaderSticky]) {
-    [self setInitialFeedHeaderConstraints];
-  }
   // Reset here since none of the view lifecycle callbacks (e.g.
   // viewDidDisappear) can be reliably used (it seems) (i.e. switching between
   // NTPs where there is saved scroll state in the destination tab). If the
@@ -1324,74 +1307,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
   }
 }
 
-// Pins feed header to top of the NTP when scrolled into the feed, below the
-// omnibox.
-- (void)stickFeedHeaderToTop {
-  DCHECK(self.feedHeaderViewController);
-  DCHECK(IsWebChannelsEnabled());
-
-  [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
-
-  NSMutableArray* constraints = [NSMutableArray array];
-  [constraints
-      addObject:[self.collectionView.topAnchor
-                    constraintEqualToAnchor:self.magicStackCollectionView.view
-                                                .bottomAnchor
-                                   constant:kBottomMagicStackPadding]];
-
-  // If the fake omnibox is pinned to the top, we pin the feed header below it.
-  // Otherwise, the feed header gets pinned to the top.
-  if ([self shouldPinFakeOmnibox]) {
-    [constraints
-        addObject:
-            [self.feedHeaderViewController.view.topAnchor
-                constraintEqualToAnchor:self.headerViewController.view
-                                            .bottomAnchor
-                               constant:
-                                   -(content_suggestions::
-                                         HeaderBottomPadding() +
-                                     [self.feedHeaderViewController
-                                             customSearchEngineViewHeight])]];
-  } else {
-    [constraints
-        addObject:
-            [self.feedHeaderViewController.view.topAnchor
-                constraintEqualToAnchor:self.view.topAnchor
-                               constant:-[self.feedHeaderViewController
-                                                customSearchEngineViewHeight]]];
-  }
-  self.feedHeaderConstraints = constraints;
-  [self.feedHeaderViewController
-      toggleBackgroundBlur:[self.NTPContentDelegate isContentHeaderSticky]
-                  animated:YES];
-  [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
-}
-
-// Sets initial feed header constraints, between content suggestions and feed.
-- (void)setInitialFeedHeaderConstraints {
-  DCHECK(self.feedHeaderViewController);
-  [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
-
-  // If Feed top section is enabled, the header bottom anchor should be set to
-  // its top anchor instead of the feed collection's top anchor.
-  UIView* bottomView = self.collectionView;
-  if (self.feedTopSectionViewController) {
-    bottomView = self.feedTopSectionViewController.view;
-  }
-
-  NSLayoutConstraint* feedHeaderTopAnchor;
-  feedHeaderTopAnchor = [self.feedHeaderViewController.view.topAnchor
-      constraintEqualToAnchor:self.magicStackCollectionView.view.bottomAnchor
-                     constant:kBottomMagicStackPadding];
-  self.feedHeaderConstraints = @[
-    feedHeaderTopAnchor,
-    [bottomView.topAnchor constraintEqualToAnchor:self.feedHeaderViewController
-                                                      .view.bottomAnchor],
-  ];
-  [self.feedHeaderViewController toggleBackgroundBlur:NO animated:YES];
-  [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
-}
-
 // Sets an top inset to the feed collection view to fit the content above it.
 - (void)updateFeedInsetsForContentAbove {
   // Setting the contentInset will cause a scroll, which will call
@@ -1421,7 +1336,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   BOOL isFeedSigninPromoVisible =
       (visibleContentStartingPoint > -([self feedTopSectionHeight] * 2) / 3 &&
        ([self scrollPosition] <
-        -([self stickyContentHeight] + [self feedTopSectionHeight] / 3))) &&
+        -([self stickyOmniboxHeight] + [self feedTopSectionHeight] / 3))) &&
       !self.omniboxFocused;
 
   [self.NTPContentDelegate
@@ -1475,30 +1390,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
     }
   } else if (self.isFakeboxPinned) {
     [self resetFakeOmniboxConstraints];
-  }
-
-  // Handles the sticky feed header.
-  if ([self.NTPContentDelegate isContentHeaderSticky] &&
-      self.feedHeaderViewController) {
-    if ((!self.isScrolledIntoFeed || force) &&
-        scrollPosition > [self offsetWhenScrolledIntoFeed]) {
-      [self setIsScrolledIntoFeed:YES];
-      [self stickFeedHeaderToTop];
-    } else if ((self.isScrolledIntoFeed || force) &&
-               scrollPosition <= [self offsetWhenScrolledIntoFeed]) {
-      [self setIsScrolledIntoFeed:NO];
-      [self setInitialFeedHeaderConstraints];
-    }
-  }
-
-  // Content suggestions header will sometimes glitch when swiping quickly from
-  // inside the feed to the top of the NTP. This check safeguards this action to
-  // make sure the header is properly positioned. (crbug.com/1261458)
-  if ([self isNTPScrolledToTop]) {
-    [self setInitialFakeOmniboxConstraints];
-    if ([self.NTPContentDelegate isContentHeaderSticky]) {
-      [self setInitialFeedHeaderConstraints];
-    }
   }
 }
 
@@ -1568,7 +1459,21 @@ const CGFloat kFeedContainerExtraHeight = 500;
           constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor],
     ]];
     if (!IsHomeCustomizationEnabled()) {
-      [self setInitialFeedHeaderConstraints];
+      // If Feed top section is enabled, the header bottom anchor should be set
+      // to its top anchor instead of the feed collection's top anchor.
+      UIView* bottomView = self.collectionView;
+      if (self.feedTopSectionViewController) {
+        bottomView = self.feedTopSectionViewController.view;
+      }
+      [NSLayoutConstraint activateConstraints:@[
+        [self.feedHeaderViewController.view.topAnchor
+            constraintEqualToAnchor:self.magicStackCollectionView.view
+                                        .bottomAnchor
+                           constant:kBottomMagicStackPadding],
+        [bottomView.topAnchor
+            constraintEqualToAnchor:self.feedHeaderViewController.view
+                                        .bottomAnchor],
+      ]];
     }
     if (self.feedTopSectionViewController) {
       [NSLayoutConstraint activateConstraints:@[
@@ -1686,15 +1591,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
 // Sets the content offset to the top of the feed.
 - (void)scrollIntoFeed {
   [self setContentOffset:[self offsetWhenScrolledIntoFeed]];
-}
-
-// The total height of all sticky content.
-- (CGFloat)stickyContentHeight {
-  CGFloat stickyContentHeight = [self stickyOmniboxHeight];
-  if ([self.NTPContentDelegate isContentHeaderSticky]) {
-    stickyContentHeight += [self feedHeaderHeight];
-  }
-  return stickyContentHeight;
 }
 
 // Returns y-offset compensated for any content insets that might be set for the
@@ -1982,6 +1878,43 @@ const CGFloat kFeedContainerExtraHeight = 500;
   return !IsRegularXRegularSizeClass(self) && IsSplitToolbarMode(self);
 }
 
+// Modifies the view controller depending on which UITrait was changed.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    [self updateModularHomeBackgroundColorForUserInterfaceStyle:
+              self.traitCollection.userInterfaceStyle];
+  }
+
+  if (previousTraitCollection.horizontalSizeClass !=
+      self.traitCollection.horizontalSizeClass) {
+    // Update header constant to cover rotation instances. When the omnibox is
+    // pinned to the top, the fake omnibox is the one shown only in portrait
+    // mode, so if the NTP is opened in landscape mode, a rotation to portrait
+    // mode needs to update the top anchor constant based on the correct header
+    // height.
+    self.headerTopAnchor.constant =
+        -([self stickyOmniboxHeight] + [self feedHeaderHeight]);
+    [self.contentSuggestionsViewController.view setNeedsLayout];
+    [self.contentSuggestionsViewController.view layoutIfNeeded];
+    [self updateOverscrollActionsState];
+    [self updateHeightAboveFeed];
+  }
+
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateFakeOmniboxForScrollPosition];
+    [self updateOverscrollActionsState];
+    // Subviews will receive traitCollectionDidChange after this call, so the
+    // only way to ensure that the scrollview isn't scrolled up too far is to
+    // circle back afterwards and adjust if needed.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [self updateHeightAboveFeed];
+        }));
+  }
+}
+
 #pragma mark - Getters
 
 // Returns the container view of the NTP content, depending on prefs and flags.
@@ -2023,12 +1956,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
   collectionView.contentOffset = CGPointMake(0, offset);
   self.scrolledIntoFeed = offset > [self offsetWhenScrolledIntoFeed];
   [self handleStickyElementsForScrollPosition:offset force:YES];
-  if (self.feedHeaderViewController) {
-    [self.feedHeaderViewController
-        toggleBackgroundBlur:(self.scrolledIntoFeed &&
-                              [self.NTPContentDelegate isContentHeaderSticky])
-                    animated:NO];
-  }
   [self updateScrollPositionToSave];
 }
 

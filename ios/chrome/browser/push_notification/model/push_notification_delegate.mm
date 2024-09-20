@@ -26,11 +26,13 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_settings_action.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -63,9 +65,6 @@ constexpr int kTimeRangeHistogramBucketCount = 30;
 // The histogram used to record a push notification's current lifecycle state on
 // the device.
 const char kLifecycleEventsHistogram[] = "IOS.PushNotification.LifecyleEvents";
-
-// Key for the PushNotificationClientId in the Send Tab notification payload.
-NSString* const kPushNotificationClientIdKey = @"push_notification_client_id";
 
 // This enum is used to represent a point along the push notification's
 // lifecycle.
@@ -240,6 +239,12 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       id<SystemIdentity> identity =
           authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
       config.primaryAccount = identity;
+      // Send an initial NAU to share the OS auth status and channel status with
+      // the server. Send an NAU on every foreground to report the OS Auth
+      // Settings.
+      ContentNotificationService* contentNotificationService =
+          ContentNotificationServiceFactory::GetForBrowserState(browserState);
+      [self sendSettingsChangeNAUWithService:contentNotificationService];
     }
   }
 
@@ -251,10 +256,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       base::UmaHistogramBoolean("IOS.PushNotification.ChimeDeviceRegistration",
                                 true);
       if (base::FeatureList::IsEnabled(
-              send_tab_to_self::kSendTabToSelfIOSPushNotifications) &&
-          browserState) {
-        DeviceInfoSyncServiceFactory::GetForBrowserState(browserState)
-            ->RefreshLocalDeviceInfo();
+              send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+        [self setUpAndEnableSendTabNotificationsWithBrowserState:browserState];
       }
     }
   });
@@ -336,25 +339,30 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       }
     }
     // Send an NAU on every foreground to report the OS Auth Settings.
-    [PushNotificationUtil
-        getPermissionSettings:^(UNNotificationSettings* settings) {
-          UNAuthorizationStatus previousAuthStatus =
-              [PushNotificationUtil getSavedPermissionSettings];
-            ContentNotificationNAUConfiguration* config =
-                [[ContentNotificationNAUConfiguration alloc] init];
-            ContentNotificationSettingsAction* settingsAction =
-                [[ContentNotificationSettingsAction alloc] init];
-            settingsAction.previousAuthorizationStatus = previousAuthStatus;
-            settingsAction.currentAuthorizationStatus =
-                settings.authorizationStatus;
-            config.settingsAction = settingsAction;
-            contentNotificationService->SendNAUForConfiguration(config);
-        }];
+    [self sendSettingsChangeNAUWithService:contentNotificationService];
   }
   [PushNotificationUtil
       getPermissionSettings:^(UNNotificationSettings* settings) {
         [PushNotificationUtil
             updateAuthorizationStatusPref:settings.authorizationStatus];
+      }];
+}
+
+- (void)sendSettingsChangeNAUWithService:
+    (ContentNotificationService*)contentNotificationService {
+  [PushNotificationUtil
+      getPermissionSettings:^(UNNotificationSettings* settings) {
+        UNAuthorizationStatus previousAuthStatus =
+            [PushNotificationUtil getSavedPermissionSettings];
+        ContentNotificationNAUConfiguration* config =
+            [[ContentNotificationNAUConfiguration alloc] init];
+        ContentNotificationSettingsAction* settingsAction =
+            [[ContentNotificationSettingsAction alloc] init];
+        settingsAction.previousAuthorizationStatus = previousAuthStatus;
+        settingsAction.currentAuthorizationStatus =
+            settings.authorizationStatus;
+        config.settingsAction = settingsAction;
+        contentNotificationService->SendNAUForConfiguration(config);
       }];
 }
 
@@ -384,6 +392,52 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
     }
   }
   return NO;
+}
+
+// If user has not previously disabled Send Tab notifications, either 1) If user
+// has authorized full notification permissions, enables Send Tab notifications
+// OR 2) enrolls user in provisional notifications for Send Tab notification
+// type.
+- (void)setUpAndEnableSendTabNotificationsWithBrowserState:
+    (ChromeBrowserState*)browserState {
+  if (!browserState) {
+    return;
+  }
+
+  // Refresh the local device info now that the client has a Chime
+  // Representative Target ID.
+  syncer::DeviceInfoSyncService* deviceInfoSyncService =
+      DeviceInfoSyncServiceFactory::GetForBrowserState(browserState);
+  deviceInfoSyncService->RefreshLocalDeviceInfo();
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  NSString* gaiaID =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin).gaiaID;
+
+  // Early return if 1) the user has previously disabled Send Tab push
+  // notifications, because in that case we don't want to automatically enable
+  // the notification type or 2) if Send Tab notifications are already enabled.
+  if (browserState->GetPrefs()->GetBoolean(
+          prefs::kSendTabNotificationsPreviouslyDisabled) ||
+      push_notification_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kSendTab,
+              base::SysNSStringToUTF8(gaiaID))) {
+    return;
+  }
+
+  if ([PushNotificationUtil getSavedPermissionSettings] ==
+      UNAuthorizationStatusAuthorized) {
+    GetApplicationContext()->GetPushNotificationService()->SetPreference(
+        gaiaID, PushNotificationClientId::kSendTab, true);
+  } else {
+    [ProvisionalPushNotificationUtil
+        enrollUserToProvisionalNotificationsForClientIds:
+            {PushNotificationClientId::kSendTab}
+                                         withAuthService:authService
+                                   deviceInfoSyncService:deviceInfoSyncService];
+  }
 }
 
 @end

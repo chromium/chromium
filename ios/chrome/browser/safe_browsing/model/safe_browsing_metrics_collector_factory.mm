@@ -11,10 +11,15 @@
 
 // static
 safe_browsing::SafeBrowsingMetricsCollector*
-SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+SafeBrowsingMetricsCollectorFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+safe_browsing::SafeBrowsingMetricsCollector*
+SafeBrowsingMetricsCollectorFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<safe_browsing::SafeBrowsingMetricsCollector*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -32,8 +37,7 @@ SafeBrowsingMetricsCollectorFactory::SafeBrowsingMetricsCollectorFactory()
 std::unique_ptr<KeyedService>
 SafeBrowsingMetricsCollectorFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::SafeBrowsingMetricsCollector>(
-      chrome_browser_state->GetPrefs());
+      profile->GetPrefs());
 }

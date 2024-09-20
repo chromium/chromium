@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 
 namespace content {
 
@@ -38,8 +39,6 @@ std::string_view UMAToName(CacheStorageSchedulerUMA uma_type) {
 
 std::string_view ClientToName(CacheStorageSchedulerClient client_type) {
   switch (client_type) {
-    case CacheStorageSchedulerClient::kBackgroundSync:
-      RETURN_LITERAL_STRING_PIECE("BackgroundSyncManager");
     case CacheStorageSchedulerClient::kCache:
       RETURN_LITERAL_STRING_PIECE("Cache");
     case CacheStorageSchedulerClient::kStorage:
@@ -48,15 +47,11 @@ std::string_view ClientToName(CacheStorageSchedulerClient client_type) {
 }
 
 bool ShouldRecordOpUMA(CacheStorageSchedulerOp op_type) {
-  return op_type != CacheStorageSchedulerOp::kBackgroundSync &&
-         op_type != CacheStorageSchedulerOp::kTest;
+  return op_type != CacheStorageSchedulerOp::kTest;
 }
 
 std::string_view OpToName(CacheStorageSchedulerOp op_type) {
   switch (op_type) {
-    case CacheStorageSchedulerOp::kBackgroundSync:
-      NOTREACHED_IN_MIGRATION();
-      return "";
     case CacheStorageSchedulerOp::kClose:
       RETURN_LITERAL_STRING_PIECE("Close");
     case CacheStorageSchedulerOp::kDelete:
@@ -93,11 +88,8 @@ std::string_view OpToName(CacheStorageSchedulerOp op_type) {
 
 std::string GetClientHistogramName(CacheStorageSchedulerUMA uma_type,
                                    CacheStorageSchedulerClient client_type) {
-  std::string histogram_name("ServiceWorkerCache");
-  histogram_name.append(std::string(ClientToName(client_type)));
-  histogram_name.append(".Scheduler");
-  histogram_name.append(std::string(UMAToName(uma_type)));
-  return histogram_name;
+  return base::StrCat({"ServiceWorkerCache", ClientToName(client_type),
+                       ".Scheduler", UMAToName(uma_type)});
 }
 
 }  // namespace
@@ -107,13 +99,11 @@ void RecordCacheStorageSchedulerUMA(CacheStorageSchedulerUMA uma_type,
                                     CacheStorageSchedulerOp op_type,
                                     int value) {
   DCHECK(uma_type == CacheStorageSchedulerUMA::kQueueLength);
-  DCHECK(client_type != CacheStorageSchedulerClient::kBackgroundSync ||
-         op_type == CacheStorageSchedulerOp::kBackgroundSync);
   std::string histogram_name = GetClientHistogramName(uma_type, client_type);
   base::UmaHistogramCounts10000(histogram_name, value);
   if (!ShouldRecordOpUMA(op_type))
     return;
-  histogram_name.append(std::string(OpToName(op_type)));
+  histogram_name.append(OpToName(op_type));
   base::UmaHistogramCounts10000(histogram_name, value);
 }
 
@@ -123,13 +113,11 @@ void RecordCacheStorageSchedulerUMA(CacheStorageSchedulerUMA uma_type,
                                     base::TimeDelta value) {
   DCHECK(uma_type == CacheStorageSchedulerUMA::kOperationDuration ||
          uma_type == CacheStorageSchedulerUMA::kQueueDuration);
-  DCHECK(client_type != CacheStorageSchedulerClient::kBackgroundSync ||
-         op_type == CacheStorageSchedulerOp::kBackgroundSync);
   std::string histogram_name = GetClientHistogramName(uma_type, client_type);
   base::UmaHistogramLongTimes(histogram_name, value);
   if (!ShouldRecordOpUMA(op_type))
     return;
-  histogram_name.append(std::string(OpToName(op_type)));
+  histogram_name.append(OpToName(op_type));
   base::UmaHistogramLongTimes(histogram_name, value);
 }
 

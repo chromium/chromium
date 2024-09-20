@@ -271,7 +271,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If this is a GuestView (e.g., Chrome Apps <webview>) then HTTPS-First Mode
   // should not apply. See crbug.com/1233889 for more details.
-  if (guest_view::GuestViewBase::IsGuest(web_contents)) {
+  if (guest_view::GuestViewBase::IsGuest(frame_tree_node_id_)) {
     std::move(callback).Run({});
     return;
   }

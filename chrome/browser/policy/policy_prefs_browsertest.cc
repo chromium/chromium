@@ -158,7 +158,13 @@ class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
 // failure/flakiness.
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
+// TODO(crbug.com/365426498): Flaky on linux-lacros-chrome.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PolicyToPrefsMapping DISABLED_PolicyToPrefsMapping
+#else
+#define MAYBE_PolicyToPrefsMapping PolicyToPrefsMapping
+#endif
+IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, MAYBE_PolicyToPrefsMapping) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

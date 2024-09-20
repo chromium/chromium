@@ -81,9 +81,13 @@ EphemeralHomeModuleBackend::GetModelConfig() {
   // Set output config.
   const std::vector<std::string>& output_labels =
       home_modules_card_registry_->all_output_labels();
+  // Use a threshold slightly greater than the kNotShown value since the
+  // threshold checks for strictly less than value.
+  float dont_show_threshold =
+      EphemeralHomeModuleRankToScore(EphemeralHomeModuleRank::kNotShown) +
+      0.001f;
   writer.AddOutputConfigForMultiClassClassifier(
-      output_labels, kMaxOutputLabelsToRank,
-      EphemeralHomeModuleRankToScore(EphemeralHomeModuleRank::kNotShown));
+      output_labels, kMaxOutputLabelsToRank, dont_show_threshold);
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{},
       /*default_ttl=*/kResultTTLDays, proto::TimeUnit::DAY);
@@ -124,7 +128,9 @@ void EphemeralHomeModuleBackend::ExecuteModelWithInput(
       home_modules_card_registry_->get_all_cards_by_priority();
   const float dont_show_result =
       EphemeralHomeModuleRankToScore(EphemeralHomeModuleRank::kNotShown);
-  ModelProvider::Request result(all_cards.size(), dont_show_result);
+  ModelProvider::Request result(
+      home_modules_card_registry_->all_output_labels().size(),
+      dont_show_result);
 
   for (const auto& card : all_cards) {
     CardSelectionSignals card_signals(&all_signals, card->card_name());

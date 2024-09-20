@@ -127,6 +127,10 @@ CGFloat GetFaviconSize() {
   return base::SysUTF8ToNSString(self.credential.URL.spec());
 }
 
+- (NSString*)username {
+  return self.credential.username;
+}
+
 @end
 
 namespace {
@@ -248,8 +252,12 @@ static const CGFloat kOffsetForConnectedCell = 16;
     self.siteNameLabel.hidden = YES;
     self.faviconView.hidden = YES;
   } else {
+    BOOL shouldShowHost =
+        credential.host && credential.host.length &&
+        ![credential.host isEqualToString:credential.siteName];
+
     NSAttributedString* attributedText =
-        CreateSiteNameLabelAttributedText(credential);
+        CreateSiteNameLabelAttributedText(credential, shouldShowHost);
     self.siteNameLabel.attributedText = attributedText;
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       self.siteNameLabel.numberOfLines = 0;

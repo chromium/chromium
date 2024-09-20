@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 
+namespace perfetto::protos::pbzero {
+class EventTiming;
+}  // namespace perfetto::protos::pbzero
+
 namespace blink {
 
 class Frame;
@@ -40,14 +44,16 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     base::TimeTicks processing_end_time;
 
     // This is the timestamp when the commit has finished on compositor thread.
-    base::TimeTicks commit_finish_time;
+    // Only set for event timings that have a next paint.
+    std::optional<base::TimeTicks> commit_finish_time;
 
     // Other than reporting to UKM, this is also used by eventTiming trace
     // events to report accurate ending time.
-    base::TimeTicks presentation_time;
+    // Only set for event timing that have a next paint.
+    std::optional<base::TimeTicks> presentation_time;
 
     // The fallback timestamp used to calculate event duration. It is set only
-    // when fallback time is used.
+    // when fallback time is used.  Some events might still have a next paint.
     std::optional<base::TimeTicks> fallback_time = std::nullopt;
 
     // Keycode for the event. If the event is not a keyboard event, the keycode
@@ -93,7 +99,11 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   void SetInteractionId(uint32_t interaction_id);
 
-  bool HasKnownInteractionID();
+  bool HasKnownInteractionID() const;
+
+  bool HasKnownEndTime() const;
+
+  base::TimeTicks GetEndTime() const;
 
   uint32_t interactionOffset() const;
 
@@ -106,7 +116,12 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   void Trace(Visitor*) const override;
 
+  // TODO(sullivan): Remove the deprecated TracedValue when DevTools migrates
+  // to the perfetto events.
   std::unique_ptr<TracedValue> ToTracedValue(Frame* frame) const;
+  void SetPerfettoData(Frame* frame,
+                       perfetto::protos::pbzero::EventTiming* traced_value,
+                       base::TimeTicks time_origin);
 
   // Getters and setters of the EventTimingReportingInfo object.
   EventTimingReportingInfo* GetEventTimingReportingInfo() {

@@ -194,7 +194,9 @@ void AutofillOptimizationGuide::OnDidParseForm(
         base::FeatureList::IsEnabled(
             features::kAutofillEnableAmountExtractionDesktop)) {
       optimization_types.insert(
-          optimization_guide::proto::AMOUNT_EXTRACTION_ALLOWLIST);
+          optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM);
+      optimization_types.insert(
+          optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
     }
 #endif
   }

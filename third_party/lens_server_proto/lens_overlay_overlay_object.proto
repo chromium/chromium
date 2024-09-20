@@ -24,6 +24,7 @@ message OverlayObject {
       DEFAULT = 0;
       GLEAM = 1;
     }
+
     RenderType render_type = 1;
   }
 
@@ -34,6 +35,7 @@ message OverlayObject {
     // Whether an object can be tapped
     bool select_on_tap = 1;
   }
+
   InteractionProperties interaction_properties = 4;
 
   // Indicates to the client that this object is eligible to be an object

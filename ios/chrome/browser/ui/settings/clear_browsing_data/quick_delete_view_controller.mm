@@ -7,7 +7,10 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
@@ -30,6 +33,8 @@
 
 namespace {
 
+using browsing_data::DeleteBrowsingDataDialogAction;
+
 // Delay to observe when dismissing the UI after showing the confirmation
 // indicator that the deletion has concluded.
 constexpr base::TimeDelta kDismissDelay = base::Seconds(1);
@@ -45,6 +50,8 @@ constexpr CGFloat kTrashIconSize = 32;
 
 // Top padding for the trash icon view.
 constexpr CGFloat kTrashIconContainerViewTopPadding = 33;
+
+constexpr CGFloat kTrashIconContainerViewAlphaComponent = 0.11;
 
 // Vertical padding for the title.
 constexpr CGFloat kTitleVerticalPadding = 22;
@@ -77,10 +84,19 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
     TableViewLinkHeaderFooterItemDelegate> {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   UITableView* _tableView;
+
+  NSLayoutConstraint* _tableViewHeightConstraint;
+
   browsing_data::TimePeriod _timeRange;
   NSString* _browsingDataSummary;
   BOOL _shouldShowFooter;
-  NSLayoutConstraint* _tableViewHeightConstraint;
+
+  BOOL _historySelected;
+  BOOL _tabsSelected;
+  BOOL _siteDataSelected;
+  BOOL _cacheSelected;
+  BOOL _passwordsSelected;
+  BOOL _autofillSelected;
 }
 @end
 
@@ -102,6 +118,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)viewDidLoad {
+  base::RecordAction(
+      base::UserMetricsAction("ClearBrowsingData_DialogCreated"));
+
   _tableView = [self createTableView];
   _dataSource = [self createAndFillDataSource];
   _tableView.dataSource = _dataSource;
@@ -131,13 +150,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
   [self displayGradientView:NO];
 
-  // Configure the color of the primary button to red, as the default colour is
-  // blue.
-  UIButtonConfiguration* buttonConfiguration =
-      self.primaryActionButton.configuration;
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kRedColor];
-  self.primaryActionButton.configuration = buttonConfiguration;
+  // Configure the color of the primary button to red in several states, as the
+  // default colour is blue.
+  [self updatePrimaryActionButtonEnabledStatus];
   self.confirmationCheckmarkColor = [UIColor colorNamed:kRed600Color];
   self.confirmationButtonColor = [UIColor colorNamed:kRed100Color];
 
@@ -174,10 +189,16 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kDeletionSelected);
   [_mutator triggerDeletion];
 }
 
 - (void)confirmationAlertSecondaryAction {
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kCancelSelected);
   [self dismissQuickDelete];
 }
 
@@ -189,6 +210,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifier itemType = static_cast<ItemIdentifier>(
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
   CHECK(itemType == ItemIdentifierBrowsingData) << itemType;
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
   [self.presentationHandler showBrowsingDataPage];
 }
 
@@ -297,53 +321,59 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                   }];
 }
 
-- (void)updateHistoryWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/353211728): Refactor summary using this result.
+- (void)setHistorySummary:(NSString*)historySummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
 }
 
-- (void)updateTabsWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/353211728): Refactor summary using this result.
+- (void)setTabsSummary:(NSString*)tabsSummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
 }
 
-- (void)updateCacheWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/353211728): Refactor summary using this result.
+- (void)setCacheSummary:(NSString*)cacheSummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
 }
 
-- (void)updatePasswordsWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/353211728): Refactor summary using this result.
+- (void)setPasswordsSummary:(NSString*)passwordsSummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
 }
 
-- (void)updateAutofillWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/353211728): Refactor summary using this result.
+- (void)setAutofillSummary:(NSString*)autofillSummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
 }
 
 - (void)setHistorySelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  _historySelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)setTabsSelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  _tabsSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)setSiteDataSelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  _siteDataSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)setCacheSelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  _cacheSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)setPasswordsSelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  _passwordsSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)setAutofillSelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  _autofillSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)deletionInProgress {
@@ -356,9 +386,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // Disable accessibility elements on entire window to avoid Voiceover focusing
   // on new elements during the deletion or the animation.
   self.view.window.accessibilityElementsHidden = YES;
+  [self.presentationHandler blockOtherWindows];
 }
 
 - (void)deletionFinished {
+  [self.presentationHandler releaseOtherWindows];
   // Allow the user to dismiss the bottom sheet, but still not interact with
   // contents of the bottom sheet.
   self.view.userInteractionEnabled = NO;
@@ -399,6 +431,21 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 #pragma mark - Private
+
+// Updates the enabled status of the primary button. The primary button should
+// only be enabled if at least one browsing data type is selected for deletion.
+- (void)updatePrimaryActionButtonEnabledStatus {
+  self.primaryActionButton.enabled = _historySelected || _tabsSelected ||
+                                     _siteDataSelected || _cacheSelected ||
+                                     _passwordsSelected || _autofillSelected;
+
+  UIButtonConfiguration* buttonConfiguration =
+      self.primaryActionButton.configuration;
+  buttonConfiguration.background.backgroundColor =
+      self.primaryActionButton.enabled ? [UIColor colorNamed:kRedColor]
+                                       : [UIColor colorNamed:kRed100Color];
+  self.primaryActionButton.configuration = buttonConfiguration;
+}
 
 // Action handler that executes when a voiceover announcement ends.
 - (void)handleUIAccessibilityAnnouncementDidFinishNotification:
@@ -612,7 +659,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   UIView* iconContainerView = [[UIView alloc] init];
   iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   iconContainerView.layer.cornerRadius = kTrashIconContainerViewCornerRadius;
-  iconContainerView.backgroundColor = [UIColor colorNamed:kRed50Color];
+  iconContainerView.backgroundColor = [[UIColor colorNamed:kRed600Color]
+      colorWithAlphaComponent:kTrashIconContainerViewAlphaComponent];
 
   // Trash icon that inside the container with the red background.
   UIImageView* icon =
@@ -640,6 +688,24 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       NSDirectionalEdgeInsetsMake(kTrashIconContainerViewTopPadding, 0, 0, 0));
 
   return outerView;
+}
+
+#pragma mark - UIResponder
+
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+#pragma mark - KeyCommandActions
+
+- (void)keyCommand_close {
+  [self dismissQuickDelete];
 }
 
 @end

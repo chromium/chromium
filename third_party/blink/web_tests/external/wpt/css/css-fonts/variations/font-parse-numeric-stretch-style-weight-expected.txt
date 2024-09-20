@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Valid value calc(0 - 100) for font property weight used for styling.
-  assert_true: expected true got false
-[FAIL] Valid value calc(200 + 801) for font property weight used for styling.
-  assert_true: expected true got false
-Harness: the test ran to completion.
-

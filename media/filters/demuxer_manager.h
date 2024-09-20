@@ -78,14 +78,7 @@ class MEDIA_EXPORT DemuxerManager {
     virtual bool IsSecurityOriginCryptographic() const = 0;
 
 #if BUILDFLAG(ENABLE_FFMPEG)
-    virtual void AddAudioTrack(const std::string& id,
-                               const std::string& label,
-                               const std::string& language,
-                               bool is_first_track) = 0;
-    virtual void AddVideoTrack(const std::string& id,
-                               const std::string& label,
-                               const std::string& language,
-                               bool is_first_track) = 0;
+    virtual void AddMediaTrack(const media::MediaTrack&) = 0;
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

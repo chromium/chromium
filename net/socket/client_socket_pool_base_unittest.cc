@@ -726,7 +726,7 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       /*alpn_protos=*/nullptr,
       /*application_settings=*/nullptr,
       /*ignore_certificate_errors=*/nullptr,
-      /*early_data_enabled=*/nullptr};
+      /*enable_early_data=*/nullptr};
   bool connect_backup_jobs_enabled_;
   MockClientSocketFactory client_socket_factory_;
   RecordingNetLogObserver net_log_observer_;
@@ -5951,11 +5951,13 @@ TEST_P(ClientSocketPoolBaseRefreshTest,
   EXPECT_EQ(1u, pool_->IdleSocketCountInGroup(kGroupId));
 }
 
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 TEST_F(ClientSocketPoolBaseTest, RefreshProxyRefreshesAllGroups) {
   // Create a proxy chain containing `myproxy` (which is refreshed) and
   // nonrefreshedproxy (which is not), verifying that if any proxy in a chain is
   // refreshed, all groups are refreshed.
-  ProxyChain proxy_chain({
+  auto proxy_chain = ProxyChain::ForIpProtection({
       PacResultElementToProxyServer("HTTPS myproxy:70"),
       PacResultElementToProxyServer("HTTPS nonrefreshedproxy:70"),
   });

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
@@ -188,6 +189,7 @@
     [NSLayoutConstraint
         activateConstraints:self.tabGroupIndicatorBottomOmniboxConstraints];
   }
+  self.tabGroupIndicatorView.showSeparator = !isTopOmnibox;
 
   BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.superview);
   BOOL isAvailable = !IsCompactHeight(self.superview) && !canShowTabStrip;
@@ -219,11 +221,9 @@
   id<LayoutGuideProvider> safeArea = self.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
     [self.tabGroupIndicatorView.leadingAnchor
-        constraintEqualToAnchor:safeArea.leadingAnchor
-                       constant:kTabGroupIndicatorVerticalMargin],
+        constraintEqualToAnchor:safeArea.leadingAnchor],
     [self.tabGroupIndicatorView.trailingAnchor
-        constraintEqualToAnchor:safeArea.trailingAnchor
-                       constant:-kTabGroupIndicatorVerticalMargin],
+        constraintEqualToAnchor:safeArea.trailingAnchor],
     [self.tabGroupIndicatorView.heightAnchor
         constraintEqualToConstant:kTabGroupIndicatorHeight],
   ]];
@@ -511,6 +511,10 @@
   [self.locationBarContainer.trailingAnchor
       constraintGreaterThanOrEqualToAnchor:self.locationBarView.trailingAnchor]
       .active = YES;
+}
+
+- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle {
+  self.tabGridButton.tabGridButtonStyle = tabGridButtonStyle;
 }
 
 - (NSArray<ToolbarButton*>*)allButtons {

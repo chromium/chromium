@@ -133,7 +133,8 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     SyncServiceFactory.getForProfile(mProfile),
                     UserPrefs.get(mProfile),
                     new PasswordStoreBridge(mProfile),
-                    PasswordManagerHelper.getForProfile(mProfile));
+                    PasswordManagerHelper.getForProfile(mProfile),
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof PasswordCheckFragmentView) {
             PasswordCheckComponentUiFactory.create(

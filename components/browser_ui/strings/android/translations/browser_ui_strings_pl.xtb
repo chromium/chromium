@@ -244,6 +244,7 @@
 <translation id="5014182796621173645">Odwiedzone: <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="5048398596102334565">Zezwalaj stronom na dostęp do czujników ruchu (zalecane)</translation>
+<translation id="5048841907079026162">Zarządzaj danymi przeglądania</translation>
 <translation id="5050380848339752099">Ta strona zamierza udostępnić informacje aplikacji poza trybem incognito.</translation>
 <translation id="5063480226653192405">Wykorzystanie</translation>
 <translation id="5091013926750941408">Strona mobilna</translation>
@@ -269,6 +270,7 @@
 <translation id="5335288049665977812">Zezwalaj na wykonywanie kodu JavaScript w witrynach (zalecane)</translation>
 <translation id="534295439873310000">Urządzenia z funkcją NFC</translation>
 <translation id="5344522958567249764">Zarządzaj prywatnością w reklamach</translation>
+<translation id="5373874281522292782">Twoje grupy kart zostały zapisane</translation>
 <translation id="5389626883706033615">Strony nie mogą prosić Cię o korzystanie z informacji, które o Tobie zapisały</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i jeszcze 1)}few{(i jeszcze #)}many{(i jeszcze #)}other{(i jeszcze #)}}</translation>
 <translation id="5403592356182871684">Nazwy</translation>
@@ -420,6 +422,7 @@
 <translation id="7561196759112975576">Zawsze</translation>
 <translation id="757524316907819857">Blokuj odtwarzanie treści chronionej na stronach</translation>
 <translation id="7594634374516752650">Połączono z urządzeniem Bluetooth</translation>
+<translation id="7617547684249261169">Możesz w całości lub częściowo usunąć m.in. historię, pliki cookie i dane witryn</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7667547420449112975">Czarnoksiężnik z Krainy Oz</translation>

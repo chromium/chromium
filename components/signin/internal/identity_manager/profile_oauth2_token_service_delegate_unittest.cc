@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/mock_callback.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
+#include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -20,27 +21,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class MockOAuth2TokenServiceObserver
-    : public ProfileOAuth2TokenServiceObserver {
- public:
-  MOCK_METHOD(void,
-              OnRefreshTokenRevoked,
-              (const CoreAccountId& account_id),
-              (override));
-  MOCK_METHOD(void,
-              OnAuthErrorChanged,
-              (const CoreAccountId&,
-               const GoogleServiceAuthError&,
-               signin_metrics::SourceForRefreshTokenOperation source),
-              (override));
-};
-
 class ProfileOAuth2TokenServiceDelegateTest : public testing::Test {
  public:
   ProfileOAuth2TokenServiceDelegateTest() {
     delegate.SetOnRefreshTokenRevokedNotified(
         on_refresh_token_revoked_notified_callback.Get());
-    scoped_observation.Observe(&delegate);
   }
 
   ~ProfileOAuth2TokenServiceDelegateTest() override = default;
@@ -50,10 +35,7 @@ class ProfileOAuth2TokenServiceDelegateTest : public testing::Test {
   // Note: Tests in this suite tests the default base implementation of
   //       'ProfileOAuth2TokenServiceDelegate'.
   FakeProfileOAuth2TokenServiceDelegate delegate;
-  MockOAuth2TokenServiceObserver mock_observer;
-  base::ScopedObservation<ProfileOAuth2TokenServiceDelegate,
-                          MockOAuth2TokenServiceObserver>
-      scoped_observation{&mock_observer};
+  signin::MockProfileOAuth2TokenServiceObserver mock_observer{&delegate};
 };
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, FireRefreshTokenRevoked) {
@@ -120,8 +102,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorPersistenErrors) {
 
   for (GoogleServiceAuthError::State state : table) {
     GoogleServiceAuthError error(state);
-    if (!error.IsPersistentError() || error.IsScopePersistentError())
+    if (!error.IsPersistentError() || error.IsScopePersistentError()) {
       continue;
+    }
 
     EXPECT_CALL(mock_observer,
                 OnAuthErrorChanged(
@@ -150,8 +133,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorTransientErrors) {
   int failure_count = 0;
   for (GoogleServiceAuthError::State state : table) {
     GoogleServiceAuthError error(state);
-    if (!error.IsTransientError())
+    if (!error.IsTransientError()) {
       continue;
+    }
 
     EXPECT_CALL(mock_observer,
                 OnAuthErrorChanged(
@@ -240,4 +224,30 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, AuthErrorChanged) {
   // Update to none again should not fire any notification.
   delegate.UpdateAuthError(account_id, GoogleServiceAuthError::AuthErrorNone());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
+}
+
+TEST_F(ProfileOAuth2TokenServiceDelegateTest,
+       OnAuthErrorChangedAfterUpdatingCredentials) {
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+
+  {
+    testing::InSequence sequence;
+    // `OnAuthErrorChanged()` is not called after adding a new account in tests.
+    EXPECT_CALL(mock_observer, OnAuthErrorChanged).Times(0);
+    EXPECT_CALL(mock_observer, OnRefreshTokenAvailable(account_id));
+    EXPECT_CALL(mock_observer, OnEndBatchChanges());
+    delegate.UpdateCredentials(account_id, "first refreshToken");
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  }
+
+  {
+    testing::InSequence sequence;
+    // `OnAuthErrorChanged()` is also not called after a token is updated
+    // without changing its error state.
+    EXPECT_CALL(mock_observer, OnAuthErrorChanged).Times(0);
+    EXPECT_CALL(mock_observer, OnRefreshTokenAvailable(account_id));
+    EXPECT_CALL(mock_observer, OnEndBatchChanges());
+    delegate.UpdateCredentials(account_id, "second refreshToken");
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  }
 }

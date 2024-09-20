@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace crosapi {
 
@@ -359,7 +360,7 @@ class CreateBrowserWithRestoredDataAction final : public BrowserAction {
       const std::vector<GURL>& urls,
       const gfx::Rect& bounds,
       const std::vector<tab_groups::TabGroupInfo>& tab_group_infos,
-      ui::WindowShowState show_state,
+      ui::mojom::WindowShowState show_state,
       int32_t active_tab_index,
       int32_t first_non_pinned_tab_index,
       std::string_view app_name,
@@ -393,7 +394,7 @@ class CreateBrowserWithRestoredDataAction final : public BrowserAction {
   const std::vector<GURL> urls_;
   const gfx::Rect bounds_;
   const std::vector<tab_groups::TabGroupInfo> tab_group_infos_;
-  const ui::WindowShowState show_state_;
+  const ui::mojom::WindowShowState show_state_;
   const int32_t active_tab_index_;
   const int32_t first_non_pinned_tab_index_;
   const std::string app_name_;
@@ -499,7 +500,7 @@ std::unique_ptr<BrowserAction> BrowserAction::CreateBrowserWithRestoredData(
     const std::vector<GURL>& urls,
     const gfx::Rect& bounds,
     const std::vector<tab_groups::TabGroupInfo>& tab_groups,
-    ui::WindowShowState show_state,
+    ui::mojom::WindowShowState show_state,
     int32_t active_tab_index,
     int32_t first_non_pinned_tab_index,
     std::string_view app_name,

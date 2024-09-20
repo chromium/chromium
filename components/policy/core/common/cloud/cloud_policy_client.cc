@@ -645,10 +645,6 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   CHECK(!types_to_fetch_.empty());
 
   VLOG(2) << "Policy fetch starting";
-  for (const auto& type : types_to_fetch_) {
-    VLOG_POLICY(2, POLICY_FETCHING)
-        << "Fetching policy type: " << type.first << " -> " << type.second;
-  }
   auto params = DMServerJobConfiguration::CreateParams::WithClient(
       DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH, this);
   params.auth_data = DMAuth::FromDMToken(dm_token_);
@@ -676,6 +672,9 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   const em::PolicyFetchRequest::SignatureType signature_type =
       GetPolicyFetchRequestSignatureType();
   for (const auto& type_to_fetch : types_to_fetch_) {
+    VLOG_POLICY(2, POLICY_FETCHING)
+        << "Fetching policy type: " << type_to_fetch.first << " -> "
+        << type_to_fetch.second;
     em::PolicyFetchRequest* fetch_request = policy_request->add_requests();
     fetch_request->set_policy_type(type_to_fetch.first);
     if (!type_to_fetch.second.empty()) {
@@ -977,7 +976,6 @@ void CloudPolicyClient::UploadChromeProfileReport(
 }
 
 void CloudPolicyClient::UploadSecurityEventReport(
-    content::BrowserContext* context,
     bool include_device_info,
     base::Value::Dict report,
     ResultCallback callback) {
@@ -990,7 +988,7 @@ void CloudPolicyClient::UploadSecurityEventReport(
 
   CreateNewRealtimeReportingJob(
       std::move(report),
-      service()->configuration()->GetReportingConnectorServerUrl(context),
+      service()->configuration()->GetRealtimeReportingServerUrl(),
       include_device_info, std::move(callback));
 }
 

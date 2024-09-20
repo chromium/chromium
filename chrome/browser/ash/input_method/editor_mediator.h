@@ -109,8 +109,13 @@ class EditorMediator : public EditorContext::Observer,
   // KeyedService overrides
   void Shutdown() override;
 
+  void ShowNotice();
+
   // Checks if the feature should be visible.
   bool IsAllowedForUse();
+
+  // Checks if the review notice banner can be shown in the settings page.
+  bool CanShowNoticeBanner() const;
 
   EditorPanelManager* panel_manager() { return &panel_manager_; }
 

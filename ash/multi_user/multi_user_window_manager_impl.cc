@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/multi_user/multi_user_window_manager_impl.h"
-#include "base/memory/raw_ptr.h"
 
 #include <set>
 #include <vector>
@@ -18,8 +17,10 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/event.h"
@@ -388,7 +389,8 @@ bool MultiUserWindowManagerImpl::ShowWindowForUserIntern(
       (owner == account_id && IsWindowOnDesktopOfUser(window, account_id)))
     return false;
 
-  bool minimized = wm::WindowStateIs(window, ui::SHOW_STATE_MINIMIZED);
+  bool minimized =
+      wm::WindowStateIs(window, ui::mojom::WindowShowState::kMinimized);
   // Check that we are not trying to transfer ownership of a minimized window.
   if (account_id != owner && minimized)
     return false;

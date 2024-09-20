@@ -23,9 +23,15 @@ AccountInvestigatorFactory* AccountInvestigatorFactory::GetInstance() {
 
 // static
 AccountInvestigator* AccountInvestigatorFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+AccountInvestigator* AccountInvestigatorFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<AccountInvestigator*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 AccountInvestigatorFactory::AccountInvestigatorFactory()

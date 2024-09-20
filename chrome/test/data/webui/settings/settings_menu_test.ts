@@ -77,21 +77,6 @@ suite('SettingsMenu', function() {
     assertFalse(!!selector.selected);
   });
 
-  // <if expr="_google_chrome">
-  test('navigateToGetMostChrome', function() {
-    loadTimeData.overrideValues({showGetTheMostOutOfChromeSection: true});
-    resetRouterForTesting();
-    createSettingsMenu();
-    Router.getInstance().navigateTo(routes.GET_MOST_CHROME);
-    flush();
-
-    // GET_MOST_CHROME should select the 'About Chrome' entry.
-    const selector = settingsMenu.$.menu;
-    assertTrue(!!selector.selected);
-    assertEquals('/help', selector.selected.toString());
-  });
-  // </if>
-
   test('noExperimental', async function() {
     loadTimeData.overrideValues({showAdvancedFeaturesMainControl: false});
     resetRouterForTesting();

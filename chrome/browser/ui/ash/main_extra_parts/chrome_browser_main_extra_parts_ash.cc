@@ -19,6 +19,7 @@
 #include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/webui/annotator/annotator_client_impl.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -30,13 +31,11 @@
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/browser/ash/auth/active_session_fingerprint_client_impl.h"
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
-#include "chrome/browser/ash/login/ui/oobe_dialog_util_impl.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_content_manager_impl.h"
@@ -57,16 +56,16 @@
 #include "chrome/browser/exo_parts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
-#include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
-#include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
+#include "chrome/browser/ui/ash/graduation/graduation_manager.h"
 #include "chrome/browser/ui/ash/in_session_auth/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/in_session_auth/in_session_auth_token_provider_impl.h"
 #include "chrome/browser/ui/ash/input_method/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
+#include "chrome/browser/ui/ash/login/oobe_dialog_util_impl.h"
 #include "chrome/browser/ui/ash/media_client/media_client_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"
@@ -236,13 +235,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   {
     auto chrome_new_window_client = std::make_unique<ChromeNewWindowClient>();
-    auto crosapi_new_window_delegate =
-        std::make_unique<CrosapiNewWindowDelegate>(
-            chrome_new_window_client.get());
     new_window_delegate_provider_ =
         std::make_unique<ChromeNewWindowDelegateProvider>(
-            std::move(chrome_new_window_client),
-            std::move(crosapi_new_window_delegate));
+            std::move(chrome_new_window_client));
     arc_open_url_delegate_impl_ = std::make_unique<ArcOpenUrlDelegateImpl>();
   }
 
@@ -368,6 +363,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
     return;
   }
 
+  g_browser_process->platform_part()
+      ->InitializeDeviceRestrictionScheduleController();
   login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
   // https://crbug.com/884127 ensuring that LoginScreenClientImpl is initialized
   // before using it InitializeDeviceDisablingManager.
@@ -416,6 +413,11 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
         ash::Shell::Get()->refresh_rate_controller()->SetGameMode(
             window, game_mode == GameMode::BOREALIS);
       }));
+
+  if (ash::features::IsGraduationEnabled()) {
+    graduation_manager_ =
+        std::make_unique<ash::graduation::GraduationManager>();
+  }
 
   if (ash::features::IsWelcomeExperienceEnabled()) {
     peripherals_app_delegate_ =
@@ -488,6 +490,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   display_settings_handler_.reset();
   media_client_.reset();
   login_screen_client_.reset();
+  graduation_manager_.reset();
 
   ash::privacy_hub_util::SetAppAccessNotifier(nullptr);
   app_access_notifier_.reset();

@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -18,6 +19,7 @@
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_pref_names.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_observer.h"
 #import "components/signin/public/base/signin_switches.h"
@@ -131,8 +133,10 @@ enum class SearchEngineSettingVersion {
 
     _searchEngineChoiceService =
         ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
+    // TODO(b/362460183): Remove `kDeprecatedSettings` and deprecated settings
+    // UI.
     BOOL shouldShowUpdatedSettings =
-        _searchEngineChoiceService->ShouldShowUpdatedSettings();
+        base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger);
     if (search_engines::IsEeaChoiceCountry(
             _searchEngineChoiceService->GetCountryId()) &&
         shouldShowUpdatedSettings) {

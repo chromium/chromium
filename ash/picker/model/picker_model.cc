@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/picker/model/picker_mode_type.h"
-#include "ash/public/cpp/picker/picker_category.h"
+#include "ash/picker/picker_category.h"
 #include "base/check_deref.h"
 #include "chromeos/components/editor_menu/public/cpp/editor_helpers.h"
 #include "components/prefs/pref_service.h"

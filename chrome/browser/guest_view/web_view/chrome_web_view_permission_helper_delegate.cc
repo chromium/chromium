@@ -414,4 +414,23 @@ void ChromeWebViewPermissionHelperDelegate::OnFileSystemPermissionResponse(
   std::move(callback).Run(allow && web_view_guest()->attached());
 }
 
+void ChromeWebViewPermissionHelperDelegate::RequestFullscreenPermission(
+    const url::Origin& requesting_origin,
+    WebViewPermissionHelper::PermissionResponseCallback callback) {
+  if (web_view_guest()->attached() &&
+      web_view_guest()->IsOwnedByControlledFrameEmbedder() &&
+      !IsFeatureEnabledByEmbedderPermissionsPolicy(
+          web_view_guest(), blink::mojom::PermissionsPolicyFeature::kFullscreen,
+          requesting_origin)) {
+    std::move(callback).Run(/*allow=*/false, /*user_input=*/"");
+    return;
+  }
+
+  base::Value::Dict request_info;
+  request_info.Set(webview::kOrigin, requesting_origin.GetURL().spec());
+  web_view_permission_helper()->RequestPermission(
+      WEB_VIEW_PERMISSION_TYPE_FULLSCREEN, std::move(request_info),
+      std::move(callback), /*allowed_by_default=*/false);
+}
+
 }  // namespace extensions

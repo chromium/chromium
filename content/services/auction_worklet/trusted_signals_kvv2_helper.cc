@@ -52,6 +52,17 @@ constexpr char kTagKey[] = "keys";
 constexpr char kTagRenderUrls[] = "renderUrls";
 constexpr char kTagAdComponentRenderUrls[] = "adComponentRenderUrls";
 
+// Wrapper around cbor::Reader::Read that enables reading floating point. While
+// as of this writing, floating point isn't used, failing on floats means adding
+// floats to the format would be a breaking change. This is also more
+// constistent with the DataDecoder service use for parsing the by the
+// browser-side code TrustedSignalsFetcher, which allows floats.
+std::optional<cbor::Value> ReadKvv2Cbor(base::span<const uint8_t> input_data) {
+  cbor::Reader::Config config;
+  config.allow_floating_point = true;
+  return cbor::Reader::Read(input_data, config);
+}
+
 // Add hardcoded `acceptCompression` to request body.
 void AddPostRequestConstants(cbor::Value::MapValue& request_map_value) {
   // acceptCompression
@@ -452,7 +463,7 @@ GetContentFromCompressionGroup(const CompressionGroupResult& group_result) {
     NOTREACHED();
   }
 
-  std::optional<cbor::Value> maybe_content = cbor::Reader::Read(content_bytes);
+  std::optional<cbor::Value> maybe_content = ReadKvv2Cbor(content_bytes);
   if (!maybe_content.has_value()) {
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
         "Failed to parse content as CBOR."));
@@ -656,7 +667,6 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::
     CHECK_NE(pos, std::string::npos);
     std::string key = trusted_bidding_signals_slot_size_param.substr(0, pos);
     std::string value = trusted_bidding_signals_slot_size_param.substr(pos + 1);
-    CHECK(key == "slotSize" || key == "allSlotsRequestedSizes");
     trusted_bidding_signals_slot_size_param_ = {std::move(key),
                                                 std::move(value)};
   }
@@ -892,7 +902,7 @@ TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
 
   // Parse CBOR bytes.
   TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap result_map;
-  std::optional<cbor::Value> body = cbor::Reader::Read(base::span(cbor_bytes));
+  std::optional<cbor::Value> body = ReadKvv2Cbor(base::span(cbor_bytes));
 
   if (!body.has_value()) {
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(

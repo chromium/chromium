@@ -46,6 +46,7 @@
 #include "components/viz/service/surfaces/surface_allocation_group.h"
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_manager.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -162,6 +163,10 @@ enum class RenderPassDamage {
 // Used for determine when to treat opacity close to 1.f as opaque. The value is
 // chosen to be smaller than 1/255.
 constexpr float kOpacityEpsilon = 0.001f;
+
+// Used as a limit for the amount of times the same delegated ink metadata can
+// be attached to the aggregated frame.
+constexpr int kMaxFramesWithIdenticalInkMetadata = 3;
 
 void MoveMatchingRequests(
     CompositorRenderPassId render_pass_id,
@@ -890,19 +895,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   }
 
   const auto& frame_metadata = resolved_frame.GetMetadata();
-
-  TRACE_EVENT(
-      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::TerminatingFlow::Global(
-          frame_metadata.begin_frame_ack.trace_id),
-      perfetto::Flow::Global(display_trace_id_),
-      [trace_id = display_trace_id_](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_chrome_graphics_pipeline();
-        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                           StepName::STEP_SURFACE_AGGREGATION);
-        data->set_display_trace_id(trace_id);
-      });
+  flow_ids_for_resolved_frames_.insert(frame_metadata.begin_frame_ack.trace_id);
 
   referenced_surfaces_.insert(surface_id);
 
@@ -2209,23 +2202,50 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     return {};
   }
 
-  CheckFrameSinksChanged(resolved_frame->surface_id());
-
   display_trace_id_ = display_trace_id;
   expected_display_time_ = expected_display_time;
 
-  TRACE_EVENT(
+  const CompositorFrameMetadata& frame_metadata = resolved_frame->GetMetadata();
+  flow_ids_for_resolved_frames_.insert(frame_metadata.begin_frame_ack.trace_id);
+
+  TRACE_EVENT_BEGIN(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::TerminatingFlow::Global(
-          resolved_frame->GetMetadata().begin_frame_ack.trace_id),
       perfetto::Flow::Global(display_trace_id_),
-      [trace_id = display_trace_id_](perfetto::EventContext ctx) {
+      [this](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_SURFACE_AGGREGATION);
-        data->set_display_trace_id(trace_id);
+        data->set_display_trace_id(display_trace_id_);
       });
+
+  // We need to terminate the above trace event separately so that the callees
+  // of `SurfaceAggregator::Aggregate` can appropriately populate
+  // `flow_ids_for_resolved_frames_`, which we need so that we can
+  // terminate the flows for those frames at this trace event.
+  absl::Cleanup surface_aggregation_trace_event_scoped_exit = [this] {
+    TRACE_EVENT_END(
+        "viz,benchmark,graphics.pipeline", [this](perfetto::EventContext ctx) {
+          auto* chrome_graphics_pipeline =
+              ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                  ->set_chrome_graphics_pipeline();
+          // Two separate loops are necessary due to Perfetto's ProtoZero
+          // semantics: if we start adding values to a repeated field, we should
+          // add all values that need to be added, before moving on to updating
+          // a different field.
+          for (int64_t id : flow_ids_for_resolved_frames_) {
+            chrome_graphics_pipeline->add_aggregated_frames_ids(id);
+          }
+          for (int64_t id : flow_ids_for_resolved_frames_) {
+            ctx.event()->add_terminating_flow_ids(id);
+          }
+        });
+    // Clear this separately from `ResetAfterAggregate` since this
+    // `absl::Cleanup` is run after `ResetAfterAggregate`.
+    flow_ids_for_resolved_frames_.clear();
+  };
+
+  CheckFrameSinksChanged(resolved_frame->surface_id());
 
   AggregatedFrame frame;
   dest_pass_list_ = &frame.render_pass_list;
@@ -2334,8 +2354,26 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   }
 
   if (delegated_ink_metadata_) {
-    frame.delegated_ink_metadata = std::move(delegated_ink_metadata_);
-    last_frame_had_delegated_ink_ = true;
+    // If the aggregated frame is getting a metadata that matches the one it
+    // received last frame, increment the counter. Once the limit of frames
+    // with the same metadata `kMaxFramesWithIdenticalInkMetadata` is
+    // reached, the metadata is no longer attached. This prevents the
+    // delegated ink trail from persisting on the screen if no new
+    // compositor frames are received by Viz. The purpose of this hysteresis
+    // is to prevent flickering in the case where the compositor frame is
+    // delayed due to a late main frame in the renderer process.
+    if (previous_ink_metadata_time_ == delegated_ink_metadata_->timestamp()) {
+      identical_ink_metadata_count_++;
+    } else {
+      identical_ink_metadata_count_ = 0;
+    }
+    if (identical_ink_metadata_count_ < kMaxFramesWithIdenticalInkMetadata) {
+      previous_ink_metadata_time_ = delegated_ink_metadata_->timestamp();
+      frame.delegated_ink_metadata = std::move(delegated_ink_metadata_);
+      last_frame_had_delegated_ink_ = true;
+    } else {
+      last_frame_had_delegated_ink_ = false;
+    }
   } else {
     last_frame_had_delegated_ink_ = false;
   }

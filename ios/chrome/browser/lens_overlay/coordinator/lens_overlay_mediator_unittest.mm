@@ -6,6 +6,9 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/search_engines/search_engines_test_environment.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -63,10 +66,14 @@ class LensOverlayMediatorTest : public PlatformTest {
  public:
   LensOverlayMediatorTest() {
     mediator_ = [[LensOverlayMediator alloc] init];
+    mediator_.templateURLService =
+        search_engines_test_environment_.template_url_service();
     mock_omnibox_coordinator_ =
         [OCMockObject mockForClass:OmniboxCoordinator.class];
     mock_toolbar_consumer_ =
         [OCMockObject mockForProtocol:@protocol(LensToolbarConsumer)];
+    mock_lens_commands_ =
+        [OCMockObject mockForProtocol:@protocol(LensOverlayCommands)];
     fake_web_state_ = std::make_unique<web::FakeWebState>();
 
     fake_result_consumer_ = [[FakeResultConsumer alloc] init];
@@ -81,6 +88,7 @@ class LensOverlayMediatorTest : public PlatformTest {
     mediator_.toolbarConsumer = mock_toolbar_consumer_;
     mediator_.webState = fake_web_state_.get();
     mediator_.lensHandler = fake_chrome_lens_overlay_;
+    mediator_.commandsHandler = mock_lens_commands_;
   }
 
   ~LensOverlayMediatorTest() override {
@@ -191,6 +199,8 @@ class LensOverlayMediatorTest : public PlatformTest {
   id mock_omnibox_coordinator_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   OCMockObject<LensToolbarConsumer>* mock_toolbar_consumer_;
+  OCMockObject<LensOverlayCommands>* mock_lens_commands_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 
 /// Tests that the omnibox and toolbar are updated on omnibox focus.
@@ -305,6 +315,40 @@ TEST_F(LensOverlayMediatorTest, HistoryStackMixed) {
          /*expectedResultReload=*/lensResult1);
   GoBack(/*expectedURL=*/URL1, /*expectCanGoBack=*/NO,
          /*expectedResultReload=*/lensResult1);
+}
+
+// Tests changing default search engine closes the overlay.
+TEST_F(LensOverlayMediatorTest, SearchEngineChange) {
+  TemplateURLService* template_url_service =
+      search_engines_test_environment_.template_url_service();
+
+  template_url_service->Load();
+  // Verify that Google is the default search provider.
+  ASSERT_EQ(SEARCH_ENGINE_GOOGLE,
+            template_url_service->GetDefaultSearchProvider()->GetEngineType(
+                template_url_service->search_terms_data()));
+
+  // Keep a reference to the Google default search provider.
+  const TemplateURL* google_provider =
+      template_url_service->GetDefaultSearchProvider();
+
+  OCMExpect([mock_lens_commands_ destroyLensUI:[OCMArg any]]);
+
+  // Change the default search provider to a non-Google one.
+  TemplateURLData non_google_provider_data;
+  non_google_provider_data.SetURL("https://www.nongoogle.com/?q={searchTerms}");
+  non_google_provider_data.suggestions_url =
+      "https://www.nongoogle.com/suggest/?q={searchTerms}";
+  auto* non_google_provider = template_url_service->Add(
+      std::make_unique<TemplateURL>(non_google_provider_data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(
+      non_google_provider);
+
+  EXPECT_OCMOCK_VERIFY(mock_lens_commands_);
+
+  // Change the default search provider back to Google.
+  template_url_service->SetUserSelectedDefaultSearchProvider(
+      const_cast<TemplateURL*>(google_provider));
 }
 
 }  // namespace

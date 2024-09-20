@@ -1,0 +1,6 @@
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE WARNING: A b tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE ERROR: A <select> tag was parsed within another <select> tag and was converted into </select>. This behavior will change in a future browser version. Please add the missing </select> end tag.
+CONSOLE WARNING: A b tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE ERROR: A <select> tag was parsed within another <select> tag and was converted into </select>. This behavior will change in a future browser version. Please add the missing </select> end tag.
+../resources/tests1.dat: PASS

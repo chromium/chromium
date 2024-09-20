@@ -31,19 +31,9 @@ enum class ParseResult {
   kMaxValue = kNotParsed
 };
 
-// Represents the intended state of
-// features::kAutofillParsingPatternActiveSource.
-struct PatternProviderFeatureState {
-  // A list of all available configurations, depending on the build config.
-  static std::vector<PatternProviderFeatureState> All();
-
-  const char* active_source = nullptr;
-};
-
 class FormFieldParserTestBase {
  public:
-  explicit FormFieldParserTestBase(
-      PatternProviderFeatureState pattern_provider_feature_state);
+  FormFieldParserTestBase();
   FormFieldParserTestBase(const FormFieldParserTestBase&) = delete;
   FormFieldParserTestBase& operator=(const FormFieldParserTestBase&) = delete;
   ~FormFieldParserTestBase();
@@ -85,7 +75,8 @@ class FormFieldParserTestBase {
   void ClassifyAndVerify(
       ParseResult parse_result = ParseResult::kParsed,
       const GeoIpCountryCode& client_country = GeoIpCountryCode(""),
-      const LanguageCode& page_language = LanguageCode(""));
+      const LanguageCode& page_language = LanguageCode(""),
+      PatternFile pattern_file = *GetActivePatternFile());
 
   // Runs multiple parsing attempts until the end of the form is reached and
   // verifies the expected types.
@@ -113,7 +104,6 @@ class FormFieldParserTestBase {
   std::map<FieldGlobalId, FieldType> expected_classifications_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   uint64_t id_counter_ = 0;
 };
 

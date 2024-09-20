@@ -31,7 +31,9 @@ void OnDeviceModelValidator::ValidateNextPrompt() {
   receiver_.reset();
   current_response_ = "";
   auto options = on_device_model::mojom::InputOptions::New();
-  options->text = validation_config_.validation_prompts(index_).prompt();
+  options->input = on_device_model::mojom::Input::New();
+  options->input->pieces.push_back(
+      validation_config_.validation_prompts(index_).prompt());
   // Avoid bad responses spamming output and taking too long.
   options->max_output_tokens = 64;
   session_->Execute(std::move(options), receiver_.BindNewPipeAndPassRemote());

@@ -272,7 +272,10 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
   }
 
   if (disable_csrss_) {
-    policy_->GetConfig()->SetDisconnectCsrss();
+    auto* config = policy_->GetConfig();
+    if (config->GetAppContainer() == nullptr) {
+      config->SetDisconnectCsrss();
+    }
   }
 
   // Get the path to the sandboxed process.

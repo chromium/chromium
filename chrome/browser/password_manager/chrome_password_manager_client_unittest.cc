@@ -316,7 +316,8 @@ class MockPasswordAccessoryControllerImpl
                                         mf_controller,
                                         password_client,
                                         driver_supplier,
-                                        base::DoNothing()) {}
+                                        base::DoNothing(),
+                                        nullptr) {}
 
   MOCK_METHOD(void,
               RefreshSuggestionsForField,
@@ -747,7 +748,7 @@ TEST_F(ChromePasswordManagerClientTest,
       GURL("https://passwords.google.com/path?query=1")));
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Test that authentication is not possible if the `authenticator` is `nullptr`.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoAuthenticator) {
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(
@@ -777,7 +778,9 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingDisabled) {
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
 }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Test that authentication is possible if both the biometric authentication
 // hardware is available and the user configured the corresponding setting.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingEnabled) {
@@ -789,8 +792,45 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingEnabled) {
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
   EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
 }
+#endif
 
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Test that authentication is possible if biometric authentication
+// hardware is available, the user configured the corresponding setting and the
+// feature flag is enabled.
+TEST_F(ChromePasswordManagerClientTest,
+       CanUseBiometricAuthSettingEnabledKillFlagEnabled) {
+  device_reauth::MockDeviceAuthenticator authenticator;
+  // Both prefs are registered by the `PasswordManager`.
+  local_state_.Get()->SetBoolean(
+      password_manager::prefs::kHadBiometricsAvailable, true);
+  profile()->GetTestingPrefService()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+  base::test::ScopedFeatureList enabled_features(
+      password_manager::features::kBiometricsAuthForPwdFill);
+  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+}
+
+// Tests that reauth is not required if the feature flag is disabled even if the
+// user has the required hardware and enabled the setting in the past.
+TEST_F(ChromePasswordManagerClientTest,
+       CanUseBiometricAuthSettingEnabledKillFlagDisabled) {
+  device_reauth::MockDeviceAuthenticator authenticator;
+  // Both prefs are registered by the `PasswordManager`.
+  local_state_.Get()->SetBoolean(
+      password_manager::prefs::kHadBiometricsAvailable, true);
+  profile()->GetTestingPrefService()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          password_manager::features::kBiometricsAuthForPwdFill});
+  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
 // Test that authentication is not possible if the `authenticator` is `nullptr`.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroid) {
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {

@@ -275,7 +275,7 @@ bool IsSaveDataSizeValid(size_t size) {
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 std::unique_ptr<PdfInkModule> MaybeCreatePdfInkModule(
-    PdfInkModule::Client& client) {
+    PdfInkModuleClient& client) {
   if (!base::FeatureList::IsEnabled(features::kPdfInk2)) {
     return nullptr;
   }
@@ -321,16 +321,10 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   client_->SetPluginContainer(container);
   DCHECK_EQ(container->Plugin(), this);
 
-  pdf_accessibility_data_handler_ = client_->CreateAccessibilityDataHandler(
-      this, this, container, IsPrintPreview());
-
   return InitializeCommon();
 }
 
 bool PdfViewWebPlugin::InitializeForTesting() {
-  pdf_accessibility_data_handler_ =
-      client_->CreateAccessibilityDataHandler(this, this, nullptr, false);
-
   return InitializeCommon();
 }
 
@@ -382,6 +376,9 @@ bool PdfViewWebPlugin::InitializeCommon() {
   DCHECK(engine_);
 
   SendSetSmoothScrolling();
+
+  pdf_accessibility_data_handler_ = client_->CreateAccessibilityDataHandler(
+      this, this, client_->PluginContainer(), IsPrintPreview());
 
   // Skip the remaining initialization when in Print Preview mode. Loading will
   // continue after the plugin receives a "resetPrintPreviewMode" message.
@@ -1349,6 +1346,12 @@ bool PdfViewWebPlugin::IsValidLink(const std::string& url) {
   return base::Value(url).is_string();
 }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+bool PdfViewWebPlugin::IsInAnnotationMode() const {
+  return ink_module_ && ink_module_->enabled();
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
 void PdfViewWebPlugin::SetCaretPosition(const gfx::PointF& position) {
   engine_->SetCaretPosition(FrameToPdfCoordinates(position));
 }
@@ -2072,6 +2075,15 @@ bool PdfViewWebPlugin::IsPageVisible(int page_index) {
   return engine_->IsPageVisible(page_index);
 }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+void PdfViewWebPlugin::OnAnnotationModeToggled(bool enable) {
+  engine_->SetFormHighlight(/*enable_form=*/!enable);
+  if (enable) {
+    engine_->ClearTextSelection();
+  }
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
 void PdfViewWebPlugin::StrokeFinished() {
   base::Value::Dict message;
   message.Set("type", "finishInkStroke");
@@ -2218,6 +2230,11 @@ bool PdfViewWebPlugin::HandleWebInputEvent(const blink::WebInputEvent& event) {
 #if BUILDFLAG(ENABLE_PDF_INK2)
   if (ink_module_ && ink_module_->HandleInputEvent(event_to_handle)) {
     return true;
+  }
+
+  if (IsInAnnotationMode()) {
+    // When in annotation mode, only handle ink input events.
+    return false;
   }
 #endif
 

@@ -37,8 +37,7 @@ bool FilteringIdEnabled() {
 
 bool IsValid(const AggregatableValues::Values& values) {
   return base::ranges::all_of(values, [](const auto& value) {
-    return AggregationKeyIdHasValidLength(value.first) &&
-           IsAggregatableValueInRange(value.second.value());
+    return IsAggregatableValueInRange(value.second.value());
   });
 }
 
@@ -49,10 +48,6 @@ ParseValues(const base::Value::Dict& dict,
   AggregatableValues::Values::container_type container;
 
   for (auto [id, key_value] : dict) {
-    if (!AggregationKeyIdHasValidLength(id)) {
-      return base::unexpected(key_error);
-    }
-
     ASSIGN_OR_RETURN(AggregatableValuesValue value,
                      AggregatableValuesValue::FromJSON(key_value, value_error));
     container.emplace_back(id, std::move(value));

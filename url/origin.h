@@ -460,7 +460,7 @@ class COMPONENT_EXPORT(URL) Origin {
 
   // Deserializes an origin from |ToValueWithNonce|. Returns nullopt if the
   // value was invalid in any way.
-  static std::optional<Origin> Deserialize(const std::string& value);
+  static std::optional<Origin> Deserialize(std::string_view value);
 
   // The tuple is used for both tuple origins (e.g. https://example.com:80), as
   // well as for opaque origins, where it tracks the tuple origin from which

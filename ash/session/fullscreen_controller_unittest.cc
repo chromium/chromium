@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace ash {
 namespace {
@@ -68,7 +69,7 @@ class FullscreenControllerTestBase : public AshTestBase {
   void CreateFullscreenWindow() {
     window_ = CreateTestWindow();
     window_->SetProperty(aura::client::kShowStateKey,
-                         ui::SHOW_STATE_FULLSCREEN);
+                         ui::mojom::WindowShowState::kFullscreen);
     SetPropertiesForNewFullscreenWindow(window_.get());
     window_state_ = WindowState::Get(window_.get());
   }

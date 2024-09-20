@@ -499,14 +499,12 @@
       ]
     },
 
-    // For regional Yahoo variants without a region-specific suggestion service,
-    // suggestion is disabled. For some of them, we might consider using one of
-    // the other language/country URLs as a fallback.
     "yahoo_dk": {
       "name": "Yahoo! Danmark",
       "keyword": "dk.yahoo.com",
       "favicon_url": "https://dk.search.yahoo.com/favicon.ico",
       "search_url": "https://dk.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://dk.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
       "id": 2,
       "regulatory_extensions": [
@@ -572,6 +570,7 @@
       "keyword": "fi.yahoo.com",
       "favicon_url": "https://fi.search.yahoo.com/favicon.ico",
       "search_url": "https://fi.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://fi.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
       "id": 2,
       "regulatory_extensions": [
@@ -749,6 +748,7 @@
       "keyword": "se.yahoo.com",
       "favicon_url": "https://se.search.yahoo.com/favicon.ico",
       "search_url": "https://se.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://se.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
       "id": 2,
       "regulatory_extensions": [
@@ -790,6 +790,7 @@
       "keyword": "tr.yahoo.com",
       "favicon_url": "https://tr.search.yahoo.com/favicon.ico",
       "search_url": "https://tr.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
+      "suggest_url": "https://tr.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
       "id": 2
     },

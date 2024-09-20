@@ -17,6 +17,7 @@
 @protocol LensOverlayCommands;
 @protocol LensToolbarConsumer;
 @class OmniboxCoordinator;
+class TemplateURLService;
 namespace web {
 class WebState;
 }  // namespace web
@@ -44,6 +45,9 @@ class WebState;
 
 /// Active`webState` observed by this mediator.
 @property(nonatomic, assign) web::WebState* webState;
+
+/// TemplateURLService to observe default search engine change.
+@property(nonatomic, assign) TemplateURLService* templateURLService;
 
 /// Releases managed objects.
 - (void)disconnect;

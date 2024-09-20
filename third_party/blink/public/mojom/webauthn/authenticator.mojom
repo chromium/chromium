@@ -357,6 +357,10 @@ struct PublicKeyCredentialRequestOptions {
   // authenticator.
   bool is_conditional;
 
+  // Aflag word corresponding to the flags in credential_type_flags.mojom,
+  // representing the types of credentials that were indicated in the request.
+  int32 requested_credential_type_flags;
+
   // An indefinite-length blob passed from the the relying party server,
   // to be sent to an authenticator for signing.
   array<uint8> challenge;

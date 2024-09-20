@@ -132,11 +132,12 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
             return windowInsetsCompat;
         }
 
-        // Ignore the input if the insets were not processed to find the widest unoccluded rect.
+        // Ignore the input if the insets were not used to adjust any view.
         if (!maybeUpdateWidestUnoccludedRect(windowInsetsCompat)) {
             return windowInsetsCompat;
         }
 
+        // Consume the insets if used to adjust any view.
         return new WindowInsetsCompat.Builder(windowInsetsCompat)
                 .setInsets(mInsetType, Insets.NONE)
                 .build();
@@ -144,7 +145,8 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
 
     /**
      * @return Whether the applied window insets should be consumed by this class. {@code false}
-     *     when the window frame is empty, {@code true} otherwise.
+     *     when the insets are not used to adjust any view, {@code true} otherwise. The insets
+     *     should be consumed only if |mWidestUnoccludedRect| is non-empty to be customized.
      */
     private boolean maybeUpdateWidestUnoccludedRect(WindowInsetsCompat windowInsetsCompat) {
         // Do nothing if the window frame is empty, or there's no update from the cached insets, or
@@ -155,7 +157,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
 
         Rect windowRect = new Rect(0, 0, windowSize.getWidth(), windowSize.getHeight());
         if (windowInsetsCompat.equals(mCachedInsets) && windowRect.equals(mWindowRect)) {
-            return true;
+            return !mWidestUnoccludedRect.isEmpty();
         }
 
         mCachedInsets = windowInsetsCompat;
@@ -176,6 +178,6 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         for (Observer observer : mObservers) {
             observer.onBoundingRectsUpdated(mWidestUnoccludedRect);
         }
-        return true;
+        return !mWidestUnoccludedRect.isEmpty();
     }
 }

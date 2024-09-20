@@ -208,13 +208,6 @@ void MultideviceHandler::OnJavascriptAllowed() {
     camera_roll_manager_observation_.Observe(camera_roll_manager_.get());
   }
 
-  if (phonehub::BrowserTabsModelProviderImpl::
-          IsLacrosSessionSyncFeatureEnabled() &&
-      browser_tabs_model_provider_) {
-    browser_tabs_model_provider_observation_.Observe(
-        browser_tabs_model_provider_.get());
-  }
-
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           Profile::FromWebUI(web_ui()))) {
     pref_change_registrar_.Add(
@@ -261,14 +254,6 @@ void MultideviceHandler::OnJavascriptDisallowed() {
     DCHECK(camera_roll_manager_observation_.IsObservingSource(
         camera_roll_manager_.get()));
     camera_roll_manager_observation_.Reset();
-  }
-
-  if (phonehub::BrowserTabsModelProviderImpl::
-          IsLacrosSessionSyncFeatureEnabled() &&
-      browser_tabs_model_provider_) {
-    DCHECK(browser_tabs_model_provider_observation_.IsObservingSource(
-        browser_tabs_model_provider_));
-    browser_tabs_model_provider_observation_.Reset();
   }
 
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
@@ -743,18 +728,8 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
                                         ->GetFeatureSetupRequestSupported()
                                   : false);
 
-  bool is_lacros_session_sync_feature_enabled = phonehub::
-      BrowserTabsModelProviderImpl::IsLacrosSessionSyncFeatureEnabled();
-  page_content_dictionary.Set(kIsChromeOSSyncedSessionSharingEnabled,
-                              is_lacros_session_sync_feature_enabled);
-
-  if (is_lacros_session_sync_feature_enabled && browser_tabs_model_provider_) {
-    page_content_dictionary.Set(
-        kIsLacrosTabSyncEnabled,
-        browser_tabs_model_provider_->IsBrowserTabSyncEnabled());
-  } else {
-    page_content_dictionary.Set(kIsLacrosTabSyncEnabled, false);
-  }
+  page_content_dictionary.Set(kIsChromeOSSyncedSessionSharingEnabled, false);
+  page_content_dictionary.Set(kIsLacrosTabSyncEnabled, false);
 
   return page_content_dictionary;
 }

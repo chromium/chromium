@@ -28,6 +28,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/class_property.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -402,28 +403,34 @@ TEST_F(MultiWindowResizeControllerTest, WindowStateChange) {
   EXPECT_TRUE(IsShowing());
 
   // Maxmize one window should dismiss the resizer.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMaximized);
   EXPECT_FALSE(IsShowing());
 
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   generator->MoveMouseTo(w1_center_in_screen);
   ShowNow();
   EXPECT_TRUE(IsShowing());
 
   // Entering Fullscreen should dismiss the resizer.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kFullscreen);
   EXPECT_FALSE(IsShowing());
 
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   generator->MoveMouseTo(w1_center_in_screen);
   ShowNow();
   EXPECT_TRUE(IsShowing());
 
   // Minimize one window should dimiss the resizer.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMinimized);
   EXPECT_FALSE(IsShowing());
 
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   generator->MoveMouseTo(w1_center_in_screen);
   ShowNow();
   EXPECT_TRUE(IsShowing());

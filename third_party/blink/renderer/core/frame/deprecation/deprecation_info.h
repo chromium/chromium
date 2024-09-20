@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DEPRECATION_DEPRECATION_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DEPRECATION_DEPRECATION_INFO_H_
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -13,10 +14,12 @@ namespace blink {
 extern const char kNotDeprecated[];
 
 class DeprecationInfo final {
+  STACK_ALLOCATED();
+
  public:
   static const DeprecationInfo Create(WebFeature feature,
-                                      const String& type,
-                                      const String& message) {
+                                      const StringView& type,
+                                      const StringView& message) {
     return DeprecationInfo(feature, type, message);
   }
 
@@ -25,11 +28,13 @@ class DeprecationInfo final {
   }
 
   const WebFeature feature_;
-  const String type_;
-  const String message_;
+  const StringView type_;
+  const StringView message_;
 
  private:
-  DeprecationInfo(WebFeature feature, String type, String message)
+  DeprecationInfo(WebFeature feature,
+                  const StringView& type,
+                  const StringView& message)
       : feature_(feature), type_(type), message_(message) {}
 };
 

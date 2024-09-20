@@ -266,8 +266,6 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
 }
 
 void NetErrorHelper::EnablePageHelperFunctions() {
-  security_interstitials::SecurityInterstitialPageController::Install(
-      render_frame());
   NetErrorPageController::Install(
       render_frame(), weak_controller_delegate_factory_.GetWeakPtr());
 }

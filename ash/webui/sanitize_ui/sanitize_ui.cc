@@ -108,6 +108,8 @@ SanitizeDialogUI::SanitizeDialogUI(
        IDS_SANITIZE_DONE_BUTTON_CHROMEOS_INPUT},
       {"sanitizeDoneButtonChromeOSNetwork",
        IDS_SANITIZE_DONE_BUTTON_CHROMEOS_NETWORK},
+      {"sanitizeDoneButtonChromeSiteContent",
+       IDS_SANITIZE_DONE_BUTTON_CHROME_SITE_CONTENT},
       {"sanitizeDoneButtonChromeStartup",
        IDS_SANITIZE_DONE_BUTTON_CHROME_STARTUP},
       {"sanitizeDoneButtonChromeHomepage",

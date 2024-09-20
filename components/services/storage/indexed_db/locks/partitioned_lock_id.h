@@ -8,7 +8,7 @@
 #include <iosfwd>
 #include <string>
 
-namespace content {
+namespace content::indexed_db {
 
 struct PartitionedLockId {
   int partition;
@@ -22,6 +22,6 @@ bool operator<(const PartitionedLockId& x, const PartitionedLockId& y);
 bool operator==(const PartitionedLockId& x, const PartitionedLockId& y);
 bool operator!=(const PartitionedLockId& x, const PartitionedLockId& y);
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_ID_H_

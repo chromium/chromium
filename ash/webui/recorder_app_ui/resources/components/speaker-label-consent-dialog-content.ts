@@ -5,6 +5,7 @@
 import {css, html, LitElement} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n, NoArgStringName} from '../core/i18n.js';
+import {HELP_URL} from '../core/url_constants.js';
 
 // Since all string names need to be reported when recording user consent for
 // speaker label, we declare separate constants here and use it for both the
@@ -58,14 +59,13 @@ export class SpeakerLabelConsentDialogContent extends LitElement {
     const listItems = DESCRIPTION_LIST_ITEM_NAMES.map(
       (name) => html`<li>${i18n[name]}</li>`,
     );
-    // TODO: b/336963138 - Add correct link
     return html`
       ${i18n[DESCRIPTION_PREFIX_NAME]}
       <ul>
         ${listItems}
       </ul>
       ${i18n[DESCRIPTION_SUFFIX_NAME]}
-      <a href="javascript:;">${i18n[LINK_NAME]}</a>
+      <a href=${HELP_URL} target="_blank">${i18n[LINK_NAME]}</a>
     `;
   }
 }

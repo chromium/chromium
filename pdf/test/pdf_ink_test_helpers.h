@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/values.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/ink/src/ink/geometry/affine_transform.h"
 
 namespace chrome_pdf {
 
@@ -25,6 +27,24 @@ base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
     const std::string& type,
     double size,
     const TestAnnotationBrushMessageParams* params);
+
+MATCHER_P6(InkAffineTransformEq,
+           expected_a,
+           expected_b,
+           expected_c,
+           expected_d,
+           expected_e,
+           expected_f,
+           "") {
+  using testing::FloatEq;
+  using testing::Matches;
+  return Matches(FloatEq(expected_a))(arg.A()) &&
+         Matches(FloatEq(expected_b))(arg.B()) &&
+         Matches(FloatEq(expected_c))(arg.C()) &&
+         Matches(FloatEq(expected_d))(arg.D()) &&
+         Matches(FloatEq(expected_e))(arg.E()) &&
+         Matches(FloatEq(expected_f))(arg.F());
+}
 
 }  // namespace chrome_pdf
 

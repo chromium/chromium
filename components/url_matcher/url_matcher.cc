@@ -176,16 +176,6 @@ URLMatcherCondition::URLMatcherCondition(
     const MatcherStringPattern* string_pattern)
     : criterion_(criterion), string_pattern_(string_pattern) {}
 
-URLMatcherCondition::URLMatcherCondition(const URLMatcherCondition& rhs)
-    : criterion_(rhs.criterion_), string_pattern_(rhs.string_pattern_) {}
-
-URLMatcherCondition& URLMatcherCondition::operator=(
-    const URLMatcherCondition& rhs) {
-  criterion_ = rhs.criterion_;
-  string_pattern_ = rhs.string_pattern_;
-  return *this;
-}
-
 bool URLMatcherCondition::operator<(const URLMatcherCondition& rhs) const {
   if (criterion_ < rhs.criterion_)
     return true;

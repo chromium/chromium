@@ -10,7 +10,7 @@ package J;
 
 public class N {
     public static final long WHOLE_HASH = 2249885413155022725L;
-    public static final long PRIORITY_HASH = 2249885413155022725L;
+    public static final long PRIORITY_HASH = 0L;
 
 
     public static native Object _O_O(int switch_num, Object object_param1);

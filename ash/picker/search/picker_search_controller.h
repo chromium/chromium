@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/picker/picker_category.h"
 #include "ash/picker/search/picker_search_aggregator.h"
 #include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/views/picker_view_delegate.h"
-#include "ash/public/cpp/picker/picker_category.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -23,21 +23,29 @@
 #include "chromeos/ash/components/emoji/emoji_search.h"
 #include "components/prefs/pref_change_registrar.h"
 
+class PrefService;
+
 namespace ash {
 
 class PickerClient;
 
 class ASH_EXPORT PickerSearchController {
  public:
-  explicit PickerSearchController(PickerClient* client,
-                                  base::TimeDelta burn_in_period);
+  explicit PickerSearchController(base::TimeDelta burn_in_period);
   PickerSearchController(const PickerSearchController&) = delete;
   PickerSearchController& operator=(const PickerSearchController&) = delete;
   ~PickerSearchController();
 
-  void LoadEmojiLanguagesFromPrefs();
+  // Adds emoji keywords for enabled languages in `prefs` and whenever the
+  // enabled languages change. This does not unload any keywords loaded
+  // previously. `prefs` can be null, which stops this class from listening to
+  // changes to prefs.
+  void LoadEmojiLanguagesFromPrefs(PrefService* prefs);
 
-  void StartSearch(std::u16string_view query,
+  // `client` must remain valid until `StopSearch` is called or until this
+  // object is destroyed.
+  void StartSearch(PickerClient* client,
+                   std::u16string_view query,
                    std::optional<PickerCategory> category,
                    PickerSearchRequest::Options search_options,
                    PickerViewDelegate::SearchResultsCallback callback);
@@ -45,6 +53,7 @@ class ASH_EXPORT PickerSearchController {
   void StopSearch();
 
   void StartEmojiSearch(
+      PrefService* prefs,
       std::u16string_view query,
       PickerViewDelegate::EmojiSearchResultsCallback callback);
 
@@ -56,8 +65,6 @@ class ASH_EXPORT PickerSearchController {
 
  private:
   void LoadEmojiLanguages(PrefService* pref);
-
-  const raw_ref<PickerClient> client_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

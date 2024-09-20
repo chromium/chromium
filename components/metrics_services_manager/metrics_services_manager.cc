@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -268,20 +269,25 @@ void MetricsServicesManager::UpdateStructuredMetricsService() {
 
 void MetricsServicesManager::UpdateUploadPermissions(bool may_upload) {
   if (metrics_service_client_->IsMetricsReportingForceEnabled()) {
-    UpdatePermissions(true, true, true);
+    UpdatePermissions(/*current_may_record=*/true,
+                      /*current_consent_given=*/true,
+                      /*current_may_upload=*/true);
     return;
   }
 
-  UpdatePermissions(client_->IsMetricsReportingEnabled(),
-                    client_->IsMetricsConsentGiven(), may_upload);
+  const auto& enable_state_provider = client_->GetEnabledStateProvider();
+  UpdatePermissions(
+      /*current_may_record=*/enable_state_provider.IsReportingEnabled(),
+      /*current_consent_given=*/enable_state_provider.IsConsentGiven(),
+      may_upload);
 }
 
 bool MetricsServicesManager::IsMetricsReportingEnabled() const {
-  return client_->IsMetricsReportingEnabled();
+  return client_->GetEnabledStateProvider().IsReportingEnabled();
 }
 
 bool MetricsServicesManager::IsMetricsConsentGiven() const {
-  return client_->IsMetricsConsentGiven();
+  return client_->GetEnabledStateProvider().IsConsentGiven();
 }
 
 bool MetricsServicesManager::IsUkmAllowedForAllProfiles() {

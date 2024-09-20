@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display/draw_polygon.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <cmath>
 #include <utility>
 #include <vector>
@@ -70,7 +66,7 @@ DrawPolygon::DrawPolygon(const DrawQuad* original_ref,
       order_index_(draw_order_index),
       original_ref_(original_ref),
       is_split_(false) {
-  gfx::Point3F points[6];
+  std::array<gfx::Point3F, 6> points;
   int num_vertices_in_clipped_quad;
   gfx::QuadF send_quad(visible_layer_rect);
 

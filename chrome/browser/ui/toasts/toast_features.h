@@ -22,6 +22,10 @@ extern const base::FeatureParam<bool> kToastDemoMode;
 // closing.
 extern const base::FeatureParam<base::TimeDelta> kToastTimeout;
 
+// The amount of time an ephemeral toast without an action should show before
+// automatically closing.
+extern const base::FeatureParam<base::TimeDelta> kToastWithoutActionTimeout;
+
 // Individual toasts
 BASE_DECLARE_FEATURE(kLinkCopiedToast);
 BASE_DECLARE_FEATURE(kImageCopiedToast);

@@ -68,7 +68,8 @@ import org.chromium.ui.test.util.UiRestriction;
 @EnableFeatures({
     ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
     ChromeFeatureList.DRAW_EDGE_TO_EDGE,
-    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+    ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
 })
 public class EdgeToEdgeInstrumentationTest {
     @ClassRule

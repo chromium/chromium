@@ -309,10 +309,8 @@ bool HasOccludingDamageRect(
   // surface_damage_rect_list[0] is the one on the very top.
   // surface_damage_rect_list[overlay_damage_index] is the damage rect of
   // this overlay surface.
-  gfx::Rect occluding_damage_rect;
-  for (size_t i = 0; i < overlay_damage_index; ++i) {
-    occluding_damage_rect.Union(surface_damage_rect_list[i]);
-  }
+  gfx::Rect occluding_damage_rect = gfx::UnionRects(
+      base::make_span(surface_damage_rect_list).first(overlay_damage_index));
   occluding_damage_rect.Intersect(quad_rect_in_target_space);
 
   return !occluding_damage_rect.IsEmpty();
@@ -661,14 +659,16 @@ std::optional<OverlayCandidate> DCLayerOverlayProcessor::FromTextureOrYuvQuad(
 
 DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     int allowed_yuv_overlay_count,
+    bool disable_video_overlay_if_moving,
     bool skip_initialization_for_testing)
     : has_overlay_support_(skip_initialization_for_testing),
       allowed_yuv_overlay_count_(allowed_yuv_overlay_count),
       is_on_battery_power_(
           base::PowerMonitor::GetInstance()
               ->AddPowerStateObserverAndReturnOnBatteryState(this)),
-      no_undamaged_overlay_promotion_(base::FeatureList::IsEnabled(
-          features::kNoUndamagedOverlayPromotion)) {
+      no_undamaged_overlay_promotion_(
+          base::FeatureList::IsEnabled(features::kNoUndamagedOverlayPromotion)),
+      disable_video_overlay_if_moving_(disable_video_overlay_if_moving) {
   if (!skip_initialization_for_testing) {
     UpdateHasHwOverlaySupport();
     UpdateSystemHDRStatus();
@@ -711,8 +711,11 @@ void DCLayerOverlayProcessor::UpdateAutoHDRVideoProcessorSupport() {
   has_auto_hdr_video_processor_support_ = gl::VideoProcessorAutoHDRSupported();
 }
 
-void DCLayerOverlayProcessor::OnPowerStateChange(bool on_battery_power) {
-  is_on_battery_power_ = on_battery_power;
+void DCLayerOverlayProcessor::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  is_on_battery_power_ =
+      (battery_power_status ==
+       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 }
 
 // Called on the Viz Compositor thread.
@@ -1122,8 +1125,7 @@ void DCLayerOverlayProcessor::Process(
   // Recount the YUV overlays when they are added to the overlay list
   // successfully.
   global_overlay_state.processed_yuv_overlay_count = 0;
-
-  if (base::FeatureList::IsEnabled(features::kDisableVideoOverlayIfMoving)) {
+  if (disable_video_overlay_if_moving_) {
     RemoveClearVideoQuadCandidatesIfMoving(
         resource_provider, render_pass_overlay_data_map, render_pass_state_map);
   }

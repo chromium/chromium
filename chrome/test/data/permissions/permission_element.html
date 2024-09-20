@@ -50,6 +50,11 @@
         el.style.fontSize = 'small';
       });
     }
+
+    window.addEventListener('message', function(event) {
+      setFontSizeSmall();
+      clickById(event.data);
+    });
   </script>
 </body>
 </html>

@@ -31,6 +31,7 @@ public class PdfPage extends BasicNativePage {
      * @param url The pdf url, which could be a pdf link, content uri or file uri.
      * @param pdfInfo Information of the pdf.
      * @param defaultTitle Default title of the pdf page.
+     * @param tabId The id of the tab.
      */
     public PdfPage(
             NativePageHost host,
@@ -38,7 +39,8 @@ public class PdfPage extends BasicNativePage {
             Activity activity,
             String url,
             PdfInfo pdfInfo,
-            String defaultTitle) {
+            String defaultTitle,
+            int tabId) {
         super(host);
 
         mIsDownloadSafe = pdfInfo.isDownloadSafe;
@@ -52,7 +54,7 @@ public class PdfPage extends BasicNativePage {
                         ? PdfUtils.getFileNameFromUrl(decodedUrl, defaultTitle)
                         : pdfInfo.filename;
         mUrl = url;
-        mPdfCoordinator = new PdfCoordinator(profile, activity, filepath);
+        mPdfCoordinator = new PdfCoordinator(profile, activity, filepath, tabId);
         mIsIncognito = profile.isOffTheRecord();
         initWithView(mPdfCoordinator.getView());
     }

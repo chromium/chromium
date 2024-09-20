@@ -208,13 +208,13 @@ void FromRefNoSuchFunctionForIntLiteral() {
 }
 
 void FromRefLifetimeBoundErrorForIntLiteral() {
-  // Testing that `ABSL_ATTRIBUTE_LIFETIME_BOUND` works as intended.
+  // Testing that `LIFETIME_BOUND` works as intended.
   [[maybe_unused]] auto wont_work =
       span_from_ref<const int>(123);  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
 }
 
 void FromRefLifetimeBoundErrorForTemporaryStringObject() {
-  // Testing that `ABSL_ATTRIBUTE_LIFETIME_BOUND` works as intended.
+  // Testing that `LIFETIME_BOUND` works as intended.
   [[maybe_unused]] auto wont_work =
       span_from_ref<const std::string>("temporary string");  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
 }

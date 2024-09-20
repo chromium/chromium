@@ -4,11 +4,14 @@
 
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "base/check.h"
+#include "base/uuid.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 
 namespace {
 
@@ -53,7 +56,8 @@ void YouTubeMusicController::OnActiveUserSessionChanged(
   }
 
   clients_[active_id] =
-      FocusModeController::Get()->delegate()->CreateYouTubeMusicClient();
+      FocusModeController::Get()->delegate()->CreateYouTubeMusicClient(
+          active_id, GetDeviceId());
 }
 
 youtube_music::YouTubeMusicClient* YouTubeMusicController::GetActiveClient()
@@ -120,6 +124,24 @@ bool YouTubeMusicController::ReportPlayback(
   client->ReportPlayback(playback_reporting_token, playback_data,
                          std::move(callback));
   return true;
+}
+
+std::string YouTubeMusicController::GetDeviceId() {
+  // Device ids are unique to the device + user and stable across reboot. So,
+  // they're generated per user and stored in prefs.
+  auto* const pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  const std::string& device_id =
+      pref_service->GetString(prefs::kFocusModeDeviceId);
+  if (!device_id.empty()) {
+    return device_id;
+  }
+
+  // A new UUID needs to be generated.
+  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  const std::string uuid_string = uuid.AsLowercaseString();
+  pref_service->SetString(prefs::kFocusModeDeviceId, uuid_string);
+  return uuid_string;
 }
 
 }  // namespace ash::youtube_music

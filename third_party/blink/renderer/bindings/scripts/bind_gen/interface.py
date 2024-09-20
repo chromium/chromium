@@ -857,17 +857,28 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
             _, api_call = api_calls[0]
             if is_return_type_void:
                 nodes.append(F("{};", api_call))
-            elif "ReflectOnly" in cg_context.member_like.extended_attributes:
-                # [ReflectOnly]
-                nodes.append(F("auto ${return_value} = {};", api_call))
             elif is_return_type_promise:
                 return_type = "ScriptPromise<{}>".format(
                     native_value_tag(
                         cg_context.return_type.unwrap().result_type))
                 nodes.append(
                     F("{} ${return_value} = {};", return_type, api_call))
+            elif "ReflectOnly" in cg_context.member_like.extended_attributes:
+                # [ReflectOnly]
+                nodes.append(F("auto ${return_value} = {};", api_call))
             else:
                 nodes.append(F("auto&& ${return_value} = {};", api_call))
+                if (not cg_context.does_override_idl_return_type
+                        and not "PromiseIDLTypeMismatch"
+                        in cg_context.member_like.extended_attributes):
+                    return_type = native_value_tag(cg_context.return_type)
+                    idl_return_type = cg_context.return_type
+                    nodes.append(
+                        F(
+                            "static_assert(bindings::IsReturnTypeCompatible<{}, std::remove_cvref_t<decltype(${return_value})>>, \"{}\");",
+                            return_type,
+                            "Return type from native call is incompatible to the type specified in IDL"
+                        ))
         else:
             branches = SequenceNode()
             for index, api_call in api_calls:
@@ -1011,7 +1022,7 @@ def make_check_constructor_call(cg_context):
     return node
 
 
-def make_check_coop_restrict_properties_access(cg_context):
+def make_check_proxy_access(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     T = TextNode
@@ -1023,8 +1034,9 @@ def make_check_coop_restrict_properties_access(cg_context):
     if "CrossOrigin" not in ext_attrs:
         return None
 
-    # COOP: restrict-properties never restricts postMessage() and closed
-    # accesses, which should still be possible across browsing context groups.
+    # COOP: restrict-properties and Partitioned Popins never restrict
+    # postMessage() and closed accesses, which should still be possible across
+    # browsing context groups.
     if cg_context.property_.identifier in ("postMessage", "closed"):
         return None
 
@@ -1040,15 +1052,13 @@ def make_check_coop_restrict_properties_access(cg_context):
         error_exit_return_statement = "return;"
 
     return CxxUnlikelyIfNode(
-        cond=("${blink_receiver}->"
-              "IsAccessBlockedByCoopRestrictProperties(${isolate})"),
+        cond=
+        ("auto reason = ${blink_receiver}->GetProxyAccessBlockedReason(${isolate})"
+         ),
         attribute="[[unlikely]]",
         body=[
-            T("""\
-${exception_state}.ThrowSecurityError(
-"Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
-"Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.");\
-"""),
+            T("${exception_state}.ThrowSecurityError("
+              "DOMWindow::GetProxyAccessBlockedExceptionMessage(*reason));"),
             T(error_exit_return_statement),
         ])
 
@@ -1867,12 +1877,19 @@ def make_v8_set_return_value(cg_context):
         return CxxBlockNode([
             T("ExecutionContext* node_execution_context = "
               "${blink_receiver}->root()->GetExecutionContext();"),
-            T("ScriptState* node_script_state = node_execution_context ? "
-              "ToScriptState(node_execution_context, ${script_state}->World()) "
-              ": ${script_state};"),
-            CxxUnlikelyIfNode(cond=T("!node_script_state"),
-                              attribute="[[unlikely]]",
-                              body=null_context_body),
+            T("ScriptState* node_script_state = ${script_state};"),
+            CxxUnlikelyIfNode(
+                cond=T("node_execution_context && "
+                       "${execution_context} != node_execution_context"),
+                attribute="[[unlikely]]",
+                body=[
+                    T("node_script_state = "
+                      "ToScriptState(node_execution_context, "
+                      "${script_state}->World());"),
+                    CxxUnlikelyIfNode(cond=T("!node_script_state"),
+                                      attribute="[[unlikely]]",
+                                      body=null_context_body)
+                ]),
             T("// [NodeWrapInOwnContext]"),
             F(
                 "v8::Local<v8::Value> v8_value = "
@@ -2026,7 +2043,7 @@ def make_attribute_get_callback_def(cg_context, function_name):
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
-        make_check_coop_restrict_properties_access(cg_context),
+        make_check_proxy_access(cg_context),
         EmptyNode(),
         make_return_value_cache_return_early(cg_context),
         EmptyNode(),
@@ -2704,7 +2721,7 @@ def make_operation_function_def(cg_context, function_name):
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
-        make_check_coop_restrict_properties_access(cg_context),
+        make_check_proxy_access(cg_context),
         EmptyNode(),
         make_check_argument_length(cg_context),
         EmptyNode(),
@@ -3905,7 +3922,7 @@ def make_cross_origin_indexed_getter_callback(cg_context, function_name):
     # Do this before the index verification below, because we do not want to
     # reveal any information about the number of frames in this window.
     body.extend([
-        make_check_coop_restrict_properties_access(cg_context),
+        make_check_proxy_access(cg_context),
         EmptyNode(),
     ])
 
@@ -7143,6 +7160,7 @@ def generate_class_like(class_like,
         (class_like.code_generator_info.blink_headers
          and class_like.code_generator_info.blink_headers[0]),
         "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+        "third_party/blink/renderer/bindings/core/v8/is_return_type_compatible.h",
     ])
     if interface and interface.inherited:
         api_source_node.accumulator.add_include_headers(
@@ -7157,6 +7175,7 @@ def generate_class_like(class_like,
         (class_like.code_generator_info.blink_headers
          and class_like.code_generator_info.blink_headers[0]),
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
+        "third_party/blink/renderer/bindings/core/v8/is_return_type_compatible.h",
         "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h",
         "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
         "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h",

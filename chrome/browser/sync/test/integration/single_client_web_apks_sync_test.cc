@@ -6,6 +6,7 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/android/webapk/webapk_registrar.h"
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
+#include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/webapks_helper.h"
@@ -114,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, UploadsAllFields) {
 
   sync_pb::WebApkIconInfo icon_info_copy = *icon_info;
 
-  webapk::WebApkSyncService::GetForProfile(GetProfile(0))
+  webapk::WebApkSyncServiceFactory::GetForProfile(GetProfile(0))
       ->OnWebApkUsed(std::move(app), /*is_install=*/false);
 
   // Note: the local proto says is_locally_installed = true because of the call
@@ -196,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   webapk::WebApkSyncService* web_apk_sync_service =
-      webapk::WebApkSyncService::GetForProfile(GetProfile(0));
+      webapk::WebApkSyncServiceFactory::GetForProfile(GetProfile(0));
 
   // Use a WebAPK before sync is turned on.
   std::unique_ptr<WebApkSpecifics> app1 = std::make_unique<WebApkSpecifics>();
@@ -287,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
           .InMicroseconds());
 
   webapk::WebApkSyncService* web_apk_sync_service =
-      webapk::WebApkSyncService::GetForProfile(GetProfile(0));
+      webapk::WebApkSyncServiceFactory::GetForProfile(GetProfile(0));
 
   web_apk_sync_service->OnWebApkUsed(std::move(app), /*is_install=*/false);
 
@@ -315,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
       base::DefaultClock().Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   webapk::WebApkSyncService* web_apk_sync_service =
-      webapk::WebApkSyncService::GetForProfile(GetProfile(0));
+      webapk::WebApkSyncServiceFactory::GetForProfile(GetProfile(0));
   web_apk_sync_service->OnWebApkUsed(std::move(app), /*is_install=*/false);
 
   EXPECT_TRUE(WaitForLocalWebApks(UnorderedElementsAre(
@@ -339,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, MergesSyncConflicts) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   webapk::WebApkSyncService* web_apk_sync_service =
-      webapk::WebApkSyncService::GetForProfile(GetProfile(0));
+      webapk::WebApkSyncServiceFactory::GetForProfile(GetProfile(0));
 
   // Start with 2 distinct apps on the sync server, which get synced to the
   // client.
@@ -490,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
       ServerManifestIdIs(manifest_id_3), ServerManifestIdIs(manifest_id_4))));
 
   webapk::WebApkSyncService* web_apk_sync_service =
-      webapk::WebApkSyncService::GetForProfile(GetProfile(0));
+      webapk::WebApkSyncServiceFactory::GetForProfile(GetProfile(0));
 
   // Note that normally this gets called as a deferred startup task on every
   // Chrome launch on Android:

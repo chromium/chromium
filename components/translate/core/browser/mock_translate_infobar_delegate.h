@@ -59,14 +59,10 @@ class MockTranslateInfoBarDelegate
   MOCK_METHOD1(UpdateTargetLanguage, void(const std::string& language_code));
   MOCK_METHOD1(UpdateSourceLanguage, void(const std::string& language_code));
 
-  void GetLanguagesNames(std::vector<std::u16string>* languages) const override;
-  void GetLanguagesCodes(
-      std::vector<std::string>* languages_codes) const override;
   void SetTranslateLanguagesForTest(
       std::vector<std::pair<std::string, std::u16string>> languages);
 
   void SetContentLanguagesCodesForTest(std::vector<std::string> languages);
-  void GetContentLanguagesCodes(std::vector<std::string>* codes) const override;
 
  private:
   std::vector<std::pair<std::string, std::u16string>> languages_;

@@ -485,7 +485,8 @@ WebContentsInteractionTestUtil::DeepQuery HotspotSSIDInput() {
 namespace wifi {
 
 WebContentsInteractionTestUtil::DeepQuery WifiNetworksList() {
-  return InternetPage() + "settings-internet-subpage" + "div#networkListDiv";
+  return InternetPage() + "settings-internet-subpage" +
+         "network-list#networkList";
 }
 
 WebContentsInteractionTestUtil::DeepQuery WifiSubpageEnableToggle() {
@@ -713,6 +714,13 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceDetailSubpage() {
 
 WebContentsInteractionTestUtil::DeepQuery BluetoothChangeDeviceNameButton() {
   return BluetoothDeviceDetailSubpage() + "cr-button#changeNameBtn";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothBatteryPercentage() {
+  return BluetoothDeviceDetailSubpage() +
+         "bluetooth-device-battery-info#batteryInfo" +
+         "bluetooth-battery-icon-percentage#defaultBattery" +
+         "span#batteryPercentage";
 }
 
 WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDeviceButton() {

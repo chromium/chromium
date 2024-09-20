@@ -139,6 +139,12 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void TestIncrementUsbActiveFrameCount() override;
   void TestDecrementUsbActiveFrameCount() override;
 
+  void TestIncrementHidActiveFrameCount() override;
+  void TestDecrementHidActiveFrameCount() override;
+
+  void TestIncrementSerialActiveFrameCount() override;
+  void TestDecrementSerialActiveFrameCount() override;
+
   void TestIncrementBluetoothConnectedDeviceCount() override;
   void TestDecrementBluetoothConnectedDeviceCount() override;
 

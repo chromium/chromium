@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/sync/engine/shutdown_reason.h"
-#include "components/sync/base/sync_stop_metadata_fate.h"
 
 #include "base/notreached.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
 
 namespace syncer {
 

@@ -8,12 +8,12 @@
  * settings.
  */
 
-import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
-import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
-import 'chrome://resources/cros_components/badge/badge.js'; // side-effect
 import '../icons.html.js';
 import '../settings_shared.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSliderElement} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
@@ -484,6 +484,18 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     const styleTransferToggle = strictQuery(
         '#audioInputStyleTransferToggle', this.shadowRoot, CrToggleElement);
     this.crosAudioConfig_.setStyleTransferEnabled(!styleTransferToggle.checked);
+  }
+
+  private onStyleTransferLearnMoreLinkClicked_(event: Event): void {
+    const path = event.composedPath();
+    if (!Array.isArray(path) || !path.length) {
+      return;
+    }
+
+    if ((path[0] as HTMLElement).tagName === 'A') {
+      // Do not toggle if the contained link is clicked.
+      event.stopPropagation();
+    }
   }
 }
 

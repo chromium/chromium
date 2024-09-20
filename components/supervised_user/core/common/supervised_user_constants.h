@@ -148,7 +148,7 @@ extern const char kFamilyMemberRoleFeedbackTag[];
 // Histogram name for the ::ClassifyUrlLoaderThrottle
 extern const char kClassifiedEarlierThanContentResponseHistogramName[];
 extern const char kClassifiedLaterThanContentResponseHistogramName[];
-
+extern const char kClassifyUrlThrottleStatusHistogramName[];
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

@@ -546,7 +546,7 @@ suite('PasswordsSectionTest', function() {
       });
 
   test('Should not show local credentials icon', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
@@ -566,7 +566,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('Should show local credentials icon', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
       isSyncingPasswords: false,

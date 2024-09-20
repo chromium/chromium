@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/capture/web_contents_video_capture_device.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -161,7 +162,10 @@ void WebContentsFrameTracker::WillStartCapturingWebContents(
   }
 
   capture_size_ = capture_size;
-  is_high_dpi_enabled_ = is_high_dpi_enabled;
+  is_high_dpi_enabled_ =
+      is_high_dpi_enabled &&
+      base::FeatureList::IsEnabled(media::kWebContentsCaptureHiDpi) &&
+      !GpuDataManagerImpl::GetInstance()->IsGpuCompositingDisabled();
   context_->IncrementCapturerCount(CalculatePreferredSize(capture_size));
   is_capturing_ = true;
 }
@@ -191,12 +195,11 @@ void WebContentsFrameTracker::SetCapturedContentSize(
 
   // For efficiency, this function should only be called when the captured
   // content size changes. The caller is responsible for enforcing that.
-
   TRACE_EVENT_INSTANT1(
       "gpu.capture", "WebContentsFrameTracker::SetCapturedContentSize",
       TRACE_EVENT_SCOPE_THREAD, "content_size", content_size.ToString());
-  if (base::FeatureList::IsEnabled(media::kWebContentsCaptureHiDpi) &&
-      is_high_dpi_enabled_) {
+
+  if (is_high_dpi_enabled_) {
     // Now that we have a new content size, reset some related values.
     content_size_ = content_size;
     max_capture_scale_override_ = kMaxCaptureScaleOverride;

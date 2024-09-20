@@ -15,9 +15,15 @@
 
 // static
 MailtoHandlerService* MailtoHandlerServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+MailtoHandlerService* MailtoHandlerServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<MailtoHandlerService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

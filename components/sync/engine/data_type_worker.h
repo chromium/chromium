@@ -103,8 +103,8 @@ enum class PendingInvalidationStatus {
 //
 // Lives on the sync sequence.
 class DataTypeWorker : public UpdateHandler,
-                        public CommitContributor,
-                        public CommitQueue {
+                       public CommitContributor,
+                       public CommitQueue {
  public:
   // Public for testing.
   enum DecryptionStatus { SUCCESS, DECRYPTION_PENDING, FAILED_TO_DECRYPT };

@@ -136,7 +136,6 @@ class ScopedSharedImageAccess {
 
 const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
   DCHECK(video_frame->HasTextures());
-  DCHECK_EQ(video_frame->NumTextures(), 1u);
 
   DCHECK(PIXEL_FORMAT_ARGB == video_frame->format() ||
          PIXEL_FORMAT_XRGB == video_frame->format() ||
@@ -1710,6 +1709,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   }
   // Could handle NV12 here as well. See NewSkImageFromVideoFrameYUV.
 
+  CHECK(!video_frame->HasTextures());
   DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
   auto* sii = raster_context_provider->SharedImageInterface();
@@ -1982,23 +1982,14 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 
       // Copy into the texture backing of the cached copy. This supports
       // multiplanar shared images.
-      if (video_frame->NumTextures() == 1) {
-        const gpu::MailboxHolder& frame_mailbox_holder =
-            GetVideoFrameMailboxHolder(video_frame.get());
-        ri->WaitSyncTokenCHROMIUM(
-            frame_mailbox_holder.sync_token.GetConstData());
-        ri->CopySharedImage(
-            frame_mailbox_holder.mailbox, mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
-            video_frame->coded_size().width(),
-            video_frame->coded_size().height(),
-            !video_frame->metadata().texture_origin_is_top_left, GL_FALSE);
-      } else {
-        DCHECK(video_frame->metadata().texture_origin_is_top_left);
-        gpu::MailboxHolder dest_holder{mailbox, gpu::SyncToken(),
-                                       GL_TEXTURE_2D};
-        VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-            video_frame.get(), raster_context_provider, dest_holder);
-      }
+      const gpu::MailboxHolder& frame_mailbox_holder =
+          GetVideoFrameMailboxHolder(video_frame.get());
+      ri->WaitSyncTokenCHROMIUM(frame_mailbox_holder.sync_token.GetConstData());
+      ri->CopySharedImage(
+          frame_mailbox_holder.mailbox, mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
+          video_frame->coded_size().width(), video_frame->coded_size().height(),
+          !video_frame->metadata().texture_origin_is_top_left, GL_FALSE);
+
       if (!gpu_rasterization) {
         raster_context_provider->GrContext()->flushAndSubmit();
       }
@@ -2072,7 +2063,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 
 bool PaintCanvasVideoRenderer::CanUseCopyVideoFrameToSharedImage(
     const VideoFrame& video_frame) {
-  return video_frame.NumTextures() == 1 ||
+  return video_frame.HasTextures() ||
          VideoFrameYUVConverter::IsVideoFrameFormatSupported(video_frame);
 }
 
@@ -2086,7 +2077,7 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
   // If we have single source shared image (either single-plane,
   // legacy-multiplanar with external sampler, or multiplanar), just use
   // CopySharedImage().
-  if (video_frame->NumTextures() == 1) {
+  if (video_frame->HasTextures()) {
     const auto& source = video_frame->mailbox_holder(0);
     auto source_rect = use_visible_rect ? video_frame->visible_rect()
                                         : gfx::Rect(video_frame->coded_size());
@@ -2101,8 +2092,9 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     yuv_gr_params.use_visible_rect = use_visible_rect;
 
     // TODO(vasilyt): Add caching support
-    VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-        video_frame.get(), raster_context_provider, destination, yuv_gr_params);
+    VideoFrameYUVConverter converter;
+    converter.ConvertYUVVideoFrame(video_frame.get(), raster_context_provider,
+                                   destination, yuv_gr_params);
   }
 
   gpu::SyncToken sync_token;

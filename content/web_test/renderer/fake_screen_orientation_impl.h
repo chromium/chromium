@@ -5,11 +5,11 @@
 #ifndef CONTENT_WEB_TEST_RENDERER_FAKE_SCREEN_ORIENTATION_IMPL_H_
 #define CONTENT_WEB_TEST_RENDERER_FAKE_SCREEN_ORIENTATION_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 #include "ui/display/mojom/screen_orientation.mojom.h"
 
 namespace blink {
@@ -21,7 +21,8 @@ namespace content {
 
 // An implementation of mojom::ScreenOrientation for web tests, that lives in
 // the renderer process.
-class FakeScreenOrientationImpl : public device::mojom::ScreenOrientation {
+class FakeScreenOrientationImpl : public device::mojom::ScreenOrientation,
+                                  blink::WebViewObserver {
  public:
   explicit FakeScreenOrientationImpl();
   ~FakeScreenOrientationImpl() override;
@@ -47,6 +48,9 @@ class FakeScreenOrientationImpl : public device::mojom::ScreenOrientation {
                        LockOrientationCallback callback) override;
   void UnlockOrientation() override;
 
+  // WebViewObserver implementation.
+  void OnDestruct() override {}
+
  private:
   void UpdateLockSync(device::mojom::ScreenOrientationLockType,
                       LockOrientationCallback callback);
@@ -56,7 +60,6 @@ class FakeScreenOrientationImpl : public device::mojom::ScreenOrientation {
   bool IsOrientationAllowedByCurrentLock(display::mojom::ScreenOrientation);
   display::mojom::ScreenOrientation SuitableOrientationForCurrentLock();
 
-  raw_ptr<blink::WebView> web_view_ = nullptr;
   device::mojom::ScreenOrientationLockType current_lock_ =
       device::mojom::ScreenOrientationLockType::DEFAULT;
   display::mojom::ScreenOrientation device_orientation_ =

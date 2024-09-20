@@ -171,11 +171,19 @@ void WorkerMainScriptLoader::OnComplete(
   resource_response_.SetEncodedBodyLength(status.encoded_body_length);
   resource_response_.SetDecodedBodyLength(status.decoded_body_length);
   resource_response_.SetCurrentRequestUrl(last_request_url_);
-  mojom::blink::ResourceTimingInfoPtr timing_info = CreateResourceTimingInfo(
-      start_time_, initial_request_url_, &resource_response_);
-  timing_info->response_end = status.completion_time;
-  fetch_context_->AddResourceTiming(std::move(timing_info),
-                                    fetch_initiator_type_names::kOther);
+
+  // https://fetch.spec.whatwg.org/#fetch-finale
+  // Step 3.3.1. If fetchParams's request's URL's scheme is not an HTTP(S)
+  // scheme, then return.
+  //
+  // i.e. call `AddResourceTiming()` only if the URL's scheme is HTTP(S).
+  if (initial_request_url_.ProtocolIsInHTTPFamily()) {
+    mojom::blink::ResourceTimingInfoPtr timing_info = CreateResourceTimingInfo(
+        start_time_, initial_request_url_, &resource_response_);
+    timing_info->response_end = status.completion_time;
+    fetch_context_->AddResourceTiming(std::move(timing_info),
+                                      fetch_initiator_type_names::kOther);
+  }
 
   has_received_completion_ = true;
   status_ = status;

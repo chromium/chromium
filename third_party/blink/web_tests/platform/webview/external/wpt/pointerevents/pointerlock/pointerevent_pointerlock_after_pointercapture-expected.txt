@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: If you see this error we have a bug. Please report this bug to chromium.
-[FAIL] mouse no pointercapture while pointerlock
-  assert_equals: document.pointerLockElement should be div1. expected Element node <div id="div1" style="width:800px;height:250px;background... but got null
-Harness: the test ran to completion.

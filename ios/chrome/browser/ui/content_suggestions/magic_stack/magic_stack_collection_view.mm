@@ -6,9 +6,11 @@
 
 #import "base/check.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/numerics/safe_conversions.h"
+#import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
@@ -18,6 +20,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_edit_button_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_layout_configurator.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_collection_view_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/placeholder_config.h"
 
@@ -238,12 +241,12 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   _collectionView.backgroundColor = [UIColor clearColor];
 
   __weak MagicStackCollectionViewController* weakSelf = self;
-  auto configureModuleCell = ^(MagicStackModuleContainer* cell,
+  auto configureModuleCell = ^(MagicStackModuleCollectionViewCell* cell,
                                NSIndexPath* indexPath, MagicStackModule* item) {
     [weakSelf configureCell:cell withItem:item atIndex:indexPath.item];
   };
   _moduleCellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[MagicStackModuleContainer class]
+      registrationWithCellClass:[MagicStackModuleCollectionViewCell class]
            configurationHandler:configureModuleCell];
 
   auto configureEditButtonCell =
@@ -303,7 +306,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 }
 
 // Cell configuration handler helper.
-- (void)configureCell:(MagicStackModuleContainer*)cell
+- (void)configureCell:(MagicStackModuleCollectionViewCell*)cell
              withItem:(MagicStackModule*)item
               atIndex:(NSUInteger)index {
   cell.delegate = self.audience;
@@ -357,7 +360,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 
   // Find closest page to the current scroll offset.
   CGFloat closestPage = roundf(offset / moduleWidth);
-  closestPage = fminf(closestPage, moduleCount);
 
   if (velocity <= -kMagicStackMinimumPaginationScrollVelocity) {
     closestPage--;
@@ -369,12 +371,17 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     UMA_HISTOGRAM_EXACT_LINEAR(kMagicStackScrollToIndexHistogram, closestPage,
                                kMaxModuleHistogramIndex);
   }
+  closestPage = std::clamp<CGFloat>(closestPage, 0, moduleCount);
   _magicStackPage = closestPage;
-  NSArray<MagicStackModule*>* items =
-      [self.diffableDataSource.snapshot itemIdentifiers];
-  if ([items count] > 0 && !_hasSeenEphemeralCard &&
-      [self isCardEphemeral:items[_magicStackPage]]) {
-    [self.audience logEphemeralCardVisibility:items[_magicStackPage].type];
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::
+              kSegmentationPlatformEphemeralCardRanker)) {
+    NSArray<MagicStackModule*>* items =
+        [self.diffableDataSource.snapshot itemIdentifiers];
+    if ([items count] > 0 && !_hasSeenEphemeralCard &&
+        [self isCardEphemeral:items[_magicStackPage]]) {
+      [self.audience logEphemeralCardVisibility:items[_magicStackPage].type];
+    }
   }
   return _magicStackPage * (moduleWidth + kMagicStackSpacing) -
          [self peekOffsetForMagicStackPage:_magicStackPage];

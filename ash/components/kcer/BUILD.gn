@@ -1,0 +1,156 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+component("kcer") {
+  defines = [ "IS_KCER_IMPL" ]
+
+  sources = [
+    "cert_cache.cc",
+    "cert_cache.h",
+    "chaps/high_level_chaps_client.cc",
+    "chaps/high_level_chaps_client.h",
+    "chaps/session_chaps_client.cc",
+    "chaps/session_chaps_client.h",
+    "client_cert_identity_kcer.cc",
+    "client_cert_identity_kcer.h",
+    "extra_instances.cc",
+    "extra_instances.h",
+    "helpers/key_helper.cc",
+    "helpers/key_helper.h",
+    "helpers/pkcs12_reader.cc",
+    "helpers/pkcs12_reader.h",
+    "helpers/pkcs12_validator.cc",
+    "helpers/pkcs12_validator.h",
+    "kcer.cc",
+    "kcer.h",
+    "kcer_histograms.cc",
+    "kcer_histograms.h",
+    "kcer_impl.cc",
+    "kcer_impl.h",
+    "kcer_notifier_net.cc",
+    "kcer_notifier_net.h",
+    "kcer_nss/kcer_token_impl_nss.cc",
+    "kcer_nss/kcer_token_impl_nss.h",
+    "kcer_token.cc",
+    "kcer_token.h",
+    "kcer_token_impl.cc",
+    "kcer_token_impl.h",
+    "kcer_token_utils.cc",
+    "kcer_token_utils.h",
+    "kcer_utils.cc",
+    "kcer_utils.h",
+    "ssl_private_key_kcer.cc",
+    "ssl_private_key_kcer.h",
+    "token_key_finder.cc",
+    "token_key_finder.h",
+    "token_results_merger.h",
+  ]
+
+  public_deps = [ ":chaps_proto" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/chaps",
+    "//chromeos/constants",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//net",
+  ]
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/chaps_util" ]
+  }
+}
+
+proto_library("chaps_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/chaps/attributes.proto",
+    "//third_party/cros_system_api/dbus/chaps/key_permissions.proto",
+  ]
+  generate_python = false
+
+  proto_out_dir = "ash/components/kcer"
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "chaps/mock_high_level_chaps_client.cc",
+    "chaps/mock_high_level_chaps_client.h",
+    "chaps/mock_session_chaps_client.cc",
+    "chaps/mock_session_chaps_client.h",
+    "kcer_nss/test_utils.cc",
+    "kcer_nss/test_utils.h",
+  ]
+
+  deps = [
+    ":chaps_proto",
+    ":kcer",
+    "//base",
+    "//content/public/browser",
+    "//crypto",
+    "//crypto:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cert_cache_unittest.cc",
+    "chaps/high_level_chaps_client_unittest.cc",
+    "chaps/session_chaps_client_unittest.cc",
+    "client_cert_identity_kcer_unittest.cc",
+    "helpers/key_helper_unittest.cc",
+    "helpers/pkcs12_reader_unittest.cc",
+    "helpers/pkcs12_validator_unittest.cc",
+    "kcer_nss/kcer_nss_unittest.cc",
+    "kcer_token_impl_unittest.cc",
+    "ssl_private_key_kcer_unittest.cc",
+    "token_key_finder_unittest.cc",
+    "token_results_merger_unittest.cc",
+  ]
+
+  deps = [
+    ":chaps_proto",
+    ":kcer",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/chaps",
+    "//chromeos/constants:constants",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//crypto:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+fuzzer_test("kcer_nss_fuzzer") {
+  sources = [ "kcer_nss/kcer_nss_fuzzer.cc" ]
+
+  deps = [
+    ":chaps_proto",
+    ":kcer",
+    ":test_support",
+    "//base/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}

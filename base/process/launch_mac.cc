@@ -35,6 +35,11 @@ int responsibility_spawnattrs_setdisclaim(posix_spawnattr_t attrs,
 
 namespace base {
 
+void CheckPThreadStackMinIsSafe() {
+  static_assert(__builtin_constant_p(PTHREAD_STACK_MIN),
+                "Always constant on mac");
+}
+
 namespace {
 
 // DPSXCHECK is a Debug Posix Spawn Check macro. The posix_spawn* family of

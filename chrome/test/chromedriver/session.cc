@@ -20,11 +20,10 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/logging.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace {
 
-ABSL_CONST_INIT thread_local Session* session = nullptr;
+constinit thread_local Session* session = nullptr;
 
 }  // namespace
 

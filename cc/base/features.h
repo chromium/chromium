@@ -46,9 +46,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapPreferCloserCovering);
 // unified scroll with main-thread repaint reasons.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
 
-// When enabled, cc will show blink's Web-Vital metrics inside its heads up
-// display.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHudDisplayForPerformanceMetrics);
 
 // Whether RenderSurface::common_ancestor_clip_id() is used to clip to the
 // common ancestor clip when any contributing layer escapes the clip of the
@@ -154,11 +151,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
 // work is done regardless. When enabled this feature reduces extra calculation
 // to when tracing is enabled.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsTracingCalculationReduction);
-
-// Temporary features to enable the fix for b/328665503 independently from
-// adding the implementation.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPaintWithGainmapShader);
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPaintWithGlobalToneMapFilter);
 
 // When enabled we will restore older FrameSequenceTracker sequence order
 // enforcing that can miss backfilled frames.

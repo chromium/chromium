@@ -17,7 +17,7 @@ std::unique_ptr<FormFieldParser> SearchFieldParser::Parse(
     AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(
-      SEARCH_TERM, context.page_language, context.pattern_source);
+      SEARCH_TERM, context.page_language, context.pattern_file);
   if (ParseField(context, scanner, patterns, &field, "SEARCH_TERM")) {
     return std::make_unique<SearchFieldParser>(field);
   }

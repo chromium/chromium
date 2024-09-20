@@ -394,14 +394,9 @@ std::string UncompressFileAndGetFilename(std::string file_contents) {
 
 bool RefreshRemoteAllowed(FirmwareUpdateManager::Source source,
                           bool refresh_remote_for_testing,
-                          const NetworkState* network) {
+                          bool is_online,
+                          bool is_metered) {
   FIRMWARE_LOG(DEBUG) << "RefreshRemoteAllowed()";
-  DCHECK(NetworkHandler::IsInitialized());
-  if (!network) {
-    return false;
-  }
-  bool is_online = network->IsOnline();
-  bool is_metered = network->metered();
   const bool connection_ok =
       is_online &&
       (!is_metered || source == FirmwareUpdateManager::Source::kUI);
@@ -552,14 +547,12 @@ void FirmwareUpdateManager::ObservePeripheralUpdates(
 }
 
 void FirmwareUpdateManager::DefaultNetworkChanged(const NetworkState* network) {
-  FIRMWARE_LOG(DEBUG) << "DefaultNetworkChanged(): Fetching Updates: "
-                      << is_fetching_updates_
-                      << ", Pending refresh: " << is_refresh_pending_
+  FIRMWARE_LOG(DEBUG) << "DefaultNetworkChanged(): Pending refresh: "
+                      << is_refresh_pending_
                       << ", Default Network: " << (network != nullptr);
-  if (is_fetching_updates_ || !is_refresh_pending_) {
-    return;
+  if (is_refresh_pending_) {
+    RequestAllUpdates(Source::kNetworkChange);
   }
-  CheckRequirementsAndMaybeRefreshRemote(Source::kNetworkChange, network);
 }
 
 // TODO(michaelcheco): Handle the case where the app is closed during an
@@ -597,32 +590,32 @@ void FirmwareUpdateManager::RequestAllUpdates(Source source) {
     return;
   }
 
-  if (should_show_notification_for_test_) {
-    // Short circuit to immediately display notification.
-    NotifyCriticalFirmwareUpdateReceived();
-    return;
-  }
-
   if (is_fetching_updates_) {
     FIRMWARE_LOG(DEBUG)
         << "One instance of RequestAllUpdates already is progress; skipped";
     return;
   }
 
+  if (should_show_notification_for_test_) {
+    // Short circuit to immediately display notification.
+    NotifyCriticalFirmwareUpdateReceived();
+    return;
+  }
+
   FIRMWARE_LOG(USER) << "RequestAllUpdates: " << static_cast<int>(source);
   is_refresh_pending_ = true;
-  CheckRequirementsAndMaybeRefreshRemote(
-      source, NetworkHandler::Get()->network_state_handler()->DefaultNetwork());
-}
-
-void FirmwareUpdateManager::CheckRequirementsAndMaybeRefreshRemote(
-    Source source,
-    const NetworkState* network) {
   is_fetching_updates_ = true;
+  const NetworkState* network =
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
+  if (!network) {
+    return MaybeRefreshRemote(false);
+  }
+  bool is_online = network->IsOnline();
+  bool is_metered = network->metered();
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&RefreshRemoteAllowed, source, refresh_remote_for_testing_,
-                     network),
+                     is_online, is_metered),
       base::BindOnce(&FirmwareUpdateManager::MaybeRefreshRemote,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -208,7 +208,7 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 #if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
 // Note that this uses IMMEDIATE_CRASH_ALWAYS_INLINE to force-inline in debug
 // mode as well. See LoggingTest.CheckCausesDistinctBreakpoints.
-[[noreturn]] IMMEDIATE_CRASH_ALWAYS_INLINE void CheckFailure() {
+[[noreturn]] NOMERGE IMMEDIATE_CRASH_ALWAYS_INLINE void CheckFailure() {
   base::ImmediateCrash();
 }
 

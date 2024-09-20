@@ -32,12 +32,12 @@
 class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
  public:
   VirtualCardEnrollmentBottomSheetCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     // Create a FakeWebState.
     auto fake_web_state = std::make_unique<web::FakeWebState>();
-    fake_web_state->SetBrowserState(browser_state_.get());
+    fake_web_state->SetBrowserState(profile_.get());
 
     // Create a FakeWebFramesmanager with AutofillBottomSheetJavaScriptFeature.
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
@@ -107,7 +107,7 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   id<ApplicationCommands> application_handler_;
   UIWindow* window_;

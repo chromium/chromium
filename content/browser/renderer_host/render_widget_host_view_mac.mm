@@ -949,9 +949,11 @@ namespace {
 void AddTextNodesToVector(const ui::AXNode* node,
                           std::vector<std::u16string>* strings) {
   if (node->GetRole() == ax::mojom::Role::kStaticText) {
-    std::u16string value;
-    if (node->GetString16Attribute(ax::mojom::StringAttribute::kName, &value))
+    if (node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+      std::u16string value =
+          node->GetString16Attribute(ax::mojom::StringAttribute::kName);
       strings->emplace_back(value);
+    }
     return;
   }
 
@@ -1543,8 +1545,8 @@ bool RenderWidgetHostViewMac::TransformPointToCoordSpaceForView(
     return true;
   }
 
-  return target_view->TransformPointToLocalCoordSpace(
-      point, GetCurrentSurfaceId(), transformed_point);
+  return target_view->TransformPointToLocalCoordSpace(point, GetFrameSinkId(),
+                                                      transformed_point);
 }
 
 viz::FrameSinkId RenderWidgetHostViewMac::GetRootFrameSinkId() {

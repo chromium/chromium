@@ -31,13 +31,11 @@
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
-#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -129,7 +127,24 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
       &DIPSWebContentsObserver::EmitDIPSIssue, weak_factory_.GetWeakPtr());
 }
 
-DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
+DIPSWebContentsObserver::~DIPSWebContentsObserver() {
+  // Some UserData may interact with `this` during their destruction. Delete
+  // them now, before it's too late. If we don't delete them manually,
+  // ~SupportsUserData() will, but `this` will be invalid at that time.
+  ClearAllUserData();
+}
+
+DIPSWebContentsObserver::Observer::~Observer() {
+  CHECK(!IsInObserverList());
+}
+
+void DIPSWebContentsObserver::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DIPSWebContentsObserver::RemoveObserver(const Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 RedirectChainDetector::RedirectChainDetector(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -284,7 +299,8 @@ std::set<std::string> DIPSRedirectContext::AllSitesWithUserActivation() const {
 std::map<std::string, std::pair<GURL, bool>>
 DIPSRedirectContext::GetRedirectHeuristicURLs(
     const GURL& first_party_url,
-    std::optional<std::set<std::string>> allowed_sites) const {
+    base::optional_ref<std::set<std::string>> allowed_sites,
+    bool require_current_interaction) const {
   std::map<std::string, std::pair<GURL, bool>>
       sites_to_url_and_current_interaction;
 
@@ -307,8 +323,7 @@ DIPSRedirectContext::GetRedirectHeuristicURLs(
     }
 
     // Check for a current interaction, if the flag requires it.
-    if (tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteraction
-            .Get() &&
+    if (require_current_interaction &&
         !sites_with_user_activation.contains(site)) {
       continue;
     }
@@ -591,13 +606,11 @@ void DIPSWebContentsObserver::OnRedirectChainEnded(
   // guaranteed to outlive the call.
   dips_service_->HandleRedirectChain(
       CloneRedirects(redirects), std::make_unique<DIPSRedirectChainInfo>(chain),
-      base::BindRepeating(
-          &DIPSWebContentsObserver::IncrementPageSpecificBounceCount,
-          weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&DIPSWebContentsObserver::OnStatefulBounce,
+                          weak_factory_.GetWeakPtr()));
 }
 
-void DIPSWebContentsObserver::IncrementPageSpecificBounceCount(
-    const GURL& final_url) {
+void DIPSWebContentsObserver::OnStatefulBounce(const GURL& final_url) {
   // Do nothing if the current URL doesn't match the final URL of the chain.
   // This means that the user has navigated away from the bounce destination, so
   // we don't want to update settings for the wrong site.
@@ -605,11 +618,9 @@ void DIPSWebContentsObserver::IncrementPageSpecificBounceCount(
     return;
   }
 
-  // TODO: crbug.com/343631048 - move this out of DIPSWebContentsObserver into a
-  // DIPSService::Observer.
-  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
-      web_contents()->GetPrimaryPage());
-  pscs->IncrementStatefulBounceCount();
+  for (auto& observer : observers_) {
+    observer.OnStatefulBounce(web_contents());
+  }
 }
 
 // A thin wrapper around NavigationHandle to implement DIPSNavigationHandle.

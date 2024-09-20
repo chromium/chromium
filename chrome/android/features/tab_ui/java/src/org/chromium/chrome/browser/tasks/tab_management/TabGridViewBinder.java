@@ -33,9 +33,9 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.IphProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -140,11 +140,16 @@ class TabGridViewBinder {
             updateThumbnail(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
             updateThumbnail(view, model);
-        } else if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
+        } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
+            @Nullable TabActionButtonData data = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+            @Nullable
+            TabActionListener tabActionListener = data == null ? null : data.tabActionListener;
             setNullableClickListener(
-                    model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER),
-                    view.fastFindViewById(R.id.action_button),
-                    model);
+                    tabActionListener, view.fastFindViewById(R.id.action_button), model);
+
+            boolean showOverflowButton =
+                    data == null ? false : data.type == TabActionButtonType.OVERFLOW;
+            ((TabGridView) view).setTabActionButtonDrawable(showOverflowButton);
         } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
             setNullableClickListener(model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
         } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
@@ -157,9 +162,6 @@ class TabGridViewBinder {
             PropertyModel model, ViewLookupCachingFrameLayout view, PropertyKey propertyKey) {
         if (CARD_ALPHA == propertyKey) {
             view.setAlpha(model.get(CARD_ALPHA));
-        } else if (TabProperties.IPH_PROVIDER == propertyKey) {
-            IphProvider provider = model.get(TabProperties.IPH_PROVIDER);
-            if (provider != null) provider.showIPH(view.fastFindViewById(R.id.tab_thumbnail));
         } else if (TabProperties.CARD_ANIMATION_STATUS == propertyKey) {
             ((TabGridView) view)
                     .scaleTabGridCardView(model.get(TabProperties.CARD_ANIMATION_STATUS));
@@ -175,11 +177,6 @@ class TabGridViewBinder {
                 LargeMessageCardView.showPriceDropTooltip(
                         priceCardView.findViewById(R.id.current_price));
             }
-        } else if (TabProperties.IS_SELECTED == propertyKey) {
-            updateColorForActionButton(
-                    view,
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
         } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_STRING == propertyKey) {
             view.fastFindViewById(R.id.action_button)
                     .setContentDescription(
@@ -189,17 +186,10 @@ class TabGridViewBinder {
                     .hideTabGridCardViewForQuickDelete(
                             model.get(TabProperties.QUICK_DELETE_ANIMATION_STATUS),
                             model.get(TabProperties.IS_INCOGNITO));
-        } else if (TabProperties.TAB_GROUP_INFO == propertyKey
-                || TabProperties.TAB_ID == propertyKey) {
-            @Nullable TabGroupInfo tabGroupInfo = model.get(TabProperties.TAB_GROUP_INFO);
-
-            // Only change the drawable if the property key in question is for tab groups.
-            if (TabProperties.TAB_GROUP_INFO == propertyKey) {
-                ((TabGridView) view).setTabActionButtonDrawable(tabGroupInfo.getIsTabGroup());
-            }
         } else if (TabProperties.VISIBILITY == propertyKey) {
             view.setVisibility(model.get(TabProperties.VISIBILITY));
-        } else if (TabProperties.TAB_ACTION_STATE == propertyKey) {
+        } else if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             updateColorForActionButton(
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
@@ -213,16 +203,12 @@ class TabGridViewBinder {
             PropertyModel model, ViewLookupCachingFrameLayout view, PropertyKey propertyKey) {
         final int tabId = model.get(TabProperties.TAB_ID);
 
-        if (TabProperties.IS_SELECTED == propertyKey) {
-            updateColorForSelectionToggleButton(
-                    view,
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
-        } else if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
+        if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             ((TabGridView) view)
                     .setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
             ((TabGridView) view).setItem(tabId);
-        } else if (TabProperties.TAB_ACTION_STATE == propertyKey) {
+        } else if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             updateColorForSelectionToggleButton(
                     view,
                     model.get(TabProperties.IS_INCOGNITO),

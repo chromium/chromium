@@ -20,8 +20,9 @@ void ExtensionWebRequestTimeTracker::LogRequestStartTime(
     bool has_listener,
     bool has_extra_headers_listener) {
   auto iter = request_time_logs_.find(request_id);
-  if (iter != request_time_logs_.end())
+  if (iter != request_time_logs_.end()) {
     return;
+  }
 
   RequestTimeLog& log = request_time_logs_[request_id];
   log.request_start_time = start_time;
@@ -70,8 +71,9 @@ void ExtensionWebRequestTimeTracker::LogRequestEndTime(
     int64_t request_id,
     const base::TimeTicks& end_time) {
   auto iter = request_time_logs_.find(request_id);
-  if (iter == request_time_logs_.end())
+  if (iter == request_time_logs_.end()) {
     return;
+  }
 
   AnalyzeLogRequest(iter->second, end_time);
 
@@ -93,8 +95,9 @@ void ExtensionWebRequestTimeTracker::AnalyzeLogRequest(
                         request_duration);
   }
 
-  if (log.block_duration.is_zero())
+  if (log.block_duration.is_zero()) {
     return;
+  }
 
   UMA_HISTOGRAM_TIMES("Extensions.WebRequest.TotalBlockingRequestTime",
                       request_duration);
@@ -176,8 +179,9 @@ void ExtensionWebRequestTimeTracker::IncrementTotalBlockTime(
     int64_t request_id,
     const base::TimeDelta& block_time) {
   auto iter = request_time_logs_.find(request_id);
-  if (iter != request_time_logs_.end())
+  if (iter != request_time_logs_.end()) {
     iter->second.block_duration += block_time;
+  }
 }
 
 void ExtensionWebRequestTimeTracker::SetRequestCanceled(int64_t request_id) {

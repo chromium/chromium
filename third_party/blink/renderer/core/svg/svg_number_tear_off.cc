@@ -44,7 +44,7 @@ void SVGNumberTearOff::setValue(float f, ExceptionState& exception_state) {
     return;
   }
   Target()->SetValue(f);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 SVGNumberTearOff* SVGNumberTearOff::CreateDetached() {

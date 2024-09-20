@@ -29,10 +29,12 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -45,7 +47,13 @@ namespace {
 
 class LensOverlayCoordinatorTest : public PlatformTest {
  public:
-  LensOverlayCoordinatorTest() {
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+      GTEST_SKIP() << "Feature unsupported on iPad";
+    }
+
     feature_list_.InitAndEnableFeature(kEnableLensOverlay);
 
     root_view_controller_ = [[UIViewController alloc] init];
@@ -84,14 +92,12 @@ class LensOverlayCoordinatorTest : public PlatformTest {
                               forProtocol:@protocol(LensOverlayCommands)];
 
     // Tab helper
-    web::WebState::CreateParams params(browser_state_);
-    web_state_ = web::WebState::Create(params);
+    web_state_ = std::make_unique<web::FakeWebState>();
     LensOverlayTabHelper::CreateForWebState(web_state_.get());
     SnapshotTabHelper::CreateForWebState(web_state_.get());
     tab_helper_ = LensOverlayTabHelper::FromWebState(web_state_.get());
 
     // Attach SnapshotTabHelper to allow snapshot generation.
-    SnapshotTabHelper::CreateForWebState(web_state_.get());
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     SnapshotTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
 
@@ -132,21 +138,25 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     }));
   }
 
-  ~LensOverlayCoordinatorTest() override {
-    // Dismisses `base_view_controller_` and waits for the dismissal to finish.
-    __block bool dismissal_finished = NO;
-    [root_view_controller_ dismissViewControllerAnimated:NO
-                                              completion:^{
-                                                dismissal_finished = YES;
-                                              }];
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
-      return dismissal_finished;
-    }));
+  void TearDown() override {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+      // Dismisses `base_view_controller_` and waits for the dismissal to
+      // finish.
+      __block bool dismissal_finished = NO;
+      [root_view_controller_ dismissViewControllerAnimated:NO
+                                                completion:^{
+                                                  dismissal_finished = YES;
+                                                }];
+      EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+        return dismissal_finished;
+      }));
+    }
+
+    PlatformTest::TearDown();
   }
 
  protected:
-  web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::MainThreadType::IO};
+  web::WebTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   FakeSnapshotGeneratorDelegate* delegate_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -180,7 +190,8 @@ TEST_F(LensOverlayCoordinatorTest, ShouldMarkOverlayShownWhenUICreated) {
   // When the coordinator is asked to create and show the UI.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
       createAndShowLensUI:NO
-               entrypoint:LensOverlayEntrypoint::kLocationBar];
+               entrypoint:LensOverlayEntrypoint::kLocationBar
+               completion:nil];
 
   // Then the UI should appear created and shown to the user.
   EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
@@ -194,7 +205,8 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDestroyTheUIUponRequest) {
   // When the coordinator is asked to create and show the UI.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
       createAndShowLensUI:NO
-               entrypoint:LensOverlayEntrypoint::kLocationBar];
+               entrypoint:LensOverlayEntrypoint::kLocationBar
+               completion:nil];
 
   // Then the UI should appear created and shown to the user.
   EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
@@ -229,7 +241,8 @@ TEST_F(LensOverlayCoordinatorTest, ShouldPresentVCOnShowCommandDispatched) {
   // Dispatch the create & show command.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
       createAndShowLensUI:NO
-               entrypoint:LensOverlayEntrypoint::kLocationBar];
+               entrypoint:LensOverlayEntrypoint::kLocationBar
+               completion:nil];
 
   // After dispatching the create & show command, a view controller should
   // appear presented.
@@ -246,7 +259,8 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDismissVCOnHideCommandDispatched) {
   // Dispatch the create & show command.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
       createAndShowLensUI:NO
-               entrypoint:LensOverlayEntrypoint::kLocationBar];
+               entrypoint:LensOverlayEntrypoint::kLocationBar
+               completion:nil];
 
   // After dispatching the create & show command, a view controller should
   // appear presented.
@@ -272,10 +286,10 @@ TEST_F(LensOverlayCoordinatorTest,
   // When the coordinator is asked to create and show the UI.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
       createAndShowLensUI:NO
-               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
-
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop_.QuitClosure());
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu
+               completion:^(BOOL success) {
+                 run_loop_.Quit();
+               }];
   run_loop_.Run();
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
@@ -308,10 +322,11 @@ TEST_F(LensOverlayCoordinatorTest,
   // When the coordinator is asked to create and show the UI.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
       createAndShowLensUI:NO
-               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu
+               completion:^(BOOL success) {
+                 run_loop_.Quit();
+               }];
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop_.QuitClosure());
   run_loop_.Run();
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
@@ -341,10 +356,11 @@ TEST_F(LensOverlayCoordinatorTest, ShouldPresentConsentDialog) {
   // When the coordinator is asked to create and show the UI.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
       createAndShowLensUI:NO
-               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu
+               completion:^(BOOL success) {
+                 run_loop_.Quit();
+               }];
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop_.QuitClosure());
   run_loop_.Run();
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
@@ -370,10 +386,11 @@ TEST_F(LensOverlayCoordinatorTest, DoesntPromptForConsentWhenAlreadyReceived) {
   // When the coordinator is asked to create and show the UI.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
       createAndShowLensUI:NO
-               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu
+               completion:^(BOOL success) {
+                 run_loop_.Quit();
+               }];
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop_.QuitClosure());
   run_loop_.Run();
 
   EXPECT_TRUE([coordinator_ isUICreated]);

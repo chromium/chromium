@@ -1296,6 +1296,7 @@ policies:
   1295: HelpMeReadSettings
   1296: GenAiDefaultSettings
   1297: KioskActiveWiFiCredentialsScopeChangeEnabled
+  1298: DataURLWhitespacePreservationEnabled
 
 atomic_groups:
   1: Homepage

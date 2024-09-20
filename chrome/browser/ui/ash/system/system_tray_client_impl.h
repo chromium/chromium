@@ -121,6 +121,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowTouchpadSettings() override;
   void ShowRemapKeysSubpage(int device_id) override;
   void ShowYouTubeMusicPremiumPage() override;
+  void ShowChromebookPerksYouTubePage() override;
   void ShowKeyboardSettings() override;
   void ShowPointingStickSettings() override;
   void ShowNearbyShareSettings() override;

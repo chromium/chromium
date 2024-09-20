@@ -4859,7 +4859,7 @@ class LayerTreeHostTestPropertyChangesDuringUpdateArePushed
 
   void SetupTree() override {
     root_ = Layer::Create();
-    root_->SetBounds(gfx::Size(1, 1));
+    root_->SetBounds(gfx::Size(30, 30));
 
     auto scrollbar = FakePaintedScrollbarLayer::CreateScrollbar();
     scrollbar->set_should_paint(true);
@@ -8187,14 +8187,14 @@ class LayerTreeHostTestSubmitFrameResources : public LayerTreeHostTest {
 
     viz::CompositorRenderPass* child_pass = AddRenderPass(
         &frame->render_passes, viz::CompositorRenderPassId{2},
-        gfx::Rect(3, 3, 10, 10), gfx::Transform(), FilterOperations());
+        gfx::Rect(3, 3, 100, 100), gfx::Transform(), FilterOperations());
     std::vector<viz::ResourceId> child_resources =
         AddOneOfEveryQuadType(child_pass, host_impl->resource_provider(),
                               viz::CompositorRenderPassId{0});
 
     viz::CompositorRenderPass* pass = AddRenderPass(
         &frame->render_passes, viz::CompositorRenderPassId{1},
-        gfx::Rect(3, 3, 10, 10), gfx::Transform(), FilterOperations());
+        gfx::Rect(3, 3, 100, 100), gfx::Transform(), FilterOperations());
     std::vector<viz::ResourceId> root_resources = AddOneOfEveryQuadType(
         pass, host_impl->resource_provider(), child_pass->id);
 

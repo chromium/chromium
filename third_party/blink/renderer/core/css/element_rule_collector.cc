@@ -35,6 +35,8 @@
 
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
+#include <utility>
+
 #include "base/containers/span.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -234,7 +236,7 @@ class CascadeLayerSeeker {
                                 matching_rules_from_no_style_sheet,
                                 document)) {}
 
-  unsigned SeekLayerOrder(unsigned rule_position) {
+  uint16_t SeekLayerOrder(unsigned rule_position) {
     if (!layer_map_) {
       return CascadeLayerMap::kImplicitOuterLayerOrder;
     }
@@ -405,9 +407,10 @@ void ElementRuleCollector::AddElementStyleProperties(
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, origin,
-      {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
-       .is_inline_style = is_inline_style});
+      property_set, {.link_match_type = static_cast<uint8_t>(
+                         AdjustLinkMatchType(inside_link_, link_match_type)),
+                     .is_inline_style = is_inline_style,
+                     .origin = origin});
   if (!is_cacheable) {
     result_.SetIsCacheable(false);
   }
@@ -420,10 +423,12 @@ void ElementRuleCollector::AddTryStyleProperties() {
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, CascadeOrigin::kAuthor,
-      {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
-       .valid_property_filter = ValidPropertyFilter::kPositionTry,
-       .is_try_style = true});
+      property_set, {.link_match_type = static_cast<uint8_t>(
+                         AdjustLinkMatchType(inside_link_, link_match_type)),
+                     .valid_property_filter = static_cast<uint8_t>(
+                         ValidPropertyFilter::kPositionTry),
+                     .is_try_style = true,
+                     .origin = CascadeOrigin::kAuthor});
   result_.SetIsCacheable(false);
 }
 
@@ -435,9 +440,10 @@ void ElementRuleCollector::AddTryTacticsStyleProperties() {
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, CascadeOrigin::kAuthor,
-      {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
-       .is_try_tactics_style = true});
+      property_set, {.link_match_type = static_cast<uint8_t>(
+                         AdjustLinkMatchType(inside_link_, link_match_type)),
+                     .origin = CascadeOrigin::kAuthor,
+                     .is_try_tactics_style = true});
   result_.SetIsCacheable(false);
 }
 
@@ -906,8 +912,7 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
       }
     }
   }
-  if (SelectorChecker::MatchesFocusPseudoClass(
-          element, /*has_scroll_marker_pseudo=*/false)) {
+  if (SelectorChecker::MatchesFocusPseudoClass(element, kPseudoIdNone)) {
     for (const auto bundle : match_request.AllRuleSets()) {
       if (CollectMatchingRulesForList<stop_at_first_match>(
               bundle.rule_set->FocusPseudoClassRules(), match_request,
@@ -1040,7 +1045,7 @@ void ElementRuleCollector::CollectMatchingPartPseudoRules(
     const MatchRequest& match_request,
     PartNames* part_names,
     bool for_shadow_pseudo) {
-  PartRequest request{part_names, for_shadow_pseudo};
+  PartRequest request{for_shadow_pseudo};
   SelectorChecker checker(part_names, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
@@ -1149,8 +1154,8 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
   SortMatchedRules();
 
   if (mode_ == SelectorChecker::kCollectingStyleRules) {
-    for (unsigned i = 0; i < matched_rules_.size(); ++i) {
-      EnsureStyleRuleList()->push_back(matched_rules_[i].GetRuleData()->Rule());
+    for (const MatchedRule& matched_rule : matched_rules_) {
+      EnsureStyleRuleList()->push_back(matched_rule.GetRuleData()->Rule());
     }
     return;
   }
@@ -1164,21 +1169,21 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
   }
 
   // Now transfer the set of matched rules over to our list of declarations.
-  for (unsigned i = 0; i < matched_rules_.size(); i++) {
-    const MatchedRule& matched_rule = matched_rules_[i];
+  for (const MatchedRule& matched_rule : matched_rules_) {
     const RuleData* rule_data = matched_rule.GetRuleData();
     if (rule_data->IsStartingStyle()) {
       result_.AddFlags(
           static_cast<MatchFlags>(MatchFlag::kAffectedByStartingStyle));
     }
     result_.AddMatchedProperties(
-        &rule_data->Rule()->Properties(), origin,
-        {.link_match_type =
-             AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()),
-         .valid_property_filter =
-             rule_data->GetValidPropertyFilter(matching_ua_rules_),
-         .layer_order = matched_rule.LayerOrder(),
-         .is_inline_style = is_vtt_embedded_style});
+        &rule_data->Rule()->Properties(),
+        {.link_match_type = static_cast<uint8_t>(
+             AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType())),
+         .valid_property_filter = static_cast<uint8_t>(
+             rule_data->GetValidPropertyFilter(matching_ua_rules_)),
+         .is_inline_style = static_cast<uint8_t>(is_vtt_embedded_style),
+         .origin = origin,
+         .layer_order = matched_rule.LayerOrder()});
   }
 
   if (tracker) {
@@ -1188,7 +1193,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
 
 void ElementRuleCollector::DidMatchRule(
     const RuleData* rule_data,
-    unsigned layer_order,
+    uint16_t layer_order,
     const ContainerQuery* container_query,
     unsigned proximity,
     const SelectorChecker::MatchResult& result,
@@ -1293,32 +1298,27 @@ void ElementRuleCollector::DumpAndClearRulesPerfMap() {
   GetSelectorStatisticsRuleMap().clear();
 }
 
-inline bool ElementRuleCollector::CompareRules(
-    const MatchedRule& matched_rule1,
-    const MatchedRule& matched_rule2) {
-  unsigned layer1 = matched_rule1.LayerOrder();
-  unsigned layer2 = matched_rule2.LayerOrder();
-  if (layer1 != layer2) {
-    return layer1 < layer2;
+struct ElementRuleCollector::CompareRules {
+  inline bool operator()(const MatchedRule& matched_rule1,
+                         const MatchedRule& matched_rule2) const {
+#ifdef __SIZEOF_INT128__
+    // https://github.com/llvm/llvm-project/issues/108418
+    __uint128_t key1 = (__uint128_t{matched_rule1.SortKey()} << 64) |
+                       matched_rule1.GetPosition();
+    __uint128_t key2 = (__uint128_t{matched_rule2.SortKey()} << 64) |
+                       matched_rule2.GetPosition();
+#else
+    std::pair key1{matched_rule1.SortKey(), matched_rule1.GetPosition()};
+    std::pair key2{matched_rule2.SortKey(), matched_rule2.GetPosition()};
+#endif
+    return key1 < key2;
   }
-
-  unsigned specificity1 = matched_rule1.Specificity();
-  unsigned specificity2 = matched_rule2.Specificity();
-  if (specificity1 != specificity2) {
-    return specificity1 < specificity2;
-  }
-
-  unsigned proximity1 = matched_rule1.Proximity();
-  unsigned proximity2 = matched_rule2.Proximity();
-  if (proximity1 != proximity2) {
-    return proximity1 > proximity2;
-  }
-
-  return matched_rule1.GetPosition() < matched_rule2.GetPosition();
-}
+};
 
 void ElementRuleCollector::SortMatchedRules() {
-  std::sort(matched_rules_.begin(), matched_rules_.end(), CompareRules);
+  if (matched_rules_.size() > 1) {
+    std::sort(matched_rules_.begin(), matched_rules_.end(), CompareRules());
+  }
 }
 
 void ElementRuleCollector::AddMatchedRulesToTracker(

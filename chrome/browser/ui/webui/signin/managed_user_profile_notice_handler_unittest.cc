@@ -93,8 +93,8 @@ class ManagedUserProfileNoticeHandlerTestBase
   void DeleteHandler() { message_handler_.reset(); }
 
   void TearDown() override {
-    BrowserWithTestWindowTest::TearDown();
     message_handler_.reset();
+    BrowserWithTestWindowTest::TearDown();
   }
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
@@ -177,6 +177,27 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest, HandleProceed) {
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
       GetParam().profile_creation_required_by_policy,
+      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
+      mock_done_callback.Get());
+
+  base::Value::List args;
+  args.Append(GetParam().state);
+  args.Append(GetParam().should_link_data);
+
+  EXPECT_CALL(mock_process_user_choice_callback,
+              Run(GetParam().expected_choice));
+  EXPECT_CALL(mock_done_callback, Run());
+  web_ui()->HandleReceivedMessage("proceed", args);
+}
+
+TEST_P(ManagedUserProfileNoticeHandleProceedTest,
+       HandleProceedWithUserDataHandling) {
+  base::MockCallback<signin::SigninChoiceCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      GetParam().profile_creation_required_by_policy,
       /*show_link_data_option=*/true, mock_process_user_choice_callback.Get(),
       mock_done_callback.Get());
 
@@ -188,6 +209,15 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest, HandleProceed) {
               Run(GetParam().expected_choice));
   EXPECT_CALL(mock_done_callback, Run());
   web_ui()->HandleReceivedMessage("proceed", args);
+
+  // When disclosure is shown, the next state shown is the data handling one.
+  if (GetParam().state == ManagedUserProfileNoticeHandler::State::kDisclosure) {
+    base::Value::List data_handling_args;
+    data_handling_args.Append(
+        ManagedUserProfileNoticeHandler::State::kUserDataHandling);
+    data_handling_args.Append(GetParam().should_link_data);
+    web_ui()->HandleReceivedMessage("proceed", data_handling_args);
+  }
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -204,7 +234,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
       GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/true, mock_process_user_choice_callback.Get(),
+      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
       mock_done_callback.Get());
 
   base::Value::List args;
@@ -226,6 +256,48 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
 }
 
 TEST_P(ManagedUserProfileNoticeHandleProceedTest,
+       HandleProceedWithDoneCallbackAndUserDataHandling) {
+  base::test::ScopedFeatureList feature_list(
+      profile_management::features::kOidcAuthProfileManagement);
+
+  base::MockCallback<signin::SigninChoiceWithConfirmationCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      GetParam().profile_creation_required_by_policy,
+      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
+      mock_done_callback.Get());
+
+  base::Value::List args;
+  args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
+  args.Append(GetParam().should_link_data);
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_process_user_choice_callback,
+              Run(GetParam().expected_choice, ::testing::_))
+      .WillOnce([&run_loop](
+                    signin::SigninChoice choice,
+                    signin::SigninChoiceOperationDoneCallback done_callback) {
+        std::move(done_callback)
+            .Run(signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
+        run_loop.Quit();
+      });
+  EXPECT_CALL(mock_done_callback, Run());
+  web_ui()->HandleReceivedMessage("proceed", args);
+
+  // When disclosure is shown, the next state shown is the data handling one.
+  if (GetParam().state == ManagedUserProfileNoticeHandler::State::kDisclosure) {
+    base::Value::List data_handling_args;
+    data_handling_args.Append(
+        ManagedUserProfileNoticeHandler::State::kUserDataHandling);
+    data_handling_args.Append(GetParam().should_link_data);
+    web_ui()->HandleReceivedMessage("proceed", data_handling_args);
+  }
+
+  run_loop.Run();
+}
+
+TEST_P(ManagedUserProfileNoticeHandleProceedTest,
        HandleProceedWithSuccessConfirmationCallback) {
   base::test::ScopedFeatureList feature_list(
       profile_management::features::kOidcAuthProfileManagement);
@@ -235,7 +307,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
       GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/true, mock_process_user_choice_callback.Get(),
+      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
       mock_done_callback.Get());
 
   base::Value::List args;

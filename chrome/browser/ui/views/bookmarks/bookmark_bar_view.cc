@@ -2189,8 +2189,9 @@ void BookmarkBarView::PerformDrop(
   DCHECK_NE(index, static_cast<size_t>(-1));
 
   base::RecordAction(base::UserMetricsAction("BookmarkBar_DragEnd"));
-  output_drag_op = chrome::DropBookmarks(browser_->profile(), data, parent_node,
-                                         index, copy);
+  output_drag_op = chrome::DropBookmarks(
+      browser_->profile(), data, parent_node, index, copy,
+      chrome::BookmarkReorderDropTarget::kBookmarkBarView);
 }
 
 int BookmarkBarView::GetDropLocationModelIndexForTesting() const {

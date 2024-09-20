@@ -608,10 +608,22 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
-  if (source_browser &&
-      platform_util::IsBrowserLockedFullscreen(source_browser)) {
-    // Block any navigation requests in locked fullscreen mode.
-    return nullptr;
+  // Block navigation requests when in locked fullscreen mode. We allow
+  // navigation requests in the webapp when locked for OnTask (only relevant for
+  // non-web browser scenarios).
+  // TODO(b/365146870): Remove once we consolidate locked fullscreen with
+  // OnTask.
+  if (source_browser) {
+    bool should_block_navigation =
+        platform_util::IsBrowserLockedFullscreen(source_browser);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (source_browser->IsLockedForOnTask()) {
+      should_block_navigation = false;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    if (should_block_navigation) {
+      return nullptr;
+    }
   }
 
   // Open System Apps in their standalone window if necessary.
@@ -718,14 +730,13 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // TODO(crbug.com/364657540): Revisit integration with web_application system
   // later if needed.
   int singleton_index;
-  bool enqueue_launch_params = false;
-  std::optional<std::tuple<Browser*, int, bool>> app_navigation_result;
+  std::optional<web_app::AppNavigationResult> app_navigation_result;
 #if !BUILDFLAG(IS_ANDROID)
   app_navigation_result = web_app::MaybeHandleAppNavigation(*params);
 #endif  // !BUILDFLAG(IS_ANDROID)
   if (app_navigation_result.has_value()) {
-    std::tie(params->browser, singleton_index, enqueue_launch_params) =
-        app_navigation_result.value();
+    params->browser = app_navigation_result->browser;
+    singleton_index = app_navigation_result->tab_index;
   } else {
     std::tie(params->browser, singleton_index) =
         GetBrowserAndTabForDisposition(*params);
@@ -873,20 +884,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     // other than add it to the appropriate tabstrip.
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  // At this point, |contents_to_navigate_or_insert| is guaranteed to exist and
-  // be non-NULL, so launch params can be enqueued in the correct web contents.
-  if (enqueue_launch_params) {
-    CHECK(contents_to_navigate_or_insert);
-    CHECK(params->browser);
-    CHECK(web_app::AppBrowserController::IsWebApp(params->browser));
-    web_app::MaybeEnqueueLaunchParams(
-        contents_to_navigate_or_insert,
-        params->browser->app_controller()->app_id(), params->url,
-        /*wait_for_navigation_to_complete=*/true);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   // If the user navigated from the omnibox, and the selected tab is going to
   // lose focus, then make sure the focus for the source tab goes away from the
   // omnibox.
@@ -985,6 +982,16 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
 
   params->navigated_or_inserted_contents = contents_to_navigate_or_insert;
+
+// At this point, the `params->navigated_or_inserted_contents` is guaranteed to
+// be non null, so perform tasks if the navigation has been captured by a web
+// app, like enqueueing launch params.
+#if !BUILDFLAG(IS_ANDROID)
+  if (app_navigation_result.has_value()) {
+    web_app::OnWebAppNavigationAfterWebContentsCreation(
+        app_navigation_result.value(), *params);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
   return navigation_handle;
 }
 

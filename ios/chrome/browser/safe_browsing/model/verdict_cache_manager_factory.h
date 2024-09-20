@@ -20,14 +20,10 @@ class BrowserState;
 }
 
 // Singleton that owns VerdictCacheManager objects, one for each active
-// ChromeBrowserState.
+// profile.
 class VerdictCacheManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the instance of VerdictCacheManager associated with this browser
-  // state, creating one if none exists.
-  static safe_browsing::VerdictCacheManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
+  static safe_browsing::VerdictCacheManager* GetForProfile(ProfileIOS* profile);
   // Returns the singleton instance of VerdictCacheManagerFactory.
   static VerdictCacheManagerFactory* GetInstance();
 

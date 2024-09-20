@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace content {
+namespace content::indexed_db {
 
 IndexedDBControlWrapper::IndexedDBControlWrapper(
     const base::FilePath& data_path,
@@ -26,13 +26,12 @@ IndexedDBControlWrapper::IndexedDBControlWrapper(
         blob_storage_context,
     mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
         file_system_access_context,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> custom_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   context_ = std::make_unique<IndexedDBContextImpl>(
       data_path, std::move(quota_manager_proxy),
       std::move(blob_storage_context), std::move(file_system_access_context),
-      io_task_runner, std::move(custom_task_runner));
+      io_task_runner, /*custom_task_runner=*/nullptr);
 
   if (special_storage_policy) {
     storage_policy_observer_.emplace(
@@ -87,4 +86,4 @@ void IndexedDBControlWrapper::OnSpecialStoragePolicyUpdated(
   GetIndexedDBControl().ApplyPolicyUpdates(std::move(policy_updates));
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

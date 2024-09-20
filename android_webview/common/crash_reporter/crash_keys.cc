@@ -178,6 +178,26 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "switch-*",
     "num-switches",
 
+    // NavigationListener investigation
+    "NoTrackedNav-message",
+    "NoTrackedNav-nav_id",
+    "NoTrackedNav-url_type",
+    "NoTrackedNav-prev_url_type",
+
+    "NoTrackedNav-discard_reason",
+    "NoTrackedNav-tracked_navs_size",
+    "NoTrackedNav-all_navs_size",
+    "NoTrackedNav-net_error_code",
+
+    "NoTrackedNav-has_committed",
+    "NoTrackedNav-was_redirect",
+    "NoTrackedNav-is_activation",
+    "NoTrackedNav-is_same_doc",
+    "NoTrackedNav-is_renderer",
+    "NoTrackedNav-is_reload",
+    "NoTrackedNav-is_history",
+    "NoTrackedNav-is_restore",
+
     nullptr};
 // clang-format on
 

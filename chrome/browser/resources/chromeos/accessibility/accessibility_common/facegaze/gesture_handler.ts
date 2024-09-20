@@ -79,13 +79,6 @@ export class GestureHandler {
           if (pref.value) {
             // Update the whole map from this preference.
             this.gestureToMacroName_.clear();
-            if (Object.entries(pref.value).length === 0) {
-              // TODO(b:361389043): Update this to default behavior.
-              pref.value[FacialGesture.JAW_OPEN] = MacroName.MOUSE_CLICK_LEFT;
-              pref.value[FacialGesture.BROW_INNER_UP] =
-                  MacroName.MOUSE_CLICK_RIGHT;
-              pref.value[FacialGesture.BROWS_DOWN] = MacroName.RESET_CURSOR;
-            }
             for (const [gesture, assignedMacro] of Object.entries(pref.value)) {
               if (assignedMacro === MacroName.UNSPECIFIED) {
                 continue;
@@ -113,6 +106,8 @@ export class GestureHandler {
           break;
         case GestureHandler.GESTURE_TO_KEY_COMBO_PREF:
           if (pref.value) {
+            // Update the whole map from this preference.
+            this.gesturesToKeyCombos_.clear();
             for (const [gesture, keyCombinationAsString] of Object.entries(
                      pref.value)) {
               const keyCombination =

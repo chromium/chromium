@@ -55,7 +55,8 @@ class FtlSignalStrategy::Core {
   // Methods are called in the order below when Connect() is called.
   void OnGetOAuthTokenResponse(OAuthTokenGetter::Status status,
                                const std::string& user_email,
-                               const std::string& access_token);
+                               const std::string& access_token,
+                               const std::string& scopes);
   void OnSignInGaiaResponse(const ProtobufHttpStatus& status);
   void StartReceivingMessages();
   void OnReceiveMessagesStreamStarted();
@@ -242,7 +243,8 @@ bool FtlSignalStrategy::Core::IsSignInError() const {
 void FtlSignalStrategy::Core::OnGetOAuthTokenResponse(
     OAuthTokenGetter::Status status,
     const std::string& user_email,
-    const std::string& access_token) {
+    const std::string& access_token,
+    const std::string& scopes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status != OAuthTokenGetter::Status::SUCCESS) {
     switch (status) {
@@ -253,8 +255,7 @@ void FtlSignalStrategy::Core::OnGetOAuthTokenResponse(
         error_ = SignalStrategy::Error::AUTHENTICATION_FAILED;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     is_sign_in_error_ = true;
     Disconnect();

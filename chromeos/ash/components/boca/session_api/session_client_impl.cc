@@ -52,4 +52,9 @@ void SessionClientImpl::GetSession(std::unique_ptr<GetSessionRequest> request) {
   sender_->StartRequestWithAuthRetry(std::move(request));
 }
 
+void SessionClientImpl::UploadToken(
+    std::unique_ptr<UploadTokenRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
+
 }  // namespace ash::boca

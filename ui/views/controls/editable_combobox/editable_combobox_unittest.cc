@@ -928,9 +928,9 @@ TEST_F(EditableComboboxTest, AccessibleValue) {
 
   data = ui::AXNodeData();
   combobox_->GetViewAccessibility().GetAccessibleNodeData(&data);
-  std::u16string val;
-  ASSERT_TRUE(
-      data.GetString16Attribute(ax::mojom::StringAttribute::kValue, &val));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kValue));
+  std::u16string val =
+      data.GetString16Attribute(ax::mojom::StringAttribute::kValue);
   EXPECT_EQ(u"item[0]", val);
 }
 

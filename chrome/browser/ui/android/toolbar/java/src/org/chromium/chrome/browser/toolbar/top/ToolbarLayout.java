@@ -412,6 +412,14 @@ public abstract class ToolbarLayout extends FrameLayout
                     public boolean isPaintPreview() {
                         return false;
                     }
+
+                    @Override
+                    public void addToolbarDataProviderObserver(
+                            ToolbarDataProvider.Observer observer) {}
+
+                    @Override
+                    public void removeToolbarDataProviderObserver(
+                            ToolbarDataProvider.Observer observer) {}
                 };
     }
 
@@ -802,14 +810,18 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
-     * If the page is currently loading, this will trigger the tab to stop.  If the page is fully
+     * If the page is currently loading, this will trigger the tab to stop. If the page is fully
      * loaded, this will trigger a refresh.
      *
      * <p>The buttons of the toolbar will be updated as a result of making this call.
+     *
+     * @param ignoreCache Whether a reload should ignore the cache (hard-reload).
      */
-    void stopOrReloadCurrentTab() {
+    void stopOrReloadCurrentTab(boolean ignoreCache) {
         maybeUnfocusUrlBar();
-        if (mToolbarTabController != null) mToolbarTabController.stopOrReloadCurrentTab();
+        if (mToolbarTabController != null) {
+            mToolbarTabController.stopOrReloadCurrentTab(ignoreCache);
+        }
     }
 
     /** Opens hompage in the current tab. */

@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.ui.signin.history_sync;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
@@ -107,6 +109,15 @@ public class HistorySyncCoordinator {
             mPropertyModelChangeProcessor = null;
         }
         if (view != null) {
+            boolean useAlternateIllustration =
+                    ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.USE_ALTERNATE_HISTORY_SYNC_ILLUSTRATION);
+            ImageView headerImage = view.findViewById(R.id.history_sync_illustration);
+            headerImage.setImageResource(
+                    useAlternateIllustration
+                            ? R.drawable.history_sync_illustration_alternative
+                            : R.drawable.history_sync_illustration);
+
             mUseLandscapeLayout = landscapeLayout;
             mMediator
                     .getModel()

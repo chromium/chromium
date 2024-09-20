@@ -196,7 +196,7 @@ static_library("renderer") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:interfaces",
     "//components/search:search",
-    "//components/security_interstitials/content/renderer:security_interstitial_page_controller",
+    "//components/security_interstitials/content/renderer",
     "//components/security_interstitials/core:",
     "//components/security_interstitials/core/common/mojom:",
     "//components/spellcheck:buildflags",
@@ -415,13 +415,26 @@ static_library("renderer") {
 
     if (build_with_tflite_lib) {
       sources += [
+        "accessibility/phrase_segmentation/base_phrase_segmenter.cc",
+        "accessibility/phrase_segmentation/base_phrase_segmenter.h",
         "accessibility/phrase_segmentation/dependency_parser_model.cc",
         "accessibility/phrase_segmentation/dependency_parser_model.h",
         "accessibility/phrase_segmentation/dependency_parser_op_resolver.cc",
         "accessibility/phrase_segmentation/dependency_parser_op_resolver.h",
+        "accessibility/phrase_segmentation/dependency_tree.cc",
+        "accessibility/phrase_segmentation/dependency_tree.h",
+        "accessibility/phrase_segmentation/phrase_segmenter.cc",
+        "accessibility/phrase_segmentation/phrase_segmenter.h",
+        "accessibility/phrase_segmentation/token_boundaries.cc",
+        "accessibility/phrase_segmentation/token_boundaries.h",
+        "accessibility/phrase_segmentation/tokenized_sentence.cc",
+        "accessibility/phrase_segmentation/tokenized_sentence.h",
+        "accessibility/phrase_segmentation/tokenizer.cc",
+        "accessibility/phrase_segmentation/tokenizer.h",
       ]
 
       deps += [
+        "//third_party/tensorflow-text",
         "//third_party/tensorflow_models:tflite_custom_ops",
         "//third_party/tflite",
         "//third_party/tflite:buildflags",

@@ -17,15 +17,12 @@ source_set("top_chrome") {
     "webui_contents_warmup_level.h",
     "webui_contents_warmup_level_recorder.h",
     "webui_contents_wrapper.h",
-    "webui_contents_wrapper_service.h",
-    "webui_contents_wrapper_service_factory.h",
   ]
 
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:webui_name_variants",
-    "//components/keyed_service/core",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",
@@ -51,8 +48,6 @@ source_set("impl") {
     "webui_contents_warmup_level.cc",
     "webui_contents_warmup_level_recorder.cc",
     "webui_contents_wrapper.cc",
-    "webui_contents_wrapper_service.cc",
-    "webui_contents_wrapper_service_factory.cc",
   ]
 
   deps = [

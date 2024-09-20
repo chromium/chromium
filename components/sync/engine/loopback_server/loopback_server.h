@@ -48,9 +48,6 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
     // updated as part of the commit are passed in |committed_data_types|.
     virtual void OnCommit(syncer::DataTypeSet committed_data_types) = 0;
 
-    // Called when a page URL is committed to DataType::HISTORY.
-    virtual void OnHistoryCommit(const std::string& url) = 0;
-
     // Called when a committed tombstone includes a deletion origin.
     virtual void OnCommittedDeletionOrigin(
         syncer::DataType type,

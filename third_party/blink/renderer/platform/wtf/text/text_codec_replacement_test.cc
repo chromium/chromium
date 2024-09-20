@@ -24,7 +24,7 @@ TEST(TextCodecReplacement, Aliases) {
   EXPECT_TRUE(TextEncoding("rEpLaCeMeNt").IsValid());
 
   EXPECT_TRUE(TextEncoding(g_replacement_alias).IsValid());
-  EXPECT_STREQ("replacement", TextEncoding(g_replacement_alias).GetName());
+  EXPECT_EQ("replacement", TextEncoding(g_replacement_alias).GetName());
 }
 
 TEST(TextCodecReplacement, DecodesToFFFD) {

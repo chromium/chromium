@@ -11,6 +11,7 @@
 
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
+#import "components/remote_cocoa/app_shim/native_widget_mac_overlay_nswindow.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom-shared.h"
 
@@ -45,7 +46,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
  public:
   explicit ImmersiveModeControllerCocoa(
       NativeWidgetMacNSWindow* browser_window,
-      NativeWidgetMacNSWindow* overlay_window);
+      NativeWidgetMacOverlayNSWindow* overlay_window);
   virtual ~ImmersiveModeControllerCocoa();
 
   // Must be called once and only once after construction. Prevents the side-
@@ -110,7 +111,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   virtual bool ShouldObserveChildWindow(NSWindow* child);
 
   NSWindow* browser_window();
-  NSWindow* overlay_window();
+  NativeWidgetMacOverlayNSWindow* overlay_window();
   BridgedContentView* overlay_content_view();
 
   // Called when `immersive_mode_titlebar_view_controller_`'s view is moved to
@@ -183,7 +184,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   bool fullscreen_transition_complete_ = false;
 
   NativeWidgetMacNSWindow* __weak browser_window_;
-  NativeWidgetMacNSWindow* __weak overlay_window_;
+  NativeWidgetMacOverlayNSWindow* __weak overlay_window_;
   BridgedContentView* __weak overlay_content_view_;
 
   // A controller for top chrome.

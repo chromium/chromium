@@ -34,5 +34,5 @@ JNI_OmniboxUrlEmphasizer_ParseForEmphasizeComponents(
       text, *autocomplete_scheme_classifier, &scheme, &host);
 
   int emphasize_values[] = {scheme.begin, scheme.len, host.begin, host.len};
-  return base::android::ToJavaIntArray(env, emphasize_values, 4);
+  return base::android::ToJavaIntArray(env, emphasize_values);
 }

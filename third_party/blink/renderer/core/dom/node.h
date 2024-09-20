@@ -1010,6 +1010,7 @@ class CORE_EXPORT Node : public EventTarget {
       const Node* parent,
       const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
       Document& document,
+      const char* property_name,
       ExceptionState& exception_state);
 
   bool SelfOrAncestorHasDirAutoAttribute() const {

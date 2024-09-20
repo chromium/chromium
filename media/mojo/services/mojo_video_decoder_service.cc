@@ -327,7 +327,8 @@ void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
   mojo_decoder_buffer_reader_->ReadDecoderBuffer(
       std::move(buffer),
       base::BindOnce(&MojoVideoDecoderService::OnReaderRead, weak_this_,
-                     std::move(callback), std::move(trace_event)));
+                     mojo::GetBadMessageCallback(), std::move(callback),
+                     std::move(trace_event)));
 }
 
 void MojoVideoDecoderService::Reset(ResetCallback callback) {
@@ -367,6 +368,7 @@ void MojoVideoDecoderService::OnDecoderInitialized(DecoderStatus status) {
 }
 
 void MojoVideoDecoderService::OnReaderRead(
+    mojo::ReportBadMessageCallback bad_message_callback,
     DecodeCallback callback,
     std::unique_ptr<ScopedDecodeTrace> trace_event,
     scoped_refptr<DecoderBuffer> buffer) {
@@ -383,8 +385,15 @@ void MojoVideoDecoderService::OnReaderRead(
     return;
   }
 
+  if (buffer->end_of_stream() && buffer->next_config() &&
+      !absl::holds_alternative<VideoDecoderConfig>(*buffer->next_config())) {
+    std::move(bad_message_callback)
+        .Run("Invalid DecoderBuffer::next_config() for video.");
+    return;
+  }
+
   decoder_->Decode(
-      buffer,
+      std::move(buffer),
       base::BindOnce(&MojoVideoDecoderService::OnDecoderDecoded, weak_this_,
                      std::move(callback), std::move(trace_event)));
 }

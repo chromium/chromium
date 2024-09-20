@@ -13,8 +13,6 @@ import org.chromium.base.ThreadUtils;
 /** See {@link android.webkit.HttpAuthHandler}. */
 @JNINamespace("android_webview")
 public class AwHttpAuthHandler {
-    private static final String TAG = "AwHttpAuthHandler";
-
     private long mNativeAwHttpAuthHandler;
     private final boolean mFirstAttempt;
 

@@ -143,6 +143,10 @@ bool DesksTestApi::DesksControllerCanUndoDeskRemoval() {
 
 // static
 bool DesksTestApi::IsDeskBarLeftGradientVisible(DeskBarViewBase::Type type) {
+  views::View* const scroll_view = GetDeskBarView(type)->scroll_view_;
+  if (!scroll_view) {
+    return false;
+  }
   const auto& gradient_mask =
       GetDeskBarView(type)->scroll_view_->layer()->gradient_mask();
   return !gradient_mask.IsEmpty() &&
@@ -151,6 +155,10 @@ bool DesksTestApi::IsDeskBarLeftGradientVisible(DeskBarViewBase::Type type) {
 
 // static
 bool DesksTestApi::IsDeskBarRightGradientVisible(DeskBarViewBase::Type type) {
+  views::View* const scroll_view = GetDeskBarView(type)->scroll_view_;
+  if (!scroll_view) {
+    return false;
+  }
   const auto& gradient_mask =
       GetDeskBarView(type)->scroll_view_->layer()->gradient_mask();
   return !gradient_mask.IsEmpty() &&

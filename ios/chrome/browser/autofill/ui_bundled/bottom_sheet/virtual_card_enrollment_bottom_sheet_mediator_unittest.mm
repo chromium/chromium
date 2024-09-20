@@ -134,24 +134,23 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest, SetsCardDataOnConsumer) {
 
   VirtualCardEnrollmentBottomSheetData* data = consumer.cardData;
   EXPECT_TRUE(data != nil);
-  EXPECT_TRUE([data.title isEqual:@"Title"]);
-  EXPECT_TRUE(
-      [data.explanatoryMessage isEqual:@"Explanatory message. Learn More"]);
-  EXPECT_TRUE([data.acceptActionText isEqual:@"Accept action"]);
-  EXPECT_TRUE([data.cancelActionText isEqual:@"Cancel action"]);
-  EXPECT_TRUE([data.learnMoreLinkText isEqual:@"Learn more"]);
+  EXPECT_NSEQ(data.title, @"Title");
+  EXPECT_NSEQ(data.explanatoryMessage, @"Explanatory message. Learn More");
+  EXPECT_NSEQ(data.acceptActionText, @"Accept action");
+  EXPECT_NSEQ(data.cancelActionText, @"Cancel action");
+  EXPECT_NSEQ(data.learnMoreLinkText, @"Learn more");
   EXPECT_EQ(1u, [data.paymentServerLegalMessageLines count]);
   for (SaveCardMessageWithLinks* line in data.paymentServerLegalMessageLines) {
-    EXPECT_TRUE([line.messageText isEqual:@"Google legal message"]);
-    EXPECT_TRUE([line.linkRanges
-        isEqualToArray:@[ [NSValue valueWithRange:NSMakeRange(2, 1)] ]]);
+    EXPECT_NSEQ(line.messageText, @"Google legal message");
+    EXPECT_NSEQ(line.linkRanges,
+                @[ [NSValue valueWithRange:NSMakeRange(2, 1)] ]);
     EXPECT_EQ(line.linkURLs, std::vector<GURL>({GURL("https://google.test")}));
   }
   EXPECT_EQ(1u, [data.issuerLegalMessageLines count]);
   for (SaveCardMessageWithLinks* line in data.issuerLegalMessageLines) {
-    EXPECT_TRUE([line.messageText isEqual:@"Issuer legal message"]);
-    EXPECT_TRUE([line.linkRanges
-        isEqualToArray:@[ [NSValue valueWithRange:NSMakeRange(4, 5)] ]]);
+    EXPECT_NSEQ(line.messageText, @"Issuer legal message");
+    EXPECT_NSEQ(line.linkRanges,
+                @[ [NSValue valueWithRange:NSMakeRange(4, 5)] ]);
     EXPECT_EQ(line.linkURLs, std::vector<GURL>({GURL("https://issuer.test")}));
   }
 }

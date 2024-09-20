@@ -28,7 +28,7 @@ class WebView;
 }  // namespace views
 
 enum class StartupProfileModeReason;
-enum class ReauthUIError;
+class ForceSigninUIError;
 
 class ProfilePicker {
  public:
@@ -246,7 +246,7 @@ class ProfilePicker {
   // displayed through `on_error_callback`.
   static void SwitchToReauth(
       Profile* profile,
-      base::OnceCallback<void(ReauthUIError)> on_error_callback);
+      base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 #endif
 
   // Switch to the flow that comes when the user decides to create a profile

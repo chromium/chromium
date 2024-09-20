@@ -32,17 +32,38 @@ const adpRegExp = RegExp(
  */
 function callImageLoaderPrivate(msg: PrivateApi): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    chrome.runtime.sendMessage(
-        null, msg, undefined, (thumbnailDataUrl: string) => {
-          if (chrome.runtime.lastError) {
-            console.warn(chrome.runtime.lastError.message);
-            reject(chrome.runtime.lastError);
-          } else if (thumbnailDataUrl) {
-            resolve(thumbnailDataUrl);
-          } else {
-            reject();
-          }
-        });
+    const callback = (thumbnailDataUrl: string) => {
+      if (chrome.runtime.lastError) {
+        console.warn(chrome.runtime.lastError.message);
+        reject(chrome.runtime.lastError);
+      } else if (thumbnailDataUrl) {
+        resolve(thumbnailDataUrl);
+      } else {
+        reject();
+      }
+    };
+
+    if (msg.apiMethod === 'getDriveThumbnail') {
+      chrome.imageLoaderPrivate.getDriveThumbnail(
+          msg.params.url,
+          msg.params.cropToSquare,
+          callback,
+      );
+    } else if (msg.apiMethod === 'getPdfThumbnail') {
+      chrome.imageLoaderPrivate.getPdfThumbnail(
+          msg.params.url,
+          msg.params.width,
+          msg.params.height,
+          callback,
+      );
+    } else if (msg.apiMethod === 'getArcDocumentsProviderThumbnail') {
+      chrome.imageLoaderPrivate.getArcDocumentsProviderThumbnail(
+          msg.params.url,
+          msg.params.widthHint,
+          msg.params.heightHint,
+          callback,
+      );
+    }
   });
 }
 

@@ -62,7 +62,9 @@ extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 extern NSString* const kPasswordManagerSymbol;
+extern NSString* const kEnterpriseSymbol;
 extern NSString* const kPopupBadgeMinusSymbol;
+extern NSString* const kPhotoSymbol;
 extern NSString* const kPhotoBadgeArrowDownSymbol;
 extern NSString* const kPhotoBadgePlusSymbol;
 extern NSString* const kPhotoBadgeMagnifyingglassSymbol;
@@ -256,6 +258,7 @@ extern NSString* const kMagicStackSymbol;
 extern NSString* const kDiscoverFeedSymbol;
 extern NSString* const kFilterSymbol;
 extern NSString* const kPersonTwoSymbol;
+extern NSString* const kSquareFilledOnSquareSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

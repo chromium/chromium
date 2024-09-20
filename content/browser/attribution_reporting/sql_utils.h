@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -16,6 +17,7 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -48,7 +50,7 @@ class AttributionReadOnlySourceData;
 
 class StoredSource;
 
-url::Origin DeserializeOrigin(const std::string& origin);
+url::Origin DeserializeOrigin(std::string_view origin);
 
 std::optional<attribution_reporting::mojom::SourceType> DeserializeSourceType(
     int val);
@@ -120,6 +122,8 @@ std::string SerializeAttributionScopesData(
 base::expected<std::optional<attribution_reporting::AttributionScopesData>,
                absl::monostate>
 DeserializeAttributionScopesData(sql::Statement&, int col);
+
+void DeduplicateSourceIds(std::vector<StoredSource::Id>&);
 
 }  // namespace content
 

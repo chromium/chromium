@@ -258,7 +258,10 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         TextView consent = mContentView.findViewById(R.id.user_data_sharing_consent);
         assertTrue(consent.isShown());
         String expectedSharingConsentText =
-                mResources.getString(R.string.account_selection_data_sharing_consent, "idp.org");
+                mResources.getString(
+                        R.string.account_selection_data_sharing_consent,
+                        "idp.org",
+                        "name, email address, and profile picture");
         expectedSharingConsentText = expectedSharingConsentText.replaceAll(LINK_TAG_REGEX, "");
         // We use toString() here because otherwise getText() returns a
         // Spanned, which is not equal to the string we get from the resources.
@@ -416,6 +419,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         properties.mIdpForDisplay = idpEtldPlusOne;
         properties.mTermsOfServiceUrl = new GURL("https://www.one.com/");
         properties.mPrivacyPolicyUrl = new GURL("https://www.two.com/");
+        properties.mDisclosureFields = DEFAULT_DISCLOSURE_FIELDS;
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

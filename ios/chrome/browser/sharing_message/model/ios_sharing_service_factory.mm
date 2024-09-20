@@ -63,17 +63,22 @@ void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
 
 // static
 SharingService* IOSSharingServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  CHECK(!browser_state->IsOffTheRecord());
-  return static_cast<SharingService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static
-SharingService* IOSSharingServiceFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+SharingService* IOSSharingServiceFactory::GetForProfile(ProfileIOS* profile) {
+  CHECK(!profile->IsOffTheRecord());
   return static_cast<SharingService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+SharingService* IOSSharingServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
+  return static_cast<SharingService*>(
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static
@@ -153,7 +158,8 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       local_device_info_provider, task_runner);
   auto ios_push_sender =
       std::make_unique<sharing_message::SharingIOSPushSender>(
-          message_bridge, device_info_tracker, local_device_info_provider);
+          message_bridge, device_info_tracker, local_device_info_provider,
+          sync_service);
   sharing_message_sender->RegisterSendDelegate(
       SharingMessageSender::DelegateType::kIOSPush, std::move(ios_push_sender));
 

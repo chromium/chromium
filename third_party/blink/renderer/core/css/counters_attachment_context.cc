@@ -101,9 +101,12 @@ int CalculateCounterValue(unsigned counter_type,
 
 }  // namespace
 
+void CountersAttachmentContext::CounterEntry::Trace(Visitor* visitor) const {
+  visitor->Trace(element);
+}
+
 CountersAttachmentContext::CountersAttachmentContext()
-    : counter_value_table_(MakeGarbageCollected<CounterValueTable>()),
-      counter_inheritance_table_(
+    : counter_inheritance_table_(
           MakeGarbageCollected<CounterInheritanceTable>()) {}
 
 bool CountersAttachmentContext::ElementGeneratesListItemCounter(
@@ -266,7 +269,7 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
     const AtomicString& counter_name,
     bool only_last) {
   RemoveStaleCounters(element, counter_name);
-  Vector<int> counter_values;
+  Vector<int> result;
   auto counter_stack_it = counter_inheritance_table_->find(counter_name);
   if (counter_stack_it == counter_inheritance_table_->end()) {
     return {0};
@@ -275,17 +278,18 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
   if (counter_stack.empty()) {
     return {0};
   }
-  for (const Element* counter_element : base::Reversed(counter_stack)) {
+
+  for (const CounterEntry* entry : base::Reversed(counter_stack)) {
     // counter() and counters() can cross style containment boundaries.
-    if (counter_element == nullptr) {
+    if (!entry) {
       continue;
     }
-    counter_values.push_back(GetCounterValue(*counter_element, counter_name));
+    result.push_back(entry->value);
     if (only_last) {
       break;
     }
   }
-  return counter_values;
+  return result;
 }
 
 // Push the counter on stack or create stack if there is none. Also set the
@@ -296,23 +300,23 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
 void CountersAttachmentContext::CreateCounter(const Element& element,
                                               const AtomicString& counter_name,
                                               int value) {
+  auto* new_entry = MakeGarbageCollected<CounterEntry>(element, value);
   auto counter_stack_it = counter_inheritance_table_->find(counter_name);
   if (counter_stack_it == counter_inheritance_table_->end()) {
     CounterStack* counter_stack =
-        MakeGarbageCollected<CounterStack>(1u, &element);
+        MakeGarbageCollected<CounterStack>(1u, new_entry);
     counter_inheritance_table_->insert(counter_name, counter_stack);
-    SetCounterValue(element, counter_name, value);
     return;
   }
   CounterStack& counter_stack = *counter_stack_it->value;
   // Remove innermost counter with same or previous sibling originating element.
   while (!counter_stack.empty() && counter_stack.back() &&
-         LayoutTreeBuilderTraversal::ParentElement(*counter_stack.back()) ==
+         LayoutTreeBuilderTraversal::ParentElement(
+             *counter_stack.back()->element) ==
              LayoutTreeBuilderTraversal::ParentElement(element)) {
     counter_stack.pop_back();
   }
-  counter_stack.push_back(&element);
-  SetCounterValue(element, counter_name, value);
+  counter_stack.push_back(new_entry);
 }
 
 // Remove counters parent is not ancestor of current element from stack,
@@ -339,8 +343,8 @@ void CountersAttachmentContext::RemoveStaleCounters(
     if (counter_stack.back() == nullptr) {
       break;
     }
-    const Element* parent =
-        LayoutTreeBuilderTraversal::ParentElement(*counter_stack.back());
+    const Element* parent = LayoutTreeBuilderTraversal::ParentElement(
+        *counter_stack.back()->element);
     // We pop all elements whose parent is not ancestor of `element`.
     if (!parent || IsAncestorOf(*parent, element)) {
       break;
@@ -366,57 +370,14 @@ void CountersAttachmentContext::RemoveCounterIfAncestorExists(
   // Also don't remove if the last counter's originating element is not
   // `element`.
   if (counter_stack.empty() || counter_stack.size() == 1 ||
-      counter_stack.back() == nullptr || counter_stack.back() != element) {
+      !counter_stack.back() || counter_stack.back()->element != element) {
     return;
   }
-  const Element* last_element = counter_stack.back();
-  const Element* previous_element = counter_stack[counter_stack.size() - 2];
-  if (previous_element && IsAncestorOf(*previous_element, *last_element)) {
+  const Element* last_element = counter_stack.back()->element;
+  CounterEntry* previous_entry = counter_stack[counter_stack.size() - 2];
+  if (previous_entry && IsAncestorOf(*previous_entry->element, *last_element)) {
     counter_stack.pop_back();
   }
-}
-
-// Set the counter's value by either updating the existing value or create
-// a new record in the table, if there is no record yet.
-void CountersAttachmentContext::SetCounterValue(
-    const Element& element,
-    const AtomicString& counter_name,
-    int value) {
-  auto counter_value_it = counter_value_table_->find(counter_name);
-  if (counter_value_it == counter_value_table_->end()) {
-    CounterValues* counter_values = MakeGarbageCollected<CounterValues>();
-    counter_values->insert(&element, value);
-    counter_value_table_->insert(counter_name, counter_values);
-    return;
-  }
-  CounterValues& counter_values = *counter_value_it->value;
-  auto element_value_it = counter_values.find(&element);
-  if (element_value_it == counter_values.end()) {
-    counter_values.insert(&element, value);
-    return;
-  }
-  element_value_it->value = value;
-}
-
-// Get the value for counter created on `element`.
-int CountersAttachmentContext::GetCounterValue(
-    const Element& element,
-    const AtomicString& counter_name) {
-  auto counter_stack_it = counter_inheritance_table_->find(counter_name);
-  if (counter_stack_it == counter_inheritance_table_->end()) {
-    return 0;
-  }
-  CounterStack& counter_stack = *counter_stack_it->value;
-  if (counter_stack.empty()) {
-    return 0;
-  }
-  auto counter_value_it = counter_value_table_->find(counter_name);
-  CHECK_NE(counter_value_it, counter_value_table_->end(),
-           base::NotFatalUntil::M130);
-  CounterValues& counter_values = *counter_value_it->value;
-  auto current_value_it = counter_values.find(&element);
-  CHECK_NE(current_value_it, counter_values.end(), base::NotFatalUntil::M130);
-  return current_value_it->value;
 }
 
 // Update the value of last on stack counter or create a new one, if there
@@ -444,15 +405,9 @@ void CountersAttachmentContext::UpdateCounterValue(
   }
   // Otherwise take the value of last counter on stack from the table and
   // update it.
-  const Element* current = counter_stack.back();
-  auto counter_value_it = counter_value_table_->find(counter_name);
-  CHECK_NE(counter_value_it, counter_value_table_->end(),
-           base::NotFatalUntil::M130);
-  CounterValues& counter_values = *counter_value_it->value;
-  auto current_value_it = counter_values.find(current);
-  CHECK_NE(current_value_it, counter_values.end(), base::NotFatalUntil::M130);
-  current_value_it->value = CalculateCounterValue(counter_type, counter_value,
-                                                  current_value_it->value);
+  CounterEntry& current = *counter_stack.back();
+  current.value =
+      CalculateCounterValue(counter_type, counter_value, current.value);
 }
 
 void CountersAttachmentContext::EnterStyleContainmentScope() {

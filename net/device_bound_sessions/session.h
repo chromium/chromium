@@ -47,9 +47,17 @@ class NET_EXPORT Session {
 
   const GURL& refresh_url() const { return refresh_url_; }
 
+  const std::optional<std::string>& cached_challenge() const {
+    return cached_challenge_;
+  }
+
   bool should_defer_when_expired() const { return should_defer_when_expired_; }
 
   bool IsEqualForTesting(const Session& other) const;
+
+  void set_cached_challenge(std::string challenge) {
+    cached_challenge_ = std::move(challenge);
+  }
 
  private:
   Session(Id id, url::Origin origin, GURL refresh);

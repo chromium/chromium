@@ -14,7 +14,7 @@
 #include "base/dcheck_is_on.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 static std::string WrappedEncodeVarInt(int64_t value) {
@@ -91,4 +91,4 @@ TEST(VarIntCoding, SingleByteCases) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace content::indexed_db

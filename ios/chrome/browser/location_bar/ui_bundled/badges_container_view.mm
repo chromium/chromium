@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -44,14 +46,6 @@
   }
 
   return accessibleElements;
-}
-
-- (void)updateForFullscreen:(BOOL)fullscreen {
-  if (fullscreen) {
-    _placeholderView.hidden = YES;
-  } else {
-    [self updatePlaceholderVisibility];
-  }
 }
 
 #pragma mark - BadgeViewVisibilityDelegate
@@ -107,16 +101,25 @@
 }
 
 - (void)setPlaceholderView:(UIView*)placeholderView {
-  _placeholderView = placeholderView;
-  _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
-  _placeholderView.isAccessibilityElement = NO;
-  _placeholderView.hidden = YES;
-  [_containerStackView addArrangedSubview:_placeholderView];
+  if (_placeholderView == placeholderView) {
+    return;
+  }
 
-  [NSLayoutConstraint activateConstraints:@[
-    [_badgeView.heightAnchor
-        constraintEqualToAnchor:_placeholderView.heightAnchor],
-  ]];
+  if ([_placeholderView superview] == _containerStackView) {
+    [_placeholderView removeFromSuperview];
+  }
+
+  _placeholderView = placeholderView;
+  if (_placeholderView) {
+    _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
+    _placeholderView.isAccessibilityElement = NO;
+    _placeholderView.hidden = YES;
+    [_containerStackView addArrangedSubview:_placeholderView];
+    [NSLayoutConstraint activateConstraints:@[
+      [_badgeView.heightAnchor
+          constraintEqualToAnchor:_placeholderView.heightAnchor]
+    ]];
+  }
   [self updatePlaceholderVisibility];
 }
 
@@ -129,6 +132,10 @@
                            (self.badgeView && !self.badgeView.hidden);
 
   _placeholderView.hidden = placeholderHidden;
+  if (!_placeholderView.hidden && IsLensOverlayAvailable()) {
+    [self.helpCommandsHandler
+        presentInProductHelpWithType:InProductHelpType::kLensOverlayEntrypoint];
+  }
 }
 
 @end

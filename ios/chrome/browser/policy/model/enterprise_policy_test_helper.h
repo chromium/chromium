@@ -25,11 +25,11 @@ class EnterprisePolicyTestHelper {
       const base::FilePath& state_directory_path);
   ~EnterprisePolicyTestHelper();
 
-  // Returns the browser state configured with `policy_provider_`.
-  TestChromeBrowserState* GetBrowserState() const;
+  // Returns the profile configured with `policy_provider_`.
+  TestProfileIOS* GetProfile() const;
   // Returns the backing local state.
   PrefService* GetLocalState();
-  // Returns the policy provider attached to `browser_state_`.
+  // Returns the policy provider attached to `profile_`.
   policy::MockConfigurationPolicyProvider* GetPolicyProvider();
   // Returns the browser policy connector.
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector();
@@ -43,8 +43,8 @@ class EnterprisePolicyTestHelper {
   std::unique_ptr<PrefService> local_state_;
   // The BrowserState-level policy connector. Must outlive `pref_service_`.
   std::unique_ptr<BrowserStatePolicyConnector> browser_state_policy_connector_;
-  // The browser state configured with the `policy_provider_`.
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  // The profile configured with the `policy_provider_`.
+  std::unique_ptr<TestProfileIOS> profile_;
 
   EnterprisePolicyTestHelper& operator=(const EnterprisePolicyTestHelper&) =
       delete;

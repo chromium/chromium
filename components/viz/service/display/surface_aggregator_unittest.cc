@@ -9101,6 +9101,87 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
   EXPECT_FALSE(new_aggregated_frame.delegated_ink_metadata);
 }
 
+// Tests that consecutive aggregated frames will result in the duplicate
+// delegated ink metadata being transferred to the aggregate frame until
+// the `kMaxFramesWithIdenticalInkMetadata` frame limit is reached.
+TEST_F(SurfaceAggregatorValidSurfaceTest, RepeatedDelegatedInkMetadataTest) {
+  std::vector<Quad> child_quads = {
+      Quad::SolidColorQuad(SkColors::kGreen, gfx::Rect(5, 5))};
+  std::vector<Pass> child_passes = {
+      Pass(child_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
+
+  CompositorFrame child_frame = MakeEmptyCompositorFrame();
+  gfx::DelegatedInkMetadata metadata(gfx::PointF(100, 100), /*diameter=*/1.5,
+                                     SK_ColorRED, base::TimeTicks::Now(),
+                                     gfx::RectF(10, 10, 200, 200),
+                                     base::TimeTicks::Now(), /*hovering=*/true);
+  child_frame.metadata.delegated_ink_metadata =
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata);
+  AddPasses(&child_frame.render_pass_list, child_passes,
+            &child_frame.metadata.referenced_surfaces);
+
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+  child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                     std::move(child_frame));
+
+  std::vector<Quad> root_quads = {Quad::SurfaceQuad(
+      SurfaceRange(std::nullopt, child_surface_id), SkColors::kWhite,
+      gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
+
+  std::vector<Pass> root_passes = {
+      Pass(root_quads, CompositorRenderPassId{1}, gfx::Size(30, 30))};
+
+  CompositorFrame root_frame = MakeEmptyCompositorFrame();
+  AddPasses(&root_frame.render_pass_list, root_passes,
+            &root_frame.metadata.referenced_surfaces);
+
+  root_frame.render_pass_list[0]
+      ->shared_quad_state_list.ElementAt(0)
+      ->quad_to_target_transform.Scale(1.5, 1.5);
+  root_frame.render_pass_list[0]
+      ->shared_quad_state_list.ElementAt(0)
+      ->quad_to_target_transform.Translate(70, 240);
+
+  // Update the expected metadata to reflect the transforms to point and area
+  // that are expected to occur.
+  gfx::PointF pt = root_frame.render_pass_list[0]
+                       ->shared_quad_state_list.ElementAt(0)
+                       ->quad_to_target_transform.MapPoint(metadata.point());
+  gfx::RectF area =
+      root_frame.render_pass_list[0]
+          ->shared_quad_state_list.ElementAt(0)
+          ->quad_to_target_transform.MapRect(metadata.presentation_area());
+  metadata = gfx::DelegatedInkMetadata(
+      pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
+      metadata.frame_time(), metadata.is_hovering());
+
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(root_frame));
+
+  // In the scenario where a compositor frame misses deadline or is skipped,
+  // ensure that the delegated ink metadata still gets put on to the aggregated
+  // frame until the duplicate metadata count of 3 is reached. See
+  // `kMaxFramesWithIdenticalInkMetadata`.
+  for (int frame_count = 1; frame_count <= 3; frame_count++) {
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
+        std::move(aggregated_frame.delegated_ink_metadata);
+    EXPECT_TRUE(actual_metadata);
+    EXPECT_EQ(*actual_metadata.get(), metadata);
+  }
+
+  // Ensure that the subsequent aggregated frame with no immediately prior
+  // compositor frame does not have a delegated ink metadata.
+  {
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
+        std::move(aggregated_frame.delegated_ink_metadata);
+    EXPECT_FALSE(actual_metadata);
+  }
+}
+
 // Confirm that transforms are aggregated as the tree is walked and correctly
 // applied to the ink metadata.
 TEST_F(SurfaceAggregatorValidSurfaceTest,

@@ -146,6 +146,9 @@ void ExtensionTelemetryUploader::SendRequest(const std::string& access_token) {
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   if (!access_token.empty()) {
+    LogAuthenticatedCookieResets(
+        *resource_request,
+        SafeBrowsingAuthenticatedEndpoint::kExtensionTelemetry);
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token);
   } else {

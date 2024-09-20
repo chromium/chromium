@@ -34,8 +34,10 @@ namespace speech {
 class SodaInstallerImplChromeOSTest : public testing::Test {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kOnDeviceSpeechRecognition);
+    // TODO: b/367128558 - Tweak the test logic before removing the Conch flag.
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features= */ {ash::features::kOnDeviceSpeechRecognition},
+        /* disabled_features= */ {ash::features::kConch});
     soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     soda_installer_impl_->RegisterLocalStatePrefs(pref_service_->registry());

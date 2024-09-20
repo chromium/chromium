@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc {
@@ -75,7 +76,8 @@ TEST_F(ArcWmMetricsTest, TestWindowMaximizeDelayMetrics) {
 
   // The histogram should not record data when maximizing in tablet mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
   widget->Maximize();
   histogram_tester.ExpectTotalCount(histogram_name, 1);
 }

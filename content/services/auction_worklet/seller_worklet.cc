@@ -865,6 +865,7 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/base::TimeDelta(),
+        /*script_timed_out=*/true,
         /*errors=*/{"scoreAd() aborted due to zero timeout."},
         /*pa_requests=*/{},
         GetRealTimeReportingContributionsOnError(
@@ -897,6 +898,7 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
+        /*script_timed_out=*/false,
         /*errors=*/std::vector<std::string>(),
         /*pa_requests=*/{},
         GetRealTimeReportingContributionsOnError(
@@ -918,6 +920,7 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
+        /*script_timed_out=*/false,
         /*errors=*/std::vector<std::string>(),
         /*pa_requests=*/{},
         GetRealTimeReportingContributionsOnError(
@@ -1001,6 +1004,7 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
+        /*script_timed_out=*/false,
         /*errors=*/std::vector<std::string>(),
         /*pa_requests=*/{},
         GetRealTimeReportingContributionsOnError(
@@ -1013,6 +1017,7 @@ void SellerWorklet::V8State::ScoreAd(
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
           /*scoring_latency=*/elapsed_timer.Elapsed(),
+          /*script_timed_out=*/false,
           /*errors=*/std::vector<std::string>(),
           /*pa_requests=*/{},
           GetRealTimeReportingContributionsOnError(
@@ -1039,6 +1044,7 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
+        /*script_timed_out=*/false,
         /*errors=*/std::move(errors_out),
         /*pa_requests=*/{},
         GetRealTimeReportingContributionsOnError(
@@ -1074,15 +1080,15 @@ void SellerWorklet::V8State::ScoreAd(
   // bindings were already added.
   if (!context_recycler_for_context_reuse_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "sellerScript", trace_id);
-    bool success =
+    AuctionV8Helper::Result result =
         v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                              total_timeout.get(),
-                              errors_out) == AuctionV8Helper::Result::kSuccess;
+                              total_timeout.get(), errors_out);
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "sellerScript", trace_id);
-    if (!success) {
+    if (result != AuctionV8Helper::Result::kSuccess) {
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
           /*scoring_latency=*/elapsed_timer.Elapsed(),
+          /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
           /*errors=*/std::move(errors_out),
           /*pa_requests=*/{},
           GetRealTimeReportingContributionsOnError(
@@ -1107,13 +1113,13 @@ void SellerWorklet::V8State::ScoreAd(
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "score_ad", trace_id);
   v8::MaybeLocal<v8::Value> maybe_score_ad_result;
-  bool success =
-      v8_helper_->CallFunction(
-          context, debug_id_.get(),
-          v8_helper_->FormatScriptName(unbound_worklet_script), "scoreAd", args,
-          total_timeout.get(), maybe_score_ad_result,
-          errors_out) == AuctionV8Helper::Result::kSuccess &&
-      maybe_score_ad_result.ToLocal(&score_ad_result);
+  AuctionV8Helper::Result result = v8_helper_->CallFunction(
+      context, debug_id_.get(),
+      v8_helper_->FormatScriptName(unbound_worklet_script), "scoreAd", args,
+      total_timeout.get(), maybe_score_ad_result, errors_out);
+  if (result == AuctionV8Helper::Result::kSuccess) {
+    score_ad_result = maybe_score_ad_result.ToLocalChecked();
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdTime",
@@ -1128,7 +1134,7 @@ void SellerWorklet::V8State::ScoreAd(
       trusted_scoring_signals_fetch_failed, /*is_bidding_signal=*/false,
       real_time_contributions);
 
-  if (!success) {
+  if (result != AuctionV8Helper::Result::kSuccess) {
     // Keep debug loss reports, Private Aggregation API requests, and real time
     // reporting contributions since `scoreAd()` might use them to detect script
     // timeout or failures.
@@ -1146,7 +1152,9 @@ void SellerWorklet::V8State::ScoreAd(
             ->TakePrivateAggregationRequests(),
         FilterRealtimeContributions(std::move(real_time_contributions),
                                     elapsed),
-        /*scoring_latency=*/elapsed, std::move(errors_out));
+        /*scoring_latency=*/elapsed,
+        /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
+        std::move(errors_out));
     return;
   }
 
@@ -1207,7 +1215,9 @@ void SellerWorklet::V8State::ScoreAd(
       base::TimeDelta elapsed = elapsed_timer.Elapsed();
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
-          /*scoring_latency=*/elapsed, std::move(errors_out),
+          /*scoring_latency=*/elapsed,
+          /*script_timed_out=*/convert_score_ad.FailureIsTimeout(),
+          std::move(errors_out),
           context_recycler->private_aggregation_bindings()
               ->TakePrivateAggregationRequests(),
           FilterRealtimeContributions(std::move(real_time_contributions),
@@ -1249,7 +1259,8 @@ void SellerWorklet::V8State::ScoreAd(
         base::TimeDelta elapsed = elapsed_timer.Elapsed();
         PostScoreAdCallbackToUserThreadOnError(
             std::move(callback),
-            /*scoring_latency=*/elapsed, std::move(errors_out),
+            /*scoring_latency=*/elapsed,
+            /*script_timed_out=*/false, std::move(errors_out),
             context_recycler->private_aggregation_bindings()
                 ->TakePrivateAggregationRequests(),
             FilterRealtimeContributions(std::move(real_time_contributions),
@@ -1283,13 +1294,14 @@ void SellerWorklet::V8State::ScoreAd(
       component_auction_modified_bid_params->ad = "null";
       if (result_idl.ad.has_value()) {
         std::string candidate_ad;
+
         // Can pass null for timeout here since we already have a TimeLimitScope
         // active.
-        AuctionV8Helper::Result result = v8_helper_->ExtractJson(
+        AuctionV8Helper::Result json_result = v8_helper_->ExtractJson(
             context, *result_idl.ad, /*script_timeout=*/nullptr, &candidate_ad);
-        if (result == AuctionV8Helper::Result::kSuccess) {
+        if (json_result == AuctionV8Helper::Result::kSuccess) {
           component_auction_modified_bid_params->ad = std::move(candidate_ad);
-        } else if (result == AuctionV8Helper::Result::kTimeout) {
+        } else if (json_result == AuctionV8Helper::Result::kTimeout) {
           errors_out.push_back(base::StrCat(
               {decision_logic_url_.spec(),
                " timeout serializing `ad` field of scoreAd() return value."}));
@@ -1308,7 +1320,8 @@ void SellerWorklet::V8State::ScoreAd(
                   ->TakePrivateAggregationRequests(),
               FilterRealtimeContributions(std::move(real_time_contributions),
                                           elapsed),
-              /*scoring_latency=*/elapsed, std::move(errors_out));
+              /*scoring_latency=*/elapsed, /*script_timed_out=*/true,
+              std::move(errors_out));
           return;
         }
         // else, it's a regular failure; leave at "null".
@@ -1358,7 +1371,8 @@ void SellerWorklet::V8State::ScoreAd(
     base::TimeDelta elapsed = elapsed_timer.Elapsed();
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
-        /*scoring_latency=*/elapsed, std::move(errors_out),
+        /*scoring_latency=*/elapsed,
+        /*script_timed_out=*/false, std::move(errors_out),
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         FilterRealtimeContributions(std::move(real_time_contributions),
@@ -1380,7 +1394,8 @@ void SellerWorklet::V8State::ScoreAd(
             ->TakePrivateAggregationRequests(),
         FilterRealtimeContributions(std::move(real_time_contributions),
                                     elapsed),
-        /*scoring_latency=*/elapsed, std::move(errors_out));
+        /*scoring_latency=*/elapsed, /*script_timed_out=*/false,
+        std::move(errors_out));
     return;
   }
 
@@ -1397,7 +1412,8 @@ void SellerWorklet::V8State::ScoreAd(
     base::TimeDelta elapsed = elapsed_timer.Elapsed();
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
-        /*scoring_latency=*/elapsed, std::move(errors_out),
+        /*scoring_latency=*/elapsed, /*script_timed_out=*/false,
+        std::move(errors_out),
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         FilterRealtimeContributions(std::move(real_time_contributions),
@@ -1421,7 +1437,8 @@ void SellerWorklet::V8State::ScoreAd(
       base::TimeDelta elapsed = elapsed_timer.Elapsed();
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
-          /*scoring_latency=*/elapsed, std::move(errors_out),
+          /*scoring_latency=*/elapsed,
+          /*script_timed_out=*/false, std::move(errors_out),
           context_recycler->private_aggregation_bindings()
               ->TakePrivateAggregationRequests(),
           FilterRealtimeContributions(std::move(real_time_contributions),
@@ -1454,7 +1471,8 @@ void SellerWorklet::V8State::ScoreAd(
       context_recycler->private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
       FilterRealtimeContributions(std::move(real_time_contributions), elapsed),
-      /*scoring_latency=*/elapsed, std::move(errors_out));
+      /*scoring_latency=*/elapsed, /*script_timed_out=*/false,
+      std::move(errors_out));
 }
 
 void SellerWorklet::V8State::ReportResult(
@@ -1499,6 +1517,7 @@ void SellerWorklet::V8State::ReportResult(
         /*report_url=*/std::nullopt,
         /*ad_beacon_map=*/{},
         /*pa_requests=*/{}, base::TimeDelta(),
+        /*script_timed_out=*/true,
         /*errors=*/{"reportResult() aborted due to zero timeout."});
     return;
   }
@@ -1530,6 +1549,7 @@ void SellerWorklet::V8State::ReportResult(
                                          /*report_url=*/std::nullopt,
                                          /*ad_beacon_map=*/{},
                                          /*pa_requests=*/{}, base::TimeDelta(),
+                                         /*script_timed_out=*/false,
                                          /*errors=*/std::vector<std::string>());
     return;
   }
@@ -1577,6 +1597,7 @@ void SellerWorklet::V8State::ReportResult(
                                          /*report_url=*/std::nullopt,
                                          /*ad_beacon_map=*/{},
                                          /*pa_requests=*/{}, base::TimeDelta(),
+                                         /*script_timed_out=*/false,
                                          /*errors=*/std::vector<std::string>());
     return;
   }
@@ -1598,6 +1619,7 @@ void SellerWorklet::V8State::ReportResult(
           /*report_url=*/std::nullopt,
           /*ad_beacon_map=*/{},
           /*pa_requests=*/{}, base::TimeDelta(),
+          /*script_timed_out=*/false,
           /*errors=*/std::vector<std::string>());
       return;
     }
@@ -1623,6 +1645,7 @@ void SellerWorklet::V8State::ReportResult(
                                          /*report_url=*/std::nullopt,
                                          /*ad_beacon_map=*/{},
                                          /*pa_requests=*/{}, base::TimeDelta(),
+                                         /*script_timed_out=*/false,
                                          /*errors=*/errors_out);
     return;
   }
@@ -1640,17 +1663,18 @@ void SellerWorklet::V8State::ReportResult(
       v8_helper_->CreateTimeLimit(
           /*script_timeout=*/auction_ad_config_non_shared_params
               .reporting_timeout);
-  bool success =
+  AuctionV8Helper::Result result =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                            total_timeout.get(),
-                            errors_out) == AuctionV8Helper::Result::kSuccess;
+                            total_timeout.get(), errors_out);
 
-  if (!success) {
+  if (result != AuctionV8Helper::Result::kSuccess) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
     PostReportResultCallbackToUserThread(
         std::move(callback), /*signals_for_winner=*/std::nullopt,
         /*report_url=*/std::nullopt, /*ad_beacon_map=*/{},
-        /*pa_requests=*/{}, elapsed_timer.Elapsed(), std::move(errors_out));
+        /*pa_requests=*/{}, elapsed_timer.Elapsed(),
+        /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
+        std::move(errors_out));
     return;
   }
 
@@ -1670,28 +1694,25 @@ void SellerWorklet::V8State::ReportResult(
   }
 
   v8::MaybeLocal<v8::Value> maybe_signals_for_winner_value;
-  success =
-      v8_helper_->CallFunction(
-          context, debug_id_.get(),
-          v8_helper_->FormatScriptName(unbound_worklet_script), "reportResult",
-          args, total_timeout.get(), maybe_signals_for_winner_value,
-          errors_out) == AuctionV8Helper::Result::kSuccess &&
-      maybe_signals_for_winner_value.ToLocal(&signals_for_winner_value);
+  result = v8_helper_->CallFunction(
+      context, debug_id_.get(),
+      v8_helper_->FormatScriptName(unbound_worklet_script), "reportResult",
+      args, total_timeout.get(), maybe_signals_for_winner_value, errors_out);
 
   std::string signals_for_winner;
-  if (success) {
-    // Consider lack of error but no return value type, or a return value that
-    // can't be converted to JSON a valid result.
-    AuctionV8Helper::Result json_result =
-        v8_helper_->ExtractJson(context, signals_for_winner_value,
-                                total_timeout.get(), &signals_for_winner);
-    if (json_result == AuctionV8Helper::Result::kFailure) {
+  if (result == AuctionV8Helper::Result::kSuccess) {
+    signals_for_winner_value = maybe_signals_for_winner_value.ToLocalChecked();
+    result = v8_helper_->ExtractJson(context, signals_for_winner_value,
+                                     total_timeout.get(), &signals_for_winner);
+    if (result == AuctionV8Helper::Result::kFailure) {
+      // Consider lack of script error but a return value that can't be
+      // converted to JSON a valid result.
+      result = AuctionV8Helper::Result::kSuccess;
       signals_for_winner = "null";
-    } else if (json_result == AuctionV8Helper::Result::kTimeout) {
+    } else if (result == AuctionV8Helper::Result::kTimeout) {
       errors_out.push_back(
           base::StrCat({decision_logic_url_.spec(),
                         " timeout serializing reportResult() return value."}));
-      success = false;
     }
   }
 
@@ -1700,7 +1721,7 @@ void SellerWorklet::V8State::ReportResult(
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ReportResultTime",
                           elapsed);
 
-  if (!success) {
+  if (result != AuctionV8Helper::Result::kSuccess) {
     // Keep Private Aggregation API requests since `reportReport()` might use
     // it to detect script timeout or failures.
     PostReportResultCallbackToUserThread(
@@ -1708,7 +1729,9 @@ void SellerWorklet::V8State::ReportResult(
         /*report_url=*/std::nullopt, /*ad_beacon_map=*/{},
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        elapsed, std::move(errors_out));
+        elapsed,
+        /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
+        std::move(errors_out));
     return;
   }
 
@@ -1718,7 +1741,7 @@ void SellerWorklet::V8State::ReportResult(
       context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
       context_recycler.private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      elapsed, std::move(errors_out));
+      elapsed, /*script_timed_out=*/false, std::move(errors_out));
 }
 
 void SellerWorklet::V8State::ConnectDevToolsAgent(
@@ -1758,6 +1781,7 @@ void SellerWorklet::V8State::PostResumeToUserThread(
 void SellerWorklet::V8State::PostScoreAdCallbackToUserThreadOnError(
     ScoreAdCallbackInternal callback,
     base::TimeDelta scoring_latency,
+    bool script_timed_out,
     std::vector<std::string> errors,
     PrivateAggregationRequests pa_requests,
     RealTimeReportingContributions real_time_contributions) {
@@ -1770,7 +1794,8 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThreadOnError(
       /*debug_loss_report_url=*/std::nullopt,
       /*debug_win_report_url=*/std::nullopt, std::move(pa_requests),
       std::move(real_time_contributions),
-      /*scoring_latency=*/scoring_latency, std::move(errors));
+      /*scoring_latency=*/scoring_latency,
+      /*script_timed_out=*/script_timed_out, std::move(errors));
 }
 
 void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
@@ -1786,6 +1811,7 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
     PrivateAggregationRequests pa_requests,
     RealTimeReportingContributions real_time_contributions,
     base::TimeDelta scoring_latency,
+    bool script_timed_out,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
@@ -1796,7 +1822,7 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
                      std::move(debug_loss_report_url),
                      std::move(debug_win_report_url), std::move(pa_requests),
                      std::move(real_time_contributions), scoring_latency,
-                     std::move(errors)));
+                     script_timed_out, std::move(errors)));
 }
 
 void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
@@ -1806,6 +1832,7 @@ void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
     base::flat_map<std::string, GURL> ad_beacon_map,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta reporting_latency,
+    bool script_timed_out,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
@@ -1813,7 +1840,7 @@ void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
       base::BindOnce(std::move(callback), std::move(signals_for_winner),
                      std::move(report_url), std::move(ad_beacon_map),
                      std::move(pa_requests), reporting_latency,
-                     std::move(errors)));
+                     script_timed_out, std::move(errors)));
 }
 
 void SellerWorklet::ResumeIfPaused() {
@@ -1846,6 +1873,7 @@ void SellerWorklet::Start() {
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.ScoringScriptJS",
       script_source_url_.spec().size());
 
+  code_download_start_ = base::TimeTicks::Now();
   worklet_loader_ = std::make_unique<WorkletLoader>(
       url_loader_factory_.get(), /*auction_network_events_handler=*/
       CreateNewAuctionNetworkEventsHandlerRemote(
@@ -1862,6 +1890,7 @@ void SellerWorklet::OnDownloadComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   DCHECK_EQ(worklet_scripts.size(), v8_helpers_.size());
+  js_fetch_latency_ = base::TimeTicks::Now() - code_download_start_;
 
   // Use `worklet_scripts[0]` for metrics and for the failure check. All the
   // results should be the same.
@@ -2161,6 +2190,7 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
     PrivateAggregationRequests pa_requests,
     RealTimeReportingContributions real_time_contributions,
     base::TimeDelta scoring_latency,
+    bool script_timed_out,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   if (load_script_error_msg_) {
@@ -2180,7 +2210,11 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
       score, reject_reason, std::move(component_auction_modified_bid_params),
       std::move(bid_in_seller_currency), scoring_signals_data_version,
       debug_loss_report_url, debug_win_report_url, std::move(pa_requests),
-      std::move(real_time_contributions), scoring_latency,
+      std::move(real_time_contributions),
+      mojom::SellerTimingMetrics::New(
+          /*js_fetch_latency=*/js_fetch_latency_,
+          /*script_latency=*/scoring_latency,
+          /*script_timed_out=*/script_timed_out),
       mojom::ScoreAdDependencyLatencies::New(
           /*code_ready_latency=*/NullOptIfZero(task->wait_code),
           /*direct_from_seller_signals_latency=*/
@@ -2293,6 +2327,7 @@ void SellerWorklet::DeliverReportResultCallbackOnUserThread(
     base::flat_map<std::string, GURL> ad_beacon_map,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta reporting_latency,
+    bool script_timed_out,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -2302,7 +2337,12 @@ void SellerWorklet::DeliverReportResultCallbackOnUserThread(
 
   std::move(task->callback)
       .Run(signals_for_winner, report_url, ad_beacon_map,
-           std::move(pa_requests), reporting_latency, std::move(errors));
+           std::move(pa_requests),
+           mojom::SellerTimingMetrics::New(
+               /*js_fetch_latency=*/js_fetch_latency_,
+               /*script_latency=*/reporting_latency,
+               /*script_timed_out=*/script_timed_out),
+           std::move(errors));
   report_result_tasks_.erase(task);
 }
 

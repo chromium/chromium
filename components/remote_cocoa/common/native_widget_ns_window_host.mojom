@@ -171,7 +171,7 @@ interface NativeWidgetNSWindowHost {
   // Called when the menubar reveal status changes.
   // `reveal_amount` ranges in [0, 1]. This is the opacity of the menubar
   // and the browser window traffic lights.
-  OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount);
+  OnImmersiveFullscreenMenuBarRevealChanged(double reveal_amount);
 
   // Returns height of the menubar if the menubar autohides, otherwise 0.
   OnAutohidingMenuBarHeightChanged(int32 menu_bar_height);

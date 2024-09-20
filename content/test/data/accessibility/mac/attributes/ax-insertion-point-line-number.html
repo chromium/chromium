@@ -34,14 +34,17 @@
   multiLine_emptyFirstLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
 -->
 <!DOCTYPE html>
+<style>
+    textarea { font-family: monospace; width: 50ch; }
+</style>
 <input id="emptyLine">
 <input id="singleLine" value="single line">
-<textarea id="multiLine">
+<textarea id="multiLine" rows="6">
     first line
     second line
     third line
 </textarea>
-<textarea id="multiLine_emptyFirstLine">
+<textarea id="multiLine_emptyFirstLine" rows="6">
 
     second line
     third line

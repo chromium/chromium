@@ -1,0 +1,16 @@
+Name: Ink
+URL: https://github.com/google/ink.git
+Version: N/A
+Revision: a8a57a8557d70b4b77a42d3fb2adb33cbc3c5431
+License: Apache 2.0
+License File: LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description:
+
+The C++ library used in the PDF Viewer for annotating PDFs.
+
+Local Modifications:
+
+None

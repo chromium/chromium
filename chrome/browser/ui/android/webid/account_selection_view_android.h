@@ -12,6 +12,9 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 
+using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+using IdentityRequestAccountPtr =
+    scoped_refptr<content::IdentityRequestAccount>;
 using TokenError = content::IdentityCredentialTokenError;
 
 // This class provides an implementation of the AccountSelectionView interface
@@ -25,11 +28,11 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   // AccountSelectionView:
   bool Show(
       const std::string& rp_for_display,
-      const std::vector<content::IdentityProviderData>& identity_provider_data,
+      const std::vector<IdentityProviderDataPtr>& idp_list,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
       Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      const std::optional<content::IdentityProviderData>& new_account_idp)
-      override;
+      const std::vector<IdentityRequestAccountPtr>& new_accounts) override;
   bool ShowFailureDialog(
       const std::string& rp_for_display,
       const std::string& idp_for_display,

@@ -51,7 +51,7 @@ class WebStateID;
     (BaseGridViewController*)gridViewController;
 // Tells the delegate that the item with `itemID` was removed.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
-       didRemoveItemWIthID:(web::WebStateID)itemID;
+       didRemoveItemWithID:(web::WebStateID)itemID;
 
 // Tells the delegate that the `gridViewController` will begin dragging a tab.
 - (void)gridViewControllerDragSessionWillBeginForTab:
@@ -72,6 +72,12 @@ class WebStateID;
     (BaseGridViewController*)gridViewController;
 // Tells the delegate that a drop animation did end.
 - (void)gridViewControllerDropAnimationDidEnd:
+    (BaseGridViewController*)gridViewController;
+// Tells the delegate that a drop session did enter.
+- (void)gridViewControllerDropSessionDidEnter:
+    (BaseGridViewController*)gridViewController;
+// Tells the delegate that a drop session did exit.
+- (void)gridViewControllerDropSessionDidExit:
     (BaseGridViewController*)gridViewController;
 
 // Tells the delegate that the inactive tabs button was tapped in

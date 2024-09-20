@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -51,10 +52,6 @@
 #include "ui/android/view_android.h"
 #include "ui/gfx/switches.h"
 #include "url/url_constants.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
 
 namespace content {
 
@@ -204,6 +201,12 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
   ~NavigationEntryScreenshotBrowserTestBase() override = default;
 
   void SetUp() override {
+    if (base::SysInfo::GetAndroidHardwareEGL() == "emulation") {
+      // crbug.com/337886037 and crrev.com/c/5504854/comment/b81b8fb6_95fb1381/:
+      // The CopyOutputRequests crash the GPU process. ANGLE is exporting the
+      // native fence support on Android emulators but it doesn't work properly.
+      GTEST_SKIP();
+    }
     NavigationTransitionUtils::ResetNumCopyOutputRequestIssuedForTesting();
     ContentBrowserTest::SetUp();
   }
@@ -435,12 +438,6 @@ class NavigationEntryScreenshotBrowserTest
 // navigation and history navigation.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        PrimaryMainFrameNav) {
-// TODO(crbug.com/353908058): Re-enable this test for automotive.
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP() << "This test is flaky on automotive. crbug.com/353908058";
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -915,9 +912,8 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, HistoryDotBack) {
 
 // Asserting that both the navigations from and to the about:blank triggers
 // screenshot capture.
-// Disabled because flaky. (See b/354018428)
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
-                       DISABLED_AboutBlankCaptured) {
+                       AboutBlankCaptured) {
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
@@ -1159,12 +1155,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 class NavigationEntryScreenshotBrowserTestWithEviction
     : public NavigationEntryScreenshotBrowserTest {
  public:
-  void SetUp() override {
-    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-      GTEST_SKIP() << "This test is flaky on automotive. crbug.com/358342700";
-    }
-    NavigationEntryScreenshotBrowserTest::SetUp();
-  }
   bool Use1MinuteEvictionDelay() const override { return true; }
   ~NavigationEntryScreenshotBrowserTestWithEviction() override = default;
 };

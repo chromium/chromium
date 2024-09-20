@@ -53,6 +53,9 @@ CGFloat const kTitleLogoHeight = 32;
 
   // URL of the current page the bottom sheet is being displayed on.
   GURL _URL;
+
+  // YES if the primary button is active where actions are effective.
+  BOOL _primaryButtonActive;
 }
 
 // The payments controller handler used to open the payments options.
@@ -76,6 +79,7 @@ CGFloat const kTitleLogoHeight = 32;
     self.handler = handler;
     _URL = URL;
     self.disableBottomSheetOnExit = YES;
+    _primaryButtonActive = NO;
   }
   return self;
 }
@@ -116,23 +120,34 @@ CGFloat const kTitleLogoHeight = 32;
   [super viewDidLoad];
 
   [self adjustTransactionsPrimaryActionButtonHorizontalConstraints];
+
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:TraitCollectionSetForTraits(
+                                      @[ UITraitUserInterfaceStyle.self ])
+                       withAction:@selector(resizeLogoOnTraitChange)];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
                                   self.imageViewAccessibilityLabel);
+  [self.delegate paymentsBottomSheetViewDidAppear];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
 
   if (self.traitCollection.userInterfaceStyle !=
       previousTraitCollection.userInterfaceStyle) {
-    // Make sure the GPay logo matches the new trait collection.
-    self.image = [self titleImage];
+    [self resizeLogoOnTraitChange];
   }
 }
+#endif
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
@@ -156,6 +171,10 @@ CGFloat const kTitleLogoHeight = 32;
 
 - (void)dismiss {
   [self dismissViewControllerAnimated:NO completion:NULL];
+}
+
+- (void)activatePrimaryButton {
+  _primaryButtonActive = YES;
 }
 
 #pragma mark - UITableViewDelegate
@@ -222,6 +241,12 @@ CGFloat const kTitleLogoHeight = 32;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  [self.delegate didTapOnPrimaryButton];
+
+  if (!_primaryButtonActive) {
+    return;
+  }
+
   self.disableBottomSheetOnExit = NO;
 
   base::RecordAction(
@@ -399,6 +424,11 @@ CGFloat const kTitleLogoHeight = 32;
                                                   atIndexPath:indexPath];
   cell.accessoryType = [self accessoryType:indexPath];
   return cell;
+}
+
+// Resizes the GPay logo to match the new trait collection.
+- (void)resizeLogoOnTraitChange {
+  self.image = [self titleImage];
 }
 
 #pragma mark - ConfirmationAlertViewController

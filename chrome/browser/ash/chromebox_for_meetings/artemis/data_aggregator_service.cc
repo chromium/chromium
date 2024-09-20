@@ -538,6 +538,15 @@ void DataAggregatorService::AddActivePayloadToPendingQueue() {
 void DataAggregatorService::EnqueueNextPendingTransportPayload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Don't attempt to enqueue anything if we're still waiting for
+  // a response from the last enqueue. We'll call this function
+  // again immediately after getting a response (when we check
+  // the pending queue size), so this will just delay this
+  // enqueue attempt until then.
+  if (enqueue_in_progress_) {
+    return;
+  }
+
   if (pending_transport_payloads_.empty()) {
     LOG(WARNING) << "Requested payload enqueue, but payload queue is empty.";
     return;

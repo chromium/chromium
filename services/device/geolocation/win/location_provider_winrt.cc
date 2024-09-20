@@ -35,6 +35,7 @@ using ABI::Windows::Devices::Geolocation::BasicGeoposition;
 using ABI::Windows::Devices::Geolocation::Geolocator;
 using ABI::Windows::Devices::Geolocation::IGeocoordinate;
 using ABI::Windows::Devices::Geolocation::IGeocoordinateWithPoint;
+using ABI::Windows::Devices::Geolocation::IGeocoordinateWithPositionData;
 using ABI::Windows::Devices::Geolocation::IGeolocator;
 using ABI::Windows::Devices::Geolocation::IGeopoint;
 using ABI::Windows::Devices::Geolocation::IGeoposition;
@@ -43,6 +44,8 @@ using ABI::Windows::Devices::Geolocation::IPositionChangedEventArgs;
 using ABI::Windows::Devices::Geolocation::IStatusChangedEventArgs;
 using ABI::Windows::Devices::Geolocation::PositionAccuracy;
 using ABI::Windows::Devices::Geolocation::PositionChangedEventArgs;
+using ABI::Windows::Devices::Geolocation::PositionSource;
+using ABI::Windows::Devices::Geolocation::PositionSource_Unknown;
 using ABI::Windows::Devices::Geolocation::PositionStatus;
 using ABI::Windows::Devices::Geolocation::StatusChangedEventArgs;
 using ABI::Windows::Foundation::IReference;
@@ -143,6 +146,27 @@ AltitudeReferenceSystem GetAltitudeReferenceSystemFromPoint(
   return reference_system;
 }
 
+PositionSource GetPositionSourceFromCoordinate(
+    const ComPtr<IGeocoordinate>& coordinate) {
+  ComPtr<IGeocoordinateWithPositionData> position_data;
+  HRESULT hr = coordinate.As(&position_data);
+  if (FAILED(hr)) {
+    GEOLOCATION_LOG(ERROR)
+        << "Failed to cast to GeocoordinateWithPositionData. "
+        << logging::SystemErrorCodeToString(hr);
+    return PositionSource_Unknown;
+  }
+
+  PositionSource position_source;
+  hr = position_data->get_PositionSource(&position_source);
+  if (FAILED(hr)) {
+    GEOLOCATION_LOG(ERROR) << "Failed to get position source. "
+                           << logging::SystemErrorCodeToString(hr);
+    return PositionSource_Unknown;
+  }
+  return position_source;
+}
+
 void RecordUmaStartProviderError(HRESULT result) {
   base::UmaHistogramSparse("Geolocation.LocationProviderWinrt.StartProvider",
                            result);
@@ -172,6 +196,16 @@ void RecordUmaErrorStatus(
 void RecordUmaCreateGeopositionError(HRESULT result) {
   base::UmaHistogramSparse(
       "Geolocation.LocationProviderWinrt.CreateGeoposition", result);
+}
+
+void RecordUmaAccuracy(int accuracy) {
+  base::UmaHistogramCounts10M("Geolocation.LocationProviderWinrt.Accuracy",
+                              accuracy);
+}
+
+void RecordUmaPositionSource(PositionSource source) {
+  base::UmaHistogramSparse("Geolocation.LocationProviderWinrt.PositionSource",
+                           source);
 }
 
 }  // namespace
@@ -520,6 +554,9 @@ mojom::GeopositionPtr LocationProviderWinrt::CreateGeoposition(
           AltitudeReferenceSystem_Ellipsoid) {
     location_data->altitude = device::mojom::kBadAltitude;
   }
+
+  RecordUmaAccuracy(static_cast<int>(location_data->accuracy));
+  RecordUmaPositionSource(GetPositionSourceFromCoordinate(coordinate));
 
   return location_data;
 }

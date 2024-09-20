@@ -98,6 +98,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -119,8 +120,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -1945,17 +1944,13 @@ public class CustomTabActivityTest {
         webServer.setServerHost("www.google.com");
         final String expectedHeader = "test-header";
         String url = webServer.setResponse("/ok.html", "<html>ok</html>", null);
-        AppHooks.setInstanceForTesting(
-                new AppHooksImpl() {
+        ServiceLoaderUtil.setInstanceForTesting(
+                CustomTabsConnection.class,
+                new CustomTabsConnection() {
                     @Override
-                    public CustomTabsConnection createCustomTabsConnection() {
-                        return new CustomTabsConnection() {
-                            @Override
-                            public void setClientDataHeaderForNewTab(
-                                    CustomTabsSessionToken session, WebContents webContents) {
-                                setClientDataHeader(webContents, expectedHeader);
-                            }
-                        };
+                    public void setClientDataHeaderForNewTab(
+                            CustomTabsSessionToken session, WebContents webContents) {
+                        setClientDataHeader(webContents, expectedHeader);
                     }
                 });
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();

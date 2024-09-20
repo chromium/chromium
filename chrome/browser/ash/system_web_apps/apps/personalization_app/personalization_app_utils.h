@@ -55,8 +55,15 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile);
 // Verifies if the current language settings in English.
 bool IsSystemInEnglishLanguage();
 
-// Controls whether the profile can see and open SeaPen UI.
+// Controls whether the profile can see and open SeaPen UI. Managed users have
+// age restrictions that underage users (<18) are not allowed to view and access
+// SeaPen features. The age check should be verified after network connection
+// is established.
 bool IsEligibleForSeaPen(Profile* profile);
+
+// Preliminary check whether the profile is allowed to install Sea Pen apps (VC
+// Background).
+bool IsAllowedToInstallSeaPen(Profile* profile);
 
 // Controls whether SeaPen feature is enabled with the current `settings` value.
 bool IsManagedSeaPenSettingsEnabled(const int settings);

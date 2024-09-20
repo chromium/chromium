@@ -174,6 +174,9 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
   // On systems without audio hardware the returned parameters may be invalid.
   // In which case just choose whatever we want for the fake device.
   if (!original_sink_params_.IsValid()) {
+    SendLogMessage(base::StringPrintf(
+        "%s => (original_sink_params_ is invalid =[original_sink_params_=%s])",
+        __func__, original_sink_params_.AsHumanReadableString().c_str()));
     original_sink_params_.Reset(media::AudioParameters::AUDIO_FAKE,
                                 media::ChannelLayoutConfig::Stereo(), 48000,
                                 480);
@@ -336,6 +339,8 @@ void RendererWebAudioDeviceImpl::NotifyRenderError() {
   }
 
   DCHECK(thread_checker_.CalledOnValidThread());
+  SendLogMessage(base::StringPrintf("%s", __func__));
+
   webaudio_callback_->OnRenderError();
 }
 

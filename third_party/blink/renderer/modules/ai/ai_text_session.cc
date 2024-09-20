@@ -17,22 +17,22 @@ AITextSession::AITextSession(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : ExecutionContextClient(context),
       task_runner_(task_runner),
-      text_session_remote_(context) {}
+      assistant_remote_(context) {}
 
 void AITextSession::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
-  visitor->Trace(text_session_remote_);
+  visitor->Trace(assistant_remote_);
 }
 
-mojo::PendingReceiver<blink::mojom::blink::AITextSession>
+mojo::PendingReceiver<blink::mojom::blink::AIAssistant>
 AITextSession::GetModelSessionReceiver() {
-  return text_session_remote_.BindNewPipeAndPassReceiver(task_runner_);
+  return assistant_remote_.BindNewPipeAndPassReceiver(task_runner_);
 }
 
 void AITextSession::SetInfo(std::variant<base::PassKey<AITextSessionFactory>,
                                          base::PassKey<AIAssistant>> pass_key,
-                            blink::mojom::blink::AITextSessionInfoPtr info) {
-  CHECK(!info_) << "The session info should only be set once after creation";
+                            blink::mojom::blink::AIAssistantInfoPtr info) {
+  CHECK(!info_) << "The assistant info should only be set once after creation";
   info_ = std::move(info);
 }
 

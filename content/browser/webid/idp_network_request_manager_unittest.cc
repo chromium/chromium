@@ -34,7 +34,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
-using AccountList = content::IdpNetworkRequestManager::AccountList;
 using IdpClientMetadata = content::IdpNetworkRequestManager::ClientMetadata;
 using TokenResult = content::IdpNetworkRequestManager::TokenResult;
 using Endpoints = content::IdpNetworkRequestManager::Endpoints;
@@ -192,7 +191,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     return {parsed_fetch_status, parsed_idp_metadata};
   }
 
-  std::tuple<FetchStatus, AccountList> SendAccountsRequestAndWaitForResponse(
+  std::tuple<FetchStatus, std::vector<IdentityRequestAccountPtr>>
+  SendAccountsRequestAndWaitForResponse(
       const std::string& test_accounts,
       const char* client_id = "",
       net::HttpStatusCode response_code = net::HTTP_OK,
@@ -202,9 +202,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
     base::RunLoop run_loop;
     FetchStatus parsed_accounts_response;
-    AccountList parsed_accounts;
+    std::vector<IdentityRequestAccountPtr> parsed_accounts;
     auto callback = base::BindLambdaForTesting(
-        [&](FetchStatus response, AccountList accounts) {
+        [&](FetchStatus response,
+            std::vector<IdentityRequestAccountPtr> accounts) {
           parsed_accounts_response = response;
           parsed_accounts = accounts;
           run_loop.Quit();
@@ -308,7 +309,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
   })";
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_empty_account_json);
 
@@ -325,14 +326,14 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingle) {
   const auto* test_single_account_json = kSingleAccountEndpointValidJson;
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_single_account_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   EXPECT_EQ(1UL, accounts.size());
-  EXPECT_EQ("1234", accounts[0].id);
+  EXPECT_EQ("1234", accounts[0]->id);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountMultiple) {
@@ -355,15 +356,15 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMultiple) {
   ]
   })";
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   EXPECT_EQ(2UL, accounts.size());
-  EXPECT_EQ("1234", accounts[0].id);
-  EXPECT_EQ("5678", accounts[1].id);
+  EXPECT_EQ("1234", accounts[0]->id);
+  EXPECT_EQ("5678", accounts[1]->id);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
@@ -379,13 +380,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
   })";
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ("1234", accounts[0].id);
+  EXPECT_EQ("1234", accounts[0]->id);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
@@ -394,7 +395,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
     std::string test_account_missing_account_id_json =
         RemoveAllLinesWithKeyFromJson("id", kSingleAccountEndpointValidJson);
     FetchStatus accounts_response;
-    AccountList accounts;
+    std::vector<IdentityRequestAccountPtr> accounts;
     std::tie(accounts_response, accounts) =
         SendAccountsRequestAndWaitForResponse(
             test_account_missing_account_id_json);
@@ -412,7 +413,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
     std::string test_account_missing_email_json =
         RemoveAllLinesWithKeyFromJson("email", kSingleAccountEndpointValidJson);
     FetchStatus accounts_response;
-    AccountList accounts;
+    std::vector<IdentityRequestAccountPtr> accounts;
     std::tie(accounts_response, accounts) =
         SendAccountsRequestAndWaitForResponse(test_account_missing_email_json);
 
@@ -429,7 +430,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
     std::string test_account_missing_name_json =
         RemoveAllLinesWithKeyFromJson("name", kSingleAccountEndpointValidJson);
     FetchStatus accounts_response;
-    AccountList accounts;
+    std::vector<IdentityRequestAccountPtr> accounts;
     std::tie(accounts_response, accounts) =
         SendAccountsRequestAndWaitForResponse(test_account_missing_name_json);
 
@@ -457,7 +458,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFieldNonEmpty) {
     })";
 
     FetchStatus accounts_response;
-    AccountList accounts;
+    std::vector<IdentityRequestAccountPtr> accounts;
     std::tie(accounts_response, accounts) =
         SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
@@ -482,7 +483,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFieldNonEmpty) {
     })";
 
     FetchStatus accounts_response;
-    AccountList accounts;
+    std::vector<IdentityRequestAccountPtr> accounts;
     std::tie(accounts_response, accounts) =
         SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
@@ -514,7 +515,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountDuplicateIds) {
   })";
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(accounts_json);
 
@@ -555,15 +556,15 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountPictureUrl) {
   })";
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_TRUE(accounts[0].picture.is_valid());
-  EXPECT_EQ(GURL("https://idp.test/profile/1234"), accounts[0].picture);
-  EXPECT_FALSE(accounts[1].picture.is_valid());
+  EXPECT_TRUE(accounts[0]->picture.is_valid());
+  EXPECT_EQ(GURL("https://idp.test/profile/1234"), accounts[0]->picture);
+  EXPECT_FALSE(accounts[1]->picture.is_valid());
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
@@ -587,12 +588,12 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
     const auto& accounts_json = TestAccountWithKeyValue("name", test_value);
 
     FetchStatus accounts_response;
-    AccountList accounts;
+    std::vector<IdentityRequestAccountPtr> accounts;
     std::tie(accounts_response, accounts) =
         SendAccountsRequestAndWaitForResponse(accounts_json.c_str());
 
     EXPECT_EQ(1UL, accounts.size());
-    EXPECT_EQ(test_value, accounts[0].name);
+    EXPECT_EQ(test_value, accounts[0]->name);
   }
 }
 
@@ -600,7 +601,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountInvalid) {
   const auto* test_invalid_account_json = "{}";
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_invalid_account_json);
 
@@ -616,7 +617,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
   const auto* test_invalid_account_json = "malformed_json";
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_invalid_account_json);
 
@@ -641,17 +642,17 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabels) {
   })";
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ("1234", accounts[0].id);
+  EXPECT_EQ("1234", accounts[0]->id);
   // The integer in the second position should be ignored.
-  ASSERT_EQ(2u, accounts[0].labels.size());
-  EXPECT_EQ("l1", accounts[0].labels[0]);
-  EXPECT_EQ("l2", accounts[0].labels[1]);
+  ASSERT_EQ(2u, accounts[0]->labels.size());
+  EXPECT_EQ("l1", accounts[0]->labels[0]);
+  EXPECT_EQ("l2", accounts[0]->labels[1]);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ComputeWellKnownUrl) {
@@ -1102,7 +1103,7 @@ TEST_F(IdpNetworkRequestManagerTest, AccountRequestOrigin) {
   })";
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
@@ -1160,7 +1161,7 @@ TEST_F(IdpNetworkRequestManagerTest, AccountSignedInStatus) {
   })";
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json, "xxx");
 
@@ -1168,15 +1169,15 @@ TEST_F(IdpNetworkRequestManagerTest, AccountSignedInStatus) {
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   ASSERT_EQ(5ul, accounts.size());
-  ASSERT_TRUE(accounts[0].login_state.has_value());
-  EXPECT_EQ(LoginState::kSignIn, *accounts[0].login_state);
-  ASSERT_TRUE(accounts[1].login_state.has_value());
-  EXPECT_EQ(LoginState::kSignUp, *accounts[1].login_state);
-  ASSERT_TRUE(accounts[2].login_state.has_value());
-  EXPECT_EQ(LoginState::kSignUp, *accounts[2].login_state);
-  EXPECT_FALSE(accounts[3].login_state.has_value());
-  ASSERT_TRUE(accounts[4].login_state.has_value());
-  EXPECT_EQ(LoginState::kSignIn, *accounts[4].login_state);
+  ASSERT_TRUE(accounts[0]->login_state.has_value());
+  EXPECT_EQ(LoginState::kSignIn, *accounts[0]->login_state);
+  ASSERT_TRUE(accounts[1]->login_state.has_value());
+  EXPECT_EQ(LoginState::kSignUp, *accounts[1]->login_state);
+  ASSERT_TRUE(accounts[2]->login_state.has_value());
+  EXPECT_EQ(LoginState::kSignUp, *accounts[2]->login_state);
+  EXPECT_FALSE(accounts[3]->login_state.has_value());
+  ASSERT_TRUE(accounts[4]->login_state.has_value());
+  EXPECT_EQ(LoginState::kSignIn, *accounts[4]->login_state);
 }
 
 // Tests the token request implementation.
@@ -1314,7 +1315,7 @@ TEST_F(IdpNetworkRequestManagerTest, RecordApprovedClientsMetrics) {
   })";
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json, "xxx");
 
@@ -1355,7 +1356,8 @@ TEST_F(IdpNetworkRequestManagerTest, DontCallCallbackAfterManagerDeletion) {
 
   bool callback_called = false;
   auto callback = base::BindLambdaForTesting(
-      [&callback_called](FetchStatus response, AccountList accounts) {
+      [&callback_called](FetchStatus response,
+                         std::vector<IdentityRequestAccountPtr> accounts) {
         callback_called = true;
       });
 
@@ -1399,7 +1401,7 @@ TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingConfig) {
 
 TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingAccounts) {
   FetchStatus fetch_status;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(fetch_status, accounts) =
       SendAccountsRequestAndWaitForResponse(R"({
   "accounts" : []
@@ -1479,7 +1481,7 @@ TEST_F(IdpNetworkRequestManagerTest, AccountsWrongMimeType) {
   const auto* test_single_account_json = kSingleAccountEndpointValidJson;
 
   FetchStatus accounts_response;
-  AccountList accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   std::tie(accounts_response, accounts) = SendAccountsRequestAndWaitForResponse(
       test_single_account_json, /*client_id=*/"", net::HTTP_OK, "text/html");
 

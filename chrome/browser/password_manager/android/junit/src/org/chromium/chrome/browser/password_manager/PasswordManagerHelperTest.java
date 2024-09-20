@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -23,13 +22,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.START_PASSWORDS_EXPORT;
-
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -38,7 +33,6 @@ import android.widget.TextView;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
@@ -47,7 +41,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
@@ -111,8 +104,7 @@ public class PasswordManagerHelperTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     // TODO(crbug.com/40854050): Use fakes for CredentialManagerLauncher,
-    // PasswordCheckupClientHelper
-    // and corresponding factories
+    // PasswordCheckupClientHelper and corresponding factories
     @Mock private PasswordCheckupClientHelperFactory mPasswordCheckupClientHelperFactoryMock;
     @Mock private CredentialManagerLauncherFactory mCredentialManagerLauncherFactoryMock;
     @Mock private CredentialManagerLauncher mCredentialManagerLauncherMock;
@@ -139,9 +131,10 @@ public class PasswordManagerHelperTest {
 
     private ModalDialogManager mModalDialogManager;
 
-    @Mock LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
-
+    @Mock private LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
     private LoadingModalDialogCoordinator.Observer mLoadingDialogCoordinatorObserver;
+
+    @Mock private CustomTabIntentHelper mCustomTabIntentHelper;
 
     private PasswordManagerHelper mPasswordManagerHelper;
 
@@ -151,7 +144,6 @@ public class PasswordManagerHelperTest {
 
     @Before
     public void setUp() throws PasswordCheckBackendException, CredentialManagerBackendException {
-        // TODO(crbug.com/41483830): Parametrize the tests for account and local storage.
         // TODO(crbug.com/40940922): Parametrise the tests for local and account.
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
@@ -318,7 +310,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         assertNotNull(mModalDialogManager.getCurrentDialogForTest());
     }
@@ -334,7 +327,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         Context context = RuntimeEnvironment.getApplication().getApplicationContext();
@@ -399,7 +393,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         assertNull(mModalDialogManager.getCurrentDialogForTest());
     }
@@ -432,34 +427,6 @@ public class PasswordManagerHelperTest {
                 TEST_NO_EMAIL_ADDRESS);
 
         assertNull(mModalDialogManager.getCurrentDialogForTest());
-    }
-
-    @Test
-    public void testSendsIntentOnLaunchGmsUpdate() {
-        Context mockContext = mock(Context.class);
-
-        PasswordManagerHelper.launchGmsUpdate(mockContext);
-
-        doAnswer(
-                        invocation -> {
-                            Intent intent = invocation.getArgument(0);
-                            assertEquals(intent.getAction(), Intent.ACTION_VIEW);
-                            assertEquals(intent.getPackage(), "com.android.vending");
-                            assertEquals(intent.getBooleanExtra("overlay", false), true);
-                            assertEquals(
-                                    intent.getStringExtra("callerId"),
-                                    mockContext.getPackageName());
-                            assertEquals(
-                                    intent.getData(),
-                                    Uri.parse(
-                                            "market://details?id="
-                                                    + GoogleApiAvailability
-                                                            .GOOGLE_PLAY_SERVICES_PACKAGE
-                                                    + "&referrer=chrome_upm"));
-                            return null;
-                        })
-                .when(mockContext)
-                .startActivity(any(Intent.class));
     }
 
     @Test
@@ -507,7 +474,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         verify(mCredentialManagerLauncherMock)
                 .getAccountCredentialManagerIntent(
@@ -531,7 +499,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         verify(mockContext).startActivity(any());
         verify(mSettingsLauncherMock)
@@ -549,7 +518,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         verify(mockContext).startActivity(any());
         verify(mSettingsLauncherMock)
@@ -568,7 +538,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         verify(mCredentialManagerLauncherMock)
                 .getLocalCredentialManagerIntent(
@@ -599,7 +570,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         histogram.assertExpected();
     }
@@ -626,7 +598,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         histogram.assertExpected();
     }
@@ -653,7 +626,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         histogram.assertExpected();
     }
@@ -681,7 +655,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         histogram.assertExpected();
     }
@@ -709,7 +684,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         histogram.assertExpected();
     }
@@ -737,7 +713,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         histogram.assertExpected();
     }
@@ -1758,7 +1735,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         histogram.assertExpected();
     }
@@ -1788,7 +1766,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         histogram.assertExpected();
     }
@@ -1825,7 +1804,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         histogram.assertExpected();
     }
@@ -1856,7 +1836,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         histogram.assertExpected();
     }
@@ -1889,7 +1870,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
@@ -1921,7 +1903,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
@@ -1953,7 +1936,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
@@ -1987,7 +1971,8 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS);
+                TEST_NO_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
 
         assertNull(mModalDialogManager.getCurrentDialogForTest());
     }
@@ -2002,23 +1987,6 @@ public class PasswordManagerHelperTest {
         // user.
         when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
                 .thenReturn(true);
-    }
-
-    @Test
-    public void testShowMainSettingsAndStartExport() {
-        Context mockContext = mock(Context.class);
-        PasswordManagerHelper.showMainSettingsAndStartExport(mockContext);
-
-        ArgumentMatcher<Bundle> bundleStartsExport =
-                (ArgumentMatcher<Bundle>)
-                        bundle -> {
-                            if (!bundle.containsKey(START_PASSWORDS_EXPORT)) return false;
-                            if (!bundle.getBoolean(START_PASSWORDS_EXPORT)) return false;
-                            return true;
-                        };
-        verify(mSettingsLauncherMock)
-                .createSettingsActivityIntent(
-                        eq(mockContext), eq(SettingsFragment.MAIN), argThat(bundleStartsExport));
     }
 
     private void chooseToSyncButNotSyncPasswords() {

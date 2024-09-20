@@ -13,6 +13,7 @@ import '../components/recording-file-list.js';
 import '../components/recording-info-dialog.js';
 import '../components/secondary-button.js';
 import '../components/settings-menu.js';
+import '../components/system-audio-consent-dialog.js';
 
 import {
   createRef,
@@ -22,12 +23,18 @@ import {
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {CraIconButton} from '../components/cra/cra-icon-button.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
+import {OnboardingDialog} from '../components/onboarding-dialog.js';
 import {RecordingFileList} from '../components/recording-file-list.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {SettingsMenu} from '../components/settings-menu.js';
+import {
+  SystemAudioConsentDialog,
+} from '../components/system-audio-consent-dialog.js';
 import {AudioPlayerController} from '../core/audio_player_controller.js';
+import {focusToBody} from '../core/focus.js';
 import {i18n} from '../core/i18n.js';
 import {
   useMicrophoneManager,
@@ -144,13 +151,20 @@ export class MainPage extends ReactiveLitElement {
 
   private readonly deleteRecordingDialog = createRef<DeleteRecordingDialog>();
 
+  private readonly systemAudioConsentDialog =
+    createRef<SystemAudioConsentDialog>();
+
   private readonly exportDialog = createRef<ExportDialog>();
 
-  private readonly startRecordingButton = createRef<HTMLButtonElement>();
+  private readonly startRecordingButton = createRef<CraIconButton>();
 
   private readonly recordingFileList = createRef<RecordingFileList>();
 
   private readonly currentPlayingId = signal<string|null>(null);
+
+  private readonly actionsContainerRef = createRef<HTMLElement>();
+
+  private readonly onboardingDialogRef = createRef<OnboardingDialog>();
 
   private readonly currentPlayingRecordingLength = computed(() => {
     const id = this.currentPlayingId.value;
@@ -189,12 +203,16 @@ export class MainPage extends ReactiveLitElement {
     return this.shadowRoot?.querySelector('settings-menu') ?? null;
   }
 
-  get startRecordingButtonForTest(): HTMLButtonElement {
+  get startRecordingButtonForTest(): CraIconButton {
     return assertExists(this.startRecordingButton.value);
   }
 
   get recordingFileListForTest(): RecordingFileList {
     return assertExists(this.recordingFileList.value);
+  }
+
+  get actionsContainer(): HTMLElement {
+    return assertExists(this.actionsContainerRef.value);
   }
 
   private readonly recordingInfoDialog = createRef<RecordingInfoDialog>();
@@ -211,7 +229,10 @@ export class MainPage extends ReactiveLitElement {
   }
 
   private onDeleteRecordingClick(ev: CustomEvent<string>) {
-    this.lastDeleteId = ev.detail;
+    const recordingId = ev.detail;
+    this.lastDeleteId = recordingId;
+    // The dialog will focus back to last focused item when closed.
+    this.recordingFileList.value?.focusOnOptionOfRecordingId(recordingId);
     // TODO(pihsun): Separate delete recording dialog while recording and while
     // playback/on main page, so the latter can take a recordingId and does
     // deletion inside the component.
@@ -230,13 +251,19 @@ export class MainPage extends ReactiveLitElement {
 
   private onExportRecordingClick(ev: CustomEvent<string>) {
     const dialog = assertExists(this.exportDialog.value);
-    dialog.recordingId = ev.detail;
+    const recordingId = ev.detail;
+    dialog.recordingId = recordingId;
+    // The dialog will focus back to last focused item when closed.
+    this.recordingFileList.value?.focusOnOptionOfRecordingId(recordingId);
     dialog.show();
   }
 
   private onShowRecordingInfoClick(ev: CustomEvent<string>) {
     const dialog = assertExists(this.recordingInfoDialog.value);
-    dialog.recordingId = ev.detail;
+    const recordingId = ev.detail;
+    dialog.recordingId = recordingId;
+    // The dialog will focus back to last focused item when closed.
+    this.recordingFileList.value?.focusOnOptionOfRecordingId(recordingId);
     dialog.show();
   }
 
@@ -305,19 +332,43 @@ export class MainPage extends ReactiveLitElement {
     </secondary-button>`;
   }
 
+  private onOnboardingDone() {
+    settings.mutate((s) => {
+      s.onboardingDone = true;
+    });
+    const onboardingDialog = assertExists(this.onboardingDialogRef.value);
+    // Focus back to body after the dialog is closed.
+    onboardingDialog.updateComplete.then(() => {
+      focusToBody();
+    });
+  }
+
+  private showSystemAudioConsentDialog() {
+    const dialog = assertExists(this.systemAudioConsentDialog.value);
+    dialog.show();
+  }
+
+  private onSystemAudioConsentDone() {
+    settings.mutate((s) => {
+      s.systemAudioConsentDone = true;
+      s.includeSystemAudio = true;
+    });
+  }
+
   override render(): RenderResult {
     const onboarding = settings.value.onboardingDone !== true;
-    function onOnboardingDone() {
-      settings.mutate((s) => {
-        s.onboardingDone = true;
-      });
-    }
 
     return html`
       <onboarding-dialog
         ?open=${onboarding}
-        @close=${onOnboardingDone}
+        @close=${this.onOnboardingDone}
+        ${ref(this.onboardingDialogRef)}
       ></onboarding-dialog>
+      <system-audio-consent-dialog
+        ${ref(this.systemAudioConsentDialog)}
+        @system-audio-consent-clicked=${this.onSystemAudioConsentDone}
+      >
+      </system-audio-consent-dialog>
       <delete-recording-dialog
         ${ref(this.deleteRecordingDialog)}
         @delete=${this.onDeleteRecording}
@@ -342,8 +393,12 @@ export class MainPage extends ReactiveLitElement {
           id="actions"
           aria-label=${i18n.mainRecordingBarLandmarkAriaLabel}
           role="region"
+          part="actions"
+          ${ref(this.actionsContainerRef)}
         >
-          <mic-selection-button></mic-selection-button>
+          <mic-selection-button
+            @trigger-system-audio-consent=${this.showSystemAudioConsentDialog}
+          ></mic-selection-button>
           ${this.renderRecordButton()}${this.renderSettingsButton()}
         </div>
         <settings-menu></settings-menu>

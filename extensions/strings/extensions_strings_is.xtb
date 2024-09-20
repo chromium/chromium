@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Óþekkt vara <ph name="PRODUCT_ID" /> frá framleiðandanum <ph name="VENDOR_ID" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Mistókst að skipta út crx-skrá. Athugaðu hvort skráin er í notkun.</translation>
 <translation id="3163201441334626963">Óþekkt vara <ph name="PRODUCT_ID" /> frá framleiðandanum <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Ekki er hægt að afpakka viðbót. Til að afpakka viðbót á öruggan hátt verður slóð á prófílsmöppuna að hefjast á einkennisstaf drifs og má ekki innihalda virkjunarstað (mount point) eða möppustaðgengil (junction eða symlink). Engin slóð sem uppfyllir þessi skilyrði er til staðar fyrir prófílinn þinn.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> frá framleiðandanum <ph name="VENDOR_ID" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inntaksgildi einkalykils verður að vera gild slóð.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Stjórnandi þessarar vélar krefst þess að <ph name="EXTENSION_NAME" /> sé uppsett. Ekki er hægt að fjarlægja hana.</translation>
 <translation id="6027032947578871493">Óþekkt vara <ph name="PRODUCT_ID" /> frá <ph name="VENDOR_NAME" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> frá framleiðandanum <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Ekki er hægt að afpakka viðbót. Til að afpakka viðbót á öruggan hátt má slóð á prófílsmöppuna ekki innihalda möppustaðgengil (symlink). Engin slóð sem uppfyllir það skilyrði er til staðar fyrir prófílinn þinn.</translation>
 <translation id="6322279351188361895">Mistókst að lesa einkalykil.</translation>
 <translation id="6391538222494443604">Inntaksmappa verður að vera fyrir hendi.</translation>
 <translation id="641087317769093025">Ekki var hægt að afþjappa viðbót</translation>

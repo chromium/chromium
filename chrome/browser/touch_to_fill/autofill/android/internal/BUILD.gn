@@ -60,6 +60,7 @@ android_resources("java_resources") {
     "java/res/layout/touch_to_fill_iban_sheet_item.xml",
     "java/res/layout/touch_to_fill_payment_method_footer_item.xml",
     "java/res/layout/touch_to_fill_payment_method_header_item.xml",
+    "java/res/layout/touch_to_fill_terms_label_sheet_item.xml",
     "java/res/values/dimens.xml",
   ]
 }

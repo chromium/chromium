@@ -100,8 +100,7 @@ SimpleFontData::SimpleFontData(const FontPlatformData* platform_data,
   // that we are informing GC about external allocated memory using
   // style_metrics_size as the font memory consumption.
   if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
-    isolate->AdjustAmountOfExternalAllocatedMemory(
-        kFontObjectsMemoryConsumption);
+    external_memory_accounter_.Increase(isolate, kFontObjectsMemoryConsumption);
   }
   PlatformInit(subpixel_ascent_descent, metrics_override);
   PlatformGlyphInit();
@@ -109,8 +108,7 @@ SimpleFontData::SimpleFontData(const FontPlatformData* platform_data,
 
 SimpleFontData::~SimpleFontData() {
   if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
-    isolate->AdjustAmountOfExternalAllocatedMemory(
-        -kFontObjectsMemoryConsumption);
+    external_memory_accounter_.Decrease(isolate, kFontObjectsMemoryConsumption);
   }
 }
 

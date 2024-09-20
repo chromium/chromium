@@ -52,8 +52,10 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -131,6 +133,7 @@
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -149,6 +152,7 @@
     NotificationsConfirmationPresenter,
     NotificationsOptInAlertCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
+    NotificationsSettingsObserverDelegate,
     SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListTapDelegate>
@@ -202,6 +206,10 @@
   // The coordinator used to present an alert to enable Tips notifications.
   NotificationsOptInAlertCoordinator* _notificationsOptInAlertCoordinator;
 
+  // An observer that tracks whether push notification permission settings have
+  // been modified.
+  NotificationsSettingsObserver* _notificationsObserver;
+
   MagicStackRankingModel* _magicStackRankingModel;
 
   // Module mediators.
@@ -237,6 +245,27 @@
 
   self.authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
+
+  // Conditionally register for provisional Safety Check notifications if the
+  // feature is enabled.
+  //
+  // TODO(crbug.com/366182129): Move Safety Check provisional notification
+  // enrollment to `SafetyCheckNotificationClient` once
+  // `ProvisionalPushNotificationUtil` circular dependencies are fixed.
+  if (IsSafetyCheckNotificationsEnabled()) {
+    _notificationsObserver = [[NotificationsSettingsObserver alloc]
+        initWithPrefService:ChromeBrowserState::FromBrowserState(browserState)
+                                ->GetPrefs()
+                 localState:GetApplicationContext()->GetLocalState()];
+
+    _notificationsObserver.delegate = self;
+
+    [ProvisionalPushNotificationUtil
+        enrollUserToProvisionalNotificationsForClientIds:
+            {PushNotificationClientId::kSafetyCheck}
+                                         withAuthService:self.authService
+                                   deviceInfoSyncService:nil];
+  }
 
   PrefService* prefs =
       ChromeBrowserState::FromBrowserState(browserState)->GetPrefs();
@@ -322,7 +351,14 @@
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::
                                     GetForBrowserState(
-                                        self.browser->GetBrowserState())];
+                                        self.browser->GetBrowserState())
+                    prefService:prefs
+        pushNotificationService:GetApplicationContext()
+                                    ->GetPushNotificationService()
+          authenticationService:self.authService];
+    _priceTrackingPromoMediator.dispatcher =
+        static_cast<id<ApplicationCommands, SnackbarCommands>>(
+            self.browser->GetCommandDispatcher());
     [moduleMediators addObject:_priceTrackingPromoMediator];
   }
 
@@ -451,6 +487,9 @@
   _magicStackHalfSheetTableViewController = nil;
   [self dismissParcelListHalfSheet];
   [self dismissParcelTrackingAlertCoordinator];
+  _notificationsObserver.delegate = nil;
+  [_notificationsObserver disconnect];
+  _notificationsObserver = nil;
   [_notificationsOptInAlertCoordinator stop];
   _notificationsOptInAlertCoordinator = nil;
   [self.browser->GetCommandDispatcher()
@@ -506,8 +545,7 @@
 #pragma mark - ContentSuggestionsViewControllerAudience
 
 - (void)viewWillDisappear {
-  DiscoverFeedServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState())
+  DiscoverFeedServiceFactory::GetForProfile(self.browser->GetProfile())
       ->SetIsShownOnStartSurface(false);
 }
 
@@ -795,10 +833,16 @@
       break;
     }
     case SafetyCheckItemType::kPassword: {
-      std::vector<password_manager::CredentialUIEntry> credentials =
+      std::vector<password_manager::CredentialUIEntry> insecure_credentials =
           safetyCheckManager->GetInsecureCredentials();
-      HandleSafetyCheckPasswordTap(credentials, applicationHandler,
+
+      password_manager::InsecurePasswordCounts insecure_password_counts =
+          safetyCheckManager->GetInsecurePasswordCounts();
+
+      HandleSafetyCheckPasswordTap(insecure_credentials,
+                                   insecure_password_counts, applicationHandler,
                                    settingsHandler);
+
       break;
     }
     case SafetyCheckItemType::kSafeBrowsing:
@@ -988,6 +1032,20 @@
   CHECK_EQ(coordinator, _notificationsOptInCoordinator);
   [_notificationsOptInCoordinator stop];
   _notificationsOptInCoordinator = nil;
+}
+
+#pragma mark - NotificationsSettingsObserverDelegate
+
+- (void)notificationsSettingsDidChangeForClient:
+    (PushNotificationClientId)clientID {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  if (clientID == PushNotificationClientId::kSafetyCheck) {
+    // When Safety Check notification permissions change, refresh the Magic
+    // Stack. This ensures the Safety Check container accurately reflects the
+    // user's notification settings.
+    [self refresh];
+  }
 }
 
 #pragma mark - SetUpListDefaultBrowserPromoCoordinatorDelegate

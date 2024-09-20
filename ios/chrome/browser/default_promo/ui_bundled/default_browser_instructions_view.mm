@@ -6,6 +6,7 @@
 
 #import "base/i18n/rtl.h"
 #import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -73,16 +74,29 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                        alertScreenViewController:alertScreen
                                        titleText:titleText];
     [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits =
+          TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.self ]);
+      [self registerForTraitChanges:traits
+                         withAction:@selector(selectAnimationForCurrentStyle)];
+    }
   }
   return self;
 }
 
 #pragma mark - UIViewController
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   [self selectAnimationForCurrentStyle];
 }
+#endif
 
 #pragma mark - Private
 

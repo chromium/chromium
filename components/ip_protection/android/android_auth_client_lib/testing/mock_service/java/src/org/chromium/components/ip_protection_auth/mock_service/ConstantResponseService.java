@@ -14,6 +14,7 @@ import org.chromium.components.ip_protection_auth.common.IErrorCode;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthAndSignCallback;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthService;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionGetInitialDataCallback;
+import org.chromium.components.ip_protection_auth.common.IIpProtectionGetProxyConfigCallback;
 
 /** Mock IP Protection auth services with simple behaviors that ignore inputs */
 public abstract class ConstantResponseService extends Service {
@@ -23,6 +24,9 @@ public abstract class ConstantResponseService extends Service {
             throws RemoteException;
 
     protected abstract void handleAuthAndSign(IIpProtectionAuthAndSignCallback callback)
+            throws RemoteException;
+
+    protected abstract void handleGetProxyConfig(IIpProtectionGetProxyConfigCallback callback)
             throws RemoteException;
 
     @Override
@@ -59,6 +63,16 @@ public abstract class ConstantResponseService extends Service {
                     Log.e(TAG, "failed to deliver %s authAndSign response", className, e);
                 }
             }
+
+            @Override
+            public void getProxyConfig(byte[] bytes, IIpProtectionGetProxyConfigCallback callback) {
+                Log.i(TAG, "got getProxyConfig request for %s", className);
+                try {
+                    handleGetProxyConfig(callback);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "failed to deliver %s getProxyConfig response", className, e);
+                }
+            }
         };
     }
 
@@ -71,6 +85,12 @@ public abstract class ConstantResponseService extends Service {
 
         @Override
         protected void handleAuthAndSign(IIpProtectionAuthAndSignCallback callback)
+                throws RemoteException {
+            callback.reportError(IErrorCode.IP_PROTECTION_AUTH_SERVICE_TRANSIENT_ERROR);
+        }
+
+        @Override
+        protected void handleGetProxyConfig(IIpProtectionGetProxyConfigCallback callback)
                 throws RemoteException {
             callback.reportError(IErrorCode.IP_PROTECTION_AUTH_SERVICE_TRANSIENT_ERROR);
         }
@@ -88,6 +108,12 @@ public abstract class ConstantResponseService extends Service {
                 throws RemoteException {
             callback.reportError(IErrorCode.IP_PROTECTION_AUTH_SERVICE_PERSISTENT_ERROR);
         }
+
+        @Override
+        protected void handleGetProxyConfig(IIpProtectionGetProxyConfigCallback callback)
+                throws RemoteException {
+            callback.reportError(IErrorCode.IP_PROTECTION_AUTH_SERVICE_PERSISTENT_ERROR);
+        }
     }
 
     public static class IllegalErrorCode extends ConstantResponseService {
@@ -99,6 +125,12 @@ public abstract class ConstantResponseService extends Service {
 
         @Override
         protected void handleAuthAndSign(IIpProtectionAuthAndSignCallback callback)
+                throws RemoteException {
+            callback.reportError(-1);
+        }
+
+        @Override
+        protected void handleGetProxyConfig(IIpProtectionGetProxyConfigCallback callback)
                 throws RemoteException {
             callback.reportError(-1);
         }
@@ -116,6 +148,12 @@ public abstract class ConstantResponseService extends Service {
                 throws RemoteException {
             callback.reportResult(null);
         }
+
+        @Override
+        protected void handleGetProxyConfig(IIpProtectionGetProxyConfigCallback callback)
+                throws RemoteException {
+            callback.reportResult(null);
+        }
     }
 
     public static class Unparsable extends ConstantResponseService {
@@ -127,6 +165,12 @@ public abstract class ConstantResponseService extends Service {
 
         @Override
         protected void handleAuthAndSign(IIpProtectionAuthAndSignCallback callback)
+                throws RemoteException {
+            callback.reportResult("unparsable non-proto gibberish".getBytes());
+        }
+
+        @Override
+        protected void handleGetProxyConfig(IIpProtectionGetProxyConfigCallback callback)
                 throws RemoteException {
             callback.reportResult("unparsable non-proto gibberish".getBytes());
         }
@@ -144,6 +188,12 @@ public abstract class ConstantResponseService extends Service {
                 throws RemoteException {
             throw new SecurityException("Intentional security exception for testing");
         }
+
+        @Override
+        protected void handleGetProxyConfig(IIpProtectionGetProxyConfigCallback callback)
+                throws RemoteException {
+            throw new SecurityException("Intentional security exception for testing");
+        }
     }
 
     public static class NeverResolve extends ConstantResponseService {
@@ -153,6 +203,10 @@ public abstract class ConstantResponseService extends Service {
 
         @Override
         protected void handleAuthAndSign(IIpProtectionAuthAndSignCallback callback)
+                throws RemoteException {}
+
+        @Override
+        protected void handleGetProxyConfig(IIpProtectionGetProxyConfigCallback callback)
                 throws RemoteException {}
     }
 }

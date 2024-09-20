@@ -185,7 +185,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    @DisableIf.Build(sdk_equals = VERSION_CODES.VANILLA_ICE_CREAM, message = "crbug.com/41401048")
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/365516493")
     public void testBrowserDisplayCutoutTakesPrecedence() throws Exception {
         final ObservableSupplierImpl<Integer> browserCutoutModeSupplier =
                 ThreadUtils.runOnUiThreadBlocking(

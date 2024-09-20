@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.default_browser_promo;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -54,10 +55,9 @@ public class DefaultBrowserPromoImpressionCounter {
      * @return boolean if promo dialog can be displayed.
      */
     boolean shouldShowPromo(boolean ignoreMaxCount) {
-      return ignoreMaxCount ||
-       (getPromoCount() < getMaxPromoCount()
-              && getSessionCount() >= getMinSessionCount()
-              && getLastPromoInterval() >= getMinPromoInterval());
+        return (ignoreMaxCount || getPromoCount() < getMaxPromoCount())
+                && getSessionCount() >= getMinSessionCount()
+                && getLastPromoInterval() >= getMinPromoInterval();
     }
 
     private void incrementPromoCount() {
@@ -94,7 +94,7 @@ public class DefaultBrowserPromoImpressionCounter {
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,
-                        (int) TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()));
+                        (int) TimeUnit.MILLISECONDS.toMinutes(TimeUtils.currentTimeMillis()));
     }
 
     int getMinSessionCount() {
@@ -127,7 +127,8 @@ public class DefaultBrowserPromoImpressionCounter {
                         .readInt(ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME, -1);
         if (lastPromoTime != -1) {
             return (int)
-                    (TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()) - lastPromoTime);
+                    (TimeUnit.MILLISECONDS.toMinutes(TimeUtils.currentTimeMillis())
+                            - lastPromoTime);
         }
         return Integer.MAX_VALUE;
     }

@@ -474,7 +474,7 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
           std::make_unique<UploadBytesElementReader>(
               query_->io_buffer()->span());
       request_->set_upload(
-          ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
+          ElementsUploadDataStream::CreateWithReader(std::move(reader)));
       extra_request_headers.SetHeader(HttpRequestHeaders::kContentType,
                                       kDnsOverHttpResponseContentType);
     }

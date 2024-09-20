@@ -45,9 +45,15 @@ const std::string GetCountryCodeFromVariations() {
 
 // static
 PersonalDataManager* PersonalDataManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+PersonalDataManager* PersonalDataManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<PersonalDataManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -73,9 +79,8 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  auto local_storage =
-      ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-          chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+  auto local_storage = ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
+      chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   auto account_storage =
       ios::WebDataServiceFactory::GetAutofillWebDataForAccount(
           chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);

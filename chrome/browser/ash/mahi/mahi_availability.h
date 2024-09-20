@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_MAHI_MAHI_AVAILABILITY_H_
 #define CHROME_BROWSER_ASH_MAHI_MAHI_AVAILABILITY_H_
 
-namespace ash {
+namespace ash::mahi_availability {
 
 // Check whether Mahi is allowed. This function checks following restrictions:
 //   * age: if not demo mode, the account must not hit minor restrictions
@@ -13,6 +13,10 @@ namespace ash {
 //   * If not in demo mode, guest session is not allowed.
 bool CanUseMahiService();
 
-}  // namespace ash
+// Check if the feature is available to use. It can be unavailable if the
+// feature flag is disabled, or the age and country requirements are not met.
+bool IsMahiAvailable();
+
+}  // namespace ash::mahi_availability
 
 #endif  // CHROME_BROWSER_ASH_MAHI_MAHI_AVAILABILITY_H_

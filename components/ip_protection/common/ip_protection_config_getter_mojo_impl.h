@@ -13,8 +13,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace ip_protection {
-class IpProtectionConfigGetterMojoImpl final
-    : public IpProtectionConfigGetter {
+class IpProtectionConfigGetterMojoImpl final : public IpProtectionConfigGetter {
  public:
   explicit IpProtectionConfigGetterMojoImpl(
       mojo::PendingRemote<network::mojom::IpProtectionConfigGetter>

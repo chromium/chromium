@@ -62,8 +62,8 @@ bool CreateDesktopShortcut(base::Environment* env,
 
 // Returns filename for .desktop file based on |profile_path| and
 // |app_id|, sanitized for security.
-base::FilePath GetAppShortcutFilename(const base::FilePath& profile_path,
-                                      const std::string& app_id);
+base::FilePath GetAppDesktopShortcutFilename(const base::FilePath& profile_path,
+                                             const std::string& app_id);
 
 // Returns the set of locations in which shortcuts are installed for the
 // extension with |extension_id| in |profile_path|.

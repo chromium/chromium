@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -51,31 +53,33 @@ namespace ash {
 namespace {
 
 // Kiosk app crx file download path under web store site.
-const char kCrxDownloadPath[] = "/chromeos/app_mode/webstore/downloads/";
-const char kDetailsURLPrefix[] =
+constexpr std::string_view kCrxDownloadPath =
+    "/chromeos/app_mode/webstore/downloads/";
+
+constexpr std::string_view kDetailsURLPrefix =
     "/chromeos/app_mode/webstore/inlineinstall/detail/";
 
-const char kItemSnippetsURLPrefix[] =
+constexpr std::string_view kItemSnippetsURLPrefix =
     "/chromeos/app_mode/webstore/itemsnippet/";
 
-const char kAppNoUpdateTemplate[] =
+constexpr std::string_view kAppNoUpdateTemplate =
     "<app appid=\"$AppId\" status=\"ok\">"
     "<updatecheck status=\"noupdate\"/>"
     "</app>";
 
-const char kAppHasUpdateTemplate[] =
+constexpr std::string_view kAppHasUpdateTemplate =
     "<app appid=\"$AppId\" status=\"ok\">"
     "<updatecheck codebase=\"$CrxDownloadUrl\" fp=\"1.$FP\" "
     "hash=\"\" hash_sha256=\"$FP\" size=\"$Size\" status=\"ok\" "
     "version=\"$Version\"/>"
     "</app>";
 
-const char kPrivateStoreAppHasUpdateTemplate[] =
+constexpr std::string_view kPrivateStoreAppHasUpdateTemplate =
     "<app appid=\"$AppId\">"
     "<updatecheck codebase=\"$CrxDownloadUrl\" version=\"$Version\"/>"
     "</app>";
 
-const char kUpdateContentTemplate[] =
+constexpr std::string_view kUpdateContentTemplate =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     "<gupdate xmlns=\"http://www.google.com/update2/response\" "
     "protocol=\"2.0\" server=\"prod\">"
@@ -83,13 +87,13 @@ const char kUpdateContentTemplate[] =
     "$APPS"
     "</gupdate>";
 
-const char kAppNoUpdateTemplateJSON[] =
+constexpr std::string_view kAppNoUpdateTemplateJSON =
     "{\"appid\": \"$AppId\","
     " \"status\": \"ok\","
     " \"updatecheck\": { \"status\": \"noupdate\" }"
     "}";
 
-const char kAppHasUpdateTemplateJSON[] =
+constexpr std::string_view kAppHasUpdateTemplateJSON =
     "{"
     "  \"appid\": \"$AppId\","
     "  \"status\": \"ok\","
@@ -112,7 +116,7 @@ const char kAppHasUpdateTemplateJSON[] =
     "  }"
     "}";
 
-const char kUpdateContentTemplateJSON[] =
+constexpr std::string_view kUpdateContentTemplateJSON =
     ")]}'\n"
     "{"
     "  \"response\": {"
@@ -127,14 +131,14 @@ const char kUpdateContentTemplateJSON[] =
     "  }"
     "}";
 
-const char kAppIdHeader[] = "X-Goog-Update-AppId";
+constexpr std::string_view kAppIdHeader = "X-Goog-Update-AppId";
 
 bool GetAppIdsFromHeader(const HttpRequest::HeaderMap& headers,
                          std::vector<std::string>* ids) {
   if (headers.count(kAppIdHeader) == 0) {
     return false;
   }
-  base::StringTokenizer t(headers.at(kAppIdHeader), ",");
+  base::StringTokenizer t(headers.at(std::string(kAppIdHeader)), ",");
   while (t.GetNext()) {
     ids->push_back(t.token());
   }
@@ -161,7 +165,7 @@ bool GetAppIdsFromUpdateUrl(const GURL& update_url,
 // extension details.
 std::optional<std::string> GetAppIdFromDetailRequest(
     const std::string& request_path) {
-  size_t prefix_length = strlen(kDetailsURLPrefix);
+  size_t prefix_length = kDetailsURLPrefix.size();
   if (request_path.substr(0, prefix_length) != kDetailsURLPrefix) {
     return std::nullopt;
   }
@@ -172,7 +176,7 @@ std::optional<std::string> GetAppIdFromDetailRequest(
 // used to fetch an item snippet.
 std::optional<std::string> GetAppIdFromItemSnippetsRequest(
     const std::string& request_path) {
-  size_t prefix_length = strlen(kItemSnippetsURLPrefix);
+  size_t prefix_length = kItemSnippetsURLPrefix.size();
   if (request_path.substr(0, prefix_length) != kItemSnippetsURLPrefix) {
     return std::nullopt;
   }
@@ -267,7 +271,7 @@ void FakeCWS::Init(net::EmbeddedTestServer* embedded_test_server) {
 }
 
 void FakeCWS::InitAsPrivateStore(net::EmbeddedTestServer* embedded_test_server,
-                                 const std::string& update_check_end_point) {
+                                 std::string_view update_check_end_point) {
   use_private_store_templates_ = true;
   update_check_end_point_ = update_check_end_point;
 
@@ -280,10 +284,11 @@ void FakeCWS::InitAsPrivateStore(net::EmbeddedTestServer* embedded_test_server,
   ServeFilesFromGeneratedDirectory(CHECK_DEREF(embedded_test_server));
 }
 
-void FakeCWS::SetUpdateCrx(const std::string& app_id,
-                           const std::string& crx_file,
-                           const std::string& version) {
-  GURL crx_download_url = web_store_url_.Resolve(kCrxDownloadPath + crx_file);
+void FakeCWS::SetUpdateCrx(std::string_view app_id,
+                           std::string_view crx_file,
+                           std::string_view version) {
+  GURL crx_download_url =
+      web_store_url_.Resolve(base::StrCat({kCrxDownloadPath, crx_file}));
 
   base::FilePath test_data_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
@@ -299,21 +304,23 @@ void FakeCWS::SetUpdateCrx(const std::string& app_id,
   const std::string sha256 = crypto::SHA256HashString(crx_content);
   const std::string sha256_hex = base::HexEncode(sha256);
 
-  id_to_update_check_content_map_[app_id] =
-      base::BindRepeating(&ApplyHasUpdateTemplate, app_id, crx_download_url,
-                          sha256_hex, crx_content.size(), version);
+  std::string app_id_str(app_id);
+  id_to_update_check_content_map_[app_id_str] =
+      base::BindRepeating(&ApplyHasUpdateTemplate, app_id_str, crx_download_url,
+                          sha256_hex, crx_content.size(), std::string(version));
 }
 
-void FakeCWS::SetNoUpdate(const std::string& app_id) {
-  id_to_update_check_content_map_[app_id] =
-      base::BindRepeating(&ApplyHasNoUpdateTemplate, app_id);
+void FakeCWS::SetNoUpdate(std::string_view app_id) {
+  std::string app_id_str(app_id);
+  id_to_update_check_content_map_[app_id_str] =
+      base::BindRepeating(&ApplyHasNoUpdateTemplate, app_id_str);
 }
 
-void FakeCWS::SetAppDetails(const std::string& app_id,
+void FakeCWS::SetAppDetails(std::string_view app_id,
                             std::string localized_name,
                             std::string icon_url,
                             std::string manifest_json) {
-  id_to_details_map_[app_id] =
+  id_to_details_map_[std::string(app_id)] =
       AppDetails{.localized_name = std::move(localized_name),
                  .icon_url = std::move(icon_url),
                  .manifest_json = std::move(manifest_json)};
@@ -374,8 +381,8 @@ void FakeCWS::OverrideGalleryCommandlineSwitches() {
       ::switches::kAppsGalleryURL,
       web_store_url_.Resolve("/chromeos/app_mode/webstore").spec());
 
-  std::string downloads_path = std::string(kCrxDownloadPath).append("%s.crx");
-  GURL downloads_url = web_store_url_.Resolve(downloads_path);
+  GURL downloads_url =
+      web_store_url_.Resolve(base::StrCat({kCrxDownloadPath, "%s.crx"}));
   command_line->AppendSwitchASCII(::switches::kAppsGalleryDownloadURL,
                                   downloads_url.spec());
 
@@ -429,8 +436,7 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
       std::string update_check_content;
       if (GetUpdateCheckContent(ids, &update_check_content, use_json)) {
         ++update_check_count_;
-        std::unique_ptr<BasicHttpResponse> http_response(
-            new BasicHttpResponse());
+        auto http_response = std::make_unique<BasicHttpResponse>();
         http_response->set_code(net::HTTP_OK);
         if (!use_json) {
           http_response->set_content_type("text/xml");
@@ -453,7 +459,7 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
                               .Set("localized_name", it->second.localized_name)
                               .Set("manifest", it->second.manifest_json))
               .value();
-      std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse());
+      auto http_response = std::make_unique<BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
       http_response->set_content_type("application/json");
       http_response->set_content(details);
@@ -467,7 +473,7 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
     std::optional<std::string> item_snippet_response =
         CreateItemSnippetStringForApp(app_id.value());
     if (item_snippet_response) {
-      std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse());
+      auto http_response = std::make_unique<BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
       http_response->set_content_type("application/x-protobuf");
       http_response->set_content(item_snippet_response.value());

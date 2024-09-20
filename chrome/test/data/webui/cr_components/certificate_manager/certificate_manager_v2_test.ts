@@ -70,7 +70,9 @@ suite('CertificateManagerV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
+      // </if>
       numPolicyCerts: 5,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
@@ -91,7 +93,9 @@ suite('CertificateManagerV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
+      // </if>
       numPolicyCerts: 5,
     };
     testProxy.handler.setCertManagementMetadata(metadata);

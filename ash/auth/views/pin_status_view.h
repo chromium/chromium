@@ -5,16 +5,22 @@
 #ifndef ASH_AUTH_VIEWS_PIN_STATUS_VIEW_H_
 #define ASH_AUTH_VIEWS_PIN_STATUS_VIEW_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/timer/timer.h"
 #include "components/account_id/account_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
+
+namespace cryptohome {
+class PinStatus;
+}  // namespace cryptohome
 
 namespace ash {
 
@@ -32,13 +38,15 @@ class ASH_EXPORT PinStatusView : public views::View {
 
     const std::u16string& GetCurrentText() const;
 
+    raw_ptr<views::Label> GetTextLabel() const;
+
     raw_ptr<PinStatusView> GetView();
 
    private:
     const raw_ptr<PinStatusView> view_;
   };
 
-  PinStatusView(const std::u16string& text);
+  PinStatusView();
 
   PinStatusView(const PinStatusView&) = delete;
   PinStatusView& operator=(const PinStatusView&) = delete;
@@ -54,9 +62,18 @@ class ASH_EXPORT PinStatusView : public views::View {
   }
 
   void SetText(const std::u16string& text_str);
+  const std::u16string& GetCurrentText() const;
+
+  void SetPinStatus(std::unique_ptr<cryptohome::PinStatus> pin_status);
 
  private:
+  void UpdateLockoutStatus();
+
   raw_ptr<views::Label> text_label_ = nullptr;
+
+  std::unique_ptr<cryptohome::PinStatus> pin_status_;
+
+  base::RepeatingTimer lockout_timer_;
 
   base::WeakPtrFactory<PinStatusView> weak_ptr_factory_{this};
 };

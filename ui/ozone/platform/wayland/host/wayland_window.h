@@ -417,6 +417,10 @@ class WaylandWindow : public PlatformWindow,
   // destroyed.
   void OnChannelDestroyed();
 
+  // Triggers window UI resize and relayout in reaction to system-wide font
+  // scale changes, eg: accessibility's "large text" setting.
+  void OnFontScaleFactorChanged(float new_font_scale);
+
   virtual void DumpState(std::ostream& out) const;
 
 #if DCHECK_IS_ON()

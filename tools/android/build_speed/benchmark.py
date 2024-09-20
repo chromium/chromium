@@ -127,18 +127,18 @@ class Benchmark:
 _BENCHMARKS = [
     Benchmark(
         name='chrome_java_nosig',
-        from_string='sInstanceForTesting = instance;',
-        to_string='sInstanceForTesting = instance;String test = "Test";',
+        from_string='super.onCreate();',
+        to_string='super.onCreate();String test = "Test";',
         change_file=
-        'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
+        'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
         name='chrome_java_sig',
-        from_string='AppHooksImpl sInstanceForTesting;',
+        from_string='private static final Object sLock = new Object();',
         to_string=
-        'AppHooksImpl sInstanceForTesting;public void NewInterfaceMethod(){}',
+        'private static final Object sLock = new Object();public void NewInterfaceMethod(){}',
         change_file=
-        'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
+        'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
         name='module_java_public_sig',

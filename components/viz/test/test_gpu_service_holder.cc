@@ -318,7 +318,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
   if (gpu_preferences.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     init_params.dawn_context_provider = gpu::DawnContextProvider::Create(
-        gpu_preferences,
+        gpu_preferences, gpu::DawnContextProvider::DefaultValidateAdapterFn,
         gpu::GpuDriverBugWorkarounds(
             gpu_feature_info.enabled_gpu_driver_bug_workarounds));
     CHECK(init_params.dawn_context_provider);

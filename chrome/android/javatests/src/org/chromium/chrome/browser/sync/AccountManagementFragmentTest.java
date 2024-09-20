@@ -235,7 +235,6 @@ public class AccountManagementFragmentTest {
         CoreAccountInfo primarySupervisedAccount =
                 signinTestRule.addChildTestAccountThenWaitForSignin();
         signinTestRule.addAccount("account@school.com");
-        signinTestRule.waitForSeeding();
         signinTestRule.waitForSignin(primarySupervisedAccount);
 
         mSettingsActivityTestRule.startSettingsActivity();

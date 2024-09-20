@@ -16,6 +16,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_host_impl.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/mojo_init_data.h"
 #include "ash/components/arc/session/mojo_invitation_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -336,26 +337,15 @@ ArcSessionDelegateImpl::ConnectMojoInternal(base::ScopedFD socket_fd,
   // Send Mojo invitation to ARCVM.
   auto invitation_manager = std::make_unique<MojoInvitationManager>();
   mojo::PlatformChannel channel;
-  const std::string& token = invitation_manager->token();
-  invitation_manager->SendInvitation(channel);
+  MojoInitData mojo_init_data;
+  invitation_manager->SendInvitation(channel, mojo_init_data.token());
 
   std::vector<base::ScopedFD> fds;
   fds.emplace_back(channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD());
 
-  // Version of protocol chrome is using.
-  uint8_t protocol_version = 0;
-
-  // We need to send the length of the message as a single byte, so make sure it
-  // fits.
-  DCHECK_LT(token.size(), 256u);
-  uint8_t message_length = static_cast<uint8_t>(token.size());
-
-  struct iovec iov[] = {{&protocol_version, sizeof(protocol_version)},
-                        {&message_length, sizeof(message_length)},
-                        {const_cast<char*>(token.c_str()), token.size()}};
-  ssize_t result = mojo::SendmsgWithHandles(connection_fd.get(), iov,
-                                            sizeof(iov) / sizeof(iov[0]), fds);
-  if (result == -1) {
+  std::vector<iovec> data_arr = mojo_init_data.AsIOvecVector();
+  if (mojo::SendmsgWithHandles(connection_fd.get(), data_arr.data(),
+                               data_arr.size(), fds) == -1) {
     PLOG(ERROR) << "sendmsg";
     return nullptr;
   }
@@ -678,8 +668,9 @@ void ArcSessionImpl::Stop() {
 
   // For second time or later, just do nothing.
   // It is already in the stopping phase.
-  if (stop_requested_)
+  if (stop_requested_) {
     return;
+  }
 
   stop_requested_ = true;
   arc_bridge_host_.reset();
@@ -782,8 +773,8 @@ void ArcSessionImpl::OnStopped(ArcStopReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // OnStopped() should be called once per instance.
   DCHECK_NE(state_, State::STOPPED);
-  VLOG(1) << "ARC session is stopped."
-          << " reason: " << reason << " state: " << state_;
+  VLOG(1) << "ARC session is stopped. reason: " << reason
+          << " state: " << state_;
 
   const bool was_running = (state_ == State::RUNNING_FULL_INSTANCE);
   arc_bridge_host_.reset();
@@ -796,8 +787,9 @@ void ArcSessionImpl::OnStopped(ArcStopReason reason) {
 void ArcSessionImpl::OnShutdown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   stop_requested_ = true;
-  if (state_ == State::STOPPED)
+  if (state_ == State::STOPPED) {
     return;
+  }
 
   // Here, the message loop is already stopped, and the Chrome will be soon
   // shutdown. Thus, it is not necessary to take care about restarting case.

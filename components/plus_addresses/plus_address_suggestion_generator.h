@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "url/origin.h"
 
@@ -33,7 +33,8 @@ class PlusAddressSuggestionGenerator final {
   PlusAddressSuggestionGenerator(
       const PlusAddressSettingService* setting_service,
       PlusAddressAllocator* allocator,
-      url::Origin origin);
+      url::Origin origin,
+      std::string primary_email);
   ~PlusAddressSuggestionGenerator();
 
   // Returns the suggestions to be offered on the `focused_field` with Password
@@ -42,8 +43,7 @@ class PlusAddressSuggestionGenerator final {
   // origin.
   [[nodiscard]] std::vector<autofill::Suggestion> GetSuggestions(
       bool is_creation_enabled,
-      const autofill::AutofillClient::PasswordFormClassification&
-          focused_form_classification,
+      const autofill::PasswordFormClassification& focused_form_classification,
       const autofill::FormFieldData& focused_field,
       autofill::AutofillSuggestionTriggerSource trigger_source,
       std::vector<PlusProfile> affiliated_profiles);
@@ -56,8 +56,10 @@ class PlusAddressSuggestionGenerator final {
   static autofill::Suggestion GetManagePlusAddressSuggestion();
 
   // Returns a suggestion for displaying an error during plus address
-  // reservation.
-  static autofill::Suggestion GetPlusAddressErrorSuggestion();
+  // reservation. The type of `error` determines which string to show and
+  // whether to offer refresh.
+  static autofill::Suggestion GetPlusAddressErrorSuggestion(
+      const PlusAddressRequestError& error);
 
   // Updates `suggestion` to have `plus_address` as the proposed suggestions.
   // `CHECK`s that `suggestion` is of type `kCreateNewPlusAddressInline`.
@@ -84,6 +86,8 @@ class PlusAddressSuggestionGenerator final {
   // TODO(crbug.com/362445807): Eliminate this parameter once the allocator
   // no longer needs it.
   const url::Origin origin_;
+  // The primary email address of the user.
+  const std::string primary_email_;
 };
 
 }  // namespace plus_addresses

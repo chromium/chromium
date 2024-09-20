@@ -216,6 +216,12 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   // Force all inputs to take any channel interpretation changes into account.
   void UpdateChannelsForInputs();
 
+  // Set the (internal) channelCountMode and channelInterpretation
+  // accordingly. Use this in the node constructors to set the internal state
+  // correctly if the node uses values different from the defaults.
+  void SetInternalChannelCountMode(ChannelCountMode);
+  void SetInternalChannelInterpretation(AudioBus::ChannelInterpretation);
+
   // The last time (context time) that his handler ran its Process() method.
   // For each render quantum, we only want to process just once to handle fanout
   // of this handler.
@@ -224,10 +230,21 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   // The last time (context time) when this node did not have silent inputs.
   double last_non_silent_time_ = 0;
 
+  unsigned channel_count_ = 2;
+
+  // The new channel count mode that will be used to set the actual mode in the
+  // pre or post rendering phase.
+  ChannelCountMode new_channel_count_mode_;
+
+  // The new channel interpretation that will be used to set the actual
+  // interpretation in the pre or post rendering phase.
+  AudioBus::ChannelInterpretation new_channel_interpretation_;
+
  private:
   void SetNodeType(NodeType);
 
-  void SendLogMessage(const String& message);
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
+  void SendLogMessage(const char* const function_name, const String& message);
 
   bool is_initialized_ = false;
   NodeType node_type_ = kNodeTypeUnknown;
@@ -264,21 +281,6 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
 
   ChannelCountMode channel_count_mode_;
   AudioBus::ChannelInterpretation channel_interpretation_;
-
- protected:
-  // Set the (internal) channelCountMode and channelInterpretation
-  // accordingly. Use this in the node constructors to set the internal state
-  // correctly if the node uses values different from the defaults.
-  void SetInternalChannelCountMode(ChannelCountMode);
-  void SetInternalChannelInterpretation(AudioBus::ChannelInterpretation);
-
-  unsigned channel_count_ = 2;
-  // The new channel count mode that will be used to set the actual mode in the
-  // pre or post rendering phase.
-  ChannelCountMode new_channel_count_mode_;
-  // The new channel interpretation that will be used to set the actual
-  // interpretation in the pre or post rendering phase.
-  AudioBus::ChannelInterpretation new_channel_interpretation_;
 };
 
 }  // namespace blink

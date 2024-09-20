@@ -198,7 +198,8 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                     }
                 });
         startAnimatorOnSurfaceView(moveAnimator);
-        if (mEdgeToEdgeSupplier != null) {
+        if (mEdgeToEdgeSupplier != null && mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
             mEdgeToEdgeSupplier.unregisterAdjuster(mEdgeToEdgePadAdjuster);
         }
     }

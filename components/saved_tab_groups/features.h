@@ -35,6 +35,8 @@ BASE_DECLARE_FEATURE(kDeferMediaLoadInBackgroundTab);
 
 BASE_DECLARE_FEATURE(kSavedTabGroupNotifyOnInteractionTimeChanged);
 
+BASE_DECLARE_FEATURE(kUseAlternateHistorySyncIllustration);
+
 extern bool IsTabGroupsSaveV2Enabled();
 
 extern bool IsTabGroupsSaveUIUpdateEnabled();

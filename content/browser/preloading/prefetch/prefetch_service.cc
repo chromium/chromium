@@ -1043,7 +1043,7 @@ void PrefetchService::StartSinglePrefetch(
     return;
   }
 
-  prefetch_container->SetLoadState(PrefetchContainer::LoadState::kStarted);
+  prefetch_container->OnPrefetchStarted();
 
   // Start timer to release the prefetch container after
   // |PrefetchContainerLifetimeInPrefetchService|.
@@ -1299,7 +1299,6 @@ PrefetchService::OnPrefetchResponseStarted(
         PrefetchStatus::kPrefetchFailedMIMENotSupported);
     return PrefetchErrorOnResponseReceived::kFailedMIMENotSupported;
   }
-
   return std::nullopt;
 }
 

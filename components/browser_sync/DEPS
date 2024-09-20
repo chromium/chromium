@@ -17,6 +17,7 @@ include_rules = [
   "+components/prefs",
   "+components/reading_list/core",
   "+components/reading_list/features",
+  "+components/saved_tab_groups",
   "+components/search_engines",
   "+components/send_tab_to_self",
   "+components/sharing_message",

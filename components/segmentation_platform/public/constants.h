@@ -158,6 +158,7 @@ const char kAdaptiveToolbarModelLabelAddToBookmarks[] = "AddToBookmarks";
 const char kAdaptiveToolbarModelLabelReadAloud[] = "ReadAloud";
 
 // Labels for contextual page actions model.
+const char kContextualPageActionModelLabelDiscounts[] = "discounts";
 const char kContextualPageActionModelLabelPriceTracking[] = "price_tracking";
 const char kContextualPageActionModelLabelReaderMode[] = "reader_mode";
 const char kContextualPageActionModelLabelPriceInsights[] = "price_insights";
@@ -235,6 +236,7 @@ const char kContextualPageActionModelInputPriceTracking[] = "can_track_price";
 const char kContextualPageActionModelInputReaderMode[] = "has_reader_mode";
 const char kContextualPageActionModelInputPriceInsights[] =
     "has_price_insights";
+const char kContextualPageActionModelInputDiscounts[] = "has_discounts";
 
 const char kComposePrmotionLabelShow[] = "Show";
 const char kComposePrmotionLabelDontShow[] = "DontShow";

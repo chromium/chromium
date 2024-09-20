@@ -91,6 +91,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // TrayNetworkStateObserver:
   void ActiveNetworkStateChanged() override;
   void NetworkListChanged() override;
+  void DeviceStateListChanged() override;
   void GlobalPolicyChanged() override;
 
   // bluetooth_config::mojom::SystemPropertiesObserver:

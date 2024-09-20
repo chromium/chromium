@@ -114,23 +114,27 @@ bool ValidatePlaybackData(const focus_mode::mojom::PlaybackDataPtr& data) {
     return false;
   }
 
-  if (data->initial_playback) {
-    if (data->media_start.has_value() || data->media_end.has_value()) {
-      DLOG(ERROR)
-          << "Failed to validate the playback data: bad initial playback data";
-      return false;
-    }
-  } else {
-    if (!data->media_start.has_value() || !data->media_end.has_value() ||
-        data->media_start < 0 || data->media_start > 18000 ||
-        data->media_end < 0 || data->media_end > 18000 ||
-        data->media_start >= data->media_end) {
-      DLOG(ERROR) << "Failed to validate the playback data: bad subsequent "
-                     "playback data, media_start="
-                  << data->media_start.value_or(-1)
-                  << ", media_end=" << data->media_end.value_or(-1);
-      return false;
-    }
+  if (data->playback_start_offset < 0 || data->playback_start_offset > 18000) {
+    DLOG(ERROR) << "Failed to validate the playback data: bad playback data, "
+                   "playback_start_offset="
+                << data->playback_start_offset;
+    return false;
+  }
+
+  if (data->media_time_current < 0 || data->media_time_current > 18000) {
+    DLOG(ERROR) << "Failed to validate the playback data: bad playback data, "
+                   "media_time_current="
+                << data->media_time_current;
+    return false;
+  }
+
+  if (data->media_start < 0 || data->media_start > 18000 ||
+      data->media_end < 0 || data->media_end > 18000 ||
+      data->media_start >= data->media_end) {
+    DLOG(ERROR) << "Failed to validate the playback data: bad playback data, "
+                   "media_start="
+                << data->media_start << ", media_end=" << data->media_end;
+    return false;
   }
 
   return true;
@@ -159,17 +163,20 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
       return;
     }
 
-    base::flat_set<std::pair<int, int>> media_segments;
-    if (data->media_start.has_value() && data->media_end.has_value()) {
-      media_segments.insert(
-          {data->media_start.value(), data->media_end.value()});
-    }
+    youtube_music::MediaSegments media_segments;
+    media_segments.insert(youtube_music::MediaSegment{
+        data->media_start, data->media_end, data->client_start_time});
+    const youtube_music::PlaybackData playback_data(
+        GetPlaybackState(data->state), data->title, data->url,
+        data->client_current_time, data->playback_start_offset,
+        data->media_time_current, media_segments, data->initial_playback);
+    rate_limiter_.OnPlaybackEvent(playback_data, base::Time::Now());
+  }
 
-    rate_limiter_.OnPlaybackEvent(
-        youtube_music::PlaybackData(GetPlaybackState(data->state), data->title,
-                                    data->url, media_segments,
-                                    data->initial_playback),
-        base::Time::Now());
+  void ReportPlayerError() override {
+    if (auto* controller = FocusModeController::Get()) {
+      controller->focus_mode_sounds_controller()->ReportPlayerError();
+    }
   }
 
   void BindInterface(

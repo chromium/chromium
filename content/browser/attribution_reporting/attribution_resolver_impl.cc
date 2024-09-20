@@ -192,14 +192,15 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
           case attribution_reporting::RandomizedResponseError::
               kExceedsChannelCapacityLimit:
             return make_result(StoreSourceResult::ExceedsMaxChannelCapacity(
-                attribution_reporting::GetMaxChannelCapacity(
+                delegate_->config().privacy_math_config.GetMaxChannelCapacity(
                     common_info.source_type())));
           case attribution_reporting::RandomizedResponseError::
               kExceedsScopesChannelCapacityLimit:
             return make_result(
                 StoreSourceResult::ExceedsMaxScopesChannelCapacity(
-                    attribution_reporting::GetMaxChannelCapacityScopes(
-                        common_info.source_type())));
+                    delegate_->config()
+                        .privacy_math_config.GetMaxChannelCapacityScopes(
+                            common_info.source_type())));
           case attribution_reporting::RandomizedResponseError::
               kExceedsTriggerStateCardinalityLimit:
             return make_result(

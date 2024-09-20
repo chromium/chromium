@@ -178,9 +178,16 @@ bool SessionExecuteModel(ChromeMLSession session,
   return true;
 }
 
-void SessionSizeInTokens(ChromeMLSession session,
-                         const std::string& text,
-                         const ChromeMLSizeInTokensFn& fn) {
+void SessionSizeInTokensInputPiece(ChromeMLSession session,
+                                   ChromeMLModel model,
+                                   const ml::InputPiece* input,
+                                   size_t input_size,
+                                   const ChromeMLSizeInTokensFn& fn) {
+  std::string text;
+  for (size_t i = 0; i < input_size; i++) {
+    // SAFETY: `input_size` describes how big `input` is.
+    text += UNSAFE_BUFFERS(PieceToString(input[i]));
+  }
   fn(text.size());
 }
 
@@ -217,7 +224,18 @@ ChromeMLSafetyResult TSModelClassifyTextSafety(ChromeMLTSModel model,
                                                const char* text,
                                                float* scores,
                                                size_t* num_scores) {
-  return ChromeMLSafetyResult::kNoClassifier;
+  if (*num_scores != 2) {
+    *num_scores = 2;
+    return ChromeMLSafetyResult::kInsufficientStorage;
+  }
+  bool has_unsafe = std::string(text).find("unsafe") != std::string::npos;
+  // SAFETY: Follows a C-API, num_scores checked above, test-only code.
+  UNSAFE_BUFFERS(scores[0]) = has_unsafe ? 0.8 : 0.2;
+  bool has_reasonable =
+      std::string(text).find("reasonable") != std::string::npos;
+  // SAFETY: Follows a C-API, num_scores checked above, test-only code.
+  UNSAFE_BUFFERS(scores[1]) = has_reasonable ? 0.2 : 0.8;
+  return ChromeMLSafetyResult::kOk;
 }
 
 const ChromeMLAPI g_api = {
@@ -232,7 +250,7 @@ const ChromeMLAPI g_api = {
 
     .SessionCreateModel = &SessionCreateModel,
     .SessionExecuteModel = &SessionExecuteModel,
-    .SessionSizeInTokens = &SessionSizeInTokens,
+    .SessionSizeInTokensInputPiece = &SessionSizeInTokensInputPiece,
     .SessionScore = &SessionScore,
     .CreateSession = &CreateSession,
     .CloneSession = &CloneSession,

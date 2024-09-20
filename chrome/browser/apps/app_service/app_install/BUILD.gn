@@ -175,7 +175,6 @@ source_set("browser_tests") {
     sources += [
       "app_install_service_ash_browsertest.cc",
       "web_app_installer_browsertest.cc",
-      "web_app_installer_lacros_browsertest.cc",
     ]
   }
 

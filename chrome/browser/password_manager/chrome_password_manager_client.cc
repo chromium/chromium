@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -212,9 +213,11 @@ void MaybeShowAccessLossWarning(
     return;
   }
   PasswordAccessLossWarningBridgeImpl bridge;
-  if (bridge.ShouldShowAccessLossNoticeSheet(prefs)) {
+  if (bridge.ShouldShowAccessLossNoticeSheet(prefs,
+                                             /*called_at_startup=*/true)) {
     bridge.MaybeShowAccessLossNoticeSheet(
-        prefs, web_contents->GetTopLevelNativeWindow(), profile);
+        prefs, web_contents->GetTopLevelNativeWindow(), profile,
+        /*called_at_startup=*/true);
   }
 }
 
@@ -586,7 +589,8 @@ void ChromePasswordManagerClient::
 
 bool ChromePasswordManagerClient::IsReauthBeforeFillingRequired(
     device_reauth::DeviceAuthenticator* authenticator) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   if (!GetLocalStatePrefs() || !GetPrefs() || !authenticator) {
     return false;
   }
@@ -767,7 +771,7 @@ void ChromePasswordManagerClient::PasswordWasAutofilled(
   manage_passwords_ui_controller->OnPasswordAutofilled(best_matches, origin,
                                                        federated_matches);
 #endif
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (was_autofilled_on_pageload &&
       !IsAuthenticatorRequestWindowUrl(GetLastCommittedURL()) &&
       password_manager_util::
@@ -1271,12 +1275,14 @@ ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(
 
 void ChromePasswordManagerClient::ShowCredentialsInAmbientBubble(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+    int credential_type_flags,
     CredentialsCallback callback) {
 #if !BUILDFLAG(IS_ANDROID)
   auto* controller =
       ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
           web_contents()->GetPrimaryMainFrame());
-  controller->AddAndShowPasswordMethods(std::move(forms), std::move(callback));
+  controller->AddAndShowPasswordMethods(std::move(forms), credential_type_flags,
+                                        std::move(callback));
 #else
   NOTREACHED_NORETURN();
 #endif
@@ -1352,14 +1358,13 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
     return;
   }
 
-  // In `kNudgePassword` experiment generated password is previewed when the
-  // popup is visible and any character typed by the user is treated as
+  // With `kPasswordGenerationSoftNudge` enabled generated password is previewed
+  // when the popup is visible and any character typed by the user is treated as
   // rejection.
-  if (password_manager::features::kPasswordGenerationExperimentVariationParam
-          .Get() ==
-      password_manager::features::PasswordGenerationVariation::kNudgePassword) {
-    // TODO(crbug.com/40267520): Rewrite the AutomaticGenerationAvailable
-    // triggering instead of checking a boolean if the experiment is launched.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationSoftNudge)) {
+    // TODO(crbug.com/366198626): Rewrite the AutomaticGenerationAvailable
+    // triggering instead of checking a boolean when the feature is launched.
     if (ui_data.input_field_empty) {
       ShowPasswordGenerationPopup(PasswordGenerationType::kAutomatic, driver,
                                   ui_data);
@@ -1412,8 +1417,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
   popup_controller_ = PasswordGenerationPopupControllerImpl::GetOrCreate(
       popup_controller_, element_bounds_in_screen_space, ui_data,
       driver->AsWeakPtr(), observer_, web_contents(),
-      password_generation_driver_receivers_.GetCurrentTargetFrame(),
-      GetPrefs());
+      password_generation_driver_receivers_.GetCurrentTargetFrame());
   DCHECK(!password_value.empty());
   popup_controller_->UpdateGeneratedPassword(password_value);
   popup_controller_->Show(
@@ -1916,7 +1920,7 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
   popup_controller_ = PasswordGenerationPopupControllerImpl::GetOrCreate(
       popup_controller_, element_bounds_in_screen_space, ui_data,
       driver->AsWeakPtr(), observer_, web_contents(),
-      driver->render_frame_host(), GetPrefs());
+      driver->render_frame_host());
 
   popup_controller_->GeneratePasswordValue(type);
   popup_controller_->Show(PasswordGenerationPopupController::kOfferGeneration);

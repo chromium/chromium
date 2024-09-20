@@ -1,0 +1,3 @@
+Document
+++Group IsControlElement=false
+++++ComboBox Name='Currency for purchase' ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='USD United States Dollar $'

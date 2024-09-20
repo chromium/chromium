@@ -20,10 +20,12 @@
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
 #include "ash/picker/picker_caps_lock_bubble_controller.h"
 #include "ash/picker/picker_insert_media_request.h"
+#include "ash/picker/picker_search_result.h"
+#include "ash/picker/picker_suggestions_controller.h"
+#include "ash/picker/picker_web_paste_target.h"
+#include "ash/picker/search/picker_search_controller.h"
 #include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_view_delegate.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
-#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -51,8 +53,6 @@ class PickerAssetFetcher;
 class PickerClient;
 class PickerModel;
 class PickerPasteRequest;
-class PickerSearchController;
-class PickerSuggestionsController;
 
 // Controls a Picker widget.
 class ASH_EXPORT PickerController : public PickerViewDelegate,
@@ -93,8 +93,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // this method on a destructed class instance to avoid a use after free.
   void SetClient(PickerClient* client);
 
-  // This should be run when the Profile from the client is ready.
-  void OnClientProfileSet();
+  // This should be run when the Prefs from the client is ready.
+  void OnClientPrefsSet(PrefService* prefs);
 
   // Toggles the visibility of the Picker widget.
   // This must only be called after `SetClient` is called with a valid client.
@@ -197,8 +197,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
   std::unique_ptr<PickerPasteRequest> paste_request_;
-  std::unique_ptr<PickerSuggestionsController> suggestions_controller_;
-  std::unique_ptr<PickerSearchController> search_controller_;
+  PickerSuggestionsController suggestions_controller_;
+  PickerSearchController search_controller_;
 
   raw_ptr<PickerClient> client_ = nullptr;
 

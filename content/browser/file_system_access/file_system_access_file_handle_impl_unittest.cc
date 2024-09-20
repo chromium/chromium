@@ -801,6 +801,54 @@ TEST_F(FileSystemAccessFileHandleImplTest, Move_HasDestWriteAccess) {
   EXPECT_TRUE(base::PathExists(renamed_file));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(FileSystemAccessFileHandleImplTest, ContentUriRenameMoveNotSupported) {
+  base::FilePath dest_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      dir_.GetPath(), FILE_PATH_LITERAL("dest"), &dest_dir));
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
+  base::FilePath renamed_file = file.DirName().AppendASCII("new_name.txt");
+  base::FilePath moved_file = dest_dir.AppendASCII("new_name.txt");
+
+  base::FilePath content_uri_dest_dir;
+  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
+      dest_dir, &content_uri_dest_dir));
+  base::FilePath content_uri_file;
+  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
+      file, &content_uri_file));
+
+  auto dest_dir_handle = GetDirectoryHandleWithPermissions(
+      content_uri_dest_dir, /*read_grant=*/allow_grant_,
+      /*write_grant=*/allow_grant_);
+  auto handle =
+      GetHandleWithPermissions(content_uri_file, /*read_grant=*/allow_grant_,
+                               /*write_grant=*/allow_grant_);
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dir_remote;
+  manager_->CreateTransferToken(*dest_dir_handle,
+                                dir_remote.InitWithNewPipeAndPassReceiver());
+
+  // Rename is not supported.
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> rename_future;
+  handle->Rename(renamed_file.BaseName().AsUTF8Unsafe(),
+                 rename_future.GetCallback());
+  EXPECT_EQ(rename_future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kInvalidModificationError);
+  EXPECT_TRUE(base::PathExists(file));
+  EXPECT_FALSE(base::PathExists(renamed_file));
+
+  // Move is not supported.
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> move_future;
+  handle->Move(std::move(dir_remote), moved_file.BaseName().AsUTF8Unsafe(),
+               move_future.GetCallback());
+  EXPECT_EQ(move_future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kInvalidModificationError);
+  EXPECT_TRUE(base::PathExists(file));
+  EXPECT_FALSE(base::PathExists(moved_file));
+}
+#endif
+
 #if BUILDFLAG(IS_MAC)
 // Tests that swap file cloning (i.e. creating a swap file using underlying
 // platform support for copy-on-write files) behaves as expected. Swap file

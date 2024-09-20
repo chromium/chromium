@@ -59,7 +59,7 @@ ScriptPromiseUntyped RTCEncodedVideoUnderlyingSource::Pull(
   DCHECK(task_runner_->BelongsToCurrentThread());
   // WebRTC is a push source without backpressure support, so nothing to do
   // here.
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 ScriptPromiseUntyped RTCEncodedVideoUnderlyingSource::Cancel(
@@ -69,7 +69,7 @@ ScriptPromiseUntyped RTCEncodedVideoUnderlyingSource::Cancel(
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 void RTCEncodedVideoUnderlyingSource::Trace(Visitor* visitor) const {

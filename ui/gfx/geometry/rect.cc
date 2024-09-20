@@ -344,6 +344,14 @@ Rect UnionRects(const Rect& a, const Rect& b) {
   return result;
 }
 
+Rect UnionRects(base::span<const Rect> rects) {
+  Rect result;
+  for (const Rect& rect : rects) {
+    result.Union(rect);
+  }
+  return result;
+}
+
 Rect UnionRectsEvenIfEmpty(const Rect& a, const Rect& b) {
   Rect result = a;
   result.UnionEvenIfEmpty(b);

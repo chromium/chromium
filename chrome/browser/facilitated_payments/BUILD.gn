@@ -4,8 +4,8 @@
 
 static_library("facilitated_payments") {
   sources = [
-    "payment_link_handler_factory.cc",
-    "payment_link_handler_factory.h",
+    "payment_link_handler_binder.cc",
+    "payment_link_handler_binder.h",
     "ui/chrome_facilitated_payments_client.cc",
     "ui/chrome_facilitated_payments_client.h",
   ]
@@ -16,6 +16,7 @@ static_library("facilitated_payments") {
     "//chrome/browser/autofill",
     "//chrome/browser/facilitated_payments/ui/android",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/autofill",
     "//components/autofill/core/browser",
     "//components/facilitated_payments/content/browser",
     "//components/facilitated_payments/core/browser",

@@ -108,16 +108,11 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
 #endif  // BUILDFLAG(IS_MAC)
 
   // Platform-specific method to check whether the system is currently
-  // running on battery power.  Returns true if running on batteries,
-  // false otherwise.
-  bool IsOnBatteryPower() const final;
-
-  // Platform-specific method to check whether the system is currently
   // running on battery power. Returns kBatteryPower if running on battery,
   // kExternalPower if running on external power or kUnknown if the power
   // state is unknown (for example, during early process lifetime when the
   // state hasn't been obtained yet).
-  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
+  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const override;
 
 #if BUILDFLAG(IS_ANDROID)
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState()

@@ -68,6 +68,11 @@ class FakeWebAppUiManager : public WebAppUiManager {
   Browser* ReparentAppTabToWindow(content::WebContents* contents,
                                   const webapps::AppId& app_id,
                                   bool shortcut_created) override;
+  Browser* ReparentAppTabToWindow(
+      content::WebContents* contents,
+      const webapps::AppId& app_id,
+      base::OnceCallback<void(content::WebContents*)> completion_callback)
+      override;
   void ShowWebAppFileLaunchDialog(
       const std::vector<base::FilePath>& file_paths,
       const webapps::AppId& app_id,
@@ -139,7 +144,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const std::string& launch_name) override;
 
   void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-      content::WebContents* web_contents,
+      Browser* browser,
       Profile* profile,
       const std::string& app_id) override;
 

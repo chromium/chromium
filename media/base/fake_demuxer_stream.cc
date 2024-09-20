@@ -85,8 +85,7 @@ void FakeDemuxerStream::Initialize() {
   next_read_num_ = 0;
 }
 
-// Only return one buffer at a time so we ignore the count.
-void FakeDemuxerStream::Read(uint32_t /*count*/, ReadCB read_cb) {
+void FakeDemuxerStream::Read(uint32_t count, ReadCB read_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!read_cb_);
 
@@ -96,7 +95,7 @@ void FakeDemuxerStream::Read(uint32_t /*count*/, ReadCB read_cb) {
     return;
 
   DCHECK(read_to_hold_ == -1 || read_to_hold_ > next_read_num_);
-  DoRead();
+  DoRead(count);
 }
 
 AudioDecoderConfig FakeDemuxerStream::audio_decoder_config() {
@@ -183,9 +182,10 @@ void FakeDemuxerStream::UpdateVideoDecoderConfig() {
   next_size_.set_height(next_size_.height() + coded_size_delta_.y());
 }
 
-void FakeDemuxerStream::DoRead() {
+void FakeDemuxerStream::DoRead(int read_count) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(read_cb_);
+  DCHECK_GE(read_count, 1);
 
   next_read_num_++;
 
@@ -203,25 +203,31 @@ void FakeDemuxerStream::DoRead() {
     return;
   }
 
-  scoped_refptr<DecoderBuffer> buffer = CreateFakeVideoBufferForTest(
-      video_decoder_config_, current_timestamp_, duration_);
+  DemuxerStream::DecoderBufferVector output_buffers;
+  for (int i = 0; i < read_count; ++i) {
+    scoped_refptr<DecoderBuffer> buffer = CreateFakeVideoBufferForTest(
+        video_decoder_config_, current_timestamp_, duration_);
 
-  // TODO(xhwang): Output out-of-order buffers if needed.
-  if (is_encrypted_) {
-    buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
-        std::string(kKeyId, kKeyId + std::size(kKeyId)),
-        std::string(kIv, kIv + std::size(kIv)), std::vector<SubsampleEntry>()));
+    // TODO(xhwang): Output out-of-order buffers if needed.
+    if (is_encrypted_) {
+      buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
+          std::string(kKeyId, kKeyId + std::size(kKeyId)),
+          std::string(kIv, kIv + std::size(kIv)),
+          std::vector<SubsampleEntry>()));
+    }
+    buffer->set_timestamp(current_timestamp_);
+    buffer->set_duration(duration_);
+    current_timestamp_ += duration_;
+
+    num_buffers_left_in_current_config_--;
+    if (num_buffers_left_in_current_config_ == 0) {
+      num_configs_left_--;
+    }
+
+    num_buffers_returned_++;
+    output_buffers.emplace_back(std::move(buffer));
   }
-  buffer->set_timestamp(current_timestamp_);
-  buffer->set_duration(duration_);
-  current_timestamp_ += duration_;
-
-  num_buffers_left_in_current_config_--;
-  if (num_buffers_left_in_current_config_ == 0)
-    num_configs_left_--;
-
-  num_buffers_returned_++;
-  std::move(read_cb_).Run(kOk, {std::move(buffer)});
+  std::move(read_cb_).Run(kOk, std::move(output_buffers));
 }
 
 FakeMediaResource::FakeMediaResource(int num_video_configs,

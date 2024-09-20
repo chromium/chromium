@@ -305,11 +305,13 @@ const AXVirtualView* TreeViewTest::GetAccessibilityViewByName(
   const AXVirtualView* ax_view = GetRootAccessibilityView();
 
   while (ax_view) {
-    std::string ax_view_name;
-    if (ax_view->GetData().GetStringAttribute(ax::mojom::StringAttribute::kName,
-                                              &ax_view_name) &&
-        ax_view_name == name) {
-      return ax_view;
+    if (ax_view->GetData().HasStringAttribute(
+            ax::mojom::StringAttribute::kName)) {
+      const std::string& ax_view_name = ax_view->GetData().GetStringAttribute(
+          ax::mojom::StringAttribute::kName);
+      if (ax_view_name == name) {
+        return ax_view;
+      }
     }
 
     if (ax_view->children().size()) {

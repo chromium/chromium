@@ -213,16 +213,8 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_BASICS" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
         Basics
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_SECTION_BROWSER_SETTINGS" translateable="false" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
-        Browser settings
-      </message>
       <message name="IDS_PREFS_SECTION_ADVANCED" desc='Title of "Advanced" section of preferences. [CHAR_LIMIT=32]'>
         Advanced
-      </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_SECTION_CHROME" translateable="false" desc='Title of "Chrome" section of preferences. [CHAR_LIMIT=32]'>
-        Chrome
       </message>
 
       <!-- Notification channels -->
@@ -483,24 +475,31 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         You can choose your search engine
       </message>
 
-      <!-- Blocking choice dialog strings. TODO(b/355054464): replace with final versions -->
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_TITLE" desc="" translateable="false">
-        To continue, update your Android settings
+      <!-- Address bar settings -->
+      <message name="IDS_ADDRESS_BAR_SETTINGS" desc="Title for Address Bar settings. [CHAR_LIMIT=32]">
+        Address bar
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_MESSAGE" desc="" translateable="false">
-        Based on a law in your region, your need to finish selecting your device\u2019s default apps
+
+      <message name="IDS_ADDRESS_BAR_SETTINGS_TOP" desc="Title for the toggle that will show the address bar on the top. [CHAR_LIMIT=32]">
+        Top
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_BUTTON" desc="" translateable="false">
-        Next
+
+      <message name="IDS_ADDRESS_BAR_SETTINGS_BOTTOM" desc="Title for the toggle that will show the address bar on the bottom. [CHAR_LIMIT=32]">
+        Bottom
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_TITLE" desc="" translateable="false">
-        You're all set!
+
+      <!-- Blocking choice dialog strings. -->
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_TITLE" desc="This string is the heading of a dialog that prompts the user to select the search engine and web browser that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This dialog appears when the user opens Chrome after they’ve ignored the Android notification to choose their default apps. This string is before the “Based on a law in your region, you need to choose your browser and search engine” string. We want users to read this dialog and understand that they can use the search engine and browser of their choice. The user can tap “Next” to start the selection flow.">
+        Choose your default apps
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_MESSAGE" desc="" translateable="false">
-        If you have selected another browser it will be downloaded in the background
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_MESSAGE" desc="This is the body text of a dialog that explains why users are being prompted to choose a search engine and browser. This dialog appears when the user opens Chrome after they’ve ignored the Android notification to choose their default apps. The headline for this dialog is “Choose your default apps”. We want users to read this dialog and understand that they can use the search engine and browser of their choice. The user can tap “Next” to start the selection flow.">
+        Based on a law in your region, you need to choose your browser and search engine
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_BUTTON" desc="" translateable="false">
-        Got it
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_TITLE" desc="This string is the heading of a dialog that confirms to the user that Android has saved their choices for the search engine and web browser that they want to use by default. This dialog appears after the user finishes the flow to choose their default apps. This string is before the “The apps you chose will be used by default. If an app isn’t already on this device, it’ll be downloaded shortly.” string. The user can tap “Done” to close the dialog and continue to use Chrome (regardless of whether it was chosen as the default browser).">
+        Choices saved
+      </message>
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_MESSAGE" desc="This is the body text of a dialog that confirms to the user that Android has saved their choices for the search engine and web browser that they want to use by default. It’s possible that the user has chosen a default app that wasn’t previously on their device: if so, that app is now being downloaded in the background. This dialog appears after the user finishes the flow to choose their default apps; now, the user can continue to use Chrome (regardless of whether it was chosen as the default browser). The headline for this dialog is “Choices saved”. The user can tap “Done” to close the dialog and continue to use Chrome (regardless of whether it was chosen as the default browser).">
+        The apps you chose will be used by default. If an app isn’t already on this device, it’ll be downloaded shortly.
       </message>
 
       <!-- Autofill and Payments preferences -->
@@ -591,45 +590,33 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_AUTOFILL_CARD_EDITOR_VIRTUAL_CARD_TURN_OFF_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to unenroll from virtual cards.">
         Turn off
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_SECTION_AUTOFILL" translateable="false" desc="Title for the Passwords and Autofill preferences. [CHAR_LIMIT=32]">
+
+      <message name="IDS_PREFS_SECTION_AUTOFILL" desc="Title for the Passwords and Autofill preferences. [CHAR_LIMIT=32]">
         Passwords and Autofill
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
-        Autofill Options
+      <message name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
+        Autofill Services
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_CONFIRM_RESTART" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
-        Restart now
+      <message name="IDS_AUTOFILL_OPTIONS_CONFIRM_RESTART" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
+        Restart Chrome
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TITLE" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
-        Relaunch Chrome to apply the setting
+      <message name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TITLE" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
+        Restart Chrome?
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TEXT" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
-        Your tabs will reopen after relaunching.
+      <message name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TEXT" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
+        To finish setting up autofill, restart Chrome now. Your tabs will automatically reopen.
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_UNDO_TOGGLE_CHANGE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
-        Undo setting change
+      <message name="IDS_AUTOFILL_OPTIONS_UNDO_TOGGLE_CHANGE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
+        Cancel
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_POLICY" desc="Explanation that a policy prevents toggling the use of third-party autofill in Chrome." formatter_data="android_java">
-        Disabled by the administrator of this device
+      <message name="IDS_AUTOFILL_OPTIONS_HINT_POLICY" desc="Explanation that a policy prevents toggling the use of third-party autofill in Chrome." formatter_data="android_java">
+        Your administrator manages this setting.
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_DISABLED" desc="Explanation that a 3P password manager must be selected to toggle the use of third-party autofill in Chrome." formatter_data="android_java">
-        Disabled because a different autofill service must be set up in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph> to use this setting.
+      <message name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_DISABLED" desc="Explanation that a 3P password manager must be selected to toggle the use of third-party autofill in Chrome." formatter_data="android_java">
+        To set your preferred service for autofill, first add the service in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph> .
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_READY" desc="Explanation that third-party autofill in Chrome will defer to the 3P password manager as selected in Android settings." formatter_data="android_java">
-        Ready to use the autofill service that is configured in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_IN_INCOGNITO" desc="Explanation that a 3P password manager may prompt to save passwords in incognito." formatter_data="android_java">
-        Note: When using “other providers”, the browser informs the configured AutofillService about sites and fields visited in incognito.\nThe AutofillService uses this information to autofill your data and may store data in the process. Autofill data saved in incognito mode is stored even after incognito mode ends and available outside incognito mode.
+      <message name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_READY" desc="Explanation that third-party autofill in Chrome will defer to the 3P password manager as selected in Android settings." formatter_data="android_java">
+        Autofill services are also managed in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog where the user confirms their intention to delete their saved CVCs.">
         Delete saved security codes?
@@ -893,6 +880,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PWD_ACCESS_LOSS_WARNING_UPDATE_GMS_CORE_BUTTON_TEXT" desc="The button text of the password access loss warning sheet when the GMS Core version doesn't support local passwords." formatter_data="android_java">
         Update
       </message>
+      <message name="IDS_PWD_ACCESS_LOSS_NOTIFICATION_NO_GMS_CORE_TEXT" desc="The text of the password access loss notification when there is no GMS Core." formatter_data="android_java">
+        Passwords will stop working soon because Google Play services isn’t available. You can make a copy of your saved passwords before they stop working.
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_NOTIFICATION_UPDATE_GMS_CORE_TEXT" desc="The text of the password access loss notification when the GMS Core version doesn't support local passwords." formatter_data="android_java">
+        Passwords may stop working soon on this device. To keep using your passwords, update Google Play services.
+      </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_TITLE" desc="The title of the password migration warning sheet.">
         We’re changing how passwords are saved on this device
       </message>
@@ -1068,10 +1061,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
 
       <!-- Privacy and security preferences -->
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_PRIVACY_SECURITY_SECTION" translateable="false" desc="Title for the Privacy and Security section. [CHAR_LIMIT=32]">
-        Privacy and security
-      </message>
       <message name="IDS_PREFS_PRIVACY_SECURITY" desc="Title for the Privacy and Security preferences. [CHAR_LIMIT=32]">
         Privacy and security
       </message>
@@ -2907,6 +2896,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB" desc="Content description for the tab title.">
         <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, tab
       </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_NOTIFICATION" desc="Content description for the tab title with a notification status.">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, new or updated tab
+      </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_CLOSE_TAB" desc="Content description for the close tab button.">
         Close <ph name="TAB_TITLE">%1$s<ex>Google</ex></ph> tab
       </message>
@@ -4487,17 +4479,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_BOOKMARK_SAVE_FLOW_TITLE" desc="The title when a user chooses save a bookmarks.">
         Bookmark saved
       </message>
-      <message name="IDS_BOOKMARK_SAVE_FLOW_TITLE_MOVE" desc="The title when a user chooses to move a bookmark.">
-        Bookmark moved
-      </message>
       <message name="IDS_PRICE_TRACKING_TITLE" desc="The title when a user chooses to track the price of a product.">
         Tracking price
       </message>
       <message name="IDS_PRICE_TRACKING_SAVE_FLOW_NOTIFICATION_SWITCH_SUBTITLE" desc="The subtitle of an optional switch to track the price for product pages added as bookmarks.">
         Get alerts if the price drops on any site
-      </message>
-      <message name="IDS_PRICE_TRACKING_SAVE_FLOW_NOTIFICATION_SWITCH_SUBTITLE_ERROR" desc="The subtitle of an optional switch to track the price for product pages added as bookmarks shown in error.">
-        Couldn’t update Track price
       </message>
       <message name="IDS_ENABLE_PRICE_TRACKING_MENU_ITEM" desc="Menu item which allows user to track the price of a product page. [CHAR_LIMIT=32]">
         Track price
@@ -4550,8 +4536,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_ENABLED_BUTTON_TEXT" desc="The label of the price tracking button when the user is tracking the product.">
         Tracking
       </message>
-      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string that describes the price tracking button to track or untrack a product.">
-        Tap to track or untrack a product.
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_BUTTON_ACTION_DESCRIPTION" desc="Accessibility string that describes the price tracking button to track or untrack a product.">
+        Track or untrack a product.
       </message>
       <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_ERROR_MESSAGE" desc="Error message when user is tracking or untracking a product encountered an error.">
         Something went wrong
@@ -4563,7 +4549,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Bookmark saved
       </message>
       <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_UNTRACKED_SUCCESS_MESSAGE" desc="Confirmation message when user untrack a product successfully.">
-        Alerts for this product have been turned off
+        Price tracking stopped
       </message>
       <message name="IDS_PRICE_INSIGHTS_TITLE" desc="The title for the price insights button.">
         Price insights
@@ -5306,6 +5292,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_USING_GOOGLE" desc="Text notifying users that the default search engine has been set to Google.">
         Using Google for search
+      </message>
+
+      <!-- AuthTab -->
+      <message name="IDS_AUTH_TAB_SECURED_BY_CHROME_TEMPLATE" desc="Message template that used to indicating that the Auth Tab is securely running on Chrome. [CHAR_LIMIT=32]">
+        Secured by <ph name="APP_NAME">%1$s<ex>Chromium</ex></ph>
       </message>
 
       <!-- WebAPK/TWA related strings -->
@@ -6283,17 +6274,26 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_CONTINUE" desc="Header for continue sheet. Sheet is shown to prompt user to continue to a website using an account from an identity provider.">
         Continue to <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%2$s<ex>idp.com</ex></ph>
       </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_NAME" desc="A user's name, to be used in a list of items shared with a website">
+      name
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_EMAIL" desc="A user's email address, to be used in a list of items shared with a website">
+      email address
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_PICTURE" desc="A user's profile picture, to be used in a list of items shared with a website">
+      profile picture
+    </message>
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS" desc="The consent text shown to the user before sign up when there is no privacy policy or terms of service.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">%2$s<ex>name and email address</ex></ph> with this site.
       </message>
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP" desc="The consent text shown to the user before sign up when there is no privacy policy.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site. See this site's <ph name="BEGIN_LINK1">&lt;link_terms_of_service&gt;</ph>terms of service<ph name="END_LINK1">&lt;/link_terms_of_service&gt;</ph>.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">%2$s<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK1">&lt;link_terms_of_service&gt;</ph>terms of service<ph name="END_LINK1">&lt;/link_terms_of_service&gt;</ph>.
       </message>
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_TOS" desc="The consent text shown to the user before sign up when there is no terms of service.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site. See this site's <ph name="BEGIN_LINK1">&lt;link_privacy_policy&gt;</ph>privacy policy<ph name="END_LINK1">&lt;/link_privacy_policy&gt;</ph>.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">%2$s<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK1">&lt;link_privacy_policy&gt;</ph>privacy policy<ph name="END_LINK1">&lt;/link_privacy_policy&gt;</ph>.
       </message>
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up.">
-        To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site. See this site's <ph name="BEGIN_LINK1">&lt;link_privacy_policy&gt;</ph>privacy policy<ph name="END_LINK1">&lt;/link_privacy_policy&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link_terms_of_service&gt;</ph>terms of service<ph name="END_LINK2">&lt;/link_terms_of_service&gt;</ph>.
+        To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">%2$s<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK1">&lt;link_privacy_policy&gt;</ph>privacy policy<ph name="END_LINK1">&lt;/link_privacy_policy&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link_terms_of_service&gt;</ph>terms of service<ph name="END_LINK2">&lt;/link_terms_of_service&gt;</ph>.
       </message>
 
       <message name="IDS_ACCOUNT_SELECTION_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials.">
@@ -6783,6 +6783,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE_SETTINGS_TITLE" desc="The word for settings, used in IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE.">
         Settings
+      </message>
+
+      <!-- Hub search -->
+      <message name="IDS_HUB_SEARCH_EMPTY_HINT" desc="The text displayed in the search box when it's empty.">
+        Search your tabs
       </message>
     </messages>
   </release>

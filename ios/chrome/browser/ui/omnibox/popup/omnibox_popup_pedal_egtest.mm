@@ -34,12 +34,7 @@ NSString* kDinoSearchString = @"dino game";
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
-  if ([self isRunningTest:@selector(testLegacyClearBrowsingDataPedal)]) {
-    config.features_disabled.push_back(kIOSQuickDelete);
-  } else {
-    config.features_enabled.push_back(kIOSQuickDelete);
-  }
+  config.features_enabled.push_back(kIOSQuickDelete);
 
   return config;
 }
@@ -153,41 +148,6 @@ NSString* kDinoSearchString = @"dino game";
 
   // Remove mock to keep the app in the same state as before running the test.
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
-}
-
-// Tests that the clear browsing data pedal is present and it opens the legacy
-// clear browsing data page.
-- (void)testLegacyClearBrowsingDataPedal {
-  // Focus omnibox from Web.
-  [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"pedalclearbrowsing"];
-
-  NSString* clearBrowsingDataPedalString = l10n_util::GetNSString(
-      IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_CLEAR_BROWSING_DATA);
-
-  // Matcher for the clear browsing data pedal suggestion.
-  id<GREYMatcher> clearBrowsingDataPedal =
-      chrome_test_util::OmniboxPopupRowWithString(clearBrowsingDataPedalString);
-
-  // Clear browsing data pedal should be visible.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:clearBrowsingDataPedal];
-
-  // Tap on clear browsing data pedal.
-  [[EarlGrey selectElementWithMatcher:clearBrowsingDataPedal]
-      performAction:grey_tap()];
-
-  // Clear browsing data page should be displayed.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      chrome_test_util::ClearBrowsingDataView()];
-
-  // Close the Clear browsing data page.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      chrome_test_util::ClearBrowsingDataView()];
-
-  [ChromeEarlGrey closeCurrentTab];
 }
 
 // Tests that the clear browsing data pedal is present and it opens the clear

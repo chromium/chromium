@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -60,6 +61,22 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
 
   [ChromeEarlGrey loadURL:test_server->GetURL(form_url)];
   [ChromeEarlGrey waitForWebStateContainingText:form_text];
+}
+
+// Matcher for the overflow menu button shown in the cells.
+id<GREYMatcher> OverflowMenuButton() {
+  return grey_allOf(
+      grey_accessibilityID(
+          manual_fill::kExpandedManualFillPlusAddressOverflowMenuID),
+      grey_interactable(), nullptr);
+}
+
+// Matcher for the "Manage" action made available by the overflow menu
+// button.
+id<GREYMatcher> OverflowMenuManageAction() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_CONTENT_CONTEXT_OPENMANAGEINNEWTAB),
+                    grey_interactable(), nullptr);
 }
 
 // Returns a matcher for the button to dismiss select plus address in manual
@@ -161,6 +178,14 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Verify that the `fieldName` has been filled with `value`.
+- (void)verifyFieldHasBeenFilledWithValue:(std::u16string)value {
+  NSString* fillCondition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kNameFieldID, base::SysUTF16ToNSString(value)];
+  [ChromeEarlGrey waitForJavaScriptCondition:fillCondition];
+}
+
 // Tests that the plus address fallback is shown in the address and the
 // password segment.
 - (void)testPlusAddressFallback {
@@ -186,7 +211,10 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       selectElementWithMatcher:
           manual_fill::ChipButton(
               plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  [self verifyFieldHasBeenFilledWithValue:
+            plus_addresses::FakePlusAddressService::kFakePlusAddress16];
 }
 
 // Tests that the plus address manage action are shown in the address and
@@ -211,8 +239,18 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [[EarlGrey
       selectElementWithMatcher:manual_fill::SegmentedControlPasswordTab()]
       performAction:grey_tap()];
+
+  // Take note of how many tabs are open before clicking the manage,
+  // which should simply open a new tab.
+  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
+  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
+
   [[EarlGrey selectElementWithMatcher:managePlusAddressMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  // A new tab should open after tapping the manage action.
+  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
+  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
 }
 
 // Tests that tapping on the create plus address action in the address manual
@@ -242,10 +280,8 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [[EarlGrey selectElementWithMatcher:createPlusAddressBottomSheetButton]
       performAction:grey_tap()];
 
-  NSString* condition = [NSString
-      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
-                       kNameFieldID, @"plus+remote@plus.plus"];
-  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+  [self verifyFieldHasBeenFilledWithValue:
+            plus_addresses::FakePlusAddressService::kFakePlusAddress16];
 }
 
 // Tests that tapping on the create plus address action in the password manual
@@ -300,7 +336,9 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  [self verifyFieldHasBeenFilledWithValue:u"plus+foo@plus.plus"];
 }
 
 // Tests that tapping on the select plus address action shows a sheet with the
@@ -371,7 +409,81 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       performAction:grey_replaceText(@"foo.com")];
   [[EarlGrey
       selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
+      performAction:grey_tap()];
+
+  [self verifyFieldHasBeenFilledWithValue:u"plus+foo@plus.plus"];
+}
+
+// Tests that for the plus address manual fallback suggestion, in the overflow
+// menu, there is an option to manage the plus address.
+- (void)testOverflowMenuManageActionInAddressManualFillMenu {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
+  }
+
+  // Open the expanded manual fill view for an address field.
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          manual_fill::ChipButton(
+              plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the overflow menu button.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+      performAction:grey_tap()];
+
+  // Take note of how many tabs are open before clicking the manage,
+  // which should simply open a new tab.
+  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
+  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
+
+  [[EarlGrey selectElementWithMatcher:OverflowMenuManageAction()]
+      performAction:grey_tap()];
+
+  // A new tab should open after tapping the manage action.
+  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
+  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
+}
+
+// Tests that the "Manage" action in the overflow menu is displayed in the
+// select plus address view.
+- (void)testOverflowMenuManageActionInSelectPlusAddressView {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
+  }
+
+  [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
+  [PlusAddressAppInterface addPlusAddressProfile];
+
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+  id<GREYMatcher> selectPlusAddressMatcher = grey_accessibilityID(
+      manual_fill::kSelectPlusAddressAccessibilityIdentifier);
+
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [[EarlGrey selectElementWithMatcher:selectPlusAddressMatcher]
+      performAction:grey_tap()];
+
+  // Tap the overflow menu button.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+      performAction:grey_tap()];
+
+  // Take note of how many tabs are open before clicking the manage,
+  // which should simply open a new tab.
+  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
+  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
+
+  [[EarlGrey selectElementWithMatcher:OverflowMenuManageAction()]
+      performAction:grey_tap()];
+
+  // A new tab should open after tapping the manage action.
+  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
+  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
 }
 
 @end

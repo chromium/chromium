@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_message_chunk_accumulator.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -170,17 +171,17 @@ class MODULES_EXPORT WebSocketChannelImpl final
     // type, but the deleter cannot be called when it was used.
     MessageDataDeleter() : isolate_(nullptr), size_(0) {}
 
-    MessageDataDeleter(v8::Isolate* isolate, size_t size)
-        : isolate_(isolate), size_(size) {}
+    MessageDataDeleter(v8::Isolate* isolate, size_t size);
 
-    MessageDataDeleter(const MessageDataDeleter&) = default;
-    MessageDataDeleter& operator=(const MessageDataDeleter&) = default;
+    MessageDataDeleter(MessageDataDeleter&&) = default;
+    MessageDataDeleter& operator=(MessageDataDeleter&&) = default;
 
     void operator()(char* p) const;
 
    private:
     raw_ptr<v8::Isolate> isolate_;
     size_t size_;
+    NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
   };
 
   using MessageData = std::unique_ptr<char[], MessageDataDeleter>;

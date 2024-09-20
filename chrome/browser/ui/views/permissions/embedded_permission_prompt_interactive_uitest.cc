@@ -395,6 +395,9 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_TestPepcHistograms DISABLED_TestPepcHistograms
 #define MAYBE_TestPepcUkm DISABLED_TestPepcUkm
 #define MAYBE_TestButtonsLabel DISABLED_TestButtonsLabel
+#define MAYBE_TestPositionUsingZoom DISABLED_TestPositionUsingZoom
+#define MAYBE_TestPositionInsideCrossOriginFrame \
+  DISABLED_TestPositionInsideCrossOriginFrame
 #else
 #define MAYBE_BasicFlowMicrophone BasicFlowMicrophone
 #define MAYBE_BasicFlowGeolocation BasicFlowGeolocation
@@ -406,6 +409,9 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_TestPepcHistograms TestPepcHistograms
 #define MAYBE_TestPepcUkm TestPepcUkm
 #define MAYBE_TestButtonsLabel TestButtonsLabel
+#define MAYBE_TestPositionUsingZoom TestPositionUsingZoom
+#define MAYBE_TestPositionInsideCrossOriginFrame \
+  TestPositionInsideCrossOriginFrame
 #endif
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
                        MAYBE_BasicFlowMicrophone) {
@@ -793,5 +799,94 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
                         },
                         testing::Gt(previous_x))),
                     PushPEPCPromptButton(element_action.button_identifier));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
+                       MAYBE_TestPositionUsingZoom) {
+  RunTestSequence(InstrumentTab(kWebContentsElementId),
+                  NavigateWebContents(kWebContentsElementId, GetURL()),
+                  ExecuteJs(kWebContentsElementId, "setFontSizeSmall"));
+
+  double zoom_level = 0;
+  int previous_x = 0;
+
+  int loops = 5;
+  while (loops--) {
+    RunTestSequence(
+        ClickOnPEPCElement("microphone"),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+
+        InAnyContext(CheckView(
+            EmbeddedPermissionPromptBaseView::kMainViewId,
+            [&previous_x](views::View* view) {
+              gfx::Rect bounds = view->GetBoundsInScreen();
+              previous_x = bounds.x();
+              return bounds.x();
+            },
+            testing::Gt(previous_x))),
+
+        Do([this, &zoom_level]() {
+          auto* manager =
+              permissions::PermissionRequestManager::FromWebContents(
+                  browser()->tab_strip_model()->GetActiveWebContents());
+          manager->Dismiss();
+          manager->FinalizeCurrentRequests();
+
+          zoom::ZoomController* zoom_controller =
+              zoom::ZoomController::FromWebContents(
+                  browser()->tab_strip_model()->GetActiveWebContents());
+          zoom_level += 0.2;
+          zoom_controller->SetZoomLevel(zoom_level);
+        }));
+  }
+
+  zoom::ZoomController* zoom_controller = zoom::ZoomController::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  zoom_controller->SetZoomLevel(zoom_controller->GetDefaultZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
+                       MAYBE_TestPositionInsideCrossOriginFrame) {
+  StateChange done_visible;
+  done_visible.where = DeepQuery{"#done"};
+  done_visible.type = StateChange::Type::kExists;
+  done_visible.event = kDoneVisibleEvent;
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(
+          kWebContentsElementId,
+          https_server()->GetURL(
+              "b.test", "/permissions/permission_element_embedder.html")),
+      ExecuteJs(kWebContentsElementId,
+                content::JsReplace("() => { insertIframe($1); }", GetURL())),
+      WaitForStateChange(kWebContentsElementId, done_visible));
+
+  int loops = 5;
+  int previous_y = 0;
+  while (loops--) {
+    RunTestSequence(
+        ExecuteJs(
+            kWebContentsElementId,
+            content::JsReplace("() => { clickInIframe($1); }", "microphone")),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        InAnyContext(CheckView(
+            EmbeddedPermissionPromptBaseView::kMainViewId,
+            [&previous_y](views::View* view) {
+              gfx::Rect bounds = view->GetBoundsInScreen();
+              previous_y = bounds.y();
+              return bounds.y();
+            },
+            testing::Gt(previous_y))),
+        ExecuteJs(kWebContentsElementId, "expandDiv"), Do([this]() {
+          auto* manager =
+              permissions::PermissionRequestManager::FromWebContents(
+                  browser()->tab_strip_model()->GetActiveWebContents());
+          manager->Dismiss();
+          manager->FinalizeCurrentRequests();
+        }));
   }
 }

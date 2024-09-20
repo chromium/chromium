@@ -58,7 +58,6 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -851,18 +850,19 @@ void PasswordAutofillAgent::TrackAutofilledElement(
 void PasswordAutofillAgent::FillPasswordSuggestion(
     const std::u16string& username,
     const std::u16string& password) {
-  auto element = focused_element().DynamicTo<WebInputElement>();
-  if (!element || !IsElementEditable(element)) {
+  auto focused_element = last_queried_element().DynamicTo<WebInputElement>();
+  if (!focused_element || !IsElementEditable(focused_element)) {
     return;
   }
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;
-  if (!HasElementsToFill(element, UseFallbackData(true), &username_element,
-                         &password_element, &password_info)) {
+  if (!HasElementsToFill(focused_element, UseFallbackData(true),
+                         &username_element, &password_element,
+                         &password_info)) {
     return;
   }
-  if (element.FormControlTypeForAutofill() == kInputPassword) {
+  if (focused_element.FormControlTypeForAutofill() == kInputPassword) {
     CHECK(password_element);
     password_info->password_field_suggestion_was_accepted = true;
     password_info->password_field = FieldRef(password_element);
@@ -876,7 +876,7 @@ void PasswordAutofillAgent::FillPasswordSuggestionById(
     FieldRendererId password_element_id,
     const std::u16string& username,
     const std::u16string& password) {
-  if (!focused_element()) {
+  if (!last_queried_element()) {
     return;
   }
   FillUsernameAndPasswordElements(
@@ -893,17 +893,17 @@ void PasswordAutofillAgent::FillUsernameAndPasswordElements(
     const std::u16string& username,
     const std::u16string& password) {
   ClearPreviewedForm();
-  WebFormControlElement focused_field = focused_element();
+  WebFormControlElement focused_element = last_queried_element();
   // TODO(crbug.com/341995827): Remove dependency on `focused_element`. Username
   // filling condition could be made similar to the password one and selection
   // range setting could be skipped.
-  CHECK(focused_field);
+  CHECK(focused_element);
   // Call OnFieldAutofilled before WebInputElement::SetAutofillState which may
   // cause frame closing.
   if (password_element && password_generation_agent_) {
     password_generation_agent_->OnFieldAutofilled(password_element);
   }
-  bool is_password_field_focused = password_element == focused_field;
+  bool is_password_field_focused = password_element == focused_element;
   if (IsUsernameAmendable(username_element, is_password_field_focused) &&
       !(username.empty() && is_password_field_focused) &&
       username_element.Value().Utf16() != username) {
@@ -926,24 +926,24 @@ void PasswordAutofillAgent::FillUsernameAndPasswordElements(
       field_renderer_id_to_submit_ = GetFieldRendererId(password_element);
     }
   }
-  auto length = base::checked_cast<unsigned>(focused_field.Value().length());
-  focused_field.SetSelectionRange(length, length);
+  auto length = base::checked_cast<unsigned>(focused_element.Value().length());
+  focused_element.SetSelectionRange(length, length);
 }
 
 void PasswordAutofillAgent::FillIntoFocusedField(
     bool is_password,
     const std::u16string& credential) {
-  auto focused_input_element = focused_element().DynamicTo<WebInputElement>();
-  if (!focused_input_element || focused_input_element.IsReadOnly()) {
+  auto focused_input = last_queried_element().DynamicTo<WebInputElement>();
+  if (!focused_input || focused_input.IsReadOnly()) {
     return;
   }
   if (!is_password) {
-    DoFillField(focused_input_element, credential);
+    DoFillField(focused_input, credential);
   }
-  if (focused_input_element.FormControlTypeForAutofill() != kInputPassword) {
+  if (focused_input.FormControlTypeForAutofill() != kInputPassword) {
     return;
   }
-  FillPasswordFieldAndSave(focused_input_element, credential);
+  FillPasswordFieldAndSave(focused_input, credential);
 }
 
 void PasswordAutofillAgent::PreviewField(FieldRendererId field_id,
@@ -1026,7 +1026,7 @@ void PasswordAutofillAgent::PreviewPasswordSuggestionById(
     FieldRendererId password_element_id,
     const std::u16string& username,
     const std::u16string& password) {
-  if (!focused_element()) {
+  if (!last_queried_element()) {
     return;
   }
   PreviewUsernameAndPasswordElements(
@@ -1042,13 +1042,13 @@ void PasswordAutofillAgent::PreviewUsernameAndPasswordElements(
     blink::WebInputElement password_element,
     const std::u16string& username,
     const std::u16string& password) {
-  WebFormControlElement focused_field = focused_element();
+  WebFormControlElement focused_element = last_queried_element();
   // TODO(crbug.com/341995827): Remove dependency on `focused_element` when
   // similar dependency is removed from
   // `PasswordAutofillAgent::FillUsernameAndPasswordElements`.
-  CHECK(focused_field);
+  CHECK(focused_element);
   if (IsUsernameAmendable(username_element,
-                          password_element == focused_field)) {
+                          password_element == focused_element)) {
     DoPreviewField(username_element, username, /*is_password=*/false);
   }
   if (password_element && IsElementEditable(password_element)) {
@@ -1063,10 +1063,6 @@ void PasswordAutofillAgent::ClearPreviewedForm() {
             .DynamicTo<WebInputElement>();
     if (!element) {
       continue;
-    }
-    if (preview_info.is_password &&
-        base::FeatureList::IsEnabled(blink::features::kPasswordStrongLabel)) {
-      element.SetShouldShowStrongPasswordLabel(false);
     }
     element.SetSuggestedValue(WebString());
     element.SetAutofillState(preview_info.autofill_state);
@@ -1605,8 +1601,8 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
     bool show_virtual_keyboard) {
   keyboard_replacing_surface_state_ = KeyboardReplacingSurfaceState::kWasShown;
 
-  auto focused_input_element = focused_element().DynamicTo<WebInputElement>();
-  if (!focused_input_element || focused_element().IsReadOnly()) {
+  auto focused_input = last_queried_element().DynamicTo<WebInputElement>();
+  if (!focused_input || focused_input.IsReadOnly()) {
     return;
   }
 
@@ -1619,7 +1615,7 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
     // in a flickering of the popup, due to showing the keyboard at the same
     // time.
     ShowSuggestions(
-        focused_input_element,
+        focused_input,
         autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked);
   }
 }

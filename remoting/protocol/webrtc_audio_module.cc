@@ -44,8 +44,7 @@ void WebrtcAudioModule::SetAudioTaskRunner(
 }
 
 int32_t WebrtcAudioModule::ActiveAudioLayer(AudioLayer* audio_layer) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::RegisterAudioCallback(
@@ -111,8 +110,7 @@ int32_t WebrtcAudioModule::SetRecordingDevice(WindowsDeviceType device) {
 }
 
 int32_t WebrtcAudioModule::PlayoutIsAvailable(bool* available) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::InitPlayout() {
@@ -125,8 +123,7 @@ bool WebrtcAudioModule::PlayoutIsInitialized() const {
 }
 
 int32_t WebrtcAudioModule::RecordingIsAvailable(bool* available) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::InitRecording() {
@@ -193,83 +190,67 @@ bool WebrtcAudioModule::MicrophoneIsInitialized() const {
 }
 
 int32_t WebrtcAudioModule::SpeakerVolumeIsAvailable(bool* available) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::SetSpeakerVolume(uint32_t volume) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::SpeakerVolume(uint32_t* volume) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::MaxSpeakerVolume(uint32_t* max_volume) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::MinSpeakerVolume(uint32_t* min_volume) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::MicrophoneVolumeIsAvailable(bool* available) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::SetMicrophoneVolume(uint32_t volume) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::MicrophoneVolume(uint32_t* volume) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::MaxMicrophoneVolume(uint32_t* max_volume) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::MinMicrophoneVolume(uint32_t* min_volume) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::SpeakerMuteIsAvailable(bool* available) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::SetSpeakerMute(bool enable) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::SpeakerMute(bool* enabled) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::MicrophoneMuteIsAvailable(bool* available) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::SetMicrophoneMute(bool enable) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::MicrophoneMute(bool* enabled) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::StereoPlayoutIsAvailable(bool* available) const {
@@ -283,8 +264,7 @@ int32_t WebrtcAudioModule::SetStereoPlayout(bool enable) {
 }
 
 int32_t WebrtcAudioModule::StereoPlayout(bool* enabled) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::StereoRecordingIsAvailable(bool* available) const {
@@ -297,8 +277,7 @@ int32_t WebrtcAudioModule::SetStereoRecording(bool enable) {
 }
 
 int32_t WebrtcAudioModule::StereoRecording(bool* enabled) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::PlayoutDelay(uint16_t* delay_ms) const {
@@ -319,31 +298,26 @@ bool WebrtcAudioModule::BuiltInNSIsAvailable() const {
 }
 
 int32_t WebrtcAudioModule::EnableBuiltInAEC(bool enable) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::EnableBuiltInAGC(bool enable) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int32_t WebrtcAudioModule::EnableBuiltInNS(bool enable) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 #if defined(WEBRTC_IOS)
 int WebrtcAudioModule::GetPlayoutAudioParameters(
     webrtc::AudioParameters* params) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 int WebrtcAudioModule::GetRecordAudioParameters(
     webrtc::AudioParameters* params) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 #endif  // WEBRTC_IOS
 

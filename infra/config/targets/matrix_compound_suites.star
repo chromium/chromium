@@ -176,16 +176,10 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "android_15_emulator_gtests",
+    name = "android_15_emulator_fyi_gtests",
     basic_suites = {
-        "android_emulator_specific_chrome_public_tests": None,
-        "android_trichrome_smoke_tests": None,
-        "android_smoke_tests": None,
-        "android_specific_chromium_gtests": None,  # Already includes gl_gtests.
-        "chromium_gtests": None,
-        "chromium_gtests_for_devices_with_graphical_output": None,
-        "linux_flavor_specific_chromium_gtests": None,
-        "system_webview_shell_instrumentation_tests": None,  # Not an experimental test
+        "android_browsertests_fyi": None,
+        "android_content_browsertests_fyi": None,
         "webview_trichrome_64_cts_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
@@ -193,6 +187,20 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "webview_trichrome_64_cts_tests_no_field_trial_suite": None,
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "android_15_emulator_gtests",
+    basic_suites = {
+        "android_specific_chromium_gtests": None,  # Already includes gl_gtests.
+        "chromium_gtests": None,
+        "android_emulator_specific_chrome_public_tests": None,
+        "android_trichrome_smoke_tests": None,
+        "android_smoke_tests": None,
+        "chromium_gtests_for_devices_with_graphical_output": None,
+        "linux_flavor_specific_chromium_gtests": None,
+        "system_webview_shell_instrumentation_tests": None,  # Not an experimental test
         "webview_ui_instrumentation_tests": None,
     },
 )
@@ -614,12 +622,12 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_jacuzzi_preuprev_tests",
+    name = "chromeos_ctp_preuprev_tests_slow_boards",
     basic_suites = {
-        "chromeos_chrome_cq_medium_tast_tests": targets.legacy_matrix_config(
+        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-10",
+                "shards-50",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -718,6 +726,28 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "gpu_fyi_chromeos_brya_telemetry_tests",
+    basic_suites = {
+        "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
+            variants = [
+                "CROS_BRYA_RELEASE_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "gpu_fyi_chromeos_corsola_telemetry_tests",
+    basic_suites = {
+        "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
+            variants = [
+                "CROS_CORSOLA_RELEASE_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "gpu_fyi_chromeos_release_gtests_volteer_skylab",
     basic_suites = {
         # gpu_angle_unit_gtests and gpu_desktop_specific_gtests should also be
@@ -789,6 +819,17 @@ targets.legacy_matrix_compound_suite(
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "gpu_fyi_chromeos_skyrim_telemetry_tests",
+    basic_suites = {
+        "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
+            variants = [
+                "CROS_SKYRIM_RELEASE_LKGM",
             ],
         ),
     },
@@ -1035,9 +1076,8 @@ targets.legacy_matrix_compound_suite(
     name = "ios_clang_tot_device_tests",
     basic_suites = {
         "clang_tot_gtests": targets.legacy_matrix_config(
-            # TODO(b/337049057): Change to iOS16+ devices once ready.
             variants = [
-                "IPHONE_7_15_4_1",
+                "IPHONE_15_PRO_18_0",
             ],
         ),
     },
@@ -1328,20 +1368,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "ios_webrtc_fyi_tests",
-    basic_suites = {
-        "ios_remoting_fyi_unittests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPHONE_15_18_0",
-                "SIM_IPAD_AIR_6TH_GEN_18_0",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "linux_optional_gpu_tests_rel_gpu_telemetry_tests",
     basic_suites = {
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
@@ -1586,18 +1612,6 @@ targets.legacy_matrix_compound_suite(
     name = "webview_trichrome_10_cts_tests_gtest",
     basic_suites = {
         "webview_trichrome_cts_tests_suite": targets.legacy_matrix_config(
-            variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "webview_trichrome_64_cts_hostside_gtests",
-    basic_suites = {
-        "webview_trichrome_64_cts_hostside_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",

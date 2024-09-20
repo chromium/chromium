@@ -107,6 +107,11 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
       focus_mode_util::GetCongratulatoryText(congratulatory_index)));
   title_label->SetMaximumWidthSingleLine(kTitleMaximumWidth);
 
+  // Show the tooltip for the truncated title.
+  if (title_label->IsDisplayTextTruncated()) {
+    title_label->SetTooltipText(title_label->GetText());
+  }
+
   emoji_label_ = title_and_emoji_box->AddChildView(CreateTextLabel(
       gfx::ALIGN_LEFT, TypographyToken::kCrosHeadline1,
       cros_tokens::kCrosSysOnSurface,

@@ -14,9 +14,9 @@ using ::ash::cros_healthd::mojom::CrashEventInfo;
 namespace reporting {
 
 constexpr base::FilePath::StringPieceType kChromeReportedLocalIdSaveFilePath =
-    "/var/lib/reporting/crash_events/CRASH_REPORTED_LOCAL_IDS";
+    "/var/lib/reporting/crash_events/CHROME_CRASH_REPORTED_LOCAL_IDS";
 constexpr base::FilePath::StringPieceType kChromeUploadedCrashInfoSaveFilePath =
-    "/var/lib/reporting/crash_events/CRASH_UPLOADED_CRASH_INFO";
+    "/var/lib/reporting/crash_events/CHROME_CRASH_UPLOADED_CRASH_INFO";
 
 ChromeFatalCrashEventsObserver::ChromeFatalCrashEventsObserver(
     const base::FilePath& reported_local_id_save_file_path,
@@ -29,7 +29,7 @@ ChromeFatalCrashEventsObserver::ChromeFatalCrashEventsObserver(
                                           uploaded_crash_info_io_task_runner) {}
 
 // static
-std::unique_ptr<FatalCrashEventsObserver>
+std::unique_ptr<ChromeFatalCrashEventsObserver>
 ChromeFatalCrashEventsObserver::Create() {
   return base::WrapUnique(new ChromeFatalCrashEventsObserver(
       base::FilePath(kChromeReportedLocalIdSaveFilePath),
@@ -54,8 +54,6 @@ ChromeFatalCrashEventsObserver::GetFatalCrashTelemetryCrashType(
 
 const base::flat_set<CrashEventInfo::CrashType>&
 ChromeFatalCrashEventsObserver::GetAllowedCrashTypes() const {
-  // This may appear to be overkilling for only 2 crash types, but it provides
-  // more robustness for future crash type additions.
   static const base::NoDestructor<base::flat_set<CrashEventInfo::CrashType>>
       allowed_crash_types({CrashEventInfo::CrashType::kChrome});
   return *allowed_crash_types;

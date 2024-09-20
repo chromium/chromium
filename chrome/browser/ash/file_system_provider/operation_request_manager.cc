@@ -70,9 +70,8 @@ bool OperationRequestManager::IsInteractingWithUser() const {
 
   // This loop is heavy, but it's not called often. Only when a request timeouts
   // which is at most once every 10 seconds per request (except tests).
-  const extensions::WindowControllerList::ControllerList& windows =
-      extensions::WindowControllerList::GetInstance()->windows();
-  for (extensions::WindowController* window : windows) {
+  for (extensions::WindowController* window :
+       *extensions::WindowControllerList::GetInstance()) {
     const Browser* const browser = window->GetBrowser();
     if (!browser)
       continue;

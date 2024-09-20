@@ -9,16 +9,8 @@ package org.chromium.components.safe_browsing;
  * SafeBrowsingApiBridge}.
  */
 public interface SafetyNetApiHandler {
-    /** Observer to be notified when the SafetyNetApiHandler determines the verdict for a url. */
+    /** Observer to be notified when the SafetyNetApiHandler determines the verify apps result. */
     interface Observer {
-        // TODO(crbug.com/40935425): Remove this function once internal reference is removed.
-        // Note: |checkDelta| is the time the remote call took in microseconds.
-        default void onUrlCheckDone(
-                long callbackId,
-                @SafeBrowsingResult int resultStatus,
-                String metadata,
-                long checkDelta) {}
-
         void onVerifyAppsEnabledDone(long callbackId, @VerifyAppsResult int result);
     }
 
@@ -31,14 +23,6 @@ public interface SafetyNetApiHandler {
      * @return whether Safe Browsing is supported for this installation.
      */
     boolean init(Observer observer);
-
-    /**
-     * TODO(crbug.com/40935425): Remove this function once internal reference is removed.
-     *
-     * <p>Start a URI-lookup to determine if it matches one of the specified threats. This is called
-     * on every URL resource Chrome loads, on the same sequence as |init|.
-     */
-    default void startUriLookup(long callbackId, String uri, int[] threatsOfInterest) {}
 
     /**
      * Start a check to determine if a uri is in an allowlist. If true, password protection service

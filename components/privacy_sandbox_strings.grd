@@ -325,6 +325,12 @@
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_ON" desc="" formatter_data="android_java" translateable="false">
         Digital fingerprinting limited
       </message>
+      <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_LIMITED" desc="" translateable="false">
+        Third-party cookies are limited
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited." translateable="false">
+        Third-party cookies limited
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
         App not working?
       </message>
@@ -503,6 +509,35 @@
           </message>
         </else>
       </if>
+      <!--Privacy Sandbox Privacy Policy-->
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_PAGE_TITLE" desc="Title for Google's Privacy Policy page." translateable="false" formatter_data="android_java">
+        Google Privacy Policy
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON" desc="Content description for the Privacy Policy page back button." translateable="false" formatter_data="android_java">
+        Back
+      </message>
+
+      <!-- Auto-verify (Anti-abuse) Page -->
+      <!-- TODO(b:330892594): Make auto-verify string updates translatable -->
+      <message name="IDS_SETTINGS_AUTO_VERIFY_DESCRIPTION" desc="" translateable="false">
+        Sites you visit (and their fraud prevention partners) can help prevent fraud by sharing small amounts of info, for example to verify you aren't a bot or to validate transactions
+      </message>
+      <message name="IDS_SETTINGS_AUTO_VERIFY_WHEN_ON_SECTION_ONE" desc="" translateable="false">
+        As you keep browsing, sites can check with Chrome and verify with a previous site you visited that you're likely a real person
+      </message>
+      <message name="IDS_SETTINGS_AUTO_VERIFY_WHEN_ON_SECTION_TWO" desc="" translateable="false">
+        Browsing is faster because a site is less likely to ask you to verify you're a real person
+      </message>
+      <message name="IDS_SETTINGS_AUTO_VERIFY_THINGS_TO_CONSIDER" desc="" translateable="false">
+        This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification
+      </message>
+      <message name="IDS_SETTINGS_AUTO_VERIFY_THINGS_TO_CONSIDER_LEARN_MORE" desc="" translateable="false">
+        Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>how auto-verify works<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+      </message>
+      <!-- TODO(b:330892146): Update screenreader text after confirming with content team -->
+      <message name="IDS_SETTINGS_AUTO_VERIFY_THINGS_TO_CONSIDER_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the things to consider section of the auto-verify settings." translateable="false">
+        Learn more about how auto-verify works
+      </message>
     </messages>
   </release>
 </grit>

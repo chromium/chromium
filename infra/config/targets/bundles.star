@@ -18,6 +18,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_12l_rel_cq_gtests",
+    targets = [
+        "tablet_sensitive_chrome_public_test_apk",
+    ],
+)
+
+targets.bundle(
     name = "android_ar_gtests",
     targets = [
         "monochrome_public_test_ar_apk",
@@ -26,14 +33,52 @@ targets.bundle(
     ],
 )
 
+# Android desktop tests that run on a Linux host.
+targets.bundle(
+    name = "android_desktop_junit_tests",
+    targets = [
+        "chrome_junit_tests",
+    ],
+    mixins = [
+        "has_native_resultdb_integration",
+        "junit-swarming-emulator",
+        "linux-jammy",
+        "x86-64",
+    ],
+)
+
+# Android desktop tests that run on AVDs or devices. Specific emulator or
+# device mixins should be added where this is used.
 targets.bundle(
     name = "android_desktop_tests",
     targets = [
-        "chrome_junit_tests",
+        "android_browsertests",
         "chrome_public_test_apk",
         "chrome_public_unit_test_apk",
-        "android_browsertests",
+        "extensions_unittests",
     ],
+    mixins = [
+        "has_native_resultdb_integration",
+        "linux-jammy",
+        "x86-64",
+    ],
+    per_test_modifications = {
+        "chrome_public_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 15,
+            ),
+        ),
+        "chrome_public_unit_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "android_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
@@ -98,6 +143,33 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_rel_isolated_scripts",
+    targets = [
+        "private_code_failure_test",
+        "android_blink_wpt_tests",
+        "webview_blink_wpt_tests",
+    ],
+    per_test_modifications = {
+        "android_blink_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+            # TODO(crbug.com/40279492): Remove experimental status once this
+            # suite is stable on CQ and gardened CI.
+            experiment_percentage = 100,
+        ),
+        "webview_blink_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+            # TODO(crbug.com/40279492): Remove experimental status once this
+            # suite is stable on CQ and gardened CI.
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.bundle(
     name = "bfcache_android_gtests",
     targets = [
         "bf_cache_android_browsertests",
@@ -137,6 +209,42 @@ targets.bundle(
         "x86-64",
         "linux-jammy",
         "junit-swarming-emulator",
+    ],
+)
+
+targets.bundle(
+    name = "cast_receiver_gtests",
+    additional_compile_targets = [
+        "cast_shell",
+        "cast_test_lists",
+        "core_runtime_simple",
+        "core_runtime_starboard",
+    ],
+    targets = [
+        "cast_audio_backend_unittests",
+        "cast_base_unittests",
+        "cast_cast_core_unittests",
+        "cast_crash_unittests",
+        "cast_display_settings_unittests",
+        "cast_graphics_unittests",
+        "cast_media_unittests",
+        "cast_shell_browsertests",
+        "cast_shell_unittests",
+        "cast_unittests",
+    ],
+    mixins = [
+        "linux-jammy",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_linux_cast_receiver_gtests",
+    targets = [
+        "cast_receiver_gtests",
+        "linux_flavor_specific_chromium_gtests",
+    ],
+    mixins = [
+        "linux-jammy",
     ],
 )
 
@@ -227,12 +335,10 @@ targets.bundle(
                 ),
             ),
             remove_mixins = [
-                "bullhead",
+                "chromium_nexus_5x_oreo",
+                "chromium_pixel_2_pie",
                 "marshmallow",
-                "oreo_fleet",
                 "oreo_mr1_fleet",
-                "pie_fleet",
-                "walleye",
             ],
         ),
     },
@@ -419,5 +525,16 @@ targets.bundle(
         "webview_cts_tests_gtest_no_field_trial",
         "webview_ui_instrumentation_tests",
         "webview_ui_instrumentation_tests_no_field_trial",
+    ],
+)
+
+targets.bundle(
+    name = "webview_trichrome_64_cts_hostside_gtests",
+    targets = [
+        "webview_trichrome_64_cts_hostside_tests",
+    ],
+    variants = [
+        "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+        "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
     ],
 )

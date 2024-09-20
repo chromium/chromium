@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
+#include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "url/gurl.h"
@@ -47,7 +48,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
     ~SystemWebAppLaunchHelper();
 
     void LaunchBocaSWA();
-    void AddTab(GURL url);
+    void AddTab(GURL url, OnTaskBlocklist::RestrictionLevel restriction_level);
 
    private:
     // Callback triggered when the Boca SWA is launched. Normally at the onset

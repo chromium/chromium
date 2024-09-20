@@ -196,10 +196,6 @@ const AtomicString& InputType::FormControlTypeAsString() const {
   return TypeToString(type_);
 }
 
-bool InputType::IsTextField() const {
-  return false;
-}
-
 bool InputType::IsAutoDirectionalityFormAssociated() const {
   return false;
 }
@@ -903,8 +899,9 @@ void InputType::WarnIfValueIsInvalidAndElementIsVisible(
     const String& value) const {
   // Don't warn if the value is set in Modernizr.
   const ComputedStyle* style = GetElement().GetComputedStyle();
-  if (style && style->Visibility() != EVisibility::kHidden)
+  if (style && style->UsedVisibility() != EVisibility::kHidden) {
     WarnIfValueIsInvalid(value);
+  }
 }
 
 void InputType::WarnIfValueIsInvalid(const String&) const {}
@@ -1277,8 +1274,9 @@ void InputType::StepUpFromLayoutObject(int n) {
 
 void InputType::CountUsageIfVisible(WebFeature feature) const {
   if (const ComputedStyle* style = GetElement().GetComputedStyle()) {
-    if (style->Visibility() != EVisibility::kHidden)
+    if (style->UsedVisibility() != EVisibility::kHidden) {
       UseCounter::Count(GetElement().GetDocument(), feature);
+    }
   }
 }
 

@@ -22,3 +22,12 @@ class DataSharingWebUIBrowserTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(DataSharingWebUIBrowserTest, ConversionUtils) {
   RunTest("data_sharing/mojom_conversion_utils_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(DataSharingWebUIBrowserTest, RunFlows) {
+  // Skip branded chrome that need to make server calls.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  GTEST_SKIP() << "N/A for Google Chrome Branding Build";
+#else
+  RunTest("data_sharing/data_sharing_test.js", "mocha.run()");
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}

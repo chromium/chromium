@@ -43,8 +43,7 @@ NigoriDataTypeProcessor::~NigoriDataTypeProcessor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void NigoriDataTypeProcessor::ConnectSync(
-    std::unique_ptr<CommitQueue> worker) {
+void NigoriDataTypeProcessor::ConnectSync(std::unique_ptr<CommitQueue> worker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Successfully connected Encryption Keys";
 

@@ -37,7 +37,6 @@ group("tests") {
     ":mojo_perftests",
     ":mojo_unittests",
     "//mojo/public/tools:mojo_python_unittests",
-    "//mojo/public/tools/bindings/tests:build_ts",
     "//third_party/ipcz/src:ipcz_tests",
   ]
 

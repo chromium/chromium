@@ -7,10 +7,8 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/signin/public/base/consent_level.h"
@@ -58,7 +56,7 @@ void AutofillSigninPromoTabHelper::Reset() {
 }
 
 void AutofillSigninPromoTabHelper::InitializeDataMoveAfterSignIn(
-    const password_manager::PasswordForm& password_form,
+    base::OnceCallback<void(content::WebContents*)> move_callback,
     signin_metrics::AccessPoint access_point,
     base::TimeDelta time_limit) {
   signin::IdentityManager* identity_manager =
@@ -72,7 +70,7 @@ void AutofillSigninPromoTabHelper::InitializeDataMoveAfterSignIn(
   // variable will help us determine whether we should reset the helper in
   // `OnErrorStateOfRefreshTokenUpdatedForAccount` or not.
   state_->needs_reauth_ = signin_util::IsSigninPending(identity_manager);
-  state_->password_form_ = password_form;
+  state_->move_callback_ = std::move(move_callback);
   state_->access_point_ = access_point;
   state_->time_limit_ = time_limit;
   state_->initialization_time_ = base::Time::Now();
@@ -88,7 +86,7 @@ void AutofillSigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   // Do nothing if there was not already an account with a refresh token error
-  // before. The password move will be initiated by `OnPrimaryAccountChanged`.
+  // before. The data move will be initiated by `OnPrimaryAccountChanged`.
   if (!state_->needs_reauth_) {
     return;
   }
@@ -97,14 +95,8 @@ void AutofillSigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
   // the move has been exceeded. This can happen for example if the user clicks
   // "Sign in" in the promo which opens a sign in tab and initializes this
   // helper, but the user does not complete the sign in. As they may forget that
-  // this sign in tab would move the password, we do nothing instead.
+  // this sign in tab would move the data, we do nothing instead.
   if (base::Time::Now() - state_->initialization_time_ > state_->time_limit_) {
-    Reset();
-    return;
-  }
-
-  // Return if there is no password to move.
-  if (!state_->password_form_.HasNonEmptyPasswordValue()) {
     Reset();
     return;
   }
@@ -133,24 +125,15 @@ void AutofillSigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
     Reset();
     return;
   }
-
-  // Initiate password move if requirements are met.
-  state_->move_helper_ =
-      std::make_unique<password_manager::MovePasswordToAccountStoreHelper>(
-          state_->password_form_,
-          ChromePasswordManagerClient::FromWebContents(web_contents_),
-          password_manager::metrics_util::MoveToAccountStoreTrigger::
-              kUserOptedInAfterSavingLocally,
-          // `base::Unretained(this)` is fine to use, because `this` owns the
-          // `MovePasswordToAccountStoreHelper`.
-          base::BindOnce(&AutofillSigninPromoTabHelper::Reset,
-                         base::Unretained(this)));
+  // Initiate data move if requirements are met.
+  std::move(state_->move_callback_).Run(web_contents_);
+  Reset();
 }
 
 void AutofillSigninPromoTabHelper::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   // The user changed their primary account while we were expecting them to
-  // reauthenticate. Abandon password move to avoid saving password to a wrong
+  // reauthenticate. Abandon data move to avoid saving data to a wrong
   // account.
   if (state_->needs_reauth_) {
     Reset();
@@ -161,14 +144,8 @@ void AutofillSigninPromoTabHelper::OnPrimaryAccountChanged(
   // the move has been exceeded. This can happen for example if the user clicks
   // "Sign in" in the promo which opens a sign in tab and initializes this
   // helper, but the user does not complete the sign in. As they may forget that
-  // this sign in tab would move the password, we do nothing instead.
+  // this sign in tab would move the data, we do nothing instead.
   if (base::Time::Now() - state_->initialization_time_ > state_->time_limit_) {
-    Reset();
-    return;
-  }
-
-  // Return if there is no password to move.
-  if (!state_->password_form_.HasNonEmptyPasswordValue()) {
     Reset();
     return;
   }
@@ -189,17 +166,9 @@ void AutofillSigninPromoTabHelper::OnPrimaryAccountChanged(
     return;
   }
 
-  // Initiate password move if requirements are met.
-  state_->move_helper_ =
-      std::make_unique<password_manager::MovePasswordToAccountStoreHelper>(
-          state_->password_form_,
-          ChromePasswordManagerClient::FromWebContents(web_contents_),
-          password_manager::metrics_util::MoveToAccountStoreTrigger::
-              kUserOptedInAfterSavingLocally,
-          // `base::Unretained(this)` is fine to use, because `this` owns the
-          // `MovePasswordToAccountStoreHelper`.
-          base::BindOnce(&AutofillSigninPromoTabHelper::Reset,
-                         base::Unretained(this)));
+  // Initiate data move if requirements are met.
+  std::move(state_->move_callback_).Run(web_contents_);
+  Reset();
 }
 
 void AutofillSigninPromoTabHelper::OnIdentityManagerShutdown(

@@ -20,14 +20,12 @@ namespace ios {
 // services with browser states.
 class AccountInvestigatorFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the instance of AccountInvestigator associated with this
-  // browser state (creating one if none exists). Returns null if this browser
-  // state cannot have an AccountInvestigatorFactory (for example, if it is
-  // incognito).
-  static AccountInvestigator* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static AccountInvestigator* GetForBrowserState(ProfileIOS* profile);
 
-  // Returns an instance of the factory singleton.
+  // Returns null if this profile cannot have an AccountInvestigatorFactory (for
+  // example, if it is incognito).
+  static AccountInvestigator* GetForProfile(ProfileIOS* profile);
   static AccountInvestigatorFactory* GetInstance();
 
   AccountInvestigatorFactory(const AccountInvestigatorFactory&) = delete;

@@ -175,7 +175,6 @@ void AddThreatProtectionPermission(const char* title,
   info->Append(std::move(value));
 }
 
-
 }  // namespace
 
 ManagementUIHandler::ManagementUIHandler(Profile* profile) {
@@ -349,6 +348,13 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
                GetReportingTypeValue(report_definition.reporting_type));
       report_sources->Append(std::move(data));
     }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    auto device_signal_data = GetDeviceSignalGrantedMessage();
+    if (!device_signal_data.empty()) {
+      report_sources->Append(std::move(device_signal_data));
+    }
+#endif
   } else {
     if (cloud_reporting_policy_enabled ||
         !cloud_profile_reporting_policy_enabled) {
@@ -364,19 +370,17 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
       data.Set("messageId", message);
       report_sources->Append(std::move(data));
     }
-  }
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // Insert the device signals consent disclosure at the end of browser
-  // reporting section.
-  auto* user_permission_service = GetUserPermissionService();
-  if (user_permission_service && user_permission_service->CanCollectSignals() ==
-                                     device_signals::UserPermission::kGranted) {
-    base::Value::Dict data;
-    data.Set("messageId", kManagementDeviceSignalsDisclosure);
-    data.Set("reportingType", GetReportingTypeValue(ReportingType::kDevice));
-    report_sources->Append(std::move(data));
+    auto device_signal_data = GetDeviceSignalGrantedMessage();
+    if (!device_signal_data.empty()) {
+      report_sources->Append(std::move(device_signal_data));
+    }
+#endif
+    base::Value::Dict learn_more_data;
+    learn_more_data.Set("messageId", kProfileReportingLearnMore);
+    report_sources->Append(std::move(learn_more_data));
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 base::Value::Dict ManagementUIHandler::GetContextualManagedData(
@@ -457,6 +461,20 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
       enterprise_connectors::REAL_TIME_CHECK_DISABLED) {
     AddThreatProtectionPermission(kManagementOnPageVisitedEvent,
                                   kManagementOnPageVisitedVisibleData, &info);
+  }
+
+  if (connectors_service
+          ->GetReportingSettings(
+              enterprise_connectors::ReportingConnector::SECURITY_EVENT)
+          .has_value() &&
+      connectors_service
+              ->GetReportingSettings(
+                  enterprise_connectors::ReportingConnector::SECURITY_EVENT)
+              ->enabled_opt_in_events.count(
+                  enterprise_connectors::kExtensionTelemetryEvent) > 0) {
+    AddThreatProtectionPermission(kManagementOnExtensionTelemetryEvent,
+                                  kManagementOnExtensionTelemetryVisibleData,
+                                  &info);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -548,6 +566,20 @@ device_signals::UserPermissionService*
 ManagementUIHandler::GetUserPermissionService() {
   return enterprise_signals::UserPermissionServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui()));
+}
+
+base::Value::Dict ManagementUIHandler::GetDeviceSignalGrantedMessage() {
+  // Insert the device signals consent disclosure at the end of browser
+  // reporting section.
+  auto* user_permission_service = GetUserPermissionService();
+  if (user_permission_service && user_permission_service->CanCollectSignals() ==
+                                     device_signals::UserPermission::kGranted) {
+    base::Value::Dict data;
+    data.Set("messageId", kManagementDeviceSignalsDisclosure);
+    data.Set("reportingType", GetReportingTypeValue(ReportingType::kDevice));
+    return data;
+  }
+  return base::Value::Dict();
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

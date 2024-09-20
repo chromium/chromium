@@ -420,6 +420,12 @@ namespace autofillPrivate {
     // Returns the list of user annotations entries.
     static void getUserAnnotationsEntries(
         GetUserAnnotationsEntriesCallback callback);
+
+    // Deletes the user annotations entry by its id.
+    static void deleteUserAnnotationsEntry(long entryId);
+
+    // Deletes all user annotations entries.
+    static void deleteAllUserAnnotationsEntries();
   };
 
   interface Events {

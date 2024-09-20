@@ -14,14 +14,13 @@ namespace storage {
 struct BucketLocator;
 }  // namespace storage
 
-namespace content {
-namespace indexed_db {
+namespace content::indexed_db {
 constexpr static const char* kBackingStoreActionUmaName =
     "WebCore.IndexedDB.BackingStore.Action";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum IndexedDBBackingStoreErrorSource {
+enum BackingStoreErrorSource {
   // 0 - 2 are no longer used.
   FIND_KEY_IN_INDEX = 3,
   GET_IDBDATABASE_METADATA = 4,
@@ -58,7 +57,7 @@ enum IndexedDBBackingStoreErrorSource {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Commented out values are deprecated.
-enum IndexedDBBackingStoreOpenResult {
+enum BackingStoreOpenResult {
   // INDEXED_DB_BACKING_STORE_OPEN_MEMORY_SUCCESS = 0,
   INDEXED_DB_BACKING_STORE_OPEN_SUCCESS = 1,
   INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY = 2,
@@ -91,11 +90,10 @@ enum class IndexedDBAction {
   kMaxValue = kDatabaseDeleteAttempt,
 };
 
-void ReportOpenStatus(IndexedDBBackingStoreOpenResult result,
+void ReportOpenStatus(BackingStoreOpenResult result,
                       const storage::BucketLocator& bucket_locator);
 
-void ReportInternalError(const char* type,
-                         IndexedDBBackingStoreErrorSource location);
+void ReportInternalError(const char* type, BackingStoreErrorSource location);
 
 void ReportLevelDBError(const std::string& histogram_name,
                         const leveldb::Status& s);
@@ -115,7 +113,6 @@ void ReportLevelDBError(const std::string& histogram_name,
   REPORT_ERROR("Consistency", location)
 #define INTERNAL_WRITE_ERROR(location) REPORT_ERROR("Write", location)
 
-}  // namespace indexed_db
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_REPORTING_H_

@@ -39,8 +39,7 @@ std::string StatusToString(AccountMapping::MappingStatus status) {
     case AccountMapping::REMOVING:
       return kStatusRemoving;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 bool StringToStatus(const std::string& status_str,

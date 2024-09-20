@@ -93,12 +93,10 @@ class PrintSpoolerInstance;
 class PrivacyItemsHost;
 class PrivacyItemsInstance;
 class ProcessInstance;
-class PropertyInstance;
 class ScreenCaptureHost;
 class ScreenCaptureInstance;
 class SharesheetHost;
 class SharesheetInstance;
-class StorageManagerInstance;
 class SystemStateHost;
 class SystemStateInstance;
 class SystemUiInstance;
@@ -303,7 +301,6 @@ class ArcBridgeService {
     return &privacy_items_;
   }
   ConnectionHolder<mojom::ProcessInstance>* process() { return &process_; }
-  ConnectionHolder<mojom::PropertyInstance>* property() { return &property_; }
   ConnectionHolder<mojom::ScreenCaptureInstance, mojom::ScreenCaptureHost>*
   screen_capture() {
     return &screen_capture_;
@@ -311,10 +308,6 @@ class ArcBridgeService {
   ConnectionHolder<mojom::SharesheetInstance, mojom::SharesheetHost>*
   sharesheet() {
     return &sharesheet_;
-  }
-
-  ConnectionHolder<mojom::StorageManagerInstance>* storage_manager() {
-    return &storage_manager_;
   }
   ConnectionHolder<mojom::SystemStateInstance, mojom::SystemStateHost>*
   system_state() {
@@ -410,12 +403,10 @@ class ArcBridgeService {
   ConnectionHolder<mojom::PrivacyItemsInstance, mojom::PrivacyItemsHost>
       privacy_items_;
   ConnectionHolder<mojom::ProcessInstance> process_;
-  ConnectionHolder<mojom::PropertyInstance> property_;
   ConnectionHolder<mojom::ScreenCaptureInstance, mojom::ScreenCaptureHost>
       screen_capture_;
   ConnectionHolder<mojom::SharesheetInstance, mojom::SharesheetHost>
       sharesheet_;
-  ConnectionHolder<mojom::StorageManagerInstance> storage_manager_;
   ConnectionHolder<mojom::SystemStateInstance, mojom::SystemStateHost>
       system_state_;
   ConnectionHolder<mojom::SystemUiInstance> system_ui_;

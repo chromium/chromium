@@ -112,11 +112,9 @@ void InspectDOMHandler::SetLoggingEnabled(bool enabled) {
 
   logging_enabled_ = enabled;
 
-  web::BrowserState* browser_state = web_ui()->GetWebState()->GetBrowserState();
-
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   JavaScriptConsoleFeature* feature =
-      JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
-          browser_state);
+      JavaScriptConsoleFeatureFactory::GetForProfile(profile);
 
   feature->SetDelegate(enabled ? this : nullptr);
 }
@@ -167,7 +165,7 @@ InspectUI::InspectUI(web::WebUIIOS* web_ui, const std::string& host)
 
   web_ui->AddMessageHandler(std::make_unique<InspectDOMHandler>());
 
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateInspectUIHTMLSource());
 }
 

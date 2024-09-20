@@ -63,7 +63,16 @@ class TestSensorClient : public mojom::SensorClient {
       return;
     }
     if (on_reading_changed_callback_) {
-      std::move(on_reading_changed_callback_).Run(reading_data_.als.value);
+      switch (type_) {
+        case SensorType::AMBIENT_LIGHT:
+          std::move(on_reading_changed_callback_).Run(reading_data_.als.value);
+          break;
+        case SensorType::ACCELEROMETER:
+          std::move(on_reading_changed_callback_).Run(reading_data_.accel.x);
+          break;
+        default:
+          NOTREACHED_NORETURN() << "Unsupported sensor type in test " << type_;
+      }
     }
   }
   void RaiseError() override {
@@ -198,7 +207,16 @@ class GenericSensorServiceTest : public DeviceServiceTestBase {
     // SensorReading is a union, so we can always use reading.als here
     // regardless of |type|.
     SensorReading reading;
-    reading.als.value = single_value;
+    switch (type) {
+      case SensorType::AMBIENT_LIGHT:
+        reading.als.value = single_value;
+        break;
+      case SensorType::ACCELEROMETER:
+        reading.accel.x = single_value;
+        break;
+      default:
+        NOTREACHED_NORETURN() << "Unsupported sensor type in test " << type;
+    }
 
     base::test::TestFuture<mojom::UpdateVirtualSensorResult> future;
     sensor_provider_->UpdateVirtualSensor(type, reading, future.GetCallback());
@@ -223,13 +241,13 @@ class GenericSensorServiceTest : public DeviceServiceTestBase {
 
 // Requests the SensorProvider to create a sensor.
 TEST_F(GenericSensorServiceTest, GetSensorTest) {
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PROXIMITY),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
 
-  auto client = std::make_unique<TestSensorClient>(SensorType::PROXIMITY);
+  auto client = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   base::RunLoop run_loop;
   sensor_provider_->GetSensor(
-      SensorType::PROXIMITY,
+      SensorType::ACCELEROMETER,
       base::BindOnce(&TestSensorClient::OnSensorCreated,
                      base::Unretained(client.get()), run_loop.QuitClosure()));
   run_loop.Run();
@@ -304,20 +322,20 @@ TEST_F(GenericSensorServiceTest, InvalidAddConfigurationTest) {
 // Tests adding more than one clients. Sensor should send notification to all
 // its clients.
 TEST_F(GenericSensorServiceTest, MultipleClientsTest) {
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
 
-  auto client_1 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
-  auto client_2 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client_1 = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
+  auto client_2 = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   {
     base::RunLoop run_loop;
     auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE,
+        SensorType::ACCELEROMETER,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_1.get()), barrier_closure));
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE,
+        SensorType::ACCELEROMETER,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_2.get()), barrier_closure));
     run_loop.Run();
@@ -327,7 +345,7 @@ TEST_F(GenericSensorServiceTest, MultipleClientsTest) {
       client_1->AddConfigurationSync(PlatformSensorConfiguration(48.0)));
 
   // Expect the SensorReadingChanged() will be called for both clients.
-  AddReadingWithFrequency(SensorType::PRESSURE);
+  AddReadingWithFrequency(SensorType::ACCELEROMETER);
   EXPECT_DOUBLE_EQ(client_1->WaitForReading(), 48.0);
   EXPECT_DOUBLE_EQ(client_2->WaitForReading(), 48.0);
 }
@@ -335,20 +353,20 @@ TEST_F(GenericSensorServiceTest, MultipleClientsTest) {
 // Tests adding more than one clients. If mojo connection is broken on one
 // client, other clients should not be affected.
 TEST_F(GenericSensorServiceTest, ClientMojoConnectionBrokenTest) {
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
 
-  auto client_1 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
-  auto client_2 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client_1 = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
+  auto client_2 = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   {
     base::RunLoop run_loop;
     auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE,
+        SensorType::ACCELEROMETER,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_1.get()), barrier_closure));
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE,
+        SensorType::ACCELEROMETER,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_2.get()), barrier_closure));
     run_loop.Run();
@@ -360,20 +378,20 @@ TEST_F(GenericSensorServiceTest, ClientMojoConnectionBrokenTest) {
   // Expect the SensorReadingChanged() will be called on client_2.
   EXPECT_TRUE(
       client_2->AddConfigurationSync(PlatformSensorConfiguration(48.0)));
-  AddReadingWithFrequency(SensorType::PRESSURE);
+  AddReadingWithFrequency(SensorType::ACCELEROMETER);
   EXPECT_DOUBLE_EQ(client_2->WaitForReading(), 48.0);
 }
 
 // Test add and remove configuration operations.
 TEST_F(GenericSensorServiceTest, AddAndRemoveConfigurationTest) {
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
 
-  auto client = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE,
+        SensorType::ACCELEROMETER,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client.get()), run_loop.QuitClosure()));
     run_loop.Run();
@@ -382,20 +400,20 @@ TEST_F(GenericSensorServiceTest, AddAndRemoveConfigurationTest) {
   // Expect the SensorReadingChanged() will be called. The frequency value
   // should be 10.0.
   EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(10.0)));
-  AddReadingWithFrequency(SensorType::PRESSURE);
+  AddReadingWithFrequency(SensorType::ACCELEROMETER);
   EXPECT_DOUBLE_EQ(client->WaitForReading(), 10.0);
 
   // Expect the SensorReadingChanged() will be called. The frequency value
   // should be 40.0.
   PlatformSensorConfiguration configuration_40(40.0);
   EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(40.0)));
-  AddReadingWithFrequency(SensorType::PRESSURE);
+  AddReadingWithFrequency(SensorType::ACCELEROMETER);
   EXPECT_DOUBLE_EQ(client->WaitForReading(), 40.0);
 
   // After |configuration_40| is removed, expect the SensorReadingChanged() will
   // be called. The frequency value should be 10.0.
   client->sensor()->RemoveConfiguration(configuration_40);
-  AddReadingWithFrequency(SensorType::PRESSURE);
+  AddReadingWithFrequency(SensorType::ACCELEROMETER);
   EXPECT_DOUBLE_EQ(client->WaitForReading(), 10.0);
 }
 
@@ -472,14 +490,14 @@ TEST_F(GenericSensorServiceTest, ErrorWhileSuspendedTest) {
 // Test suspend and resume. After resuming, client can add configuration and
 // be notified by SensorReadingChanged() as usual.
 TEST_F(GenericSensorServiceTest, SuspendThenResumeTest) {
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
 
-  auto client = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE,
+        SensorType::ACCELEROMETER,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client.get()), run_loop.QuitClosure()));
     run_loop.Run();
@@ -488,20 +506,20 @@ TEST_F(GenericSensorServiceTest, SuspendThenResumeTest) {
   // Expect the SensorReadingChanged() will be called. The frequency should
   // be 10.0 after AddConfiguration.
   EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(10.0)));
-  AddReadingWithFrequency(SensorType::PRESSURE);
+  AddReadingWithFrequency(SensorType::ACCELEROMETER);
   EXPECT_DOUBLE_EQ(client->WaitForReading(), 10.0);
 
   client->sensor()->Suspend();
   {
     const auto sensor_info =
-        GetVirtualSensorInformationSync(SensorType::PRESSURE);
+        GetVirtualSensorInformationSync(SensorType::ACCELEROMETER);
     ASSERT_TRUE(sensor_info);
     EXPECT_DOUBLE_EQ(sensor_info->sampling_frequency, 0.0);
   }
   client->sensor()->Resume();
   {
     const auto sensor_info =
-        GetVirtualSensorInformationSync(SensorType::PRESSURE);
+        GetVirtualSensorInformationSync(SensorType::ACCELEROMETER);
     ASSERT_TRUE(sensor_info);
     EXPECT_DOUBLE_EQ(sensor_info->sampling_frequency, 10.0);
   }
@@ -509,27 +527,27 @@ TEST_F(GenericSensorServiceTest, SuspendThenResumeTest) {
   // Expect the SensorReadingChanged() will be called. The frequency should
   // be 50.0 after new configuration is added.
   EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(50.0)));
-  AddReadingWithFrequency(SensorType::PRESSURE);
+  AddReadingWithFrequency(SensorType::ACCELEROMETER);
   EXPECT_DOUBLE_EQ(client->WaitForReading(), 50.0);
 }
 
 // Test suspend when there are more than one client. The suspended client won't
 // receive SensorReadingChanged() notification.
 TEST_F(GenericSensorServiceTest, MultipleClientsSuspendAndResumeTest) {
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
 
-  auto client_1 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
-  auto client_2 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client_1 = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
+  auto client_2 = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   {
     base::RunLoop run_loop;
     auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE,
+        SensorType::ACCELEROMETER,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_1.get()), barrier_closure));
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE,
+        SensorType::ACCELEROMETER,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_2.get()), barrier_closure));
     run_loop.Run();
@@ -541,32 +559,32 @@ TEST_F(GenericSensorServiceTest, MultipleClientsSuspendAndResumeTest) {
   // sensor_1 won't.
   EXPECT_TRUE(
       client_2->AddConfigurationSync(PlatformSensorConfiguration(46.0)));
-  AddReadingWithFrequency(SensorType::PRESSURE);
+  AddReadingWithFrequency(SensorType::ACCELEROMETER);
   EXPECT_DOUBLE_EQ(client_2->WaitForReading(), 46.0);
 }
 
 TEST_F(GenericSensorServiceTest, MojoReceiverDisconnectionTest) {
   EXPECT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 0U);
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
   EXPECT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 1U);
 
-  auto client = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE,
+        SensorType::ACCELEROMETER,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client.get()), run_loop.QuitClosure()));
     run_loop.Run();
   }
 
   EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(50.0)));
-  EXPECT_EQ(UpdateVirtualSensorSync(SensorType::PRESSURE, 42.0),
+  EXPECT_EQ(UpdateVirtualSensorSync(SensorType::ACCELEROMETER, 42.0),
             mojom::UpdateVirtualSensorResult::kSuccess);
 
   // Break the Mojo connection to SensorProviderImpl. The corresponding
-  // VirtualPlatformSensorProvider still has a connected pressure sensor, so it
+  // VirtualPlatformSensorProvider still has a connected accelerometer, so it
   // is not deleted.
   sensor_provider_.reset();
   task_environment_.RunUntilIdle();
@@ -583,23 +601,25 @@ TEST_F(GenericSensorServiceTest, MojoReceiverDisconnectionTest) {
       sensor_provider_.BindNewPipeAndPassReceiver());
 
   // Repeat the whole setup process.
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
   EXPECT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 2U);
 
-  auto new_client = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto new_client =
+      std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE, base::BindOnce(&TestSensorClient::OnSensorCreated,
-                                             base::Unretained(new_client.get()),
-                                             run_loop.QuitClosure()));
+        SensorType::ACCELEROMETER,
+        base::BindOnce(&TestSensorClient::OnSensorCreated,
+                       base::Unretained(new_client.get()),
+                       run_loop.QuitClosure()));
     run_loop.Run();
   }
 
   EXPECT_TRUE(
       new_client->AddConfigurationSync(PlatformSensorConfiguration(1.0)));
-  EXPECT_EQ(UpdateVirtualSensorSync(SensorType::PRESSURE, 2.0),
+  EXPECT_EQ(UpdateVirtualSensorSync(SensorType::ACCELEROMETER, 2.0),
             mojom::UpdateVirtualSensorResult::kSuccess);
 
   // Check that the existing VirtualPlatformSensorProvider and
@@ -636,7 +656,7 @@ TEST_F(GenericSensorServiceTest, MojoReceiverDisconnectionTest) {
 TEST_F(GenericSensorServiceTest,
        DifferentVirtualAndNonVirtualPlatformSensorsTest) {
   EXPECT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 0U);
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
   EXPECT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 1U);
 
@@ -657,25 +677,25 @@ TEST_F(GenericSensorServiceTest,
   auto* provider =
       sensor_provider_impl_->GetLastVirtualSensorProviderForTesting();
   ASSERT_TRUE(provider);
-  EXPECT_TRUE(provider->IsOverridingSensor(SensorType::PRESSURE));
+  EXPECT_TRUE(provider->IsOverridingSensor(SensorType::ACCELEROMETER));
   EXPECT_FALSE(provider->IsOverridingSensor(SensorType::AMBIENT_LIGHT));
 }
 
 TEST_F(GenericSensorServiceTest, SameVirtualAndNonVirtualPlatformSensorsTest) {
   EXPECT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 0U);
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
   EXPECT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 1U);
 
   // Create a sensor. Its type is the one we created a virtual sensor for
   // above, so the non-virtual code path (i.e. the FakePlatformSensorProvider
   // in this case) should not be called.
-  auto client = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   EXPECT_CALL(*fake_platform_sensor_provider_, CreateSensorInternal).Times(0);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE,
+        SensorType::ACCELEROMETER,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client.get()), run_loop.QuitClosure()));
     run_loop.Run();
@@ -686,7 +706,7 @@ TEST_F(GenericSensorServiceTest, SameVirtualAndNonVirtualPlatformSensorsTest) {
   auto* provider =
       sensor_provider_impl_->GetLastVirtualSensorProviderForTesting();
   ASSERT_TRUE(provider);
-  EXPECT_TRUE(provider->IsOverridingSensor(SensorType::PRESSURE));
+  EXPECT_TRUE(provider->IsOverridingSensor(SensorType::ACCELEROMETER));
 }
 
 TEST_F(GenericSensorServiceTest,
@@ -751,27 +771,29 @@ TEST_F(GenericSensorServiceTest, VirtualEulerAngleSensorCreationTest) {
 TEST_F(GenericSensorServiceTest, VirtualPlatformOverridesNonVirtualTest) {
   // Create a non-virtual sensor first.
   EXPECT_CALL(*fake_platform_sensor_provider_, CreateSensorInternal).Times(1);
-  auto client1 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client1 = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE, base::BindOnce(&TestSensorClient::OnSensorCreated,
-                                             base::Unretained(client1.get()),
-                                             run_loop.QuitClosure()));
+        SensorType::ACCELEROMETER,
+        base::BindOnce(&TestSensorClient::OnSensorCreated,
+                       base::Unretained(client1.get()),
+                       run_loop.QuitClosure()));
     run_loop.Run();
   }
 
   // Now start overriding sensors of this type.
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
   EXPECT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 1U);
-  auto client2 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client2 = std::make_unique<TestSensorClient>(SensorType::ACCELEROMETER);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
-        SensorType::PRESSURE, base::BindOnce(&TestSensorClient::OnSensorCreated,
-                                             base::Unretained(client2.get()),
-                                             run_loop.QuitClosure()));
+        SensorType::ACCELEROMETER,
+        base::BindOnce(&TestSensorClient::OnSensorCreated,
+                       base::Unretained(client2.get()),
+                       run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -782,7 +804,7 @@ TEST_F(GenericSensorServiceTest, VirtualPlatformOverridesNonVirtualTest) {
   EXPECT_TRUE(client2->AddConfigurationSync(PlatformSensorConfiguration(23.0)));
 
   // Updating virtual sensor does not change the non-virtual one.
-  EXPECT_EQ(UpdateVirtualSensorSync(SensorType::PRESSURE, 1.0),
+  EXPECT_EQ(UpdateVirtualSensorSync(SensorType::ACCELEROMETER, 1.0),
             mojom::UpdateVirtualSensorResult::kSuccess);
   EXPECT_DOUBLE_EQ(client2->WaitForReading(), 1.0);
   SensorReading reading;
@@ -793,15 +815,15 @@ TEST_F(GenericSensorServiceTest, VirtualPlatformOverridesNonVirtualTest) {
 }
 
 TEST_F(GenericSensorServiceTest, DoubleVirtualPlatformSensorCreationTest) {
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSuccess);
-  EXPECT_EQ(CreateVirtualSensorSync(SensorType::PRESSURE),
+  EXPECT_EQ(CreateVirtualSensorSync(SensorType::ACCELEROMETER),
             mojom::CreateVirtualSensorResult::kSensorTypeAlreadyOverridden);
 }
 
 TEST_F(GenericSensorServiceTest, GetNonOverriddenSensorTest) {
   base::test::TestFuture<mojom::GetVirtualSensorInformationResultPtr> future;
-  sensor_provider_->GetVirtualSensorInformation(SensorType::PRESSURE,
+  sensor_provider_->GetVirtualSensorInformation(SensorType::ACCELEROMETER,
                                                 future.GetCallback());
   EXPECT_EQ(future.Get()->which(),
             mojom::GetVirtualSensorInformationResult::Tag::kError);
@@ -810,7 +832,7 @@ TEST_F(GenericSensorServiceTest, GetNonOverriddenSensorTest) {
 }
 
 TEST_F(GenericSensorServiceTest, UpdateNonOverriddenSensorTest) {
-  EXPECT_EQ(UpdateVirtualSensorSync(SensorType::PRESSURE, 42.0),
+  EXPECT_EQ(UpdateVirtualSensorSync(SensorType::ACCELEROMETER, 42.0),
             mojom::UpdateVirtualSensorResult::kSensorTypeNotOverridden);
 }
 

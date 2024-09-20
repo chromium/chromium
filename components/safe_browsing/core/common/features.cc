@@ -63,10 +63,6 @@ BASE_FEATURE(kDangerousDownloadInterstitial,
              "DangerousDownloadInterstitial",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeepScanningPromptRemoval,
-             "SafeBrowsingDeepScanningPromptRemoval",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeepScanningCriteria,
              "SafeBrowsingDeepScanningCriteria",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -84,7 +80,7 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
 
 BASE_FEATURE(kDlpRegionalizedEndpoints,
              "DlpRegionalizedEndpoints",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadTailoredWarnings,
              "DownloadTailoredWarnings",
@@ -159,10 +155,6 @@ BASE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions,
              "SafeBrowsingExtensionTelemetryDisableOffstoreExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGooglePlayProtectPrompt,
-             "SafeBrowsingGooglePlayProtectPrompt",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGooglePlayProtectInApkTelemetry,
              "SafeBrowsingGooglePlayProtectInApkTelemetry",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -230,10 +222,6 @@ constexpr base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter{
     &kRedWarningSurvey, "RedWarningSurveyDidProceedFilter",
     /*default_value=*/"TRUE,FALSE"};
 
-BASE_FEATURE(kRippleForEnhancedProtection,
-             "RippleForEnhancedProtection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
              "SafeBrowsingAsyncRealTimeCheck",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -251,6 +239,12 @@ BASE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation,
 BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
              "SafeBrowsingRemoveCookiesInAuthRequests",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist,
+             "SafeBrowsingSyncCheckerCheckAllowlist",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kSafetyHubAbusiveNotificationRevocation,
              "SafetyHubAbusiveNotificationRevocation",

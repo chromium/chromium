@@ -137,6 +137,17 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "android_browsertests_fyi",
+    tests = {
+        "android_browsertests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "android_specific_chromium_gtests",
     tests = {
         "android_browsertests": targets.legacy_test_config(
@@ -375,12 +386,10 @@ targets.legacy_basic_suite(
     tests = {
         "chrome_sizes": targets.legacy_test_config(
             remove_mixins = [
-                "bullhead",
+                "chromium_nexus_5x_oreo",
+                "chromium_pixel_2_pie",
                 "marshmallow",
-                "oreo_fleet",
                 "oreo_mr1_fleet",
-                "pie_fleet",
-                "walleye",
             ],
             args = [
                 "--platform=android",
@@ -422,10 +431,16 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "chromeos_arm_gtests",
     tests = {
-        "video_decode_accelerator_tests_v4l2": targets.legacy_test_config(
+        "video_decode_accelerator_tests_v4l2_vp8": targets.legacy_test_config(
             ci_only = True,
-            # TODO(b/303119905): Remove experimental status once this
-            # suite is added to CQ.
+            # TODO(b/303119905): Remove experimental status first.
+            # Then promote out of ci-only optionally.
+            experiment_percentage = 100,
+        ),
+        "video_decode_accelerator_tests_v4l2_vp9": targets.legacy_test_config(
+            ci_only = True,
+            # TODO(b/303119905): Remove experimental status first.
+            # Then promote out of ci-only optionally.
             experiment_percentage = 100,
         ),
     },
@@ -560,23 +575,6 @@ targets.legacy_basic_suite(
             timeout_sec = 14400,
             experiment_percentage = 100,
             shards = 2,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromeos_chrome_cq_medium_tast_tests",
-    tests = {
-        "cq_medium_tast_tests": targets.legacy_test_config(
-            # `tast_expr` must be a non-empty string to run the tast tests. But the value of
-            # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
-            # put the stub string here.
-            tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
-            test_level_retries = 2,
-            # Timeout including DUT privisioning.
-            timeout_sec = 3600,
-            # Number of shards. Might be overriden for slower boards.
-            shards = 5,
         ),
     },
 )
@@ -959,6 +957,17 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "android_content_browsertests_fyi",
+    tests = {
+        "content_browsertests": targets.legacy_test_config(
+            android_swarming = targets.swarming(
+                shards = 15,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "chromium_gtests",
     tests = {
         "absl_hardening_tests": targets.legacy_test_config(),
@@ -1134,11 +1143,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "base_junit_tests": targets.legacy_test_config(
@@ -1148,11 +1156,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "build_junit_tests": targets.legacy_test_config(
@@ -1162,11 +1169,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "chrome_java_test_pagecontroller_junit_tests": targets.legacy_test_config(
@@ -1176,11 +1182,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "chrome_junit_tests": targets.legacy_test_config(
@@ -1190,11 +1195,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "components_junit_tests": targets.legacy_test_config(
@@ -1204,11 +1208,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "content_junit_tests": targets.legacy_test_config(
@@ -1218,11 +1221,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "device_junit_tests": targets.legacy_test_config(
@@ -1232,11 +1234,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "junit_unit_tests": targets.legacy_test_config(
@@ -1246,11 +1247,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "keyboard_accessory_junit_tests": targets.legacy_test_config(
@@ -1260,11 +1260,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "media_base_junit_tests": targets.legacy_test_config(
@@ -1274,11 +1273,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "module_installer_junit_tests": targets.legacy_test_config(
@@ -1288,11 +1286,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "net_junit_tests": targets.legacy_test_config(
@@ -1302,11 +1299,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "paint_preview_junit_tests": targets.legacy_test_config(
@@ -1316,11 +1312,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "password_check_junit_tests": targets.legacy_test_config(
@@ -1330,11 +1325,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "password_manager_junit_tests": targets.legacy_test_config(
@@ -1344,11 +1338,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "services_junit_tests": targets.legacy_test_config(
@@ -1358,11 +1351,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "touch_to_fill_junit_tests": targets.legacy_test_config(
@@ -1372,11 +1364,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "ui_junit_tests": targets.legacy_test_config(
@@ -1386,11 +1377,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "webapk_client_junit_tests": targets.legacy_test_config(
@@ -1400,11 +1390,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "webapk_shell_apk_h2o_junit_tests": targets.legacy_test_config(
@@ -1414,11 +1403,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "webapk_shell_apk_junit_tests": targets.legacy_test_config(
@@ -1428,11 +1416,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
     },
@@ -2319,6 +2306,17 @@ targets.legacy_basic_suite(
         "dawn_end2end_no_dxc_validation_layers_tests": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "gpu_dawn_gtests_use_tint_ir",
+    tests = {
+        "dawn_end2end_use_tint_ir_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 1,
             ),
         ),
     },
@@ -3788,7 +3786,6 @@ targets.legacy_basic_suite(
                 shards = 3,
             ),
         ),
-        "ios_remoting_unittests": targets.legacy_test_config(),
         "ios_testing_unittests": targets.legacy_test_config(),
         "net_unittests": targets.legacy_test_config(),
         # TODO(https://bugs.chromium.org/p/gn/issues/detail?id=340): Enable this.
@@ -3856,13 +3853,6 @@ targets.legacy_basic_suite(
                 shards = 2,
             ),
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "ios_remoting_fyi_unittests",
-    tests = {
-        "ios_remoting_unittests": targets.legacy_test_config(),
     },
 )
 
@@ -4167,12 +4157,10 @@ targets.legacy_basic_suite(
     tests = {
         "monochrome_public_apk_checker": targets.legacy_test_config(
             remove_mixins = [
-                "bullhead",
+                "chromium_nexus_5x_oreo",
+                "chromium_pixel_2_pie",
                 "marshmallow",
-                "oreo_fleet",
                 "oreo_mr1_fleet",
-                "pie_fleet",
-                "walleye",
             ],
             swarming = targets.swarming(
                 dimensions = {
@@ -4431,6 +4419,9 @@ targets.legacy_basic_suite(
     name = "optimization_guide_gpu_gtests",
     tests = {
         "optimization_guide_gpu_unittests": targets.legacy_test_config(
+            args = [
+                "--ui-test-action-timeout=30000",
+            ],
             linux_args = [
                 "-use-xvfb",
             ],
@@ -4517,36 +4508,6 @@ targets.legacy_basic_suite(
     name = "pixel_experimental_browser_tests_gtests",
     tests = {
         "pixel_experimental_browser_tests": targets.legacy_test_config(
-            experiment_percentage = 100,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "private_code_failure_test_isolated_scripts",
-    tests = {
-        "private_code_failure_test": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "android_rel_isolated_scripts",
-    tests = {
-        "private_code_failure_test": targets.legacy_test_config(),
-        "android_blink_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-            # TODO(crbug.com/40279492): Remove experimental status once this
-            # suite is stable on CQ and gardened CI.
-            experiment_percentage = 100,
-        ),
-        "webview_blink_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-            # TODO(crbug.com/40279492): Remove experimental status once this
-            # suite is stable on CQ and gardened CI.
             experiment_percentage = 100,
         ),
     },
@@ -5138,13 +5099,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "webview_trichrome_64_cts_hostside_tests_suite",
-    tests = {
-        "webview_trichrome_64_cts_hostside_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "webview_trichrome_64_cts_tests_suite",
     tests = {
         "webview_trichrome_64_cts_tests": targets.legacy_test_config(
@@ -5273,7 +5227,6 @@ targets.legacy_basic_suite(
                 expiration_sec = 18000,
                 hard_timeout_sec = 14400,
             ),
-            experiment_percentage = 100,
         ),
     },
 )

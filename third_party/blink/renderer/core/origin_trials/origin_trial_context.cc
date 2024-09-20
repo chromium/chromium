@@ -537,6 +537,15 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(blink::features::kPermissionElement);
   }
 
+  // TODO(crbug.com/362675965): remove after origin trial.
+  if (trial_name == "AISummarizationAPI") {
+    return base::FeatureList::IsEnabled(features::kEnableAISummarizationAPI);
+  }
+
+  if (trial_name == "LanguageDetectionAPI") {
+    return base::FeatureList::IsEnabled(features::kLanguageDetectionAPI);
+  }
+
   return true;
 }
 
@@ -622,8 +631,7 @@ bool OriginTrialContext::EnableTrialFromToken(
 
   if (token_result.Status() == OriginTrialTokenStatus::kSuccess) {
     String trial_name =
-        String::FromUTF8(token_result.ParsedToken()->feature_name().data(),
-                         token_result.ParsedToken()->feature_name().size());
+        String::FromUTF8(token_result.ParsedToken()->feature_name());
     OriginTrialFeaturesEnabled result = EnableTrialFromName(
         trial_name, token_result.ParsedToken()->expiry_time());
     trial_status = result.status;
@@ -659,8 +667,7 @@ void OriginTrialContext::CacheToken(const String& raw_token,
   String trial_name =
       token_result.ParsedToken() &&
               token_result.Status() != OriginTrialTokenStatus::kUnknownTrial
-          ? String::FromUTF8(token_result.ParsedToken()->feature_name().data(),
-                             token_result.ParsedToken()->feature_name().size())
+          ? String::FromUTF8(token_result.ParsedToken()->feature_name())
           : kDefaultTrialName;
 
   // Does nothing if key already exists.

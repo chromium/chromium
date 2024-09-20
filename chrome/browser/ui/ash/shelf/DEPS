@@ -55,7 +55,7 @@ include_rules = [
   "+chrome/browser/media/router",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
-  "+chrome/browser/scalable_iph",
+  "+chrome/browser/ash/scalable_iph",
   "+chrome/browser/sync",
   "+chrome/browser/ui/app_icon_loader_delegate.h",
   "+chrome/browser/ui/app_icon_loader.h",

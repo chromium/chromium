@@ -27,11 +27,15 @@ namespace notifications {
 struct Impression {
   using ImpressionResultMap = std::map<UserFeedback, ImpressionResult>;
   using CustomData = std::map<std::string, std::string>;
+
   Impression();
   Impression(SchedulerClientType type,
              const std::string& guid,
              const base::Time& create_time);
   Impression(const Impression& other);
+  Impression(Impression&& other);
+  Impression& operator=(const Impression& other);
+  Impression& operator=(Impression&& other);
   ~Impression();
 
   bool operator==(const Impression& other) const;
@@ -98,8 +102,13 @@ struct SuppressionInfo {
 // client.
 struct ClientState {
   using Impressions = base::circular_deque<Impression>;
+
   ClientState();
-  explicit ClientState(const ClientState& other);
+  ClientState(const ClientState& other);
+  ClientState(ClientState&& other);
+  ClientState& operator=(const ClientState& other);
+  ClientState& operator=(ClientState&& other);
+
   ~ClientState();
 
   bool operator==(const ClientState& other) const;

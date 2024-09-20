@@ -184,6 +184,17 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
   if (!allowed && net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
     allowed = true;
   }
+
+  // Allow unpartitioned storage access when the
+  // kNativeUnpartitionedStoragePermittedWhen3PCOff feature is enabled. This
+  // developer flag is used to simulate Chrome's unpartitioned storage behavior
+  // that is otherwise unreachable through command line flags. (Fixes
+  // crbug.com/357784801)
+  if (!allowed &&
+      base::FeatureList::IsEnabled(
+          features::kNativeUnpartitionedStoragePermittedWhen3PCOff)) {
+    allowed = true;
+  }
   if (delegate_->AllowStorageAccess(
           content::GlobalRenderFrameHostToken(render_process_id_, frame_token),
           storage_type, url, allowed, &callback)) {

@@ -489,7 +489,7 @@ const CGFloat kSymbolSize = 18;
     [_layoutGuideCenter referenceView:_buttonNewTab
                             underName:kNewTabButtonGuide];
 
-    _isIncognito = _browser->GetBrowserState()->IsOffTheRecord();
+    _isIncognito = _browser->GetProfile()->IsOffTheRecord();
     // TODO(crbug.com/41247629): Rewrite layout code and convert these masks to
     // to trailing and leading margins rather than right and bottom.
     _buttonNewTab.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin |
@@ -764,8 +764,7 @@ const CGFloat kSymbolSize = 18;
 
 - (void)sendNewTabCommand {
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          _browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(_browser->GetProfile());
   engagementTracker->NotifyEvent(
       feature_engagement::events::kNewTabToolbarItemUsed);
 
@@ -872,7 +871,7 @@ const CGFloat kSymbolSize = 18;
 - (void)insertNewItemAtIndex:(NSUInteger)index withURL:(const GURL&)newTabURL {
   UrlLoadParams params =
       UrlLoadParams::InNewTab(newTabURL, base::checked_cast<int>(index));
-  params.in_incognito = _browser->GetBrowserState()->IsOffTheRecord();
+  params.in_incognito = _browser->GetProfile()->IsOffTheRecord();
   UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
 }
 

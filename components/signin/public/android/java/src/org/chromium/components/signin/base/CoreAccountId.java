@@ -9,9 +9,8 @@ import androidx.annotation.NonNull;
 import org.jni_zero.CalledByNative;
 
 /**
- * Represents the id of an account, which can be either a Gaia ID or email depending on the
- * migration status within AccountTrackerService.
- * This class has a native counterpart called CoreAccountId.
+ * Represents the id of an account, which can be either a Gaia ID or email. This class has a native
+ * counterpart called CoreAccountId.
  */
 public class CoreAccountId {
     private final String mId;

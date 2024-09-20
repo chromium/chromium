@@ -437,13 +437,6 @@ class IdentityManager : public KeyedService,
   void PrepareForAddingNewAccount();
 
 #if BUILDFLAG(IS_ANDROID)
-  // Returns a pointer to the AccountTrackerService Java instance associated
-  // with this object.
-  // TODO(crbug.com/40615112): Eliminate this method once
-  // AccountTrackerService.java has no more client usage.
-  base::android::ScopedJavaLocalRef<jobject>
-  LegacyGetAccountTrackerServiceJavaObject();
-
   // Get the reference on the java IdentityManager.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

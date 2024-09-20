@@ -76,6 +76,8 @@ class GraphImplDml final : public WebNNGraphImpl {
       const ContextProperties& context_properties,
       scoped_refptr<Adapter> adapter,
       mojom::GraphInfoPtr& graph_info,
+      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+          constant_operands,
       GraphBuilderDml& graph_builder,
       std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
       GraphBufferBindingInfo& graph_buffer_binding_info);
@@ -86,12 +88,15 @@ class GraphImplDml final : public WebNNGraphImpl {
   // method to wait for the initialization work to be completed on GPU. The
   // GraphImplDml instance will only be created and bound to the mojom receiver
   // in GraphImplDml::OnInitializationComplete method.
-  static void CreateAndBuild(scoped_refptr<Adapter> adapter,
-                             base::WeakPtr<ContextImplDml> context,
-                             mojom::GraphInfoPtr graph_info,
-                             ComputeResourceInfo compute_resource_info,
-                             WebNNContextImpl::CreateGraphImplCallback callback,
-                             bool pass_dml_execution_disable_meta_commands);
+  static void CreateAndBuild(
+      scoped_refptr<Adapter> adapter,
+      base::WeakPtr<ContextImplDml> context,
+      mojom::GraphInfoPtr graph_info,
+      ComputeResourceInfo compute_resource_info,
+      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      WebNNContextImpl::CreateGraphImplCallback callback,
+      bool pass_dml_execution_disable_meta_commands);
 
   GraphImplDml(const GraphImplDml&) = delete;
   GraphImplDml& operator=(const GraphImplDml&) = delete;
@@ -303,10 +308,11 @@ class GraphImplDml final : public WebNNGraphImpl {
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
       WebNNContextImpl::CreateGraphImplCallback callback,
-      base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
       std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
       GraphBufferBindingInfo graph_buffer_binding_info,
       ComputeResourceInfo compute_resource_info,
+      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
       base::expected<Microsoft::WRL::ComPtr<IDMLCompiledOperator>, HRESULT>
           compilation_result);
 
@@ -413,9 +419,9 @@ class GraphImplDml final : public WebNNGraphImpl {
   std::unique_ptr<GraphResources> graph_resources_;
 
   base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>
-      previous_input_buffers_;
+      previous_input_tensors_;
   base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>
-      previous_output_buffers_;
+      previous_output_tensors_;
 
   base::WeakPtrFactory<GraphImplDml> weak_factory_{this};
 };

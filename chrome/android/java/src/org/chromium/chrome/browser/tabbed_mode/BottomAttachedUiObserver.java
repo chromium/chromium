@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -260,7 +261,12 @@ public class BottomAttachedUiObserver
         if (mOmniboxSuggestionsVisible && mOmniboxSuggestionsColor != null) {
             return mOmniboxSuggestionsColor;
         }
-        if (mBottomSheetVisible) {
+        // If drawing edge-to-edge only match the bottom sheet color if the bottom sheet extends
+        // across the full width. Since the bottom sheet shows in the front, if it doesn't extend
+        // across the entire width, it looks nicer to match the color of other components behind /
+        // to the side of the bottom sheet.
+        if (mBottomSheetVisible
+                && (mBottomSheetController.isFullWidth() || !EdgeToEdgeUtils.isEnabled())) {
             // This can cause a null return intentionally to indicate that a bottom sheet is showing
             // a page preview / web content.
             return mBottomSheetColor;
@@ -282,7 +288,7 @@ public class BottomAttachedUiObserver
     /** The divider should be visible for partial width bottom-attached UI. */
     private boolean shouldShowDivider() {
         if (mBottomSheetVisible) {
-            return !mBottomSheetController.isFullWidth();
+            return !mBottomSheetController.isFullWidth() && !EdgeToEdgeUtils.isEnabled();
         }
         if (mOverlayPanelVisible) {
             return !mOverlayPanelStateProvider.isFullWidthSizePanel();

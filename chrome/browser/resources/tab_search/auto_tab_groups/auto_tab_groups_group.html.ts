@@ -45,6 +45,7 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
         @value-changed="${this.onNameChanged_}"
         aria-label="${this.getInputAriaLabel_()}"
         @focus="${this.onInputFocus_}"
+        @blur="${this.onInputBlur_}"
         @keydown="${this.onInputKeyDown_}">
     </cr-input>
   `}
@@ -64,6 +65,7 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
           @close="${this.onTabRemove_}"
           @focus="${this.onTabFocus_}"
           @blur="${this.onTabBlur_}"
+          close-button-icon="tab-search:remove"
           in-suggested-group>
       </tab-search-item>
     `)}

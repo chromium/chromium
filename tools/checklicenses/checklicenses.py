@@ -527,9 +527,6 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
     'tools/python/google/__init__.py': [
         'UNKNOWN',
     ],
-    'tools/stats_viewer/Properties/AssemblyInfo.cs': [
-        'UNKNOWN',
-    ],
     'tools/symsrc/pefile.py': [
         'UNKNOWN',
     ],

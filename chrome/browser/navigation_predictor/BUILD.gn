@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("navigation_predictor") {
+  sources = [
+    "navigation_predictor_keyed_service.h",
+    "search_engine_preconnector.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core:core",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "navigation_predictor_keyed_service.cc",
+    "search_engine_preconnector.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":navigation_predictor",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//content/public/browser",
+  ]
+}

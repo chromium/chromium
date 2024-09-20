@@ -251,8 +251,7 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
   }
 
   bool DataReceived(base::span<const char> data) override {
-    AddChunk(decoder_->Decode(data.data(), data.size()), data,
-             /*has_error=*/false);
+    AddChunk(decoder_->Decode(data), data, /*has_error=*/false);
     return true;
   }
 

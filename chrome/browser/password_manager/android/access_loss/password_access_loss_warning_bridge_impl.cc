@@ -7,10 +7,13 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
-#include "chrome/browser/password_manager/android/access_loss/jni_headers/PasswordAccessLossWarningBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/PasswordAccessLossWarningBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/android/window_android.h"
+
+constexpr base::TimeDelta kMinIntervalBetweenWarnings = base::Days(1);
+constexpr base::TimeDelta kMinIntervalBetweenWarningsAtStartup = base::Days(7);
 
 PasswordAccessLossWarningBridgeImpl::PasswordAccessLossWarningBridgeImpl() =
     default;
@@ -19,7 +22,8 @@ PasswordAccessLossWarningBridgeImpl::~PasswordAccessLossWarningBridgeImpl() =
     default;
 
 bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
-    PrefService* pref_service) {
+    PrefService* pref_service,
+    bool called_at_startup) {
   // TODO: crbug.com/357063741 - Check all the criteria for showing the sheet.
   if (!base::FeatureList::IsEnabled(
           password_manager::features::
@@ -32,13 +36,37 @@ bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
       password_manager_android_util::PasswordAccessLossWarningType::kNone) {
     return false;
   }
+
+  if (password_manager::features::kIgnoreAccessLossWarningTimeout.Get()) {
+    return true;
+  }
+
+  base::Time last_shown_timestamp = pref_service->GetTime(
+      password_manager::prefs::kPasswordAccessLossWarningShownTimestamp);
+  base::TimeDelta time_since_last_shown =
+      base::Time::Now() - last_shown_timestamp;
+  if (time_since_last_shown < kMinIntervalBetweenWarnings) {
+    return false;
+  }
+
+  base::Time last_shown_timestamp_at_startup = pref_service->GetTime(
+      password_manager::prefs::
+          kPasswordAccessLossWarningShownAtStartupTimestamp);
+  base::TimeDelta time_since_last_shown_at_startup =
+      base::Time::Now() - last_shown_timestamp_at_startup;
+  if (called_at_startup &&
+      time_since_last_shown_at_startup < kMinIntervalBetweenWarningsAtStartup) {
+    return false;
+  }
+
   return true;
 }
 
 void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet(
     PrefService* pref_service,
     const gfx::NativeWindow window,
-    Profile* profile) {
+    Profile* profile,
+    bool called_at_startup) {
   if (profile == nullptr) {
     return;
   }
@@ -57,4 +85,12 @@ void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet(
       static_cast<int>(
           password_manager_android_util::GetPasswordAccessLossWarningType(
               pref_service)));
+  pref_service->SetTime(
+      password_manager::prefs::kPasswordAccessLossWarningShownTimestamp,
+      base::Time::Now());
+  if (called_at_startup) {
+    pref_service->SetTime(password_manager::prefs::
+                              kPasswordAccessLossWarningShownAtStartupTimestamp,
+                          base::Time::Now());
+  }
 }

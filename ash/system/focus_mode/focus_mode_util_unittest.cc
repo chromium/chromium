@@ -17,33 +17,20 @@ TEST(FocusModeUtilTests, VerifyInvalidSourceTitle) {
   EXPECT_TRUE(GetSourceTitleForMediaControls(selected_playlist).empty());
 }
 
-// Verify that having a missing playlist title will still return the playlist
-// type as a string.
-TEST(FocusModeUtilTests, VerifySourceTitleWithMissingPlaylistTitle) {
+// Verify the YTM source string.
+TEST(FocusModeUtilTests, VerifyYTMSourceTitle) {
   SelectedPlaylist selected_playlist;
   selected_playlist.id = "id0";
   selected_playlist.type = SoundType::kYouTubeMusic;
   EXPECT_EQ(GetSourceTitleForMediaControls(selected_playlist), "YouTube Music");
 }
 
-// Verify a fully formed YTM string.
-TEST(FocusModeUtilTests, VerifyYTMSourceTitle) {
-  SelectedPlaylist selected_playlist;
-  selected_playlist.id = "id0";
-  selected_playlist.type = SoundType::kYouTubeMusic;
-  selected_playlist.title = "Playlist Title";
-  EXPECT_EQ(GetSourceTitleForMediaControls(selected_playlist),
-            "YouTube Music ᐧ Playlist Title");
-}
-
-// Verify a fully formed Soundscape string.
+// Verify the Soundscape source string.
 TEST(FocusModeUtilTests, VerifySoundscapeSourceTitle) {
   SelectedPlaylist selected_playlist;
   selected_playlist.id = "id0";
   selected_playlist.type = SoundType::kSoundscape;
-  selected_playlist.title = "Playlist Title";
-  EXPECT_EQ(GetSourceTitleForMediaControls(selected_playlist),
-            "Focus sounds ᐧ Playlist Title");
+  EXPECT_EQ(GetSourceTitleForMediaControls(selected_playlist), "Focus sounds");
 }
 
 // Verify we get the correct `GetNextProgressStep` based on the current

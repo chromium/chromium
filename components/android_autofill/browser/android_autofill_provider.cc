@@ -205,6 +205,10 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
                     manager->ComputeFieldTypeGroupForField(form, field),
                     field.origin()};
 
+  if (credman_sheet_status_ == CredManBottomSheetLifecycle::kIsShowing) {
+    return;  // CredMan prevents 3P autofill UI. Start the session on refocus!
+  }
+
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.
   if (!IsLinkedForm(form)) {
@@ -486,21 +490,33 @@ void AndroidAutofillProvider::OnFocusOnFormField(
     const FormData& form,
     const FormFieldData& field) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (ShouldShowCredManForField(field, GetRenderFrameHost(manager))) {
-    ShowCredManSheet(GetRenderFrameHost(manager));
-    // TODO: crbug.com/332471454 - Ensure this doesn't mess up WebView metrics.
+  std::optional<FieldInfo> field_to_focus = StartFocusChange(form, field);
+  if (ShouldShowCredManForField(field, GetRenderFrameHost(manager)) &&
+      ShowCredManSheet(GetRenderFrameHost(manager), form.global_id(),
+                       field_to_focus)) {
+    return;  // The focus event will be completed after CredMan closes.
   }
-
-  FieldInfo field_info;
-  if (!IsLinkedForm(form) ||
-      !form_->GetSimilarFieldIndex(field, &field_info.index)) {
-    return;
+  if (field_to_focus) {
+    bridge_->OnFocusChanged(std::move(field_to_focus));
   }
+}
 
-  field_info.bounds = ToClientAreaBound(field.bounds());
-  MaybeFireFormFieldVisibilitiesDidChange(manager, form);
-  bridge_->OnFocusChanged(field_info);
+std::optional<FieldInfo> AndroidAutofillProvider::StartFocusChange(
+    const FormData& form,
+    const FormFieldData& field) {
+  if (!IsLinkedForm(form)) {
+    return std::nullopt;  // Form may have changed or was unfocused meanwhile.
+  }
+  FieldInfo field_to_focus;
+  if (!form_->GetSimilarFieldIndex(field, &field_to_focus.index)) {
+    return std::nullopt;
+  }
+  field_to_focus.bounds = ToClientAreaBound(field.bounds());
+  std::vector<int> indices_with_change = form_->UpdateFieldVisibilities(form);
+  if (!indices_with_change.empty()) {
+    bridge_->OnFormFieldVisibilitiesDidChange(std::move(indices_with_change));
+  }
+  return field_to_focus;
 }
 
 void AndroidAutofillProvider::MaybeFireFormFieldDidChange(
@@ -517,21 +533,6 @@ void AndroidAutofillProvider::MaybeFireFormFieldDidChange(
   form_->OnFormFieldDidChange(field_info.index, field.value());
   field_info.bounds = ToClientAreaBound(field.bounds());
   bridge_->OnFormFieldDidChange(field_info);
-}
-
-void AndroidAutofillProvider::MaybeFireFormFieldVisibilitiesDidChange(
-    AndroidAutofillManager* manager,
-    const FormData& form) {
-  if (!IsLinkedForm(form)) {
-    return;
-  }
-
-  std::vector<int> field_indices_with_change =
-      form_->UpdateFieldVisibilities(form);
-  if (field_indices_with_change.empty()) {
-    return;
-  }
-  bridge_->OnFormFieldVisibilitiesDidChange(field_indices_with_change);
 }
 
 void AndroidAutofillProvider::OnDidFillAutofillFormData(
@@ -657,15 +658,21 @@ bool AndroidAutofillProvider::ShouldShowCredManForField(
   return credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
 }
 
-void AndroidAutofillProvider::ShowCredManSheet(content::RenderFrameHost* rfh) {
+bool AndroidAutofillProvider::ShowCredManSheet(
+    content::RenderFrameHost* rfh,
+    FormGlobalId form_id,
+    std::optional<FieldInfo> field_to_focus) {
   CHECK_EQ(credman_sheet_status_, CredManBottomSheetLifecycle::kNotShown);
   if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
     credman_sheet_status_ = CredManBottomSheetLifecycle::kIsShowing;
     delegate->SetRequestCompletionCallback(
         base::BindRepeating(&AndroidAutofillProvider::OnCredManUiClosed,
-                            weak_ptr_factory_.GetWeakPtr()));
+                            weak_ptr_factory_.GetWeakPtr(), std::move(form_id),
+                            std::move(field_to_focus)));
     delegate->TriggerCredManUi(RequestPasswords(false));
+    return true;
   }
+  return false;
 }
 
 void AndroidAutofillProvider::MaybeInitKeyboardSuppressor() {
@@ -693,12 +700,12 @@ bool AndroidAutofillProvider::IsIdOfLinkedForm(FormGlobalId form_id) const {
   return form_ && form_->form().global_id() == form_id;
 }
 
-bool AndroidAutofillProvider::IsLinkedForm(const FormData& form) {
+bool AndroidAutofillProvider::IsLinkedForm(const FormData& form) const {
   return form_ && form_->SimilarFormAs(form);
 }
 
 gfx::RectF AndroidAutofillProvider::ToClientAreaBound(
-    const gfx::RectF& bounding_box) {
+    const gfx::RectF& bounding_box) const {
   gfx::Rect client_area = web_contents()->GetContainerBounds();
   return bounding_box + client_area.OffsetFromOrigin();
 }
@@ -847,12 +854,18 @@ AndroidAutofillProvider::CachedData::operator=(CachedData&&) = default;
 
 AndroidAutofillProvider::CachedData::~CachedData() = default;
 
-void AndroidAutofillProvider::OnCredManUiClosed(bool success) {
+void AndroidAutofillProvider::OnCredManUiClosed(
+    FormGlobalId form_id,
+    std::optional<FieldInfo> field_to_focus,
+    bool success) {
   credman_sheet_status_ = CredManBottomSheetLifecycle::kClosed;
   if (keyboard_suppressor_) {
     keyboard_suppressor_->Unsuppress();
   }
-  // TODO: crbug.com/332471454 - Open the keyboard on failure.
+  if (!success && field_to_focus && IsIdOfLinkedForm(form_id)) {
+    // TODO: crbug.com/332471454 - Open the keyboard.
+    bridge_->OnFocusChanged(field_to_focus);
+  }
 }
 
 }  // namespace autofill

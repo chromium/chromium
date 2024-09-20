@@ -43,15 +43,11 @@ FastCheckoutView* FastCheckoutControllerImpl::GetOrCreateView() {
 }
 
 void FastCheckoutControllerImpl::OpenAutofillProfileSettings() {
-#if BUILDFLAG(IS_ANDROID)
   autofill::ShowAutofillProfileSettings(web_contents_);
-#endif
 }
 
 void FastCheckoutControllerImpl::OpenCreditCardSettings() {
-#if BUILDFLAG(IS_ANDROID)
   autofill::ShowAutofillCreditCardSettings(web_contents_);
-#endif
 }
 
 gfx::NativeView FastCheckoutControllerImpl::GetNativeView() {

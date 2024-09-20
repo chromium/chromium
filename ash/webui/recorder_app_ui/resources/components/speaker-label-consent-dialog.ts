@@ -89,7 +89,6 @@ export class SpeakerLabelConsentDialog extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    // TODO: b/336963138 - Add correct link
     return html`<cra-feature-tour-dialog
       ${ref(this.dialog)}
       illustrationName="onboarding_speaker_label"

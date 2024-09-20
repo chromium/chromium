@@ -24,6 +24,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/strings/cstring_view.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 
@@ -616,7 +617,7 @@ BASE_EXPORT FilePath GetUniquePath(const FilePath& path);
 // " (%d)" as `suffix_format` makes this behave identical to `GetUniquePath()`.
 BASE_EXPORT FilePath
 GetUniquePathWithSuffixFormat(const FilePath& path,
-                              std::string_view suffix_format);
+                              base::cstring_view suffix_format);
 
 // Sets the given |fd| to non-blocking mode.
 // Returns true if it was able to set it in the non-blocking mode, otherwise

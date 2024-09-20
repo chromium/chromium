@@ -7,14 +7,15 @@
 
 #include "base/strings/stringprintf.h"
 
-#include <string_view>
 #include <tuple>
+
+#include "base/strings/cstring_view.h"
 
 namespace base {
 
 void ConstexprStringView() {
-  static constexpr std::string_view kTest = "test %s";
-  std::ignore = StringPrintfNonConstexpr(kTest, "123");  // expected-error {{call to deleted function 'StringPrintfNonConstexpr'}}
+  static constexpr base::cstring_view kTest = "test %s";
+  std::ignore = StringPrintfNonConstexpr(kTest.data(), "123");  // expected-error {{call to deleted function 'StringPrintfNonConstexpr'}}
 }
 
 void ConstexprCharArray() {

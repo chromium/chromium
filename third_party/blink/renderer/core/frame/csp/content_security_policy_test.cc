@@ -594,7 +594,6 @@ TEST_F(ContentSecurityPolicyTest, DirectiveType) {
       {CSPDirectiveName::ImgSrc, "img-src"},
       {CSPDirectiveName::ManifestSrc, "manifest-src"},
       {CSPDirectiveName::MediaSrc, "media-src"},
-      {CSPDirectiveName::NavigateTo, "navigate-to"},
       {CSPDirectiveName::ObjectSrc, "object-src"},
       {CSPDirectiveName::ReportURI, "report-uri"},
       {CSPDirectiveName::Sandbox, "sandbox"},

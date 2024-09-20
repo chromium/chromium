@@ -32,24 +32,21 @@ typedef struct {
 } TranslateKitInputText;
 
 typedef struct {
-  // The modifiable output text buffer.
+  // The output text buffer.
   // Not owned.
-  char* buffer;
+  const char* buffer;
   // The size of the output text buffer.
   size_t buffer_size;
 } TranslateKitOutputText;
 
 typedef struct {
-  // A chrome::on_device_translation::TranslateKitConfig serialized as a string.
+  // A chrome::on_device_translation::TranslateKitLanguagePackageConfig
+  // serialized as a string.
   // Not owned.
-  const char* translate_kit_config;
-  // The size of `translate_kit_config`.
-  size_t translate_kit_config_size;
-  // The source language the initialized translator to translate from.
-  TranslateKitLanguage source_lang;
-  // The target language the initialized translator to translate to.
-  TranslateKitLanguage target_lang;
-} TranslateKitTranslatorConfig;
+  const char* package_config;
+  // The size of `package_config`.
+  size_t package_config_size;
+} TranslateKitSetLanguagePackagesArgs;
 
 }  // extern "C"
 

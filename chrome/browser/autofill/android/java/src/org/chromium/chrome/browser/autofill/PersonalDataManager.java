@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.IbanRecordType;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -434,7 +435,8 @@ public class PersonalDataManager implements Destroyable {
 
         private String mNickname;
         private @IbanRecordType int mRecordType;
-        private String mValue;
+        // Value is empty for server IBAN.
+        @Nullable private String mValue;
 
         private Iban(
                 String guid,
@@ -448,7 +450,7 @@ public class PersonalDataManager implements Destroyable {
             mLabel = Objects.requireNonNull(label, "Label can't be null");
             mNickname = Objects.requireNonNull(nickname, "Nickname can't be null");
             mRecordType = recordType;
-            mValue = Objects.requireNonNull(value, "Iban value can't be null");
+            mValue = value;
         }
 
         // Creates an Iban instance that is not stored on a server nor locally,
@@ -603,7 +605,9 @@ public class PersonalDataManager implements Destroyable {
                         assert mInstrumentId != null
                                         && mInstrumentId != 0L
                                         && TextUtils.isEmpty(mGuid)
-                                : "Server IBANs must have a non-zero instrumentId and empty GUID.";
+                                        && TextUtils.isEmpty(mValue)
+                                : "Server IBANs must have a non-zero instrumentId, empty GUID and"
+                                        + " empty value.";
                         break;
                 }
                 return new Iban(mGuid, mInstrumentId, mLabel, mNickname, mRecordType, mValue);
@@ -1051,7 +1055,7 @@ public class PersonalDataManager implements Destroyable {
      * @return Whether FIDO authentication is available.
      */
     public boolean isFidoAuthenticationAvailable() {
-        return isAutofillCreditCardEnabled()
+        return isAutofillPaymentMethodsEnabled()
                 && PersonalDataManagerJni.get()
                         .isFidoAuthenticationAvailable(mPersonalDataManagerAndroid);
     }
@@ -1064,9 +1068,10 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * @return Whether the Autofill feature for Credit Cards is enabled.
+     * @return Whether the Autofill feature for Payment Methods is enabled.
      */
-    public boolean isAutofillCreditCardEnabled() {
+    public boolean isAutofillPaymentMethodsEnabled() {
+        // TODO(crbug.com/40903277): Rename pref to AUTOFILL_PAYMENT_METHODS_ENABLED.
         return mPrefService.getBoolean(Pref.AUTOFILL_CREDIT_CARD_ENABLED);
     }
 
@@ -1168,13 +1173,15 @@ public class PersonalDataManager implements Destroyable {
         mImageFetcher.prefetchImages(
                 getCreditCardsToSuggest().stream()
                         .map(card -> card.getCardArtUrl())
-                        .toArray(GURL[]::new));
+                        .toArray(GURL[]::new),
+                new int[] {ImageSize.SMALL, ImageSize.LARGE});
     }
 
     /**
      * Return the card art image for the given `customImageUrl`.
-     * @param customImageUrl  URL of the image. If the image is available, it is returned, otherwise
-     *         it is fetched from this URL.
+     *
+     * @param customImageUrl URL of the image. If the image is available, it is returned, otherwise
+     *     it is fetched from this URL.
      * @param cardIconSpecs {@code CardIconSpecs} instance containing the specs for the card icon.
      * @return Bitmap image if found in the local cache, else return an empty object.
      */

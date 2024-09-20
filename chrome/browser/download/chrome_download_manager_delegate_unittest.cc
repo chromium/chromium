@@ -78,6 +78,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -1958,24 +1959,24 @@ class FakeSafeBrowsingService : public safe_browsing::TestSafeBrowsingService {
   FakeSafeBrowsingService(const FakeSafeBrowsingService&) = delete;
   FakeSafeBrowsingService& operator=(const FakeSafeBrowsingService&) = delete;
 
-  bool SendDownloadReport(
+  void SendDownloadReport(
       download::DownloadItem* download,
       ReportType report_type,
       bool did_proceed,
       std::optional<bool> show_download_in_folder) override {
     actual_sent_report_type_ = report_type;
     actual_sent_did_proceed_ = did_proceed;
-    return true;
+    return;
   }
 
-  bool PersistDownloadReportAndSendOnNextStartup(
+  void PersistDownloadReportAndSendOnNextStartup(
       download::DownloadItem* download,
       ReportType report_type,
       bool did_proceed,
       std::optional<bool> show_download_in_folder) override {
     actual_persisted_report_type_ = report_type;
     actual_persisted_did_proceed_ = did_proceed;
-    return true;
+    return;
   }
 
   std::optional<ReportType> GetActualSentReportType() {
@@ -2492,6 +2493,66 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
   policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
 }
 #endif  // !BUILDFLAG(IS_WIN)
+
+TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
+       ShouldObfuscateDownload) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_obfuscation::kEnterpriseFileObfuscation);
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+
+  // Chrome-initiated download
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(false));
+  EXPECT_FALSE(delegate()->ShouldObfuscateDownload(download_item.get()));
+
+  // User-initiated download, no matching connector policies
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*delegate(), GetDownloadProtectionService())
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_FALSE(delegate()->ShouldObfuscateDownload(download_item.get()));
+
+  // User-initiated download, matching connector policies
+  auto mock_protection_service =
+      std::make_unique<::testing::StrictMock<TestDownloadProtectionService>>();
+  EXPECT_CALL(*delegate(), GetDownloadProtectionService())
+      .WillRepeatedly(Return(mock_protection_service.get()));
+
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  enterprise_connectors::test::SetAnalysisConnector(
+      pref_service(), enterprise_connectors::FILE_DOWNLOADED,
+      R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["malware", "dlp"]
+          }
+        ],
+        "block_until_verdict": 1
+      })");
+
+  EXPECT_TRUE(delegate()->ShouldObfuscateDownload(download_item.get()));
+
+  // User-initiated download, matching connector policies, but report-only
+  enterprise_connectors::test::SetAnalysisConnector(
+      pref_service(), enterprise_connectors::FILE_DOWNLOADED,
+      R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["malware", "dlp"]
+          }
+        ],
+        "block_until_verdict": 0
+      })");
+
+  EXPECT_FALSE(delegate()->ShouldObfuscateDownload(download_item.get()));
+}
 #endif  // FULL_SAFE_BROWSING
 
 #if BUILDFLAG(IS_ANDROID)

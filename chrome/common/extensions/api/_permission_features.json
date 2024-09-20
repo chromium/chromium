@@ -358,7 +358,8 @@
       "18B761AA5B58FA89E596EB7996B4C92C86775C7F",  // https://crbug.com/882461 SecureConnect
       "2012C0122892D332325339998251D1CC3CAE396A",  // https://crbug.com/882461 SecureConnect
       "C8F4673FC69965390BC376C0761EC341492F9D87",  // Contact Center Insights
-      "31367E6C4D69B90D866289492A307C205AF8A32F" // b/361094242 Secure Enterprise Browser Extension
+      "31367E6C4D69B90D866289492A307C205AF8A32F", // b/361094242 Secure Enterprise Browser Extension
+      "50B8ECD18A36937668D1FCA9CEEE668BC25C39CC" // b/361094242 Beyondcorp Enterprise Extension
     ]
   },
   "experimental": {
@@ -367,6 +368,11 @@
     "extension_types": [
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
+  },
+  "experimentalAiData": {
+    "extension_types": ["extension"],
+    "channel": "dev",
+    "command_line_switch": "extension-ai-data-collection"
   },
   "favicon": {
     "channel": "stable",

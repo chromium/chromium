@@ -40,7 +40,9 @@
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/task_scheduler.h"
+#include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
+#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
@@ -421,8 +423,12 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
 
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
-      GetServiceDisplayName(internal_service).c_str(), SERVICE_AUTO_START,
-      com_service_command, com_switch, UPDATER_KEY, clsids, {}));
+      GetLocalizedString(internal_service
+                             ? IDS_INTERNAL_UPDATER_SERVICE_DISPLAY_NAME_BASE
+                             : IDS_UPDATER_SERVICE_DISPLAY_NAME_BASE),
+      GetLocalizedString(IDS_UPDATER_SERVICE_DESCRIPTION_BASE),
+      SERVICE_AUTO_START, com_service_command, com_switch, UPDATER_KEY, clsids,
+      {}));
 
   for (const auto& clsid : clsids) {
     AddInstallComProgIdWorkItems(UpdaterScope::kSystem, clsid, list);

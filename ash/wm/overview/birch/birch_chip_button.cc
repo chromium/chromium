@@ -7,12 +7,14 @@
 #include "ash/birch/birch_item.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_util.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
+#include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -56,6 +58,7 @@ constexpr int kFaviconCornerRadius = 8;
 constexpr int kAppIconSize = 16;
 constexpr int kAppCornerRadius = 20;
 constexpr int kIllustrationSize = 40;
+constexpr int kCoralGroupedImageSize = 40;
 constexpr int kIllustrationCornerRadius = 8;
 constexpr int kWeatherImageSize = 32;
 
@@ -195,17 +198,24 @@ void BirchChipButton::Init(BirchItem* item) {
   title_->SetText(item_->title());
   subtitle_->SetText(item_->subtitle());
 
-  SetCallback(
-      base::BindRepeating(&BirchItem::PerformAction, base::Unretained(item_)));
+  SetCallback(base::BindRepeating(
+      &BirchItem::PerformAction, base::Unretained(item_),
+      /*is_post_login=*/BirchBarController::Get()->is_informed_restore()));
 
   const auto addon_type = item_->GetAddonType();
   // Add add-ons according to the add-on type.
   switch (addon_type) {
-    case BirchAddonType::kButton: {
-      auto button = birch_bar_util::CreateAddonButton(
-          base::BindRepeating(&BirchItem::PerformAddonAction,
-                              base::Unretained(item_)),
-          *item_->addon_label());
+    case BirchAddonType::kButton:
+    case BirchAddonType::kCoralButton: {
+      // Coral item works different since it triggers a new overview view.
+      const bool is_coral = addon_type == BirchAddonType::kCoralButton;
+      base::RepeatingClosure callback =
+          is_coral ? base::BindRepeating(&BirchChipButton::OnCoralAddonClicked,
+                                         base::Unretained(this))
+                   : base::BindRepeating(&BirchItem::PerformAddonAction,
+                                         base::Unretained(item_));
+      auto button = birch_bar_util::CreateAddonButton(std::move(callback),
+                                                      *item_->addon_label());
       button->SetTooltipText(item->GetAddonAccessibleName());
       SetAddon(std::move(button));
       break;
@@ -241,6 +251,71 @@ void BirchChipButton::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
+  auto* birch_bar_controller = BirchBarController::Get();
+  CHECK(birch_bar_controller);
+
+  using CommandId = BirchChipContextMenuModel::CommandId;
+
+  switch (command_id) {
+    case base::to_underlying(CommandId::kHideSuggestion):
+      birch_bar_controller->OnItemHiddenByUser(item_);
+      break;
+    case base::to_underlying(CommandId::kHideWeatherSuggestions):
+      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kWeather,
+                                                  /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kToggleTemperatureUnits):
+      birch_bar_controller->ToggleTemperatureUnits();
+      break;
+    case base::to_underlying(CommandId::kHideCalendarSuggestions):
+      birch_bar_controller->SetShowSuggestionType(
+          BirchSuggestionType::kCalendar,
+          /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kHideDriveSuggestions):
+      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kDrive,
+                                                  /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kHideChromeTabSuggestions):
+      birch_bar_controller->SetShowSuggestionType(
+          BirchSuggestionType::kChromeTab,
+          /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kHideMediaSuggestions):
+      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kMedia,
+                                                  /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kHideCoralSuggestions):
+      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kCoral,
+                                                  /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kCoralNewDesk):
+      // TODO(yulunwu) implement behavior
+      break;
+    case base::to_underlying(CommandId::kCoralSaveForLater):
+      // TODO(yulunwu) implement behavior
+      break;
+    case base::to_underlying(CommandId::kProvideFeedback):
+      Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+          ShellDelegate::FeedbackSource::kOverview,
+          /*description_template=*/std::string(),
+          /*category_tag=*/"Coral");
+      break;
+    default:
+      birch_bar_controller->ExecuteMenuCommand(command_id, /*from_chip=*/true);
+  }
+}
+
+void BirchChipButton::SetAddon(std::unique_ptr<views::View> addon_view) {
+  if (addon_view_) {
+    RemoveChildViewT(addon_view_);
+  } else {
+    flex_layout_->SetInteriorMargin(kInteriorMarginsWithAddon);
+  }
+  addon_view_ = AddChildView(std::move(addon_view));
+}
+
 void BirchChipButton::StylizeIconForItemType(
     BirchItemType type,
     SecondaryIconType secondary_icon_type,
@@ -266,12 +341,14 @@ void BirchChipButton::StylizeIconForItemType(
       rounded_corners = kIllustrationCornerRadius;
       background_color_id = kIconBackgroundColorId;
       break;
+    case BirchItemType::kCoral:
+      icon_size = kCoralGroupedImageSize;
+      break;
     case BirchItemType::kTab:
     case BirchItemType::kSelfShare:
     case BirchItemType::kMostVisited:
     case BirchItemType::kLastActive:
     case BirchItemType::kLostMedia:
-    case BirchItemType::kCoral:
       // When `use_smaller_dimension` is true, we use the smaller app icon sizes
       // because we have access only to smaller icons.
       use_smaller_dimension ? icon_size = kAppIconSize
@@ -287,12 +364,16 @@ void BirchChipButton::StylizeIconForItemType(
   primary_icon_view_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets((kMainIconViewSize - icon_size) / 2)));
 
-  if (background_color_id) {
+  if (background_color_id.has_value()) {
     primary_icon_view_->SetBackground(views::CreateThemedRoundedRectBackground(
         background_color_id.value(), rounded_corners));
   }
 
-  if (secondary_icon_type == SecondaryIconType::kNoIcon) {
+  // Due to https://b/364912772, self share items are created with `kNoIcon`
+  // when no form factor is found. We still want to show a generic self share
+  // icon in this case.
+  if (secondary_icon_type == SecondaryIconType::kNoIcon &&
+      item_->GetType() != BirchItemType::kSelfShare) {
     secondary_icon_view_->SetVisible(false);
     return;
   }
@@ -349,63 +430,35 @@ void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image,
     secondary_icon_view_->SetImage(secondary_icon_image);
   }
 
+  // TODO(https://b/364912772): Remove temporary fix by adding sender's device
+  // form_factor to `SelfTabToSelfEntry`.
+  if (item_->GetType() == BirchItemType::kSelfShare) {
+    // All Self Share Birch Items will utilize a generic share secondary icon as
+    // part of a temporary fix.
+    secondary_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        kBirchSecondaryIconGenericShareIcon, kSecondaryIconColorId));
+  }
+
   bool use_smaller_dimension = icon_image.Size().width() <= kAppIconSize ||
                                icon_image.Size().height() <= kAppIconSize;
   StylizeIconForItemType(item_->GetType(), secondary_icon_type,
                          use_smaller_dimension);
 }
 
-void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
-  auto* birch_bar_controller = BirchBarController::Get();
-  CHECK(birch_bar_controller);
+void BirchChipButton::OnCoralAddonClicked() {
+  CHECK_EQ(BirchItemType::kCoral, item_->GetType());
 
-  using CommandId = BirchChipContextMenuModel::CommandId;
-
-  switch (command_id) {
-    case base::to_underlying(CommandId::kHideSuggestion):
-      birch_bar_controller->OnItemHiddenByUser(item_);
-      break;
-    case base::to_underlying(CommandId::kHideWeatherSuggestions):
-      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kWeather,
-                                                  /*show=*/false);
-      break;
-    case base::to_underlying(CommandId::kToggleTemperatureUnits):
-      birch_bar_controller->ToggleTemperatureUnits();
-      break;
-    case base::to_underlying(CommandId::kHideCalendarSuggestions):
-      birch_bar_controller->SetShowSuggestionType(
-          BirchSuggestionType::kCalendar,
-          /*show=*/false);
-      break;
-    case base::to_underlying(CommandId::kHideDriveSuggestions):
-      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kDrive,
-                                                  /*show=*/false);
-      break;
-    case base::to_underlying(CommandId::kHideChromeTabSuggestions):
-      birch_bar_controller->SetShowSuggestionType(
-          BirchSuggestionType::kChromeTab,
-          /*show=*/false);
-      break;
-    case base::to_underlying(CommandId::kHideMediaSuggestions):
-      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kMedia,
-                                                  /*show=*/false);
-      break;
-    case base::to_underlying(CommandId::kHideCoralSuggestions):
-      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kCoral,
-                                                  /*show=*/false);
-      break;
-    default:
-      birch_bar_controller->ExecuteMenuCommand(command_id, /*from_chip=*/true);
+  if (!tab_app_selection_widget_) {
+    tab_app_selection_widget_ = std::make_unique<TabAppSelectionHost>(this);
+    tab_app_selection_widget_->Show();
+    return;
   }
-}
 
-void BirchChipButton::SetAddon(std::unique_ptr<views::View> addon_view) {
-  if (addon_view_) {
-    RemoveChildViewT(addon_view_);
+  if (!tab_app_selection_widget_->IsVisible()) {
+    tab_app_selection_widget_->Show();
   } else {
-    flex_layout_->SetInteriorMargin(kInteriorMarginsWithAddon);
+    tab_app_selection_widget_->Hide();
   }
-  addon_view_ = AddChildView(std::move(addon_view));
 }
 
 BEGIN_METADATA(BirchChipButton)

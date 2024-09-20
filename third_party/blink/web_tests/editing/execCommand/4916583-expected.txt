@@ -1,6 +1,0 @@
-This tests for a bug when outdenting an indented list item. You should see 'foo' and 'bar' each in their own list item below.
-
-foo
-bar
-
-<ul><li>foo</li><li>bar</li></ul>

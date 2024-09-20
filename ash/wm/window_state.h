@@ -22,6 +22,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/gfx/animation/tween.h"
@@ -531,7 +532,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   ui::ZOrderLevel GetZOrdering() const;
 
   // Returns the window's current show state.
-  ui::WindowShowState GetShowState() const;
+  ui::mojom::WindowShowState GetShowState() const;
 
   // Sets the window's bounds in screen coordinates.
   void SetBoundsInScreen(const gfx::Rect& bounds_in_screen);

@@ -58,7 +58,8 @@ void AddAggregateVisitDataFromSession(
           auto last_active_tab = URLVisitAggregate::Tab(
               tab->tab_id.id(),
               URLVisit(tab_url, current_navigation.title(), tab->timestamp,
-                       session->GetDeviceFormFactor(), source),
+                       session->GetDeviceFormFactor(), source,
+                       session->GetSessionName()),
               session->GetSessionTag(), session->GetSessionName());
           auto tab_data =
               URLVisitAggregate::TabData(std::move(last_active_tab));

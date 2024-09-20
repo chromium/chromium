@@ -47,6 +47,13 @@ class WebappsClientAndroid : public ChromeWebappsClient {
   bool IsAppFullyInstalledForSiteUrl(content::BrowserContext* browsing_context,
                                      const GURL& site_url) const override;
   // TODO(crbug.com/40269982): Implement.
+  bool IsUrlControlledBySeenManifest(content::BrowserContext* browsing_context,
+                                     const GURL& site_url) const override;
+
+  void OnManifestSeen(content::BrowserContext* browsing_context,
+                      const blink::mojom::Manifest& manifest) const override;
+
+  // TODO(crbug.com/40269982): Implement.
   void SaveInstallationDismissedForMl(content::BrowserContext* browsing_context,
                                       const GURL& manifest_id) const override;
   // TODO(crbug.com/40269982): Implement.

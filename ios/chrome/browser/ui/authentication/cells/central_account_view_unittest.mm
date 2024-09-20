@@ -33,7 +33,8 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabels) {
                                     avatarImage:image
                                            name:mainText
                                           email:detailText
-                                managementState:ManagementState()];
+                                managementState:ManagementState()
+                                useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
@@ -55,7 +56,8 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithoutGivenName) {
                                     avatarImage:image
                                            name:nil
                                           email:mainText
-                                managementState:ManagementState()];
+                                managementState:ManagementState()
+                                useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
@@ -80,7 +82,8 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMachinePolicyDomain) {
                                     avatarImage:image
                                            name:mainText
                                           email:detailText
-                                managementState:std::move(managementState)];
+                                managementState:std::move(managementState)
+                                useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
@@ -105,7 +108,8 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithUserPolicyDomain) {
                                     avatarImage:image
                                            name:mainText
                                           email:detailText
-                                managementState:std::move(managementState)];
+                                managementState:std::move(managementState)
+                                useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);

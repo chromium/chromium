@@ -49,13 +49,11 @@ void RejectingAuthenticator::ProcessMessage(
 
 std::unique_ptr<jingle_xmpp::XmlElement>
 RejectingAuthenticator::GetNextMessage() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const std::string& RejectingAuthenticator::GetAuthKey() const {
-  NOTREACHED_IN_MIGRATION();
-  return auth_key_;
+  NOTREACHED();
 }
 
 const SessionPolicies* RejectingAuthenticator::GetSessionPolicies() const {
@@ -64,8 +62,7 @@ const SessionPolicies* RejectingAuthenticator::GetSessionPolicies() const {
 
 std::unique_ptr<ChannelAuthenticator>
 RejectingAuthenticator::CreateChannelAuthenticator() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace remoting::protocol

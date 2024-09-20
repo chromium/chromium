@@ -219,9 +219,13 @@ TEST_F(ContentSettingImageModelTest, CookieAccessed) {
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
       std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
-  HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
-                                 CONTENT_SETTING_BLOCK);
+  auto* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  content_settings->SetDefaultContentSetting(ContentSettingsType::COOKIES,
+                                             CONTENT_SETTING_BLOCK);
+  content_settings->SetContentSettingDefaultScope(
+      web_contents()->GetLastCommittedURL(), GURL(),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
   auto content_setting_image_model =
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::COOKIES);

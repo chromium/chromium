@@ -112,7 +112,7 @@ def _remove_generics(value):
     value = ret
 
 
-_PACKAGE_REGEX = re.compile('^package\s+(\S+?);', flags=re.MULTILINE)
+_PACKAGE_REGEX = re.compile(r'^package\s+(\S+?);', flags=re.MULTILINE)
 
 
 def _parse_package(contents):
@@ -383,7 +383,7 @@ def _parse_imports(contents):
           package.replace('.', '/') + '/' + class_name.replace('.', '$'))
 
 
-_JNI_NAMESPACE_REGEX = re.compile('@JNINamespace\("(.*?)"\)')
+_JNI_NAMESPACE_REGEX = re.compile(r'@JNINamespace\("(.*?)"\)')
 
 
 def _parse_jni_namespace(contents):

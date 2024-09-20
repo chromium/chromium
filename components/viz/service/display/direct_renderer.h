@@ -97,7 +97,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::Rect GetTargetDamageBoundingRect() const;
 
   // Public interface implemented by subclasses.
-  struct SwapFrameData {
+  struct VIZ_SERVICE_EXPORT SwapFrameData {
     SwapFrameData();
     ~SwapFrameData();
 

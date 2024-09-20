@@ -6,9 +6,9 @@
 
 The edits have the following format:
     ...
-    {lhs_node1};{rhs_node1}
+    {lhs_node1}@{rhs_node1}
     {node_n}
-    {lhs_node2};{rhs_node2}
+    {lhs_node2}@{rhs_node2}
     ...
     ...
 Where lhs_node, rhs_node, and node_n represent a node's text representation
@@ -142,7 +142,7 @@ class Node:
         # - size_info_available
         # - is_deref_node
         # - is_data_change
-        assert len(x) == 6
+        assert len(x) == 6, txt
 
         node = Node(*x)
 
@@ -247,7 +247,7 @@ def main():
     # Collect from every compile units the nodes and edges of the graph:
     for line in sys.stdin:
         line = line.rstrip('\n\r')
-        nodes = line.split(';')
+        nodes = line.split('@')
 
         # If there's only one node, it's a buffer node.
         if len(nodes) == 1:
@@ -255,7 +255,7 @@ def main():
             continue
 
         # Else, parse the edge between two nodes:
-        assert len(nodes) == 2
+        assert len(nodes) == 2, "Length of nodes: " + str(len(nodes))
         lhs = Node.from_string(nodes[0])
         rhs = Node.from_string(nodes[1])
 

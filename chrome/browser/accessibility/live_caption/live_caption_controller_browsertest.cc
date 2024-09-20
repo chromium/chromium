@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/live_caption/live_caption_controller.h"
+
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -25,7 +27,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/live_caption/caption_bubble_controller.h"
-#include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -58,7 +59,11 @@ Profile* CreateProfile() {
 
 class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
  public:
-  LiveCaptionControllerTest() = default;
+  LiveCaptionControllerTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kConch);
+#endif
+  }
   ~LiveCaptionControllerTest() override = default;
   LiveCaptionControllerTest(const LiveCaptionControllerTest&) = delete;
   LiveCaptionControllerTest& operator=(const LiveCaptionControllerTest&) =
@@ -155,6 +160,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
 
  private:
   std::unique_ptr<CaptionBubbleContextBrowser> caption_bubble_context_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, ProfilePrefsAreRegistered) {

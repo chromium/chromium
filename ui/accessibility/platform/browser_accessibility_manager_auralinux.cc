@@ -401,12 +401,13 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
   }
 }
 
-void BrowserAccessibilityManagerAuraLinux::OnNodeDeleted(AXTree* tree,
-                                                         int32_t node_id) {
-  if (primary_web_contents_for_window_id_ == node_id) {
-    primary_web_contents_for_window_id_ = kInvalidAXNodeID;
+void BrowserAccessibilityManagerAuraLinux::OnNodeWillBeDeleted(
+    ui::AXTree* tree,
+    ui::AXNode* node) {
+  if (primary_web_contents_for_window_id_ == node->id()) {
+    primary_web_contents_for_window_id_ = ui::kInvalidAXNodeID;
   }
-  BrowserAccessibilityManager::OnNodeDeleted(tree, node_id);
+  BrowserAccessibilityManager::OnNodeWillBeDeleted(tree, node);
 }
 
 void BrowserAccessibilityManagerAuraLinux::OnIgnoredWillChange(

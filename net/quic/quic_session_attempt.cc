@@ -8,10 +8,12 @@
 #include "base/feature_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
+#include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/address_utils.h"
+#include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
@@ -112,6 +114,18 @@ int QuicSessionAttempt::Start(CompletionOnceCallback callback) {
 
   callback_ = std::move(callback);
   return rv;
+}
+
+void QuicSessionAttempt::PolulateNetErrorDetails(
+    NetErrorDetails* details) const {
+  if (session_) {
+    details->connection_info = QuicHttpStream::ConnectionInfoFromQuicVersion(
+        session_->connection()->version());
+    details->quic_connection_error = session_->error();
+  } else {
+    details->connection_info = connection_info_;
+    details->quic_connection_error = quic_connection_error_;
+  }
 }
 
 int QuicSessionAttempt::DoLoop(int rv) {
@@ -221,6 +235,8 @@ int QuicSessionAttempt::DoCreateSessionComplete(int rv) {
 
 int QuicSessionAttempt::DoCryptoConnect(int rv) {
   if (rv != OK) {
+    // Reset `session_` to avoid dangling pointer.
+    ResetSession();
     return rv;
   }
 
@@ -311,6 +327,8 @@ int QuicSessionAttempt::DoConfirmConnection(int rv) {
   }
 
   if (rv != OK) {
+    // Reset `session_` to avoid dangling pointer.
+    ResetSession();
     return rv;
   }
 
@@ -377,6 +395,14 @@ void QuicSessionAttempt::OnCryptoConnectComplete(int rv) {
   if (rv != ERR_IO_PENDING && !callback_.is_null()) {
     std::move(callback_).Run(rv);
   }
+}
+
+void QuicSessionAttempt::ResetSession() {
+  CHECK(session_);
+  connection_info_ = QuicHttpStream::ConnectionInfoFromQuicVersion(
+      session_->connection()->version());
+  quic_connection_error_ = session_->error();
+  session_ = nullptr;
 }
 
 }  // namespace net

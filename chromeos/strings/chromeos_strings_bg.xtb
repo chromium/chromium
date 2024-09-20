@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Въведете подкана</translation>
 <translation id="115705039208660697">ананаси</translation>
 <translation id="1164939766849482256">Скрийнсейвър „От зазоряване до здрачаване“</translation>
+<translation id="1166688493741195933">Генерирането на имена на записите не бе успешно</translation>
 <translation id="1167755866710282443">Отворете менюто, за да персонализирате клавишите. Плъзнете менюто за преместване.</translation>
 <translation id="1171349345463658120">пясъчна лагуна</translation>
 <translation id="1173894706177603556">Преименуване</translation>
@@ -52,6 +53,7 @@
 <translation id="1204296502688602597">Забавяне на DNS</translation>
 <translation id="1207734034680156868">Предложенията се базират на описанието ви</translation>
 <translation id="121090498480012229">пускане или поставяне на пауза на мултимедията</translation>
+<translation id="1216675364136048456">Затваряне</translation>
 <translation id="1223498995510244364">Обобщаване</translation>
 <translation id="123124571410524056">Предполага се наличие на портал</translation>
 <translation id="1232610416724362657">водопад</translation>
@@ -125,9 +127,11 @@
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Задаване като тапет</translation>
 <translation id="1578784163189013834">Избиране на фон за скрийнсейвъра</translation>
+<translation id="1587031308639983732">Промените въз основа на часа може да не са точни. Тази настройка се управлява от администратора ви.</translation>
 <translation id="1588438908519853928">Нормално</translation>
 <translation id="1591562245178063882">Този месец</translation>
 <translation id="1593528591614229756">Не забравяйте да изберете имената на точките за достъп (APN), предоставени от мобилния оператор или администратора ви. Избирането на APN ще деактивира всички персонализирани имена на точки за достъп. Невалидните APN може да прекъснат мобилната ви връзка. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Скриване на преписа</translation>
 <translation id="160633243685262989">Визуализация на изображението</translation>
 <translation id="1611649489706141841">напред</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
@@ -141,7 +145,9 @@
 <translation id="1643449475550628585">Ежедневна промяна на изображението на тапета</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1651925268237749928">Избрахте споделен албум. Другите хора могат да добавят или променят снимки. Тапетът ви може да използва снимки, които понастоящем не са в този албум.</translation>
+<translation id="1661512400125589646">Пауза</translation>
 <translation id="1661865805917886535">Част от информацията за профила и системата може да бъде изпратена до Google. Използваме тази информация за отстраняване на технически проблеми и за подобряване на услугите ни в съответствие с Декларацията ни за поверителност (<ph name="PRIVACYPOLICYURL" />) и Общите ни условия (<ph name="TERMSOFSERVICEURL" />). За да поискате промени в съдържанието, отворете Помощния център за правни въпроси (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">Обобщението бе генерирано успешно</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
 <translation id="1664796644829245314">Визуализация на „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
@@ -150,6 +156,7 @@
 <translation id="1672499492233627739">Видеокартина от уебкамерата</translation>
 <translation id="1676557873873341166">Заснема се видеоклип</translation>
 <translation id="1684279041537802716">Цвят на акцентирането</translation>
+<translation id="1697278726914783200">Записване</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Налице е DNS резолвер</translation>
 <translation id="1708602061922134366">Синьо от логото на Google</translation>
@@ -167,10 +174,12 @@
 <translation id="1753496554272155572">Изход от визуализацията на тапета</translation>
 <translation id="1754578112426924640">Бутон за редактиране на <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Приложение за диагностика</translation>
+<translation id="1756681705074952506">Метод за въвеждане</translation>
 <translation id="175763766237925754">Добра (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Препис</translation>
 <translation id="1765169783255151332">Бързо превключване на клавишите</translation>
 <translation id="1768959921651994223">Тип удостоверяване</translation>
 <translation id="1776228893584526149">Цветови тон на тапета</translation>
@@ -215,6 +224,7 @@
 <translation id="1954818433534793392">сграда</translation>
 <translation id="1962550982027027473">Изисква се стандартно име на точката за достъп (APN)</translation>
 <translation id="1967860190218310525">Създаване на APN</translation>
+<translation id="1967917622327567355">Показване на преписа</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">традиционен</translation>
 <translation id="1977994649430373166">Снимка на потребителския профил в Google</translation>
@@ -247,6 +257,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">днес</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> снимки</translation>
+<translation id="2154460308960858308">Изчистване на търсенето</translation>
 <translation id="2156072344042480449">Двете ви най-скорошни подкани. Можете да ги използвате само докато сте на тази страница.</translation>
 <translation id="2157660087437850958">инструмент за избор на емоджи</translation>
 <translation id="2157959690810728433">В ОПАШКАТА</translation>
@@ -258,6 +269,7 @@
 <translation id="2180197493692062006">Нещо се обърка. Опитайте да отворите приложението отново.</translation>
 <translation id="2189104374785738357">Редактиране на подробностите за името на точката за достъп (APN)</translation>
 <translation id="2195732836444333448">В момента няма наличен капацитет. Заповядайте отново скоро.</translation>
+<translation id="2197185031095816179">Повторното задаване на безопасността може да помогне за премахването на нежеланите изскачащи прозорци, отстраняването на проблеми с мрежата и коригиране на други неочаквани проблеми.</translation>
 <translation id="2201758491318984023">велосипед</translation>
 <translation id="2203272733515928691">Горещ извор</translation>
 <translation id="2203642483788377106">скала</translation>
@@ -274,7 +286,6 @@
 <translation id="2230624078793142213">Създаване на още</translation>
 <translation id="2236746079896696523">Превключвател за фоновото осветление на клавиатурата</translation>
 <translation id="2240366984605217732">Превключване на подредбата</translation>
-<translation id="2242381852034179222">Тази функция се управлява от администраторите ви</translation>
 <translation id="2244834438220057800">зелен</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
 <translation id="2267285889943769271">Добавяне на екранна снимка</translation>
@@ -332,6 +343,7 @@
 <translation id="2560876255701405320">Списък с аудиозаписи</translation>
 <translation id="2561093647892030937">лимони</translation>
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
+<translation id="2573178735329662769">Записване на цялото аудио от Chromebook</translation>
 <translation id="2575552334616524665">Можете да включите това от настройките или от менюто <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Той ще заеме до 2 GB в хранилището</translation>
 <translation id="2584547424703650812">Сияйни пейзажи</translation>
@@ -484,6 +496,7 @@
 <translation id="3502426834823382181">преглед на всички приложения</translation>
 <translation id="3510890413042482857">Изпращане на <ph name="BEGIN_LINK1" />данните от проследяването на ефективността<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS: Актуал.</translation>
+<translation id="3522508178835057262">Засега не се поддържат преписи с повече от <ph name="MAX_WORD_LENGTH" /> думи</translation>
 <translation id="3527036260304016759">Неуспешно – неизвестна грешка</translation>
 <translation id="353214771040290298">Край на редактирането</translation>
 <translation id="3532980081107202182">Остават около <ph name="MIN_REMAINING" /> минути</translation>
@@ -492,12 +505,14 @@
 <translation id="3557205324756024651">Локална самоличност (по избор)</translation>
 <translation id="3565064564551103223">Разрешени IP адреси</translation>
 <translation id="3569407787324516067">Скрийнсейвър</translation>
+<translation id="3571184524500629183">Затваряне на търсенето</translation>
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="357889014807611375">Wi-Fi мрежа с отчитане</translation>
 <translation id="3583278742022654445">Сигналът е слаб. Приближете се до източника на Wi-Fi сигнал.</translation>
 <translation id="3588034708467091142">Проверете дали имате връзка с интернет и опитайте отново.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> е лесното за използване име на <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
+<translation id="3600063043775287169">Когато аудиото от Chromebook е включено, „Рекордер“ записва целия звук, който се възпроизвежда на това устройство. Уверете се, че искате да записвате всички звуци.</translation>
 <translation id="3600339377155080675">Дублиране на екрана</translation>
 <translation id="3602290021589620013">Визуализация</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -514,6 +529,7 @@
 <translation id="3661106764436337772">Пишете по-бързо и уверено</translation>
 <translation id="3662461537616691585">бургундско червено и тъмночервено</translation>
 <translation id="3668449597372804501">Тапет с облаци</translation>
+<translation id="3668570675727296296">Езикови настройки</translation>
 <translation id="3675132884790542448">прасета</translation>
 <translation id="3689839747745352263">Тест: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Зарежда се...</translation>
@@ -521,6 +537,7 @@
 <translation id="3715651196924935218">Изход от режима на плаващ прозорец</translation>
 <translation id="3716250181321371108">Създаване на контрола</translation>
 <translation id="3716830479327464973">Когато разрешите това, „Рекордер“ ще анализира аудиозаписите ви с цел:</translation>
+<translation id="3719826155360621982">Начална страница</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> отзива)</translation>
 <translation id="3748026146096797577">Няма връзка</translation>
 <translation id="3749289110408117711">Име на файла</translation>
@@ -529,11 +546,13 @@
 <translation id="3780740315729837296">Задаване на клавиш на клавиатурата</translation>
 <translation id="3784455785234192852">Заключване</translation>
 <translation id="3785643128701396311">изкуство с пиксели</translation>
+<translation id="3799381533888781854">ИЗКЛЮЧЕНО – тази настройка се управлява от администратора ви.</translation>
 <translation id="380097101658023925">контроли за rgb</translation>
 <translation id="38114475217616659">Изчистване на цялата история</translation>
 <translation id="3820172043799983114">Невалиден ПИН код.</translation>
 <translation id="382043424867370667">Тапет със залез</translation>
 <translation id="3824259034819781947">Прикачване на файлове</translation>
+<translation id="3836587210832263413">Активирайте само разширенията, които смятате за надеждни</translation>
 <translation id="3838338534323494292">Нова парола</translation>
 <translation id="3845880861638660475">Натиснете <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />, за да затворите диалоговия прозорец.</translation>
 <translation id="3848280697030027394">потъмняване на клавиатурата</translation>
@@ -579,6 +598,7 @@
 <translation id="4046123991198612571">Следващ запис</translation>
 <translation id="404928562651467259">ПРЕДУПРЕЖДЕНИЕ</translation>
 <translation id="4050208988451295487">Няколко опции:</translation>
+<translation id="405181879009056822">Настройки на ChromeOS</translation>
 <translation id="4054683689023980771">Изображението се изтегля</translation>
 <translation id="4059839844193047929">Ако излезете от тази страница, текущият ви запис ще бъде прекратен</translation>
 <translation id="4063039537646912479">светлосиньо</translation>
@@ -593,6 +613,7 @@
 <translation id="4111761024568264522">Сензорен панел с USB</translation>
 <translation id="4113067922640381334">Вече имате достъп до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Тъмен режим</translation>
+<translation id="4126551873361000548">Превъртане с 10 секунди назад</translation>
 <translation id="4130035430755296270">Продължете да задържате курсора на мишката за още опции за оформление</translation>
 <translation id="4130750466177569591">Приемам</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
@@ -622,6 +643,7 @@
 <translation id="4251839292699800785">Стилен офис</translation>
 <translation id="4258281355379922695">Забавяне на HTTP</translation>
 <translation id="4266143281602681663">прежда</translation>
+<translation id="4269815121975886860">Предпочитания при стартиране</translation>
 <translation id="4271957103967917607">Преглед на цял екран</translation>
 <translation id="4275663329226226506">Медия</translation>
 <translation id="4278766082079064416">Клавишната комбинация се използва за „<ph name="CONFLICT_ACCEL_NAME" />“. Редактирайте или премахнете действието, за да отстраните конфликта.</translation>
@@ -673,6 +695,7 @@
 <translation id="4507392511610824664">увеличаване на яркостта</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4513946894732546136">Отзиви</translation>
+<translation id="4516323842122524821">Сила на звука</translation>
 <translation id="4521826082652183069">Съответствие на алтернативното име на субекта</translation>
 <translation id="4522570452068850558">Подробности</translation>
 <translation id="4536864596629708641">Конфигурация на IP адреса</translation>
@@ -689,8 +712,10 @@
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4594021849294327751">Създаване на препис</translation>
+<translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Не могат да се създадат изображения на това. Опитайте с друга подкана.</translation>
 <translation id="4609350030397390689">Намаляване на яркостта на клавиатурата</translation>
+<translation id="4623061655523261501">Имената на записите бяха генерирани успешно</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
 <translation id="463791356324567266">Сканирането се отменя...</translation>
 <translation id="4644611440022666152">Включване и изтегляне</translation>
@@ -726,6 +751,7 @@
 <translation id="4809927044794281115">Светла тема</translation>
 <translation id="4813136279048157860">Моите изображения</translation>
 <translation id="4813345808229079766">Връзка</translation>
+<translation id="4824527342590024245">Засега не се поддържат преписи с по-малко от <ph name="MIN_WORD_LENGTH" /> думи</translation>
 <translation id="4830894019733815633">каньон</translation>
 <translation id="4832079907277790330">Избиране на папка в приложението Файлове…</translation>
 <translation id="4835901797422965222">Няма активни мрежи</translation>
@@ -754,8 +780,10 @@
 <translation id="4921665434385737356">За <ph name="NUM_SECONDS" /> секунди се заредиха <ph name="RATE" />.</translation>
 <translation id="4930320165497208503">За настройване или актуализиране на дадена връзка отворете <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="4946927805998996217">Генерира се обобщение</translation>
 <translation id="4950314376641394653">Фърмуерът на <ph name="DEVICE_NAME" /> е актуализиран до версия <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">тунел от дървета</translation>
+<translation id="4965661459364092269">Повторното задаване на безопасността завърши</translation>
 <translation id="4965703485264574128">За приблизителен резултат умножете стойността за <ph name="CATEGORY_TEXT" /> по <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Разделяне</translation>
 <translation id="4972592110715526173">промяна на режима</translation>
@@ -776,6 +804,7 @@
 <translation id="5049856988445523908">SIM картата е заключена (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Име на групата</translation>
 <translation id="5051044138948155788">Това е единствената страница. Ще се покаже екранът за стартиране на сканирането.</translation>
+<translation id="5053233795640754917">Пауза</translation>
 <translation id="5078711626843651677">Гласовите модели се съхраняват временно на устройството, докато обозначаването на говорещите бъде завършено. Можете да изключите това по всяко време от настройките.</translation>
 <translation id="5078983345702708852">футуристичен</translation>
 <translation id="5087864757604726239">назад</translation>
@@ -783,6 +812,7 @@
 <translation id="5089810972385038852">Щат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Изключете USB кабела на <ph name="DEVICE_NAME" /> и го включете отново, за да продължите процеса на актуализиране</translation>
+<translation id="5095864667399748231">Спиране или пускане на звука</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Клавишната комбинация без клавиша „<ph name="META_KEY" />“ може да е в конфликт с комбинация в приложение. Натиснете тази комбинация отново, за да продължите да я използвате, или натиснете нова, като включите и клавиша „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Подобни:</translation>
@@ -811,11 +841,13 @@
 <translation id="5229104491259541281">Преобразуване на „<ph name="QUERY" />“</translation>
 <translation id="5229344016299762883">Изход от режима на цял екран</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
+<translation id="5236119614998611749">Генерирането на обобщение не бе успешно</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Администраторът ви е настроил <ph name="APP_NAME" /> така, че да се стартира автоматично всеки път, когато влезете в профила си.}=2{Администраторът ви е настроил <ph name="APP_NAME" /> и още 1 приложение така, че да се стартират автоматично всеки път, когато влезете в профила си.}other{Администраторът ви е настроил <ph name="APP_NAME" /> и още # приложения така, че да се стартират автоматично всеки път, когато влезете в профила си.}}</translation>
 <translation id="5248419081947706722">син</translation>
 <translation id="5252456968953390977">Роуминг</translation>
 <translation id="5254600740122644523">Библиотека в(ъв) <ph name="SIMPLE_STYLE" /> стил, която се намира в(ъв) <ph name="SIMPLE_TONE" /> помещение</translation>
 <translation id="5257811368506016604">Активиране на режима за светли цветове</translation>
+<translation id="5261479807286543505">Настройки за стартирането</translation>
 <translation id="5264277876637023664">Тестване на процесора</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">Името на точката за достъп (APN) е деактивирано.</translation>
@@ -825,6 +857,7 @@
 <translation id="5292579816060236070">Тапет с изгрев</translation>
 <translation id="5294769550414936029">версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Преместване на прозореца в работен кът</translation>
+<translation id="5302048478445481009">Език</translation>
 <translation id="5303837385540978511">Тапет специално за <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Самоличност</translation>
@@ -924,9 +957,11 @@
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5876385649737594562">Включете, за да изберете опции</translation>
+<translation id="5877503382465267833">Поставяне на пауза на <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Цял екран</translation>
 <translation id="5893975327266416093">Докоснете клавиш на клавиатурата, за да го зададете</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
+<translation id="5896602941605730551">Пускане</translation>
 <translation id="5901630391730855834">Жълто</translation>
 <translation id="5903200662178656908">Устройството е комбинирана клавиатура и мишка.</translation>
 <translation id="5904994456462260490">Добавяне на ново име на точката за достъп (APN)</translation>
@@ -991,6 +1026,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Създадено на <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Капацитетът на батерията намалява с течение на използването ѝ</translation>
+<translation id="6189987971574353264">Пускане</translation>
 <translation id="6191293864534840972">Неправилно образувани сървъри за имена</translation>
 <translation id="6196607555925437199">Повторно създаване</translation>
 <translation id="6205145102504628069">Облаци</translation>
@@ -1012,6 +1048,8 @@
 <translation id="628726841779494414">Управлявайте принтерите си от съответните настройки</translation>
 <translation id="6292095526077353682">При зареждане да се показва скрийнсейвър за</translation>
 <translation id="629550705077076970">затъмняване на клавиатурата</translation>
+<translation id="6301193653204230066">Повторното задаване на безопасността изключва разширенията за браузъра Chrome и възстановява безопасните стандартни настройки за мрежата и други настройки.
+          Разделите, файловете, „бисквитките“ и историята няма да се променят.</translation>
 <translation id="6302401976930124515">Тестът „<ph name="TEST_NAME" />“ бе прекратен</translation>
 <translation id="631063167932043783">Приложение Explore</translation>
 <translation id="6318437367327684789">завинаги</translation>
@@ -1021,6 +1059,7 @@
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="6327262166342360252">Този тапет бе създаден с AI посредством следния текст: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Автоматична тъмна тема</translation>
+<translation id="6335228876613776082">Изтеглянето на модела завърши</translation>
 <translation id="6340526405444716530">Персонализиране</translation>
 <translation id="6348252528297699679">Можете да изключите местоположението от „Настройки &gt; Поверителност и сигурност &gt; Контроли за поверителност &gt; Достъп до местоположението“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Потребителско име и парола</translation>
@@ -1119,13 +1158,16 @@
 <translation id="6761537227090937007">Създава се изображение с висока разделителна способност…</translation>
 <translation id="6766275201586212568">Неуспешни преобразувания от DNS</translation>
 <translation id="6768237774506518020">Голям процент неуспехи при преобразуването от DNS</translation>
+<translation id="6786747875388722282">Разширения</translation>
 <translation id="6791471867139427246">цвят на осветлението на клавиатурата</translation>
 <translation id="6796229976413584781">Клавишната комбинация бе изтрита</translation>
 <translation id="6798678288485555829">Придвижване в текст</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Има информация, свързана с избраното от вас. За достъп използвайте стрелката нагоре.</translation>
 <translation id="6831043979455480757">Превод</translation>
+<translation id="6846843854964504403">Повторно задаване на безопасността</translation>
 <translation id="6853312040151791195">Скорост на разреждане</translation>
+<translation id="6862228900689076919">Тази функция се управлява от администратора ви</translation>
 <translation id="6862416241246624313">Отзивите бяха изпратени</translation>
 <translation id="6866732840889595464">Маргаритка</translation>
 <translation id="6871256179359663621">светлолилаво</translation>
@@ -1137,6 +1179,7 @@
 <translation id="6910312834584889076">Капакът на скенера е отворен. Затворете го и опитайте отново.</translation>
 <translation id="6910845598686542904">изчисляване на моделите на гласовете, разпознати в записа;</translation>
 <translation id="6911383237894364323">Не може да се установи връзка с мултимедийните сървъри</translation>
+<translation id="6927968682840110570">Име на записа</translation>
 <translation id="6930242544192836755">Продължителност</translation>
 <translation id="6930597342185648547">Всичко за фона</translation>
 <translation id="6939667434404433010">Търсете по име на записа</translation>
@@ -1179,6 +1222,7 @@
 <translation id="708426984172631313">СПРЯН</translation>
 <translation id="7086168019478250425">биолуминeсцентен плаж</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Генерират се имена на записите</translation>
 <translation id="7097908713073775559">разноцветни</translation>
 <translation id="710028965487274708">Неуспешно – Удостоверяването не бе успешно</translation>
 <translation id="7101959270679078188">Отключете устройството (<ph name="DEVICE_NAME" />), за да продължите процеса на актуализиране</translation>
@@ -1249,6 +1293,7 @@
 <translation id="7378170410161264436">„Рекордер“ може да създава преписи за записите с говор.
 За целта трябва да изтеглите модела за преписи (до 100 MB).</translation>
 <translation id="7384004438856720753">дворец</translation>
+<translation id="7388345524791662148">Още опции за <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Вграден сензорен панел</translation>
 <translation id="7397270852490618635">Изключване на светлата тема</translation>
 <translation id="7401543881546089382">Изтриване на прекия път</translation>
@@ -1270,6 +1315,7 @@
 <translation id="7513770521371759388">долна част</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Пускане на <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Създаване</translation>
 <translation id="7528507600602050979">Помощното съдържание не е налично</translation>
 <translation id="7535791657097741517">Включване на светлата тема</translation>
@@ -1282,6 +1328,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сензорен екран с USB</translation>
 <translation id="757747079855995705">камък</translation>
+<translation id="7590883480672980941">Настройки за въвеждане</translation>
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Преместете с мишката или клавишите със стрелки.</translation>
 <translation id="7618774594543487847">Неутрален</translation>
@@ -1308,9 +1355,11 @@
 <translation id="7746357909584236306">може да се редактира</translation>
 <translation id="7747039790905080783">Предварително споделен ключ</translation>
 <translation id="7752963721013053477">От зазоряване до здрачаване – специално съдържание</translation>
+<translation id="7760571082554155847">Настройки за началната страница</translation>
 <translation id="7762130827864645708">Промяната на паролата ви беше успешна. Моля, използвайте новата парола от сега нататък.</translation>
 <translation id="7763470514545477072">Съответствие на суфикса на домейна</translation>
 <translation id="7769672763586021400">Идент. № на модела</translation>
+<translation id="7774759755755950354">Назад</translation>
 <translation id="7778717409420828014">Отзивите ви ни помагат да подобрим практическата работа с Chromebook и ще бъдат прегледани от екипа ни. Поради големия брой сигнали не можем да изпратим отговор.</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7784116172884276937">Не са настроени DNS сървъри</translation>
@@ -1343,11 +1392,13 @@
 <translation id="7897043345768902965">пешеходна пътека</translation>
 <translation id="7902285181767404769">Заглушаване на известията по време на запис</translation>
 <translation id="7903695460270716054">Изберете подбрани произведения на изкуството и изображения</translation>
+<translation id="7912005977894000746">Назад към основната страница</translation>
 <translation id="7915220255123750251">Управление на настройките за името на точката за достъп (APN) за мрежата. Чрез APN се установява връзка между мобилна мрежа и интернет.</translation>
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="7942349550061667556">Червено</translation>
 <translation id="7943235353293548836">Постоянен интервал за проверка на връзката</translation>
 <translation id="7943516765291457328">Включете Bluetooth, за да сканирате за точки за достъп в близост</translation>
+<translation id="7944482598620888754">Съдържание на сайта</translation>
 <translation id="7944562637040950644">превключване на фоновото осветление на клавиатурата</translation>
 <translation id="7953669802889559161">Въвеждане</translation>
 <translation id="7955587717700691983">Клавиатура с Bluetooth</translation>
@@ -1355,6 +1406,7 @@
 <translation id="7971535376154084247">Общи контроли</translation>
 <translation id="7977800524392185497">За да се присъедините към <ph name="NETWORK_NAME" /> мрежа, отворете „Настройки“</translation>
 <translation id="7978412674231730200">Личен ключ</translation>
+<translation id="7982789257301363584">Мрежа</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Приложението <ph name="APP_NAME_1" /> бе стартирано автоматично}other{# приложения бяха стартирани автоматично}}</translation>
 <translation id="7994702968232966508">Метод с EAP</translation>
 <translation id="8004582292198964060">Браузър</translation>
@@ -1383,6 +1435,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8132480444149501833">Заявяване на броячи за трафика</translation>
+<translation id="8135609423982943441">Безопасните стандартни настройки на вашия Chromebook бяха възстановени. Имате възможност да коригирате тези промени по всяко време от настройките.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Избиране на <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Инстр. за програмисти</translation>
@@ -1400,6 +1453,7 @@
 <translation id="8227119283605456246">Прикачване на файл</translation>
 <translation id="8227488649450500937">Изпробвайте една от тези подкани или вижте <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ръководството за подкани<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
+<translation id="8236972776513018241">Препис</translation>
 <translation id="8238771987802558562">Избиране на APN</translation>
 <translation id="8246209727385807362">Неизвестен оператор</translation>
 <translation id="8250926778281121244">ръждив</translation>
@@ -1412,6 +1466,7 @@
 <translation id="8291967909914612644">Държава на собствения доставчик</translation>
 <translation id="8294431847097064396">Източник</translation>
 <translation id="8302368968391049045">Защитна стена за HTTPS</translation>
+<translation id="8308787307410010965">Настройки за съдържанието на сайтовете</translation>
 <translation id="8312330582793120272">пускане на мултимедията</translation>
 <translation id="8318753676953949627">Няма изображения</translation>
 <translation id="8320910311642849813">гора</translation>
@@ -1441,6 +1496,7 @@
 <translation id="8424039430705546751">надолу</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8431300646573772016">Новите неща в Chrome OS</translation>
+<translation id="8433186206711564395">Настройки на мрежата</translation>
 <translation id="843568408673868420">Връзка с интернет</translation>
 <translation id="844521431886043384">Не е настроен DNS</translation>
 <translation id="8456200178779628126">Използвайте AI на Google, за да получавате помощ при четене и писане</translation>
@@ -1499,10 +1555,13 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум в Google Снимки</translation>
 <translation id="8775713578693478175">Име на точката за достъп (APN) на модема</translation>
+<translation id="877735394245039557">Моделът се изтегля</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Тази мрежа може да има портал за удостоверяване</translation>
+<translation id="8797082062139985406">Създаване на име чрез AI на Google</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
 <translation id="8798441408945964110">Име на доставчика</translation>
+<translation id="8808828119384186784">Настройки на Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тапет</translation>
 <translation id="8820457400746201697">Преместете синята точка на докосване до дадено действие. Изберете съответния клавиш за персонализиране.</translation>
@@ -1520,6 +1579,7 @@
 <translation id="8864415976656252616">Няма предложено съдържание. Вижте най-популярното помощно съдържание.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Устройството е таблет.</translation>
+<translation id="8878117140814294155">Спиране или пускане на звука на микрофона</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>
 <translation id="8882789155418924367">сови</translation>
 <translation id="8892443466059986410">Анулиране на редактирането на прекия път</translation>

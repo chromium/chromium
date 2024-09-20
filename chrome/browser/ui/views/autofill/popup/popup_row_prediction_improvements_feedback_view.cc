@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -24,6 +25,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -45,25 +47,34 @@ constexpr int kButtonRadius = 12;
 std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
     base::RepeatingClosure learn_more_clicked) {
   auto feedback_container = std::make_unique<PopupRowContentView>();
+  // TODO(crbug.com/345170058): Possibly move `touchable_menu_height` inside the
+  // `ChromeLayoutProvider`.
+  feedback_container->SetMinimumCrossAxisSize(
+      views::MenuConfig::instance().touchable_menu_height);
 
-  const std::u16string text = u"Prediction improvements. $1.";
-  const std::u16string learn_more_link_text = u"Learn more";
-  std::vector<size_t> replacement_offsets;
   views::StyledLabel::RangeStyleInfo style_info =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           std::move(learn_more_clicked));
-  const std::u16string formatted_text = l10n_util::FormatString(
-      text, /*replacements=*/{learn_more_link_text}, &replacement_offsets);
+  std::vector<size_t> replacement_offsets;
+  const std::u16string manage_prediction_improvements_link_text =
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS);
+  const std::u16string formatted_text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT,
+      /*replacements=*/{manage_prediction_improvements_link_text},
+      &replacement_offsets);
 
   feedback_container->SetFlexForView(
       feedback_container->AddChildView(
           views::Builder<views::StyledLabel>()
               .SetText(formatted_text)
               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-              .AddStyleRange(gfx::Range(replacement_offsets[0],
-                                        replacement_offsets[0] +
-                                            learn_more_link_text.length()),
-                             style_info)
+              .AddStyleRange(
+                  gfx::Range(
+                      replacement_offsets[0],
+                      replacement_offsets[0] +
+                          manage_prediction_improvements_link_text.length()),
+                  style_info)
               // This is used in tests only.
               .SetID(PopupRowPredictionImprovementsFeedbackView::
                          kLearnMoreStyledLabelViewID)
@@ -87,8 +98,12 @@ std::unique_ptr<views::ImageButton> CreateFeedbackButton(
       views::CreateVectorImageButtonWithNativeTheme(button_action, icon,
                                                     kIconSize);
   const bool is_thumbs_up = icon.name == vector_icons::kThumbUpIcon.name;
-  // TODO(b/362468426): Make these strings come from a finch config.
-  const std::u16string tooltip = is_thumbs_up ? u"Thumbs up" : u"Thumbs down";
+  const std::u16string tooltip =
+      is_thumbs_up
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_UP_BUTTON_TOOLTIP)
+          : l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_DOWN_BUTTON_TOOLTIP);
 
   views::InstallFixedSizeCircleHighlightPathGenerator(button.get(),
                                                       kButtonRadius);

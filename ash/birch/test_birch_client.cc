@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/models/image_model.h"
 
 namespace ash {
 
@@ -184,6 +185,10 @@ void TestBirchClient::WaitForRefreshTokens(base::OnceClosure callback) {
 
 base::FilePath TestBirchClient::GetRemovedItemsFilePath() {
   return test_dir_.GetPath();
+}
+
+ui::ImageModel TestBirchClient::GetChromeBackupIcon() {
+  return ui::ImageModel();
 }
 
 void TestBirchClient::HandleCalendarFetch(

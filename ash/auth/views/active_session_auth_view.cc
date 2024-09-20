@@ -244,8 +244,13 @@ bool ActiveSessionAuthView::HasPin() const {
   return auth_container_->HasPin();
 }
 
-void ActiveSessionAuthView::SetPinStatus(const std::u16string& status_str) {
-  auth_container_->SetPinStatus(status_str);
+void ActiveSessionAuthView::SetPinStatus(
+    std::unique_ptr<cryptohome::PinStatus> pin_status) {
+  auth_container_->SetPinStatus(std::move(pin_status));
+}
+
+const std::u16string& ActiveSessionAuthView::GetPinStatusMessage() const {
+  return auth_container_->GetPinStatusMessage();
 }
 
 void ActiveSessionAuthView::SetInputEnabled(bool enabled) {

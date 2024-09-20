@@ -234,11 +234,10 @@ SVGParsingError SVGAngle::SetValueAsString(const String& value) {
   float value_in_specified_units = 0;
   SVGAngleType unit_type = kSvgAngletypeUnknown;
 
-  SVGParsingError error =
-      WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
-        return ParseValue(chars, chars + length, value_in_specified_units,
-                          unit_type);
-      });
+  SVGParsingError error = WTF::VisitCharacters(value, [&](auto chars) {
+    return ParseValue(chars.data(), chars.data() + chars.size(),
+                      value_in_specified_units, unit_type);
+  });
   if (error != SVGParseStatus::kNoError)
     return error;
 

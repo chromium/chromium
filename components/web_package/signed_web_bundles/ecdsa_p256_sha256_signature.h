@@ -25,10 +25,14 @@ class EcdsaP256SHA256Signature {
   static base::expected<EcdsaP256SHA256Signature, std::string> Create(
       base::span<const uint8_t> bytes);
 
-  ~EcdsaP256SHA256Signature();
+  explicit EcdsaP256SHA256Signature(mojo::DefaultConstruct::Tag);
 
   EcdsaP256SHA256Signature(const EcdsaP256SHA256Signature&);
+  EcdsaP256SHA256Signature(EcdsaP256SHA256Signature&&);
   EcdsaP256SHA256Signature& operator=(const EcdsaP256SHA256Signature&);
+  EcdsaP256SHA256Signature& operator=(EcdsaP256SHA256Signature&&);
+
+  ~EcdsaP256SHA256Signature();
 
   bool operator==(const EcdsaP256SHA256Signature& other) const = default;
 
@@ -37,7 +41,6 @@ class EcdsaP256SHA256Signature {
 
   base::span<const uint8_t> bytes() const { return *bytes_; }
 
-  explicit EcdsaP256SHA256Signature(mojo::DefaultConstruct::Tag);
 
  private:
   explicit EcdsaP256SHA256Signature(std::vector<uint8_t> bytes);

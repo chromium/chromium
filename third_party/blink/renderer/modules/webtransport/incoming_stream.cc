@@ -198,16 +198,8 @@ void IncomingStream::ProcessClose() {
 
   if (fin_received_.value()) {
     ScriptState::Scope scope(script_state_);
-    ExceptionState exception_state(script_state_->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
-    CloseAbortAndReset(exception_state);
     // Ignore exception because stream will be errored soon.
-    if (exception_state.HadException()) {
-      DLOG(WARNING) << "CloseAbortAndReset throws exception "
-                    << exception_state.Code() << ", "
-                    << exception_state.Message();
-      exception_state.ClearException();
-    }
+    CloseAbortAndReset(IGNORE_EXCEPTION);
   }
 
   ScriptValue error;

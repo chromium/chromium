@@ -452,6 +452,11 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
       "smbfsmountid" /* fake mount ID for mount name */,
       storage::kFileSystemTypeSmbFs, storage::FileSystemMountOption(),
       FilePath("/media/fuse/smbfs-smbfsmountid"));
+  storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+      base::StrCat({util::kFuseBoxMountNamePrefix, "id"}),
+      storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
+      base::FilePath::FromUTF8Unsafe(util::kFuseBoxMediaPath)
+          .AppendASCII("subdir"));
 
   FilePath inside;
   FileSystemURL url;
@@ -513,6 +518,11 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
           "smbfsmountid",
           "path/in/smb",
           "/mnt/chromeos/SMB/smbfsmountid/path/in/smb",
+      },
+      {
+          "fubomona:id",
+          "path/in/fusebox",
+          "/mnt/chromeos/Fusebox/subdir/path/in/fusebox",
       },
   };
 
@@ -585,6 +595,19 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   ash::SeneschalClient::Shutdown();
   ash::ConciergeClient::Shutdown();
   ash::ChunneldClient::Shutdown();
+}
+
+TEST_F(FileManagerPathUtilTest, ConvertFuseMonikerPathToPathInsideVM) {
+  base::FilePath inside("/random/path");
+  EXPECT_FALSE(ConvertFuseboxMonikerPathToPathInsideVM(
+      base::FilePath("/media/fuse/fusebox/subdir/path"),
+      base::FilePath("/mnt/chromeos"), &inside));
+  EXPECT_EQ(inside.value(), "/random/path");
+
+  EXPECT_TRUE(ConvertFuseboxMonikerPathToPathInsideVM(
+      base::FilePath("/media/fuse/fusebox/moniker/token"),
+      base::FilePath("/mnt/chromeos"), &inside));
+  EXPECT_EQ(inside.value(), "/mnt/chromeos/Fusebox/moniker/token");
 }
 
 TEST_F(FileManagerPathUtilTest, ExtractMountNameFileSystemNameFullPath) {

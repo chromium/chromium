@@ -437,8 +437,10 @@ std::optional<std::string> GetDeviceManagerIdentity() {
 #else
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   std::string custom_management_label =
-      g_browser_process->local_state()->GetString(
-          prefs::kEnterpriseCustomLabel);
+      g_browser_process->local_state()
+          ? g_browser_process->local_state()->GetString(
+                prefs::kEnterpriseCustomLabel)
+          : std::string();
   if (!custom_management_label.empty()) {
     return custom_management_label;
   }

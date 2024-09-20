@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
@@ -20,6 +21,7 @@
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_job.h"
+#include "net/http/http_stream_pool_switching_info.h"
 #include "net/http/http_stream_request.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -36,16 +38,16 @@ HttpStreamPool::JobController::~JobController() = default;
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     HttpStreamRequest::Delegate* delegate,
-    const HttpStreamKey& stream_key,
+    HttpStreamPoolSwitchingInfo switching_info,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
-    AlternativeServiceInfo alternative_service_info,
-    quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
   CHECK(!delegate_);
   CHECK(!request_);
+
+  const HttpStreamKey& stream_key = switching_info.stream_key;
 
   network_anonymization_key_ = stream_key.network_anonymization_key();
 
@@ -55,23 +57,33 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
       HttpStreamRequest::HTTP_STREAM);
   request_ = request.get();
 
+  RespectLimits respect_limits =
+      (switching_info.load_flags & LOAD_IGNORE_LIMITS)
+          ? RespectLimits::kIgnore
+          : RespectLimits::kRespect;
+
   // Currently we only support a single HTTP/2 alternative service. This
   // behavior is the same as HttpStreamFactory::JobController.
-  if (alternative_service_info.protocol() == NextProto::kProtoHTTP2) {
+  if (switching_info.alternative_service_info.protocol() ==
+      NextProto::kProtoHTTP2) {
     HttpStreamKey alt_stream_key(
-        url::SchemeHostPort(url::kHttpsScheme,
-                            alternative_service_info.host_port_pair().host(),
-                            alternative_service_info.host_port_pair().port()),
+        url::SchemeHostPort(
+            url::kHttpsScheme,
+            switching_info.alternative_service_info.host_port_pair().host(),
+            switching_info.alternative_service_info.host_port_pair().port()),
         stream_key.privacy_mode(), stream_key.socket_tag(),
         stream_key.network_anonymization_key(), stream_key.secure_dns_policy(),
         stream_key.disable_cert_network_fetches());
 
-    alternative_service_info_ = std::move(alternative_service_info);
+    alternative_service_info_ =
+        std::move(switching_info.alternative_service_info);
 
     alternative_job_ =
         pool_->GetOrCreateGroup(alt_stream_key)
-            .CreateJob(this, alternative_service_info.protocol());
-    alternative_job_->Start(priority, allowed_bad_certs,
+            .CreateJob(this, alternative_service_info_.protocol(),
+                       switching_info.is_http1_allowed,
+                       switching_info.proxy_info);
+    alternative_job_->Start(priority, allowed_bad_certs, respect_limits,
                             enable_ip_based_pooling,
                             enable_alternative_services,
                             quic::ParsedQuicVersion::Unsupported(), net_log);
@@ -80,9 +92,12 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
   }
 
   origin_job_ = pool_->GetOrCreateGroup(stream_key)
-                    .CreateJob(this, NextProto::kProtoUnknown);
-  origin_job_->Start(priority, allowed_bad_certs, enable_ip_based_pooling,
-                     enable_alternative_services, quic_version, net_log);
+                    .CreateJob(this, NextProto::kProtoUnknown,
+                               switching_info.is_http1_allowed,
+                               switching_info.proxy_info);
+  origin_job_->Start(priority, allowed_bad_certs, respect_limits,
+                     enable_ip_based_pooling, enable_alternative_services,
+                     switching_info.quic_version, net_log);
 
   return request;
 }
@@ -94,7 +109,8 @@ void HttpStreamPool::JobController::OnStreamReady(
   SetJobResult(job, OK);
   request_->Complete(negotiated_protocol,
                      ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON);
-  delegate_->OnStreamReady(ProxyInfo::Direct(), std::move(stream));
+  // `job` should not be destroyed yet.
+  delegate_->OnStreamReady(job->proxy_info(), std::move(stream));
 }
 
 void HttpStreamPool::JobController::OnStreamFailed(
@@ -105,7 +121,8 @@ void HttpStreamPool::JobController::OnStreamFailed(
   request_->AddConnectionAttempts(job->connection_attempts());
   SetJobResult(job, status);
   if (AllJobsFinished()) {
-    delegate_->OnStreamFailed(status, net_error_details, ProxyInfo::Direct(),
+    // `job` should not be destroyed yet.
+    delegate_->OnStreamFailed(status, net_error_details, job->proxy_info(),
                               std::move(resolve_error_info));
   }
 }

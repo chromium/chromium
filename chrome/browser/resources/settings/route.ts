@@ -88,6 +88,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL =
         r.SITE_SETTINGS.createChild('capturedSurfaceControl');
   }
+  if (loadTimeData.getBoolean('enableSmartCardReadersContentSetting')) {
+    r.SITE_SETTINGS_SMART_CARD_READERS =
+        r.SITE_SETTINGS.createChild('smartCardReaders');
+  }
   if (loadTimeData.getBoolean('privateStateTokensEnabled')) {
     r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
   }
@@ -106,7 +110,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_IMAGES = r.SITE_SETTINGS.createChild('images');
   r.SITE_SETTINGS_MIXEDSCRIPT = r.SITE_SETTINGS.createChild('insecureContent');
   r.SITE_SETTINGS_JAVASCRIPT = r.SITE_SETTINGS.createChild('javascript');
-  r.SITE_SETTINGS_JAVASCRIPT_JIT = r.SITE_SETTINGS.createChild('v8');
+  r.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER = r.SITE_SETTINGS.createChild('v8');
   if (loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt')) {
     r.SITE_SETTINGS_KEYBOARD_LOCK = r.SITE_SETTINGS.createChild('keyboardLock');
     r.SITE_SETTINGS_POINTER_LOCK = r.SITE_SETTINGS.createChild('pointerLock');
@@ -159,6 +163,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_AUTOMATIC_FULLSCREEN =
         r.SITE_SETTINGS.createChild('automaticFullScreen');
   }
+  if (loadTimeData.getBoolean('enableWebAppInstallation')) {
+    r.SITE_SETTINGS_WEB_APP_INSTALLATION =
+        r.SITE_SETTINGS.createChild('webApplications');
+  }
 }
 
 /**
@@ -200,6 +208,10 @@ function createRoutes(): SettingsRoutes {
       loadTimeData.getBoolean('showAdvancedFeaturesMainControl')) {
     r.AI = r.BASIC.createSection(
         '/ai', 'ai', loadTimeData.getString('aiPageTitle'));
+    if (loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
+        loadTimeData.getBoolean('showTabOrganizationControl')) {
+      r.AI_TAB_ORGANIZATION = r.AI.createChild('/ai/tabOrganizer');
+    }
   }
 
   // <if expr="not chromeos_ash">
@@ -305,15 +317,6 @@ function createRoutes(): SettingsRoutes {
           '/performance', 'performance',
           loadTimeData.getString('performancePageTitle'));
     }
-
-    // <if expr="_google_chrome">
-    if (visibility.getMostChrome !== false &&
-        loadTimeData.getBoolean('showGetTheMostOutOfChromeSection')) {
-      r.GET_MOST_CHROME = r.ADVANCED.createSection(
-          '/getMostChrome', 'getMostChrome',
-          loadTimeData.getString('getTheMostOutOfChrome'));
-    }
-    // </if>
   }
   return r as unknown as SettingsRoutes;
 }

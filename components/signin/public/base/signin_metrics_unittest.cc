@@ -47,6 +47,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE,
     AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO,
     AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS,
+    AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -74,6 +75,7 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_SET_UP_LIST,
     AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
     AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE,
+    AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
 };
 
 class SigninMetricsTest : public ::testing::Test {
@@ -202,8 +204,12 @@ class SigninMetricsTest : public ::testing::Test {
         return "AvatarBubbleSigninWithSyncPromo";
       case AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
         return "AccountMenu";
+      case AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
+        return "AccountMenuFailedSwitch";
       case AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
         return "ProductSpecifications";
+      case AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+        return "AddressBubble";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED_IN_MIGRATION();
         return "";

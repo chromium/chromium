@@ -10,7 +10,9 @@
 #ifndef CHROME_INSTALL_STATIC_INSTALL_UTIL_H_
 #define CHROME_INSTALL_STATIC_INSTALL_UTIL_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/win/windows_types.h"
@@ -277,16 +279,26 @@ std::vector<std::wstring> TokenizeString(const std::wstring& str,
 
 // Tokenizes |command_line| in the same way as CommandLineToArgvW() in
 // shell32.dll, handling quoting, spacing etc. Normally only used from
-// GetSwitchValueFromCommandLine(), but exposed for testing.
+// GetCommandLineSwitch(), but exposed for testing.
 std::vector<std::wstring> TokenizeCommandLineToArray(
     const std::wstring& command_line);
 
 // Returns the value of a switch of the form "--<switch name>=<switch value>" in
-// |command_line|. An empty switch in |command_line| ("--") denotes the end of
-// switches and the beginning of args. Anything of the form --<switch
-// name>=<switch value> following "--" is ignored.
-std::wstring GetSwitchValueFromCommandLine(const std::wstring& command_line,
-                                           const std::wstring& switch_name);
+// |command_line|. If the switch has no value, returns an empty string. If the
+// switch is not present returns std::nullopt. An empty switch in |command_line|
+// ("--") denotes the end of switches and the beginning of args. Anything
+// following the "--" switch is ignored.
+std::optional<std::wstring> GetCommandLineSwitch(
+    const std::wstring& command_line,
+    std::wstring_view switch_name);
+
+// Convenience version of the above which returns the value of a switch in the
+// current process command line.
+std::optional<std::wstring> GetCommandLineSwitch(std::wstring_view switch_name);
+
+// Returns the value of the specified switch or an empty string if there is no
+// such switch in the current process command line or the switch has no value.
+std::wstring GetCommandLineSwitchValue(std::wstring_view switch_name);
 
 // Ensures that the given |full_path| exists, and that the tail component is a
 // directory. If the directory does not already exist, it will be created.

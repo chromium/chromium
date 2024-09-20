@@ -20,18 +20,9 @@ using ::testing::Property;
 
 // This class contains additional logic to set up DriveFS and enable testing for
 // Drive file search in the launcher.
-class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest,
-                                      public testing::WithParamInterface<bool> {
+class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest {
  public:
-  AppListDriveSearchBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          search_features::kLauncherFuzzyMatchAcrossProviders);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          search_features::kLauncherFuzzyMatchAcrossProviders);
-    }
-  }
+  AppListDriveSearchBrowserTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     create_drive_integration_service_ = base::BindRepeating(
@@ -65,12 +56,8 @@ class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(FuzzyMatchForProviders,
-                         AppListDriveSearchBrowserTest,
-                         testing::Bool());
-
 // Test that Drive files can be searched.
-IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FileSearch) {
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, FileSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
@@ -91,7 +78,7 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FileSearch) {
 }
 
 // Test that Drive folders can be searched.
-IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FolderSearch) {
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, FolderSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
@@ -111,7 +98,7 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FolderSearch) {
 }
 
 // Test that files are ordered based on access time.
-IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, ResultOrdering) {
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, ResultOrdering) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =

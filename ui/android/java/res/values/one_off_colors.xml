@@ -22,8 +22,6 @@ found in the LICENSE file.
     <color name="black_alpha_30" tools:ignore="UnusedResources">#4D000000</color>
 
     <color name="green_50">#E6F4EA</color>
-    <color name="gm3_baseline_surface_tint_light_alph_5">#0D6991D6</color>
-    <color name="neutral_variant_80_alpha_5">#0DC7C7C7</color>
 
     <color name="white_alpha_65" tools:ignore="UnusedResources">#A6FFFFFF</color>
     <color name="white_alpha_75" tools:ignore="UnusedResources">#BFFFFFFF</color>

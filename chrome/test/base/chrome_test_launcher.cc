@@ -30,6 +30,7 @@
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/profiler/chrome_thread_profiler_client.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/taskbar_util.h"
@@ -37,6 +38,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/utility/chrome_content_utility_client.h"
 #include "components/crash/core/app/crashpad.h"
+#include "components/sampling_profiler/thread_profiler.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/network_service_test_helper.h"
@@ -225,6 +227,11 @@ bool ChromeTestChromeMainDelegate::ShouldHandleConsoleControlEvents() {
 
 void ChromeTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
   base::test::TaskEnvironment::CreateThreadPool();
+
+  // The ThreadProfiler client must be set before main thread profiling is
+  // started (below).
+  sampling_profiler::ThreadProfiler::SetClient(
+      std::make_unique<ChromeThreadProfilerClient>());
 
 // `ChromeMainDelegateAndroid::PreSandboxStartup` creates the profiler a little
 // later.

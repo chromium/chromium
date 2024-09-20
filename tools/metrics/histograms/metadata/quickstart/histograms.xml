@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.FastPairAdvertisementStarted.ErrorCode"
-    enum="QuickStartFastPairAdvertisingErrorCode" expires_after="2024-12-01">
+    enum="QuickStartFastPairAdvertisingErrorCode" expires_after="2025-03-09">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>

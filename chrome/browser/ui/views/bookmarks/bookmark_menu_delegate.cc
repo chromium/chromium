@@ -110,8 +110,9 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
       return;
 
     bool copy = event.source_operations() == ui::DragDropTypes::DRAG_COPY;
-    output_drag_op = chrome::DropBookmarks(profile_, drop_data_, drop_parent_,
-                                           index_to_drop_at_, copy);
+    output_drag_op = chrome::DropBookmarks(
+        profile_, drop_data_, drop_parent_, index_to_drop_at_, copy,
+        chrome::BookmarkReorderDropTarget::kBookmarkMenu);
   }
 
  private:

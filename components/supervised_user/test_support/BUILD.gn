@@ -5,6 +5,8 @@
 source_set("test_support") {
   testonly = true
   sources = [
+    "browser_state_management.cc",
+    "browser_state_management.h",
     "kids_chrome_management_test_utils.cc",
     "kids_chrome_management_test_utils.h",
     "kids_management_api_server_mock.cc",
@@ -18,6 +20,8 @@ source_set("test_support") {
   ]
   deps = [
     "//base",
+    "//components/content_settings/core/browser",
+    "//components/prefs",
     "//components/safe_search_api",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
@@ -25,6 +29,7 @@ source_set("test_support") {
     "//components/supervised_user/core/browser:fetcher",
     "//components/supervised_user/core/browser:fetcher_config",
     "//components/supervised_user/core/browser/proto",
+    "//components/supervised_user/core/common",
     "//net:test_support",
     "//net/traffic_annotation",
     "//services/network/public/cpp",

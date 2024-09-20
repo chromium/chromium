@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX файлын ауыстыру мүмкін болмады. Файл пайдаланылып жатқан болуы мүмкін.</translation>
 <translation id="3163201441334626963">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">Кеңейтімді пакеттен шығару мүмкін емес. Кеңейтімді қауіпсіз түрде пакеттен шығару үшін диск әрібінен басталатын профиль каталогіңіздің жолы болу керек және қосындыны, бекіту нүктесін немесе таңбалық сілтемені қамтымайды. Профиліңіз үшін мұндай жол жоқ.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> ұсынған <ph name="PRODUCT_NAME" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Жеке кілт үшін енгізілетін мән жарамды жол болуы керек.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Бұл машинаның әкімшісі <ph name="EXTENSION_NAME" /> кеңейтімін орнатуды қажет етеді. Оны жою мүмкін емес.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> ұсынған <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">Кеңейтімді пакеттен шығару мүмкін емес. Кеңейтімді пакеттен қауіпсіз түрде шығару үшін белгі сілтемесін қамтымайтын профиль каталогінің жолы болуы керек. Профиліңіз үшін мұндай жолдар жоқ.</translation>
 <translation id="6322279351188361895">Жеке кілтті оқу әрекеті сәтсіз аяқталды.</translation>
 <translation id="6391538222494443604">Кіріс каталогі бар болуы керек.</translation>
 <translation id="641087317769093025">Кеңейтімді мұрағаттан шығару мүмкін болмады</translation>

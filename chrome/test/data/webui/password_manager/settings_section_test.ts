@@ -18,9 +18,12 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createBlockedSiteEntry, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
 // clang-format off
+// <if expr="is_win or is_macosx or is_chromeos">
+import type { PrefToggleButtonElement } from 'chrome://password-manager/password_manager.js';
+// </if>
+
 // <if expr="is_win or is_macosx">
-import type { PrefToggleButtonElement} from 'chrome://password-manager/password_manager.js';
-import {PasskeysBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import { PasskeysBrowserProxyImpl } from 'chrome://password-manager/password_manager.js';
 
 import {TestPasskeysBrowserProxy} from './test_passkeys_browser_proxy.js';
 // </if>
@@ -142,7 +145,7 @@ suite('SettingsSectionTest', function() {
     assertFalse(settings.$.autosigninToggle.checked);
   });
 
-  // <if expr="is_win or is_macosx">
+  // <if expr="is_win or is_macosx or is_chromeos">
   // Tests that biometric auth pref is visible, and clicking on it triggers
   // biometric auth validation instead of directly updating the pref value.
   test('biometric auth prefs when feature is available', async function() {
@@ -391,7 +394,7 @@ suite('SettingsSectionTest', function() {
   });
 
   test('account storage toggle when feature is available', async function() {
-    passwordManager.data.isOptedInAccountStorage = false;
+    passwordManager.data.isAccountStorageEnabled = false;
     syncProxy.accountInfo = {
       email: 'testemail@gmail.com',
     };
@@ -412,16 +415,16 @@ suite('SettingsSectionTest', function() {
     assertFalse(accountStorageToggle.hasAttribute('checked'));
     accountStorageToggle.click();
 
-    // Toggle should not change until authentication succeeds.
-    await passwordManager.whenCalled('optInForAccountStorage');
+    // Toggle should not change until the backend confirms the enabling.
+    await passwordManager.whenCalled('setAccountStorageEnabled');
     assertFalse(accountStorageToggle.hasAttribute('checked'));
 
-    // Assert that password section subscribed as a listener to opt in state and
-    // opt out from account storage.
-    assertTrue(!!passwordManager.listeners.accountStorageOptInStateListener);
-    passwordManager.data.isOptedInAccountStorage = true;
+    // Assert that password section subscribed as a listener to enabled state
+    // and enable account storage.
+    assertTrue(!!passwordManager.listeners.accountStorageEnabledStateListener);
+    passwordManager.data.isAccountStorageEnabled = true;
     // Imitate listener notification after successful identification.
-    passwordManager.listeners.accountStorageOptInStateListener(true);
+    passwordManager.listeners.accountStorageEnabledStateListener(true);
     await flushTasks();
 
     assertTrue(accountStorageToggle.checked);
@@ -479,7 +482,7 @@ suite('SettingsSectionTest', function() {
   });
 
   test('Move passwords to account button is visible', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
@@ -507,7 +510,7 @@ suite('SettingsSectionTest', function() {
   });
 
   test('Move passwords to account button is not visible', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
@@ -537,7 +540,7 @@ suite('SettingsSectionTest', function() {
   test(
       'clicking save passwords in account opens move passwords dialog',
       async function() {
-        passwordManager.data.isOptedInAccountStorage = true;
+        passwordManager.data.isAccountStorageEnabled = true;
         syncProxy.syncInfo = {
           isEligibleForAccountStorage: true,
           isSyncingPasswords: false,
@@ -581,7 +584,7 @@ suite('SettingsSectionTest', function() {
 
   test('Account storage iph', async function() {
     loadTimeData.overrideValues({canAddShortcut: false});
-    passwordManager.data.isOptedInAccountStorage = false;
+    passwordManager.data.isAccountStorageEnabled = false;
     syncProxy.accountInfo = {
       email: 'testemail@gmail.com',
     };

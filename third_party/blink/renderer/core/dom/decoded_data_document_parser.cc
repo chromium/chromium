@@ -61,8 +61,7 @@ void DecodedDataDocumentParser::AppendBytes(base::span<const uint8_t> bytes) {
   if (IsDetached())
     return;
 
-  base::span<const char> char_data = base::as_chars(bytes);
-  String decoded = decoder_->Decode(char_data.data(), char_data.size());
+  String decoded = decoder_->Decode(bytes);
   UpdateDocument(decoded);
 }
 

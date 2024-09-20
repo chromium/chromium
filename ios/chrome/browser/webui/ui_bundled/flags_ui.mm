@@ -194,7 +194,7 @@ FlagsUI::FlagsUI(web::WebUIIOS* web_ui, const std::string& host)
                 flag_access);
 
   // Set up the about:flags source.
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateFlagsUIHTMLSource());
 }
 

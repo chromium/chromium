@@ -1,0 +1,201 @@
+error: unrecognized representation hint
+  --> tests/ui-nightly/enum.rs:19:8
+   |
+19 | #[repr("foo")]
+   |        ^^^^^
+
+error: unrecognized representation hint
+  --> tests/ui-nightly/enum.rs:25:8
+   |
+25 | #[repr(foo)]
+   |        ^^^
+
+error: unsupported representation for deriving FromBytes, AsBytes, or Unaligned on an enum
+  --> tests/ui-nightly/enum.rs:31:8
+   |
+31 | #[repr(transparent)]
+   |        ^^^^^^^^^^^
+
+error: conflicting representation hints
+  --> tests/ui-nightly/enum.rs:37:8
+   |
+37 | #[repr(u8, u16)]
+   |        ^^^^^^^
+
+error: must have a non-align #[repr(...)] attribute in order to guarantee this type's memory layout
+  --> tests/ui-nightly/enum.rs:42:22
+   |
+42 | #[derive(FromZeroes, FromBytes)]
+   |                      ^^^^^^^^^
+   |
+   = note: this error originates in the derive macro `FromBytes` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: only C-like enums can implement FromZeroes
+  --> tests/ui-nightly/enum.rs:52:1
+   |
+52 | / enum FromZeroes1 {
+53 | |     A(u8),
+54 | | }
+   | |_^
+
+error: only C-like enums can implement FromZeroes
+  --> tests/ui-nightly/enum.rs:57:1
+   |
+57 | / enum FromZeroes2 {
+58 | |     A,
+59 | |     B(u8),
+60 | | }
+   | |_^
+
+error: FromZeroes only supported on enums with a variant that has a discriminant of `0`
+  --> tests/ui-nightly/enum.rs:63:1
+   |
+63 | / enum FromZeroes3 {
+64 | |     A = 1,
+65 | |     B,
+66 | | }
+   | |_^
+
+error: FromBytes requires repr of "u8", "u16", "i8", or "i16"
+  --> tests/ui-nightly/enum.rs:73:8
+   |
+73 | #[repr(C)]
+   |        ^
+
+error: FromBytes requires repr of "u8", "u16", "i8", or "i16"
+  --> tests/ui-nightly/enum.rs:79:8
+   |
+79 | #[repr(usize)]
+   |        ^^^^^
+
+error: FromBytes requires repr of "u8", "u16", "i8", or "i16"
+  --> tests/ui-nightly/enum.rs:85:8
+   |
+85 | #[repr(isize)]
+   |        ^^^^^
+
+error: FromBytes requires repr of "u8", "u16", "i8", or "i16"
+  --> tests/ui-nightly/enum.rs:91:8
+   |
+91 | #[repr(u32)]
+   |        ^^^
+
+error: FromBytes requires repr of "u8", "u16", "i8", or "i16"
+  --> tests/ui-nightly/enum.rs:97:8
+   |
+97 | #[repr(i32)]
+   |        ^^^
+
+error: FromBytes requires repr of "u8", "u16", "i8", or "i16"
+   --> tests/ui-nightly/enum.rs:103:8
+    |
+103 | #[repr(u64)]
+    |        ^^^
+
+error: FromBytes requires repr of "u8", "u16", "i8", or "i16"
+   --> tests/ui-nightly/enum.rs:109:8
+    |
+109 | #[repr(i64)]
+    |        ^^^
+
+error: Unaligned requires repr of "u8" or "i8", and no alignment (i.e., repr(align(N > 1)))
+   --> tests/ui-nightly/enum.rs:119:8
+    |
+119 | #[repr(C)]
+    |        ^
+
+error: Unaligned requires repr of "u8" or "i8", and no alignment (i.e., repr(align(N > 1)))
+   --> tests/ui-nightly/enum.rs:125:8
+    |
+125 | #[repr(u16)]
+    |        ^^^
+
+error: Unaligned requires repr of "u8" or "i8", and no alignment (i.e., repr(align(N > 1)))
+   --> tests/ui-nightly/enum.rs:131:8
+    |
+131 | #[repr(i16)]
+    |        ^^^
+
+error: Unaligned requires repr of "u8" or "i8", and no alignment (i.e., repr(align(N > 1)))
+   --> tests/ui-nightly/enum.rs:137:8
+    |
+137 | #[repr(u32)]
+    |        ^^^
+
+error: Unaligned requires repr of "u8" or "i8", and no alignment (i.e., repr(align(N > 1)))
+   --> tests/ui-nightly/enum.rs:143:8
+    |
+143 | #[repr(i32)]
+    |        ^^^
+
+error: Unaligned requires repr of "u8" or "i8", and no alignment (i.e., repr(align(N > 1)))
+   --> tests/ui-nightly/enum.rs:149:8
+    |
+149 | #[repr(u64)]
+    |        ^^^
+
+error: Unaligned requires repr of "u8" or "i8", and no alignment (i.e., repr(align(N > 1)))
+   --> tests/ui-nightly/enum.rs:155:8
+    |
+155 | #[repr(i64)]
+    |        ^^^
+
+error: Unaligned requires repr of "u8" or "i8", and no alignment (i.e., repr(align(N > 1)))
+   --> tests/ui-nightly/enum.rs:161:8
+    |
+161 | #[repr(usize)]
+    |        ^^^^^
+
+error: Unaligned requires repr of "u8" or "i8", and no alignment (i.e., repr(align(N > 1)))
+   --> tests/ui-nightly/enum.rs:167:8
+    |
+167 | #[repr(isize)]
+    |        ^^^^^
+
+error: cannot derive Unaligned with repr(align(N > 1))
+   --> tests/ui-nightly/enum.rs:173:12
+    |
+173 | #[repr(u8, align(2))]
+    |            ^^^^^^^^
+
+error: cannot derive Unaligned with repr(align(N > 1))
+   --> tests/ui-nightly/enum.rs:179:12
+    |
+179 | #[repr(i8, align(2))]
+    |            ^^^^^^^^
+
+error: cannot derive Unaligned with repr(align(N > 1))
+   --> tests/ui-nightly/enum.rs:185:18
+    |
+185 | #[repr(align(1), align(2))]
+    |                  ^^^^^^^^
+
+error: cannot derive Unaligned with repr(align(N > 1))
+   --> tests/ui-nightly/enum.rs:191:8
+    |
+191 | #[repr(align(2), align(4))]
+    |        ^^^^^^^^
+
+error[E0565]: meta item in `repr` must be an identifier
+  --> tests/ui-nightly/enum.rs:19:8
+   |
+19 | #[repr("foo")]
+   |        ^^^^^
+
+error[E0552]: unrecognized representation hint
+  --> tests/ui-nightly/enum.rs:25:8
+   |
+25 | #[repr(foo)]
+   |        ^^^
+   |
+   = help: valid reprs are `Rust` (default), `C`, `align`, `packed`, `transparent`, `simd`, `i8`, `u8`, `i16`, `u16`, `i32`, `u32`, `i64`, `u64`, `i128`, `u128`, `isize`, `usize`
+
+error[E0566]: conflicting representation hints
+  --> tests/ui-nightly/enum.rs:37:8
+   |
+37 | #[repr(u8, u16)]
+   |        ^^  ^^^
+   |
+   = warning: this was previously accepted by the compiler but is being phased out; it will become a hard error in a future release!
+   = note: for more information, see issue #68585 <https://github.com/rust-lang/rust/issues/68585>
+   = note: `#[deny(conflicting_repr_hints)]` on by default

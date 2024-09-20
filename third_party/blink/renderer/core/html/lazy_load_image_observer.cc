@@ -40,7 +40,7 @@ bool IsElementInInvisibleSubTree(const Element& element) {
     if (ancestor.IsHTMLElement() && !ancestor.GetLayoutObject())
       return true;
     const ComputedStyle* style = ancestor_element->EnsureComputedStyle();
-    if (style && (style->Visibility() != EVisibility::kVisible ||
+    if (style && (style->UsedVisibility() != EVisibility::kVisible ||
                   style->Display() == EDisplay::kNone)) {
       return true;
     }
@@ -134,7 +134,7 @@ void LazyLoadImageObserver::LoadIfNearViewport(
       // attribute, etc. Style might also not be calculated if the ancestors
       // were invisible.
       const ComputedStyle* style = entry->target()->GetComputedStyle();
-      if (!style || style->Visibility() != EVisibility::kVisible ||
+      if (!style || style->UsedVisibility() != EVisibility::kVisible ||
           style->Display() == EDisplay::kNone) {
         // Check that style was null because it was not computed since the
         // element was in an invisible subtree.

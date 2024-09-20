@@ -11,6 +11,7 @@
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+#include "power_observer.h"
 
 namespace base {
 
@@ -118,8 +119,7 @@ void PowerMonitor::ShutdownForTesting() {
   }
   {
     AutoLock auto_lock(battery_power_status_lock_);
-    battery_power_status_ =
-        PowerStateObserver::BatteryPowerStatus::kExternalPower;
+    battery_power_status_ = PowerStateObserver::BatteryPowerStatus::kUnknown;
   }
   {
     AutoLock auto_lock(power_thermal_state_lock_);
@@ -159,6 +159,7 @@ void PowerMonitor::NotifyPowerStateChange(bool on_battery_power) {
 void PowerMonitor::NotifyPowerStateChange(
     PowerStateObserver::BatteryPowerStatus battery_power_status) {
   DCHECK(IsInitialized());
+
   if (battery_power_status ==
       PowerStateObserver::BatteryPowerStatus::kUnknown) {
     DVLOG(1) << "PowerStateChange: with unknown value";

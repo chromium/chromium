@@ -229,8 +229,9 @@ void AppViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
 void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
   ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
 
-  if (!url_.is_valid())
+  if (!url_.is_valid()) {
     return;
+  }
 
   GetController().LoadURL(url_, content::Referrer(), ui::PAGE_TRANSITION_LINK,
                           std::string());

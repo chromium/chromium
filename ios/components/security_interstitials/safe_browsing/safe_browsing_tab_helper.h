@@ -80,9 +80,22 @@ class SafeBrowsingTabHelper
     // navigations occurred before the URL check has finished.
     bool IsQueryStale(const SafeBrowsingQueryManager::Query& query);
 
+    // Decides if a page is reloaded on commit. Used when an async check is
+    // completed while an unsafe query is in the
+    // `to_be_committed_redirect_chain_`.
+    bool ShouldReloadOnCommit();
+
     // Returns whether a query contained in `query_data` is still relevant. May
     // return false if navigations occurred before the URL check has finished.
     bool IsQueryStale(const SafeBrowsingQueryManager::QueryData& query_data);
+
+    // Clears and moves `to_be_committed_redirect_chain_` to
+    // `committed_redirect_chain_`.
+    void SetCommittedRedirectChain();
+
+    // Reloads the page. Used when a reload is necessary for triggering an error
+    // page.
+    void ReloadPage();
 
     // Returns a policy decision based on query `result`.
     web::WebStatePolicyDecider::PolicyDecision CreatePolicyDecision(
@@ -267,6 +280,7 @@ class SafeBrowsingTabHelper
     // A list of queries corresponding to the redirect chain saved after
     // DidFinishNavigation() is called.
     std::list<MainFrameUrlQuery> committed_redirect_chain_;
+    bool reload_page_on_commit_ = false;
   };
 
   // Helper object that observes results of URL check queries.

@@ -38,7 +38,7 @@ class Vp9UncompressedHeaderParserTest : public testing::Test {
 };
 
 TEST_F(Vp9UncompressedHeaderParserTest, SetupPastIndependence) {
-  Vp9FrameHeader frame_header = {};
+  Vp9FrameHeader frame_header;
 
   SetupPastIndependence(&frame_header);
 

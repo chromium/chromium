@@ -49,7 +49,6 @@ static_library("smart_lock") {
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/secure_channel",
-    "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

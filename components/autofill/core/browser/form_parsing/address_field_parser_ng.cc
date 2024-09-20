@@ -355,7 +355,7 @@ void AddressFieldParserNG::AddClassifications(
 base::span<const MatchPatternRef> AddressFieldParserNG::GetMatchPatterns(
     std::string_view name) {
   return ::autofill::GetMatchPatterns(name, context_->page_language,
-                                      context_->pattern_source);
+                                      context_->pattern_file);
 }
 
 std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(

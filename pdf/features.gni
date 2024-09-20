@@ -24,7 +24,4 @@ declare_args() {
   # Enable the next generation of ink libraries. This can co-exist with
   # `enable_ink` above.
   enable_pdf_ink2 = enable_pdf
-
-  # Enable Ink Stubs. Only applicable when `enable_pdf_ink2` is true.
-  enable_pdf_ink2_stubs = true
 }

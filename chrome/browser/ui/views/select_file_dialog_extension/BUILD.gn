@@ -21,11 +21,11 @@ static_library("select_file_dialog_extension") {
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/file_manager",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/extensions",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
   ]

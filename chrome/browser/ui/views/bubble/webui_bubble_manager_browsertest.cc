@@ -36,10 +36,6 @@ void DestroySpareRenderProcess() {
 void DestroyBubble(WebUIBubbleManager* bubble_manager, Profile* profile) {
   bubble_manager->CloseBubble();
   bubble_manager->ResetContentsWrapperForTesting();
-  if (auto* service =
-          WebUIContentsWrapperServiceFactory::GetForProfile(profile, true)) {
-    service->Shutdown();
-  }
   base::RunLoop().RunUntilIdle();
 }
 

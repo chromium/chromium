@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> (क्रमांक <ph name="SERIAL_NUMBER" />) विक्रेता की ओर से <ph name="PRODUCT_ID" /> अज्ञात प्रॉडक्ट</translation>
 <translation id="3144135466825225871">crx फ़ाइल बदला नहीं जा सका. यह देखने के लिए जाँच करें कि क्या फ़ाइल उपयोग में है.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> की ओर से अज्ञात <ph name="PRODUCT_ID" /> प्रॉडक्ट</translation>
-<translation id="3369521687965833290">एक्सटेंशन को 'अनपैक' नहीं कर सका.  किसी एक्सटेंशन को सुरक्षित रूप से 'अनपैक' करने के लिए आपकी प्रोफ़ाइल निर्देशिका में एक ऐसा पाथ होना ज़रूरी है, जिसमें कोई सिमलिंक न हो.  ऐसा कोई भी पाथ आपकी प्रोफ़ाइल के लिए मौजूद नहीं है.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (क्रमांक <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> (क्रमांक <ph name="SERIAL_NUMBER" />) विक्रेता की ओर से <ph name="PRODUCT_NAME" /></translation>
 <translation id="3561217442734750519">निजी कुंजी के लिए इनपुट मान, एक मान्य पाथ होना चाहिए.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">इस मशीन के व्‍यवस्‍थापक के लिए आवश्‍यक है कि <ph name="EXTENSION_NAME" /> इंस्‍टॉल किया जाए. उसे अनइंस्‍टॉल नहीं किया जा सकता.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> (क्रमांक <ph name="SERIAL_NUMBER" />) की ओर से अज्ञात <ph name="PRODUCT_ID" /> प्रॉडक्ट</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> विक्रेता की ओर से <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">एक्सटेंशन को 'अनपैक' नहीं कर सका.  किसी एक्सटेंशन को सुरक्षित रूप से 'अनपैक' करने के लिए आपकी प्रोफ़ाइल निर्देशिका में एक ऐसा पाथ होना ज़रूरी है, जिसमें कोई सिमलिंक न हो.  ऐसा कोई भी पाथ आपकी प्रोफ़ाइल के लिए मौजूद नहीं है.</translation>
 <translation id="6322279351188361895">निजी कुंजी को पढ़ने में विफल.</translation>
 <translation id="6391538222494443604">इनपुट निर्देशिका मौजूद होनी चाहिए.</translation>
 <translation id="641087317769093025">एक्सटेंशन को अनज़िप नहीं किया जा सका</translation>

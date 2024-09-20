@@ -14,8 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -44,6 +46,9 @@
 
 namespace content {
 namespace {
+
+using RequestWorkletServiceOutcome =
+    AuctionProcessManager::RequestWorkletServiceOutcome;
 
 // Alias constants to improve readability.
 const size_t kMaxSellerProcesses = AuctionProcessManager::kMaxSellerProcesses;
@@ -321,12 +326,19 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
     // handles, but having it explcitly in the struct makes sure the test cases
     // are testing what they're expected to.
     size_t expected_total_handles;
+
+    // If `num_handles` is set, this represents whether each request caused us
+    // to hit the limit for the number of processes.
+    std::vector<bool> hit_limit_after_requesting_handles = {};
   };
 
   const Operation kOperationList[] = {
-      {Operation::Op::kRequestHandles, /*num_handles=*/GetMaxProcesses(),
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/GetMaxProcesses(),
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses()},
+       /*expected_total_handles=*/
+       GetMaxProcesses(), /*hit_limit_after_requesting_handles=*/
+       {false, false, false}},
 
       // Check destroying intermediate, last, and first handle when there are no
       // queued requests. Keep exactly GetMaxProcesses() requests, to ensure
@@ -334,26 +346,38 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
       // GetMaxProcesses() is at least 3).
       {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/1u, /*expected_total_handles=*/GetMaxProcesses() - 1},
-      {Operation::Op::kRequestHandles, /*num_handles=*/1,
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/1,
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses()},
+       /*expected_total_handles=*/
+       GetMaxProcesses(), /*hit_limit_after_requesting_handles=*/
+       {false}},
       {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/0u, /*expected_total_handles=*/GetMaxProcesses() - 1},
-      {Operation::Op::kRequestHandles, /*num_handles=*/1,
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/1,
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses()},
+       /*expected_total_handles=*/
+       GetMaxProcesses(), /*hit_limit_after_requesting_handles=*/
+       {false}},
       {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/GetMaxProcesses() - 1,
        /*expected_total_handles=*/GetMaxProcesses() - 1},
-      {Operation::Op::kRequestHandles, /*num_handles=*/1,
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/1,
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses()},
+       /*expected_total_handles=*/
+       GetMaxProcesses(), /*hit_limit_after_requesting_handles=*/
+       {false}},
 
       // Queue 3 more requests, but delete the last and first of them, to test
       // deleting queued requests.
-      {Operation::Op::kRequestHandles, /*num_handles=*/3,
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/3,
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses() + 3},
+       /*expected_total_handles=*/GetMaxProcesses() +
+           3, /*hit_limit_after_requesting_handles=*/
+       {true, true, true}},
       {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/GetMaxProcesses(),
        /*expected_total_handles=*/GetMaxProcesses() + 2},
@@ -362,9 +386,12 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
        /*expected_total_handles=*/GetMaxProcesses() + 1},
 
       // Request 4 more processes.
-      {Operation::Op::kRequestHandles, /*num_handles=*/4,
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/4,
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses() + 5},
+       /*expected_total_handles=*/GetMaxProcesses() +
+           5, /*hit_limit_after_requesting_handles=*/
+       {true, true, true, true}},
 
       // Destroy the first handle and the first pending in the queue immediately
       // afterwards. The next pending request should get a process.
@@ -402,11 +429,25 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
           data.emplace_back(ProcessHandleData());
           url::Origin distinct_origin = url::Origin::Create(
               GURL(base::StringPrintf("https://%i.test", ++num_origins)));
+          base::HistogramTester histogram_tester;
           ASSERT_EQ(original_size < GetMaxProcesses(),
                     auction_process_manager_.RequestWorkletService(
                         GetParam(), distinct_origin, site_instance_,
                         data.back().process_handle.get(),
                         data.back().run_loop->QuitClosure()));
+          RequestWorkletServiceOutcome expected_result =
+              operation.hit_limit_after_requesting_handles[i]
+                  ? RequestWorkletServiceOutcome::kHitProcessLimit
+                  : RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess;
+          histogram_tester.ExpectUniqueSample(
+              base::StrCat(
+                  {"Ads.InterestGroup.Auction.",
+                   GetParam() == AuctionProcessManager::WorkletType::kSeller
+                       ? "Seller."
+                       : "Buyer.",
+                   "RequestWorkletServiceOutcome"}),
+              expected_result,
+              /*expected_bucket_count=*/1);
         }
         break;
 
@@ -476,6 +517,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
        ++origin_index) {
     url::Origin origin = url::Origin::Create(
         GURL(base::StringPrintf("https://%zu.test", origin_index)));
+    base::HistogramTester histogram_tester;
     for (size_t i = 0; i < 2 * GetMaxProcesses(); ++i) {
       processes[origin_index].emplace_back(GetServiceExpectSuccess(origin));
       // All requests for the same origin share a process.
@@ -483,6 +525,21 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
                 processes[origin_index].front()->GetService());
       EXPECT_EQ(origin_index + 1, auction_process_manager_.NumReceivers());
     }
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"Ads.InterestGroup.Auction.",
+                      GetParam() == AuctionProcessManager::WorkletType::kSeller
+                          ? "Seller."
+                          : "Buyer.",
+                      "RequestWorkletServiceOutcome"}),
+        RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"Ads.InterestGroup.Auction.",
+                      GetParam() == AuctionProcessManager::WorkletType::kSeller
+                          ? "Seller."
+                          : "Buyer.",
+                      "RequestWorkletServiceOutcome"}),
+        RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess,
+        2 * GetMaxProcesses() - 1);
 
     // Each origin should have a different process.
     for (size_t origin_index2 = 0; origin_index2 < origin_index;
@@ -901,6 +958,8 @@ class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
 
 TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
        AndroidLike) {
+  base::HistogramTester histogram_tester;
+
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
@@ -930,6 +989,9 @@ TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
   EXPECT_NE(id_a2, id_b1);
   EXPECT_EQ(id_a2, id_b2);
   EXPECT_NE(id_b1, id_b2);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kUsedSharedProcess, 4);
 
   // Site-isolation requiring origins are distinct from non-isolated ones, but
   // can share across browsing instances.
@@ -948,9 +1010,17 @@ TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
   EXPECT_NE(id_i1, id_a2);
   EXPECT_NE(id_i1, id_b1);
   EXPECT_NE(id_i1, id_b2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 1);
 }
 
 TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
+  base::HistogramTester histogram_tester;
+
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
@@ -979,6 +1049,12 @@ TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
   EXPECT_NE(id_a2, id_b1);
   EXPECT_NE(id_a2, id_b2);
   EXPECT_EQ(id_b1, id_b2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 2);
 
   // Stuff that's also isolated by explicit requests gets the same treatment.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i1 =
@@ -996,6 +1072,12 @@ TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
   EXPECT_NE(id_i1, id_a2);
   EXPECT_NE(id_i1, id_b1);
   EXPECT_NE(id_i1, id_b2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 3);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 3);
 }
 
 TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,

@@ -15,13 +15,6 @@
 namespace enterprise_obfuscation {
 namespace {
 
-constexpr size_t kKeySize = 32u;
-constexpr size_t kAuthTagSize = 16u;
-constexpr size_t kMaxDataChunkSize = 524288;  // default download buffer size
-constexpr size_t kNoncePrefixSize = 7u;
-constexpr size_t kHeaderSize = 1u + kKeySize + kNoncePrefixSize;
-constexpr size_t kChunkSizePrefixSize = 4u;
-
 // Helper function to divide data in chunks of random sizes.
 void ObfuscateTestDataInChunks(const std::vector<uint8_t>& test_data,
                                std::vector<uint8_t>& obfuscated_content) {
@@ -37,7 +30,7 @@ void ObfuscateTestDataInChunks(const std::vector<uint8_t>& test_data,
     // Generate a random chunk size between 1 and remaining data size.
     size_t remaining_data = test_data.size() - i;
     size_t chunk_size =
-        base::RandInt(1, std::min(remaining_data, kMaxDataChunkSize));
+        base::RandInt(1, std::min(remaining_data, kMaxChunkSize));
 
     std::vector<uint8_t> chunk(test_data.begin() + i,
                                test_data.begin() + i + chunk_size);
@@ -105,7 +98,7 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateSingleDataChunk) {
 
   auto chunk_size = GetObfuscatedChunkSize(obfuscated_chunk.value());
 
-  if (test_data.size() > kMaxDataChunkSize) {
+  if (test_data.size() > kMaxChunkSize) {
     ASSERT_EQ(chunk_size.error(), Error::kDeobfuscationFailed);
     return;
   }
@@ -226,7 +219,7 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Bool(),  // File obfuscator feature enabled/disabled
         ::testing::Values(0,
                           10,
-                          kMaxDataChunkSize + 1024,
-                          kMaxDataChunkSize * 2 + 1024)));
+                          kMaxChunkSize + 1024,
+                          kMaxChunkSize * 2 + 1024)));
 
 }  // namespace enterprise_obfuscation

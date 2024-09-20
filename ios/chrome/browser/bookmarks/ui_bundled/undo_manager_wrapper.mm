@@ -23,12 +23,11 @@
 @synthesize hasUndoManagerChanged = _hasUndoManagerChanged;
 @synthesize undoManager = _undoManager;
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initWithBrowserState:(ProfileIOS*)profile {
   self = [super init];
   if (self) {
     _undoManager =
-        ios::BookmarkUndoServiceFactory::GetForBrowserState(browserState)
-            ->undo_manager();
+        ios::BookmarkUndoServiceFactory::GetForProfile(profile)->undo_manager();
     _bridge.reset(new bookmarks::UndoManagerBridge(self));
     _undoManager->AddObserver(_bridge.get());
   }

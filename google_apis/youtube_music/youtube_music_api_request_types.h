@@ -10,6 +10,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "google_apis/common/base_requests.h"
 
 namespace google_apis::youtube_music {
 
@@ -43,6 +44,15 @@ struct PlaybackQueuePrepareRequestPayload {
   std::optional<ExplicitFilter> explicit_filter;
 
   std::optional<ShuffleMode> shuffle_mode;
+};
+
+// Payload for PlaybackQueueNextRequests. Currently, all fields are optional so
+// it's empty;.
+struct PlaybackQueueNextRequestPayload {
+  PlaybackQueueNextRequestPayload();
+  ~PlaybackQueueNextRequestPayload();
+
+  std::string ToJson() const;
 };
 
 // Payload used as a request body for the API request that reports the playback.
@@ -117,6 +127,24 @@ struct ReportPlaybackRequestPayload {
   std::string ToJson() const;
 
   Params params;
+};
+
+// Requests that can have their payload signed with a client certificate.
+// Signing is implemented as a series of headers that are computed
+// asynchronously so they must be set before the request begins.
+class SignedRequest : public UrlFetchRequestBase {
+ public:
+  SignedRequest(RequestSender* sender);
+  ~SignedRequest() override;
+
+  void SetSigningHeaders(std::vector<std::string>&& headers);
+
+ protected:
+  HttpRequestMethod GetRequestType() const final;
+  std::vector<std::string> GetExtraRequestHeaders() const override;
+
+ private:
+  std::vector<std::string> headers_;
 };
 
 }  // namespace google_apis::youtube_music

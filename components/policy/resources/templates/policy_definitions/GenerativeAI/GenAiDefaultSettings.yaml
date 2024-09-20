@@ -21,8 +21,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- chrome.*
-- chrome_os
+- fuchsia
 items:
 - caption: Allow GenAI features and improve AI models
   name: Allowed
@@ -42,5 +41,10 @@ schema:
   - 1
   - 2
   type: integer
+supported_on:
+- android:130-
+- chrome.*:130-
+- chrome_os:130-
+- ios:130-
 tags: []
 type: int-enum

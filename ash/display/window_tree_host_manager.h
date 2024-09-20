@@ -17,7 +17,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -54,15 +53,6 @@ class ASH_EXPORT WindowTreeHostManager
       public ui::ImeKeyEventDispatcher,
       public AshWindowTreeHostDelegate {
  public:
-  // TODO(oshima): Remove this observer.
-  class ASH_EXPORT Observer {
-   public:
-    virtual ~Observer() {}
-
-    // Invoked in WindowTreeHostManager::Shutdown().
-    virtual void OnWindowTreeHostManagerShutdown() {}
-  };
-
   WindowTreeHostManager();
 
   WindowTreeHostManager(const WindowTreeHostManager&) = delete;
@@ -94,10 +84,6 @@ class ASH_EXPORT WindowTreeHostManager
 
   // Initializes all WindowTreeHosts.
   void InitHosts();
-
-  // Add/Remove observers.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // Returns the root window for primary display.
   aura::Window* GetPrimaryRootWindow();
@@ -207,8 +193,6 @@ class ASH_EXPORT WindowTreeHostManager
   // The mapping from display ID to its rounded display provider.
   base::flat_map<int64_t, std::unique_ptr<RoundedDisplayProvider>>
       rounded_display_providers_map_;
-
-  base::ObserverList<Observer, true>::Unchecked observers_;
 
   // Store the primary window tree host temporarily while replacing
   // display.

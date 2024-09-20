@@ -9,6 +9,7 @@
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/mock_picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_item_view.h"
@@ -22,7 +23,6 @@
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
@@ -702,6 +702,23 @@ TEST_F(PickerSearchResultsViewTest,
   EXPECT_EQ(view->GetAccessibleName(),
             l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 2);
+}
+
+TEST_F(PickerSearchResultsViewTest, ClearingSearchResultsDoesNotAnnounce) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          &mock_delegate, kPickerWidth, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  view->ClearSearchResults();
+
+  EXPECT_EQ(view->GetAccessibleName(), u"");
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 0);
 }
 
 struct PickerSearchResultTestCase {

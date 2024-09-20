@@ -119,15 +119,13 @@ build build.ninja: gn
 
 
 def clobber(out_dir):
-  """Clobber contents of build directory.
+  """Clobber contents of build sub directories.
 
   Don't delete the directory itself: some checkouts have the build directory
   mounted."""
   for f in os.listdir(out_dir):
     path = os.path.join(out_dir, f)
-    if os.path.isfile(path):
-      os.unlink(path)
-    elif os.path.isdir(path):
+    if os.path.isdir(path):
       delete_build_dir(path)
 
 

@@ -10,6 +10,8 @@ static_library("on_task") {
   sources = [
     "locked_session_window_tracker_factory.cc",
     "locked_session_window_tracker_factory.h",
+    "on_task_locked_session_navigation_throttle.cc",
+    "on_task_locked_session_navigation_throttle.h",
     "on_task_locked_session_window_tracker.cc",
     "on_task_locked_session_window_tracker.h",
     "on_task_system_web_app_manager_impl.cc",
@@ -18,6 +20,7 @@ static_library("on_task") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
   ]
 

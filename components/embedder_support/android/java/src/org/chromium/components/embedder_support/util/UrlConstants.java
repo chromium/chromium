@@ -118,6 +118,9 @@ public class UrlConstants {
     public static final String MY_ACTIVITY_URL_IN_QD =
             "https://myactivity.google.com/myactivity?utm_source=chrome_qd";
 
+    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY =
+            "https://policies.google.com/privacy/embedded";
+
     public static final String GOOGLE_URL = "https://www.google.com/";
 
     public static final String EXPLORE_HOST = "explore";

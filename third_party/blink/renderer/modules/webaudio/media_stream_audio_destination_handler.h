@@ -42,7 +42,9 @@ class MediaStreamAudioDestinationHandler final : public AudioHandler {
   void UpdatePullStatusIfNeeded() override;
 
   uint32_t MaxChannelCount() const;
-  void SendLogMessage(const String& message);
+
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
+  void SendLogMessage(const char* const function_name, const String& message);
 
   // MediaStreamSource is held alive by MediaStreamAudioDestinationNode.
   // Accessed by main thread and during audio thread processing.

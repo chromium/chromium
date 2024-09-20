@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">điểm xếp hạng</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Đã thêm <ph name="ONE_ADDED" /> thẻ, đã thay đổi <ph name="ANY_CHANGED" /> thẻ}other{Đã thêm <ph name="MANY_ADDED" /> thẻ, thay đổi <ph name="ANY_CHANGED" /> thẻ}}</translation>
 <translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>
-<translation id="3322827343001922122">Mở trình đơn thao tác đối với nhóm thẻ cho nhóm thẻ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Đề xuất: <ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="3547352561153509682">Thao tác này sẽ xoá nhóm khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Ẩn hộp thoại các thẻ không hoạt động</translation>
@@ -80,7 +79,6 @@
 <translation id="4460014764210899310">Tách nhóm</translation>
 <translation id="4590027107044272416">Hiện bạn có thể mở một thẻ mới tại đây</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Đóng 1 thẻ không hoạt động?}other{Đóng <ph name="TAB_COUNT_MANY" /> thẻ không hoạt động?}}</translation>
-<translation id="4648718555153979859">Các thẻ của bạn được nhóm với nhau tại đây</translation>
 <translation id="4686942373615810936">Vừa tạo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Sẽ đóng sau 1 ngày}other{Sẽ đóng sau <ph name="DAY_COUNT_MANY" /> ngày}}</translation>
 <translation id="4777866634702576038">Bạn muốn xoá nhóm thẻ?</translation>
@@ -136,6 +134,7 @@
 <translation id="6694634756612002311">Quản lý hoạt động chia sẻ</translation>
 <translation id="6744956528665271406">Chỉnh sửa màu cho nhóm</translation>
 <translation id="6856809498882026482">Ẩn chế độ chọn nhiều thẻ</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> được chia sẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> được chia sẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Chia sẻ thẻ}other{Chia sẻ các thẻ}}</translation>
 <translation id="7129458170538955174">Thông tin về cửa hàng này đã mở ở nửa dưới của màn hình</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Đóng nhóm <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_ONE" /> thẻ.}other{Đóng nhóm <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
@@ -171,6 +170,7 @@
 <translation id="8205266828577616993">Chuyển thẻ lên trên</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8338427544764842461">Các nhóm thẻ của bạn được lưu tại đây và cập nhật trên mọi thiết bị bạn đã đăng nhập</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ được chia sẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Mở rộng nhóm thẻ được chia sẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Đóng <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đóng <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="8398929769197326728">Thư mục mới – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Cài đặt</translation>

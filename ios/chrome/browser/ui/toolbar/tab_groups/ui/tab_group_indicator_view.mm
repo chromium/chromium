@@ -4,12 +4,20 @@
 
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_mutator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/gfx/ios/uikit_util.h"
 
 @implementation TabGroupIndicatorView {
   // Stores the tab group informations.
@@ -25,6 +33,8 @@
   UILabel* _titleView;
   // Dot view.
   UIView* _coloredDotView;
+  // Separator view.
+  UIView* _separatorView;
   // Button used to display the menu.
   UIButton* _menuButton;
 }
@@ -33,14 +43,18 @@
   self = [super init];
   if (self) {
     self.accessibilityIdentifier = kTabGroupIndicatorViewIdentifier;
+    self.isAccessibilityElement = YES;
+    self.accessibilityTraits |= UIAccessibilityTraitButton;
 
     _containerView = [self containerView];
     _titleView = [self titleView];
     _coloredDotView = [self coloredDotView];
+    _separatorView = [self setUpSeparatorView];
     _menuButton = [self menuButton];
 
     [self addSubview:_containerView];
     [self addSubview:_menuButton];
+    [self addSubview:_separatorView];
     [_containerView addSubview:_coloredDotView];
     [_containerView addSubview:_titleView];
 
@@ -66,7 +80,12 @@
 
 // Updates the view's visibility.
 - (void)updateVisibility {
-  self.hidden = _groupTitle == nil || !_available;
+  BOOL hidden = _groupTitle == nil || !_available;
+  if (hidden == self.hidden) {
+    return;
+  }
+  self.hidden = hidden;
+  [_toolbarHeightDelegate toolbarsHeightChanged];
 }
 
 // Returns the container view.
@@ -105,19 +124,41 @@
   return dotView;
 }
 
+// Sets the separator view up.
+- (UIView*)setUpSeparatorView {
+  UIView* separatorView = [[UIView alloc] init];
+  separatorView.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
+  separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  return separatorView;
+}
+
 // Returns the menu button.
 - (UIButton*)menuButton {
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.showsMenuAsPrimaryAction = YES;
+  [button addTarget:self
+                action:@selector(menuButtonTapped:)
+      forControlEvents:UIControlEventMenuActionTriggered];
   return button;
 }
 
-// Sets the menu of `menuButton`.
-- (void)setMenuButton {
+// Handles taps on the menu button.
+- (void)menuButtonTapped:(id)sender {
+  base::RecordAction(base::UserMetricsAction(
+      _displayedOnNTP ? "MobileTabGroupIndicatorShowNTPMenu"
+                      : "MobileTabGroupIndicatorShowMenu"));
+}
+
+// Configures the menu of `menuButton`.
+- (void)configureMenuButton {
   __weak __typeof(self) weakSelf = self;
-  ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:kMenuScenarioHistogramTabGroupIndicatorEntry];
+  MenuScenarioHistogram scenario =
+      _displayedOnNTP ? kMenuScenarioHistogramTabGroupIndicatorNTPEntry
+                      : kMenuScenarioHistogramTabGroupIndicatorEntry;
+  ActionFactory* actionFactory =
+      [[ActionFactory alloc] initWithScenario:scenario];
+
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
                   [weakSelf.mutator showTabGroupEdition];
@@ -126,7 +167,7 @@
                   [weakSelf.mutator addNewTabInGroup];
                 }]];
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                  [weakSelf.mutator unGroup];
+                  [weakSelf.mutator unGroupWithConfirmation:YES];
                 }]];
   if (IsTabGroupSyncEnabled()) {
     [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
@@ -134,12 +175,12 @@
                   }]];
     if (!_incognito) {
       [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                      [weakSelf.mutator deleteGroup];
+                      [weakSelf.mutator deleteGroupWithConfirmation:YES];
                     }]];
     }
   } else {
     [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                    [weakSelf.mutator deleteGroup];
+                    [weakSelf.mutator deleteGroupWithConfirmation:NO];
                   }]];
   }
 
@@ -150,12 +191,21 @@
 - (void)setContraints {
   [NSLayoutConstraint activateConstraints:@[
     [_containerView.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:self.leadingAnchor],
+        constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
+                                    constant:kTabGroupIndicatorVerticalMargin],
     [_containerView.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.trailingAnchor],
+        constraintLessThanOrEqualToAnchor:self.trailingAnchor
+                                 constant:-kTabGroupIndicatorVerticalMargin],
     [_containerView.topAnchor constraintEqualToAnchor:self.topAnchor],
     [_containerView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
     [_containerView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+
+    [_separatorView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+    [_separatorView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+    [_separatorView.topAnchor constraintEqualToAnchor:self.bottomAnchor],
+    [_separatorView.heightAnchor
+        constraintEqualToConstant:ui::AlignValueToUpperPixel(
+                                      kToolbarSeparatorHeight)],
 
     [_titleView.leadingAnchor
         constraintEqualToAnchor:_coloredDotView.trailingAnchor
@@ -170,7 +220,7 @@
     [_titleView.bottomAnchor
         constraintEqualToAnchor:_containerView.bottomAnchor],
   ]];
-  AddSameConstraints(_menuButton, self);
+  AddSameConstraints(_menuButton, _containerView);
 }
 
 #pragma mark - Setters
@@ -182,12 +232,21 @@
 
 - (void)setIncognito:(BOOL)incognito {
   _incognito = incognito;
-  [self setMenuButton];
+  [self configureMenuButton];
+}
+
+- (void)setShowSeparator:(BOOL)showSeparator {
+  _showSeparator = showSeparator;
+  _separatorView.hidden = !showSeparator;
 }
 
 - (void)setGroupTitle:(NSString*)title {
-  _groupTitle = title;
+  _groupTitle = [title copy];
   _titleView.text = title;
+
+  self.accessibilityLabel =
+      l10n_util::GetNSStringF(IDS_IOS_TAB_GROUP_INDICATOR_ACCESSIBILITY_TITLE,
+                              base::SysNSStringToUTF16(title));
 }
 
 - (void)setGroupColor:(UIColor*)color {

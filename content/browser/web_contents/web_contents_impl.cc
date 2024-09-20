@@ -195,6 +195,7 @@
 #include "ui/accessibility/ax_tree_combiner.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -809,15 +810,33 @@ bool WebContentsImpl::IsPopup() const {
   return is_popup_;
 }
 
+bool WebContentsImpl::IsPartitionedPopin() const {
+  // The feature must be enabled if a popin was opened.
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
+         !partitioned_popin_opener_);
+
+  return !!partitioned_popin_opener_;
+}
+
 RenderFrameHostImpl* WebContentsImpl::PartitionedPopinOpener() const {
   // A popin cannot open a popin so at most one could be set at a time.
   DCHECK(!partitioned_popin_opener_ || !opened_partitioned_popin_);
+
+  // The feature must be enabled if the popin opener is set.
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
+         !partitioned_popin_opener_);
+
   return partitioned_popin_opener_.get();
 }
 
 WebContents* WebContentsImpl::OpenedPartitionedPopin() const {
   // A popin cannot open a popin so at most one could be set at a time.
   DCHECK(!partitioned_popin_opener_ || !opened_partitioned_popin_);
+
+  // The feature must be enabled if a popin was opened.
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
+         !opened_partitioned_popin_);
+
   return opened_partitioned_popin_.get();
 }
 
@@ -2956,9 +2975,6 @@ bool WebContentsImpl::IsInnerWebContentsForGuest() {
 void WebContentsImpl::AttachInnerWebContents(
     std::unique_ptr<WebContents> inner_web_contents,
     RenderFrameHost* render_frame_host,
-    mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame> remote_frame,
-    mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>
-        remote_frame_host_receiver,
     bool is_full_page) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::AttachInnerWebContents",
                         "inner_web_contents",
@@ -3035,10 +3051,9 @@ void WebContentsImpl::AttachInnerWebContents(
       inner_main_frame->browsing_context_state()->CreateOuterDelegateProxy(
           render_frame_host_impl->GetSiteInstance()->group(),
           inner_main_frame->frame_tree_node(), blink::RemoteFrameToken());
-  if (remote_frame && remote_frame_host_receiver) {
-    proxy->BindRemoteFrameInterfaces(std::move(remote_frame),
-                                     std::move(remote_frame_host_receiver));
-  }
+  // Since the inner WebContents is created from the browser side we do
+  // not have RemoteFrame mojo channels. New channels will be bound when the
+  // `CreateView` IPC is sent.
 
   // When attaching a GuestView as an inner WebContents, there should already be
   // a live RenderFrame, which has to be swapped.
@@ -3065,8 +3080,7 @@ void WebContentsImpl::AttachInnerWebContents(
   }
 
   observers_.NotifyObservers(&WebContentsObserver::InnerWebContentsAttached,
-                             inner_web_contents_impl, render_frame_host,
-                             is_full_page);
+                             inner_web_contents_impl, render_frame_host);
 
   // Make sure that the inner web contents and its outer delegate get properly
   // linked via the embedding token now that inner web contents are attached.
@@ -4245,10 +4259,10 @@ void WebContentsImpl::Restore() {
 }
 
 // TODO(laurila, crbug.com/1466855): Map into new `ui::DisplayState` enum
-// instead of `ui::WindowShowState`.
-ui::WindowShowState WebContentsImpl::GetWindowShowState() {
+// instead of `ui::mojom::WindowShowState`.
+ui::mojom::WindowShowState WebContentsImpl::GetWindowShowState() {
   return GetDelegate() ? GetDelegate()->GetWindowShowState()
-                       : ui::SHOW_STATE_DEFAULT;
+                       : ui::mojom::WindowShowState::kDefault;
 }
 
 blink::mojom::DevicePostureProvider*
@@ -9384,13 +9398,20 @@ void WebContentsImpl::RendererUnresponsive(
     return;
   }
 
+  bool visible = GetVisibility() == Visibility::VISIBLE;
+  base::UmaHistogramBoolean("Renderer.Unresponsive.Visibility", visible);
+
   // Do not report hangs (to task manager, to hang renderer dialog, etc.) for
   // invisible tabs (like extension background page, background tabs).  See
   // https://crbug.com/881812 for rationale and for choosing the visibility
   // (rather than process priority) as the signal here.
-  if (GetVisibility() != Visibility::VISIBLE) {
+  if (!visible) {
     return;
   }
+
+  base::UmaHistogramBoolean(
+      "Renderer.Unresponsive.PageVisible.WidgetVisibility",
+      !render_widget_host->is_hidden());
 
   if (!render_widget_host->renderer_initialized()) {
     return;
@@ -9541,9 +9562,19 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
   OPTIONAL_TRACE_EVENT1(
       "content", "WebContentsImpl::CreateRenderWidgetHostViewForRenderManager",
       "render_view_host", render_view_host);
-  bool is_inner_frame_tree = static_cast<RenderViewHostImpl*>(render_view_host)
-                                 ->frame_tree()
-                                 ->is_fenced_frame();
+
+  bool is_inner_frame_tree = [&]() {
+    FrameTree* frame_tree =
+        static_cast<RenderViewHostImpl*>(render_view_host)->frame_tree();
+    switch (frame_tree->type()) {
+      case FrameTree::Type::kPrimary:
+      case FrameTree::Type::kPrerender:
+        return false;
+      case FrameTree::Type::kFencedFrame:
+        return true;
+    }
+  }();
+
   if (is_inner_frame_tree) {
     WebContentsViewChildFrame::CreateRenderWidgetHostViewForInnerFrameTree(
         this, render_view_host->GetWidget());
@@ -9963,7 +9994,8 @@ void WebContentsImpl::IncrementBluetoothConnectedDeviceCount() {
   // Notify for UI updates if the state changes.
   bluetooth_connected_device_count_++;
   if (bluetooth_connected_device_count_ == 1) {
-    OnIsConnectedToBluetoothDeviceChanged(true);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kBluetooth, /*used=*/true);
   }
 }
 
@@ -9979,18 +10011,10 @@ void WebContentsImpl::DecrementBluetoothConnectedDeviceCount() {
   DCHECK_NE(bluetooth_connected_device_count_, 0u);
   bluetooth_connected_device_count_--;
   if (bluetooth_connected_device_count_ == 0) {
-    OnIsConnectedToBluetoothDeviceChanged(false);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kBluetooth,
+        /*used=*/false);
   }
-}
-
-void WebContentsImpl::OnIsConnectedToBluetoothDeviceChanged(
-    bool is_connected_to_bluetooth_device) {
-  OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::OnIsConnectedToBluetoothDeviceChanged");
-  NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
-  observers_.NotifyObservers(
-      &WebContentsObserver::OnIsConnectedToBluetoothDeviceChanged,
-      is_connected_to_bluetooth_device);
 }
 
 void WebContentsImpl::IncrementBluetoothScanningSessionsCount() {
@@ -10037,7 +10061,8 @@ void WebContentsImpl::IncrementSerialActiveFrameCount() {
   // Notify for UI updates if the state changes.
   serial_active_frame_count_++;
   if (serial_active_frame_count_ == 1) {
-    NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kSerial, /*used=*/true);
   }
 }
 
@@ -10054,7 +10079,8 @@ void WebContentsImpl::DecrementSerialActiveFrameCount() {
   DCHECK_NE(0u, serial_active_frame_count_);
   serial_active_frame_count_--;
   if (serial_active_frame_count_ == 0) {
-    NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kSerial, /*used=*/false);
   }
 }
 
@@ -10071,7 +10097,8 @@ void WebContentsImpl::IncrementHidActiveFrameCount() {
   // non-zero.
   hid_active_frame_count_++;
   if (hid_active_frame_count_ == 1) {
-    NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kHID, /*used=*/true);
   }
 }
 
@@ -10089,18 +10116,20 @@ void WebContentsImpl::DecrementHidActiveFrameCount() {
   DCHECK_NE(0u, hid_active_frame_count_);
   hid_active_frame_count_--;
   if (hid_active_frame_count_ == 0) {
-    NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kHID, /*used=*/false);
   }
 }
 
-void WebContentsImpl::OnIsConnectedToUsbDeviceChanged(
-    bool is_connected_to_usb_device) {
+void WebContentsImpl::OnDeviceConnectionTypesChanged(
+    WebContentsObserver::DeviceConnectionType device_connection_type,
+    bool used) {
   OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::OnIsConnectedToUsbDeviceChanged");
+                        "WebContentsImpl::OnDeviceConnectionTypesChanged");
   NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
   observers_.NotifyObservers(
-      &WebContentsObserver::OnIsConnectedToUsbDeviceChanged,
-      is_connected_to_usb_device);
+      &WebContentsObserver::OnDeviceConnectionTypesChanged,
+      device_connection_type, used);
 }
 
 void WebContentsImpl::IncrementUsbActiveFrameCount() {
@@ -10116,7 +10145,8 @@ void WebContentsImpl::IncrementUsbActiveFrameCount() {
   // non-zero.
   usb_active_frame_count_++;
   if (usb_active_frame_count_ == 1) {
-    OnIsConnectedToUsbDeviceChanged(true);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kUSB, /*used=*/true);
   }
 }
 
@@ -10134,7 +10164,8 @@ void WebContentsImpl::DecrementUsbActiveFrameCount() {
   DCHECK_NE(0u, usb_active_frame_count_);
   usb_active_frame_count_--;
   if (usb_active_frame_count_ == 0) {
-    OnIsConnectedToUsbDeviceChanged(false);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kUSB, /*used=*/false);
   }
 }
 
@@ -10431,6 +10462,20 @@ void WebContentsImpl::OnFrameVisibilityChanged(
                         "render_frame_host", host, "visibility", visibility);
   observers_.NotifyObservers(&WebContentsObserver::OnFrameVisibilityChanged,
                              host, visibility);
+}
+
+void WebContentsImpl::OnRemoteSubframeViewportIntersectionStateChanged(
+    RenderFrameHostImpl* host,
+    const blink::mojom::ViewportIntersectionState&
+        viewport_intersection_state) {
+  OPTIONAL_TRACE_EVENT2(
+      "content",
+      "WebContentsImpl::OnRemoteSubframeViewportIntersectionStateChanged",
+      "render_frame_host", host, "viewport_intersection_state",
+      viewport_intersection_state);
+  observers_.NotifyObservers(
+      &WebContentsObserver::OnRemoteSubframeViewportIntersectionStateChanged,
+      host, viewport_intersection_state);
 }
 
 void WebContentsImpl::OnFrameIsCapturingMediaStreamChanged(
@@ -11305,12 +11350,11 @@ void WebContentsImpl::WarmUpAndroidSpareRenderer() {
   int renderer_timeout_seconds =
       features::kAndroidSpareRendererTimeoutSeconds.Get();
   if (renderer_timeout_seconds < 0) {
-    SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
-        GetBrowserContext());
+    SpareRenderProcessHostManager::Get().WarmupSpare(GetBrowserContext());
   } else {
     base::TimeDelta timeout = base::Seconds(renderer_timeout_seconds);
-    SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
-        GetBrowserContext(), timeout);
+    SpareRenderProcessHostManager::Get().WarmupSpare(GetBrowserContext(),
+                                                     timeout);
   }
 }
 
@@ -11318,6 +11362,11 @@ void WebContentsImpl::SetPartitionedPopinOpenerOnNewWindowIfNeeded(
     WebContentsImpl* new_window,
     const mojom::CreateNewWindowParams& params,
     RenderFrameHostImpl* opener) {
+  // We should not take action if the feature is disabled.
+  if (!base::FeatureList::IsEnabled(blink::features::kPartitionedPopins)) {
+    return;
+  }
+
   // All popins should be counted as popups to ensure proper UX treatment.
   if (!params.features->is_partitioned_popin || !new_window->is_popup_) {
     return;

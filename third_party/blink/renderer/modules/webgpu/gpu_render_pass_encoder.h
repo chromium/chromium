@@ -121,6 +121,36 @@ class GPURenderPassEncoder : public DawnObject<wgpu::RenderPassEncoder>,
     GetHandle().DrawIndexedIndirect(indirectBuffer->GetHandle(),
                                     indirectOffset);
   }
+  void multiDrawIndirect(const DawnObject<wgpu::Buffer>* indirectBuffer,
+                         uint64_t indirectOffset,
+                         uint32_t maxDrawCount,
+                         ExceptionState& exception_state);
+  void multiDrawIndirect(const DawnObject<wgpu::Buffer>* indirectBuffer,
+                         uint64_t indirectOffset,
+                         uint32_t maxDrawCount,
+                         DawnObject<wgpu::Buffer>* drawCountBuffer,
+                         ExceptionState& exception_state);
+  void multiDrawIndirect(const DawnObject<wgpu::Buffer>* indirectBuffer,
+                         uint64_t indirectOffset,
+                         uint32_t maxDrawCount,
+                         DawnObject<wgpu::Buffer>* drawCountBuffer,
+                         uint64_t drawCountBufferOffset,
+                         ExceptionState& exception_state);
+  void multiDrawIndexedIndirect(const DawnObject<wgpu::Buffer>* indirectBuffer,
+                                uint64_t indirectOffset,
+                                uint32_t maxDrawCount,
+                                ExceptionState& exception_state);
+  void multiDrawIndexedIndirect(const DawnObject<wgpu::Buffer>* indirectBuffer,
+                                uint64_t indirectOffset,
+                                uint32_t maxDrawCount,
+                                DawnObject<wgpu::Buffer>* drawCountBuffer,
+                                ExceptionState& exception_state);
+  void multiDrawIndexedIndirect(const DawnObject<wgpu::Buffer>* indirectBuffer,
+                                uint64_t indirectOffset,
+                                uint32_t maxDrawCount,
+                                DawnObject<wgpu::Buffer>* drawCountBuffer,
+                                uint64_t drawCountBufferOffset,
+                                ExceptionState& exception_state);
   void executeBundles(const HeapVector<Member<GPURenderBundle>>& bundles);
   void beginOcclusionQuery(uint32_t queryIndex) {
     GetHandle().BeginOcclusionQuery(queryIndex);

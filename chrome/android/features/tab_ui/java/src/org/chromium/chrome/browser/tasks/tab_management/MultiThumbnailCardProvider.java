@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -410,7 +411,15 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_down_shift),
                 context.getColor(R.color.modern_grey_800_alpha_38));
 
-        mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged);
+        // Run this immediately if non-null as in the TabListEditor context we might try to load
+        // tabs thumbnails before the post task normally run by ObservableSupplier#addObserver is
+        // run.
+        @Nullable
+        TabModelFilter currentFilter =
+                mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged);
+        if (currentFilter != null) {
+            mOnTabModelFilterChanged.onResult(currentFilter);
+        }
     }
 
     private void onTabModelFilterChanged(TabModelFilter filter) {

@@ -51,6 +51,7 @@ include_rules = [
     "+device",
     "+gpu/GLES2",
     "+gpu/command_buffer/common/sync_token.h",
+    "+gpu/command_buffer/common/shared_image_usage.h",
     "+mojo/core/embedder/embedder.h",
     "+mojo/public",
     "+mozilla",

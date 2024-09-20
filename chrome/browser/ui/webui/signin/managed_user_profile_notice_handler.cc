@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -52,13 +53,16 @@
 
 namespace {
 const int kAvatarSize = 100;
+constexpr base::TimeDelta kLongProcessingThreshold = base::Seconds(5);
 
 bool UseMultiscreen() {
 #if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
   return base::FeatureList::IsEnabled(
-      profile_management::features::kOidcAuthProfileManagement);
+             profile_management::features::kOidcAuthProfileManagement) ||
+         base::FeatureList::IsEnabled(
+             features::kEnterpriseUpdatedProfileCreationScreen);
 #endif
 }
 
@@ -239,9 +243,33 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
   int state = args[0].GetIfInt().value_or(0);
   CHECK_NE(state, ManagedUserProfileNoticeHandler::State::kProcessing)
       << "User should not be able to click the proceed button while processing";
+  if (state == ManagedUserProfileNoticeHandler::State::kValueProposition &&
+      IsJavascriptAllowed()) {
+    FireWebUIListener("on-state-changed",
+                      ManagedUserProfileNoticeHandler::State::kDisclosure);
+    return;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (show_link_data_option_ &&
+      state == ManagedUserProfileNoticeHandler::State::kDisclosure &&
+      IsJavascriptAllowed() && UseMultiscreen()) {
+    FireWebUIListener(
+        "on-state-changed",
+        ManagedUserProfileNoticeHandler::State::kUserDataHandling);
+    return;
+  }
+#endif
   if (process_user_choice_with_confirmation_callback_ &&
       state == ManagedUserProfileNoticeHandler::State::kDisclosure &&
       IsJavascriptAllowed()) {
+    if (type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
+      processing_timer_.Start(
+          FROM_HERE, kLongProcessingThreshold,
+          base::BindOnce(&ManagedUserProfileNoticeHandler::OnLongProcessingTime,
+                         base::Unretained(this)));
+    }
+
     FireWebUIListener("on-state-changed",
                       ManagedUserProfileNoticeHandler::State::kProcessing);
   }
@@ -276,6 +304,10 @@ void ManagedUserProfileNoticeHandler::HandleCancel(
   if (done_callback) {
     std::move(done_callback).Run();
   }
+}
+
+void ManagedUserProfileNoticeHandler::OnLongProcessingTime() {
+  FireWebUIListener("on-long-processing");
 }
 
 void ManagedUserProfileNoticeHandler::UpdateProfileInfo(
@@ -353,8 +385,9 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
   std::string title =
       l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROFILE_WELCOME_TITLE);
   std::string subtitle;
+  std::string email;
+  std::string account_name;
   std::string enterprise_info;
-  bool show_cancel_button = true;
   ProfileAttributesEntry* entry = GetProfileEntry();
 
   switch (type_) {
@@ -410,6 +443,17 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
                    profile_creation_required_by_policy_
                        ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
                        : IDS_APP_CONTINUE));
+
+      AccountInfo account_info =
+          IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+              ->FindExtendedAccountInfoByAccountId(account_id_);
+      CHECK(!account_info.IsEmpty());
+      dict.Set("continueAs", l10n_util::GetStringFUTF8(
+                                 IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
+                                 base::UTF8ToUTF16(account_info.given_name)));
+      dict.Set("email", base::UTF16ToUTF8(email_));
+      dict.Set("accountName", account_info.full_name);
+
 #if !BUILDFLAG(IS_CHROMEOS)
       // We apply the checkLinkDataCheckboxByDefault to true value only if the
       // link data checkbox is visible and the policy
@@ -433,7 +477,6 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
   dict.Set("title", title);
   dict.Set("subtitle", subtitle);
   dict.Set("enterpriseInfo", enterprise_info);
-  dict.Set("showCancelButton", show_cancel_button);
 
   return dict;
 }
@@ -494,6 +537,10 @@ void ManagedUserProfileNoticeHandler::OnUserChoiceHandled(
     DisallowJavascript();
     std::move(done_callback_).Run();
     return;
+  }
+
+  if (type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
+    processing_timer_.Stop();
   }
 
   switch (result) {

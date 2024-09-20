@@ -21,6 +21,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
@@ -34,28 +35,21 @@
 
 namespace quick_answers {
 namespace {
-// Phonetics audio button.
-// TODO(b/335701090): Use LayoutProvider.
+// TODO(b/335701090): Use LayoutProvider for those values.
+
+// Layout code automatically flips left/right margins for RTL.
 constexpr auto kPhoneticsAudioButtonMarginInsets =
     gfx::Insets::TLBR(0, 4, 0, 4);
+constexpr auto kPhoneticsAudioButtonRefreshedMarginInsets =
+    gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kPhoneticsAudioButtonSizeDip = 14;
 constexpr int kPhoneticsAudioButtonBorderDip = 3;
+constexpr int kPhoneticsAudioButtonRefreshedBorderDip = 5;
+constexpr int kPhoneticsAudioButtonBackgroundRadiusDip = 12;
 
 constexpr int kItemSpacing = 4;
 
 constexpr char16_t kSeparatorText[] = u" · ";
-
-views::Builder<views::ImageButton> PhoneticsAudioButton() {
-  return views::Builder<views::ImageButton>()
-      .SetImageModel(
-          views::Button::ButtonState::STATE_NORMAL,
-          ui::ImageModel::FromVectorIcon(vector_icons::kVolumeUpIcon,
-                                         ui::kColorButtonBackgroundProminent,
-                                         kPhoneticsAudioButtonSizeDip))
-      .SetTooltipText(l10n_util::GetStringUTF16(
-          IDS_RICH_ANSWERS_VIEW_PHONETICS_BUTTON_A11Y_NAME_TEXT))
-      .SetBorder(views::CreateEmptyBorder(kPhoneticsAudioButtonBorderDip));
-}
 
 bool IsEmpty(PhoneticsInfo phonetics_info) {
   return phonetics_info.phonetics_audio.is_empty();
@@ -104,14 +98,15 @@ ResultView::ResultView() {
                       views::FlexSpecification(
                           views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero)
                           .WithOrder(1)))
-          .AddChild(PhoneticsAudioButton()
-                        .CopyAddressTo(&phonetics_audio_button_)
-                        .SetVisible(false)
-                        .SetProperty(views::kMarginsKey,
-                                     kPhoneticsAudioButtonMarginInsets)
-                        .SetCallback(base::BindRepeating(
-                            &ResultView::OnPhoneticsAudioButtonPressed,
-                            base::Unretained(this))))
+          .AddChild(
+              views::Builder<views::ImageButton>()
+                  .CopyAddressTo(&phonetics_audio_button_)
+                  .SetVisible(false)
+                  .SetTooltipText(l10n_util::GetStringUTF16(
+                      IDS_RICH_ANSWERS_VIEW_PHONETICS_BUTTON_A11Y_NAME_TEXT))
+                  .SetCallback(base::BindRepeating(
+                      &ResultView::OnPhoneticsAudioButtonPressed,
+                      base::Unretained(this))))
           .Build());
 
   AddChildView(
@@ -193,6 +188,28 @@ void ResultView::SetDesign(Design design) {
 
   second_line_label_->SetFontList(GetSecondLineFontList(design));
   second_line_label_->SetLineHeight(GetSecondLineHeight(design));
+
+  phonetics_audio_button_->SetImageModel(
+      views::Button::ButtonState::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(vector_icons::kVolumeUpIcon,
+                                     design == Design::kCurrent
+                                         ? ui::kColorButtonBackgroundProminent
+                                         : ui::kColorSysOnSurface,
+                                     kPhoneticsAudioButtonSizeDip));
+  phonetics_audio_button_->SetBorder(
+      design == Design::kCurrent
+          ? views::CreateEmptyBorder(kPhoneticsAudioButtonBorderDip)
+          : views::CreateEmptyBorder(kPhoneticsAudioButtonRefreshedBorderDip));
+  phonetics_audio_button_->SetBackground(
+      design == Design::kCurrent
+          ? nullptr
+          : views::CreateThemedRoundedRectBackground(
+                ui::ColorIds::kColorSysStateHoverOnSubtle,
+                kPhoneticsAudioButtonBackgroundRadiusDip));
+  phonetics_audio_button_->SetProperty(
+      views::kMarginsKey, design == Design::kCurrent
+                              ? kPhoneticsAudioButtonMarginInsets
+                              : kPhoneticsAudioButtonRefreshedMarginInsets);
 }
 
 void ResultView::OnPhoneticsAudioButtonPressed() {

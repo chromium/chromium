@@ -244,12 +244,12 @@ package gen.base_module;
 
 public final class R {
     public static class anim  {
-        public static final int abc_fade_in = 0x7f010000;
-        public static final int abc_fade_out = 0x7f010001;
-        public static final int abc_slide_in_top = 0x7f010007;
+        public static int abc_fade_in = 0x7f010000;
+        public static int abc_fade_out = 0x7f010001;
+        public static int abc_slide_in_top = 0x7f010007;
     }
     public static class animator  {
-        public static final int design_appbar_state_list_animator = 0x7f020000;
+        public static int design_appbar_state_list_animator = 0x7f020000;
     }
 }
 ```
@@ -266,10 +266,18 @@ public final class R {
     public static class anim extends gen.base_module.R.anim {
     }
     public static class animator extends gen.base_module.R.animator  {
-        public static final int design_appbar_state_list_animator = 0x7f030000;
+        // Each DFM uses a unique package byte (here it's 7e rather than 7f)
+        public static int design_appbar_state_list_animator = 0x7e020000;
     }
 }
 ```
+
+*** note
+**Note:** Since some Android APIs (E.g. notification icons) assume resources to
+be in the base module, we currently move all DFM resources to the base module
+as a build step.
+***
+
 
 ### Per-Library `R.java` Files
 Generated for each `android_library()` target that sets `resources_package`.

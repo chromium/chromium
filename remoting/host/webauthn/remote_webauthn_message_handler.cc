@@ -261,8 +261,7 @@ void RemoteWebAuthnMessageHandler::OnCreateResponse(
       // according to the spec.
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown create result case: " << response.result_case();
+      NOTREACHED() << "Unknown create result case: " << response.result_case();
   }
 
   RemoveRequestCancellerByMessageId(id);
@@ -290,8 +289,7 @@ void RemoteWebAuthnMessageHandler::OnGetResponse(
       // according to the spec.
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown get result case: " << response.result_case();
+      NOTREACHED() << "Unknown get result case: " << response.result_case();
   }
 
   RemoveRequestCancellerByMessageId(id);

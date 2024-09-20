@@ -21,10 +21,12 @@ struct DISPLAY_TYPES_EXPORT DisplayConfig {
 
   std::vector<DisplayGeometry> display_geometries;
   float primary_scale = 1.0f;
+  float font_scale = 1.0f;
 
   bool operator==(const DisplayConfig& other) const {
     return display_geometries == other.display_geometries &&
-           primary_scale == other.primary_scale;
+           primary_scale == other.primary_scale &&
+           font_scale == other.font_scale;
   }
 };
 

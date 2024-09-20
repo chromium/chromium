@@ -95,11 +95,6 @@ WebAppRegistrar::~WebAppRegistrar() {
   }
 }
 
-bool WebAppRegistrar::IsLocallyInstalled(const GURL& start_url) const {
-  return IsLocallyInstalled(
-      GenerateAppId(/*manifest_id=*/std::nullopt, start_url));
-}
-
 blink::ParsedPermissionsPolicy WebAppRegistrar::GetPermissionsPolicy(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
@@ -891,12 +886,6 @@ bool WebAppRegistrar::IsInstalled(const webapps::AppId& app_id) const {
 bool WebAppRegistrar::IsUninstalling(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->is_uninstalling();
-}
-
-bool WebAppRegistrar::IsLocallyInstalled(const webapps::AppId& app_id) const {
-  return IsInstallState(
-      app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION});
 }
 
 bool WebAppRegistrar::IsActivelyInstalled(const webapps::AppId& app_id) const {

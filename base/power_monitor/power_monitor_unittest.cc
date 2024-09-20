@@ -8,6 +8,7 @@
 
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
+#include "power_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

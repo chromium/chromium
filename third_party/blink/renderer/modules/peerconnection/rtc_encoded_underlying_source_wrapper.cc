@@ -83,7 +83,7 @@ ScriptPromiseUntyped RTCEncodedUnderlyingSourceWrapper::Pull(
     return video_from_encoder_underlying_source_->Pull(script_state,
                                                        exception_state);
   }
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 ScriptPromiseUntyped RTCEncodedUnderlyingSourceWrapper::Cancel(
@@ -99,7 +99,7 @@ ScriptPromiseUntyped RTCEncodedUnderlyingSourceWrapper::Cancel(
     return video_from_encoder_underlying_source_->Cancel(script_state, reason,
                                                          exception_state);
   }
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 void RTCEncodedUnderlyingSourceWrapper::Trace(Visitor* visitor) const {

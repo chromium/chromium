@@ -822,10 +822,9 @@ WebContentsAccessibilityAndroid::GetAbsolutePositionForNode(JNIEnv* env,
   float dip_scale = 1 / root_manager->device_scale_factor();
   gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
       node->GetUnclippedRootFrameBoundsRect(), dip_scale, dip_scale);
-  int rect[4] = {absolute_rect.x(), absolute_rect.y(), absolute_rect.right(),
-                 absolute_rect.bottom()};
-
-  return base::android::ToJavaIntArray(env, rect, static_cast<size_t>(4));
+  int rect[] = {absolute_rect.x(), absolute_rect.y(), absolute_rect.right(),
+                absolute_rect.bottom()};
+  return base::android::ToJavaIntArray(env, rect);
 }
 
 static size_t ActualUnignoredChildCount(const ui::AXNode* node) {
@@ -966,10 +965,9 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   std::vector<int> suggestion_ends;
   node->GetSuggestions(&suggestion_starts, &suggestion_ends);
   if (suggestion_starts.size() && suggestion_ends.size()) {
-    suggestion_starts_java = base::android::ToJavaIntArray(
-        env, suggestion_starts.data(), suggestion_starts.size());
-    suggestion_ends_java = base::android::ToJavaIntArray(
-        env, suggestion_ends.data(), suggestion_ends.size());
+    suggestion_starts_java =
+        base::android::ToJavaIntArray(env, suggestion_starts);
+    suggestion_ends_java = base::android::ToJavaIntArray(env, suggestion_ends);
 
     // Currently we don't retrieve the text of each suggestion, so
     // store a blank string for now.
@@ -1555,8 +1553,7 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(JNIEnv* env,
     coords[4 * i + 2] = char_bounds.right();
     coords[4 * i + 3] = char_bounds.bottom();
   }
-  return base::android::ToJavaIntArray(env, coords.data(),
-                                       static_cast<size_t>(4 * len));
+  return base::android::ToJavaIntArray(env, coords);
 }
 
 jboolean WebContentsAccessibilityAndroid::GetImageData(

@@ -1,0 +1,11 @@
+# The code in this directory runs on bucket-specific threads (or, more
+# specifically, task runners that draw from the threadpool).
+# IndexedDBContextImpl, on the other hand, runs on its own task runner.
+# All inter-thread interaction should be routed through the
+# BucketContext and its delegate.
+#
+# Other than IndexedDBContextImpl, most code in the parent directory is
+# sequence-agnostic.
+include_rules = [
+  "-content/browser/indexed_db/indexed_db_context_impl.h",
+]

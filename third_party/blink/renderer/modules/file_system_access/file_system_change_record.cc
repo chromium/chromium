@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_change_type.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 
 namespace blink {
@@ -57,8 +56,8 @@ FileSystemChangeRecord::FileSystemChangeRecord(
       relative_path_components_(relative_path),
       type_(std::move(type)) {}
 
-const char* FileSystemChangeRecord::type() const {
-  return V8FileSystemChangeType(ToChangeTypeEnum(type_->which())).AsCStr();
+V8FileSystemChangeType FileSystemChangeRecord::type() const {
+  return V8FileSystemChangeType(ToChangeTypeEnum(type_->which()));
 }
 
 std::optional<Vector<String>> FileSystemChangeRecord::relativePathMovedFrom()

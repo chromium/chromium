@@ -13,10 +13,17 @@
 
 namespace ash::coral_util {
 
+// TODO(http://b/367328201): Note that some of the structs in this file will be
+// removed eventually in favor of the mojom structs in
+// chromeos/ash/services/coral/public/mojom/coral_service.mojom.
+
 // TODO(zxdan) Look into additional metadata.
 struct ASH_PUBLIC_EXPORT AppData {
   std::string app_id;
   std::string app_name;
+
+  // Enable the auto comparator.
+  auto operator<=>(const AppData&) const = default;
 };
 
 // TODO(zxdan) Look into additional metadata.
@@ -24,9 +31,15 @@ struct ASH_PUBLIC_EXPORT TabData {
   std::string tab_title;
   // The url or source link of a tab.
   std::string source;
+
+  // Enable the auto comparator.
+  auto operator<=>(const TabData&) const = default;
 };
 
 using ContentItem = std::variant<AppData, TabData>;
+
+// Gets the unique identifier for `item`.
+std::string ASH_PUBLIC_EXPORT GetIdentifier(const ContentItem& item);
 
 class ASH_PUBLIC_EXPORT CoralRequest {
  public:
@@ -44,6 +57,8 @@ class ASH_PUBLIC_EXPORT CoralRequest {
   void set_content(std::vector<ContentItem>&& content) {
     content_ = std::move(content);
   }
+
+  const std::vector<ContentItem>& content() const { return content_; }
 
  private:
   // Tab/app content with arbitrary ordering.
@@ -73,11 +88,12 @@ class ASH_PUBLIC_EXPORT CoralCluster {
   ~CoralCluster();
 
   const std::u16string& title() const { return title_; }
+  void set_title(const std::u16string& title) { title_ = title; }
 
  private:
   std::u16string title_;
   // Tab/app content keys sorted by relevance to the cluster.
-  std::vector<ContentKey> content_keys;
+  std::vector<ContentKey> content_keys_;
 };
 
 // `CoralResponse` contains 0-2 `CoralCluster`s in order of relevance.

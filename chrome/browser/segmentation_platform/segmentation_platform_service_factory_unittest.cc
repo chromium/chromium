@@ -121,7 +121,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformAndroidHomeModuleRanker, {}},
          {features::kSegmentationPlatformURLVisitResumptionRanker, {}},
          {features::kSegmentationPlatformEphemeralCardRanker, {}},
-         {features::kSegmentationPlatformMetricsClustering, {}}},
+         {features::kSegmentationSurveyPage, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -531,8 +531,11 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
 
   auto input_context = base::MakeRefCounted<InputContext>();
   input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputPriceInsights,
+      segmentation_platform::kContextualPageActionModelInputDiscounts,
       segmentation_platform::processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kContextualPageActionModelInputPriceInsights,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0));
   input_context->metadata_args.emplace(
       segmentation_platform::kContextualPageActionModelInputPriceTracking,
       segmentation_platform::processing::ProcessedValue::FromFloat(0));
@@ -544,11 +547,11 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
       kContextualPageActionsKey, prediction_options, input_context,
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
-      std::vector<std::string>(1,
-                               kContextualPageActionModelLabelPriceInsights));
+      std::vector<std::string>(1, kContextualPageActionModelLabelDiscounts));
   clock()->Advance(base::Seconds(
       ContextualPageActionsModel::kShareOutputCollectionDelayInSec));
 
+  // TODO(crbug.com/40254472): Clean this up.
   WaitAndCheckUkmRecord(
       proto::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
       /*inputs=*/
@@ -669,7 +672,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
   std::vector<std::string> result = {};
   ExpectGetClassificationResult(
       kEphemeralHomeModuleBackendKey, prediction_options, input_context,
-      /*expected_status=*/segmentation_platform::PredictionStatus::kFailed,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
       /*expected_labels=*/result);
 }
 

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
@@ -34,6 +35,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/new_window_delegate.h"
+// gn --check is not aware of conditional includes, add nogncheck.
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"  // nogncheck
+#include "ash/webui/settings/public/constants/setting.mojom-shared.h"  // nogncheck
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -53,8 +58,32 @@ using quick_answers::QuickAnswersExitPoint;
 
 constexpr char kFeedbackDescriptionTemplate[] = "#QuickAnswers\nQuery:%s\n";
 
-constexpr char kQuickAnswersSettingsUrl[] =
-    "chrome://os-settings/osSearch/search";
+// TODO(b/365588558): `OSSettingsType` and `ShowOSSettings` are to avoid having
+// ash dependency from lacros build. Delete those code once we can delete lacros
+// code.
+enum class OSSettingsType { QuickAnswers, Mahi };
+
+void ShowOSSettings(Profile* profile, OSSettingsType type) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  switch (type) {
+    case OSSettingsType::QuickAnswers:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kSearchSubpagePath,
+          chromeos::settings::mojom::Setting::kQuickAnswersOnOff);
+      return;
+    case OSSettingsType::Mahi:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kSystemPreferencesSectionPath,
+          chromeos::settings::mojom::Setting::kMahiOnOff);
+      return;
+  }
+
+  CHECK(false) << "Invalid os settings type provided";
+
+#else
+// Lacros and other non-Ash build configs are not supported.
+#endif
+}
 
 // Open the specified URL in a new tab with the specified profile
 void OpenUrl(Profile* profile, const GURL& url) {
@@ -323,37 +352,16 @@ void QuickAnswersUiController::OnSettingsButtonPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kSettingsButtonClick);
 
-  OpenSettings();
-}
-
-void QuickAnswersUiController::OpenSettings() {
-  if (!fake_open_settings_callback_.is_null()) {
-    CHECK_IS_TEST();
-    fake_open_settings_callback_.Run();
-    return;
+  switch (QuickAnswersState::GetFeatureType()) {
+    case QuickAnswersState::FeatureType::kQuickAnswers:
+      ShowOSSettings(profile_, OSSettingsType::QuickAnswers);
+      return;
+    case QuickAnswersState::FeatureType::kHmr:
+      ShowOSSettings(profile_, OSSettingsType::Mahi);
+      return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  OpenUrl(profile_, GURL(kQuickAnswersSettingsUrl));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // OS settings app is implemented in Ash, but OpenUrl here does not qualify
-  // for redirection in Lacros due to security limitations. Thus we need to
-  // explicitly send the request to Ash to launch the OS settings app.
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  DCHECK(service->IsAvailable<crosapi::mojom::UrlHandler>());
-
-  service->GetRemote<crosapi::mojom::UrlHandler>()->OpenUrl(
-      GURL(kQuickAnswersSettingsUrl));
-#endif
-}
-
-void QuickAnswersUiController::SetFakeOpenSettingsCallbackForTesting(
-    QuickAnswersUiController::FakeOpenSettingsCallback
-        fake_open_settings_callback) {
-  CHECK_IS_TEST();
-  CHECK(!fake_open_settings_callback.is_null());
-  CHECK(fake_open_settings_callback_.is_null());
-  fake_open_settings_callback_ = fake_open_settings_callback;
+  CHECK(false) << "Invalid feature type enum value specified";
 }
 
 void QuickAnswersUiController::OnReportQueryButtonPressed() {

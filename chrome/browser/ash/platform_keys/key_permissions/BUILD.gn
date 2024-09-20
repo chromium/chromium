@@ -30,6 +30,7 @@ static_library("key_permissions") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash/components/kcer:chaps_proto",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
@@ -38,7 +39,6 @@ static_library("key_permissions") {
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
-    "//chromeos/components/kcer:chaps_proto",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
@@ -65,7 +65,6 @@ static_library("test_support") {
   deps = [
     ":key_permissions",
     "//base",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/platform_keys",
     "//components/keyed_service/core",
     "//content/public/browser",
@@ -82,16 +81,15 @@ source_set("browser_tests") {
 
   deps = [
     ":key_permissions",
+    "//ash/components/kcer:chaps_proto",
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys:test_support",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/test:test_support",
-    "//chromeos/components/kcer:chaps_proto",
     "//components/prefs",
     "//content/test:test_support",
     "//testing/gtest",
@@ -112,14 +110,13 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/components/arc",
     "//ash/components/arc:arc_test_support",
+    "//ash/components/kcer:chaps_proto",
     "//base/test:test_support",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys:test_support",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/test:test_support",
-    "//chromeos/components/kcer:chaps_proto",
     "//components/policy/core/common",
     "//content/test:test_support",
     "//testing/gmock",

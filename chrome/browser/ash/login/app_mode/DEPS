@@ -41,6 +41,7 @@ include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser/speech/extension_api",
   "+chrome/browser/ui/ash/keyboard",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_navigator.h",

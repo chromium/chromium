@@ -175,8 +175,9 @@ void LoopbackServerEntity::SerializeBaseProtoFields(
   sync_entity->set_deleted(IsDeleted());
   sync_entity->set_folder(IsFolder());
 
-  if (RequiresParentId())
+  if (RequiresParentId()) {
     sync_entity->set_parent_id_string(GetParentId());
+  }
 }
 
 void LoopbackServerEntity::SerializeAsLoopbackServerEntity(

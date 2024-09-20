@@ -45,10 +45,12 @@ interface RecordingProgress {
   transcription: Transcription|null;
 }
 
-function getMicrophoneStream(micId: string): Promise<MediaStream> {
+function getMicrophoneStream(micId: string, echoCancellation: boolean):
+  Promise<MediaStream> {
   return navigator.mediaDevices.getUserMedia({
     audio: {
       deviceId: {exact: micId},
+      echoCancellation: {exact: echoCancellation},
     },
   });
 }
@@ -58,6 +60,7 @@ interface RecordingSessionConfig {
   micId: string;
   platformHandler: PlatformHandler;
   speakerLabelEnabled: boolean;
+  canCaptureSystemAudioWithLoopback: boolean;
 }
 
 let audioCtxGlobal: AudioContext|null = null;
@@ -107,6 +110,10 @@ export class RecordingSession {
   private systemAudioSourceNode: MediaStreamAudioSourceNode|null = null;
 
   private micMuted = false;
+
+  private everPausedInternal = false;
+
+  private everMutedInternal = false;
 
   readonly progress = computed<RecordingProgress>(() => {
     const powers = this.powers.value;
@@ -166,11 +173,22 @@ export class RecordingSession {
    */
   setMicMuted(muted: boolean): void {
     this.micMuted = muted;
+    if (muted) {
+      this.everMutedInternal = true;
+    }
     if (this.micAudioSourceNode !== null) {
       for (const track of this.micAudioSourceNode.mediaStream.getTracks()) {
         track.enabled = !muted;
       }
     }
+  }
+
+  get everPaused(): boolean {
+    return this.everPausedInternal;
+  }
+
+  get everMuted(): boolean {
+    return this.everMutedInternal;
   }
 
   private connectSourceNode(node: MediaStreamAudioSourceNode) {
@@ -183,7 +201,10 @@ export class RecordingSession {
       return;
     }
 
-    const micStream = await getMicrophoneStream(this.config.micId);
+    // Turn on AEC when capturing system audio via getDisplayMedia.
+    const micStream = await getMicrophoneStream(
+      this.config.micId, this.config.canCaptureSystemAudioWithLoopback
+    );
     this.micAudioSourceNode = this.audioCtx.createMediaStreamSource(micStream);
     this.connectSourceNode(this.micAudioSourceNode);
 
@@ -196,7 +217,8 @@ export class RecordingSession {
       return;
     }
 
-    if (!this.config.includeSystemAudio) {
+    if (!this.config.includeSystemAudio ||
+      !this.config.canCaptureSystemAudioWithLoopback) {
       return;
     }
 
@@ -236,6 +258,7 @@ export class RecordingSession {
       this.mediaRecorder.pause();
       // Close the mic when paused, so the "mic in use" indicator would go away.
       this.closeMicAudioSourceNode();
+      this.everPausedInternal = true;
     } else {
       await this.initMicAudioSourceNode();
       this.mediaRecorder.resume();

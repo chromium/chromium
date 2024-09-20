@@ -44,7 +44,8 @@
           "builder": "android-webview-13-x64-hostside-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-webview-13-x64-hostside-rel/targets"
     }
   },
   "$build/reclient": {

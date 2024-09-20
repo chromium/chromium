@@ -18,12 +18,14 @@ class LargeIconService;
 }
 
 // Singleton that owns all LargeIconService and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class IOSChromeLargeIconServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static favicon::LargeIconService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static favicon::LargeIconService* GetForBrowserState(ProfileIOS* profile);
+
+  static favicon::LargeIconService* GetForProfile(ProfileIOS* profile);
 
   static IOSChromeLargeIconServiceFactory* GetInstance();
 

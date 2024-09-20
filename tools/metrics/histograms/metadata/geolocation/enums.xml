@@ -74,6 +74,20 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Authorized when in-use"/>
 </enum>
 
+<enum name="LocationProviderManagerMode">
+  <int value="0" label="kNetworkOnly"/>
+  <int value="1" label="kPlatformOnly"/>
+  <int value="2" label="kCustomOnly"/>
+  <int value="3" label="kHybridPlatform"/>
+  <int value="4" label="kHybridFallbackNetwork"/>
+</enum>
+
+<enum name="LocationProviderManagerSource">
+  <int value="0" label="kNetworkProvider"/>
+  <int value="1" label="kPlatformProvider"/>
+  <int value="2" label="kCustomProvider"/>
+</enum>
+
 <enum name="LocationSystemPermissionStatus">
   <int value="0" label="kNotDetermined"/>
   <int value="1" label="kDenied"/>
@@ -94,6 +108,16 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="kNetworkLocationProvider"/>
   <int value="1" label="kPublicIpAddressGeolocator"/>
   <int value="2" label="kSimpleGeolocationProvider"/>
+</enum>
+
+<enum name="WindowsDevicesGeolocationPositionSource">
+  <int value="0" label="PositionSource_Cellular"/>
+  <int value="1" label="PositionSource_Satellite"/>
+  <int value="2" label="PositionSource_WiFi"/>
+  <int value="3" label="PositionSource_IPAddress"/>
+  <int value="4" label="PositionSource_Unknown"/>
+  <int value="5" label="PositionSource_Default"/>
+  <int value="6" label="PositionSource_Obfuscated"/>
 </enum>
 
 <enum name="WindowsDevicesGeolocationPositionStatus">

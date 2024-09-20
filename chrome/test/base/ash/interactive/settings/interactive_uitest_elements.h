@@ -481,6 +481,9 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceDetailSubpage();
 // The change name button in Bluetooth device details page.
 WebContentsInteractionTestUtil::DeepQuery BluetoothChangeDeviceNameButton();
 
+// The Battery percentage in Bluetooth device details page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothBatteryPercentage();
+
 // The forget device button in Bluetooth device details page.
 WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDeviceButton();
 

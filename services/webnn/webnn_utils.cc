@@ -76,6 +76,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kConcat;
     case mojom::Operation::Tag::kConv2d:
       return ops::kConv2d;
+    case mojom::Operation::Tag::kCumulativeSum:
+      return ops::kCumulativeSum;
     case mojom::Operation::Tag::kDequantizeLinear:
       return ops::kDequantizeLinear;
     case mojom::Operation::Tag::kElementWiseBinary:
@@ -90,6 +92,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kGather;
     case mojom::Operation::Tag::kGatherElements:
       return ops::kGatherElements;
+    case mojom::Operation::Tag::kGatherNd:
+      return ops::kGatherNd;
     case mojom::Operation::Tag::kGelu:
       return ops::kGelu;
     case mojom::Operation::Tag::kGemm:
@@ -132,6 +136,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kResample2d;
     case mojom::Operation::Tag::kReshape:
       return ops::kReshape;
+    case mojom::Operation::Tag::kScatterNd:
+      return ops::kScatterND;
     case mojom::Operation::Tag::kSigmoid:
       return ops::kSigmoid;
     case mojom::Operation::Tag::kSlice:

@@ -1011,28 +1011,28 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SlotStart {
   }
 
   // Tagging objects is not free. Avoid calling this repeatedly.
-  PA_ALWAYS_INLINE void* ToObject() {
-    return internal::TagAddr(untagged_slot_start);
+  PA_ALWAYS_INLINE void* ToObject() const {
+    return internal::TagAddr(untagged_slot_start_);
   }
 
   PA_ALWAYS_INLINE
-  void CheckIsSlotStart() {
+  void CheckIsSlotStart() const {
     auto* slot_span_metadata =
         SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(
-            untagged_slot_start);
+            untagged_slot_start_);
     uintptr_t slot_span =
         SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(
             slot_span_metadata);
-    PA_CHECK(!((untagged_slot_start - slot_span) %
+    PA_CHECK(!((untagged_slot_start_ - slot_span) %
                slot_span_metadata->bucket->slot_size));
   }
 
-  uintptr_t untagged_slot_start;
+  uintptr_t untagged_slot_start_;
 
  private:
   PA_ALWAYS_INLINE
   explicit SlotStart(uintptr_t untagged_slot_start)
-      : untagged_slot_start(untagged_slot_start) {}
+      : untagged_slot_start_(untagged_slot_start) {}
 };
 
 }  // namespace partition_alloc::internal

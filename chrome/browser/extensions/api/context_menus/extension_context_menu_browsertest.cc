@@ -24,6 +24,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -46,6 +47,10 @@
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/models/menu_model.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
+#endif
 
 using content::WebContents;
 using extensions::ContextMenuMatcher;
@@ -971,6 +976,45 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, UpdateCheckboxes) {
   VerifyRadioItemSelectionState(menu.get(), extension->id(), "checkbox2",
                                 false);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Extension context menu tests in locked fullscreen when locked and not locked
+// for OnTask. Only relevant for non-web browser scenarios.
+class ExtensionContextMenuLockedFullscreenTest
+    : public ExtensionContextMenuBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool IsLockedForOnTask() { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLockedFullscreenTest,
+                       VerifyItemStateInLockedFullscreenForOnTask) {
+  browser()->SetLockedForOnTask(IsLockedForOnTask());
+
+  // Enter locked fullscreen.
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+
+  // Load test extension and wait for js test code to create context menu with
+  // one item.
+  ExtensionTestMessageListener listener("created context menu");
+  base::FilePath extension_dir = GetRootDir().AppendASCII("locked_fullscreen");
+  ASSERT_TRUE(
+      LoadExtension(extension_dir, {.wait_for_registration_stored = true}));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  // Create / build the context menu and verify item state is enabled if the
+  // instance is locked for OnTask. False otherwise.
+  const GURL page_url("http://www.google.com");
+  const std::unique_ptr<TestRenderViewContextMenu> menu(
+      TestRenderViewContextMenu::Create(GetWebContents(), page_url));
+  int command_id = ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
+  ASSERT_EQ(IsLockedForOnTask(), menu->IsCommandIdEnabled(command_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(ExtensionContextMenuLockedFullscreenTests,
+                         ExtensionContextMenuLockedFullscreenTest,
+                         ::testing::Bool());
+#endif
 
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          ExtensionContextMenuLazyTest,

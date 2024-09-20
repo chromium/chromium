@@ -41,6 +41,16 @@ enum ActionTypeId {
   OPEN_FILE_MANAGER = 10,
 };
 
+/**
+ * Specifies an os settings component opened by OpenSettings call. A component
+ * can be an item in a section, e.g., scroll direction item in touchpad
+ * section.
+ */
+enum SettingsComponent {
+  BLUETOOTH,
+  // TODO(b/365595552): add remaining required components.
+};
+
 // Browser interface for chrome://help-app to bootstrap a connection.
 interface PageHandlerFactory {
   // Create a page handler which exposes interfaces implemented in the browser
@@ -87,4 +97,9 @@ interface PageHandler {
   // Failure to provide a valid https:// URL will cause the Help app renderer
   // process to crash.
   OpenUrlInBrowserAndTriggerInstallDialog(url.mojom.Url url);
+
+  // Opens an os settings for the specified settings component. If a specified
+  // component is not available on a device, e.g., a trackpad settings specified
+  // while a device does not have it, it is handled as no-op.
+  OpenSettings(SettingsComponent component);
 };

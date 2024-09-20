@@ -119,12 +119,15 @@ android_library("java") {
     ":android_backend_java_enums",
     ":java_resources",
     ":settings_interface_java",
+    ":utils_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "account_storage_notice:java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/feedback/android:factory_java",
+    "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/lifetime/android:java",
     "//chrome/browser/loading_modal/android:java",
@@ -239,6 +242,20 @@ generate_jni("jni_headers") {
   ]
 }
 
+android_library("utils_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/CustomTabIntentHelper.java",
+    "java/src/org/chromium/chrome/browser/password_manager/GmsUpdateLauncher.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordExportLauncher.java",
+  ]
+
+  deps = [
+    "$google_play_services_package:google_play_services_base_java",
+    "//chrome/browser/settings:factory_java",
+    "//components/browser_ui/settings/android:java",
+  ]
+}
+
 java_group("javatests") {
   testonly = true
   deps = [
@@ -259,8 +276,10 @@ robolectric_binary("password_manager_junit_tests") {
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordManagerBackendSupportHelperTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordSettingsAccessorFactoryImplTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordStoreAndroidBackendTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/GmsUpdateLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/OutdatedGmsCoreDialogTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientMetricsRecorderTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/PasswordExportLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtilTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelperTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelperTest.java",
@@ -283,6 +302,7 @@ robolectric_binary("password_manager_junit_tests") {
     ":settings_interface_java",
     ":test_support_java",
     ":unified_password_manager_proto_java",
+    ":utils_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "access_loss:junit",
@@ -294,11 +314,12 @@ robolectric_binary("password_manager_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
+    "//chrome/browser/feedback/android:delegate_public_impl_java",
+    "//chrome/browser/feedback/android:internal_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/loading_modal/android:java",
     "//chrome/browser/password_manager/android/access_loss:enums_java",
     "//chrome/browser/password_manager/android/access_loss:helper_java",
-    "//chrome/browser/password_manager/android/access_loss:java",
     "//chrome/browser/password_manager/android/pwd_migration:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -606,6 +627,7 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android:test_support",
+    "//chrome/browser/ui/autofill",
     "//chrome/test:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser",

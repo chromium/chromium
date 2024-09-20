@@ -15,11 +15,10 @@
 std::unique_ptr<KeyedService>
 TextClassifierModelServiceFake::CreateTextClassifierModelService(
     web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  auto* opt_guide =
-      OptimizationGuideServiceFactory::GetForProfile(browser_state);
-  auto service =
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  OptimizationGuideService* opt_guide =
+      OptimizationGuideServiceFactory::GetForProfile(profile);
+  std::unique_ptr<TextClassifierModelService> service =
       base::WrapUnique(new TextClassifierModelServiceFake(opt_guide));
   return service;
 }

@@ -25,7 +25,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -64,15 +63,14 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     Browser* browser,
     content::WebContents* web_contents,
     const Extension* extension,
-    SidePanelRegistry* registry)
+    SidePanelRegistry* registry,
+    bool for_tab)
     : profile_(profile),
       browser_(browser),
       web_contents_(web_contents),
       extension_(extension),
-      registry_(registry) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionSidePanelIntegration));
-
+      registry_(registry),
+      for_tab_(for_tab) {
   // Only one of `browser` or `web_contents` should be defined when constructing
   // this class.
   DCHECK(browser != nullptr ^ web_contents != nullptr);
@@ -311,6 +309,7 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {
   auto extension_view = std::make_unique<ExtensionViewViews>(host_.get());
   extension_view->SetVisible(true);
 
+  scoped_view_observation_.Reset();
   scoped_view_observation_.Observe(extension_view.get());
   return extension_view;
 }
@@ -328,7 +327,7 @@ void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
   SidePanelEntry* entry = GetEntry();
   DCHECK(entry);
 
-  if (coordinator->IsSidePanelEntryShowing(entry)) {
+  if (coordinator->IsSidePanelEntryShowing(entry->key(), for_tab_)) {
     coordinator->Close();
   } else {
     entry->ClearCachedView();

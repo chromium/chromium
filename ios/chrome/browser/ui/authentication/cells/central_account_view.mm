@@ -21,16 +21,22 @@
 
 namespace {
 
-NSString* const kEnterpriseIconName = @"enterprise_icon";
-
 // The space between the enterprise icon and the "Your browser is managed ..."
 // label.
 const CGFloat kEnterpriseIconSpacing = 4.0;
+// The vertical space between labels.
+const CGFloat kLabelVerticalSpacing = 2.0;
 
 // Returns a tinted version of the enterprise building icon.
 UIImage* GetEnterpriseIcon() {
   UIColor* color = [UIColor colorNamed:kTextSecondaryColor];
-  return [[UIImage imageNamed:kEnterpriseIconName] imageWithTintColor:color];
+  return SymbolWithPalette(
+      CustomSymbolWithConfiguration(
+          kEnterpriseSymbol,
+          [UIImageSymbolConfiguration
+              configurationWithFont:
+                  [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]]),
+      @[ color ]);
 }
 
 }  // namespace
@@ -52,7 +58,8 @@ UIImage* GetEnterpriseIcon() {
                   avatarImage:(UIImage*)avatarImage
                          name:(NSString*)name
                         email:(NSString*)email
-              managementState:(ManagementState)managementState {
+              managementState:(ManagementState)managementState
+              useLargeMargins:(BOOL)useLargeMargins {
   self = [super initWithFrame:frame];
   if (self) {
     CHECK(avatarImage);
@@ -145,18 +152,31 @@ UIImage* GetEnterpriseIcon() {
 
       [NSLayoutConstraint activateConstraints:@[
         [horizontalStack.topAnchor
-            constraintEqualToAnchor:subtitleLabel.bottomAnchor],
+            constraintEqualToAnchor:subtitleLabel.bottomAnchor
+                           constant:kLabelVerticalSpacing],
         [horizontalStack.centerXAnchor
             constraintEqualToAnchor:self.centerXAnchor],
+        [horizontalStack.leadingAnchor
+            constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
+                                        constant:kTableViewHorizontalSpacing],
+        [horizontalStack.trailingAnchor
+            constraintLessThanOrEqualToAnchor:self.trailingAnchor
+                                     constant:-kTableViewHorizontalSpacing],
 
         [self.bottomAnchor
             constraintEqualToAnchor:horizontalStack.bottomAnchor
-                           constant:2 * kTableViewLargeVerticalSpacing],
+                           constant:(useLargeMargins
+                                         ? 2 * kTableViewLargeVerticalSpacing
+                                         : kTableViewLargeVerticalSpacing +
+                                               kTableViewVerticalSpacing)],
       ]];
     } else {
       [self.bottomAnchor
           constraintEqualToAnchor:subtitleLabel.bottomAnchor
-                         constant:2 * kTableViewLargeVerticalSpacing]
+                         constant:(useLargeMargins
+                                       ? 2 * kTableViewLargeVerticalSpacing
+                                       : kTableViewLargeVerticalSpacing +
+                                             kTableViewVerticalSpacing)]
           .active = YES;
     }
 
@@ -164,7 +184,9 @@ UIImage* GetEnterpriseIcon() {
       [imageView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
       [imageView.topAnchor
           constraintEqualToAnchor:self.topAnchor
-                         constant:kTableViewLargeVerticalSpacing],
+                         constant:(useLargeMargins
+                                       ? kTableViewLargeVerticalSpacing
+                                       : kTableViewVerticalSpacing)],
       [imageView.widthAnchor
           constraintEqualToConstant:GetSizeForIdentityAvatarSize(
                                         IdentityAvatarSize::Large)
@@ -180,7 +202,8 @@ UIImage* GetEnterpriseIcon() {
           constraintEqualToAnchor:self.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
 
-      [subtitleLabel.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor],
+      [subtitleLabel.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
+                                              constant:kLabelVerticalSpacing],
       [subtitleLabel.leadingAnchor
           constraintEqualToAnchor:titleLabel.leadingAnchor],
       [subtitleLabel.trailingAnchor

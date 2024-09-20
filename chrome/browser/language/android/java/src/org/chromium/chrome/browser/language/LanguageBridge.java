@@ -7,14 +7,13 @@ package org.chromium.chrome.browser.language;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.language.LanguageProfileController;
-import org.chromium.components.language.LanguageProfileDelegateImpl;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -59,25 +58,20 @@ public class LanguageBridge {
      * @return The ordered set of ULP languages as saved in the Chrome preference.
      */
     public static LinkedHashSet<String> getULPFromPreference(Profile profile) {
-        return new LinkedHashSet<>(
-                Arrays.asList(LanguageBridgeJni.get().getULPFromPreference(profile)));
+        return new LinkedHashSet<>(LanguageBridgeJni.get().getULPFromPreference(profile));
     }
 
     /** Blocking call used by native ULPLanguageModel to get device ULP languages. */
     @CalledByNative
-    public static String[] getULPLanguagesFromDevice(String accountName) {
-        LanguageProfileDelegateImpl delegate = new LanguageProfileDelegateImpl();
-        LanguageProfileController controller = new LanguageProfileController(delegate);
-
+    public static @JniType("std::vector<std::string>") List<String> getULPLanguagesFromDevice(
+            @JniType("std::string") String accountName) {
         if (TextUtils.isEmpty(accountName)) accountName = null;
-        List<String> languages_list = controller.getLanguagePreferences(accountName);
-        String[] languages_array = new String[languages_list.size()];
-        languages_array = languages_list.toArray(languages_array);
-        return languages_array;
+        return LanguageProfileController.getLanguagePreferences(accountName);
     }
 
     @NativeMethods
     interface Natives {
-        String[] getULPFromPreference(Profile profile);
+        @JniType("std::vector<std::string>")
+        List<String> getULPFromPreference(@JniType("Profile*") Profile profile);
     }
 }

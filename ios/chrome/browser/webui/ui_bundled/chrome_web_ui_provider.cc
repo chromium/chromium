@@ -14,28 +14,26 @@
 namespace web_ui {
 
 signin::IdentityManager* GetIdentityManagerForWebUI(web::WebUIIOS* web_ui) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  return IdentityManagerFactory::GetForProfile(
-      browser_state->GetOriginalChromeBrowserState());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  return IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
 }
 
 syncer::SyncService* GetSyncServiceForWebUI(web::WebUIIOS* web_ui) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  return SyncServiceFactory::GetForBrowserState(
-      browser_state->GetOriginalChromeBrowserState());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  return SyncServiceFactory::GetForBrowserState(profile->GetOriginalProfile());
 }
 
 syncer::SyncInvalidationsService* GetSyncInvalidationsServiceForWebUI(
     web::WebUIIOS* web_ui) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  return SyncInvalidationsServiceFactory::GetForBrowserState(
-      browser_state->GetOriginalChromeBrowserState());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  return SyncInvalidationsServiceFactory::GetForProfile(
+      profile->GetOriginalProfile());
 }
 
 syncer::UserEventService* GetUserEventServiceForWebUI(web::WebUIIOS* web_ui) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  return IOSUserEventServiceFactory::GetForBrowserState(
-      browser_state->GetOriginalChromeBrowserState());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  return IOSUserEventServiceFactory::GetForProfile(
+      profile->GetOriginalProfile());
 }
 
 std::string GetChannelString() {

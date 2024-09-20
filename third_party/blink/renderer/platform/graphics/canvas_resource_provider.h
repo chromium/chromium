@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 class GrDirectContext;
 
@@ -129,12 +129,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       RasterMode raster_mode,
-      uint32_t shared_image_usage_flags,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
       const SkImageInfo& info,
-      uint32_t shared_image_usage_flags = 0,
+      gpu::SharedImageUsageSet shared_image_usage_flags = {},
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
@@ -228,9 +228,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
-  virtual uint32_t GetSharedImageUsageFlags() const {
+  virtual gpu::SharedImageUsageSet GetSharedImageUsageFlags() const {
     NOTREACHED_IN_MIGRATION();
-    return 0;
+    return gpu::SharedImageUsageSet();
   }
 
   CanvasResourceProvider(const CanvasResourceProvider&) = delete;

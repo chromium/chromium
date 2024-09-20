@@ -54,30 +54,13 @@ void ScreenAIDownloaderNonChromeOS::OnEvent(
     return;
   }
 
-  switch (event) {
-    case Events::COMPONENT_CHECKING_FOR_UPDATES:
-    case Events::COMPONENT_UPDATE_FOUND:
-    case Events::COMPONENT_WAIT:
-    case Events::COMPONENT_UPDATE_READY:
-    case Events::COMPONENT_ALREADY_UP_TO_DATE:
-    case Events::COMPONENT_UPDATE_UPDATING:
-      break;
-    case Events::COMPONENT_UPDATED:
-      RecordComponentInstallationResult(
-          /*install=*/true, /*successful=*/true);
-      break;
-    case Events::COMPONENT_UPDATE_ERROR:
-      RecordComponentInstallationResult(
-          /*install=*/true, /*successful=*/false);
-      break;
-
-    case Events::COMPONENT_UPDATE_DOWNLOADING:
-      update_client::CrxUpdateItem item;
-      if (g_browser_process->component_updater()->GetComponentDetails(omaha_id,
-                                                                      &item)) {
-        SetDownloadProgress(static_cast<double>(item.downloaded_bytes) /
-                            item.total_bytes);
-      }
+  if (event == Events::COMPONENT_UPDATE_DOWNLOADING) {
+    update_client::CrxUpdateItem item;
+    if (g_browser_process->component_updater()->GetComponentDetails(omaha_id,
+                                                                    &item)) {
+      SetDownloadProgress(static_cast<double>(item.downloaded_bytes) /
+                          item.total_bytes);
+    }
   }
 }
 

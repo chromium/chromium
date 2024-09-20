@@ -5,7 +5,7 @@
 import fnmatch
 import hashlib
 import logging
-import posixpath
+import os
 import signal
 try:
   import _thread as thread
@@ -23,6 +23,7 @@ from pylib.base import base_test_result
 from pylib.base import test_collection
 from pylib.base import test_exception
 from pylib.base import test_run
+from pylib.utils import device_dependencies
 from pylib.local.device import local_device_environment
 
 from lib.proto import exception_recorder
@@ -31,14 +32,6 @@ from lib.proto import exception_recorder
 _SIGTERM_TEST_LOG = (
   '  Suite execution terminated, probably due to swarming timeout.\n'
   '  Your test may not have run.')
-
-
-def SubstituteDeviceRoot(device_path, device_root):
-  if not device_path:
-    return device_root
-  if isinstance(device_path, list):
-    return posixpath.join(*(p if p else device_root for p in device_path))
-  return device_path
 
 
 class TestsTerminated(Exception):
@@ -381,6 +374,16 @@ class LocalDeviceTestRun(test_run.TestRun):
     ret = FlattenTestList(ret)
     ret.sort()
     return ret
+
+  def GetDataDepsForListing(self):
+    device_root = '$CHROMIUM_TESTS_ROOT'
+    host_device_tuples = self._test_instance.GetDataDependencies()
+    host_device_tuples = device_dependencies.SubstituteDeviceRoot(
+        host_device_tuples, device_root)
+    host_device_tuples = device_dependencies.ExpandDataDependencies(
+        host_device_tuples)
+
+    return sorted(f'{d} <- {os.path.relpath(h)}' for h, d in host_device_tuples)
 
   def _GetTests(self):
     raise NotImplementedError

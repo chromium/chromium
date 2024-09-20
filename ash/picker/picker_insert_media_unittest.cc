@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/picker/picker_rich_media.h"
-#include "ash/public/cpp/picker/picker_web_paste_target.h"
+#include "ash/picker/picker_web_paste_target.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"

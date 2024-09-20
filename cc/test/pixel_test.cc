@@ -23,7 +23,6 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
@@ -34,7 +33,6 @@
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_in_process_context_provider.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/buildflags.h"
@@ -61,6 +59,10 @@ PixelTest::PixelTest(GraphicsBackend backend)
   // Keep texture sizes exactly matching the bounds of the RenderPass to avoid
   // floating point badness in texcoords.
   renderer_settings_.dont_round_texture_sizes_for_pixel_tests = true;
+
+  // Copy requests force full damage, but OutputSurface-based readback can test
+  // incremental damage cases.
+  renderer_settings_.partial_swap_enabled = true;
 
   // Check if the graphics backend needs to initialize Vulkan, Dawn.
   bool init_vulkan = false;
@@ -122,25 +124,35 @@ void PixelTest::RenderReadbackTargetAndAreaToResultBitmap(
     const gfx::Rect* copy_rect) {
   base::RunLoop run_loop;
 
-  std::unique_ptr<viz::CopyOutputRequest> request =
-      std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA,
-          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
-          base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
-                         run_loop.QuitClosure()));
-  if (copy_rect) {
-    request->set_area(*copy_rect);
+  const bool use_copy_request = target != pass_list->back().get();
+  if (use_copy_request) {
+    std::unique_ptr<viz::CopyOutputRequest> request =
+        std::make_unique<viz::CopyOutputRequest>(
+            viz::CopyOutputRequest::ResultFormat::RGBA,
+            viz::CopyOutputRequest::ResultDestination::kSystemMemory,
+            base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
+                           run_loop.QuitClosure()));
+    if (copy_rect) {
+      request->set_area(*copy_rect);
+    }
+    target->copy_requests.push_back(std::move(request));
   }
-  target->copy_requests.push_back(std::move(request));
 
   float device_scale_factor = 1.f;
   renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
                        display_color_spaces_,
                        std::move(surface_damage_rect_list_));
 
-  // Call SwapBuffersSkipped(), so the renderer can have a chance to release
-  // resources.
-  renderer_->SwapBuffersSkipped();
+  if (use_copy_request) {
+    // Call SwapBuffersSkipped(), so the renderer can have a chance to release
+    // resources.
+    renderer_->SwapBuffersSkipped();
+  } else {
+    renderer_->SwapBuffers(viz::DirectRenderer::SwapFrameData());
+    output_surface_->ReadbackForTesting(
+        base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
+                       run_loop.QuitClosure()));
+  }
 
   // Wait for the readback to complete.
   run_loop.Run();
@@ -149,20 +161,20 @@ void PixelTest::RenderReadbackTargetAndAreaToResultBitmap(
 bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
                              const base::FilePath& ref_file,
                              const PixelComparator& comparator) {
-  return RunPixelTestWithReadbackTarget(pass_list, pass_list->back().get(),
-                                        ref_file, comparator);
+  return RunPixelTestWithCopyOutputRequest(pass_list, pass_list->back().get(),
+                                           ref_file, comparator);
 }
 
-bool PixelTest::RunPixelTestWithReadbackTarget(
+bool PixelTest::RunPixelTestWithCopyOutputRequest(
     viz::AggregatedRenderPassList* pass_list,
     viz::AggregatedRenderPass* target,
     const base::FilePath& ref_file,
     const PixelComparator& comparator) {
-  return RunPixelTestWithReadbackTargetAndArea(pass_list, target, ref_file,
-                                               comparator, nullptr);
+  return RunPixelTestWithCopyOutputRequestAndArea(pass_list, target, ref_file,
+                                                  comparator, nullptr);
 }
 
-bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
+bool PixelTest::RunPixelTestWithCopyOutputRequestAndArea(
     viz::AggregatedRenderPassList* pass_list,
     viz::AggregatedRenderPass* target,
     const base::FilePath& ref_file,

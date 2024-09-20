@@ -27,22 +27,36 @@ struct ParseTestData {
 
 }  // namespace
 
-class DataURLTest : public testing::Test,
-                    public ::testing::WithParamInterface<bool> {
- protected:
-  void SetUp() override {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(features::kOptimizeParsingDataUrls);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kOptimizeParsingDataUrls);
-    }
+class DataURLTest
+    : public testing::Test,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  DataURLTest() {
+    using FeatureList = std::vector<base::test::FeatureRef>;
+    FeatureList enabled_features;
+    FeatureList disabled_features;
+    const auto feature_set = [&](bool flag_on) -> FeatureList& {
+      return flag_on ? enabled_features : disabled_features;
+    };
+    feature_set(OptimizedParsing())
+        .push_back(features::kOptimizeParsingDataUrls);
+    feature_set(KeepWhitespace())
+        .push_back(features::kKeepWhitespaceForDataUrls);
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
+
+  bool OptimizedParsing() const { return std::get<0>(GetParam()); }
+  bool KeepWhitespace() const { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(DataURLTest, DataURLTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(DataURLTest,
+                         DataURLTest,
+                         testing::Combine(
+                             /*optimize_parsing=*/testing::Bool(),
+                             /*keep_whitespace=*/testing::Bool()));
 
 TEST_P(DataURLTest, Parse) {
   const ParseTestData tests[] = {
@@ -89,10 +103,9 @@ TEST_P(DataURLTest, Parse) {
       // invalid base64 content
       {"data:;base64,aGVs_-_-", false, "", "", ""},
 
-      // Spaces should be removed from non-text data URLs (we already tested
-      // spaces above).
+      // Spaces should NOT be removed from non-base64 encoded data URLs.
       {"data:image/fractal,a b c d e f g", true, "image/fractal", "",
-       "abcdefg"},
+       KeepWhitespace() ? "a b c d e f g" : "abcdefg"},
 
       // Spaces should also be removed from anything base-64 encoded
       {"data:;base64,aGVs bG8gd2  9ybGQ=", true, "text/plain", "US-ASCII",
@@ -109,9 +122,9 @@ TEST_P(DataURLTest, Parse) {
        "%20",
        true, "text/javascript", "", "d4 = 'four';"},
 
-      // Only unescaped whitespace should be stripped in non-base64.
-      // http://b/1157796
-      {"data:img/png,A  B  %20  %0A  C", true, "img/png", "", "AB \nC"},
+      // All whitespace should be preserved on non-base64 encoded content.
+      {"data:img/png,A  B  %20  %0A  C", true, "img/png", "",
+       KeepWhitespace() ? "A  B     \n  C" : "AB \nC"},
 
       {"data:text/plain;charset=utf-8;base64,SGVsbMO2", true, "text/plain",
        "utf-8", "Hell\xC3\xB6"},
@@ -330,6 +343,31 @@ TEST_P(DataURLTest, Image) {
   EXPECT_EQ(headers->GetStatusLine(), "HTTP/1.1 200 OK");
   EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &value));
   EXPECT_EQ(value, "image/png");
+}
+
+// Tests the application of the kRemoveWhitespaceForDataURLs command line
+// switch.
+TEST(DataURLRemoveWhitespaceTest, Parse) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      kRemoveWhitespaceForDataURLs);
+  const ParseTestData tests[] = {
+      {"data:image/fractal,a b c d e f g", true, "image/fractal", "",
+       "abcdefg"},
+      {"data:img/png,A  B  %20  %0A  C", true, "img/png", "", "AB \nC"},
+  };
+
+  for (const auto& test : tests) {
+    SCOPED_TRACE(test.url);
+
+    std::string mime_type;
+    std::string charset;
+    std::string data;
+    bool ok = DataURL::Parse(GURL(test.url), &mime_type, &charset, &data);
+    EXPECT_EQ(ok, test.is_valid);
+    EXPECT_EQ(test.mime_type, mime_type);
+    EXPECT_EQ(test.charset, charset);
+    EXPECT_EQ(test.data, data);
+  }
 }
 
 }  // namespace net

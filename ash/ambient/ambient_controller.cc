@@ -79,6 +79,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -1162,7 +1163,7 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = GetWidgetName();
-  params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  params.show_state = ui::mojom::WindowShowState::kFullscreen;
   params.parent = container;
   params.delegate = widget_delegate;
   params.visible_on_all_workspaces = true;

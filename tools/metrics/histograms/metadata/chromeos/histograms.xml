@@ -274,7 +274,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerDestinationPlatform"
-    enum="ArcIntentHandlerDestinationPlatform" expires_after="2025-01-05">
+    enum="ArcIntentHandlerDestinationPlatform" expires_after="2025-03-09">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -285,7 +285,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Attestation.AttestationFlowStatus"
-    enum="AttestationFlowStatus" expires_after="2025-01-05">
+    enum="AttestationFlowStatus" expires_after="2025-03-09">
   <owner>chingkang@google.com</owner>
   <owner>cros-hwsec+umas@chromium.org</owner>
   <summary>
@@ -762,6 +762,60 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.MlCore.DlcBeginInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The detailed error code received from DLC Service while trying to request to
+    install the ML Core DLC by cros-camera.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.MlCore.DlcBeginInstallResult"
+    enum="DlcClientDlcBeginInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Result of an attempt to request DLC Service to begin installation of the ML
+    Core DLC by cros-camera. See the related histogram
+    .DlcBeginInstallDlcServiceError for detailed error codes returned.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.MlCore.DlcFinalInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The final detailed error code received from DLC Service after the completion
+    of a request to install the ML Core DLC by cros-camera.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.MlCore.DlcFinalInstallResult"
+    enum="DlcClientDlcFinalInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Final result of an attempt to install the ML Core DLC by cros-camera. See
+    the related histogram .DlcFinalInstallDlcServiceError for detailed error
+    codes returned from DLC Service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.MlCore.DlcInstallAttemptCount"
+    units="attempts" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Indicates at least n attempts were made to install the ML Core DLC by
+    cros-camera. Note that the buckets are cumulative: If e.g. 3 attempts are
+    made, then the &quot;1&quot;, &quot;2&quot;, and &quot;3&quot; buckets will
+    all be incremented.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Camera.ModuleID" enum="PopularCamPeriphModuleID"
     expires_after="2025-02-10">
   <owner>dorahkim@google.com</owner>
@@ -859,6 +913,60 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.SuperRes.DlcBeginInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The detailed error code received from DLC Service while trying to request to
+    install the super res DLC by cros-camera.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SuperRes.DlcBeginInstallResult"
+    enum="DlcClientDlcBeginInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Result of an attempt to request DLC Service to begin installation of the
+    super res DLC by cros-camera. See the related histogram
+    .DlcBeginInstallDlcServiceError for detailed error codes returned.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SuperRes.DlcFinalInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The final detailed error code received from DLC Service after the completion
+    of a request to install the super res DLC by cros-camera.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SuperRes.DlcFinalInstallResult"
+    enum="DlcClientDlcFinalInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Final result of an attempt to install the super res DLC by cros-camera. See
+    the related histogram .DlcFinalInstallDlcServiceError for detailed error
+    codes returned from DLC Service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SuperRes.DlcInstallAttemptCount"
+    units="attempts" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Indicates at least n attempts were made to install the super res DLC by
+    cros-camera. Note that the buckets are cumulative: If e.g. 3 attempts are
+    made, then the &quot;1&quot;, &quot;2&quot;, and &quot;3&quot; buckets will
+    all be incremented.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Camera.SuperRes.Error" enum="SuperResError"
     expires_after="2025-05-31">
   <owner>julianachang@google.com</owner>
@@ -877,6 +985,63 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <summary>
     Records the number of Super Resolution still capture shots taken in a camera
     session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram
+    name="ChromeOS.CameraDiag.BlurDetector.DlcBeginInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The detailed error code received from DLC Service while trying to request to
+    install the blur detector DLC by cros-camera-diagnostics.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CameraDiag.BlurDetector.DlcBeginInstallResult"
+    enum="DlcClientDlcBeginInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Result of an attempt to request DLC Service to begin installation of the
+    blur detector DLC by cros-camera-diagnostics. See the related histogram
+    .DlcBeginInstallDlcServiceError for detailed error codes returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="ChromeOS.CameraDiag.BlurDetector.DlcFinalInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The final detailed error code received from DLC Service after the completion
+    of a request to install the blur detector DLC by cros-camera-diagnostics.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CameraDiag.BlurDetector.DlcFinalInstallResult"
+    enum="DlcClientDlcFinalInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Final result of an attempt to install the blur detector DLC by
+    cros-camera-diagnostics. See the related histogram
+    .DlcFinalInstallDlcServiceError for detailed error codes returned from DLC
+    Service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CameraDiag.BlurDetector.DlcInstallAttemptCount"
+    units="attempts" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Indicates at least n attempts were made to install the blur detector DLC by
+    cros-camera-diagnostics. Note that the buckets are cumulative: If e.g. 3
+    attempts are made, then the &quot;1&quot;, &quot;2&quot;, and &quot;3&quot;
+    buckets will all be incremented.
   </summary>
 </histogram>
 
@@ -1057,7 +1222,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CWP.{PPath}.{PType}" units="failures"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>raging@google.com</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -1776,7 +1941,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.AttachmentForm.{Type}" enum="AttachmentForm"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>wmahon@google.com</owner>
   <owner>chromeos-tango@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -1796,7 +1961,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.AttachmentType.{Form}" enum="AttachmentType"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>wmahon@google.com</owner>
   <owner>chromeos-tango@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -1897,7 +2062,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.InternalKeyboard.NumberOfTopRowKeys"
-    units="keys" expires_after="2024-10-28">
+    units="keys" expires_after="2025-10-28">
   <owner>dpad@google.com</owner>
   <owner>wangdanny@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -1907,7 +2072,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent"
-    enum="KeyboardTopRowActionKeys" expires_after="2024-10-28">
+    enum="KeyboardTopRowActionKeys" expires_after="2025-10-28">
   <owner>dpad@google.com</owner>
   <owner>wangdanny@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -2161,7 +2326,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Intents.IntentPickerAction"
-    enum="IntentPickerDialogAction" expires_after="2025-01-05">
+    enum="IntentPickerDialogAction" expires_after="2025-03-09">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2183,7 +2348,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Intents.LinkCapturingEvent2"
-    enum="LinkCapturingEvent" expires_after="2025-01-05">
+    enum="LinkCapturingEvent" expires_after="2025-03-09">
   <owner>vpao@google.com</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2376,7 +2541,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.GetPackState.FeatureId"
-    enum="LanguagePackFeatureIds" expires_after="2025-01-05">
+    enum="LanguagePackFeatureIds" expires_after="2025-03-09">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
@@ -2421,7 +2586,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.InstallError.Handwriting"
-    enum="LanguagePackDlcErrorType" expires_after="2025-01-05">
+    enum="LanguagePackDlcErrorType" expires_after="2025-03-09">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
@@ -2456,7 +2621,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Oobe.ValidLocale" enum="BooleanSuccess"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <owner>tranbaoduy@chromium.org</owner>
@@ -2489,7 +2654,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Liveness.PingResult" enum="BooleanSuccess"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>iby@google.com</owner>
   <owner>xiyuan@google.com</owner>
   <summary>
@@ -2662,6 +2827,20 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Mahi.Used" enum="MahiFeature"
+    expires_after="2025-06-01">
+  <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
+  <summary>
+    Records overall Mahi usage per feature. Recorded each time a feature within
+    Mahi is used, concurrently with its network request, but after any
+    client-side checks that could disable the feature.
+
+    This is counted regardless of whether the server returns success or failure.
+    For that, see ChromeOS.Mahi.ResponseStatusOnRequest.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.MessageCenter.ScrollActionReason"
     enum="ChromeOSMessageCenterScrollActionReason" expires_after="2025-02-01">
   <owner>leandre@chromium.org</owner>
@@ -2675,8 +2854,62 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.MlCoreCacher.MlCore.DlcBeginInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The detailed error code received from DLC Service while trying to request to
+    install the ML Core DLC by ml-core-cacher.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MlCoreCacher.MlCore.DlcBeginInstallResult"
+    enum="DlcClientDlcBeginInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Result of an attempt to request DLC Service to begin installation of the ML
+    Core DLC by ml-core-cacher. See the related histogram
+    .DlcBeginInstallDlcServiceError for detailed error codes returned.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MlCoreCacher.MlCore.DlcFinalInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The final detailed error code received from DLC Service after the completion
+    of a request to install the ML Core DLC by ml-core-cacher.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MlCoreCacher.MlCore.DlcFinalInstallResult"
+    enum="DlcClientDlcFinalInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Final result of an attempt to install the ML Core DLC by ml-core-cacher. See
+    the related histogram .DlcFinalInstallDlcServiceError for detailed error
+    codes returned from DLC Service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MlCoreCacher.MlCore.DlcInstallAttemptCount"
+    units="attempts" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Indicates at least n attempts were made to install the ML Core DLC by
+    ml-core-cacher. Note that the buckets are cumulative: If e.g. 3 attempts are
+    made, then the &quot;1&quot;, &quot;2&quot;, and &quot;3&quot; buckets will
+    all be incremented.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Ownership.OwnerKeyUmaEvent" enum="OwnerKeyUmaEvent"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>miersh@google.com</owner>
   <owner>chromeos-commercial-networking@google.com</owner>
   <summary>
@@ -2707,7 +2940,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Printing.TimeCostOfSuccessfulFoomaticShell"
-    units="seconds" expires_after="2025-01-05">
+    units="seconds" expires_after="2025-03-09">
   <owner>pawliczek@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
@@ -2827,7 +3060,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.RgbKeyboard.{Type}"
-    enum="RgbKeyboardBacklightChangeType" expires_after="2024-09-15">
+    enum="RgbKeyboardBacklightChangeType" expires_after="2025-09-15">
   <owner>michaelcheco@google.com</owner>
   <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
@@ -2869,7 +3102,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SAML.InSessionPasswordChangeEvent"
-    enum="SamlInSessionPasswordChangeEvent" expires_after="2025-01-05">
+    enum="SamlInSessionPasswordChangeEvent" expires_after="2025-03-09">
   <owner>mslus@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
   <summary>
@@ -2906,7 +3139,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Sandboxing.LandlockEnabled" enum="Boolean"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>enlightened@chromium.org</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>
@@ -3468,7 +3701,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.{Key}.{State}"
-    enum="ExtendedFkeysModifier" expires_after="2024-09-12">
+    enum="ExtendedFkeysModifier" expires_after="2025-09-12">
   <owner>michaelcheco@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -4155,7 +4388,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SwapManagement.SwapStop.Status" enum="AbslErrorCode"
-    expires_after="2024-07-28">
+    expires_after="2025-02-10">
   <owner>ctshao@google.com</owner>
   <owner>bgeffon@google.com</owner>
   <summary>
@@ -4185,7 +4418,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.FirstInteraction"
-    enum="CrosSystemTrayFirstInteraction" expires_after="2025-01-05">
+    enum="CrosSystemTrayFirstInteraction" expires_after="2025-03-09">
   <owner>amehfooz@chromium.org</owner>
   <owner>cros-status-area@google.com</owner>
   <summary>
@@ -4218,7 +4451,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.NotificationsRemovedByClearAll"
-    units="notifications" expires_after="2025-01-05">
+    units="notifications" expires_after="2025-03-09">
   <owner>amehfooz@chromium.org</owner>
   <owner>cros-status-area@google.com</owner>
   <summary>
@@ -4228,7 +4461,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.ShelfPodCount" units="count"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>amehfooz@chromium.org</owner>
   <owner>cros-status-area@google.com</owner>
   <summary>
@@ -4304,7 +4537,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.CableSpeed" enum="CableSpeedMetric"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4352,7 +4585,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.PartnerType" enum="PartnerTypeMetric"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4402,7 +4635,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram base="true" name="ChromeOS.USB.DeviceAttached"
-    enum="ChromeOSUsbEventTiming" expires_after="2025-01-05">
+    enum="ChromeOSUsbEventTiming" expires_after="2025-03-09">
   <owner>allenwebb@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>
@@ -4421,7 +4654,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.USB.ExternalDeviceAttached.{USBDeviceRecognized}.{USBDeviceClass}"
-    enum="ChromeOSUsbEventTiming" expires_after="2025-01-05">
+    enum="ChromeOSUsbEventTiming" expires_after="2025-03-09">
   <owner>jthies@google.com</owner>
   <owner>allenwebb@chromium.org</owner>
   <owner>chromeos-usb@google.com</owner>
@@ -4464,7 +4697,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceClass"
-    enum="ChromeOSUsbDeviceClass" expires_after="2025-01-05">
+    enum="ChromeOSUsbDeviceClass" expires_after="2025-03-09">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4479,7 +4712,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceSpeed"
-    enum="ChromeOSUsbDeviceSpeed" expires_after="2025-01-05">
+    enum="ChromeOSUsbDeviceSpeed" expires_after="2025-03-09">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4557,7 +4790,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.WXMountCount" units="count"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>

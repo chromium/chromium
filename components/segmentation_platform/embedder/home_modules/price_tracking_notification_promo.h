@@ -9,6 +9,11 @@
 
 namespace segmentation_platform::home_modules {
 
+// Signal Keys for this card.
+extern const char kHasSubscriptionSignalKey[];
+extern const char kIsNewUserSignalKey[];
+extern const char kIsSyncedSignalKey[];
+
 class PriceTrackingNotificationPromo : public CardSelectionInfo {
  public:
   explicit PriceTrackingNotificationPromo(int price_tracking_promo_count);

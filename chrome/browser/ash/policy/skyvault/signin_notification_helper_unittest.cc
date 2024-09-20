@@ -14,6 +14,16 @@
 
 namespace policy::skyvault_ui_utils {
 
+namespace {
+
+const gfx::Image CreateTestThumbnail() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  return gfx::Image::CreateFrom1xBitmap(bitmap);
+}
+
+}  // namespace
+
 constexpr int kId = 123;
 
 class SignInNotificationHelperTest
@@ -61,8 +71,8 @@ TEST_P(SignInNotificationHelperTest, ClickOnCancel) {
   auto [file_type, notification_id] = GetParam();
 
   base::MockCallback<base::RepeatingCallback<void(base::File::Error)>> mock_cb;
-  ShowSignInNotification(profile_.get(), kId, file_type, "dummy_name.txt",
-                         mock_cb.Get());
+  ShowSignInNotification(profile_.get(), kId, file_type,
+                         base::FilePath("dummy_name.txt"), mock_cb.Get());
   EXPECT_TRUE(display_service_->GetNotification(notification_id).has_value());
 
   EXPECT_CALL(mock_cb, Run(base::File::Error::FILE_ERROR_FAILED));
@@ -77,11 +87,21 @@ TEST_P(SignInNotificationHelperTest, ClickOnCancel) {
 // be run with error.
 TEST_P(SignInNotificationHelperTest, CloseNotification) {
   auto [file_type, notification_id] = GetParam();
+  const bool with_image =
+      file_type ==
+      ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture;
 
   base::MockCallback<base::RepeatingCallback<void(base::File::Error)>> mock_cb;
-  ShowSignInNotification(profile_.get(), kId, file_type, "dummy_name.txt",
-                         mock_cb.Get());
+  std::optional<const gfx::Image> thumbnail =
+      with_image ? std::optional<const gfx::Image>(CreateTestThumbnail())
+                 : std::nullopt;
+  ShowSignInNotification(profile_.get(), kId, file_type,
+                         base::FilePath("dummy_name.txt"), mock_cb.Get(),
+                         thumbnail);
   EXPECT_TRUE(display_service_->GetNotification(notification_id).has_value());
+  EXPECT_EQ(
+      display_service_->GetNotification(notification_id)->image().IsEmpty(),
+      !with_image);
 
   EXPECT_CALL(mock_cb, Run(base::File::Error::FILE_ERROR_FAILED));
   display_service_->RemoveNotification(NotificationHandler::Type::TRANSIENT,
@@ -102,7 +122,11 @@ INSTANTIATE_TEST_SUITE_P(
                           base::NumberToString(kId)})),
         std::make_tuple(
             ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration,
-            kMigrationSignInNotification)),
+            kMigrationSignInNotification),
+        std::make_tuple(
+            ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture,
+            base::StrCat({kScreenCaptureSignInNotificationIdPrefix,
+                          base::NumberToString(kId)}))),
 
     SignInNotificationHelperTest::ParamToName);
 

@@ -73,4 +73,34 @@ void SessionServiceImpl::DeferRequestForRefresh(
   std::move(continue_callback).Run();
 }
 
+void SessionServiceImpl::SetChallengeForBoundSession(
+    const GURL& request_url,
+    const SessionChallengeParam& param) {
+  if (!param.session_id()) {
+    return;
+  }
+
+  SchemefulSite site(request_url);
+  auto range = unpartitioned_sessions_.equal_range(site);
+  for (auto it = range.first; it != range.second; ++it) {
+    if (it->second->id().value() == param.session_id()) {
+      it->second->set_cached_challenge(param.challenge());
+      return;
+    }
+  }
+}
+
+const Session* SessionServiceImpl::GetSessionForTesting(
+    const SchemefulSite& site,
+    const std::string& session_id) const {
+  auto range = unpartitioned_sessions_.equal_range(site);
+  for (auto it = range.first; it != range.second; ++it) {
+    if (it->second->id().value() == session_id) {
+      return it->second.get();
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace net::device_bound_sessions

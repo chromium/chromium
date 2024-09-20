@@ -23,8 +23,9 @@ namespace {
 base::TimeDelta GetDelayImpl(base::TimeDelta last_delay, int jitter_sign) {
   DCHECK(jitter_sign == -1 || jitter_sign == 1);
 
-  if (last_delay >= kMaxBackoffTime)
+  if (last_delay >= kMaxBackoffTime) {
     return kMaxBackoffTime;
+  }
 
   const base::TimeDelta backoff =
       std::max(kMinBackoffTime, last_delay * kBackoffMultiplyFactor) +

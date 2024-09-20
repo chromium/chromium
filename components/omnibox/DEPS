@@ -1,3 +1,5 @@
 include_rules = [
+  "+ui/android/java/src/org/chromium/ui/base/DeviceFormFactor.java",
+  "+ui/android/java/src/org/chromium/ui/base/DeviceInput.java",
   "+ui/base",
 ]

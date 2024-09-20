@@ -28,7 +28,6 @@ static_library("optin") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/settings",
-    "//chrome/browser/ui/webui/ash/login",
     "//components/metrics",
     "//components/prefs",
     "//third_party/nearby:presence_types",

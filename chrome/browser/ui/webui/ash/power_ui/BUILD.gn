@@ -16,7 +16,7 @@ static_library("power_ui") {
     "//base",
     "//chrome/browser/ash/power",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",

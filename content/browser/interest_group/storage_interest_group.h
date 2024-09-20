@@ -28,7 +28,7 @@ struct CONTENT_EXPORT StorageInterestGroup {
   ~StorageInterestGroup();
 
   blink::InterestGroup interest_group;
-  auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
+  blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
 
   // Hashed k-anonymous keys.
   base::flat_set<std::string> hashed_kanon_keys;
@@ -40,6 +40,8 @@ struct CONTENT_EXPORT StorageInterestGroup {
   base::Time join_time;
   // The last time this interest group was updated.
   base::Time last_updated;
+  // The time when the browser will permit updating this interest group.
+  base::Time next_update_after;
   // The last time the k-anon values were updated.
   base::Time last_k_anon_updated;
 };

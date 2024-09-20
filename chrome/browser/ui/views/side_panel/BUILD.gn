@@ -45,8 +45,6 @@ source_set("side_panel") {
     "history_clusters/history_clusters_tab_helper.h",
     "lens/lens_core_tab_side_panel_helper.cc",
     "lens/lens_core_tab_side_panel_helper.h",
-    "read_anything/read_anything_coordinator.cc",
-    "read_anything/read_anything_coordinator.h",
     "read_anything/read_anything_service.cc",
     "read_anything/read_anything_service.h",
     "read_anything/read_anything_service_factory.cc",
@@ -120,9 +118,13 @@ source_set("side_panel") {
     "//chrome/browser:primitives",
     "//chrome/browser/companion/core/mojom:mojo_bindings",
     "//chrome/browser/companion/visual_query",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/customize_chrome",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome",
     "//chrome/common",
     "//chrome/common/accessibility:mojo_bindings",
     "//components/lens",
@@ -214,5 +216,8 @@ source_set("side_panel") {
     deps += [ "//chrome/common/extensions/api" ]
   }
 
-  allow_circular_includes_from = [ "//chrome/browser/ui/views/toolbar" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/customize_chrome",
+  ]
 }

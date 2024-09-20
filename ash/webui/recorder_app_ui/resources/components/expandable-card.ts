@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cros_components/accordion/accordion.js';
+import 'chrome://resources/cros_components/accordion/accordion_item.js';
 import 'chrome://resources/cros_components/checkbox/checkbox.js';
-import './cra/cra-accordion.js';
-import './cra/cra-accordion-item.js';
 import './cra/cra-icon-button.js';
 import './cra/cra-icon.js';
 
@@ -12,7 +12,6 @@ import {
   Checkbox as CrosCheckbox,
 } from 'chrome://resources/cros_components/checkbox/checkbox.js';
 import {
-  classMap,
   css,
   CSSResultGroup,
   html,
@@ -24,7 +23,7 @@ import {assertInstanceof} from '../core/utils/assert.js';
 
 export class ExpandableCard extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
-    cra-accordion {
+    cros-accordion {
       --cros-card-background-color: none;
 
       &::part(card) {
@@ -36,13 +35,13 @@ export class ExpandableCard extends ReactiveLitElement {
       margin: -8px -14px;
     }
 
-    cra-accordion-item {
+    cros-accordion-item {
       &::part(content) {
         padding: 0 14px 18px;
       }
 
-      &.hide-content::part(content) {
-        display: none;
+      &::part(row) {
+        line-height: 1;
       }
     }
 
@@ -54,19 +53,11 @@ export class ExpandableCard extends ReactiveLitElement {
   static override properties: PropertyDeclarations = {
     expanded: {type: Boolean},
     disabled: {type: Boolean},
-    hideContent: {type: Boolean},
   };
 
   expanded = false;
 
   disabled = false;
-
-  /**
-   * Hides the content and the arrow. The component still emits
-   * "expandable-card-expanded" and "expandable-card-collapsed" event, but only
-   * the checkbox state would change.
-   */
-  hideContent = false;
 
   private onExpanded() {
     this.dispatchEvent(new CustomEvent('expandable-card-expanded'));
@@ -90,18 +81,14 @@ export class ExpandableCard extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    const classes = {
-      'hide-content': this.hideContent,
-    };
     // The whole header of cros-accordion can be focused, so tabindex=-1 is set
     // on the checkbox to make it unfocusable.
-    return html`<cra-accordion variant="compact">
-      <cra-accordion-item
+    return html`<cros-accordion variant="compact">
+      <cros-accordion-item
         ?disabled=${this.disabled}
         ?expanded=${this.shouldExpand}
         @cros-accordion-item-expanded=${this.onExpanded}
         @cros-accordion-item-collapsed=${this.onCollapsed}
-        class=${classMap(classes)}
       >
         <cros-checkbox
           slot="leading"
@@ -109,12 +96,13 @@ export class ExpandableCard extends ReactiveLitElement {
           ?disabled=${this.disabled}
           @change=${this.onCheckboxClick}
           tabindex="-1"
+          aria-hidden="true"
         >
         </cros-checkbox>
         <slot name="header" slot="title"></slot>
         <slot name="content"></slot>
-      </cra-accordion-item>
-    </cra-accordion>`;
+      </cros-accordion-item>
+    </cros-accordion>`;
   }
 }
 

@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_path.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
@@ -233,9 +232,7 @@ float SVGGeometryElement::PathLengthScaleFactor(float computed_path_length,
 
 void SVGGeometryElement::GeometryPresentationAttributeChanged(
     const QualifiedName& attr_name) {
-  InvalidateSVGPresentationAttributeStyle();
-  SetNeedsStyleRecalc(kLocalStyleChange,
-                      StyleChangeReasonForTracing::FromAttribute(attr_name));
+  UpdatePresentationAttributeStyle(attr_name);
   GeometryAttributeChanged();
 }
 

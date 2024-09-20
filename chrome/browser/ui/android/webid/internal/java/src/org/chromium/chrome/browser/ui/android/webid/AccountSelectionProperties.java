@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
+import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -120,6 +121,7 @@ class AccountSelectionProperties {
             public Consumer<Context> mTermsOfServiceClickCallback;
             public Consumer<Context> mPrivacyPolicyClickCallback;
             public Callback<View> mSetFocusViewCallback;
+            public @IdentityRequestDialogDisclosureField int[] mDisclosureFields;
         }
 
         static final ReadableObjectPropertyKey<Properties> PROPERTIES =

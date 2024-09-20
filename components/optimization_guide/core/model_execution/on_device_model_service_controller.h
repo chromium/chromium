@@ -31,6 +31,7 @@
 #include "feature_keys.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
+#include "services/on_device_model/public/cpp/text_safety_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
@@ -153,6 +154,7 @@ class OnDeviceModelServiceController
     OnDeviceModelClient(
         ModelBasedCapabilityKey feature,
         base::WeakPtr<OnDeviceModelServiceController> controller,
+        const on_device_model::TextSafetyLoaderParams& ts_params,
         const on_device_model::ModelAssetPaths& model_paths,
         base::optional_ref<const on_device_model::AdaptationAssetPaths>
             adaptation_assets);
@@ -160,6 +162,8 @@ class OnDeviceModelServiceController
     bool ShouldUse() override;
     mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetModelRemote()
         override;
+    mojo::Remote<on_device_model::mojom::TextSafetyModel>&
+    GetTextSafetyModelRemote() override;
     void OnResponseCompleted() override;
     void OnSessionTimedOut() override;
 
@@ -167,6 +171,7 @@ class OnDeviceModelServiceController
     ModelBasedCapabilityKey feature_;
     base::WeakPtr<OnDeviceModelServiceController> controller_;
     on_device_model::ModelAssetPaths model_paths_;
+    on_device_model::TextSafetyLoaderParams ts_params_;
 
     // Model adaptation assets are populated when it was required.
     std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets_;
@@ -185,6 +190,14 @@ class OnDeviceModelServiceController
       const on_device_model::ModelAssetPaths& model_paths,
       base::optional_ref<const on_device_model::AdaptationAssetPaths>
           adaptation_assets);
+
+  mojo::Remote<on_device_model::mojom::TextSafetyModel>&
+  GetTextSafetyModelRemote(
+      const on_device_model::TextSafetyLoaderParams& params);
+
+  void OnTextSafetyParamsLoaded(
+      mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model,
+      on_device_model::mojom::TextSafetyModelParamsPtr params);
 
   // Ensures the service is running and base model remote is created.
   void MaybeCreateBaseModelRemote(
@@ -216,6 +229,8 @@ class OnDeviceModelServiceController
 
   on_device_model::ModelAssetPaths PopulateModelPaths();
 
+  on_device_model::TextSafetyLoaderParams PopulateTextSafetyParams() const;
+
   // Called to update the model availability changes for `feature`.
   void NotifyModelAvailabilityChange(ModelBasedCapabilityKey feature);
 
@@ -234,6 +249,8 @@ class OnDeviceModelServiceController
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
 
   mojo::Remote<on_device_model::mojom::OnDeviceModel> base_model_remote_;
+
+  mojo::Remote<on_device_model::mojom::TextSafetyModel> ts_model_remote_;
 
   // Maintains the live model adaptation controllers per feature. Created when
   // model adaptation is needed for a feature, and removed when adaptation

@@ -89,12 +89,16 @@ class TouchToFillPaymentMethodViewBridge {
             @JniType("std::u16string") String label,
             @JniType("std::u16string") String secondaryLabel,
             @JniType("std::u16string") String subLabel,
-            boolean applyDeactivatedStyle) {
+            @JniType("std::u16string") String secondarySubLabel,
+            boolean applyDeactivatedStyle,
+            boolean shouldDisplayTermsAvailable) {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSecondaryLabel(secondaryLabel)
                 .setSubLabel(subLabel)
+                .setSecondarySubLabel(secondarySubLabel)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
+                .setShouldDisplayTermsAvailable(shouldDisplayTermsAvailable)
                 .build();
     }
 }

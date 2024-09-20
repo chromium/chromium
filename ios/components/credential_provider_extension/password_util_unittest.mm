@@ -88,24 +88,24 @@ void PasswordUtilKeychainTest::TearDown() {
 TEST_F(PasswordUtilKeychainTest, CheckRestoreOfSavedPasswords) {
   AddPasswordForKey(kCredentialKey1, kCredentialPassword1);
   AddPasswordForKey(kCredentialKey2, kCredentialPassword2);
-  ASSERT_TRUE([PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey2))
-      isEqualToString:kCredentialPassword2]);
-  ASSERT_TRUE([PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey1))
-      isEqualToString:kCredentialPassword1]);
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey2)),
+              kCredentialPassword2);
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey1)),
+              kCredentialPassword1);
   RemovePasswordForKey(kCredentialKey1);
-  ASSERT_TRUE([PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey2))
-      isEqualToString:kCredentialPassword2]);
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey2)),
+              kCredentialPassword2);
   RemovePasswordForKey(kCredentialKey2);
 }
 
 // Tests retrieval of saved passwords, using an empty string as arg.
 TEST_F(PasswordUtilKeychainTest, EmptyArgument) {
-  ASSERT_TRUE([PasswordWithKeychainIdentifier(@"") isEqualToString:@""]);
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(@""), @"");
 }
 
 // Tests retrieval of saved passwords, nil as arg.
 TEST_F(PasswordUtilKeychainTest, NilArgument) {
-  ASSERT_TRUE([PasswordWithKeychainIdentifier(nil) isEqualToString:@""]);
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(nil), @"");
 }
 
 // Tests storing passwords with StorePassword.
@@ -115,13 +115,13 @@ TEST_F(PasswordUtilKeychainTest, CheckSavingPasswords) {
   EXPECT_TRUE(StorePasswordInKeychain(kCredentialPassword2,
                                       KeyWithPrefix(kCredentialKey2)));
 
-  ASSERT_TRUE([PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey2))
-      isEqualToString:kCredentialPassword2]);
-  ASSERT_TRUE([PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey1))
-      isEqualToString:kCredentialPassword1]);
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey2)),
+              kCredentialPassword2);
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey1)),
+              kCredentialPassword1);
   RemovePasswordForKey(kCredentialKey1);
-  ASSERT_TRUE([PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey2))
-      isEqualToString:kCredentialPassword2]);
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey2)),
+              kCredentialPassword2);
   RemovePasswordForKey(kCredentialKey2);
 }
 

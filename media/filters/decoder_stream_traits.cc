@@ -318,14 +318,4 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::OnOutputReady(
       base::TimeTicks::Now() - *buffer->metadata().decode_begin_time;
 }
 
-void DecoderStreamTraits<DemuxerStream::VIDEO>::SetPreferNonPlatformDecoders(
-    bool prefer) {
-  prefer_non_platform_decoders_ = prefer;
-}
-
-bool DecoderStreamTraits<DemuxerStream::VIDEO>::GetPreferNonPlatformDecoders()
-    const {
-  return prefer_non_platform_decoders_;
-}
-
 }  // namespace media

@@ -14,6 +14,10 @@ namespace data_sharing::features {
 // implementation of the service is returned.
 BASE_DECLARE_FEATURE(kDataSharingFeature);
 
+// Join only feature flag for data sharing. Enabled partial data sharing related
+// functionalities.
+BASE_DECLARE_FEATURE(kDataSharingJoinOnly);
+
 extern const base::FeatureParam<std::string> kDataSharingURL;
 
 }  // namespace data_sharing::features

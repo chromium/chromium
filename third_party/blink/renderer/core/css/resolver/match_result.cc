@@ -40,38 +40,24 @@
 
 namespace blink {
 
-MatchedProperties::MatchedProperties() {
-  memset(&types_, 0, sizeof(types_));
-}
-
 void MatchedProperties::Trace(Visitor* visitor) const {
   visitor->Trace(properties);
 }
 
-void MatchResult::AddMatchedProperties(
-    const CSSPropertyValueSet* properties,
-    CascadeOrigin origin,
-    const AddMatchedPropertiesOptions& options) {
-  CHECK_NE(origin, CascadeOrigin::kNone);
-  matched_properties_.Grow(matched_properties_.size() + 1);
-  MatchedProperties& new_properties = matched_properties_.back();
-  new_properties.properties = const_cast<CSSPropertyValueSet*>(properties);
-  new_properties.types_.link_match_type = options.link_match_type;
-  new_properties.types_.valid_property_filter =
-      static_cast<std::underlying_type_t<ValidPropertyFilter>>(
-          options.valid_property_filter);
-  new_properties.types_.layer_order = ClampTo<uint16_t>(options.layer_order);
-  new_properties.types_.is_inline_style = options.is_inline_style;
-  new_properties.types_.is_try_style = options.is_try_style;
-  new_properties.types_.is_try_tactics_style = options.is_try_tactics_style;
-  new_properties.types_.origin = origin;
-  new_properties.types_.tree_order = current_tree_order_;
+void MatchResult::AddMatchedProperties(const CSSPropertyValueSet* properties,
+                                       const MatchedProperties::Data& types) {
+  MatchedProperties::Data new_types = types;
+  new_types.tree_order = current_tree_order_;
+  matched_properties_.emplace_back(const_cast<CSSPropertyValueSet*>(properties),
+                                   new_types);
+
 #if DCHECK_IS_ON()
-  DCHECK_GE(origin, last_origin_);
+  DCHECK_NE(types.origin, CascadeOrigin::kNone);
+  DCHECK_GE(types.origin, last_origin_);
   if (!tree_scopes_.empty()) {
-    DCHECK_EQ(origin, CascadeOrigin::kAuthor);
+    DCHECK_EQ(types.origin, CascadeOrigin::kAuthor);
   }
-  last_origin_ = origin;
+  last_origin_ = types.origin;
 #endif
 }
 

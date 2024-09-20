@@ -169,6 +169,12 @@ bool ConvertFileSystemURLToPathInsideCrostini(
     const storage::FileSystemURL& file_system_url,
     base::FilePath* inside);
 
+// Convert a Fusebox Moniker path to a path inside VM mounted at `vm_mount`.
+// `inside` is modified only when the return value is true (success).
+bool ConvertFuseboxMonikerPathToPathInsideVM(const base::FilePath& path,
+                                             const base::FilePath& vm_mount,
+                                             base::FilePath* inside);
+
 // Convert a path inside a VM mounted at |vm_mount| (e.g. /mnt/chromeos) to a
 // FileSystemURL. If |map_crostini_home| is set, paths
 // under the user's home directory (e.g. /home/user) are translated to be under

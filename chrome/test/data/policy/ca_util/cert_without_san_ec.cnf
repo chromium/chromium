@@ -1,0 +1,8 @@
+.include ${ENV::CA_CERT_UTIL_DIR}/ca_ec.cnf
+
+[leaf_cert_without_san]
+# Extensions to add when signing a request for an leaf cert
+basicConstraints       = critical, CA:false
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always
+extendedKeyUsage       = serverAuth, clientAuth

@@ -7939,6 +7939,14 @@ std::optional<EVENTID> AXPlatformNodeWin::MojoEventToUIAEvent(
       return UIA_AutomationFocusChangedEventId;
     case ax::mojom::Event::kLiveRegionChanged:
       return UIA_LiveRegionChangedEventId;
+    case ax::mojom::Event::kMenuStart:
+      return UIA_MenuModeStartEventId;
+    case ax::mojom::Event::kMenuEnd:
+      return UIA_MenuModeEndEventId;
+    case ax::mojom::Event::kMenuPopupStart:
+      return UIA_MenuOpenedEventId;
+    case ax::mojom::Event::kMenuPopupEnd:
+      return UIA_MenuClosedEventId;
     case ax::mojom::Event::kSelection:
       return UIA_SelectionItem_ElementSelectedEventId;
     case ax::mojom::Event::kSelectionAdd:

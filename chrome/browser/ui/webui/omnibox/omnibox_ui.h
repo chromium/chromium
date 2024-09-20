@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_OMNIBOX_UI_H_
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/webui/omnibox/omnibox.mojom-forward.h"
+#include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom-forward.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"

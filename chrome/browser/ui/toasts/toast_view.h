@@ -27,12 +27,14 @@ enum class ToastCloseReason {
   kCloseButton = 2,
   kPreempted = 3,
   kMenuItemClick = 4,
-  kAborted = 5,  // When the feature explicitly dismisses the toast.
-  kMaxValue = kAborted
+  kFeatureDismiss = 5,
+  kAbort = 6,
+  kMaxValue = kAbort
 };
 
 // The view for toasts.
-class ToastView : public views::BubbleDialogDelegateView {
+class ToastView : public views::BubbleDialogDelegateView,
+                  public views::AnimationDelegateViews {
   METADATA_HEADER(ToastView, views::BubbleDialogDelegateView)
 
  public:
@@ -40,7 +42,8 @@ class ToastView : public views::BubbleDialogDelegateView {
   ToastView(views::View* anchor_view,
             const std::u16string& toast_text,
             const gfx::VectorIcon& icon,
-            bool has_close_button);
+            bool has_close_button,
+            bool should_hide_ui_for_fullscreen);
   ~ToastView() override;
 
   // Must be called prior to Init (which is called from
@@ -52,8 +55,16 @@ class ToastView : public views::BubbleDialogDelegateView {
   // views::BubbleDialogDelegateView:
   void Init() override;
 
+  // AnimationDelegateViews:
+  void AnimationProgressed(const gfx::Animation* animation) override;
+
+  void AnimateIn();
+
   // Animates out the toast, then closes the toast widget.
   void Close(ToastCloseReason close_reason);
+
+  void UpdateRenderToastOverWebContentsAndPaint(
+      const bool render_toast_over_web_contents);
 
   views::Label* label_for_testing() { return label_; }
   views::MdTextButton* action_button_for_testing() { return action_button_; }
@@ -63,12 +74,19 @@ class ToastView : public views::BubbleDialogDelegateView {
   // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;
   void OnThemeChanged() override;
-  std::u16string GetAccessibleWindowTitle() const override;
 
  private:
+  void AnimateOut(base::OnceClosure callback, bool show_height_animation);
+
+  gfx::LinearAnimation height_animation_{this};
+  gfx::Rect starting_widget_bounds_;
+  gfx::Rect target_widget_bounds_;
+  gfx::Tween::Type height_animation_tween_;
+
   const std::u16string toast_text_;
   const raw_ref<const gfx::VectorIcon> icon_;
   const bool has_close_button_;
+  bool render_toast_over_web_contents_;
   bool has_action_button_ = false;
   std::u16string action_button_text_;
   base::RepeatingClosure action_button_callback_;

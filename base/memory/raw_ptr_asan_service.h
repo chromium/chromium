@@ -46,22 +46,22 @@ class BASE_EXPORT RawPtrAsanService {
 
   bool IsEnabled() const { return mode_ == Mode::kEnabled; }
 
-  ALWAYS_INLINE NO_SANITIZE(
-      "address") bool is_dereference_check_enabled() const {
+  NO_SANITIZE("address")
+  ALWAYS_INLINE bool is_dereference_check_enabled() const {
     return is_dereference_check_enabled_;
   }
 
-  ALWAYS_INLINE NO_SANITIZE(
-      "address") bool is_extraction_check_enabled() const {
+  NO_SANITIZE("address")
+  ALWAYS_INLINE bool is_extraction_check_enabled() const {
     return is_extraction_check_enabled_;
   }
 
-  ALWAYS_INLINE NO_SANITIZE(
-      "address") bool is_instantiation_check_enabled() const {
+  NO_SANITIZE("address")
+  ALWAYS_INLINE bool is_instantiation_check_enabled() const {
     return is_instantiation_check_enabled_;
   }
 
-  ALWAYS_INLINE NO_SANITIZE("address") static RawPtrAsanService& GetInstance() {
+  NO_SANITIZE("address") ALWAYS_INLINE static RawPtrAsanService& GetInstance() {
     return instance_;
   }
 

@@ -4,6 +4,9 @@
 
 source_set("coordinator") {
   sources = [
+    "base_history_coordinator+subclassing.h",
+    "base_history_coordinator.h",
+    "base_history_coordinator.mm",
     "history_coordinator.h",
     "history_coordinator.mm",
     "history_coordinator_delegate.h",
@@ -51,6 +54,9 @@ source_set("constants") {
 
 source_set("ui") {
   sources = [
+    "base_history_view_controller+subclassing.h",
+    "base_history_view_controller.h",
+    "base_history_view_controller.mm",
     "history_consumer.h",
     "history_entries_status_item.h",
     "history_entries_status_item.mm",
@@ -170,9 +176,11 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     "//base",
+    "//components/browsing_data/core",
     "//components/sync/base",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view:constants",
     "//ios/chrome/browser/signin/model:fake_system_identity",

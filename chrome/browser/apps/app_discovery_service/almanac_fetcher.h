@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_ALMANAC_FETCHER_H_
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_ALMANAC_FETCHER_H_
 
-#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/almanac_api_client/proto_file_manager.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.pb.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
@@ -58,9 +57,6 @@ class AlmanacFetcher : public AppFetcher {
   // caches, and notifies the class subscribers.
   void DownloadApps();
 
-  // Calls the Almanac server with the device information provided.
-  void OnGetDeviceInfo(DeviceInfo device_info);
-
   // Writes the response to disk if the call to the server succeeded or reads
   // the cached data otherwise.
   void OnServerResponse(std::optional<proto::LauncherAppResponse> response);
@@ -78,7 +74,6 @@ class AlmanacFetcher : public AppFetcher {
 
   ResultCallbackList subscribers_;
 
-  std::unique_ptr<DeviceInfoManager> device_info_manager_;
   std::unique_ptr<ProtoFileManager<proto::LauncherAppResponse>>
       proto_file_manager_;
   std::unique_ptr<AlmanacIconCache> icon_cache_;

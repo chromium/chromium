@@ -50,6 +50,18 @@ class BackForwardCacheMetrics
                                            NotRestoredReason::kMinValue,
                                            NotRestoredReason::kMaxValue>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(HistoryNavigationDirection)
+  enum class HistoryNavigationDirection {
+    kBack = 0,
+    kForward = 1,
+    kSameEntry = 2,
+    kMaxValue = kSameEntry,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:HistoryNavigationDirection)
+
   // Please keep in sync with BackForwardCacheHistoryNavigationOutcome in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
   enum class HistoryNavigationOutcome {

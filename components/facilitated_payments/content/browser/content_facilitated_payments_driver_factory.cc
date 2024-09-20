@@ -26,6 +26,22 @@ ContentFacilitatedPaymentsDriverFactory::
   DCHECK(driver_map_.empty());
 }
 
+ContentFacilitatedPaymentsDriver&
+ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(
+    content::RenderFrameHost* render_frame_host) {
+  auto [iter, insertion_happened] =
+      driver_map_.emplace(render_frame_host, nullptr);
+  std::unique_ptr<ContentFacilitatedPaymentsDriver>& driver = iter->second;
+  if (!insertion_happened) {
+    DCHECK(driver);
+    return *iter->second;
+  }
+  driver = std::make_unique<ContentFacilitatedPaymentsDriver>(
+      &*client_, optimization_guide_decider_, render_frame_host);
+  DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(), driver.get());
+  return *iter->second;
+}
+
 void ContentFacilitatedPaymentsDriverFactory::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   driver_map_.erase(render_frame_host);
@@ -40,7 +56,7 @@ void ContentFacilitatedPaymentsDriverFactory::RenderFrameHostStateChanged(
   if (render_frame_host != render_frame_host->GetOutermostMainFrame()) {
     return;
   }
-  // User visible pages are active i.e. `LifecycleState == kActive`. An
+  // User visible pages are active i.e. `LifecycleState == kActive`. A
   // RenderFrameHost state change where `old_state == kActive` represents a
   // navigation away from an active page. When navigating away, all facilitated
   // payments processes should be abandoned.
@@ -65,48 +81,15 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishNavigation(
   driver.DidNavigateToOrAwayFromPage();
 }
 
-void ContentFacilitatedPaymentsDriverFactory::DOMContentLoaded(
-    content::RenderFrameHost* render_frame_host) {
-  // The driver is only created for the outermost main frame as the PIX code
-  // is only expected to be present there. PIX code detection is triggered
-  // only on active frames.
-  if (render_frame_host != render_frame_host->GetOutermostMainFrame() ||
-      !render_frame_host->IsActive()) {
-    return;
-  }
-  if (!base::FeatureList::IsEnabled(kEnablePixDetectionOnDomContentLoaded)) {
-    return;
-  }
-  auto& driver = GetOrCreateForFrame(render_frame_host);
-  // Initialize PIX code detection.
-  driver.OnContentLoadedInThePrimaryMainFrame(
-      render_frame_host->GetLastCommittedURL(),
-      render_frame_host->GetPageUkmSourceId());
-}
-
-void ContentFacilitatedPaymentsDriverFactory::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  // The driver is only created for the outermost main frame as the PIX code is
-  // only expected to be present there. PIX code detection is triggered only on
-  // active frames.
-  if (render_frame_host != render_frame_host->GetOutermostMainFrame() ||
-      !render_frame_host->IsActive()) {
-    return;
-  }
-  if (base::FeatureList::IsEnabled(kEnablePixDetectionOnDomContentLoaded) ||
-      !base::FeatureList::IsEnabled(kEnablePixDetection)) {
-    return;
-  }
-  auto& driver = GetOrCreateForFrame(render_frame_host);
-  // Initialize PIX code detection.
-  driver.OnContentLoadedInThePrimaryMainFrame(
-      validated_url, render_frame_host->GetPageUkmSourceId());
-}
-
 void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {
+  // The Facilitated Payments infra is initiated for both Pix and eWallet,
+  // however the Pix payflow should only be initiated if its flag is enabled.
+  if (!base::FeatureList::IsEnabled(kEnablePixPayments)) {
+    return;
+  }
+
   if (render_frame_host != render_frame_host->GetOutermostMainFrame() ||
       !render_frame_host->IsActive()) {
     return;
@@ -117,22 +100,6 @@ void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
   driver.OnTextCopiedToClipboard(render_frame_host->GetLastCommittedURL(),
                                  copied_text,
                                  render_frame_host->GetPageUkmSourceId());
-}
-
-ContentFacilitatedPaymentsDriver&
-ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(
-    content::RenderFrameHost* render_frame_host) {
-  auto [iter, insertion_happened] =
-      driver_map_.emplace(render_frame_host, nullptr);
-  std::unique_ptr<ContentFacilitatedPaymentsDriver>& driver = iter->second;
-  if (!insertion_happened) {
-    DCHECK(driver);
-    return *iter->second;
-  }
-  driver = std::make_unique<ContentFacilitatedPaymentsDriver>(
-      &*client_, optimization_guide_decider_, render_frame_host);
-  DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(), driver.get());
-  return *iter->second;
 }
 
 }  // namespace payments::facilitated

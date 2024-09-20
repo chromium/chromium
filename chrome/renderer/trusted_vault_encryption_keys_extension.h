@@ -45,6 +45,14 @@ class TrustedVaultEncryptionKeysExtension
 #if !BUILDFLAG(IS_ANDROID)
   void SetSyncEncryptionKeys(gin::Arguments* args);
   void SetClientEncryptionKeys(gin::Arguments* args);
+  void SetClientEncryptionKeysContinue(
+      gin::Arguments* args,
+      v8::Local<v8::Function> callback,
+      std::string gaia_id,
+      std::optional<
+          base::flat_map<std::string,
+                         std::vector<chrome::mojom::TrustedVaultKeyPtr>>>
+          trusted_vault_keys);
 #endif
   void AddTrustedSyncEncryptionRecoveryMethod(gin::Arguments* args);
   void RunCompletionCallback(

@@ -159,9 +159,7 @@ class DMStorageImpl final : public DMStorage {
     // Persists individual policies.
     std::set<std::string> updated_policy_set;
     bool policy_info_data_saved = false;
-    for (const auto& policy_entry : policy_map) {
-      const std::string& policy_type = policy_entry.first;
-      const std::string& policy_value = policy_entry.second;
+    for (const auto& [policy_type, policy_value] : policy_map) {
       if (!policy_info_data_saved) {
         // Policy info has a new public key when server rotates the key.
         // In this case, persists the policy info as the cached policy info

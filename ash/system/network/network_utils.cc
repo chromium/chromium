@@ -39,14 +39,16 @@ int GetStringIdForNetworkDetailedViewTitleRow(
   }
 }
 
-int GetAddESimTooltipMessageId() {
+InhibitReason GetCellularInhibitReason() {
   const DeviceStateProperties* cellular_device =
       Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
           NetworkType::kCellular);
-
   CHECK(cellular_device);
+  return cellular_device->inhibit_reason;
+}
 
-  switch (cellular_device->inhibit_reason) {
+int GetCellularInhibitReasonMessageId(InhibitReason inhibit_reason) {
+  switch (inhibit_reason) {
     case InhibitReason::kInstallingProfile:
       return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_INSTALLING_PROFILE;
     case InhibitReason::kRenamingProfile:

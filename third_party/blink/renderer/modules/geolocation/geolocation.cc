@@ -90,10 +90,12 @@ GeolocationPositionError* CreatePositionError(
       error_code = GeolocationPositionError::kPositionUnavailable;
       break;
     default:
-      // On Blink side, it should only handles W3C defined error codes.
-      // If it reaches here that means an unexpected error type being propagated
-      // to Blink. This should never happen.
-      NOTREACHED_NORETURN();
+      // On the Blink side, it should only handle W3C-defined error codes. If it
+      // reaches here, that means a platform-specific error type is being
+      // propagated to Blink. We will now just use kPositionUnavailable until
+      // more explicit error codes are defined in the W3C spec.
+      error_code = GeolocationPositionError::kPositionUnavailable;
+      break;
   }
   return MakeGarbageCollected<GeolocationPositionError>(error_code,
                                                         error.error_message);

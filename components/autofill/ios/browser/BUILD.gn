@@ -94,6 +94,7 @@ optimize_js("autofill_js") {
 
   deps = [
     "//components/autofill/ios/form_util:fill_js_dependencies",
+    "//components/autofill/ios/form_util:fill_js_namespace",
     "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
@@ -118,6 +119,8 @@ source_set("test_support") {
     "ios_test_event_waiter.h",
     "mock_password_autofill_agent_delegate.h",
     "mock_password_autofill_agent_delegate.mm",
+    "new_frame_catcher.h",
+    "new_frame_catcher.mm",
     "test_autofill_manager_injector.h",
   ]
   public_deps = [ ":browser" ]

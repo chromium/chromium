@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/lens/lens_untrusted_ui.h"
+#include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "content/public/browser/file_select_listener.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -26,11 +26,11 @@ class BrowserContext;
 // that separates it from other views. This includes context menu support and
 // opening urls in a new tab.
 class LensOverlaySidePanelWebView
-    : public SidePanelWebUIViewT<lens::LensUntrustedUI> {
-  using SidePanelWebUIViewT_LensUntrustedUI =
-      SidePanelWebUIViewT<lens::LensUntrustedUI>;
+    : public SidePanelWebUIViewT<lens::LensSidePanelUntrustedUI> {
+  using SidePanelWebUIViewT_LensSidePanelUntrustedUI =
+      SidePanelWebUIViewT<lens::LensSidePanelUntrustedUI>;
   METADATA_HEADER(LensOverlaySidePanelWebView,
-                  SidePanelWebUIViewT_LensUntrustedUI)
+                  SidePanelWebUIViewT_LensSidePanelUntrustedUI)
 
  public:
   LensOverlaySidePanelWebView(

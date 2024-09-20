@@ -157,19 +157,19 @@ class ProtobufHttpClientTest : public testing::Test {
 void ProtobufHttpClientTest::ExpectCallWithTokenSuccess() {
   EXPECT_CALL(mock_token_getter_, CallWithToken(_))
       .WillOnce(RunOnceCallback<0>(OAuthTokenGetter::Status::SUCCESS, "",
-                                   kFakeAccessToken));
+                                   kFakeAccessToken, ""));
 }
 
 void ProtobufHttpClientTest::ExpectCallWithTokenAuthError() {
   EXPECT_CALL(mock_token_getter_, CallWithToken(_))
       .WillOnce(
-          RunOnceCallback<0>(OAuthTokenGetter::Status::AUTH_ERROR, "", ""));
+          RunOnceCallback<0>(OAuthTokenGetter::Status::AUTH_ERROR, "", "", ""));
 }
 
 void ProtobufHttpClientTest::ExpectCallWithTokenNetworkError() {
   EXPECT_CALL(mock_token_getter_, CallWithToken(_))
-      .WillOnce(
-          RunOnceCallback<0>(OAuthTokenGetter::Status::NETWORK_ERROR, "", ""));
+      .WillOnce(RunOnceCallback<0>(OAuthTokenGetter::Status::NETWORK_ERROR, "",
+                                   "", ""));
 }
 
 // Unary request tests.
@@ -359,7 +359,7 @@ TEST_F(ProtobufHttpClientTest,
   client_.CancelPendingRequests();
   ASSERT_TRUE(token_callback);
   std::move(token_callback)
-      .Run(OAuthTokenGetter::Status::SUCCESS, "", kFakeAccessToken);
+      .Run(OAuthTokenGetter::Status::SUCCESS, "", kFakeAccessToken, "");
 
   // Verify no request.
   ASSERT_FALSE(test_url_loader_factory_.IsPending(kTestFullUrl));

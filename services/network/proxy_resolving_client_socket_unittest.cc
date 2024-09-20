@@ -19,6 +19,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_proxy_connect_job.h"
@@ -92,12 +93,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 // case no proxy is in use.
 TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
   // This deliberately uses a different origin than the one being connected to.
-  url::Origin kNetworkIsolationKeyOrigin =
-      url::Origin::Create(GURL("https://foopy.test"));
-  net::NetworkIsolationKey kNetworkIsolationKey(
-      kNetworkIsolationKeyOrigin /* top_frame_origin */,
-      kNetworkIsolationKeyOrigin /* frame_origin */);
-  net::NetworkAnonymizationKey kNetworkAnonymizationKey =
+  const net::SchemefulSite kNetworkIsolationKeySite =
+      net::SchemefulSite(GURL("https://foopy.test"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kNetworkIsolationKeySite,
+                                                      kNetworkIsolationKeySite);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey =
       net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
           kNetworkIsolationKey);
   auto url_request_context = CreateBuilder("DIRECT")->Build();

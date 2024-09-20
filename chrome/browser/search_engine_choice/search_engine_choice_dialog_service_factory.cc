@@ -38,12 +38,6 @@ bool g_is_chrome_build =
 
 search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
     Profile& profile) {
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kFeatureSuppressed;
-  }
-
   bool is_regular_or_guest_profile =
       profile.IsRegularProfile() || profile.IsGuestSession();
 #if BUILDFLAG(IS_CHROMEOS)

@@ -35,10 +35,15 @@ function sendTrackRequest() {
   parent.postMessage({cmd: 'gettrack'}, TRUSTED_ORIGIN);
 }
 
+function mediaErrorEvent() {
+  parent.postMessage({cmd: 'mediaErrorEvent'}, TRUSTED_ORIGIN);
+}
+
 interface PlaybackStatus {
   state: string;
   position: number;
-  initial: boolean;
+  loadTime: Date;
+  clientStartTime: Date;
 }
 let playbackStatus: PlaybackStatus|null = null;
 
@@ -58,11 +63,12 @@ function replyPlaybackStatus(newState: string|null) {
         cmd: 'replyplaybackstatus',
         state: playbackStatus.state,
         position: playbackStatus.position,
-        initial: playbackStatus.initial,
+        loadTime: playbackStatus.loadTime,
+        clientStartTime: playbackStatus.clientStartTime,
       },
       TRUSTED_ORIGIN);
 
-  playbackStatus.initial = false;
+  playbackStatus.clientStartTime = new Date();
 }
 
 function getPlayerElement(): HTMLAudioElement {
@@ -81,10 +87,12 @@ function loadTrack(track: Track) {
     metadata.artwork = [{src: track.thumbnailUrl}];
   }
   navigator.mediaSession.metadata = new MediaMetadata(metadata);
+  const timeNow = new Date();
   playbackStatus = {
     state: 'none',
     position: 0,
-    initial: true,
+    loadTime: timeNow,
+    clientStartTime: timeNow,
   };
 }
 
@@ -100,6 +108,20 @@ globalThis.addEventListener('load', () => {
   getPlayerElement().addEventListener('ended', () => {
     replyPlaybackStatus('ended');
     sendTrackRequest();
+  });
+
+  getPlayerElement().addEventListener('error', () => {
+    const mediaError = getPlayerElement().error;
+    switch (mediaError?.code) {
+      case MediaError.MEDIA_ERR_ABORTED:
+      case MediaError.MEDIA_ERR_DECODE:
+      case MediaError.MEDIA_ERR_NETWORK:
+      case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+        mediaErrorEvent();
+        break;
+      default:
+        break;
+    }
   });
 
   // Registering this makes the "next track" button show up in the media

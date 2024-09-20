@@ -395,8 +395,44 @@ targets.tests.junit_test(
     label = "//chromecast/base:cast_base_junit_tests",
 )
 
-# TODO(crbug.com/41489655): Eliminate cast_* suites that are no longer
+# TODO(issues.chromium.org/1516671): Eliminate cast_* suites that are no longer
 # needed.
+
+targets.tests.gtest_test(
+    name = "cast_audio_backend_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_base_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_cast_core_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_crash_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_display_settings_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_graphics_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_media_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_shell_browsertests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_shell_unittests",
+)
 
 targets.tests.junit_test(
     name = "cast_shell_junit_tests",
@@ -450,10 +486,6 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "chrome_disabled_tast_tests",
-)
-
-targets.tests.gtest_test(
-    name = "cq_medium_tast_tests",
 )
 
 targets.tests.gtest_test(
@@ -963,7 +995,18 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "video_decode_accelerator_tests_v4l2",
+    name = "video_decode_accelerator_tests_v4l2_vp8",
+    args = [
+        "--as-root",
+        "--validator_type=none",
+        "../../media/test/data/test-25fps.vp8",
+        "../../media/test/data/test-25fps.vp8.json",
+    ],
+    binary = "video_decode_accelerator_tests",
+)
+
+targets.tests.gtest_test(
+    name = "video_decode_accelerator_tests_v4l2_vp9",
     args = [
         "--as-root",
         "--validator_type=none",
@@ -1122,6 +1165,17 @@ targets.tests.gtest_test(
     ],
     args = [
         "--use-wire",
+    ],
+    binary = "dawn_end2end_tests",
+)
+
+targets.tests.gtest_test(
+    name = "dawn_end2end_use_tint_ir_tests",
+    mixins = [
+        "dawn_end2end_gpu_test",
+    ],
+    args = [
+        "--enable-toggles=use_tint_ir",
     ],
     binary = "dawn_end2end_tests",
 )
@@ -1370,10 +1424,6 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "ios_remoting_unittests",
-)
-
-targets.tests.isolated_script_test(
     name = "ios_testing_unittests",
 )
 
@@ -1417,10 +1467,6 @@ targets.tests.junit_test(
 
 targets.tests.gtest_test(
     name = "keyboard_unittests",
-)
-
-targets.tests.gtest_test(
-    name = "lacros_all_tast_tests",
 )
 
 targets.tests.gtest_test(
@@ -2122,6 +2168,17 @@ targets.tests.gtest_test(
     binary = "browser_tests",
 )
 
+targets.tests.gtest_test(
+    name = "tablet_sensitive_chrome_public_test_apk",
+    mixins = [
+        "skia_gold_test",
+    ],
+    args = [
+        "--annotation=Restriction=Tablet",
+    ],
+    binary = "chrome_public_test_apk",
+)
+
 targets.tests.isolated_script_test(
     name = "telemetry_chromium_minidump_unittests",
     args = [
@@ -2192,6 +2249,9 @@ targets.tests.gtest_test(
 targets.tests.script_test(
     name = "test_traffic_annotation_auditor",
     script = "test_traffic_annotation_auditor.py",
+    precommit_args = [
+        "--no-update-sheet",
+    ],
 )
 
 targets.tests.isolated_script_test(

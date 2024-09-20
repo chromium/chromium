@@ -53,8 +53,7 @@ inline float ForwardFilter(float in_n_1,
           b[1] * w[n-1] + b[2] * w[n-2] + b[3] * w[n-3];
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0.0f;
+  NOTREACHED();
 }
 
 template<RecursiveFilter::Order order>
@@ -72,8 +71,7 @@ inline float BackwardFilter(const std::vector<float>& out,
       return b[0] * (w_n1 - w_n)  +
           b[1] * out[n + 1] + b[2] * out[n + 2] + b[3] * out[n + 3];
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0.0f;
+  NOTREACHED();
 }
 
 template<RecursiveFilter::Order order, bool absolute_values>
@@ -192,8 +190,7 @@ unsigned char SingleChannelRecursiveFilter(
    }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }

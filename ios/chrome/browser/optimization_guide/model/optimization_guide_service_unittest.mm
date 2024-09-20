@@ -68,6 +68,8 @@ class OptimizationGuideServiceTest : public PlatformTest {
   OptimizationGuideServiceTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         optimization_guide::switches::kPurgeHintsStore);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        optimization_guide::switches::kGoogleApiKeyConfigurationCheckOverride);
 
     // The tests are run in the same process and share the same
     // OptimizationHintsComponentUpdateListener due to the global object usage

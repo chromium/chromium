@@ -18,9 +18,6 @@
 class GURL;
 
 class Profile;
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
 
 namespace apps {
 
@@ -65,9 +62,8 @@ class PromiseAppAlmanacConnector {
 
   std::string BuildGetPromiseAppRequestBody(const apps::PackageId& package_id);
 
+  raw_ptr<Profile> profile_;
   std::string locale_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<DeviceInfoManager> device_info_manager_;
 
   bool skip_api_key_check_for_testing_ = false;
 

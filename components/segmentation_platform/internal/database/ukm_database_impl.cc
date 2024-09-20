@@ -89,6 +89,15 @@ void UkmDatabaseImpl::DeleteEntriesOlderThan(base::Time time) {
                                 backend_->GetWeakPtr(), time));
 }
 
+void UkmDatabaseImpl::CleanupItems(const std::string& profile_id,
+                                   std::vector<CleanupItem> cleanup_items) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UkmDatabaseBackend::CleanupItems, backend_->GetWeakPtr(),
+                     profile_id, std::move(cleanup_items)));
+}
+
 void UkmDatabaseImpl::CommitTransactionForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_task_runner_->PostTask(

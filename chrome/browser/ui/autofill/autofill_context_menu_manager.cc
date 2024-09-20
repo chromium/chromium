@@ -559,15 +559,11 @@ bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(
 
 void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
     ContentPasswordManagerDriver& password_manager_driver) {
-  // If the password generation feature is enabled for this user, the context
-  // menu entry is displayed only if the field is also a password. The password
-  // generation button would be a no-op on non-password fields.
   const bool password_generation_enabled_for_current_field =
       password_manager_util::ManualPasswordGenerationEnabled(
           &password_manager_driver) &&
-      (params_.form_control_type ==
-           blink::mojom::FormControlType::kInputPassword ||
-       params_.is_password_type_by_heuristics);
+      (password_manager_driver.IsPasswordFieldForPasswordManager(
+          autofill::FieldRendererId(params_.field_renderer_id), params_));
   const bool user_has_passwords_saved =
       UserHasPasswordsSaved(password_manager_driver);
   const bool add_select_password_submenu_option =

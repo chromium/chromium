@@ -1,0 +1,29 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_COMBOBOX name='Currency for purchase' value='USD United States Dollar $' EXPANDED FOCUSABLE HASPOPUP haspopup:menu
+++++++ROLE_SYSTEM_LIST ispopup:auto
+++++++++ROLE_SYSTEM_LISTITEM name='EUR Euro' FOCUSABLE SELECTABLE
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='EUR'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Euro'
+++++++++ROLE_SYSTEM_LISTITEM name='GBP Great British Pound' FOCUSABLE SELECTABLE
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='GBP'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Great British Pound'
+++++++++ROLE_SYSTEM_LISTITEM name='USD United States Dollar' SELECTED FOCUSABLE SELECTABLE
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='USD'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='United States Dollar'
+++++++++ROLE_SYSTEM_LISTITEM name='JPY Japanese Yen' FOCUSABLE SELECTABLE
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='JPY'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Japanese Yen'
+++++++++ROLE_SYSTEM_LISTITEM name='BTC Bitcoin' FOCUSABLE SELECTABLE
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='BTC'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Bitcoin'

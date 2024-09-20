@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
     Status of STTS notifications. Recorded whenever a target device is chosen, a
-    recieved notification is shown, or an action is taken on the notification.
+    received notification is shown, or an action is taken on the notification.
   </summary>
 </histogram>
 
@@ -582,16 +582,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Completed"/>
     <variant name="InProgress"/>
   </token>
-</histogram>
-
-<histogram name="Sharing.SharingHubDesktop.CrOSSharesheetResult"
-    enum="SharingHubSharesheetResult" expires_after="2024-09-22">
-  <owner>tsergeant@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Records whether the user selects a share target after opening the Chrome OS
-    sharesheet.
-  </summary>
 </histogram>
 
 <histogram name="Sharing.SmsFetcherAvailableDeviceCount" units="devices"

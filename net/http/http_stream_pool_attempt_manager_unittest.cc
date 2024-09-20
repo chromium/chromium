@@ -21,6 +21,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
@@ -28,6 +29,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/port_util.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -40,7 +42,9 @@
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_test_util.h"
+#include "net/http/http_stream_request.h"
 #include "net/log/test_net_log.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
@@ -166,7 +170,10 @@ class Preconnector {
 
   int Preconnect(HttpStreamPool& pool) {
     int rv = pool.Preconnect(
-        GetStreamKey(), num_streams_, alternative_service_info_, quic_version_,
+        HttpStreamPoolSwitchingInfo(GetStreamKey(), alternative_service_info_,
+                                    quic_version_, is_http1_allowed_,
+                                    load_flags_, proxy_info_),
+        num_streams_,
         base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
     if (rv != ERR_IO_PENDING) {
       result_ = rv;
@@ -200,9 +207,11 @@ class Preconnector {
   size_t num_streams_ = 1;
 
   AlternativeServiceInfo alternative_service_info_;
-
   quic::ParsedQuicVersion quic_version_ =
       quic::ParsedQuicVersion::Unsupported();
+  bool is_http1_allowed_ = true;
+  ProxyInfo proxy_info_ = ProxyInfo::Direct();
+  int load_flags_ = 0;
 
   std::optional<int> result_;
   base::OnceClosure wait_result_closure_;
@@ -249,6 +258,21 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return *this;
   }
 
+  StreamRequester& set_is_http1_allowed(bool is_http1_allowed) {
+    is_http1_allowed_ = is_http1_allowed;
+    return *this;
+  }
+
+  StreamRequester& set_load_flags(int load_flags) {
+    load_flags_ = load_flags;
+    return *this;
+  }
+
+  StreamRequester& set_proxy_info(ProxyInfo proxy_info) {
+    proxy_info_ = std::move(proxy_info);
+    return *this;
+  }
+
   StreamRequester& set_privacy_mode(PrivacyMode privacy_mode) {
     key_builder_.set_privacy_mode(privacy_mode);
     return *this;
@@ -270,9 +294,12 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   HttpStreamRequest* RequestStream(HttpStreamPool& pool) {
     HttpStreamKey stream_key = GetStreamKey();
     request_ = pool.RequestStream(
-        this, stream_key, priority_, allowed_bad_certs_,
-        enable_ip_based_pooling_, enable_alternative_services_,
-        alternative_service_info_, quic_version_, NetLogWithSource());
+        this,
+        HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
+                                    quic_version_, is_http1_allowed_,
+                                    load_flags_, proxy_info_),
+        priority_, allowed_bad_certs_, enable_ip_based_pooling_,
+        enable_alternative_services_, NetLogWithSource());
     return request_.get();
   }
 
@@ -292,6 +319,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   // HttpStreamRequest::Delegate methods:
   void OnStreamReady(const ProxyInfo& used_proxy_info,
                      std::unique_ptr<HttpStream> stream) override {
+    used_proxy_info_ = used_proxy_info;
     stream_ = std::move(stream);
     SetResult(OK);
   }
@@ -313,6 +341,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
                       const ProxyInfo& used_proxy_info,
                       ResolveErrorInfo resolve_error_info) override {
     net_error_details_ = net_error_details;
+    used_proxy_info_ = used_proxy_info;
     resolve_error_info_ = resolve_error_info;
     SetResult(status);
   }
@@ -337,9 +366,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   void OnQuicBroken() override {}
 
   void OnSwitchesToHttpStreamPool(
-      HttpStreamKey stream_key,
-      const AlternativeServiceInfo& alternative_service_info,
-      quic::ParsedQuicVersion quic_version) override {}
+      HttpStreamPoolSwitchingInfo request_info) override {}
 
   std::unique_ptr<HttpStream> ReleaseStream() { return std::move(stream_); }
 
@@ -365,6 +392,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return request_->connection_attempts();
   }
 
+  const ProxyInfo& used_proxy_info() const { return used_proxy_info_; }
+
  private:
   void SetResult(int rv) {
     result_ = rv;
@@ -380,11 +409,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
 
   bool enable_ip_based_pooling_ = true;
-
   bool enable_alternative_services_ = true;
-
+  bool is_http1_allowed_ = true;
+  int load_flags_ = 0;
+  ProxyInfo proxy_info_ = ProxyInfo::Direct();
   AlternativeServiceInfo alternative_service_info_;
-
   quic::ParsedQuicVersion quic_version_ =
       quic::ParsedQuicVersion::Unsupported();
 
@@ -398,6 +427,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   ResolveErrorInfo resolve_error_info_;
   SSLInfo cert_error_ssl_info_;
   scoped_refptr<SSLCertRequestInfo> cert_info_;
+  ProxyInfo used_proxy_info_;
 };
 
 constexpr std::string_view kDefaultServerName = "www.example.org";
@@ -459,6 +489,10 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
 
   SSLConfigService* ssl_config_service() {
     return session_deps_.ssl_config_service.get();
+  }
+
+  HttpNetworkSession* http_network_session() {
+    return http_network_session_.get();
   }
 
   HttpServerProperties* http_server_properties() {
@@ -553,6 +587,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ResolveEndpointFailedSync) {
   endpoint_request->set_start_result(ERR_FAILED);
   StreamRequester requester;
   requester.RequestStream(pool());
+  requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_FAILED)));
 
   // Resetting the request should release the corresponding job(s).
@@ -586,9 +621,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, LoadState) {
   ASSERT_EQ(request->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
 
   endpoint_request->CallOnServiceEndpointRequestFinished(ERR_FAILED);
+  requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_FAILED)));
-
-  RunUntilIdle();
   ASSERT_EQ(request->GetLoadState(), LOAD_STATE_IDLE);
 }
 
@@ -711,6 +745,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   FastForwardBy(kDnsUpdateDelay);
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
       .CallOnServiceEndpointsUpdated();
   RunUntilIdle();
   FastForwardBy(kDnsUpdateDelay);
@@ -732,20 +767,55 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
             timing_info.connect_timing.connect_start);
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, PlainHttpWaitForHttpsRecord) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination("http://a.test").RequestStream(pool());
+
+  // Notify there is a resolved IP address. The request should not make any
+  // progress since it needs to wait for HTTPS RR.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointsUpdated();
+  Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
+
+  // Simulate triggering HTTP -> HTTPS upgrade.
+  endpoint_request->CallOnServiceEndpointRequestFinished(
+      ERR_DNS_NAME_HTTPS_ONLY);
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_DNS_NAME_HTTPS_ONLY)));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, SetPriority) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
   StreamRequester requester1;
   HttpStreamRequest* request1 =
       requester1.set_priority(RequestPriority::LOW).RequestStream(pool());
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester1.GetStreamKey())
+          .GetAttemptManagerForTesting();
   ASSERT_EQ(endpoint_request->priority(), RequestPriority::LOW);
+  ASSERT_EQ(manager->GetPriority(), RequestPriority::LOW);
 
+  // Create another request with IDLE priority, which has lower than LOW.
   StreamRequester requester2;
   HttpStreamRequest* request2 =
       requester2.set_priority(RequestPriority::IDLE).RequestStream(pool());
+  ASSERT_EQ(manager, pool()
+                         .GetOrCreateGroupForTesting(requester2.GetStreamKey())
+                         .GetAttemptManagerForTesting());
   ASSERT_EQ(endpoint_request->priority(), RequestPriority::LOW);
+  ASSERT_EQ(manager->GetPriority(), RequestPriority::LOW);
 
+  // Set the second request's priority to HIGHEST. The corresponding service
+  // endpoint request and attempt manager should update their priorities.
   request2->SetPriority(RequestPriority::HIGHEST);
   ASSERT_EQ(endpoint_request->priority(), RequestPriority::HIGHEST);
+  ASSERT_EQ(manager->GetPriority(), RequestPriority::HIGHEST);
 
   // Check `request2` completes first.
 
@@ -757,9 +827,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SetPriority) {
   data2->set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
   socket_factory()->AddSocketDataProvider(data2.get());
 
-  endpoint_request->add_endpoint(
-      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
-  endpoint_request->CallOnServiceEndpointsUpdated();
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
   ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
   ASSERT_EQ(request1->GetLoadState(), LOAD_STATE_CONNECTING);
   ASSERT_EQ(request2->GetLoadState(), LOAD_STATE_CONNECTING);
@@ -811,7 +882,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TcpFailAsync) {
   ASSERT_EQ(requester.connection_attempts()[0].result, ERR_FAILED);
 }
 
-TEST_F(HttpStreamPoolAttemptManagerTest, TlsOk) {
+TEST_F(HttpStreamPoolAttemptManagerTest, TlsOkAsync) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   auto data = std::make_unique<SequencedSocketData>();
@@ -826,6 +897,25 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TlsOk) {
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, TcpSyncTlsAsyncOk) {
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination("https://a.test").RequestStream(pool());
+
+  requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
@@ -1149,6 +1239,47 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
+// Regression test for crbug.com/368187247. Tests that an idle stream socket
+// is reused when an in-flight connection attempt is slow.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       SlowTimerFiredAfterIdleSocketAvailable) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination("http://a.test").Build();
+
+  MockConnectCompleter connect_completer;
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(&connect_completer));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester(stream_key);
+  requester.RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Create an active text-based stream and release it to create an idle stream.
+  // The idle stream should be reused for the in-flight request.
+  Group& group = pool().GetOrCreateGroupForTesting(stream_key);
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::make_unique<FakeStreamSocket>(),
+      StreamSocketHandle::SocketReuseType::kReusedIdle,
+      LoadTimingInfo::ConnectTiming());
+  stream.reset();
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 2u);
+
+  // Fire the slow timer. It should not attempt another connection.
+  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 2u);
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, ReachedGroupLimit) {
   constexpr size_t kMaxPerGroup = 4;
   pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
@@ -1408,6 +1539,54 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   ASSERT_TRUE(request_c->completed());
 }
 
+// Regression test for crbug.com/368164182. Tests that the per-group limit is
+// respected when there is an idle stream socket.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       ReachedPerGroupLimitWithIdleStreamSocket) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination("http://a.test").Build();
+
+  Group& group = pool().GetOrCreateGroupForTesting(stream_key);
+
+  // Create an active text-based stream and release it to create an idle stream.
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::make_unique<FakeStreamSocket>(),
+      StreamSocketHandle::SocketReuseType::kReusedIdle,
+      LoadTimingInfo::ConnectTiming());
+  stream.reset();
+
+  // Create requests up to the per-group limit + 1. Active stream counts for the
+  // group should not exceed the per-group limit.
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  for (size_t i = 0; i < pool().max_stream_sockets_per_group() + 1; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    datas.emplace_back(std::move(data));
+
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    StreamRequester* raw_requester = requester.get();
+    requesters.emplace_back(std::move(requester));
+    raw_requester->RequestStream(pool());
+    ASSERT_FALSE(raw_requester->result().has_value());
+    ASSERT_LE(group.ActiveStreamSocketCount(),
+              pool().max_stream_sockets_per_group());
+  }
+
+  for (const auto& requester : requesters) {
+    requester->WaitForResult();
+    EXPECT_THAT(requester->result(), Optional(IsOk()));
+    // Release the stream to unblock other requests.
+    requester->ReleaseStream();
+  }
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, RequestStreamIdleStreamSocket) {
   StreamRequester requester;
   Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
@@ -1422,6 +1601,33 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequestStreamIdleStreamSocket) {
 
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+}
+
+// Tests that the group and pool limits are ignored when requests set
+// LOAD_IGNORE_LIMITS.
+TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreLimits) {
+  constexpr size_t kMaxPerGroup = 2;
+  constexpr size_t kMaxPerPool = 3;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  std::vector<std::unique_ptr<SequencedSocketData>> data_providers;
+
+  for (size_t i = 0; i < kMaxPerPool + 1; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    socket_factory()->AddSocketDataProvider(data.get());
+    data_providers.emplace_back(std::move(data));
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+    auto requester = std::make_unique<StreamRequester>();
+    requester->set_load_flags(LOAD_IGNORE_LIMITS).RequestStream(pool());
+    requester->WaitForResult();
+    EXPECT_THAT(requester->result(), Optional(IsOk()));
+    requesters.emplace_back(std::move(requester));
+  }
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, UseIdleStreamSocketAfterRelease) {
@@ -1455,6 +1661,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, UseIdleStreamSocketAfterRelease) {
   streams.pop_back();
 
   released_stream.reset();
+  requester.WaitForResult();
   ASSERT_TRUE(request->completed());
   ASSERT_EQ(manager->PendingJobCount(), 0u);
 }
@@ -2110,6 +2317,55 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyMatchingIpSessionOk) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       SpdyMatchingIpSessionBecomeUnavailableBeforeNotify) {
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+
+  // Add a SpdySession for www.example.org.
+  StreamRequester requester_a;
+  requester_a.set_destination("https://www.example.org");
+
+  CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
+  requester_a.RequestStream(pool());
+  requester_a.WaitForResult();
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
+
+  // Data for the second request.
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(data.get());
+  auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(ssl.get());
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  // Create the second request to example.test. It will finds the matching
+  // SPDY session, but the task to use the session runs asynchronously, so it
+  // hasn't run yet.
+  StreamRequester requester_b;
+  requester_b.set_destination("https://example.test").RequestStream(pool());
+  endpoint_request
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CallOnServiceEndpointsUpdated();
+  ASSERT_FALSE(requester_b.result().has_value());
+
+  // Close the session before the second request can try to use it.
+  spdy_session_pool()->CloseAllSessions();
+
+  // Finish the service endpoint resolution. It should create a new SPDY
+  // session.
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  requester_b.WaitForResult();
+  EXPECT_THAT(requester_b.result(), Optional(IsOk()));
+  ASSERT_TRUE(spdy_session_pool()->FindAvailableSession(
+      requester_b.GetStreamKey().ToSpdySessionKey(),
+      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false,
+      NetLogWithSource()));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyPreconnectMatchingIpSession) {
   const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
 
@@ -2462,6 +2718,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectActiveStreamsAvailable) {
 
   int rv = preconnector.Preconnect(pool());
   EXPECT_THAT(rv, IsOk());
+  ASSERT_EQ(group.GetAttemptManagerForTesting(), nullptr);
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectFail) {
@@ -3217,6 +3474,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AlternativeSerivcesDisabled) {
 // Tests that QUIC attempt fails when there is no known QUIC version and the
 // DNS resolution indicates that the endpoint doesn't support QUIC.
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
+  // Set that QUIC is working on the current network.
+  quic_session_pool()->set_is_quic_known_to_work_on_current_network(true);
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
@@ -3238,7 +3498,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
                   .GetAttemptManagerForTesting()
                   ->GetQuicTaskResultForTesting(),
-              Optional(IsError(ERR_FAILED)));
+              Optional(IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)));
+  // No matching ALPN should not update
+  // `is_quic_known_to_work_on_current_network()`.
+  EXPECT_TRUE(quic_session_pool()->is_quic_known_to_work_on_current_network());
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicPreconnect) {
@@ -3586,6 +3849,39 @@ TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnOk) {
   requester.set_destination(kDefaultDestination).RequestStream(pool());
   RunUntilIdle();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnExistingSession) {
+  origins_to_force_quic_on().insert(
+      HostPortPair::FromURL(GURL(kDefaultDestination)));
+  InitializeSession();
+
+  AddQuicData();
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // The first request. It should create a QUIC session.
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination).RequestStream(pool());
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_EQ(requester1.negotiated_protocol(), NextProto::kProtoQUIC);
+
+  // The second request. The request disables alternative services but the
+  // QUIC session should be used because QUIC is forced by the
+  // HttpNetworkSession. If the second request doesn't use the existing session
+  // this test fails because we call AddQuicData() only once so we only added
+  // mock reads and writes for only one QUIC connection.
+  StreamRequester requester2;
+  requester2.set_destination(kDefaultDestination)
+      .set_enable_alternative_services(false)
+      .RequestStream(pool());
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_EQ(requester2.negotiated_protocol(), NextProto::kProtoQUIC);
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnFail) {
@@ -3990,6 +4286,75 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectUnsafePort) {
   preconnector.Preconnect(pool());
   preconnector.WaitForResult();
   EXPECT_THAT(preconnector.result(), Optional(IsError(ERR_UNSAFE_PORT)));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, DisallowH1) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // Nagotiate to use HTTP/1.1.
+  StaticSocketDataProvider data;
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester;
+  requester.set_is_http1_allowed(false);
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_H2_OR_QUIC_REQUIRED)));
+}
+
+// Tests that a bad proxy is reported to a ProxyResolutionService when falling
+// back to the direct connection succeeds.
+TEST_F(HttpStreamPoolAttemptManagerTest, ReportBadProxyAfterSuccessOnDirect) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+  StaticSocketDataProvider data;
+  socket_factory()->AddSocketDataProvider(&data);
+
+  // Simulate that we have a bad proxy.
+  ProxyInfo proxy_info;
+  proxy_info.UsePacString("PROXY badproxy:80; DIRECT");
+  proxy_info.Fallback(ERR_PROXY_CONNECTION_FAILED, NetLogWithSource());
+
+  StreamRequester requester;
+  requester.set_proxy_info(proxy_info).RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+
+  // The ProxyResolutionService should know that the proxy is bad.
+  auto proxy_chain = ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_HTTP, "badproxy", 80);
+  const ProxyRetryInfoMap retry_info_map =
+      http_network_session()->proxy_resolution_service()->proxy_retry_info();
+  auto it = retry_info_map.find(proxy_chain);
+  ASSERT_TRUE(it != retry_info_map.end());
+  EXPECT_THAT(it->second.net_error, IsError(ERR_PROXY_CONNECTION_FAILED));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, DirectProxyInfoForIpProtection) {
+  const auto kIpProtectionDirectChain =
+      ProxyChain::ForIpProtection(std::vector<ProxyServer>());
+  ProxyInfo proxy_info;
+  proxy_info.UseProxyChain(kIpProtectionDirectChain);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+  StaticSocketDataProvider data;
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester;
+  requester.set_proxy_info(proxy_info).RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(requester.used_proxy_info().ToDebugString(),
+            proxy_info.ToDebugString());
 }
 
 }  // namespace net

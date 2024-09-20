@@ -77,7 +77,11 @@ extern NSString* const kTabGroupCyanColor;
 extern NSString* const kTabGroupPurpleColor;
 extern NSString* const kTabGroupGreenColor;
 extern NSString* const kTabGroupGreyColor;
-
+// A semi transparent background color that ensures symbols are visible in
+// light and dark modes.
+extern NSString* const kWhiteBlackAlpha50Color;
+// Lens overlay consent dialog description text color.
+extern NSString* const kLensOverlayConsentDialogDescriptionColor;
 // ***************
 // Standard Colors
 // ***************
@@ -102,6 +106,7 @@ extern NSString* const kBlue500Color;
 extern NSString* const kBlue600Color;
 extern NSString* const kBlue700Color;
 // Static blue palette (same color for light and dark modes).
+extern NSString* const kStaticBlueColor;
 extern NSString* const kStaticBlue400Color;
 
 // Standard green color.

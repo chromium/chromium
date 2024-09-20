@@ -25,6 +25,7 @@ ts_files = [
   "file_manager/directory_tree.ts",
   "file_manager/directory_tree_context_menu.ts",
   "file_manager/dlp.ts",
+  "file_manager/skyvault.ts",
   "file_manager/dlp_enterprise_connectors.ts",
   "file_manager/drive_specific.ts",
   "file_manager/file_dialog.ts",

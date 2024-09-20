@@ -27,7 +27,6 @@
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_sync_message.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if !BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #include "ipc/trace_ipc_message.h"
@@ -46,7 +45,7 @@ void OnEventReady(bool* signal) {
 }
 
 // Holds a pointer to the per-thread ReceivedSyncMsgQueue object.
-ABSL_CONST_INIT thread_local SyncChannel::ReceivedSyncMsgQueue* received_queue =
+constinit thread_local SyncChannel::ReceivedSyncMsgQueue* received_queue =
     nullptr;
 
 }  // namespace

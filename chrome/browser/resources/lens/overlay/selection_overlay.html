@@ -53,6 +53,12 @@
     pointer-events: none;
   }
 
+  :host([suppress-copy-and-save-as-image]) .copy-as-image-context-menu-item,
+  :host([suppress-copy-and-save-as-image]) .save-as-image-context-menu-item,
+  :host(:not([enable-copy-as-image])) .copy-as-image-context-menu-item,
+  :host(:not([enable-save-as-image])) .save-as-image-context-menu-item,
+  :host(:not([show-detected-text-context-menu-options]))
+      .detected-text-context-menu-option,
   :host(:not([show-translate-context-menu-item])) .translate-context-menu-item,
   :host([disable-shimmer]) #overlayShimmerCanvas,
   :host([disable-shimmer]) #overlayShimmer {
@@ -200,7 +206,7 @@
   }
 
   :host([show-selected-text-context-menu]) #selectedTextContextMenu,
-  :host([show-detected-text-context-menu]) #detectedTextContextMenu {
+  :host([show-selected-region-context-menu]) #selectedRegionContextMenu {
     animation: scale-in 250ms cubic-bezier(0.2, 0.0, 0, 1.0);
     opacity: 1;
     visibility: visible;
@@ -211,7 +217,7 @@
     align-self: stretch;
     display: flex;
     gap: 12px;
-    height: 36px;
+    min-height: 36px;
     padding: 0 16px;
   }
 
@@ -229,11 +235,16 @@
     mask-position: center;
     mask-repeat: no-repeat;
     mask-size: 100%;
+    min-width: 20px;
     width: 20px;
   }
 
   .menu-item-icon.copy {
     mask-image: url('copy.svg');
+  }
+
+  .menu-item-icon.download {
+    mask-image: url('download.svg');
   }
 
   .menu-item-icon.translate {
@@ -250,6 +261,8 @@
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+    padding-block-end: 3px;
+    padding-block-start: 3px;
   }
 
   @keyframes initial-inset-animation {
@@ -356,20 +369,31 @@
         <span class="menu-item-label">$i18n{translate}</span>
       </div>
     </div>
-    <div id="detectedTextContextMenu" class="context-menu" role="menu"
-        style$="[[getContextMenuStyle(detectedTextContextMenuX,
-                                      detectedTextContextMenuY)]]"
+    <div id="selectedRegionContextMenu" class="context-menu" role="menu"
+        style$="[[getContextMenuStyle(selectedRegionContextMenuX,
+                                      selectedRegionContextMenuY)]]"
         on-pointerenter="handlePointerEnterContextMenu"
         on-pointerleave="handlePointerLeaveContextMenu">
-      <div class="context-menu-item" role="menuitem"
-          on-pointerup="handleSelectText">
+      <div class="context-menu-item detected-text-context-menu-option"
+          role="menuitem" on-pointerup="handleSelectText">
         <span class="menu-item-icon text"></span>
         <span class="menu-item-label">$i18n{selectText}</span>
       </div>
-      <div class="context-menu-item translate-context-menu-item" role="menuitem"
+      <div class="context-menu-item translate-context-menu-item
+          detected-text-context-menu-option" role="menuitem"
           on-pointerup="handleTranslateDetectedText">
         <span class="menu-item-icon translate"></span>
         <span class="menu-item-label">$i18n{translate}</span>
+      </div>
+      <div class="context-menu-item copy-as-image-context-menu-item"
+          role="menuitem" on-pointerup="handleCopyAsImage">
+        <span class="menu-item-icon copy"></span>
+        <span class="menu-item-label">$i18n{copyAsImage}</span>
+      </div>
+      <div class="context-menu-item save-as-image-context-menu-item"
+          role="menuitem" on-pointerup="handleSaveAsImage">
+        <span class="menu-item-icon download"></span>
+        <span class="menu-item-label">$i18n{saveAsImage}</span>
       </div>
     </div>
   </div>

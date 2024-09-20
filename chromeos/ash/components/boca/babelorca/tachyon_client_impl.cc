@@ -15,7 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -82,13 +82,13 @@ void TachyonClientImpl::OnResponse(
     std::unique_ptr<std::string> response_body) {
   if (url_loader->NetError() != net::OK &&
       url_loader->NetError() != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    request_data->response_cb->Run(base::unexpected(
-        ResponseCallbackWrapper::TachyonRequestError::kNetworkError));
+    std::move(request_data->response_cb)
+        .Run(base::unexpected(TachyonRequestError::kNetworkError));
     return;
   }
   if (!url_loader->ResponseInfo() || !url_loader->ResponseInfo()->headers) {
-    request_data->response_cb->Run(base::unexpected(
-        ResponseCallbackWrapper::TachyonRequestError::kInternalError));
+    std::move(request_data->response_cb)
+        .Run(base::unexpected(TachyonRequestError::kInternalError));
     return;
   }
   const int response_code =
@@ -98,16 +98,16 @@ void TachyonClientImpl::OnResponse(
     return;
   }
   if (!network::IsSuccessfulStatus(response_code)) {
-    request_data->response_cb->Run(base::unexpected(
-        ResponseCallbackWrapper::TachyonRequestError::kHttpError));
+    std::move(request_data->response_cb)
+        .Run(base::unexpected(TachyonRequestError::kHttpError));
     return;
   }
   if (!response_body) {
-    request_data->response_cb->Run(base::unexpected(
-        ResponseCallbackWrapper::TachyonRequestError::kInternalError));
+    std::move(request_data->response_cb)
+        .Run(base::unexpected(TachyonRequestError::kInternalError));
     return;
   }
-  request_data->response_cb->Run(std::move(*response_body));
+  std::move(request_data->response_cb).Run(std::move(*response_body));
 }
 
 }  // namespace ash::babelorca

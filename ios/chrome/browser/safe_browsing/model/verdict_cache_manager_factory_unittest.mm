@@ -11,18 +11,17 @@
 using VerdictCacheManagerFactoryTest = PlatformTest;
 
 // Checks that VerdictCacheManagerFactory returns different instances
-// for an off-the-record browser state and a regular browser state.
+// for an off-the-record profile and a regular profile.
 TEST_F(VerdictCacheManagerFactoryTest, OffTheRecordUsesDifferentInstance) {
   web::WebTaskEnvironment task_environment;
 
-  std::unique_ptr<TestChromeBrowserState> browser_state =
-      TestChromeBrowserState::Builder().Build();
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
 
-  // There should be a non-null instance for an off-the-record browser state.
-  EXPECT_TRUE(VerdictCacheManagerFactory::GetForBrowserState(
-      browser_state->GetOffTheRecordChromeBrowserState()));
+  // There should be a non-null instance for an off-the-record profile.
+  EXPECT_TRUE(VerdictCacheManagerFactory::GetForProfile(
+      profile->GetOffTheRecordProfile()));
 
-  EXPECT_NE(VerdictCacheManagerFactory::GetForBrowserState(browser_state.get()),
-            VerdictCacheManagerFactory::GetForBrowserState(
-                browser_state->GetOffTheRecordChromeBrowserState()));
+  EXPECT_NE(VerdictCacheManagerFactory::GetForProfile(profile.get()),
+            VerdictCacheManagerFactory::GetForProfile(
+                profile->GetOffTheRecordProfile()));
 }

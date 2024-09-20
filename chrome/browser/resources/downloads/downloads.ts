@@ -12,7 +12,7 @@ export {DownloadsDangerousDownloadInterstitialElement} from './dangerous_downloa
 export {MojomData} from './data.js';
 export {DangerType, PageCallbackRouter, PageHandlerInterface, PageRemote, SafeBrowsingState, State, TailoredWarningType} from './downloads.mojom-webui.js';
 export {IconLoader, IconLoaderImpl} from './icon_loader.js';
-export {ItemElement} from './item.js';
+export {DownloadsItemElement} from './item.js';
 export {DownloadsManagerElement} from './manager.js';
 export {SearchService} from './search_service.js';
 export {DownloadsToolbarElement} from './toolbar.js';

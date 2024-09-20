@@ -93,7 +93,7 @@ void RemoteTestServerSpawnerRequest::Core::SendRequest(
     std::unique_ptr<UploadElementReader> reader(
         UploadOwnedBytesElementReader::CreateWithString(post_data));
     request_->set_upload(
-        ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
+        ElementsUploadDataStream::CreateWithReader(std::move(reader)));
     request_->SetExtraRequestHeaderByName(HttpRequestHeaders::kContentType,
                                           "application/json",
                                           /*overwrite=*/true);

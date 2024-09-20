@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/lru_cache.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
@@ -512,8 +513,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   int CountActiveSessions() { return active_sessions_.size(); }
 
   // Inject a QUIC session for testing various edge cases.
-  void ActivateSessionForTesting(const url::SchemeHostPort& destination,
-                                 QuicChromiumClientSession* session);
+  void ActivateSessionForTesting(
+      std::unique_ptr<QuicChromiumClientSession> new_session);
 
   void DeactivateSessionForTesting(QuicChromiumClientSession* session);
 
@@ -539,8 +540,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   friend class test::QuicSessionPoolPeer;
 
   using SessionMap = std::map<QuicSessionKey, QuicChromiumClientSession*>;
-  using SessionIdMap =
-      std::map<QuicChromiumClientSession*, QuicSessionAliasKey>;
+  using SessionIdSet = std::set<std::unique_ptr<QuicChromiumClientSession>,
+                                base::UniquePtrComparator>;
   using AliasSet = std::set<QuicSessionAliasKey>;
   using SessionAliasMap = std::map<QuicChromiumClientSession*, AliasSet>;
   using SessionSet =
@@ -562,6 +563,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                             const std::vector<IPEndPoint>& ip_endpoints,
                             const std::set<std::string>& aliases,
                             bool use_dns_aliases);
+  // Returns true if IP matching can be waived when trying to send requests to
+  // |destination| on |session|.
+  bool CanWaiveIpMatching(const url::SchemeHostPort& destination,
+                          QuicChromiumClientSession* session) const;
   void OnJobComplete(Job* job, int rv);
   bool HasActiveSession(const QuicSessionKey& session_key) const;
   bool HasActiveJob(const QuicSessionKey& session_key) const;
@@ -762,7 +767,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   std::unique_ptr<quic::QuicAlarmFactory> alarm_factory_;
 
   // Contains owning pointers to all sessions that currently exist.
-  SessionIdMap all_sessions_;
+  SessionIdSet all_sessions_;
   // Contains non-owning pointers to currently active session
   // (not going away session, once they're implemented).
   SessionMap active_sessions_;
@@ -850,6 +855,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // If true, skip DNS resolution for a hostname if the ORIGIN frame received on
   // an active session encompasses that hostname.
   const bool skip_dns_with_origin_frame_;
+
+  // If true, a request will be sent on the existing session iff the hostname
+  // matches the certificate presented during the handshake.
+  const bool ignore_ip_matching_when_finding_existing_sessions_;
 
   quic::DeterministicConnectionIdGenerator connection_id_generator_{
       quic::kQuicDefaultConnectionIdLength};

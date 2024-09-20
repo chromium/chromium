@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/picker/model/picker_mode_type.h"
-#include "ash/public/cpp/picker/picker_category.h"
+#include "ash/picker/picker_category.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"

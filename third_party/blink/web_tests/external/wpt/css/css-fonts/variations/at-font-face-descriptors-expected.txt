@@ -1,13 +1,9 @@
 This is a testharness.js-based test.
-Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] font-weight(valid): Simple calc value: calc(100.5)
   assert_equals: Unexpected resulting value. expected "100.5" but got "calc(100.5)"
-[FAIL] font-weight(valid): Out-of-range simple calc value (should be clamped): calc(1001)
-  assert_not_equals: Valid value should be accepted. got disallowed value ""
 [FAIL] font-weight(valid): Valid calc expression: calc(100.5*3 + 50.5)
   assert_equals: Unexpected resulting value. expected "352" but got "calc(352)"
-[FAIL] font-weight(valid): Valid calc expression with out-of-range value (should be clamped): calc(100.5*3 + 800)
-  assert_not_equals: Valid value should be accepted. got disallowed value ""
 [FAIL] font-weight(valid): Simple range with equal upper and lower bounds: 500 500
   assert_equals: Unexpected resulting value. expected "500" but got "500 500"
 [FAIL] font-weight(valid): Lower bound calc(): calc(100 + 100) 400

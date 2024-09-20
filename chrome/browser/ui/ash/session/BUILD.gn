@@ -21,19 +21,20 @@ static_library("session") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/ash/login/demo_mode",
-    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/policy/off_hours",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
     "//chrome/browser/policy:onc",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf",
-    "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
     "//chrome/common",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/dbus/session_manager",
@@ -52,9 +53,10 @@ static_library("session") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/login/lock",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf",
-    "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
   ]
 }
 

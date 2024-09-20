@@ -75,13 +75,13 @@ class UpdaterImpl : public DYNAMICIIDSIMPL(IUpdater) {
   UpdaterImpl(const UpdaterImpl&) = delete;
   UpdaterImpl& operator=(const UpdaterImpl&) = delete;
 
-  // Returns S_OK if user, or for system, only if the COM caller is Admin.
-  // Otherwise, fails creation of this COM class.
   HRESULT RuntimeClassInitialize();
 
   // Overrides for IUpdater.
   IFACEMETHODIMP GetVersion(BSTR* version) override;
   IFACEMETHODIMP FetchPolicies(IUpdaterCallback* callback) override;
+
+  // Returns `E_ACCESSDENIED` if the COM caller is not admin for a `system` app.
   IFACEMETHODIMP RegisterApp(const wchar_t* app_id,
                              const wchar_t* brand_code,
                              const wchar_t* brand_path,
@@ -100,6 +100,8 @@ class UpdaterImpl : public DYNAMICIIDSIMPL(IUpdater) {
                         BOOL same_version_update_allowed,
                         IUpdaterObserver* observer) override;
   IFACEMETHODIMP UpdateAll(IUpdaterObserver* observer) override;
+
+  // Returns `E_ACCESSDENIED` if the COM caller is not admin for a `system` app.
   IFACEMETHODIMP Install(const wchar_t* app_id,
                          const wchar_t* brand_code,
                          const wchar_t* brand_path,
@@ -111,6 +113,8 @@ class UpdaterImpl : public DYNAMICIIDSIMPL(IUpdater) {
                          LONG priority,
                          IUpdaterObserver* observer) override;
   IFACEMETHODIMP CancelInstalls(const wchar_t* app_id) override;
+
+  // Returns `E_ACCESSDENIED` if the COM caller is not admin for a `system` app.
   IFACEMETHODIMP RunInstaller(const wchar_t* app_id,
                               const wchar_t* installer_path,
                               const wchar_t* install_args,
@@ -131,8 +135,6 @@ class UpdaterInternalImpl : public DYNAMICIIDSIMPL(IUpdaterInternal) {
   UpdaterInternalImpl(const UpdaterInternalImpl&) = delete;
   UpdaterInternalImpl& operator=(const UpdaterInternalImpl&) = delete;
 
-  // Returns S_OK if user, or for system, only if the COM caller is Admin.
-  // Otherwise, fails creation of this COM class.
   HRESULT RuntimeClassInitialize();
 
   // Overrides for IUpdaterInternal.

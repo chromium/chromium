@@ -64,6 +64,8 @@
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/consent_level.h"
@@ -90,6 +92,7 @@
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "net/cookies/cookie_util.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -922,6 +925,11 @@ class GetAuthTokenFunctionTest
   }
 
   void TearDownOnMainThread() override {
+    if (!identity_test_env_profile_adaptor_) {
+      // In some tests, we have released the profile early and removed the
+      // observer, so do nothing
+      return;
+    }
     identity_test_env()->identity_manager()->RemoveDiagnosticsObserver(this);
     IdentityTestWithSignin::TearDownOnMainThread();
   }
@@ -1913,6 +1921,35 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
+                       InteractiveSigninFailedDuringProfileShutDown) {
+  SignIn("primary@example.com");
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+  scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
+  func->set_extension(CreateExtension(CLIENT_ID | SCOPES));
+  func->push_mint_token_result(TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
+  // Have GetAuthTokenFunction make the request for the access token to ensure
+  // that the function doesn't immediately succeed.
+  func->set_auto_login_access_token(false);
+
+  RunFunctionAsync(func.get(), "[{\"interactive\": true}]");
+  identity_test_env()->identity_manager()->RemoveDiagnosticsObserver(this);
+  identity_test_env_profile_adaptor_.reset();
+  CloseBrowserSynchronously(browser());
+  EXPECT_FALSE(func->scope_ui_shown());
+
+  // The login screen should not be shown when the profile is shutting
+  // down.
+  EXPECT_FALSE(func->login_ui_shown());
+  EXPECT_EQ(std::string(errors::kBrowserContextShutDown),
+            WaitForError(func.get()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(keep_alive));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NoninteractiveQueue) {
   SignIn("primary@example.com");
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
@@ -2016,14 +2053,15 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, InteractiveQueueShutdown) {
 
   // After the request is canceled, the function will complete.
   func->OnIdentityAPIShutdown();
-  EXPECT_EQ(std::string(errors::kCanceled), WaitForError(func.get()));
+  EXPECT_EQ(std::string(errors::kBrowserContextShutDown),
+            WaitForError(func.get()));
   EXPECT_FALSE(func->login_ui_shown());
   EXPECT_FALSE(func->scope_ui_shown());
 
   QueueRequestComplete(type, &queued_request);
   histogram_tester()->ExpectUniqueSample(
       kGetAuthTokenResultHistogramName,
-      IdentityGetAuthTokenError::State::kCanceled, 1);
+      IdentityGetAuthTokenError::State::kBrowserContextShutDown, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NoninteractiveShutdown) {
@@ -2037,10 +2075,11 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NoninteractiveShutdown) {
 
   // After the request is canceled, the function will complete.
   func->OnIdentityAPIShutdown();
-  EXPECT_EQ(std::string(errors::kCanceled), WaitForError(func.get()));
+  EXPECT_EQ(std::string(errors::kBrowserContextShutDown),
+            WaitForError(func.get()));
   histogram_tester()->ExpectUniqueSample(
       kGetAuthTokenResultHistogramName,
-      IdentityGetAuthTokenError::State::kCanceled, 1);
+      IdentityGetAuthTokenError::State::kBrowserContextShutDown, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
@@ -2294,10 +2333,11 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, IdentityAPIShutdown) {
   RunFunctionAsync(func.get(), "[{}]");
 
   id_api()->Shutdown();
-  EXPECT_EQ(std::string(errors::kCanceled), WaitForError(func.get()));
+  EXPECT_EQ(std::string(errors::kBrowserContextShutDown),
+            WaitForError(func.get()));
   histogram_tester()->ExpectUniqueSample(
       kGetAuthTokenResultHistogramName,
-      IdentityGetAuthTokenError::State::kCanceled, 1);
+      IdentityGetAuthTokenError::State::kBrowserContextShutDown, 1);
 }
 
 // Ensure that when there are multiple active function calls, IdentityAPI
@@ -2333,9 +2373,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   // Shut down IdentityAPI and ensure that both functions complete with an
   // error.
   id_api()->Shutdown();
-  EXPECT_EQ(std::string(errors::kCanceled),
+  EXPECT_EQ(std::string(errors::kBrowserContextShutDown),
             func1_runner.WaitForError(func1.get()));
-  EXPECT_EQ(std::string(errors::kCanceled),
+  EXPECT_EQ(std::string(errors::kBrowserContextShutDown),
             func2_runner.WaitForError(func2.get()));
 }
 
@@ -3801,6 +3841,32 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
       kLaunchWebAuthFlowResultHistogramName,
       IdentityLaunchWebAuthFlowFunction::Error::kUserRejected, 1);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, ProfileShutDown) {
+  std::unique_ptr<net::EmbeddedTestServer> https_server =
+      std::make_unique<net::EmbeddedTestServer>(
+          net::EmbeddedTestServer::TYPE_HTTPS);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  EXPECT_TRUE(https_server->Start());
+  // We want to interrupt the flow before `auth_url` gets loaded. To ensure that
+  // an URL doesn't load prematurely, use a default test URL that never returns
+  // a response.
+  GURL auth_url(https_server->GetURL("/hung"));
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
+      CreateLaunchWebAuthFlowFunction();
+  std::string args =
+      "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
+  RunFunctionAsync(function.get(), args);
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(std::string(errors::kBrowserContextShutDown),
+            WaitForError(function.get()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(keep_alive));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Regression test for http://b/290733700.
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,

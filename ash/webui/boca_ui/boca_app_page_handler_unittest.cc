@@ -12,11 +12,13 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "components/account_id/account_id.h"
@@ -25,6 +27,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,6 +42,7 @@ using ::testing::StrictMock;
 using ::testing::WithArg;
 
 namespace ash::boca {
+namespace {
 constexpr char kGaiaId[] = "123";
 constexpr char kUserEmail[] = "cat@gmail.com";
 
@@ -50,6 +54,10 @@ class MockSessionClientImpl : public SessionClientImpl {
   MOCK_METHOD(void,
               CreateSession,
               (std::unique_ptr<CreateSessionRequest>),
+              (override));
+  MOCK_METHOD(void,
+              GetSession,
+              (std::unique_ptr<GetSessionRequest>),
               (override));
 };
 
@@ -145,7 +153,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
       mojom::OnTaskConfig::New(/*=is_locked*/ true, std::move(tabs));
 
   const auto config =
-      mojom::Config::New(session_duration, std::move(students),
+      mojom::Config::New(session_duration, nullptr, std::move(students),
                          on_task_config->Clone(), caption_config->Clone());
   // Page handler callback.
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
@@ -153,8 +161,10 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
   // API callback.
   base::test::TestFuture<bool> future_1;
 
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id(kGaiaId);
   CreateSessionRequest request(
-      nullptr, kGaiaId, config->session_duration,
+      nullptr, teacher, config->session_duration,
       ::boca::Session::SessionState::Session_SessionState_ACTIVE,
       future.GetCallback());
   EXPECT_CALL(*session_client_impl(), CreateSession(_))
@@ -162,21 +172,37 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
           Invoke([&](auto request) {
-            ASSERT_EQ(kGaiaId, request->teacher_gaia_id());
+            ASSERT_EQ(kGaiaId, request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
                 ::boca::Session::SessionState::Session_SessionState_ACTIVE,
                 request->session_state());
 
             // Optional attribute.
-            ASSERT_EQ(2u, request->student_groups().size());
-            EXPECT_EQ("1", request->student_groups()[0].gaia_id());
-            EXPECT_EQ("a", request->student_groups()[0].full_name());
-            EXPECT_EQ("a@gmail.com", request->student_groups()[0].email());
+            ASSERT_EQ(1, request->roster()->student_groups().size());
+            ASSERT_EQ(2,
+                      request->roster()->student_groups()[0].students().size());
+            EXPECT_EQ(
+                "1",
+                request->roster()->student_groups()[0].students()[0].gaia_id());
+            EXPECT_EQ("a", request->roster()
+                               ->student_groups()[0]
+                               .students()[0]
+                               .full_name());
+            EXPECT_EQ(
+                "a@gmail.com",
+                request->roster()->student_groups()[0].students()[0].email());
 
-            EXPECT_EQ("2", request->student_groups()[1].gaia_id());
-            EXPECT_EQ("b", request->student_groups()[1].full_name());
-            EXPECT_EQ("b@gmail.com", request->student_groups()[1].email());
+            EXPECT_EQ(
+                "2",
+                request->roster()->student_groups()[0].students()[1].gaia_id());
+            EXPECT_EQ("b", request->roster()
+                               ->student_groups()[0]
+                               .students()[1]
+                               .full_name());
+            EXPECT_EQ(
+                "b@gmail.com",
+                request->roster()->student_groups()[0].students()[1].email());
 
             ASSERT_TRUE(request->on_task_config());
             EXPECT_TRUE(request->on_task_config()->active_bundle().locked());
@@ -252,11 +278,13 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
   base::test::TestFuture<bool> future_1;
 
   const auto config = mojom::Config::New(
-      session_duration, std::vector<mojom::IdentityPtr>{},
+      session_duration, nullptr, std::vector<mojom::IdentityPtr>{},
       mojom::OnTaskConfigPtr(nullptr), mojom::CaptionConfigPtr(nullptr));
 
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id(kGaiaId);
   CreateSessionRequest request(
-      nullptr, kGaiaId, config->session_duration,
+      nullptr, teacher, config->session_duration,
       ::boca::Session::SessionState::Session_SessionState_ACTIVE,
       future.GetCallback());
   EXPECT_CALL(*session_client_impl(), CreateSession(_))
@@ -264,7 +292,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
           Invoke([&](auto request) {
-            ASSERT_EQ(kGaiaId, request->teacher_gaia_id());
+            ASSERT_EQ(kGaiaId, request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
                 ::boca::Session::SessionState::Session_SessionState_ACTIVE,
@@ -272,7 +300,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
 
             ASSERT_FALSE(request->captions_config());
             ASSERT_FALSE(request->on_task_config());
-            ASSERT_TRUE(request->student_groups().empty());
+            ASSERT_FALSE(request->roster());
 
             request->callback().Run("success");
           })));
@@ -285,4 +313,145 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
   ASSERT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_1.Get());
 }
+
+TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
+
+  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        auto session = std::make_unique<::boca::Session>();
+        session->mutable_duration()->set_seconds(120);
+        auto* teacher = session->mutable_teacher();
+        teacher->set_email("teacher@email.com");
+        teacher->set_full_name("teacher");
+        teacher->set_gaia_id("000");
+
+        auto* student_groups_1 =
+            session->mutable_roster()->mutable_student_groups()->Add();
+        student_groups_1->set_title(kMainStudentGroupName);
+        auto* student = student_groups_1->mutable_students()->Add();
+        student->set_email("dog@email.com");
+        student->set_full_name("dog");
+        student->set_gaia_id("123");
+
+        ::boca::SessionConfig session_config;
+        auto* caption_config_1 = session_config.mutable_captions_config();
+
+        caption_config_1->set_captions_enabled(true);
+        caption_config_1->set_translations_enabled(true);
+
+        auto* active_bundle =
+            session_config.mutable_on_task_config()->mutable_active_bundle();
+        active_bundle->set_locked(true);
+        auto* content = active_bundle->mutable_content_configs()->Add();
+        content->set_url("http://google.com/");
+        content->set_favicon_url("data/image");
+        content->set_title("google");
+        content->mutable_locked_navigation_options()->set_navigation_type(
+            ::boca::LockedNavigationOptions_NavigationType_OPEN_NAVIGATION);
+
+        (*session->mutable_student_group_configs())[kMainStudentGroupName] =
+            std::move(session_config);
+        request->callback().Run(std::move(session));
+      })));
+
+  boca_app_handler_->GetSession(future_1.GetCallback());
+
+  auto result = std::move(future_1.Take()->get_config());
+
+  EXPECT_EQ(120, result->session_duration.InSeconds());
+
+  EXPECT_EQ("teacher", result->teacher->name);
+  EXPECT_EQ("teacher@email.com", result->teacher->email);
+  EXPECT_EQ("000", result->teacher->id);
+
+  EXPECT_EQ(true, result->caption_config->caption_enabled);
+  EXPECT_EQ(true, result->caption_config->transcription_enabled);
+
+  ASSERT_EQ(1u, result->students.size());
+
+  EXPECT_EQ("dog", result->students[0]->name);
+  EXPECT_EQ("123", result->students[0]->id);
+  EXPECT_EQ("dog@email.com", result->students[0]->email);
+
+  ASSERT_EQ(1u, result->on_task_config->tabs.size());
+  ASSERT_TRUE(result->on_task_config->is_locked);
+  EXPECT_EQ(mojom::NavigationType::kOpen,
+            result->on_task_config->tabs[0]->navigation_type);
+  EXPECT_EQ("http://google.com/",
+            result->on_task_config->tabs[0]->tab->url.spec());
+  EXPECT_EQ("google", result->on_task_config->tabs[0]->tab->title);
+  EXPECT_EQ("data/image", result->on_task_config->tabs[0]->tab->favicon);
+}
+
+TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
+
+  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        auto session = std::make_unique<::boca::Session>();
+        session->mutable_duration()->set_seconds(120);
+        request->callback().Run(std::move(session));
+      })));
+
+  boca_app_handler_->GetSession(future_1.GetCallback());
+
+  auto result = std::move(future_1.Take()->get_config());
+  EXPECT_EQ(120, result->session_duration.InSeconds());
+}
+
+TEST_F(BocaAppPageHandlerTest, GetSessionWithEmptyInputTest) {
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
+
+  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        request->callback().Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
+      })));
+
+  boca_app_handler_->GetSession(future_1.GetCallback());
+  auto result = future_1.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(mojom::GetSessionError::kHTTPError, result->get_error());
+}
+
+TEST_F(BocaAppPageHandlerTest, GetSessionWithNullPtrInputTest) {
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
+
+  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(WithArg<0>(Invoke(
+          [&](auto request) { request->callback().Run(base::ok(nullptr)); })));
+
+  boca_app_handler_->GetSession(future_1.GetCallback());
+
+  auto result = future_1.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(mojom::GetSessionError::kEmpty, result->get_error());
+}
+
+}  // namespace
 }  // namespace ash::boca

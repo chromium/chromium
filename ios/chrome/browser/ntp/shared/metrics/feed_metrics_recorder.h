@@ -229,6 +229,9 @@ class Time;
 // Records a user action for the Following feed sort type being selected.
 - (void)recordFollowingFeedSortTypeSelected:(FollowingFeedSortType)sortType;
 
+// Records the value of the uniformity flag value from Discover.
+- (void)recordUniformityFlagValue:(BOOL)flag;
+
 #pragma mark - Follow
 
 // Record metrics for when the user request to follow/unfollow a website,

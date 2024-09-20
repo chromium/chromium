@@ -680,6 +680,14 @@ BASE_FEATURE(kOverscrollHistoryNavigation,
              "OverscrollHistoryNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Partitioned Popins must have a Popin-Policy in their top-frame HTTP Response
+// that permits the opener origin. This feature disables that check for purposes
+// of testing only, this must never be enabled by default in any context.
+// See https://explainers-by-googlers.github.io/partitioned-popins/
+BASE_FEATURE(kPartitionedPopinsHeaderPolicyBypass,
+             "PartitionedPopinsHeaderPolicyBypass",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables additional ChildProcessSecurityPolicy enforcements for PDF renderer
 // processes, including blocking storage and cookie access for them.
 //
@@ -1075,6 +1083,23 @@ BASE_FEATURE(kStrictOriginIsolation,
              "StrictOriginIsolation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether subframe process reuse should be restricted according to
+// resource usage policies. Namely, a process that is already consuming too
+// much memory is not attempted to be reused.
+BASE_FEATURE(kSubframeProcessReuseThresholds,
+             "SubframeProcessReuseThresholds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Specifies the memory threshold for the `kSubframeProcessReuseThresholds`
+// feature, which only allows a process to be reused for another subframe if the
+// process's memory footprint stays below this threshold. Similar to
+// `kProcessPerSiteMainFrameTotalMemoryLimit`, and only provided as a separate
+// knob so that it can be independently controlled in subframe and main frame
+// process reuse experiments.
+constexpr base::FeatureParam<double> kSubframeProcessReuseMemoryThreshold{
+    &kSubframeProcessReuseThresholds, "SubframeProcessReuseMemoryThreshold",
+    2 * 1024 * 1024 * 1024u};
+
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
 BASE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs,
@@ -1150,6 +1175,11 @@ BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebAppSystemMediaControls,
              "WebAppSystemMediaControls",
 #if BUILDFLAG(IS_WIN)
+             // Windows enabled since 124.
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#elif BUILDFLAG(IS_MAC)
+             // macOS enabled in 130. If a kill switch is needed, it should be
+             // safe to only disable the failing platform (ie. macOS here).
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1246,7 +1276,7 @@ BASE_FEATURE(kAccessibilityIncludeLongClickAction,
 // updated UI to replace existing Chrome Accessibility Settings.
 BASE_FEATURE(kAccessibilityPageZoom,
              "AccessibilityPageZoom",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the OS-level font setting is adjusted for.
 const base::FeatureParam<bool> kAccessibilityPageZoomOSLevelAdjustment{

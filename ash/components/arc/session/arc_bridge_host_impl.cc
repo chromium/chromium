@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/adbd.mojom.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/app_permissions.mojom.h"
@@ -47,10 +48,8 @@
 #include "ash/components/arc/mojom/print_spooler.mojom.h"
 #include "ash/components/arc/mojom/privacy_items.mojom.h"
 #include "ash/components/arc/mojom/process.mojom.h"
-#include "ash/components/arc/mojom/property.mojom.h"
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
-#include "ash/components/arc/mojom/storage_manager.mojom.h"
 #include "ash/components/arc/mojom/system_state.mojom.h"
 #include "ash/components/arc/mojom/system_ui.mojom.h"
 #include "ash/components/arc/mojom/timer.mojom.h"
@@ -362,11 +361,6 @@ void ArcBridgeHostImpl::OnProcessInstanceReady(
   OnInstanceReady(arc_bridge_service_->process(), std::move(process_remote));
 }
 
-void ArcBridgeHostImpl::OnPropertyInstanceReady(
-    mojo::PendingRemote<mojom::PropertyInstance> property_remote) {
-  OnInstanceReady(arc_bridge_service_->property(), std::move(property_remote));
-}
-
 void ArcBridgeHostImpl::OnScreenCaptureInstanceReady(
     mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote) {
   OnInstanceReady(arc_bridge_service_->screen_capture(),
@@ -377,12 +371,6 @@ void ArcBridgeHostImpl::OnSharesheetInstanceReady(
     mojo::PendingRemote<mojom::SharesheetInstance> sharesheet_remote) {
   OnInstanceReady(arc_bridge_service_->sharesheet(),
                   std::move(sharesheet_remote));
-}
-
-void ArcBridgeHostImpl::OnStorageManagerInstanceReady(
-    mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote) {
-  OnInstanceReady(arc_bridge_service_->storage_manager(),
-                  std::move(storage_manager_remote));
 }
 
 void ArcBridgeHostImpl::OnSystemStateInstanceReady(
@@ -477,22 +465,38 @@ void ArcBridgeHostImpl::OnInstanceReady(
   DCHECK(receivers_.size());
   DCHECK(remote.is_valid());
 
-  // Track |channel|'s lifetime via |mojo_channels_| so that it will be
+  // Get `remote.version()` before `remote` becomes inaccessible. This value is
+  // used to determine if we need to call `QueryVersion` or not.
+  uint32_t interface_version = remote.version();
+
+  // Track `channel`'s lifetime via `mojo_channels_` so that it will be
   // closed on ArcBridgeHost/Instance closing or the ArcBridgeHostImpl's
   // destruction.
   auto* channel =
       new MojoChannel<InstanceType, HostType>(holder, std::move(remote));
   mojo_channels_.emplace_back(channel);
 
-  // Since |channel| is managed by |mojo_channels_|, its lifetime is shorter
-  // than |this|. Thus, the connection error handler will be invoked only
-  // when |this| is alive and base::Unretained is safe here.
+  // Since `channel` is managed by `mojo_channels_`, its lifetime is shorter
+  // than `this`. Thus, the connection error handler will be invoked only
+  // when `this` is alive and base::Unretained is safe here.
   channel->set_disconnect_handler(base::BindOnce(
       &ArcBridgeHostImpl::OnChannelClosed, base::Unretained(this), channel));
 
-  // Call QueryVersion so that the version info is properly stored in the
-  // InterfacePtr<T>.
-  channel->QueryVersion();
+  // When `kArcExchangeVersionOnMojoHandshake` flag is enabled, check if
+  // `remote` has already stored a non-zero version and skip `QueryVersion` if
+  // there is no need to call it. Otherwise, call `QueryVersion` so that the
+  // version info is properly stored in the `InterfacePtr<T>`.
+  // TODO(b/364233894): Remove `interface_version > 0` after ensuring all Mojo
+  // instances send their versions correctly. This condition is temporally added
+  // because we cannot determine whether we need to call `QueryVersion` or not
+  // when `interface_version == 0` so far. But at least we can skip
+  // `QueryVersion` when `interface_version` contains a non-zero version.
+  if (base::FeatureList::IsEnabled(kArcExchangeVersionOnMojoHandshake) &&
+      interface_version > 0) {
+    channel->OnVersionReady(interface_version);
+  } else {
+    channel->QueryVersion();
+  }
 }
 
 void ArcBridgeHostImpl::OnChannelClosed(MojoChannelBase* channel) {

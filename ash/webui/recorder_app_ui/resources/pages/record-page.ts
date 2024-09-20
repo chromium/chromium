@@ -26,6 +26,7 @@ import {
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {CraButton} from '../components/cra/cra-button.js';
 import {CraDialog} from '../components/cra/cra-dialog.js';
 import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
@@ -34,6 +35,7 @@ import {
 } from '../components/transcription-consent-dialog.js';
 import {i18n, replacePlaceholderWithHtml} from '../core/i18n.js';
 import {
+  useMicrophoneManager,
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
@@ -46,6 +48,7 @@ import {
   settings,
   SpeakerLabelEnableState,
   TranscriptionEnableState,
+  TranscriptionLanguage,
 } from '../core/state/settings.js';
 import {
   assertExhaustive,
@@ -78,6 +81,12 @@ export class RecordPage extends ReactiveLitElement {
   static override styles = css`
     :host {
       background-color: var(--cros-sys-app_base);
+      display: block;
+      height: 100%;
+      width: 100%;
+    }
+
+    #container {
       box-sizing: border-box;
       display: flex;
       flex-flow: column;
@@ -217,6 +226,20 @@ export class RecordPage extends ReactiveLitElement {
       padding: 24px 0 16px;
     }
 
+    @keyframes pulses {
+      0% {
+        /*
+         * This is var(--cros-ref-motion-easing-emphasized-accelerate), but
+         * using the CSS variable here doesn't work for some reason...
+         */
+        animation-timing-function: cubic-bezier(0.3, 0, 0.8, 0.15);
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
     #timer {
       align-items: center;
       display: flex;
@@ -235,8 +258,8 @@ export class RecordPage extends ReactiveLitElement {
         width: 12px;
 
         .paused & {
+          animation: 1s infinite pulses;
           color: var(--cros-sys-secondary);
-          opacity: 0.5;
         }
       }
 
@@ -257,7 +280,7 @@ export class RecordPage extends ReactiveLitElement {
         var(--cros-ref-motion-easing-emphasized-accelerate);
 
       .paused & {
-        opacity: 0.5;
+        animation: 1s infinite pulses;
       }
     }
 
@@ -337,6 +360,8 @@ export class RecordPage extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
+  private readonly microphoneManager = useMicrophoneManager();
+
   // TODO: b/336963138 - Handle when transcription isn't available.
   private readonly transcriptionShown = signal(false);
 
@@ -358,7 +383,7 @@ export class RecordPage extends ReactiveLitElement {
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
 
-  private readonly stopRecordingButton = createRef<HTMLButtonElement>();
+  private readonly stopRecordingButton = createRef<CraButton>();
 
   private wakeLock: WakeLockSentinel|null = null;
 
@@ -370,7 +395,9 @@ export class RecordPage extends ReactiveLitElement {
 
   private readonly recordingControlQueue = new AsyncJobQueue('enqueue');
 
-  get stopRecordingButtonForTest(): HTMLButtonElement {
+  private recordStartTime: number|null = null;
+
+  get stopRecordingButtonForTest(): CraButton {
     return assertExists(this.stopRecordingButton.value);
   }
 
@@ -387,6 +414,8 @@ export class RecordPage extends ReactiveLitElement {
       includeSystemAudio: this.includeSystemAudio,
       platformHandler: this.platformHandler,
       speakerLabelEnabled,
+      canCaptureSystemAudioWithLoopback:
+        this.platformHandler.canCaptureSystemAudioWithLoopback.value,
     });
 
     try {
@@ -401,12 +430,13 @@ export class RecordPage extends ReactiveLitElement {
         // Permission denied, maybe user clicked cancel. Return to the main
         // page in this case.
         // TODO(pihsun): Better error handling/reporting and ask user to retry.
-        navigateTo('index');
+        navigateTo('main');
       } else {
         console.error(e);
       }
       return;
     }
+    this.recordStartTime = performance.now();
 
     this.transcriptionEnableDispose = effect(() => {
       // TODO(pihsun): This is a bit fragile now since this relies on the
@@ -450,12 +480,47 @@ export class RecordPage extends ReactiveLitElement {
     });
   }
 
+  private usingInternalMicrophone(): boolean {
+    const microphones = this.microphoneManager.getMicrophoneList().value;
+    const info = microphones.find((device) => device.deviceId === this.micId);
+    return info?.isInternal ?? false;
+  }
+
+  private sendRecordEvent(recordingSaved: boolean) {
+    const session = this.recordingSession.value;
+    if (session === null || this.recordStartTime === null) {
+      return;
+    }
+
+    const transcription = session.progress.value.transcription;
+    const locale = this.transcriptionEnabled.value ?
+      TranscriptionLanguage.EN_US :
+      TranscriptionLanguage.NONE;
+
+    this.platformHandler.eventsSender.sendRecordEvent({
+      audioDuration: Math.round(session.progress.value.length * 1000),
+      everMuted: session.everMuted,
+      everPaused: session.everPaused,
+      includeSystemAudio: this.includeSystemAudio,
+      isInternalMicrophone: this.usingInternalMicrophone(),
+      recordDuration: Math.round(performance.now() - this.recordStartTime),
+      recordingSaved,
+      speakerCount: transcription?.getSpeakerLabels().length ?? 0,
+      speakerLabelEnableState: settings.value.speakerLabelEnabled,
+      transcriptionAvailable: this.transcriptionAvailable.value,
+      transcriptionEnableState: settings.value.transcriptionEnabled,
+      transcriptionLocale: locale,
+      wordCount: transcription?.wordCount ?? 0,
+    });
+  }
+
   private async cancelRecording() {
     if (this.recordingSession.value === null) {
       return;
     }
     this.releaseWakeLock();
     await this.recordingSession.value.finish();
+    this.sendRecordEvent(/* recordingSaved= */ false);
     this.transcriptionEnableDispose?.();
     this.transcriptionEnableDispose = null;
     this.recordingSession.value = null;
@@ -472,6 +537,13 @@ export class RecordPage extends ReactiveLitElement {
     }
     this.releaseWakeLock();
     const session = this.recordingSession.value;
+
+    this.platformHandler.perfLogger.start({
+      audioDuration: Math.round(session.progress.value.length * 1000),
+      kind: 'record',
+      wordCount: session.progress.value.transcription?.wordCount ?? 0,
+    });
+
     const audioData = await session.finish();
     const params: RecordingCreateParams = {
       title: this.recordingTitle,
@@ -484,6 +556,8 @@ export class RecordPage extends ReactiveLitElement {
       params,
       audioData,
     );
+    this.sendRecordEvent(/* recordingSaved= */ true);
+    this.platformHandler.perfLogger.finish('record');
 
     this.transcriptionEnableDispose?.();
     this.transcriptionEnableDispose = null;
@@ -579,7 +653,7 @@ export class RecordPage extends ReactiveLitElement {
   private async deleteRecording() {
     // TODO(pihsun): Make this function sync since it's called as event handler.
     await this.cancelRecording();
-    navigateTo('index');
+    navigateTo('main');
   }
 
   private onToggleMuted() {
@@ -596,16 +670,15 @@ export class RecordPage extends ReactiveLitElement {
       <audio-waveform .values=${session.progress.value.powers}>
       </audio-waveform>
       <cra-icon-button
+        buttonstyle="toggle"
+        class="with-filled-style"
         shape="circle"
         @click=${this.onToggleMuted}
-        aria-checked=${this.micMuted.value}
+        .selected=${this.micMuted.value}
         aria-label=${i18n.recordMuteButtonTooltip}
-        role="switch"
       >
-        <cra-icon
-          slot="icon"
-          .name=${this.micMuted.value ? 'mic_mute' : 'mic'}
-        ></cra-icon>
+        <cra-icon slot="icon" name="mic"></cra-icon>
+        <cra-icon slot="selectedIcon" name="mic_mute"></cra-icon>
       </cra-icon-button>
     `;
   }
@@ -712,7 +785,7 @@ export class RecordPage extends ReactiveLitElement {
 
   private async saveAndExitRecording() {
     await this.stopRecording();
-    navigateTo('index');
+    navigateTo('main');
   }
 
   private onSaveClick() {
@@ -801,7 +874,7 @@ export class RecordPage extends ReactiveLitElement {
         <cra-icon-button
           buttonstyle="floating"
           @click=${this.onBackClick}
-          aria-label=${i18n.backToMainButtonTooltip}
+          aria-label=${i18n.backToMainButtonAriaLabel}
         >
           <cra-icon slot="icon" name="arrow_back"></cra-icon>
         </cra-icon-button>
@@ -831,34 +904,40 @@ export class RecordPage extends ReactiveLitElement {
     };
 
     return html`
-      <div id="main-area">
-        ${this.renderHeader()}
-        <div id="middle" class=${classMap(mainSectionClasses)}>
-          <div id="audio-waveform-container" class="sheet">
-            ${this.renderAudioWaveform()}
-          </div>
-          <div id="transcription-container" class="sheet">
-            ${this.renderTranscription()}
+      <div id="container" part="container">
+        <div id="main-area">
+          ${this.renderHeader()}
+          <div id="middle" class=${classMap(mainSectionClasses)}>
+            <div id="audio-waveform-container" class="sheet">
+              ${this.renderAudioWaveform()}
+            </div>
+            <div id="transcription-container" class="sheet">
+              ${this.renderTranscription()}
+            </div>
           </div>
         </div>
-      </div>
-      <div id="footer" class=${classMap(footerClasses)}>
-        <div id="timer">${this.renderTimer()}</div>
-        <div id="actions">
-          <secondary-button
-            @click=${this.onDeleteButtonClick}
-            aria-label=${i18n.recordDeleteButtonTooltip}
-          >
-            <cra-icon slot="icon" name="delete"></cra-icon>
-          </secondary-button>
-          ${this.renderStopRecordButton()}
-          <secondary-button
-            id="pause-button"
-            @click=${this.onPauseButtonClick}
-            aria-label=${i18n.recordPauseButtonTooltip}
-          >
-            <cra-icon slot="icon" name="pause"></cra-icon>
-          </secondary-button>
+        <div id="footer" class=${classMap(footerClasses)}>
+          <div id="timer">${this.renderTimer()}</div>
+          <div id="actions">
+            <secondary-button
+              @click=${this.onDeleteButtonClick}
+              aria-label=${i18n.recordDeleteButtonTooltip}
+            >
+              <cra-icon slot="icon" name="delete"></cra-icon>
+            </secondary-button>
+            ${this.renderStopRecordButton()}
+            <secondary-button
+              id="pause-button"
+              @click=${this.onPauseButtonClick}
+              aria-label=${i18n.recordPauseButtonTooltip}
+              buttonstyle="toggle"
+              class="with-filled-style"
+              .selected=${this.recordingPaused.value}
+            >
+              <cra-icon slot="icon" name="pause"></cra-icon>
+              <cra-icon slot="selectedIcon" name="pause"></cra-icon>
+            </secondary-button>
+          </div>
         </div>
       </div>
       <delete-recording-dialog

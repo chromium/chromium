@@ -25,7 +25,8 @@ struct ManagementState;
                   avatarImage:(UIImage*)avatarImage
                          name:(NSString*)name
                         email:(NSString*)email
-              managementState:(ManagementState)managementState;
+              managementState:(ManagementState)managementState
+              useLargeMargins:(BOOL)useLargeMargins;
 
 // Returns the view parameters.
 - (UIImage*)avatarImage;

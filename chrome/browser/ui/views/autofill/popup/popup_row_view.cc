@@ -206,7 +206,10 @@ PopupRowView::PopupRowView(
           controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()),
       suggestion_is_acceptable_(
           controller && line_number < controller->GetLineCount() &&
-          controller->GetSuggestionAt(line_number).is_acceptable) {
+          controller->GetSuggestionAt(line_number).is_acceptable),
+      highlight_on_select_(
+          controller && line_number < controller->GetLineCount() &&
+          controller->GetSuggestionAt(line_number).highlight_on_select) {
   CHECK(content_view);
   CHECK(controller_);
   CHECK_LT(line_number_, controller_->GetLineCount());
@@ -411,7 +414,7 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     selected_cell_ = new_cell;
   } else if (new_cell == CellType::kContent) {
     controller_->SelectSuggestion(line_number_);
-    content_view_->UpdateStyle(/*selected=*/true);
+    content_view_->UpdateStyle(/*selected=*/highlight_on_select_);
     content_view_->GetViewAccessibility().SetIsSelected(true);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
@@ -482,19 +485,27 @@ void PopupRowView::UpdateUI() {
 }
 
 void PopupRowView::UpdateBackground() {
-  // The whole row is highlighted when:
-  // * The subpopup is open, or
-  // * The expanding control view is being hovered, or
-  // * The suggestion is not acceptable and either the control or content part
-  //   is being hovered.
-  ui::ColorId kBackgroundColorId =
-      child_suggestions_displayed_ || (selected_cell_ == CellType::kControl) ||
-              (!suggestion_is_acceptable_ && selected_cell_)
-          ? ui::kColorDropdownBackgroundSelected
-          : ui::kColorDropdownBackground;
+  const bool is_highlighted = [&]() {
+    if (!highlight_on_select_) {
+      return false;
+    }
+    // The whole row is highlighted when the subpopup is open, or ...
+    if (child_suggestions_displayed_) {
+      return true;
+    }
+    // the expanding control view is being hovered, or ...
+    if (selected_cell_ == CellType::kControl) {
+      return true;
+    }
+    // the suggestion is not acceptable and either the control or content part
+    // is being hovered.
+    return !suggestion_is_acceptable_ && selected_cell_;
+  }();
   SetBackground(views::CreateThemedRoundedRectBackground(
-      kBackgroundColorId, ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-                              views::Emphasis::kMedium)));
+      is_highlighted ? ui::kColorDropdownBackgroundSelected
+                     : ui::kColorDropdownBackground,
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kMedium)));
 }
 
 void PopupRowView::UpdateOpenSubPopupIconVisibility() {

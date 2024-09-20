@@ -175,6 +175,14 @@
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "Win_x64/{%position%}/updater-syms.zip",
             "archive_type":"ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "enterprise_companion.zip"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_x64/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
         }
     ]
 }

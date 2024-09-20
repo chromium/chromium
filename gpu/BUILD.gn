@@ -362,6 +362,7 @@ test("gl_tests") {
     sources += [ "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc" ]
   } else if (is_win) {
     deps += [
+      "//third_party/microsoft_dxheaders:dxguids",
       "//ui/platform_window",
       "//ui/platform_window:platform_impls",
     ]

@@ -170,17 +170,7 @@ struct EnrollmentConfig {
   ~EnrollmentConfig();
 
   // Whether enrollment should be triggered.
-  bool should_enroll() const {
-    return should_enroll_with_attestation() || should_enroll_interactively();
-  }
-
-  // Whether attestation enrollment should be triggered.
-  bool should_enroll_with_attestation() const {
-    return auth_mechanism != AUTH_MECHANISM_INTERACTIVE;
-  }
-
-  // Whether interactive enrollment should be triggered.
-  bool should_enroll_interactively() const { return mode != MODE_NONE; }
+  bool should_enroll() const { return mode != MODE_NONE; }
 
   // Whether we fell back into manual enrollment.
   bool is_manual_fallback() const {
@@ -201,12 +191,6 @@ struct EnrollmentConfig {
            mode == MODE_ATTESTATION_ROLLBACK_FORCED || mode == MODE_RECOVERY ||
            mode == MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED ||
            is_manual_fallback();
-  }
-
-  // Whether attestation-based authentication is forced. The user cannot enroll
-  // manually.
-  bool is_attestation_auth_forced() const {
-    return auth_mechanism == AUTH_MECHANISM_ATTESTATION;
   }
 
   // Whether this configuration is in attestation mode per server request.
