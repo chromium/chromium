@@ -2455,6 +2455,26 @@
             ]
         }
     ],
+    "AutofillPredictionImprovementsTeamfood": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableImprovedPredictionParser",
+                        "AutofillPredictionImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillRequireValidLocalCardsInSettings": [
         {
             "platforms": [
