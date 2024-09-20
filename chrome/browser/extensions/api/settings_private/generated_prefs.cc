@@ -96,9 +96,6 @@ void GeneratedPrefs::CreatePrefs() {
   prefs_[kResolveTimezoneByGeolocationMethodShort] =
       CreateGeneratedResolveTimezoneByGeolocationMethodShort(profile_);
 #endif
-  prefs_[content_settings::kCookiePrimarySetting] =
-      std::make_unique<content_settings::GeneratedCookiePrimarySettingPref>(
-          profile_);
   prefs_[content_settings::kCookieDefaultContentSetting] = std::make_unique<
       content_settings::GeneratedCookieDefaultContentSettingPref>(profile_);
   prefs_[kGeneratedPasswordLeakDetectionPref] =

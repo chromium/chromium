@@ -126,19 +126,6 @@ IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetDisabledPref) {
   EXPECT_TRUE(RunSettingsSubtest("getDisabledPref")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetPartiallyManagedPref) {
-  auto provider = std::make_unique<content_settings::MockProvider>();
-  provider->SetWebsiteSetting(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
-  content_settings::TestUtils::OverrideProvider(
-      HostContentSettingsMapFactory::GetForProfile(profile()),
-      std::move(provider), content_settings::ProviderType::kPolicyProvider);
-  EXPECT_TRUE(RunSettingsSubtest("getPartiallyManagedPref")) << message_;
-}
-
 IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetAllPrefs) {
   EXPECT_TRUE(RunSettingsSubtest("getAllPrefs")) << message_;
 }
