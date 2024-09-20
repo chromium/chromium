@@ -201,6 +201,7 @@ source_set("connections_implementation") {
     ":platform_public_comm",
     ":platform_public_logging",
     ":platform_public_types",
+    ":platform_wifi_utils",
     ":v3_types",
     "//third_party/abseil-cpp:absl",
     "//third_party/protobuf:protobuf_lite",
@@ -593,6 +594,21 @@ source_set("platform_api_comm") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
+source_set("platform_wifi_utils") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [ "src/internal/platform/implementation/wifi_utils.cc" ]
+  public = [
+    "src/internal/platform/implementation/wifi.h",
+    "src/internal/platform/implementation/wifi_utils.h",
+  ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 source_set("platform_api_types") {
   public_configs = [
     ":nearby_include_config",
@@ -901,7 +917,6 @@ source_set("platform_public_comm") {
     "src/internal/platform/wifi_direct.cc",
     "src/internal/platform/wifi_hotspot.cc",
     "src/internal/platform/wifi_lan.cc",
-    "src/internal/platform/wifi_utils.cc",
   ]
   public = [
     "src/internal/platform/ble.h",
@@ -913,7 +928,6 @@ source_set("platform_public_comm") {
     "src/internal/platform/wifi_direct.h",
     "src/internal/platform/wifi_hotspot.h",
     "src/internal/platform/wifi_lan.h",
-    "src/internal/platform/wifi_utils.h",
   ]
   public_deps = [
     ":platform_api_comm",
@@ -922,6 +936,7 @@ source_set("platform_public_comm") {
     ":platform_base_uuid",
     ":platform_public_logging",
     ":platform_public_types",
+    ":platform_wifi_utils",
     "//third_party/abseil-cpp:absl",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
