@@ -74,6 +74,9 @@ class PDFiumPage {
   // Returns FPDF_TEXTPAGE for the page, loading and parsing it if necessary.
   FPDF_TEXTPAGE GetTextPage();
 
+  // Gets the number of characters in the page.
+  int GetCharCount();
+
   // See definition of PDFiumEngine::GetTextRunInfo().
   std::optional<AccessibilityTextRunInfo> GetTextRunInfo(int start_char_index);
 
@@ -190,12 +193,6 @@ class PDFiumPage {
 
   // Converts a form type to its corresponding Area.
   static Area FormTypeToArea(int form_type);
-
-  // Gets the character at the given index.
-  char16_t GetCharAtIndex(int index);
-
-  // Gets the number of characters in the page.
-  int GetCharCount();
 
   // Returns true if the given `char_index` lies within the character range
   // of the page.

@@ -165,17 +165,17 @@ TEST_P(PDFiumPageTest, IsCharInPageBounds) {
   const gfx::RectF page_bounds = page.GetCroppedRect();
   EXPECT_EQ(page_bounds, gfx::RectF(193.33333f, 129.33333f));
 
-  EXPECT_EQ(page.GetCharAtIndex(0), 'H');
+  EXPECT_EQ(page.GetCharUnicode(0), static_cast<uint32_t>('H'));
   EXPECT_FALSE(page.IsCharInPageBounds(0, page_bounds));
-  EXPECT_EQ(page.GetCharAtIndex(12), '!');
+  EXPECT_EQ(page.GetCharUnicode(12), static_cast<uint32_t>('!'));
   EXPECT_TRUE(page.IsCharInPageBounds(12, page_bounds));
-  EXPECT_EQ(page.GetCharAtIndex(13), '\r');
+  EXPECT_EQ(page.GetCharUnicode(13), static_cast<uint32_t>('\r'));
   EXPECT_TRUE(page.IsCharInPageBounds(13, page_bounds));
-  EXPECT_EQ(page.GetCharAtIndex(14), '\n');
+  EXPECT_EQ(page.GetCharUnicode(14), static_cast<uint32_t>('\n'));
   EXPECT_TRUE(page.IsCharInPageBounds(14, page_bounds));
-  EXPECT_EQ(page.GetCharAtIndex(15), 'G');
+  EXPECT_EQ(page.GetCharUnicode(15), static_cast<uint32_t>('G'));
   EXPECT_FALSE(page.IsCharInPageBounds(15, page_bounds));
-  EXPECT_EQ(page.GetCharAtIndex(29), '!');
+  EXPECT_EQ(page.GetCharUnicode(29), static_cast<uint32_t>('!'));
   EXPECT_FALSE(page.IsCharInPageBounds(29, page_bounds));
 }
 

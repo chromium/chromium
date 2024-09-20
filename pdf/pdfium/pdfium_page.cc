@@ -470,6 +470,13 @@ void PDFiumPage::CalculatePageObjectTextRunBreaks() {
   }
 }
 
+int PDFiumPage::GetCharCount() {
+  if (!available_) {
+    return 0;
+  }
+  return FPDFText_CountChars(GetTextPage());
+}
+
 std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
     int start_char_index) {
   FPDF_PAGE page = GetPage();
@@ -643,8 +650,10 @@ std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
 }
 
 uint32_t PDFiumPage::GetCharUnicode(int char_index) {
-  FPDF_TEXTPAGE text_page = GetTextPage();
-  return FPDFText_GetUnicode(text_page, char_index);
+  // No explicit `available_` check here to return 0 when unavailable.
+  // If this page is unavailable, GetTextPage() returns nullptr and
+  // FPDFText_GetUnicode() naturally returns 0.
+  return FPDFText_GetUnicode(GetTextPage(), char_index);
 }
 
 gfx::RectF PDFiumPage::GetCharBounds(int char_index) {
@@ -999,18 +1008,6 @@ PDFiumPage::Area PDFiumPage::FormTypeToArea(int form_type) {
     default:
       return NONSELECTABLE_AREA;
   }
-}
-
-char16_t PDFiumPage::GetCharAtIndex(int index) {
-  if (!available_)
-    return u'\0';
-  return static_cast<char16_t>(FPDFText_GetUnicode(GetTextPage(), index));
-}
-
-int PDFiumPage::GetCharCount() {
-  if (!available_)
-    return 0;
-  return FPDFText_CountChars(GetTextPage());
 }
 
 bool PDFiumPage::IsCharIndexInBounds(int index) {

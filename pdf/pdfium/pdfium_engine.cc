@@ -236,7 +236,7 @@ void FormatStringForOS(std::u16string* text) {
 // For triple clicks, look for line breaks.
 // The actual algorithm used in Blink is much more complicated, so do a simple
 // approximation.
-bool FindMultipleClickBoundary(bool is_double_click, char16_t cur) {
+bool FindMultipleClickBoundary(bool is_double_click, uint32_t cur) {
   if (!is_double_click)
     return cur == '\n';
 
@@ -1250,7 +1250,7 @@ void PDFiumEngine::OnMultipleClick(int click_count,
   // now it doesn't.
   int start_index = char_index;
   do {
-    char16_t cur = pages_[page_index]->GetCharAtIndex(start_index);
+    uint32_t cur = pages_[page_index]->GetCharUnicode(start_index);
     if (FindMultipleClickBoundary(is_double_click, cur))
       break;
   } while (--start_index >= 0);
@@ -1260,7 +1260,7 @@ void PDFiumEngine::OnMultipleClick(int click_count,
   int end_index = char_index;
   const int total = pages_[page_index]->GetCharCount();
   for (; end_index < total; ++end_index) {
-    char16_t cur = pages_[page_index]->GetCharAtIndex(end_index);
+    uint32_t cur = pages_[page_index]->GetCharUnicode(end_index);
     if (FindMultipleClickBoundary(is_double_click, cur))
       break;
   }
