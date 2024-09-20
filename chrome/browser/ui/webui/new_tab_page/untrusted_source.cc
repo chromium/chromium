@@ -111,17 +111,12 @@ void UntrustedSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  PolicyBlocklistService* service =
-      PolicyBlocklistFactory::GetForBrowserContext(profile_);
-  URLBlocklistState blocklist_state = service->GetURLBlocklistState(url);
-  if (blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST) {
-    LOG(WARNING) << "URL is blocked by a policy.";
+  GURL url_param = GURL(url.query());
+  if (url_param.is_valid() && IsURLBlockedByPolicy(url_param)) {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
     return;
   }
-
   const std::string path = url.has_path() ? url.path().substr(1) : "";
-  GURL url_param = GURL(url.query());
   if (path == "one-google-bar" && one_google_bar_service_) {
     std::string query_params;
     net::GetValueForKeyInQuery(url, "paramsencoded", &query_params);
@@ -286,8 +281,9 @@ void UntrustedSource::ServeBackgroundImage(
     const std::string& position_y,
     const std::string& scrim_display,
     content::URLDataSource::GotDataCallback callback) {
-  if (!url.is_valid() || !(url.SchemeIs(url::kHttpsScheme) ||
-                           url.SchemeIs(content::kChromeUIUntrustedScheme))) {
+  if (!url.is_valid() || IsURLBlockedByPolicy(url) ||
+      !(url.SchemeIs(url::kHttpsScheme) ||
+        url.SchemeIs(content::kChromeUIUntrustedScheme))) {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
     return;
   }
@@ -310,4 +306,15 @@ void UntrustedSource::ServeBackgroundImage(
   std::move(callback).Run(
       base::MakeRefCounted<base::RefCountedString>(FormatTemplate(
           IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_HTML, replacements)));
+}
+
+bool UntrustedSource::IsURLBlockedByPolicy(const GURL& url) {
+  PolicyBlocklistService* service =
+      PolicyBlocklistFactory::GetForBrowserContext(profile_);
+  URLBlocklistState blocklist_state = service->GetURLBlocklistState(url);
+  if (blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST) {
+    LOG(WARNING) << "URL is blocked by a policy.";
+    return true;
+  }
+  return false;
 }
