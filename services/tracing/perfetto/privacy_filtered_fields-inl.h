@@ -494,6 +494,10 @@ constexpr int kAnimationFrameScriptTimingInfoIndices[] = {1, 2, 3, 9, 10, -1};
 constexpr MessageInfo kAnimationFrameScriptTimingInfo = {
     kAnimationFrameScriptTimingInfoIndices, nullptr};
 
+// Proto Message: EventTiming
+constexpr int kEventTimingIndices[] = {1, 3, 4, 5, 6, 7, 8, 9, -1};
+constexpr MessageInfo kEventTiming = {kEventTimingIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
     1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
@@ -503,7 +507,7 @@ constexpr int kTrackEventIndices[] = {
     1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1028,
     1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, 1046, 1047,
     1048, 1049, 1050, 1051, 1052, 1053, 1054, 1055, 1056, 1057, 1058, 1059,
-    1060, 1061, 1064, 1065, -1};
+    1060, 1061, 1064, 1065, 1069, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -592,7 +596,8 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kTouchDispositionGestureFilter,
     &kViewClassName,
     &kAnimationFrameTimingInfo,
-    &kAnimationFrameScriptTimingInfo};
+    &kAnimationFrameScriptTimingInfo,
+    &kEventTiming};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
