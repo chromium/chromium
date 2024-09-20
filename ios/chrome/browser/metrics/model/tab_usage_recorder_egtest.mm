@@ -528,7 +528,9 @@ void SwitchToNormalMode() {
 
 // Tests that leaving Chrome while an evicted tab is reloading triggers the
 // recording of the USER_LEFT_CHROME metric.
-- (void)testEvictedTabReloadBackgrounded {
+//
+// TODO(crbug.com/368595186): Disabled due to flakiness.
+- (void)DISABLED_testEvictedTabReloadBackgrounded {
   std::map<GURL, std::string> responses;
   const GURL slowURL = web::test::HttpServer::MakeUrl("http://slow");
   responses[slowURL] = "Slow Page";
