@@ -15,6 +15,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_span.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -325,6 +326,18 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
   size_t iter_index;
   if (iter->GetBucketIndex(&iter_index)) {
     index_offset = dest_index - iter_index;
+    // TODO(crbug.com/367379194): Temporary instrumentation to see how often
+    // `index_offset` is non-0.
+    if (index_offset != 0) {
+      int offset_value = static_cast<int>(index_offset);
+      if (offset_value > 0) {
+        UMA_HISTOGRAM_COUNTS_100("UMA.AddSubtractImpl.PositiveOffset",
+                                 offset_value);
+      } else {
+        UMA_HISTOGRAM_COUNTS_100("UMA.AddSubtractImpl.NegativeOffset",
+                                 -offset_value);
+      }
+    }
   }
   if (dest_index >= counts_size()) {
     return false;
