@@ -94,8 +94,8 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     }
 
     /**
-     * Select the "Close tab" menu option to close the current Tab, expecting to land on the regular
-     * Tab Switcher.
+     * Select the "Close tab" menu option to close the current Tab, expecting to land on a regular
+     * tab.
      *
      * <p>This happens when the last incognito tab is closed but there are other regular tabs.
      */
