@@ -60,7 +60,6 @@ schema:
 supported_on:
 - chrome.*:61-
 - chrome_os:61-
-- android:130-
 tags:
 - local-data-access
 type: int-enum
