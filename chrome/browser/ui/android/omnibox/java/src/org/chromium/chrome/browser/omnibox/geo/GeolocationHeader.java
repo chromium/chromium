@@ -32,6 +32,8 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -211,10 +213,6 @@ public class GeolocationHeader {
     @VisibleForTesting
     static final long LOCATION_REQUEST_UPDATE_INTERVAL = Duration.ofMinutes(9).toMillis();
 
-    // Timeout requests after 30 minutes if we somehow fail to remove our listener.
-    @VisibleForTesting
-    static final long LOCATION_REQUEST_UPDATE_MAX_DURATION = Duration.ofMinutes(30).toMillis();
-
     /** The X-Geo header prefix, preceding any location descriptors */
     private static final String XGEO_HEADER_PREFIX = "X-Geo:";
 
@@ -279,9 +277,11 @@ public class GeolocationHeader {
     }
 
     /**
-     * Attempts to start listening for location updates on a LOCATION_REQUEST_UPDATE_INTERVAL (9
-     * minute) interval, returning true if the request to listen succeeded. Locations are requested
-     * to be less than five minutes old and have a granularity matching the app's permission level.
+     * Start listening for location updates on a LOCATION_REQUEST_UPDATE_INTERVAL interval,
+     * returning true if the request to listen succeeded.
+     *
+     * <p>Locations are requested to be less than REFRESH_LOCATION_AGE minutes old and have a
+     * granularity matching the app's permission level.
      */
     private static boolean startListeningForLocationUpdates() {
         if (sCurrentLocationRequested) return true;
@@ -290,9 +290,19 @@ public class GeolocationHeader {
             FusedLocationProviderClient fusedLocationClient =
                     LocationServices.getFusedLocationProviderClient(
                             ContextUtils.getApplicationContext());
+
+            long updateDuration =
+                    Duration.ofMinutes(OmniboxFeatures.sGeolocationRequestTimeoutMinutes.getValue())
+                            .toMillis();
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        sCurrentLocationRequested = false;
+                    },
+                    updateDuration);
             var locationRequest =
                     new LocationRequest.Builder(LOCATION_REQUEST_UPDATE_INTERVAL)
-                            .setDurationMillis(LOCATION_REQUEST_UPDATE_MAX_DURATION)
+                            .setDurationMillis(updateDuration)
                             .setMaxUpdateAgeMillis(REFRESH_LOCATION_AGE)
                             .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
                             .setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
