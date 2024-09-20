@@ -98,7 +98,8 @@ TEST_F(SunfishTest, PressEnterKey) {
   auto* capture_button =
       session_test_api.GetCaptureLabelView()->capture_button_container();
   auto* capture_label = session_test_api.GetCaptureLabelInternalView();
-  ASSERT_TRUE(!capture_button->GetVisible() && capture_label->GetVisible());
+  ASSERT_FALSE(capture_button->GetVisible());
+  ASSERT_TRUE(capture_label->GetVisible());
   PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_TRUE(controller->IsActive());
 
@@ -106,7 +107,8 @@ TEST_F(SunfishTest, PressEnterKey) {
   // `OnCaptureImageAttempted()` will be called once.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*proceed=*/true);
-  ASSERT_TRUE(capture_button->GetVisible() && !capture_label->GetVisible());
+  ASSERT_FALSE(capture_button->GetVisible());
+  ASSERT_FALSE(capture_label->GetVisible());
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   EXPECT_EQ(1, test_delegate->num_capture_image_attempts());
@@ -168,9 +170,9 @@ TEST_F(SunfishTest, CaptureLabelView) {
   EXPECT_FALSE(capture_button->GetVisible());
   EXPECT_FALSE(capture_label->GetVisible());
 
-  // Release the drag. Only the button is shown.
+  // Release the drag. The label and button should still both be hidden.
   event_generator->ReleaseLeftButton();
-  EXPECT_TRUE(capture_button->GetVisible());
+  EXPECT_FALSE(capture_button->GetVisible());
   EXPECT_FALSE(capture_label->GetVisible());
 }
 

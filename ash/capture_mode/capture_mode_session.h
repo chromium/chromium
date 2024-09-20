@@ -38,6 +38,10 @@ namespace gfx {
 class Canvas;
 }  // namespace gfx
 
+namespace views {
+class BoxLayoutView;
+}  // namespace views
+
 namespace ash {
 
 class CaptureModeBarView;
@@ -49,6 +53,9 @@ class CursorSetter;
 class RecordingTypeMenuView;
 class UserNudgeController;
 class WindowDimmer;
+
+// TODO(http://b/366621847):  Create an API for creating action buttons that can
+// be called asynchronously from `capture_mode_util`.
 
 // Encapsulates an active capture mode session (i.e. an instance of this class
 // lives as long as capture mode is active). It creates and owns the capture
@@ -322,6 +329,17 @@ class ASH_EXPORT CaptureModeSession
   // child is visible.
   bool ShouldCaptureLabelHandleEvent(aura::Window* event_target);
 
+  // Creates the the action container widget if it wasn't previously created,
+  // and updates the widget's bounds.
+  void UpdateActionContainerWidget();
+
+  // Updates the action container widget's bounds.
+  void UpdateActionContainerWidgetBounds();
+
+  // Calculates the targeted action container widget bounds in screen
+  // coordinates.
+  gfx::Rect CalculateActionContainerWidgetBounds() const;
+
   // Updates |root_window_dimmers_| to dim the correct root windows.
   void UpdateRootWindowDimmers();
 
@@ -411,6 +429,10 @@ class ASH_EXPORT CaptureModeSession
   // timer.
   views::UniqueWidgetPtr capture_label_widget_;
   raw_ptr<CaptureLabelView, DanglingUntriaged> capture_label_view_ = nullptr;
+
+  // TODO(hewer): Check if we can migrate these widgets to `SunfishBehavior`.
+  views::UniqueWidgetPtr action_container_widget_;
+  raw_ptr<views::BoxLayoutView> action_container_view_ = nullptr;
 
   // Widget that hosts the recording type menu, from which the user can pick the
   // desired recording format type.

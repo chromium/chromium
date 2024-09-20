@@ -57,6 +57,7 @@
 #include "ui/aura/window_tracker.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -77,6 +78,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -182,6 +184,9 @@ constexpr base::TimeDelta kCaptureUIOpacityChangeDuration =
 // phase, they can create default region which is centered and sized to this
 // value times the root window's width and height.
 constexpr float kRegionDefaultRatio = 0.24f;
+
+// The horizontal distance between action buttons in a row.
+constexpr int kActionButtonSpacing = 10;
 
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
@@ -407,6 +412,76 @@ gfx::Rect GetHitTestRectForFineTunePosition(
     default:
       NOTREACHED();
   }
+}
+
+// Calculates the bounds for a widget of `preferred_size` so that it appears
+// along one of the edges of `capture_bounds`, or slightly above
+// `capture_bar_bounds` if there is not a good edge.
+gfx::Rect CalculateRegionEdgeBounds(const gfx::Size& preferred_size,
+                                    const gfx::Rect& capture_bar_root_bounds,
+                                    const gfx::Rect& capture_region_root_bounds,
+                                    aura::Window* root) {
+  // The capture button may be placed along the edge of a capture region if it
+  // cannot be placed in the middle. This enum represents the possible edges.
+  enum class Direction { kBottom, kTop, kLeft, kRight };
+
+  // Try placing the label slightly outside |capture_bounds|. The label will
+  // be |kCaptureButtonDistanceFromRegionDp| away from |capture_bounds| along
+  // one of the edges. The order we will try is bottom, top, left then right.
+  const std::vector<Direction> directions = {
+      Direction::kBottom, Direction::kTop, Direction::kLeft, Direction::kRight};
+
+  // For each direction, start off with the label in the center of
+  // |capture_bounds| (matching centerpoints). We will shift the label to
+  // slightly outside |capture_bounds| for each direction.
+  gfx::Rect centered_widget_bounds(preferred_size);
+  centered_widget_bounds.set_x(capture_region_root_bounds.CenterPoint().x() -
+                               preferred_size.width() / 2);
+  centered_widget_bounds.set_y(capture_region_root_bounds.CenterPoint().y() -
+                               preferred_size.height() / 2);
+  const int spacing = CaptureModeSession::kCaptureButtonDistanceFromRegionDp;
+
+  // Try the directions in the preferred order. We will early out if one of
+  // them is viable.
+  gfx::Rect widget_bounds;
+  for (Direction direction : directions) {
+    widget_bounds = centered_widget_bounds;
+
+    switch (direction) {
+      case Direction::kBottom:
+        widget_bounds.set_y(capture_region_root_bounds.bottom() + spacing);
+        break;
+      case Direction::kTop:
+        widget_bounds.set_y(capture_region_root_bounds.y() - spacing -
+                            preferred_size.height());
+        break;
+      case Direction::kLeft:
+        widget_bounds.set_x(capture_region_root_bounds.x() - spacing -
+                            preferred_size.width());
+        break;
+      case Direction::kRight:
+        widget_bounds.set_x(capture_region_root_bounds.right() + spacing);
+        break;
+    }
+
+    // If |widget_bounds| does not overlap with |capture_bar_root_bounds| and is
+    // fully contained in root, we're good.
+    if (!widget_bounds.Intersects(capture_bar_root_bounds) &&
+        root->bounds().Contains(widget_bounds)) {
+      return widget_bounds;
+    }
+  }
+
+  // Reaching here, we have not found a good edge to place the widget at. The
+  // last attempt is to place it slightly above the capture bar.
+  widget_bounds.set_size(preferred_size);
+  widget_bounds.set_x(capture_bar_root_bounds.CenterPoint().x() -
+                      preferred_size.width() / 2);
+  widget_bounds.set_y(capture_bar_root_bounds.y() -
+                      CaptureModeSession::kCaptureButtonDistanceFromRegionDp -
+                      preferred_size.height());
+
+  return widget_bounds;
 }
 
 }  // namespace
@@ -641,6 +716,19 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
           location_in_screen) &&
       capture_label_view_->ShouldHandleEvent();
   if (is_event_on_capture_button) {
+    cursor_setter_->UpdateCursor(root_window, ui::mojom::CursorType::kHand);
+    return;
+  }
+
+  // TODO(hewer): Further refine this so the area between buttons does not show
+  // the hand cursor.
+  // If the current mouse event is on an action button, show the hand mouse
+  // cursor.
+  const bool is_event_on_action_button =
+      action_container_widget_ &&
+      action_container_widget_->GetWindowBoundsInScreen().Contains(
+          location_in_screen);
+  if (is_event_on_action_button) {
     cursor_setter_->UpdateCursor(root_window, ui::mojom::CursorType::kHand);
     return;
   }
@@ -1217,6 +1305,11 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
 
 void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image) {
   DCHECK_EQ(active_behavior()->behavior_type(), BehaviorType::kSunfish);
+
+  // When we show the panel, we also want to update the action button container
+  // and any buttons that might be visible.
+  UpdateActionContainerWidget();
+
   if (!search_results_panel_widget_) {
     search_results_panel_widget_ =
         SearchResultsPanel::CreateWidget(current_root());
@@ -1654,6 +1747,9 @@ void CaptureModeSession::RefreshStackingOrder() {
     widget_in_order.emplace_back(toast);
   if (capture_label_widget_)
     widget_in_order.emplace_back(capture_label_widget_.get());
+  if (action_container_widget_) {
+    widget_in_order.emplace_back(action_container_widget_.get());
+  }
   if (capture_mode_bar_widget_)
     widget_in_order.emplace_back(capture_mode_bar_widget_.get());
   if (recording_type_menu_widget_)
@@ -1905,6 +2001,12 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // Let the capture button handle any events it can handle first.
   if (ShouldCaptureLabelHandleEvent(event_target))
     return;
+
+  // Let the action buttons handle their events if any.
+  if (capture_mode_util::IsEventTargetedOnWidget(
+          *event, action_container_widget_.get())) {
+    return;
+  }
 
   // Let the recording type menu handle its events if any.
   if (capture_mode_util::IsEventTargetedOnWidget(
@@ -2506,67 +2608,8 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
         return label_bounds;
     }
 
-    // The capture button may be placed along the edge of a capture region if it
-    // cannot be placed in the middle. This enum represents the possible edges.
-    enum class Direction { kBottom, kTop, kLeft, kRight };
-
-    // Try placing the label slightly outside |capture_bounds|. The label will
-    // be |kCaptureButtonDistanceFromRegionDp| away from |capture_bounds| along
-    // one of the edges. The order we will try is bottom, top, left then right.
-    const std::vector<Direction> directions = {
-        Direction::kBottom, Direction::kTop, Direction::kLeft,
-        Direction::kRight};
-
-    // For each direction, start off with the label in the center of
-    // |capture_bounds| (matching centerpoints). We will shift the label to
-    // slighty outside |capture_bounds| for each direction.
-    gfx::Rect centered_label_bounds(preferred_size);
-    centered_label_bounds.set_x(capture_bounds.CenterPoint().x() -
-                                preferred_size.width() / 2);
-    centered_label_bounds.set_y(capture_bounds.CenterPoint().y() -
-                                preferred_size.height() / 2);
-    const int spacing = kCaptureButtonDistanceFromRegionDp;
-
-    // Try the directions in the preferred order. We will early out if one of
-    // them is viable.
-    for (Direction direction : directions) {
-      label_bounds = centered_label_bounds;
-
-      switch (direction) {
-        case Direction::kBottom:
-          label_bounds.set_y(capture_bounds.bottom() + spacing);
-          break;
-        case Direction::kTop:
-          label_bounds.set_y(capture_bounds.y() - spacing -
-                             preferred_size.height());
-          break;
-        case Direction::kLeft:
-          label_bounds.set_x(capture_bounds.x() - spacing -
-                             preferred_size.width());
-          break;
-        case Direction::kRight:
-          label_bounds.set_x(capture_bounds.right() + spacing);
-          break;
-      }
-
-      // If |label_bounds| does not overlap with |capture_bar_bounds| and is
-      // fully contained in root, we're good.
-      if (!label_bounds.Intersects(capture_bar_bounds) &&
-          root->bounds().Contains(label_bounds)) {
-        return label_bounds;
-      }
-    }
-
-    // Reaching here, we have not found a good edge to place the label at. The
-    // last attempt is to place it slightly above the capture bar.
-    label_bounds.set_size(preferred_size);
-    label_bounds.set_x(capture_bar_bounds.CenterPoint().x() -
-                       preferred_size.width() / 2);
-    label_bounds.set_y(capture_bar_bounds.y() -
-                       kCaptureButtonDistanceFromRegionDp -
-                       preferred_size.height());
-
-    return label_bounds;
+    return CalculateRegionEdgeBounds(preferred_size, capture_bar_bounds,
+                                     capture_bounds, root);
   };
 
   gfx::Rect bounds(current_root_->bounds());
@@ -2616,6 +2659,62 @@ bool CaptureModeSession::ShouldCaptureLabelHandleEvent(
 
   DCHECK(capture_label_view_);
   return capture_label_view_->ShouldHandleEvent();
+}
+
+// TODO(http://b/363069895): Upload strings for translation.
+void CaptureModeSession::UpdateActionContainerWidget() {
+  CHECK(features::IsSunfishFeatureEnabled());
+
+  if (!action_container_widget_) {
+    action_container_widget_ = std::make_unique<views::Widget>();
+    auto* parent = GetParentContainer(current_root_);
+    action_container_widget_->Init(
+        CreateWidgetParams(parent, gfx::Rect(), "ActionButtonsContainer"));
+
+    action_container_widget_->SetContentsView(
+        views::Builder<views::BoxLayoutView>()
+            .CopyAddressTo(&action_container_view_)
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetBetweenChildSpacing(kActionButtonSpacing)
+            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+            .SetCrossAxisAlignment(
+                views::BoxLayout::CrossAxisAlignment::kStretch)
+            .Build());
+
+    action_container_widget_->Show();
+  }
+
+  UpdateActionContainerWidgetBounds();
+}
+
+void CaptureModeSession::UpdateActionContainerWidgetBounds() {
+  DCHECK(action_container_widget_);
+
+  const gfx::Rect bounds = CalculateActionContainerWidgetBounds();
+  const gfx::Rect old_bounds =
+      action_container_widget_->GetNativeWindow()->GetBoundsInScreen();
+  if (old_bounds == bounds) {
+    return;
+  }
+
+  action_container_widget_->SetBounds(bounds);
+}
+
+gfx::Rect CaptureModeSession::CalculateActionContainerWidgetBounds() const {
+  DCHECK(action_container_widget_);
+
+  const gfx::Size preferred_size = action_container_view_->GetPreferredSize();
+  const gfx::Rect capture_bar_bounds =
+      action_container_widget_->GetNativeWindow()->bounds();
+
+  gfx::Rect bounds(current_root_->bounds());
+  const gfx::Rect capture_region = controller_->user_capture_region();
+  bounds = CalculateRegionEdgeBounds(preferred_size, capture_bar_bounds,
+                                     capture_region, current_root_);
+
+  // User capture bounds are in root window coordinates so convert them here.
+  wm::ConvertRectToScreen(current_root_, &bounds);
+  return bounds;
 }
 
 void CaptureModeSession::UpdateRootWindowDimmers() {

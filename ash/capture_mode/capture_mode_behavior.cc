@@ -304,6 +304,9 @@ class SunfishBehavior : public CaptureModeBehavior {
 
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldReShowUisAtPerformingCapture() const override { return true; }
+  bool ShouldShowCaptureButtonAfterRegionSelected() const override {
+    return false;
+  }
   const std::u16string GetCaptureLabelRegionText() const override {
     return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
   }
@@ -445,6 +448,10 @@ bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture() const {
   // of video recording, we need to reshow the UIs so that we can start the
   // 3-second count down animation.
   return CaptureModeController::Get()->type() != CaptureModeType::kImage;
+}
+
+bool CaptureModeBehavior::ShouldShowCaptureButtonAfterRegionSelected() const {
+  return true;
 }
 
 void CaptureModeBehavior::CreateCaptureFolder(
