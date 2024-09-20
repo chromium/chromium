@@ -73,9 +73,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -1964,7 +1966,11 @@ IN_PROC_BROWSER_TEST_P(DevToolsExtensionSidePanelTest,
   ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
 
   content::WebContents* side_panel_contents =
-      extensions::GetExtensionSidePanelWebContents(*browser(), extension->id());
+      browser()
+          ->GetFeatures()
+          .extension_side_panel_manager()
+          ->GetExtensionCoordinatorForTesting(extension->id())
+          ->GetHostWebContentsForTesting();
   ASSERT_TRUE(side_panel_contents);
   EXPECT_TRUE(content::WaitForLoadStop(side_panel_contents));
 

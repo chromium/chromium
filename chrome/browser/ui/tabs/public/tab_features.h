@@ -30,23 +30,27 @@ class WebContents;
 
 namespace customize_chrome {
 class SidePanelController;
-}
-
-namespace permissions {
-class PermissionIndicatorsTabData;
-}
+}  // namespace customize_chrome
 
 namespace enterprise_data_protection {
 class DataProtectionNavigationController;
-}
+}  // namespace enterprise_data_protection
 
-namespace user_annotations {
-class UserAnnotationsWebContentsObserver;
-}  // namespace user_annotations
+namespace extensions {
+class ExtensionSidePanelManager;
+}  // namespace extensions
+
+namespace permissions {
+class PermissionIndicatorsTabData;
+}  // namespace permissions
 
 namespace privacy_sandbox {
 class PrivacySandboxTabObserver;
 }  // namespace privacy_sandbox
+
+namespace user_annotations {
+class UserAnnotationsWebContentsObserver;
+}  // namespace user_annotations
 
 namespace tabs {
 
@@ -117,6 +121,10 @@ class TabFeatures {
     return privacy_sandbox_tab_observer_.get();
   }
 
+  extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
+    return extension_side_panel_manager_.get();
+  }
+
   // Called exactly once to initialize features.
   // Can be overridden in tests to initialize nothing.
   virtual void Init(TabInterface& tab, Profile* profile);
@@ -177,6 +185,11 @@ class TabFeatures {
 
   std::unique_ptr<privacy_sandbox::PrivacySandboxTabObserver>
       privacy_sandbox_tab_observer_;
+
+  // The tab-scoped extension side-panel manager. There is a separate
+  // window-scoped extension side-panel manager.
+  std::unique_ptr<extensions::ExtensionSidePanelManager>
+      extension_side_panel_manager_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

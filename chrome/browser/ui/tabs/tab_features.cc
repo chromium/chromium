@@ -138,8 +138,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
 
-    extensions::ExtensionSidePanelManager::CreateForTab(
-        profile, tab.GetContents(), side_panel_registry_.get());
+  extension_side_panel_manager_ =
+      std::make_unique<extensions::ExtensionSidePanelManager>(
+          profile, tab.GetContents(), side_panel_registry_.get());
 
   data_protection_controller_ = std::make_unique<
       enterprise_data_protection::DataProtectionNavigationController>(&tab);
@@ -198,8 +199,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   // scoped.
   side_panel_registry_->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
-    extensions::ExtensionSidePanelManager::GetForTabForTesting(old_contents)
-        ->WillDiscard();
+  extension_side_panel_manager_->WillDiscard();
+  extension_side_panel_manager_ =
+      std::make_unique<extensions::ExtensionSidePanelManager>(
+          Profile::FromBrowserContext(new_contents->GetBrowserContext()),
+          new_contents, side_panel_registry_.get());
 
   if (commerce_ui_tab_helper_) {
     commerce_ui_tab_helper_.reset();
@@ -224,9 +228,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab->GetContents());
   }
-    extensions::ExtensionSidePanelManager::CreateForTab(
-        Profile::FromBrowserContext(new_contents->GetBrowserContext()),
-        new_contents, side_panel_registry_.get());
 }
 
 }  // namespace tabs

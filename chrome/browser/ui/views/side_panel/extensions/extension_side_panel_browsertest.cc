@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -287,19 +288,23 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
                                  ContextMenuSource::kMenuItem));
   }
 
+  ExtensionSidePanelCoordinator* GetCoordinator(
+      const ExtensionId& extension_id,
+      content::WebContents* web_contents) {
+    auto* manager =
+        web_contents ? tabs::TabInterface::GetFromContents(web_contents)
+                           ->GetTabFeatures()
+                           ->extension_side_panel_manager()
+                     : browser()->GetFeatures().extension_side_panel_manager();
+    return manager->GetExtensionCoordinatorForTesting(extension_id);
+  }
+
   // Runs a script in the extension's side panel WebContents to retrieve the
   // value of document.sidePanelTemp.
   std::string GetGlobalVariableInExtensionSidePanel(
       const ExtensionId& extension_id,
       content::WebContents* web_contents) {
-    auto* extension_coordinator =
-        web_contents
-            ? extensions::ExtensionSidePanelManager::GetForTabForTesting(
-                  web_contents)
-                  ->GetExtensionCoordinatorForTesting(extension_id)
-            : extensions::ExtensionSidePanelManager::GetForBrowserForTesting(
-                  browser())
-                  ->GetExtensionCoordinatorForTesting(extension_id);
+    auto* extension_coordinator = GetCoordinator(extension_id, web_contents);
 
     static constexpr char kScript[] = R"(
       document.sidePanelTemp ? document.sidePanelTemp : 'undefined';
@@ -315,14 +320,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   void SetGlobalVariableInExtensionSidePanel(const ExtensionId& extension_id,
                                              content::WebContents* web_contents,
                                              const std::string& value) {
-    auto* extension_coordinator =
-        web_contents
-            ? extensions::ExtensionSidePanelManager::GetForTabForTesting(
-                  web_contents)
-                  ->GetExtensionCoordinatorForTesting(extension_id)
-            : extensions::ExtensionSidePanelManager::GetForBrowserForTesting(
-                  browser())
-                  ->GetExtensionCoordinatorForTesting(extension_id);
+    auto* extension_coordinator = GetCoordinator(extension_id, web_contents);
 
     std::string script =
         base::StringPrintf(R"(document.sidePanelTemp = "%s";)", value.c_str());
@@ -622,8 +620,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Path) {
       test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
   ASSERT_TRUE(extension);
   auto* extension_coordinator =
-      extensions::ExtensionSidePanelManager::GetForBrowserForTesting(browser())
-          ->GetExtensionCoordinatorForTesting(extension->id());
+      GetCoordinator(extension->id(), /*web_contents=*/nullptr);
 
   SidePanelEntry::Key extension_key = GetKey(extension->id());
   EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key));
@@ -687,8 +684,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, WindowCloseCalled) {
   }
 
   auto* extension_coordinator =
-      extensions::ExtensionSidePanelManager::GetForBrowserForTesting(browser())
-          ->GetExtensionCoordinatorForTesting(extension->id());
+      GetCoordinator(extension->id(), /*web_contents=*/nullptr);
 
   // Call window.close() from the extension's side panel page and wait for the
   // web contents to be destroyed.
@@ -758,9 +754,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
 
   auto* extension_coordinator =
-      extensions::ExtensionSidePanelManager::GetForTabForTesting(
-          active_web_contents)
-          ->GetExtensionCoordinatorForTesting(extension->id());
+      GetCoordinator(extension->id(), active_web_contents);
   content::WebContentsDestroyedWatcher destroyed_watcher(
       extension_coordinator->GetHostWebContentsForTesting());
   ASSERT_TRUE(
@@ -790,8 +784,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   }
 
   auto* extension_coordinator =
-      extensions::ExtensionSidePanelManager::GetForBrowserForTesting(browser())
-          ->GetExtensionCoordinatorForTesting(extension->id());
+      GetCoordinator(extension->id(), /*web_contents=*/nullptr);
 
   // Start showing another entry and call window.close() from the extension's
   // side panel page while the other entry is still loading but not shown. The
@@ -894,8 +887,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
       test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
   ASSERT_TRUE(extension);
   auto* extension_coordinator =
-      extensions::ExtensionSidePanelManager::GetForBrowserForTesting(browser())
-          ->GetExtensionCoordinatorForTesting(extension->id());
+      GetCoordinator(extension->id(), /*web_contents=*/nullptr);
 
   SidePanelEntry::Key extension_key = GetKey(extension->id());
   EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key));

@@ -20,11 +20,4 @@ void OpenExtensionSidePanel(Browser& browser, const ExtensionId& id) {
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, id));
 }
 
-content::WebContents* GetExtensionSidePanelWebContents(Browser& browser,
-                                                       const ExtensionId& id) {
-  return ExtensionSidePanelManager::GetForBrowserForTesting(&browser)
-      ->GetExtensionCoordinatorForTesting(id)
-      ->GetHostWebContentsForTesting();
-}
-
 }  // namespace extensions

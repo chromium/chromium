@@ -20,6 +20,7 @@ class ToastController;
 class ToastService;
 
 namespace extensions {
+class ExtensionSidePanelManager;
 class Mv2DisabledDialogController;
 }  // namespace extensions
 
@@ -127,6 +128,10 @@ class BrowserWindowFeatures {
     return send_tab_to_self_toolbar_bubble_controller_.get();
   }
 
+  extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
+    return extension_side_panel_manager_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -161,6 +166,11 @@ class BrowserWindowFeatures {
 
   raw_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<ToastService> toast_service_;
+
+  // The window-scoped extension side-panel manager. There is a separate
+  // tab-scoped extension side-panel manager.
+  std::unique_ptr<extensions::ExtensionSidePanelManager>
+      extension_side_panel_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

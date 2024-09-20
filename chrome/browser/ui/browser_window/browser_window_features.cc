@@ -27,7 +27,9 @@
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
+#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -157,6 +159,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // unified_side_panel_.
   side_panel_coordinator_ =
       std::make_unique<SidePanelCoordinator>(browser_view);
+  extension_side_panel_manager_ =
+      std::make_unique<extensions::ExtensionSidePanelManager>(
+          browser_view->browser(),
+          side_panel_coordinator_->GetWindowRegistry());
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {

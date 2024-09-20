@@ -58,11 +58,6 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
           /*include_runtime_checks=*/false)) {
     SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
   }
-
-    extensions::ExtensionSidePanelManager::CreateForBrowser(browser,
-                                                            window_registry);
-
-  return;
 }
 
 SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
