@@ -196,6 +196,8 @@ generate_jni("jni_headers") {
     "apk/src/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
     "apk/src/org/chromium/chromecast/shell/CastMetricsHelper.java",
   ]
+
+  deps = [ "//components/android_autofill/browser:jni_headers_features" ]
 }
 
 android_library("cast_shell_java") {
