@@ -348,7 +348,6 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
   if (!EnumPrinters(kFlags, nullptr, kLevel, printer_info_buffer.data(),
                     printer_info_buffer.size(), &bytes_needed,
                     &count_returned)) {
-    NOTREACHED_IN_MIGRATION();
     return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
   }
 
