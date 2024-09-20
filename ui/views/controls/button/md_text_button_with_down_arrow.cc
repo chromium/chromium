@@ -16,6 +16,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 
 namespace views {
+constexpr int kDropdownArrowSize = 20;
 
 MdTextButtonWithDownArrow::MdTextButtonWithDownArrow(PressedCallback callback,
                                                      const std::u16string& text)
@@ -28,7 +29,9 @@ MdTextButtonWithDownArrow::MdTextButtonWithDownArrow(PressedCallback callback,
   // Reduce padding between the drop arrow and the right border.
   const gfx::Insets original_padding = GetInsets();
   SetCustomPadding(
-      gfx::Insets::TLBR(original_padding.top(), original_padding.left(),
+      gfx::Insets::TLBR(original_padding.top(),
+                        LayoutProvider::Get()->GetDistanceMetric(
+                            DISTANCE_DROPDOWN_BUTTON_LEFT_MARGIN),
                         original_padding.bottom(),
                         LayoutProvider::Get()->GetDistanceMetric(
                             DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN)));
@@ -53,8 +56,8 @@ void MdTextButtonWithDownArrow::StateChanged(ButtonState old_state) {
 
 void MdTextButtonWithDownArrow::SetDropArrowImage() {
   SkColor drop_arrow_color = label()->GetEnabledColor();
-  auto drop_arrow_image =
-      ui::ImageModel::FromVectorIcon(kMenuDropArrowIcon, drop_arrow_color);
+  auto drop_arrow_image = ui::ImageModel::FromVectorIcon(
+      kArrowDropDownIcon, drop_arrow_color, kDropdownArrowSize);
   SetImageModel(Button::STATE_NORMAL, drop_arrow_image);
 }
 

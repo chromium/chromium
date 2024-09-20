@@ -91,6 +91,9 @@ enum DistanceMetric {
   // Width of the horizontal padding in a dropdown button between the down arrow
   // and the button's border.
   DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN,
+  // Width of the horizontal padding in a dropdown button between the button's
+  // left border and the label.
+  DISTANCE_DROPDOWN_BUTTON_LEFT_MARGIN,
   // Width of modal dialogs unless the content is too wide to make that
   // feasible.
   DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH,
