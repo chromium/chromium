@@ -18,10 +18,6 @@ AccountProfileMapper::AccountProfileMapper(
       profile_count_(profile_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   profile_index_per_gaia_id_ = [[NSMutableDictionary alloc] init];
-  if (!experimental_flags::DisplaySwitchProfile().has_value()) {
-    // Make sure we have only one profile when the flag is not enabled.
-    CHECK_EQ(profile_count_, 1ul);
-  }
   system_identity_manager_observation_.Observe(system_identity_manager);
 }
 
@@ -32,10 +28,6 @@ AccountProfileMapper::~AccountProfileMapper() {
 void AccountProfileMapper::AddObserver(AccountProfileMapper::Observer* observer,
                                        size_t profile_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!experimental_flags::DisplaySwitchProfile().has_value()) {
-    // Make sure we have only one profile when the flag is not enabled.
-    CHECK_EQ(profile_index, 0ul);
-  }
   observer_lists_per_profile_index_[profile_index].AddObserver(observer);
 }
 
@@ -55,10 +47,6 @@ void AccountProfileMapper::IterateOverIdentities(
     IdentityIteratorCallback callback,
     size_t profile_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!experimental_flags::DisplaySwitchProfile().has_value()) {
-    // Make sure we have only one profile when the flag is not enabled.
-    CHECK_EQ(profile_index, 0ul);
-  }
   std::set<size_t> profile_indexes_to_notify;
   auto manager_callback =
       base::BindRepeating(&AccountProfileMapper::ProcessIdentitiesForProfile,
@@ -254,24 +242,22 @@ void AccountProfileMapper::AddIdentityToProfile(
   CHECK(!profile_index_per_gaia_id_[identity.gaiaID]);
   CHECK(hosted_domain);
   size_t new_profile_index = 0;
-  // TODO(crbug.com/331783685): Need to make sure no cached hosted domain is
-  // nil, and no hosted domain is @"".
-  if (hosted_domain.length != 0) {
-    // This is a managed identity, so search for the next available profile
-    // index.
-    NSArray* all_profile_indexes = profile_index_per_gaia_id_.allValues;
-    do {
-      new_profile_index += 1;
-    } while ([all_profile_indexes containsObject:@(new_profile_index)]);
-    if (new_profile_index >= profile_count_) {
-      // No more profile available, so for now, the managed identity is added
-      // the personal profile.
-      new_profile_index = 0;
+  if (experimental_flags::DisplaySwitchProfile().has_value()) {
+    // TODO(crbug.com/331783685): Need to make sure no cached hosted domain is
+    // nil, and no hosted domain is @"".
+    if (hosted_domain.length != 0) {
+      // This is a managed identity, so search for the next available profile
+      // index.
+      NSArray* all_profile_indexes = profile_index_per_gaia_id_.allValues;
+      do {
+        new_profile_index += 1;
+      } while ([all_profile_indexes containsObject:@(new_profile_index)]);
+      if (new_profile_index >= profile_count_) {
+        // No more profile available, so for now, the managed identity is added
+        // the personal profile.
+        new_profile_index = 0;
+      }
     }
-  }
-  if (!experimental_flags::DisplaySwitchProfile().has_value()) {
-    // Make sure we have only one profile when the flag is not enabled.
-    CHECK_EQ(new_profile_index, 0ul);
   }
   profile_index_per_gaia_id_[identity.gaiaID] = @(new_profile_index);
   // Make sure observers for this profile will be notified for this new
