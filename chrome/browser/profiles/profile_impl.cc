@@ -487,13 +487,6 @@ ProfileImpl::ProfileImpl(
   // Register on BrowserContext.
   user_prefs::UserPrefs::Set(this, prefs_.get());
 
-#if BUILDFLAG(IS_ANDROID)
-  // On Android StartupData creates proto database provider for the profile
-  // before profile is created, so move ownership to storage partition.
-  GetDefaultStoragePartition()->SetProtoDatabaseProvider(
-      startup_data->TakeProtoDatabaseProvider());
-#endif
-
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1134,6 +1127,13 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
     DCHECK(extension_prefs);
     extension_prefs->MigrateObsoleteExtensionPrefs();
   }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android StartupData creates proto database provider for the profile
+  // before profile is created, so move ownership to storage partition.
+  GetDefaultStoragePartition()->SetProtoDatabaseProvider(
+      g_browser_process->startup_data()->TakeProtoDatabaseProvider());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
