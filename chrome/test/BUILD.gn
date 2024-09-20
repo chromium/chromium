@@ -9504,7 +9504,7 @@ test("unit_tests") {
     sources += [
       "../browser/lifetime/switch_utils_unittest.cc",
       "../browser/profiles/profile_list_desktop_unittest.cc",
-      "../browser/profiles/profile_statistics_unittest.cc",
+      "../browser/profiles/profile_statistics_aggregator_unittest.cc",
       "../browser/ui/profiles/profile_colors_util_unittest.cc",
     ]
   }
