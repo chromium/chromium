@@ -31,6 +31,34 @@ consoles.list_view(
 )
 
 try_.builder(
+    name = "android-desktop-arm64-clobber-rel",
+    mirrors = [
+        "ci/android-desktop-arm64-archive-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-arm64-archive-rel",
+            "release_try_builder",
+            "chrome_with_codecs",
+        ],
+    ),
+)
+
+try_.builder(
+    name = "android-desktop-x64-clobber-rel",
+    mirrors = [
+        "ci/android-desktop-x64-archive-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-x64-archive-rel",
+            "release_try_builder",
+            "chrome_with_codecs",
+        ],
+    ),
+)
+
+try_.builder(
     name = "android-desktop-arm64-compile-rel",
     mirrors = [
         "ci/android-desktop-arm64-compile-rel",
