@@ -97,6 +97,15 @@ class AddressDataManagerTest : public testing::Test {
     run_loop.Run();
   }
 
+  // Add and remove a dummy profile to use `WaitForOnAddressDataChanged`
+  // if we do not expect a change to happen.
+  void WaitForDummyDataChanged() {
+    const AutofillProfile kDummyProfile = test::GetFullProfile2();
+    AddProfileToAddressDataManager(kDummyProfile);
+    address_data_manager().RemoveProfile(kDummyProfile.guid());
+    WaitForOnAddressDataChanged();
+  }
+
   void ResetAddressDataManager(bool use_sync_transport_mode = false) {
     address_data_manager_.reset();
     MakePrimaryAccountAvailable(use_sync_transport_mode, identity_test_env_,
@@ -1204,6 +1213,155 @@ TEST_F(AddressDataManagerTest, ChangeCallbackIsTriggeredOnAddedProfile) {
   EXPECT_CALL(callback, Run);
   address_data_manager().AddChangeCallback(callback.Get());
   AddProfileToAddressDataManager(test::GetFullProfile());
+}
+
+TEST_F(AddressDataManagerTest, MigrateProfileToAccountWhenReady) {
+  const AutofillProfile kLocalProfile = test::GetFullProfile();
+  ASSERT_EQ(kLocalProfile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
+  AddProfileToAddressDataManager(kLocalProfile);
+
+  address_data_manager().MigrateProfileToAccountWhenReady(kLocalProfile);
+  WaitForOnAddressDataChanged();
+  const std::vector<const AutofillProfile*> profiles =
+      address_data_manager().GetProfiles();
+
+  // `kLocalProfile` should be gone and only the migrated account profile should
+  // exist.
+  ASSERT_EQ(profiles.size(), 1u);
+  const AutofillProfile kAccountProfile = *profiles[0];
+  EXPECT_EQ(kAccountProfile.record_type(),
+            AutofillProfile::RecordType::kAccount);
+  EXPECT_NE(kLocalProfile.guid(), kAccountProfile.guid());
+  EXPECT_EQ(kLocalProfile.Compare(kAccountProfile), 0);
+}
+
+TEST_F(AddressDataManagerTest, ProfileToMigrateWasDeleted) {
+  const AutofillProfile kLocalProfile = test::GetFullProfile();
+  ASSERT_EQ(kLocalProfile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
+  AddProfileToAddressDataManager(kLocalProfile);
+  address_data_manager().RemoveProfile(kLocalProfile.guid());
+  WaitForOnAddressDataChanged();
+
+  address_data_manager().MigrateProfileToAccountWhenReady(kLocalProfile);
+  WaitForDummyDataChanged();
+
+  // There should be no more profiles saved.
+  EXPECT_EQ(address_data_manager().GetProfiles().size(), 0u);
+}
+
+TEST_F(AddressDataManagerTest, ProfileToMigrateWasEdited) {
+  AutofillProfile local_profile = test::GetFullProfile();
+  ASSERT_EQ(local_profile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
+  AddProfileToAddressDataManager(local_profile);
+
+  // Make an update to the profile.
+  local_profile.set_profile_label("new label");
+  UpdateProfileOnAddressDataManager(local_profile);
+
+  address_data_manager().MigrateProfileToAccountWhenReady(local_profile);
+  WaitForOnAddressDataChanged();
+  const std::vector<const AutofillProfile*> profiles =
+      address_data_manager().GetProfiles();
+
+  // `local_profile` should be gone and only the edited migrated account profile
+  // should exist.
+  ASSERT_EQ(profiles.size(), 1u);
+  const AutofillProfile kAccountProfile = *profiles[0];
+  EXPECT_EQ(kAccountProfile.record_type(),
+            AutofillProfile::RecordType::kAccount);
+  EXPECT_NE(local_profile.guid(), kAccountProfile.guid());
+  EXPECT_EQ(local_profile.Compare(kAccountProfile), 0);
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(AddressDataManagerTest, ProfileNotMigratedWhenNotSignedIn) {
+  identity_test_env_.ClearPrimaryAccount();
+
+  const AutofillProfile kLocalProfile = test::GetFullProfile();
+  ASSERT_EQ(kLocalProfile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
+  AddProfileToAddressDataManager(kLocalProfile);
+
+  address_data_manager().MigrateProfileToAccountWhenReady(kLocalProfile);
+  WaitForDummyDataChanged();
+
+  const std::vector<const AutofillProfile*> profiles =
+      address_data_manager().GetProfiles();
+
+  // The address should remain in local store.
+  ASSERT_EQ(profiles.size(), 1u);
+  const AutofillProfile kStoredProfile = *profiles[0];
+  EXPECT_EQ(kStoredProfile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
+  EXPECT_EQ(kLocalProfile.guid(), kStoredProfile.guid());
+  EXPECT_EQ(kLocalProfile.Compare(kStoredProfile), 0);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+TEST_F(AddressDataManagerTest, ProfileNotMigratedWhenDuplicateExists) {
+  const AutofillProfile kLocalProfile = test::GetFullProfile();
+  AutofillProfile account_profile = test::GetFullProfile();
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+
+  ASSERT_EQ(kLocalProfile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
+  ASSERT_EQ(account_profile.record_type(),
+            AutofillProfile::RecordType::kAccount);
+
+  AddProfileToAddressDataManager(account_profile);
+  AddProfileToAddressDataManager(kLocalProfile);
+
+  ASSERT_EQ(address_data_manager().GetProfiles().size(), 2u);
+
+  address_data_manager().MigrateProfileToAccountWhenReady(kLocalProfile);
+  WaitForOnAddressDataChanged();
+
+  const std::vector<const AutofillProfile*> profiles =
+      address_data_manager().GetProfiles();
+
+  // `kLocalProfile` should have been deleted and `account_profile` remains in
+  // account store.
+  ASSERT_EQ(profiles.size(), 1u);
+  const AutofillProfile kAccountProfile = *profiles[0];
+  EXPECT_EQ(kAccountProfile.record_type(),
+            AutofillProfile::RecordType::kAccount);
+  EXPECT_EQ(account_profile.guid(), kAccountProfile.guid());
+  EXPECT_NE(kLocalProfile.guid(), kAccountProfile.guid());
+  EXPECT_EQ(account_profile.Compare(kAccountProfile), 0);
+}
+
+TEST_F(AddressDataManagerTest, WaitForSyncServiceForMigration) {
+  const AutofillProfile kLocalProfile = test::GetFullProfile();
+  sync_service_.SetPersistentAuthError();
+  ASSERT_FALSE(sync_service_.GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+
+  ASSERT_EQ(kLocalProfile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
+  AddProfileToAddressDataManager(kLocalProfile);
+
+  address_data_manager().MigrateProfileToAccountWhenReady(kLocalProfile);
+  WaitForDummyDataChanged();
+
+  // Resolve the sync service error so that the migration takes place.
+  sync_service_.ClearAuthError();
+  sync_service_.FireStateChanged();
+  WaitForOnAddressDataChanged();
+
+  const std::vector<const AutofillProfile*> profiles =
+      address_data_manager().GetProfiles();
+
+  // `kLocalProfile` should be gone and only the migrated account profile should
+  // exist.
+  ASSERT_EQ(profiles.size(), 1u);
+  const AutofillProfile kAccountProfile = *profiles[0];
+  EXPECT_EQ(kAccountProfile.record_type(),
+            AutofillProfile::RecordType::kAccount);
+  EXPECT_NE(kLocalProfile.guid(), kAccountProfile.guid());
+  EXPECT_EQ(kLocalProfile.Compare(kAccountProfile), 0);
 }
 
 }  // namespace

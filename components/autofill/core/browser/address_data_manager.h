@@ -31,6 +31,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
 namespace signin {
@@ -63,7 +64,8 @@ class ContactInfoPreconditionChecker;
 // was posted before the add operation has finished, the remove would
 // incorrectly get rejected by the ADM.
 class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
-                           public WebDataServiceConsumer {
+                           public WebDataServiceConsumer,
+                           public syncer::SyncServiceObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -175,6 +177,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // `profile` (the kLocalOrSyncable one) will not be available in the
   // AddressDataManager anymore once the migrating has finished.
   void MigrateProfileToAccount(const AutofillProfile& profile);
+
+  // Migrates a given kLocalOrSyncable `profile` to kAccount when `CONTACT_INFO`
+  // is available.
+  void MigrateProfileToAccountWhenReady(const AutofillProfile& profile);
 
   // Asynchronously loads all `AutofillProfile`s (from all record types) into
   // the class's state. See `synced_local_profiles_` and `account_profiles_`.
@@ -390,6 +396,20 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Called when `prefs::kAutofillProfileEnabled` changed.
   void OnAutofillProfilePrefChanged();
 
+  // syncer::SyncServiceObserver override:
+  // Checks if `CONTACT_INFO` is available yet in the data types. If
+  // `MigrateProfileToAccountWhenReady()` has been called before, it will
+  // call `TryMigrateProfilesToAccount()`.
+  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
+
+  void ResetSyncServiceObserver();
+
+  // If the profiles corresponding to the GUIDs in in
+  // `profile_guids_to_migrate_` are valid, trigger their migration by passing
+  // them to `MigrateProfileToAccount()`.
+  void TryMigrateProfilesToAccount();
+
   base::ObserverList<Observer> observers_;
 
   std::unique_ptr<ContactInfoPreconditionChecker>
@@ -415,6 +435,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   base::ScopedObservation<AutofillWebDataService,
                           AutofillWebDataServiceObserverOnUISequence>
       webdata_service_observer_{this};
+
+  // Activated upon `MigrateProfileToAccountWhenReady()`.
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observer_{this};
 
   // A timely ordered list of ongoing changes for each profile.
   std::unordered_map<std::string, std::deque<QueuedAutofillProfileChange>>
@@ -463,6 +487,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   bool auto_accept_address_imports_for_testing_ = false;
 
   const std::string app_locale_;
+
+  // GUIDs that are temporarily saved through
+  // `MigrateProfileToAccountWhenReady()`. They will be migrated to account
+  // storage and this vector cleared once `CONTACT_INFO` is available in the
+  // sync data types.
+  base::flat_set<std::string> profile_guids_to_migrate_;
 
   base::WeakPtrFactory<AddressDataManager> weak_factory_{this};
 };
