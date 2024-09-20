@@ -1879,7 +1879,7 @@ void LockContentsView::OnAuthenticate(bool auth_success,
     }
 
     if (display_error_messages) {
-      ShowAuthErrorMessage();
+      ShowAuthErrorMessage(authenticated_by_pin);
     }
   }
 }
@@ -2078,7 +2078,7 @@ LoginBigUserView* LockContentsView::CurrentBigUserView() {
   return primary_big_view_;
 }
 
-void LockContentsView::ShowAuthErrorMessage() {
+void LockContentsView::ShowAuthErrorMessage(bool authenticated_by_pin) {
   LoginBigUserView* big_view = CurrentBigUserView();
   if (!big_view->auth_user()) {
     return;
@@ -2099,7 +2099,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   auth_error_bubble_->ShowAuthError(
       /*anchor_view = */ big_view->auth_user()->GetActiveInputView(),
       /*unlock_attempt = */ unlock_attempt,
-      /*show_pin = */ user_state->show_pin,
+      /*authenticated_by_pin = */ authenticated_by_pin,
       /*is_login_screen = */ screen_type_ == LockScreen::ScreenType::kLogin);
 }
 

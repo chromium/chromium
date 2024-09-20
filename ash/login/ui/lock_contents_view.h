@@ -326,7 +326,7 @@ class ASH_EXPORT LockContentsView
   LoginBigUserView* CurrentBigUserView();
 
   // Opens an error bubble to indicate authentication failure.
-  void ShowAuthErrorMessage();
+  void ShowAuthErrorMessage(bool authenticated_by_pin);
 
   // Hides the error bubble indicating authentication failure if open.
   void HideAuthErrorMessage();
