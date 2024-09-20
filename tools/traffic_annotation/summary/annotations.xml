@@ -99,7 +99,7 @@ Refer to README.md for content description and update process.
  <item id="gcm_registration" added_in_milestone="62" content_hash_code="06c679e8" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/registration_request.cc" />
  <item id="gcm_unregistration" added_in_milestone="62" content_hash_code="01cbf67f" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/unregistration_request.cc" />
  <item id="geo_language_provider" added_in_milestone="65" type="partial" second_id="network_location_request" content_hash_code="03e4d160" os_list="linux,windows,chromeos,android" semantics_fields="1" policy_fields="3,4" file_path="components/language/content/browser/geo_language_provider.cc" />
- <item id="heartbeat_sender" added_in_milestone="86" content_hash_code="07dd0efd" os_list="linux,windows,chromeos" file_path="remoting/host/heartbeat_sender.cc" />
+ <item id="heartbeat_sender" added_in_milestone="86" content_hash_code="07dd0efd" os_list="windows,chromeos,linux" file_path="remoting/host/heartbeat_sender.cc" />
  <item id="hintsfetcher_gethintsrequest" added_in_milestone="75" content_hash_code="04bb400f" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/hints_fetcher.cc" />
  <item id="history_notice_utils_notice" added_in_milestone="62" type="partial" second_id="web_history_service" content_hash_code="07cc4c62" os_list="linux,windows,chromeos,android" semantics_fields="2,3,4" policy_fields="4" file_path="components/browsing_data/core/history_notice_utils.cc" />
  <item id="history_notice_utils_popup" added_in_milestone="62" type="partial" second_id="web_history_service" content_hash_code="01d3338e" os_list="linux,windows,chromeos,android" semantics_fields="2,3,4" policy_fields="4" file_path="components/browsing_data/core/history_notice_utils.cc" />
@@ -486,4 +486,6 @@ Refer to README.md for content description and update process.
  <item id="digital_asset_links_include" added_in_milestone="130" content_hash_code="05cd869e" os_list="android" file_path="android_webview/browser/aw_asset_domain_list_include_handler.cc" />
  <item id="remoting_cloud_send_heartbeat" added_in_milestone="131" content_hash_code="07e72ee4" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
  <item id="remoting_cloud_update_remote_access_host" added_in_milestone="131" content_hash_code="0628eb6e" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="remoting_directory_legacy_heartbeat" added_in_milestone="131" content_hash_code="00a4acfc" os_list="linux,windows,android,chromeos" file_path="remoting/base/directory_service_client.cc" />
+ <item id="remoting_directory_send_heartbeat" added_in_milestone="131" content_hash_code="02120f68" os_list="linux,windows,android,chromeos" file_path="remoting/base/directory_service_client.cc" />
 </annotations>
