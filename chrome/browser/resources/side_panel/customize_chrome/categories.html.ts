@@ -56,14 +56,16 @@ export function getHtml(this: CategoriesElement) {
     ${this.collections_.map((item, index) => html`
       <div class="tile collection" tabindex="0" role="button"
           data-index="${index}" @click="${this.onCollectionClick_}"
-          aria-current="${this.isCollectionSelected_(item.id)}">
+          aria-current="${this.isCollectionSelected_(item.id)}"
+          ?hidden="${!this.shouldShowCollection_(item.imageVerified)}">
         <customize-chrome-check-mark-wrapper
             ?checked="${this.isCollectionSelected_(item.id)}">
           <div class="image-container">
-            <img is="cr-auto-img"
+            <img is="cr-auto-img" data-index="${index}"
                 auto-src="${item.previewImageUrl.url}"
                 draggable="false"
-                @load="${this.onPreviewImageLoad_}">
+                @load="${this.onPreviewImageLoad_}"
+                @error="${this.onPreviewImageError_}">
             </img>
           </div>
         </customize-chrome-check-mark-wrapper>

@@ -275,6 +275,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
               ntp_features::kCustomizeChromeWallpaperSearchButton));
   source->AddBoolean("toolbarCustomizationEnabled",
                      base::FeatureList::IsEnabled(features::kToolbarPinning));
+  source->AddBoolean("imageErrorDetectionEnabled",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpBackgroundImageErrorDetection));
 
   webui::SetupWebUIDataSource(
       source,

@@ -15,6 +15,7 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import type {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -90,6 +91,8 @@ export class CategoriesElement extends CategoriesElementBase {
   protected isWallpaperSearchSelected_: boolean = false;
   protected wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
+  protected imageErrorDetectionEnabled_: boolean =
+      loadTimeData.getBoolean('imageErrorDetectionEnabled');
 
   private pageHandler_: CustomizeChromePageHandlerInterface;
   private previewImageLoadStartEpoch_: number;
@@ -162,7 +165,17 @@ export class CategoriesElement extends CategoriesElementBase {
     }
   }
 
-  protected onPreviewImageLoad_() {
+  protected shouldShowCollection_(itemLoaded: boolean) {
+    return !this.imageErrorDetectionEnabled_ || itemLoaded;
+  }
+
+  protected onPreviewImageLoad_(e: Event) {
+    if (this.imageErrorDetectionEnabled_) {
+      const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+      assert(this.collections_[index]);
+      this.collections_[index].imageVerified = true;
+      this.requestUpdate();
+    }
     chrome.metricsPrivate.recordValue(
         {
           metricName: 'NewTabPage.Images.ShownTime.CollectionPreviewImage',
@@ -174,6 +187,22 @@ export class CategoriesElement extends CategoriesElementBase {
         Math.floor(
             WindowProxy.getInstance().now() -
             this.previewImageLoadStartEpoch_));
+  }
+
+  protected onPreviewImageError_(e: Event) {
+    if (!this.imageErrorDetectionEnabled_) {
+      return;
+    }
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    assert(this.collections_[index]);
+    this.pageHandler_
+        .getReplacementCollectionPreviewImage(this.collections_[index].id)
+        .then(({previewImageUrl}) => {
+          if (previewImageUrl) {
+            this.collections_[index]!.previewImageUrl = previewImageUrl;
+            this.requestUpdate();
+          }
+        });
   }
 
   private computeSelectedCategory_() {

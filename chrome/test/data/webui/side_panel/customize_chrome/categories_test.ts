@@ -11,12 +11,13 @@ import type {BackgroundCollection, CustomizeChromePageRemote} from 'chrome://cus
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
+import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
@@ -27,6 +28,7 @@ function createTestCollections(length: number): BackgroundCollection[] {
       id: `${i}`,
       label: `collection_${i}`,
       previewImageUrl: {url: `https://collection-${i}.jpg`},
+      imageVerified: false,
     });
   }
   return testCollections;
@@ -43,9 +45,17 @@ suite('CategoriesTest', () => {
     handler.setResultFor('getBackgroundCollections', Promise.resolve({
       collections: createTestCollections(numCollections),
     }));
+    if (loadTimeData.getBoolean('imageErrorDetectionEnabled')) {
+      handler.setResultMapperFor(
+          'getReplacementCollectionPreviewImage', (collectionId: string) => {
+            return Promise.resolve({
+              previewImageUrl: {url: `https://replaced-${collectionId}.jpg`},
+            });
+          });
+    }
     categoriesElement = document.createElement('customize-chrome-categories');
     document.body.appendChild(categoriesElement);
-    await handler.whenCalled('getBackgroundCollections');
+    await microtasksFinished();
   }
 
   setup(async () => {
@@ -62,23 +72,90 @@ suite('CategoriesTest', () => {
   });
 
   test('hide collection elements when collections empty', async () => {
-    await setInitialSettings(0);
+    const numCollections = 0;
+    await setInitialSettings(numCollections);
 
     const collections =
         categoriesElement.shadowRoot!.querySelectorAll('.collection');
-    assertEquals(0, collections.length);
+    assertEquals(numCollections, collections.length);
   });
 
-  test('creating element shows background collection tiles', async () => {
-    await setInitialSettings(2);
+  [true, false].forEach((errorDetectionEnabled) => {
+    suite(`ImageErrorDetectionEnabled_${errorDetectionEnabled}`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          imageErrorDetectionEnabled: errorDetectionEnabled,
+        });
+      });
 
-    const collections =
-        categoriesElement.shadowRoot!.querySelectorAll('.collection');
-    assertEquals(2, collections.length);
-    assertEquals(
-        'collection_1', collections[0]!.querySelector('.label')!.textContent);
-    assertEquals(
-        'collection_2', collections[1]!.querySelector('.label')!.textContent);
+      test('collection visibility based on error detection', async () => {
+        const numCollections = 2;
+        await setInitialSettings(numCollections);
+
+        const collections =
+            categoriesElement.shadowRoot!.querySelectorAll('.collection');
+        assertEquals(numCollections, collections.length);
+        if (!errorDetectionEnabled) {
+          assertTrue(isVisible(collections[0]!));
+          assertTrue(isVisible(collections[1]!));
+        } else {
+          // Images have yet to be verified, so they should be hidden.
+          assertFalse(isVisible(collections[0]!));
+          assertFalse(isVisible(collections[1]!));
+        }
+        assertEquals(
+            'collection_1',
+            collections[0]!.querySelector('.label')!.textContent);
+        assertEquals(
+            'collection_2',
+            collections[1]!.querySelector('.label')!.textContent);
+      });
+
+      test('collection image src based on error detection', async () => {
+        const numCollections = 2;
+        await setInitialSettings(numCollections);
+
+        const collections =
+            categoriesElement.shadowRoot!.querySelectorAll<HTMLElement>(
+                '.collection');
+        assertEquals(numCollections, collections.length);
+        const img1 = collections[0]!.querySelector<CrAutoImgElement>('img');
+        const img2 = collections[1]!.querySelector<CrAutoImgElement>('img');
+        assertTrue(!!img1);
+        assertTrue(!!img2);
+
+        await microtasksFinished();
+        if (!errorDetectionEnabled) {
+          assertEquals('https://collection-1.jpg', img1.autoSrc);
+          assertEquals('https://collection-2.jpg', img2.autoSrc);
+        } else {
+          assertEquals('https://replaced-1.jpg', img1.autoSrc);
+          assertEquals('https://replaced-2.jpg', img2.autoSrc);
+        }
+      });
+
+      test('collections surface if their images load', async () => {
+        await setInitialSettings(1);
+        await microtasksFinished();
+        const collection = $$(categoriesElement, '.collection');
+        assertTrue(!!collection);
+        const img1 = collection!.querySelector<CrAutoImgElement>('img');
+        assertTrue(!!img1);
+
+        if (errorDetectionEnabled) {
+          assertFalse(isVisible(collection));
+        }
+
+        img1.dispatchEvent(new Event('load'));
+
+        await microtasksFinished();
+        assertTrue(isVisible(collection));
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.Images.ShownTime.CollectionPreviewImage'));
+      });
+    });
   });
 
   test('collection preview images create metrics when loaded', async () => {

@@ -95,6 +95,8 @@ class NtpBackgroundServiceTest : public testing::Test,
     return &test_url_loader_factory_;
   }
 
+  // TODO(b:367699101) - Remove test parameters once image error
+  // detection logic is initiated solely in the frontend.
   bool BackgroundImageErrorDetectionEnabled() const { return GetParam(); }
 
  protected:
@@ -183,10 +185,6 @@ TEST_P(NtpBackgroundServiceTest, GoodCollectionsResponse) {
 
   SetUpResponseWithData(service()->GetCollectionsLoadURLForTesting(),
                         response_string);
-  if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(
-        GURL(collection.preview(0).image_url() + GetThumbnailImageOptions()));
-  }
 
   ASSERT_TRUE(service()->collection_info().empty());
 
@@ -209,15 +207,8 @@ TEST_P(NtpBackgroundServiceTest, BrokenCollectionPreviewImageHasNoReplacement) {
   ntp::background::Collection collection;
   collection.set_collection_id("shapes");
   collection.set_collection_name("Shapes");
-  collection.add_preview()->set_image_url(kTestImageUrl);
-  ntp::background::GetCollectionsResponse response;
-  *response.add_collections() = collection;
-  std::string response_string;
-  response.SerializeToString(&response_string);
 
-  SetUpResponseWithData(service()->GetCollectionsLoadURLForTesting(),
-                        response_string);
-  // Set up for when BackgroundImageErrorDetectionEnabled is true.
+  // Add fake image to collection that produces a network error when accessed.
   ntp::background::Image image;
   image.set_asset_id(12345);
   image.set_image_url("https://wallpapers.co/some_other_image");
@@ -226,152 +217,72 @@ TEST_P(NtpBackgroundServiceTest, BrokenCollectionPreviewImageHasNoReplacement) {
   *image_response.add_images() = image;
   std::string image_response_string;
   image_response.SerializeToString(&image_response_string);
-  if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithData(service()->GetImagesURLForTesting(),
-                          image_response_string);
-    SetUpResponseWithNetworkError(
-        GURL(collection.preview(0).image_url() + GetThumbnailImageOptions()));
-    SetUpResponseWithNetworkError(
-        GURL(image.image_url() + GetThumbnailImageOptions()));
-  }
+  SetUpResponseWithData(service()->GetImagesURLForTesting(),
+                        image_response_string);
+  SetUpResponseWithNetworkError(
+      GURL(image.image_url() + GetThumbnailImageOptions()));
 
-  ASSERT_TRUE(service()->collection_info().empty());
+  base::RunLoop run_loop;
+  auto replacement_image_callback = base::BindLambdaForTesting(
+      [&](const std::optional<GURL>& replacement_image_url) {
+        EXPECT_FALSE(replacement_image_url.has_value());
+        run_loop.Quit();
+      });
+  service()->FetchReplacementCollectionPreviewImage(
+      collection.collection_id(), std::move(replacement_image_callback));
+  run_loop.Run();
 
-  EXPECT_CALL(observer_, OnCollectionInfoAvailable).Times(1);
-  service()->FetchCollectionInfo();
-  base::RunLoop().RunUntilIdle();
-
-  CollectionInfo collection_info;
-  collection_info.collection_id = collection.collection_id();
-  collection_info.collection_name = collection.collection_name();
-  collection_info.preview_image_url =
-      GURL(collection.preview(0).image_url() + GetThumbnailImageOptions());
-  if (BackgroundImageErrorDetectionEnabled()) {
-    EXPECT_TRUE(service()->collection_info().empty());
-    histogram_tester_.ExpectTotalCount(
-        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 1);
-    ASSERT_EQ(1,
-              histogram_tester_.GetBucketCount(
-                  "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
-                  NtpImageType::kCollections));
-    ASSERT_EQ(2, histogram_tester_.GetBucketCount(
-                     "NewTabPage.BackgroundService.Images.Headers.StatusCode",
-                     net::HTTP_NOT_FOUND));
-  } else {
-    EXPECT_FALSE(service()->collection_info().empty());
-    EXPECT_THAT(service()->collection_info().at(0), Eq(collection_info));
-    EXPECT_EQ(service()->collection_error_info().error_type, ErrorType::NONE);
-  }
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 1);
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
+                   NtpImageType::kCollections));
 }
 
 TEST_P(NtpBackgroundServiceTest, BrokenCollectionPreviewImageHasReplacement) {
   ntp::background::Collection collection;
   collection.set_collection_id("shapes");
   collection.set_collection_name("Shapes");
-  collection.add_preview()->set_image_url(kTestImageUrl);
-  ntp::background::GetCollectionsResponse response;
-  *response.add_collections() = collection;
-  std::string response_string;
-  response.SerializeToString(&response_string);
 
-  SetUpResponseWithData(service()->GetCollectionsLoadURLForTesting(),
-                        response_string);
-
-  // Set up for when BackgroundImageErrorDetectionEnabled is true.
-  ntp::background::Image image;
-  image.set_asset_id(12345);
-  image.set_image_url("https://wallpapers.co/some_other_image");
-  image.add_attribution()->set_text("different attribution text");
+  // Add image to collection that produces a network success when accessed.
+  ntp::background::Image image_1;
+  image_1.set_asset_id(12345);
+  image_1.set_image_url("https://wallpapers.co/some_image");
+  image_1.add_attribution()->set_text("attribution text");
   ntp::background::GetImagesInCollectionResponse image_response;
-  *image_response.add_images() = image;
+  *image_response.add_images() = image_1;
+  ntp::background::Image image_2;
+  image_2.set_asset_id(23451);
+  image_2.set_image_url("https://wallpapers.co/some_other_image");
+  image_2.add_attribution()->set_text("different attribution text");
+  *image_response.add_images() = image_2;
   std::string image_response_string;
   image_response.SerializeToString(&image_response_string);
-  if (BackgroundImageErrorDetectionEnabled()) {
     SetUpResponseWithData(service()->GetImagesURLForTesting(),
                           image_response_string);
     SetUpResponseWithNetworkError(
-        GURL(collection.preview(0).image_url() + GetThumbnailImageOptions()));
+        GURL(image_1.image_url() + GetThumbnailImageOptions()));
     SetUpResponseWithNetworkSuccess(
-        GURL(image.image_url() + GetThumbnailImageOptions()));
-  }
+        GURL(image_2.image_url() + GetThumbnailImageOptions()));
 
-  ASSERT_TRUE(service()->collection_info().empty());
+    base::RunLoop run_loop;
+    auto replacement_image_callback = base::BindLambdaForTesting(
+        [&](const std::optional<GURL>& replacement_image_url) {
+          EXPECT_TRUE(replacement_image_url.has_value());
+          EXPECT_EQ(replacement_image_url.value(),
+                    GURL(image_2.image_url() + GetThumbnailImageOptions()));
+          run_loop.Quit();
+        });
+    service()->FetchReplacementCollectionPreviewImage(
+        collection.collection_id(), std::move(replacement_image_callback));
+    run_loop.Run();
 
-  EXPECT_CALL(observer_, OnCollectionInfoAvailable).Times(1);
-  service()->FetchCollectionInfo();
-  base::RunLoop().RunUntilIdle();
-
-  CollectionInfo collection_info;
-  collection_info.collection_id = collection.collection_id();
-  collection_info.collection_name = collection.collection_name();
-  collection_info.preview_image_url =
-      GURL(collection.preview(0).image_url() + GetThumbnailImageOptions());
-
-  CollectionInfo updated_collection_info;
-  updated_collection_info = collection_info;
-  updated_collection_info.preview_image_url =
-      GURL(image.image_url() + GetThumbnailImageOptions());
-
-  EXPECT_FALSE(service()->collection_info().empty());
-  EXPECT_EQ(service()->collection_error_info().error_type, ErrorType::NONE);
-
-  if (BackgroundImageErrorDetectionEnabled()) {
-    EXPECT_FALSE(service()->collection_info().empty());
-    EXPECT_THAT(service()->collection_info().at(0),
-                Eq(updated_collection_info));
-  } else {
-    EXPECT_FALSE(service()->collection_info().empty());
-    EXPECT_THAT(service()->collection_info().at(0), Eq(collection_info));
-  }
-}
-
-TEST_P(NtpBackgroundServiceTest, CollectionHasNoPreviewImage) {
-  ntp::background::Collection shapes_collection;
-  shapes_collection.set_collection_id("shapes");
-  shapes_collection.set_collection_name("Shapes");
-  shapes_collection.add_preview()->set_image_url(kTestImageUrl);
-
-  ntp::background::Collection colors_collection;
-  colors_collection.set_collection_id("colors");
-  colors_collection.set_collection_name("Colors");
-
-  ntp::background::GetCollectionsResponse response;
-  *response.add_collections() = shapes_collection;
-  *response.add_collections() = colors_collection;
-  std::string response_string;
-  response.SerializeToString(&response_string);
-
-  SetUpResponseWithData(service()->GetCollectionsLoadURLForTesting(),
-                        response_string);
-  if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(GURL(
-        shapes_collection.preview(0).image_url() + GetThumbnailImageOptions()));
-  }
-
-  ASSERT_TRUE(service()->collection_info().empty());
-
-  EXPECT_CALL(observer_, OnCollectionInfoAvailable).Times(1);
-  service()->FetchCollectionInfo();
-  base::RunLoop().RunUntilIdle();
-
-  CollectionInfo shapes_collection_info;
-  shapes_collection_info.collection_id = shapes_collection.collection_id();
-  shapes_collection_info.collection_name = shapes_collection.collection_name();
-  shapes_collection_info.preview_image_url = GURL(
-      shapes_collection.preview(0).image_url() + GetThumbnailImageOptions());
-
-  CollectionInfo colors_collection_info;
-  colors_collection_info.collection_id = colors_collection.collection_id();
-  colors_collection_info.collection_name = colors_collection.collection_name();
-
-  if (BackgroundImageErrorDetectionEnabled()) {
-    EXPECT_EQ(1u, service()->collection_info().size());
-    EXPECT_THAT(service()->collection_info().at(0), Eq(shapes_collection_info));
-  } else {
-    EXPECT_EQ(2u, service()->collection_info().size());
-    EXPECT_THAT(service()->collection_info().at(0), Eq(shapes_collection_info));
-    EXPECT_THAT(service()->collection_info().at(1), Eq(colors_collection_info));
-  }
+    histogram_tester_.ExpectTotalCount(
+        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 1);
+    ASSERT_EQ(1,
+              histogram_tester_.GetBucketCount(
+                  "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
+                  NtpImageType::kCollections));
 }
 
 TEST_P(NtpBackgroundServiceTest, CollectionImagesNetworkError) {
@@ -535,8 +446,6 @@ TEST_P(NtpBackgroundServiceTest,
   SetUpResponseWithData(service()->GetImagesURLForTesting(),
                         image_response_string);
   if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(
-        GURL(collection.preview(0).image_url() + GetThumbnailImageOptions()));
     SetUpResponseWithNetworkSuccess(
         GURL(image.image_url() + GetThumbnailImageOptions()));
   }

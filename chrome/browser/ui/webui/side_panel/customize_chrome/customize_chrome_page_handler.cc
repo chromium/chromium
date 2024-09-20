@@ -41,6 +41,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider.h"
@@ -226,6 +227,19 @@ void CustomizeChromePageHandler::GetBackgroundCollections(
   background_collections_request_start_time_ = base::TimeTicks::Now();
   background_collections_callback_ = std::move(callback);
   ntp_background_service_->FetchCollectionInfo();
+}
+
+void CustomizeChromePageHandler::GetReplacementCollectionPreviewImage(
+    const std::string& collection_id,
+    GetReplacementCollectionPreviewImageCallback callback) {
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                         std::nullopt);
+  if (!ntp_background_service_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  ntp_background_service_->FetchReplacementCollectionPreviewImage(
+      collection_id, std::move(callback));
 }
 
 void CustomizeChromePageHandler::GetBackgroundImages(

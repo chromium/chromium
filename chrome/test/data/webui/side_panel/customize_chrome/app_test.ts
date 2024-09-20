@@ -79,6 +79,7 @@ suite('AppTest', () => {
       id: 'test',
       label: 'test',
       previewImageUrl: {url: 'https://test.jpg'},
+      imageVerified: false,
     };
 
     // Test initial page state.

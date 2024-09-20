@@ -24,6 +24,7 @@ function createTestCollection(name: string): BackgroundCollection {
     id: `${name}_id`,
     label: name,
     previewImageUrl: {url: `https://collection-${name}.jpg`},
+    imageVerified: false,
   };
   return testCollection;
 }
