@@ -60,8 +60,7 @@ bool IsSurfaceControlEnabled(const gpu::GpuFeatureInfo& info) {
 
 std::vector<SupportedVideoDecoderConfig> GenerateSupportedConfigs(
     DeviceInfo* device_info,
-    bool allow_media_codec_sw_decoder,
-    bool require_min_resolution_for_hw_decoder) {
+    bool allow_media_codec_sw_decoder) {
   std::vector<SupportedVideoDecoderConfig> supported_configs;
   for (const auto& info : GetDecoderInfoCache()) {
     const auto codec = VideoCodecProfileToVideoCodec(info.profile);
@@ -91,18 +90,8 @@ std::vector<SupportedVideoDecoderConfig> GenerateSupportedConfigs(
         continue;
       }
 
-      // Require a minimum of 360p even for hardware decoding of VP8+VP9 and
-      // H.264 (if built-in support is available).
-      auto coded_size_min = info.coded_size_min;
-      if (require_min_resolution_for_hw_decoder && !info.is_software_codec &&
-          can_use_builtin_software_decoder &&
-          (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9 ||
-           codec == VideoCodec::kH264)) {
-        coded_size_min.SetToMax(gfx::Size(360, 360));
-      }
-
       supported_configs.emplace_back(
-          info.profile, info.profile, coded_size_min, info.coded_size_max,
+          info.profile, info.profile, info.coded_size_min, info.coded_size_max,
           kAllowEncrypted,
           /*require_encrypted=*/info.secure_codec_capability ==
               SecureCodecCapability::kEncrypted);
@@ -233,8 +222,7 @@ std::vector<SupportedVideoDecoderConfig>
 MediaCodecVideoDecoder::GetSupportedConfigs() {
   static const auto configs = GenerateSupportedConfigs(
       DeviceInfo::GetInstance(),
-      base::FeatureList::IsEnabled(media::kAllowMediaCodecSoftwareDecoder),
-      /*require_min_resolution_for_hw_decoder=*/true);
+      base::FeatureList::IsEnabled(media::kAllowMediaCodecSoftwareDecoder));
   return configs;
 }
 
@@ -1367,33 +1355,15 @@ bool MediaCodecVideoDecoder::CodecNeedsReallocation(int new_width) {
 
 std::vector<SupportedVideoDecoderConfig>
 MediaCodecVideoDecoder::GetSupportedConfigsInternal() {
-  const bool first_init = !decoder_config_.IsValidConfig();
-  const bool require_min_resolution_for_hw_decoder =
-      first_init || !base::FeatureList::IsEnabled(kMediaCodecElideEOS);
-
   // Tests override the DeviceInfo, so if an override is provided query the
   // configs as they look under that DeviceInfo.
   if (device_info_ != DeviceInfo::GetInstance()) {
     return GenerateSupportedConfigs(device_info_,
-                                    /*allow_media_codec_sw_decoder=*/true,
-                                    require_min_resolution_for_hw_decoder);
+                                    /*allow_media_codec_sw_decoder=*/true);
   }
 
   // Use the default cached results if minimum resolutions should be enforced.
-  if (require_min_resolution_for_hw_decoder) {
-    return GetSupportedConfigs();
-  }
-
-  // Otherwise, regenerate the supported config list w/o the artificial minimum
-  // resolution requirements so we can reuse the codec for adaptations below the
-  // minimum resolution. The actual minimum resolution will still be set.
-  //
-  // Note: This only regenerates the std::vector<> of configs, the actual
-  // MediaCodecInfo data is still cached elsewhere.
-  return GenerateSupportedConfigs(
-      device_info_,
-      base::FeatureList::IsEnabled(media::kAllowMediaCodecSoftwareDecoder),
-      require_min_resolution_for_hw_decoder);
+  return GetSupportedConfigs();
 }
 
 }  // namespace media

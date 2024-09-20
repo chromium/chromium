@@ -364,13 +364,6 @@ TEST_P(MediaCodecVideoDecoderTest, SoftwareDecodersSupportEncrypted) {
   FAIL() << "No encrypted config found for " << GetCodecName(GetParam());
 }
 
-TEST_P(MediaCodecVideoDecoderVp8Test, SmallVp8IsRejected) {
-  auto configs = MediaCodecVideoDecoder::GetSupportedConfigs();
-  auto small_vp8_config = TestVideoConfig::Normal(VideoCodec::kVP8);
-  for (const auto& c : configs)
-    ASSERT_FALSE(c.Matches(small_vp8_config));
-}
-
 TEST_P(MediaCodecVideoDecoderAV1Test, Av1IsSupported) {
   if (!HasAv1Decoder()) {
     return;
@@ -1062,12 +1055,6 @@ static std::vector<VideoCodec> GetH264() {
 }
 #endif
 
-static std::vector<VideoCodec> GetVp8IfAvailable() {
-  return MediaCodecUtil::IsVp8DecoderAvailable()
-             ? std::vector<VideoCodec>(1, VideoCodec::kVP8)
-             : std::vector<VideoCodec>();
-}
-
 // TODO(crbug.com/40169704): Uncomment once MediaCodecVideoDecoderVp9Test
 // is fixed.
 // static std::vector<VideoCodec> GetVp9IfAvailable() {
@@ -1090,10 +1077,6 @@ INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderH264Test,
                          MediaCodecVideoDecoderH264Test,
                          testing::ValuesIn(GetH264()));
 #endif
-
-INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderVp8Test,
-                         MediaCodecVideoDecoderVp8Test,
-                         testing::ValuesIn(GetVp8IfAvailable()));
 
 // TODO(crbug.com/40169704): Uncomment once MediaCodecVideoDecoderVp9Test
 // is fixed.
