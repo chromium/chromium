@@ -141,17 +141,6 @@ class Canvas2DLayerBridgeTest : public Test {
       accelerated_compositing_scope_;
 };
 
-TEST_F(Canvas2DLayerBridgeTest, DisableAcceleration) {
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferCPU, kNonOpaque);
-
-  bool has_backend_texture = bridge->NewImageSnapshot(FlushReason::kTesting)
-                                 ->PaintImageForCurrentFrame()
-                                 .IsTextureBacked();
-
-  EXPECT_FALSE(has_backend_texture);
-}
-
 TEST_F(Canvas2DLayerBridgeTest, NoDrawOnContextLost) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);

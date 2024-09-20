@@ -649,6 +649,24 @@ TEST_P(CanvasRenderingContext2DTest, HidingCanvasTurnsOffRateLimiting) {
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 }
 
+TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
+  CreateContext(kNonOpaque);
+
+  gfx::Size size = CanvasElement().Size();
+  auto provider = std::make_unique<FakeCanvasResourceProvider>(
+      SkImageInfo::MakeN32Premul(size.width(), size.height()),
+      RasterModeHint::kPreferCPU, &CanvasElement(),
+      CompositingMode::kSupportsDirectCompositing);
+  CanvasElement().SetResourceProviderForTesting(
+      std::move(provider),
+      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+
+  EXPECT_FALSE(Context2D()
+                   ->GetImage(FlushReason::kTesting)
+                   ->PaintImageForCurrentFrame()
+                   .IsTextureBacked());
+}
+
 TEST_P(CanvasRenderingContext2DTest,
        PrepareMailboxWhenContextIsLostWithFailedRestore) {
   // Gpu compositing must be supported for this test to be able to create
