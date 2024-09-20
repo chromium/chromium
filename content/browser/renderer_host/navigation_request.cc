@@ -248,6 +248,13 @@ const char kSecSharedStorageWritableRequestHeaderKey[] =
 
 constexpr char kNavigationRequestScope[] = "NavigationRequestScope";
 
+// Flag to control whether redirect URLs are being sanitized before sending
+// them to the renderer process as part of the navigation.
+// See https://crbug.com/40095391.
+BASE_FEATURE(kSanitizeRedirectUrlsDuringNavigation,
+             "SanitizeRedirectUrlsDuringNavigation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Denotes the type of user agent string value sent in the User-Agent request
 // header.
 //
@@ -6313,6 +6320,19 @@ void NavigationRequest::CommitNavigation() {
   if (!subresource_loader_params_.prefetched_signed_exchanges.empty()) {
     commit_params->prefetched_signed_exchanges =
         std::move(subresource_loader_params_.prefetched_signed_exchanges);
+  }
+
+  if (base::FeatureList::IsEnabled(kSanitizeRedirectUrlsDuringNavigation)) {
+    // Before sending the commit parameters to the renderer process, sanitize
+    // the redirect URLs to avoid leaking pontentially sensitive data into
+    // processes which are cross-site. There is no dependency on the
+    // cross-site-ness, therefore just sanitize unilaterally.
+    for (auto redirect : commit_params->redirect_infos) {
+      redirect.new_url = redirect.new_url.DeprecatedGetOriginAsURL();
+    }
+    for (auto redirect : commit_params->redirects) {
+      redirect = redirect.DeprecatedGetOriginAsURL();
+    }
   }
 
   GetRenderFrameHost()->CommitNavigation(
