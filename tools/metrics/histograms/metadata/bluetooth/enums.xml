@@ -278,7 +278,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Handshake started"/>
   <int value="1" label="GATT initialized successfully"/>
   <int value="2"
-      label="Recieved response bytes from Key-based pairing characteristic"/>
+      label="Received response bytes from Key-based pairing characteristic"/>
   <int value="3" label="Handshake completed successfully"/>
 </enum>
 
