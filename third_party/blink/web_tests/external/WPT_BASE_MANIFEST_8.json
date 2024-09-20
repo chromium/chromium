@@ -154517,6 +154517,19 @@
         }
        ]
       ],
+      "clip-path-rect-004.html": [
+       "0a25d8fa5ef2fedd756e1fb874ab0e2716c2441b",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-path-reference-box-001.html": [
        "35b31ebaef1fc184e7f4e6202093d650e6b1db65",
        [
@@ -182836,6 +182849,19 @@
         {}
        ]
       ],
+      "block-aspect-ratio-058.html": [
+       "b6d923f12bc42fcdacbce81b6bc5d1689d888b1b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "block-aspect-ratio-with-margin-collapsing-001.html": [
        "78a0418fe285da58030cdd863460add0533e6af5",
        [
@@ -187172,7 +187198,7 @@
       ]
      ],
      "intrinsic-percent-replaced-017.html": [
-      "190b2f8fe4435f082c01b21876c5168139bc562b",
+      "d7e5d70e43af7943e19b358ec80a5cff259dc02e",
       [
        null,
        [
@@ -368014,12 +368040,40 @@
       "912cf514a1abcf2c90ca9236a04e3b9747949d73",
       []
      ],
+     "server-response.https.window_13-16-expected.txt": [
+      "b3a7b12f302315e30c7f004a6a28d97e4984e59f",
+      []
+     ],
+     "server-response.https.window_17-20-expected.txt": [
+      "08f9dabf7342868733448b23ad8ca1215c23888b",
+      []
+     ],
+     "server-response.https.window_21-24-expected.txt": [
+      "6726fd0e81f0c4770cf7fdd2af9c292730dbdc3a",
+      []
+     ],
+     "server-response.https.window_25-28-expected.txt": [
+      "08f28e71a635aa4f2b9f2514fc4b056d42c83d4c",
+      []
+     ],
+     "server-response.https.window_29-32-expected.txt": [
+      "566a552bbe874b44e641de950e3e2a14e0b58724",
+      []
+     ],
+     "server-response.https.window_33-36-expected.txt": [
+      "afe1513e67e675b056629b524368df2998a00afc",
+      []
+     ],
+     "server-response.https.window_37-40-expected.txt": [
+      "790ca9a0cd01898f14357eb6c45c32b691640f20",
+      []
+     ],
      "server-response.https.window_5-8-expected.txt": [
       "bc9bfe105a8bdef92a16524b2d72a7413eb36f2c",
       []
      ],
      "server-response.https.window_9-12-expected.txt": [
-      "e3d6294317b6366a7f618b7047a23210587274fa",
+      "716e2bef99f884da912f4fb0d2d7cd9de7cc9b18",
       []
      ],
      "third_party": {
@@ -390306,7 +390360,7 @@
      []
     ],
     "webhid.idl": [
-     "56e3161caed3274adb28f8e56f9a499c6f38fe73",
+     "03e72511d961678fe82fee2a70afd44316b51835",
      []
     ],
     "webidl.idl": [
@@ -409478,7 +409532,7 @@
      []
     ],
     "README.md": [
-     "39b829b158f4782440789ef0ca89781113c838f7",
+     "e6cae317d0b480452038290f7e2f9acc5c377be2",
      []
     ],
     "WEB_FEATURES.yml": [
@@ -409493,12 +409547,24 @@
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
      []
     ],
+    "audio-decoder.https.any-expected.txt": [
+     "a85baeb2bba8f2f6954334a721ea10f6ad4ef066",
+     []
+    ],
+    "audio-decoder.https.any.worker-expected.txt": [
+     "a85baeb2bba8f2f6954334a721ea10f6ad4ef066",
+     []
+    ],
     "audio-encoder-config.https.any-expected.txt": [
      "d9a80b8a4a8e65aed2ce13ba9f666e657f274352",
      []
     ],
     "audio-encoder-config.https.any.worker-expected.txt": [
      "d9a80b8a4a8e65aed2ce13ba9f666e657f274352",
+     []
+    ],
+    "audioDecoder-codec-specific.https.any_flac-expected.txt": [
+     "ede50f41555a2b4543d2b8d98207855f22cc0371",
      []
     ],
     "audioDecoder-codec-specific.https.any_pcm_f32-expected.txt": [
@@ -409673,6 +409739,10 @@
      "80f9c8c91f434b3977799451fbf2e37fb3cdbcad",
      []
     ],
+    "sfx.flac": [
+     "a8d313c562573d66a0e072aae4c70ba11480908c",
+     []
+    ],
     "sfx.mp3": [
      "d2600174469a203b229444919378c138b3cf6680",
      []
@@ -409683,6 +409753,14 @@
     ],
     "video-decoder.crossOriginIsolated.https.any.js.headers": [
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
+     []
+    ],
+    "video-decoder.https.any-expected.txt": [
+     "3893314ee160f59883efd7f9bc8f9591b5bb64c8",
+     []
+    ],
+    "video-decoder.https.any.worker-expected.txt": [
+     "3893314ee160f59883efd7f9bc8f9591b5bb64c8",
      []
     ],
     "video-encoder-config.https.any-expected.txt": [
@@ -410966,7 +411044,7 @@
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "4a67d9117621532ad223ed3c7e201706e400bbdb",
+     "73010a4a1c3c538d4c759b21803632a24e5d69c2",
      []
     ],
     "resources": {
@@ -448958,7 +449036,7 @@
       ]
      ],
      "to-javascript-parent-initiated-parent-csp.html": [
-      "8aa8884914d58185bc5622dc0f3047030f873e1c",
+      "98052c42c1e8f0fdf038791ab685cfc1d4246385",
       [
        null,
        {}
@@ -546216,7 +546294,7 @@
       ]
      ],
      "server-response.https.window.js": [
-      "3e1011d422926c4747540bc98a8179d61b2eba67",
+      "7d519ae303e311279b96953de00a6bc3457ebd0b",
       [
        "fledge/tentative/server-response.https.window.html?1-4",
        {
@@ -546260,6 +546338,566 @@
          [
           "variant",
           "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?13-16",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?17-20",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?21-24",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?25-28",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?29-32",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?33-36",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?37-40",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
          ]
         ],
         "timeout": "long"
@@ -546308,6 +546946,34 @@
          [
           "variant",
           "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
          ]
         ],
         "timeout": "long"
@@ -546356,6 +547022,34 @@
          [
           "variant",
           "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
          ]
         ],
         "timeout": "long"
@@ -621003,7 +621697,7 @@
      ]
     ],
     "MediaStreamTrack-getSettings.https.html": [
-     "3bae50c346dd3c83d15f37eca598b58838250c46",
+     "7c583a568c9645e89cd0993aa483b0cdc90176a0",
      [
       null,
       {
@@ -651081,6 +651775,15 @@
       {}
      ]
     ],
+    "Selection-direction-on-clicks.tentative.html": [
+     "8bff6e9396a919ee9a3dd3059cb99d402de3b041",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "addRange-00.html": [
      "7f73f2a3a3a459758cae45a0d14024ba901bca9c",
      [
@@ -651655,6 +652358,15 @@
        [
         null,
         {}
+       ]
+      ],
+      "Selection-direction.html": [
+       "340711a8f0682d2736fa355efadab337189a6feb",
+       [
+        null,
+        {
+         "testdriver": true
+        }
        ]
       ],
       "Selection-getComposedRanges-collapsed.html": [
@@ -656472,15 +657184,6 @@
      [
       null,
       {}
-     ]
-    ],
-    "selection-direction.tentative.html": [
-     "340711a8f0682d2736fa355efadab337189a6feb",
-     [
-      null,
-      {
-       "testdriver": true
-      }
      ]
     ],
     "shadow-root-clonable.html": [
@@ -687981,7 +688684,7 @@
      ]
     ],
     "audio-decoder.https.any.js": [
-     "fd828d481571d80eff7ddd5cc389cf13ffc659dd",
+     "471e0e4ad02c0b01f79cd111c5f416e406d23756",
      [
       "webcodecs/audio-decoder.https.any.html",
       {
@@ -688083,7 +688786,7 @@
      ]
     ],
     "audioDecoder-codec-specific.https.any.js": [
-     "f032b0fe59a5e977fd9db8d958734e7a3481b2e7",
+     "6a4793c62c908f3d938f549dc0da5fd667d58cc0",
      [
       "webcodecs/audioDecoder-codec-specific.https.any.html?adts_aac",
       {
@@ -688139,6 +688842,73 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.html?flac",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688198,6 +688968,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688257,6 +689031,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688316,6 +689094,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688375,6 +689157,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688434,6 +689220,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688493,6 +689283,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688552,6 +689346,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688611,6 +689409,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688670,6 +689472,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688729,6 +689535,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688788,6 +689598,73 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.worker.html?flac",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688847,6 +689724,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688906,6 +689787,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -688965,6 +689850,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -689024,6 +689913,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -689083,6 +689976,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -689142,6 +690039,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -689201,6 +690102,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -689260,6 +690165,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -689319,6 +690228,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -689378,6 +690291,10 @@
         [
          "variant",
          "?pcm_f32"
+        ],
+        [
+         "variant",
+         "?flac"
         ]
        ]
       }
@@ -692133,7 +693050,7 @@
      ]
     ],
     "video-decoder.https.any.js": [
-     "5b3193b8c37a4558945e5e2ae29639c26980ef89",
+     "6b77aeae5451d7e745ef7ddc495864a50e763066",
      [
       "webcodecs/video-decoder.https.any.html",
       {
@@ -719486,6 +720403,195 @@
          [
           "title",
           "validation tests for WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "gatherND.https.any.js": [
+      "a8bfa2b336bf56238014665a70ca46ac00b6c541",
+      [
+       "webnn/validation_tests/gatherND.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gatherND.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gatherND.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gatherND.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gatherND.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gatherND.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherND operation"
          ],
          [
           "global",
