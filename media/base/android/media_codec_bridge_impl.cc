@@ -379,7 +379,8 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
           config.initial_expected_coded_size.height(), config.surface, j_csd0,
           j_csd1, j_hdr_metadata, /*allowAdaptivePlayback=*/true,
           /*useAsyncApi=*/!!config.on_buffers_available_cb,
-          /*useBlockModel=*/config.use_block_model, j_decoder_name));
+          /*useBlockModel=*/config.use_block_model, j_decoder_name,
+          config.profile));
   if (j_bridge.is_null())
     return nullptr;
 

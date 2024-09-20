@@ -70,6 +70,9 @@ class MEDIA_EXPORT VideoCodecConfig {
 
   // Enables Block Model (LinearBlock).
   bool use_block_model = false;
+
+  // The profile of decoder.
+  VideoCodecProfile profile;
 };
 
 // A bridge to a Java MediaCodec.

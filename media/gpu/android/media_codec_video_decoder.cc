@@ -704,6 +704,7 @@ void MediaCodecVideoDecoder::CreateCodec() {
   config->container_color_space = decoder_config_.color_space_info();
   config->hdr_metadata = decoder_config_.hdr_metadata();
   config->use_block_model = use_block_model_;
+  config->profile = decoder_config_.profile();
   SelectMediaCodec(decoder_config_, requires_secure_codec_, &config->name,
                    &is_software_codec_);
 

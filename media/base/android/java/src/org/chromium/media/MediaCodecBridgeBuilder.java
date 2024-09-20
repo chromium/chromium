@@ -34,7 +34,8 @@ class MediaCodecBridgeBuilder {
             boolean allowAdaptivePlayback,
             boolean useAsyncApi,
             boolean useBlockModel,
-            String decoderName) {
+            String decoderName,
+            int profile) {
         CodecCreationInfo info = new CodecCreationInfo();
         try {
             Log.i(
@@ -60,7 +61,8 @@ class MediaCodecBridgeBuilder {
                             height,
                             csds,
                             hdrMetadata,
-                            info.supportsAdaptivePlayback && allowAdaptivePlayback);
+                            info.supportsAdaptivePlayback && allowAdaptivePlayback,
+                            profile);
 
             if (!bridge.configureVideo(
                     format,
