@@ -13,6 +13,7 @@
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
+#import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "components/plus_addresses/settings/mock_plus_address_setting_service.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
@@ -185,9 +186,9 @@ TEST_F(PlusAddressBottomSheetMediatorTest, OpenLearnMoreUrlOnNewTab) {
 
 // Ensure the consumer is notified when plus addresses are refreshed.
 TEST_F(PlusAddressBottomSheetMediatorTest, DidTapRefresh) {
-  OCMExpect([consumer_
-      didReservePlusAddress:base::SysUTF8ToNSString(
-                                FakePlusAddressService::kFakePlusAddress)]);
+  OCMExpect([consumer_ didReservePlusAddress:
+                           base::SysUTF8ToNSString(
+                               plus_addresses::test::kFakePlusAddressRefresh)]);
   [mediator() didTapRefreshButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
   OCMExpect([consumer_ didConfirmPlusAddress]);

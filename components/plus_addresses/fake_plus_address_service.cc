@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -145,8 +146,10 @@ void FakePlusAddressService::RefreshPlusAddress(
     return;
   }
   std::move(on_completed)
-      .Run(PlusProfile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
-                       PlusAddress(kFakePlusAddress), is_confirmed_));
+      .Run(PlusProfile(
+          kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
+          PlusAddress(plus_addresses::test::kFakePlusAddressRefresh),
+          is_confirmed_));
 }
 
 std::optional<std::string> FakePlusAddressService::GetPrimaryEmail() {

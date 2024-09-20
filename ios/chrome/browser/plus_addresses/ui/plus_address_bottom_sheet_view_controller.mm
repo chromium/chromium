@@ -359,12 +359,13 @@ UIImageView* BrandingImageView() {
 
 - (void)didTapTrailingButton {
   _refreshCount++;
-  [_delegate didTapRefreshButton];
   self.primaryActionButton.enabled = NO;
   // TODO(crbug.com/343153116): Disable the refresh button when it's loading.
   _reservedPlusAddress = l10n_util::GetNSString(
       IDS_PLUS_ADDRESS_BOTTOMSHEET_REFRESH_TEMPORARY_LABEL_CONTENT_IOS);
   [_reservedPlusAddressTableView reloadData];
+
+  [_delegate didTapRefreshButton];
 }
 
 #pragma mark - Private

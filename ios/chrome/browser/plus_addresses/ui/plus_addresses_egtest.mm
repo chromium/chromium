@@ -347,11 +347,12 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 }
 
 // A test to check the refresh plus address functionality.
-- (void)DISABLED_testRefresh {
+- (void)testRefresh {
   [self openCreatePlusAddressBottomSheet];
 
-  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
-      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  id<GREYMatcher> plusAddressLabelMatcher =
+      GetMatcherForPlusAddressLabel(base::SysUTF8ToNSString(
+          plus_addresses::FakePlusAddressService::kFakePlusAddress));
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
 
   id<GREYMatcher> refreshButton = grey_allOf(

@@ -15,6 +15,7 @@
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "content/public/browser/web_contents.h"
@@ -95,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
 
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), FakePlusAddressService::kFakePlusAddress);
+  EXPECT_EQ(future.Get(), plus_addresses::test::kFakePlusAddressRefresh);
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
