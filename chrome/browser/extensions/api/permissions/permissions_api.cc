@@ -53,15 +53,12 @@ constexpr char kMustSpecifyDocumentIdOrTabIdError[] =
     "Must specify either 'documentId' or 'tabId'.";
 constexpr char kTabNotFoundError[] = "No tab with ID '*'.";
 constexpr char kInvalidDocumentIdError[] = "No document with ID '*'.";
-constexpr char kExtensionCantRequestSiteAccessError[] =
-    "Extension cannot add a site access request for a site it cannot be "
-    "granted access to. Extension must have previously requested host "
-    "permissions for the current site in the tab or document provided via "
-    "'host_permissions', 'optional_host_permissions', or 'matches' for static "
-    "content scripts.";
 constexpr char kExtensionHasSiteAccessError[] =
     "Extension cannot add a site access request for a site it already has "
     "access to.";
+constexpr char kExtensionHasNoHostPermissionsError[] =
+    "Extension cannot add a site access request when it does not have any host "
+    "permissions.";
 constexpr char kExtensionRequestCannotBeRemovedError[] =
     "Extension cannot remove a site access request that doesn't exist.";
 
@@ -577,37 +574,20 @@ PermissionsAddSiteAccessRequestFunction::Run() {
 
   const GURL& url = web_contents->GetLastCommittedURL();
   auto* permissions_manager = PermissionsManager::Get(browser_context());
+
+  // Request is invalid if extension didn't request any host permissions.
+  if (!permissions_manager->HasRequestedHostPermissions(*extension())) {
+    return RespondNow(Error(kExtensionHasNoHostPermissionsError));
+  }
+
+  // Request is invalid if extension has access to the tab's current web
+  // contents.
   PermissionsManager::ExtensionSiteAccess site_access =
       permissions_manager->GetSiteAccess(*extension(), url);
-
   if (site_access.has_site_access ||
       extension()->permissions_data()->HasTabPermissionsForSecurityOrigin(
           tab_id, url)) {
-    // Request is invalid if extension has access to the tab's current web
-    // contents.
-    error = kExtensionHasSiteAccessError;
-    is_valid = false;
-  } else if (!site_access.withheld_site_access &&
-             !PermissionsParser::GetOptionalPermissions(extension())
-                  .HasEffectiveAccessToURL(
-                      web_contents->GetLastCommittedURL())) {
-    // Request is invalid if extension wants access to the tab's current web
-    // contents, and access hasn't been withheld.
-    // Note: Ungranted optional permissions are not included in the site access
-    // computation. Thus, we need to check them separately.
-    is_valid = false;
-    error = kExtensionCantRequestSiteAccessError;
-  } else {
-    // Request is valid if extension wants access to the tab's current web
-    // contents, and access hasn't been withheld. This doesn't mean the request
-    // will be visible, as the user can block the extension's site access and/or
-    // their site access requests.
-    is_valid = true;
-  }
-
-  if (!is_valid) {
-    CHECK(!error.empty());
-    return RespondNow(Error(error));
+    return RespondNow(Error(kExtensionHasSiteAccessError));
   }
 
   // TODO(crbug.com/330588494): Use pattern from parameter, if given, once it's

@@ -611,42 +611,73 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
   auto extension_A =
       InstallExtensionWithPermissions("Extension A", {"activeTab"});
   auto extension_B =
-      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
-  WithholdHostPermissions(extension_A.get());
+      InstallExtensionWithHostPermissions("Extension B", {"*://www.b.com/*"});
+  auto extension_C =
+      InstallExtensionWithHostPermissions("Extension C", {"<all_urls>"});
   WithholdHostPermissions(extension_B.get());
+  WithholdHostPermissions(extension_C.get());
 
-  // Navigate to a site and verify request access button is not visible, since
-  // no extension has added a request.
-  NavigateAndCommit(GURL("http://www.url.com"));
+  // Navigate to a site only explicitly requested by extension C. Verify
+  // request access button is not visible, since no extension has added a
+  // request.
+  NavigateAndCommit(GURL("http://www.other.com"));
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
-  // Add a site access request for extension A and verify it's visible on the
-  // request access button.
+  // Add a site access request for extension A and verify it's not visible on
+  // the request access button since extensions with only activeTab can't add a
+  // request.
   AddSiteAccessRequest(*extension_A,
+                       browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add a site access request for extension B and verify it's not visible on
+  // the request access button since extension didn't request access for the
+  // current site.
+  AddSiteAccessRequest(*extension_B,
+                       browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add a site access request for extension C and verify it's visible on the
+  // request access button.
+  AddSiteAccessRequest(*extension_C,
                        browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
-              testing::ElementsAre(extension_A->id()));
+              testing::ElementsAre(extension_C->id()));
 
-  // Add a site access request for extension B and verify both extensions are
-  // visible on the request access button.
+  // Navigate to a site only explicitly requested by extension B and C. Verify
+  // request access button is not visible, since requests are reset on
+  // cross-origin navigations.
+  NavigateAndCommit(GURL("http://www.b.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add a site access request for extension B and verify it's visible on
+  // the request access button.
   AddSiteAccessRequest(*extension_B,
                        browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
-              testing::ElementsAre(extension_A->id(), extension_B->id()));
+              testing::ElementsAre(extension_B->id()));
 
-  // Remove the site access request for extension A and verify only extension B
-  // is visible on the request access button.
-  RemoveSiteAccessRequest(*extension_A,
+  // Add a site access request for extension C and verify it's visible on the
+  // request access button.
+  AddSiteAccessRequest(*extension_C,
+                       browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_B->id(), extension_C->id()));
+
+  // Remove the site access request for extension B and verify only extension
+  // C is visible on the request access button.
+  RemoveSiteAccessRequest(*extension_B,
                           browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
-              testing::ElementsAre(extension_B->id()));
+              testing::ElementsAre(extension_C->id()));
 
-  // Remove the site access request for extension B and verify request access
+  // Remove the site access request for extension C and verify request access
   // button is not visible.
-  RemoveSiteAccessRequest(*extension_B,
+  RemoveSiteAccessRequest(*extension_C,
                           browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
