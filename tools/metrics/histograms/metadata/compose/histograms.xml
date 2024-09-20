@@ -155,8 +155,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compose.ProactiveNudge.CTR"
-    enum="ComposeProactiveNudgeCtrEvent" expires_after="2025-03-09">
+<histogram name="Compose.ProactiveNudge.CTR" enum="ComposeNudgeCtrEvent"
+    expires_after="2025-03-09">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -187,6 +187,17 @@ chromium-metrics-reviews@google.com.
     Segmentation Platform block reasons are recorded with the lowest priority.
     Logged each time the nudge is displayed or blocked from displaying (with a
     reason why).
+  </summary>
+</histogram>
+
+<histogram name="Compose.SelectionNudge.CTR" enum="ComposeNudgeCtrEvent"
+    expires_after="2025-03-09">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Histogram for calculating the click-through rate (CTR) of the Compose
+    selection nudge. Logged each time the nudge is displayed and when it's
+    clicked by the user. CTR is calculated through `clicked/displayed`.
   </summary>
 </histogram>
 

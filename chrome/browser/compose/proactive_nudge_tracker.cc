@@ -529,11 +529,13 @@ void ProactiveNudgeTracker::BeginShown() {
   if (state_->selection_nudge_requested) {
     state_->selection_nudge_requested = false;
     state_->selection_nudge_shown = true;
+    compose::LogComposeSelectionNudgeCtr(
+        compose::ComposeNudgeCtrEvent::kNudgeDisplayed);
     return;
   }
 
   compose::LogComposeProactiveNudgeCtr(
-      compose::ComposeProactiveNudgeCtrEvent::kNudgeDisplayed);
+      compose::ComposeNudgeCtrEvent::kNudgeDisplayed);
   compose::LogComposeProactiveNudgeShowStatus(
       compose::ComposeShowStatus::kShouldShow);
   delegate_->GetPageUkmTracker()->ProactiveNudgeShown();

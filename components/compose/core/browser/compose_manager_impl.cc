@@ -234,20 +234,15 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
 
 void ComposeManagerImpl::NeverShowComposeForOrigin(const url::Origin& origin) {
   client_->AddSiteToNeverPromptList(origin);
-  LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent::kUserDisabledSite);
-  client_->GetPageUkmTracker()->ProactiveNudgeDisabledForSite();
 }
 
 void ComposeManagerImpl::DisableCompose() {
   client_->DisableProactiveNudge();
-  LogComposeProactiveNudgeCtr(
-      ComposeProactiveNudgeCtrEvent::kUserDisabledProactiveNudge);
-  client_->GetPageUkmTracker()->ProactiveNudgeDisabledGlobally();
 }
 
 void ComposeManagerImpl::GoToSettings() {
   client_->OpenProactiveNudgeSettings();
-  LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent::kOpenSettings);
+  LogComposeProactiveNudgeCtr(ComposeNudgeCtrEvent::kOpenSettings);
 }
 
 bool ComposeManagerImpl::ShouldAnchorNudgeOnCaret() {
