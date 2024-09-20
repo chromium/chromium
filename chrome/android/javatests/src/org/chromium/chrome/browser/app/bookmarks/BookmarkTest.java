@@ -1820,7 +1820,7 @@ public class BookmarkTest {
     private void openBookmarkManager() throws InterruptedException {
         if (mActivityTestRule.getActivity().isTablet()) {
             String rootFolderId = "folder/0";
-            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL + rootFolderId);
+            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL + rootFolderId);
             mItemsContainer =
                     mActivityTestRule
                             .getActivity()
