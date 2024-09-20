@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/tabs/tab_model.h"
 
+#include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -170,6 +174,15 @@ tabs::TabFeatures* TabModel::GetTabFeatures() {
 
 uint32_t TabModel::GetTabHandle() {
   return GetHandle().raw_value();
+}
+
+void TabModel::Close() {
+  auto* window_interface = GetBrowserWindowInterface();
+  auto* tab_strip = window_interface->GetTabStripModel();
+  CHECK(tab_strip);
+  int tab_idx = tab_strip->GetIndexOfTab(GetHandle());
+  CHECK(tab_idx != TabStripModel::kNoTab);
+  tab_strip->CloseWebContentsAt(tab_idx, TabCloseTypes::CLOSE_NONE);
 }
 
 void TabModel::OnTabStripModelChanged(

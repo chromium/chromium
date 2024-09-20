@@ -131,6 +131,10 @@ BASE_FEATURE(kForceSupervisedUserReauthenticationForBlockedSites,
              "ForceSupervisedUserReauthenticationForBlockedSites",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial,
+             "CloseSignTabsFromReauthenticationInterstitial",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes,
              "EnableSupervisedUserReauthenticationForSubframes",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -129,6 +129,7 @@ class TabModel final : public SupportsHandles<TabModel>,
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   tabs::TabFeatures* GetTabFeatures() override;
   uint32_t GetTabHandle() override;
+  void Close() override;
 
  private:
   // Overridden from TabStripModelObserver:

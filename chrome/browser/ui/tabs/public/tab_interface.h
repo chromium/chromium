@@ -60,6 +60,9 @@ class TabInterface {
   // WebContents.
   virtual content::WebContents* GetContents() const = 0;
 
+  // Closes the tab.
+  virtual void Close() = 0;
+
   // Register for this callback to detect changes to GetContents(). The first
   // WebContents is the contents that will be discarded. The second WebContents
   // is the new contents. The tab is guaranteed to be in the background.
