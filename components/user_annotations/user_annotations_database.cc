@@ -225,4 +225,22 @@ void UserAnnotationsDatabase::RemoveAnnotationsInRange(
   delete_statement.Run();
 }
 
+int UserAnnotationsDatabase::GetCountOfValuesContainedBetween(base::Time begin,
+                                                              base::Time end) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Statement s(
+      db_.GetCachedStatement(SQL_FROM_HERE,
+                             "SELECT COUNT(DISTINCT(entry_id)) FROM entries "
+                             "WHERE last_modified_time > ? "
+                             "AND last_modified_time < ?"));
+  s.BindTime(0, begin);
+  s.BindTime(1, end);
+
+  if (!s.Step()) {
+    // This might happen in case of I/O errors. See crbug.com/332263206.
+    return 0;
+  }
+  return s.ColumnInt(0);
+}
+
 }  // namespace user_annotations

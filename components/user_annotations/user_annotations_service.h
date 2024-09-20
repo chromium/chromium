@@ -102,6 +102,12 @@ class UserAnnotationsService : public KeyedService {
   virtual void RemoveAnnotationsInRange(const base::Time& delete_begin,
                                         const base::Time& delete_end);
 
+  // Returns the number of unique user annotations that were last modified
+  // between [`begin`, `end`).
+  void GetCountOfValuesContainedBetween(base::Time begin,
+                                        base::Time end,
+                                        base::OnceCallback<void(int)> callback);
+
   // KeyedService:
   void Shutdown() override;
 

@@ -230,4 +230,32 @@ TEST_F(UserAnnotationsDatabaseTest, RemoveAnnotationsInRangeBackward) {
   EXPECT_TRUE(database_->RetrieveAllEntries()->empty());
 }
 
+TEST_F(UserAnnotationsDatabaseTest, GetCountOfValuesContainedBetween) {
+  auto foo_entry = CreateUserAnnotationsEntry("foo", "foo_value");
+  auto bar_entry = CreateUserAnnotationsEntry("bar", "bar_value");
+  auto foo_create_time = base::Time::Now();
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries({foo_entry}, /*deleted_entry_ids=*/{}));
+  task_environment_.FastForwardBy(base::Hours(1));
+  auto bar_create_time = base::Time::Now();
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries({bar_entry}, /*deleted_entry_ids=*/{}));
+  EXPECT_EQ(2u, database_->RetrieveAllEntries()->size());
+
+  // One entry: bar.
+  int count = database_->GetCountOfValuesContainedBetween(
+      bar_create_time - base::Seconds(1), bar_create_time + base::Seconds(1));
+  EXPECT_EQ(1, count);
+
+  // One entry: foo.
+  count = database_->GetCountOfValuesContainedBetween(
+      foo_create_time - base::Seconds(1), foo_create_time + base::Seconds(1));
+  EXPECT_EQ(1, count);
+
+  // All.
+  count = database_->GetCountOfValuesContainedBetween(base::Time::Min(),
+                                                      base::Time::Max());
+  EXPECT_EQ(2, count);
+}
+
 }  // namespace user_annotations

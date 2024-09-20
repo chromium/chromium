@@ -56,6 +56,10 @@ void RecordRemoveAllEntriesResult(UserAnnotationsExecutionResult result) {
                                 result);
 }
 
+void RecordCountEntriesResult(UserAnnotationsExecutionResult result) {
+  base::UmaHistogramEnumeration("UserAnnotations.CountEntries.Result", result);
+}
+
 }  // namespace
 
 UserAnnotationsService::UserAnnotationsService(
@@ -334,6 +338,37 @@ void UserAnnotationsService::RemoveAnnotationsInRange(
   user_annotations_database_
       .AsyncCall(&UserAnnotationsDatabase::RemoveAnnotationsInRange)
       .WithArgs(delete_begin, delete_end);
+}
+
+void UserAnnotationsService::GetCountOfValuesContainedBetween(
+    base::Time begin,
+    base::Time end,
+    base::OnceCallback<void(int)> callback) {
+  if (!ShouldPersistUserAnnotations()) {
+    RecordCountEntriesResult(UserAnnotationsExecutionResult::kSuccess);
+    // This code path will get removed soon but given no annotations are removed
+    // when a specific range is selected in this code path, also do not indicate
+    // we are removing entries here.
+    std::move(callback).Run(0);
+    return;
+  }
+  if (!user_annotations_database_) {
+    RecordCountEntriesResult(
+        UserAnnotationsExecutionResult::kCryptNotInitialized);
+    std::move(callback).Run(0);
+    return;
+  }
+  user_annotations_database_
+      .AsyncCall(&UserAnnotationsDatabase::GetCountOfValuesContainedBetween)
+      .WithArgs(begin, end)
+      .Then(base::BindOnce(
+          [](base::OnceCallback<void(int)> callback, int result) {
+            RecordCountEntriesResult(
+                result ? UserAnnotationsExecutionResult::kSuccess
+                       : UserAnnotationsExecutionResult::kSqlError);
+            std::move(callback).Run(result);
+          },
+          std::move(callback)));
 }
 
 }  // namespace user_annotations

@@ -56,6 +56,10 @@ class UserAnnotationsDatabase {
   void RemoveAnnotationsInRange(const base::Time& delete_begin,
                                 const base::Time& delete_end);
 
+  // Returns the number of unique user annotations that were last modified
+  // between [`begin`, `end`).
+  int GetCountOfValuesContainedBetween(base::Time begin, base::Time end);
+
  private:
   sql::InitStatus InitInternal(const base::FilePath& storage_dir);
 

@@ -19,6 +19,17 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="UserAnnotations.CountEntries.Result"
+    enum="UserAnnotationsExecutionResult" expires_after="M135">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of counting entries within a certain time frame from user
+    annotations service. Recorded for each call to count entries from the
+    browsing data removal UI.
+  </summary>
+</histogram>
+
 <histogram name="UserAnnotations.RemoveAllEntries.Result"
     enum="UserAnnotationsExecutionResult" expires_after="M135">
   <owner>rajendrant@chromium.org</owner>
