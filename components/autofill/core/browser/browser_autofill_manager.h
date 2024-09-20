@@ -598,7 +598,7 @@ class BrowserAutofillManager : public AutofillManager {
   // returns whether the study is enabled/disabled.
   bool EvaluateAblationStudy(
       const std::vector<Suggestion>& address_and_credit_card_suggestions,
-      const AutofillField* autofill_field,
+      AutofillField* autofill_field,
       SuggestionsContext& context);
 
   // Returns a list with the suggestions available for `field`. Which fields of
@@ -612,7 +612,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormStructure* form_structure,
       const FormFieldData& field,
-      const AutofillField* autofill_field,
+      AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext& context,
       autofill_metrics::SuggestionRankingContext& ranking_context);
@@ -632,7 +632,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormStructure* form_structure,
       const FormFieldData& field,
-      const AutofillField* autofill_field,
+      AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext& context,
       OnGenerateSuggestionsCallback callback);

@@ -1508,19 +1508,13 @@ void BrowserAutofillManager::
   GenerateSuggestionsAndMaybeShowUI(form, form_structure, field, autofill_field,
                                     trigger_source, context,
                                     std::move(callback));
-
-  if (autofill_field && context.ablation_group != AblationGroup::kDefault) {
-    autofill_field->AppendLogEventIfNotRepeated(AblationFieldLogEvent{
-        context.ablation_group, context.conditional_ablation_group,
-        context.day_in_ablation_window});
-  }
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     const FormData& form,
     const FormStructure* form_structure,
     const FormFieldData& field,
-    const AutofillField* autofill_field,
+    AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext& context,
     OnGenerateSuggestionsCallback callback) {
@@ -3117,7 +3111,7 @@ void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
 
 bool BrowserAutofillManager::EvaluateAblationStudy(
     const std::vector<Suggestion>& address_and_credit_card_suggestions,
-    const AutofillField* autofill_field,
+    AutofillField* autofill_field,
     SuggestionsContext& context) {
   if (context.filling_product != FillingProduct::kAddress &&
       context.filling_product != FillingProduct::kCreditCard) {
@@ -3160,6 +3154,12 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
         context.ablation_group, AblationGroup::kDefault);
   }
 
+  if (autofill_field && context.ablation_group != AblationGroup::kDefault) {
+    autofill_field->AppendLogEventIfNotRepeated(AblationFieldLogEvent{
+        context.ablation_group, context.conditional_ablation_group,
+        context.day_in_ablation_window});
+  }
+
   if (!address_and_credit_card_suggestions.empty() &&
       context.ablation_group == AblationGroup::kAblation &&
       !features::kAutofillAblationStudyIsDryRun.Get()) {
@@ -3176,7 +3176,7 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     const FormData& form,
     const FormStructure* form_structure,
     const FormFieldData& field,
-    const AutofillField* autofill_field,
+    AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext& context,
     autofill_metrics::SuggestionRankingContext& ranking_context) {
