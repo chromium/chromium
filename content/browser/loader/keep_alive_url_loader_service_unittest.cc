@@ -1383,8 +1383,16 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest, Shutdown) {
   EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
 }
 
+// TODO(https://crbug.com/368570340)
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ForwardRedirectsAndResponseToAttributionRequestHelper \
+  DISABLED_ForwardRedirectsAndResponseToAttributionRequestHelper
+#else
+#define MAYBE_ForwardRedirectsAndResponseToAttributionRequestHelper \
+  ForwardRedirectsAndResponseToAttributionRequestHelper
+#endif
 TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
-       ForwardRedirectsAndResponseToAttributionRequestHelper) {
+       MAYBE_ForwardRedirectsAndResponseToAttributionRequestHelper) {
   // The Attribution Manager uses the DataDecoder service, which, when an
   // InProcessDataDecoer object exists, will route to an internal in-process
   // instance.
