@@ -4486,6 +4486,56 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GURL("about:blank"), web_contents_b->GetLastCommittedURL());
 }
 
+// Check that when RenderProcessHostImpl::DisableRefCounts is called while a
+// NavigationStateKeepAlive exists, the navigation still succeeds. This is a
+// regression test for crbug.com/348150830.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       DisableRefCountsWhileKeepAliveExists) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // This test needs the browser process to call DisableRefCounts after the form
+  // submission's NavigationStateKeepAlive is created and before the task that
+  // sends the BeginNavigation IPC. To do this, use EvalJS to return a string to
+  // the test framework between those two renderer-side tasks, allowing the
+  // browser process to reset the counts before the BeginNavigation IPC is
+  // received and the NavigationStateKeepAlive is destroyed.
+  std::string expected_str("Placeholder value");
+  std::string js_str = base::StringPrintf(
+      "f = document.createElement('form');"
+      "f.action = 'about:blank';"
+      "document.body.appendChild(f);"
+      "f.submit();"
+      "'%s';",
+      expected_str.c_str());
+
+  TestNavigationObserver observer(shell()->web_contents());
+  EXPECT_EQ(expected_str, EvalJs(shell(), js_str).ExtractString());
+
+  // Expect at this point that a NavigationStateKeepAlive has been created for
+  // the form submission.
+  NavigationStateKeepAlive* keep_alive =
+      current_frame_host()->GetStoragePartition()->GetNavigationStateKeepAlive(
+          current_frame_host()->GetFrameToken());
+  ASSERT_TRUE(keep_alive);
+
+  // Disable ref counts on the process, which resets all ref counts to 0. This
+  // seems to happen in practice in https://crbug.com/348150830 when a
+  // BrowserContext is closed before all of its frames are properly cleaned up,
+  // but the exact repro steps for this aren't known, so simulate this behavior
+  // with an explicit DisableRefCounts() call.
+  current_frame_host()->GetProcess()->DisableRefCounts();
+
+  // Wait for the navigation to complete. At that point, the
+  // NavigationStateKeepAlive goes away, which can possibly decrement the
+  // associated ref count. Since DisableRefCounts() was called, the ref count
+  // should not be further decremented, and the navigation should complete
+  // successfully.
+  observer.Wait();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+  EXPECT_TRUE(current_frame_host()->GetLastCommittedURL().IsAboutBlank());
+}
+
 using MediaNavigationBrowserTest = NavigationBaseBrowserTest;
 
 // Media navigations synchronously complete the time of the `CommitNavigation`

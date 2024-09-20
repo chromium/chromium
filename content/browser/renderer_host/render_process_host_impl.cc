@@ -2565,10 +2565,12 @@ size_t RenderProcessHostImpl::GetShutdownDelayRefCount() const {
 }
 
 void RenderProcessHostImpl::IncrementNavigationStateKeepAliveCount() {
+  CHECK(!are_ref_counts_disabled_);
   navigation_state_keepalive_count_++;
 }
 
 void RenderProcessHostImpl::DecrementNavigationStateKeepAliveCount() {
+  CHECK(!are_ref_counts_disabled_);
   CHECK_GT(navigation_state_keepalive_count_, 0);
   navigation_state_keepalive_count_--;
   if (navigation_state_keepalive_count_ == 0) {
