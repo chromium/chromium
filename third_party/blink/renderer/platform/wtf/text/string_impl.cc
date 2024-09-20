@@ -1697,8 +1697,7 @@ scoped_refptr<StringImpl> StringImpl::Replace(const StringView& pattern,
 
 scoped_refptr<StringImpl> StringImpl::UpconvertedString() {
   if (Is8Bit())
-    return String::Make16BitFrom8BitSource(Characters8(), length_)
-        .ReleaseImpl();
+    return String::Make16BitFrom8BitSource(Span8()).ReleaseImpl();
   return this;
 }
 

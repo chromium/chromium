@@ -525,14 +525,8 @@ class WTF_EXPORT String {
   }
 #endif
 
-  [[nodiscard]] static String Make8BitFrom16BitSource(const UChar*, wtf_size_t);
-  template <wtf_size_t inlineCapacity>
-  [[nodiscard]] static String Make8BitFrom16BitSource(
-      const Vector<UChar, inlineCapacity>& buffer) {
-    return Make8BitFrom16BitSource(buffer.data(), buffer.size());
-  }
-
-  [[nodiscard]] static String Make16BitFrom8BitSource(const LChar*, wtf_size_t);
+  [[nodiscard]] static String Make8BitFrom16BitSource(base::span<const UChar>);
+  [[nodiscard]] static String Make16BitFrom8BitSource(base::span<const LChar>);
 
   // String::fromUTF8 will return a null string if
   // the input data contains invalid UTF-8 sequences.

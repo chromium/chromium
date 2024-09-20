@@ -64,7 +64,7 @@ class UCharBuffer {
       case AtomicStringUCharEncoding::kUnknown:
         return StringImpl::Create8BitIfPossible(characters_, length_);
       case AtomicStringUCharEncoding::kIs8Bit:
-        return String::Make8BitFrom16BitSource(characters_, length_)
+        return String::Make8BitFrom16BitSource({characters_, length_})
             .ReleaseImpl();
       case AtomicStringUCharEncoding::kIs16Bit:
         return StringImpl::Create(characters_, length_);

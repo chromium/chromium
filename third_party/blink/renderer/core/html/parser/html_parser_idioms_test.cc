@@ -131,14 +131,12 @@ TEST_P(SplitOnWhitespaceTest, SplitOnASCIIWhitespace) {
 TEST_P(SplitOnWhitespaceTest, UTF16SplitOnASCIIWhitespace) {
   const SplitOnWhitespaceTestCase test_case = GetParam();
   String input8 = test_case.input;
-  String input16 =
-      String::Make16BitFrom8BitSource(input8.Characters8(), input8.length());
+  String input16 = String::Make16BitFrom8BitSource(input8.Span8());
   Vector<String> output = SplitOnASCIIWhitespace(input16);
   EXPECT_EQ(output.size(), test_case.expected.size());
   for (wtf_size_t i = 0; i < output.size(); ++i) {
     String output8 = test_case.expected[i];
-    String output16 = String::Make16BitFrom8BitSource(output8.Characters8(),
-                                                      output8.length());
+    String output16 = String::Make16BitFrom8BitSource(output8.Span8());
     EXPECT_EQ(output[i], output16);
   }
 }

@@ -485,7 +485,7 @@ String AttemptStaticStringCreation(const UChar* characters,
   if (width == kLikely8Bit)
     string = StringImpl::Create8BitIfPossible(characters, size);
   else if (width == kForce8Bit)
-    string = String::Make8BitFrom16BitSource(characters, size);
+    string = String::Make8BitFrom16BitSource({characters, size});
   else
     string = String(characters, size);
 

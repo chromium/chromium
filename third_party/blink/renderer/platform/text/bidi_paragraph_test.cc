@@ -81,8 +81,7 @@ TEST_P(BaseDirectionTest, Data) {
 
   // Test the 8 bits code path if all characters are 8 bits.
   if (text.IsAllSpecialCharacters<[](UChar ch) { return ch <= 0x00FF; }>()) {
-    String text8 =
-        String::Make8BitFrom16BitSource(text.Characters16(), text.length());
+    String text8 = String::Make8BitFrom16BitSource(text.Span16());
 
     // Test when the search stops at Line Feed.
     EXPECT_EQ(
