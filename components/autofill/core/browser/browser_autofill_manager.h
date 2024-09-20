@@ -594,6 +594,13 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source);
 
+  // Evaluates the specifics of the ablation study, updates `context`, and
+  // returns whether the study is enabled/disabled.
+  bool EvaluateAblationStudy(
+      const std::vector<Suggestion>& address_and_credit_card_suggestions,
+      const AutofillField* autofill_field,
+      SuggestionsContext& context);
+
   // Returns a list with the suggestions available for `field`. Which fields of
   // the `form` are filled depends on the `trigger_source`. `context` could
   // contain additional information about the suggestions, such as ablation
