@@ -3823,7 +3823,7 @@
   {
     "name": "enable-projector-server-side-usm",
     "owners": [ "cros-projector@google.com" ],
-    "expiry_milestone": 128
+    "expiry_milestone": 135
   },
   {
     "name": "enable-quic",
