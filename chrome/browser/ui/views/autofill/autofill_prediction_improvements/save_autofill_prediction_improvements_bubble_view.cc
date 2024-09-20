@@ -33,7 +33,7 @@ namespace {
 // TODO(crbug.com/362227996): Icons related to the feedback view is repeating in
 // the suggestion specific class. Consolidate them into a single file. The size
 // of the icons used in the buttons.
-constexpr int kIconSize = 20;
+constexpr int kIconSize = 16;
 
 // The button radius used to paint the background.
 constexpr int kButtonRadius = 12;
@@ -50,12 +50,12 @@ std::unique_ptr<views::View> BuildPredictedValueRow(const std::string key,
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .AddChildren(
           views::Builder<views::Label>()
-              .SetText(base::UTF8ToUTF16(key))
-              .SetTextStyle(views::style::STYLE_BODY_4)
+              .SetText(base::UTF8ToUTF16(value))
+              .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT),
           views::Builder<views::Label>()
-              .SetText(base::UTF8ToUTF16(value))
-              .SetTextStyle(views::style::STYLE_BODY_4_BOLD)
+              .SetText(base::UTF8ToUTF16(key))
+              .SetTextStyle(views::style::STYLE_BODY_5)
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT))
       .Build();
 }
@@ -125,12 +125,33 @@ std::unique_ptr<views::ImageButton> CreateFeedbackButton(
 
 std::unique_ptr<views::View> CreateFooterView(
     base::WeakPtr<SaveAutofillPredictionImprovementsController> controller) {
-  auto feedback_container = std::make_unique<views::BoxLayoutView>();
+  auto footer_container =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetBetweenChildSpacing(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_CONTROL_LIST_VERTICAL))
+          .Build();
+  footer_container->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_FOOTER_DETAILS))
+          .SetMultiLine(true)
+          .SetTextStyle(views::style::STYLE_BODY_5)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .Build());
+
+  auto* feedback_container = footer_container->AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+          .Build());
 
   views::StyledLabel::RangeStyleInfo style_info =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &SaveAutofillPredictionImprovementsController::OnLearnMoreClicked,
           controller));
+  style_info.text_style = views::style::TextStyle::STYLE_LINK_5;
+
   std::vector<size_t> replacement_offsets;
   const std::u16string manage_prediction_improvements_link_text =
       l10n_util::GetStringUTF16(
@@ -145,6 +166,7 @@ std::unique_ptr<views::View> CreateFooterView(
       feedback_container->AddChildView(
           views::Builder<views::StyledLabel>()
               .SetText(formatted_text)
+              .SetDefaultTextStyle(views::style::STYLE_BODY_5)
               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
               .AddStyleRange(
                   gfx::Range(
@@ -174,7 +196,8 @@ std::unique_ptr<views::View> CreateFooterView(
           &SaveAutofillPredictionImprovementsController::OnThumbsDownClicked,
           controller)));
   feedback_container->AddChildView(std::move(buttons_wrapper));
-  return feedback_container;
+
+  return footer_container;
 }
 }  // namespace
 

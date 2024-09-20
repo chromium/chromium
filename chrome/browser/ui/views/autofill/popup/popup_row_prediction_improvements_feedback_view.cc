@@ -36,7 +36,7 @@ namespace autofill {
 namespace {
 
 // The size of the icons used in the buttons.
-constexpr int kIconSize = 20;
+constexpr int kIconSize = 16;
 
 // The button radius used to paint the background.
 constexpr int kButtonRadius = 12;
