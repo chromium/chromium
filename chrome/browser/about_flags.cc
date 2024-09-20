@@ -11835,6 +11835,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          supervised_user::kForceSupervisedUserReauthenticationForBlockedSites)},
 
+    {"supervised-profile-subframe-reauth",
+     flag_descriptions::kSupervisedProfileSubframeReauthName,
+     flag_descriptions::kSupervisedProfileSubframeReauthDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kAllowSupervisedUserReauthenticationForSubframes)},
+
     {"supervised-profile-filtering-fallback",
      flag_descriptions::kSupervisedProfileFilteringFallbackName,
      flag_descriptions::kSupervisedProfileFilteringFallbackDescription,

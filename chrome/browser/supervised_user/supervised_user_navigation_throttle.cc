@@ -203,10 +203,17 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
 // Whether to show a re-auth interstitial instead of the parent approval
 // interstitial.
 bool SupervisedUserNavigationThrottle::ShouldShowReauthInterstitial(
-    const Profile* profile) {
+    const Profile* profile,
+    bool is_main_frame) {
   if (!base::FeatureList::IsEnabled(
           supervised_user::
               kForceSupervisedUserReauthenticationForBlockedSites)) {
+    return false;
+  }
+
+  if (!is_main_frame &&
+      !base::FeatureList::IsEnabled(
+          supervised_user::kAllowSupervisedUserReauthenticationForSubframes)) {
     return false;
   }
 
@@ -256,7 +263,7 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
           navigation_handle()->GetWebContents()->GetBrowserContext());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      if (ShouldShowReauthInterstitial(profile)) {
+      if (ShouldShowReauthInterstitial(profile, is_main_frame)) {
         // Show the re-authentication interstitial if the user signed out of the
         // content area, as parent's approval requires authentication. This
         // interstitial is only available on Linux/Mac/Windows as ChromeOS and

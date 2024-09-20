@@ -21913,6 +21913,8 @@ from previous Chrome versions.
   <int value="698842796"
       label="RevokeNotificationsPermissionIfDisabledOnAppLevel:disabled"/>
   <int value="699149897" label="ContentSuggestionsDebugLog:disabled"/>
+  <int value="699177589"
+      label="EnableSupervisedUserReauthenticationForSubframes:enabled"/>
   <int value="699334781"
       label="AutofillEnableSupportForPhoneNumberTrunkTypes:disabled"/>
   <int value="699632009" label="NewTabPageTilesTitleWrapAround:enabled"/>
@@ -25357,6 +25359,8 @@ from previous Chrome versions.
   <int value="2099866799" label="TrackByDefaultOnMobile:disabled"/>
   <int value="2099945365" label="OmniboxAssistantVoiceSearch:enabled"/>
   <int value="2100128918" label="LibAssistantV2:enabled"/>
+  <int value="2100299982"
+      label="EnableSupervisedUserReauthenticationForSubframes:disabled"/>
   <int value="2100547979" label="AdaptiveCharging:enabled"/>
   <int value="2100708771" label="AutofillVcnEnrollRequestTimeout:disabled"/>
   <int value="2101124624" label="WebUIDownloadShelf:disabled"/>

@@ -8499,6 +8499,14 @@
     "expiry_milestone": 131
   },
   {
+    "name": "supervised-profile-subframe-reauth",
+    "owners": [
+      "ljjlee@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "supervised-profile-youtube-reauth",
     "owners": [
       "ljjlee@google.com",

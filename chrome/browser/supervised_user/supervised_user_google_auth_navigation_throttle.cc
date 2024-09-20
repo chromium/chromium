@@ -21,7 +21,10 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
+#include "components/supervised_user/core/common/features.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -153,14 +156,28 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
           supervised_user::kForceSupervisedUserReauthenticationForYouTube) ||
       !google_util::IsYoutubeDomainUrl(request_url,
                                        google_util::ALLOW_SUBDOMAIN,
-                                       google_util::ALLOW_NON_STANDARD_PORTS) ||
-      !navigation_handle()->IsInPrimaryMainFrame()) {
-    // The interstitial should only be displayed for YouTube requests, and can
-    // only be displayed in the primary main frame (i.e. not in a pre-rendered
-    // page or a sub-frame). Navigation is allowed otherwise.
-    // TODO(355210476): Create an interstitial for embedded YouTube videos in
-    // sub-frames.
+                                       google_util::ALLOW_NON_STANDARD_PORTS)) {
+    // This interstitial should only be displayed for YouTube request.
     return content::NavigationThrottle::PROCEED;
+  }
+
+  // We only show the interstitial for the primary main frame and subframes.
+  // Navigation is allowed otherwise;
+  switch (navigation_handle()->GetNavigatingFrameType()) {
+    case content::FrameType::kSubframe:
+      if (!base::FeatureList::IsEnabled(
+              supervised_user::
+                  kAllowSupervisedUserReauthenticationForSubframes)) {
+        return content::NavigationThrottle::PROCEED;
+      }
+      break;
+    case content::FrameType::kPrimaryMainFrame:
+      break;
+    case content::FrameType::kFencedFrameRoot:
+    case content::FrameType::kPrerenderMainFrame:
+      return content::NavigationThrottle::PROCEED;
+    default:
+      NOTREACHED_NORETURN();
   }
 
   // Cancel the navigation and show the re-authentication page.
