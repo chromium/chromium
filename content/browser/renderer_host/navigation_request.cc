@@ -7183,6 +7183,10 @@ bool NavigationRequest::IsRestore() const {
   return NavigationTypeUtils::IsRestore(common_params_->navigation_type);
 }
 
+bool NavigationRequest::IsReload() const {
+  return NavigationTypeUtils::IsReload(common_params_->navigation_type);
+}
+
 void NavigationRequest::RecordDownloadUseCountersPrePolicyCheck() {
   RenderFrameHost* rfh = frame_tree_node_->current_frame_host();
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(

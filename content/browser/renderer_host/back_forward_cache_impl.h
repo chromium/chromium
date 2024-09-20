@@ -442,6 +442,15 @@ class CONTENT_EXPORT BackForwardCacheImpl
     return should_allow_storing_pages_with_cache_control_no_store_;
   }
 
+  // Returns true if there is a BFCached entry that sufficiently matches the
+  // navigation that just committed in `committing_rfh`, such that the entry
+  // could have been used (the URL, origin, and security properties are the
+  // same, and if `require_no_subframes` is used, has no subframes). This is
+  // called in response to new non-reload/session-restore cross-document
+  // navigation commits.
+  bool HasPotentiallyMatchingEntry(const RenderFrameHostImpl& committing_rfh,
+                                   bool require_no_subframes) const;
+
  private:
   // Destroys all evicted frames in the BackForwardCache.
   void DestroyEvictedFrames();
