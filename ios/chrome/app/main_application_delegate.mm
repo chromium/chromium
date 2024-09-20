@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
+#import "base/ios/scoped_critical_action.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -156,6 +157,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 - (void)applicationWillTerminate:(UIApplication*)application {
   // Any report captured from this point on should be noted as after terminate.
   crash_keys::SetCrashedAfterAppWillTerminate();
+  base::ios::ScopedCriticalAction::ApplicationWillTerminate();
 
   // If `self.didFinishLaunching` is NO, that indicates that the app was
   // terminated before startup could be run. In this situation, skip running

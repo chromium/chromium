@@ -20,6 +20,11 @@
 #include "base/synchronization/lock.h"
 
 namespace base::ios {
+
+BASE_FEATURE(kScopedCriticalActionSkipOnShutdown,
+             "ScopedCriticalActionSkipOnShutdown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 constexpr base::TimeDelta kMaxTaskReuseDelay = base::Seconds(3);
@@ -38,8 +43,21 @@ ScopedCriticalAction::~ScopedCriticalAction() {
 }
 
 // static
+void ScopedCriticalAction::ApplicationWillTerminate() {
+  if (base::FeatureList::IsEnabled(kScopedCriticalActionSkipOnShutdown)) {
+    ActiveBackgroundTaskCache::GetInstance()->ApplicationWillTerminate();
+  }
+}
+
+// static
 void ScopedCriticalAction::ClearNumActiveBackgroundTasksForTest() {
   g_num_active_background_tasks_for_test.store(0);
+}
+
+// static
+void ScopedCriticalAction::ResetApplicationWillTerminateForTest() {
+  ActiveBackgroundTaskCache::GetInstance()
+      ->ResetApplicationWillTerminateForTest();  // IN-TEST
 }
 
 // static
@@ -181,7 +199,9 @@ ScopedCriticalAction::ActiveBackgroundTaskCache::Handle ScopedCriticalAction::
   // If this call didn't newly-create a Core instance, the call to
   // StartBackgroundTask() is almost certainly (barring race conditions)
   // unnecessary. It is however harmless to invoke it twice.
-  Core::StartBackgroundTask(handle->second.core, task_name);
+  if (!application_is_terminating_) {
+    Core::StartBackgroundTask(handle->second.core, task_name);
+  }
 
   return handle;
 }
@@ -206,6 +226,16 @@ void ScopedCriticalAction::ActiveBackgroundTaskCache::ReleaseHandle(
   if (background_task_to_end != nullptr) {
     Core::EndBackgroundTask(std::move(background_task_to_end));
   }
+}
+
+void ScopedCriticalAction::ActiveBackgroundTaskCache::
+    ApplicationWillTerminate() {
+  application_is_terminating_ = true;
+}
+
+void ScopedCriticalAction::ActiveBackgroundTaskCache::
+    ResetApplicationWillTerminateForTest() {
+  application_is_terminating_ = false;
 }
 
 }  // namespace base::ios
