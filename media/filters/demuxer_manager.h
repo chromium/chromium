@@ -188,7 +188,7 @@ class MEDIA_EXPORT DemuxerManager {
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<media::Demuxer> CreateMediaUrlDemuxer(
-      bool hls_content, 
+      bool hls_content,
       base::flat_map<std::string, std::string> headers);
 #endif  // BUILDFLAG(IS_ANDROID)
 
