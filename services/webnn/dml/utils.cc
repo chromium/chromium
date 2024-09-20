@@ -157,6 +157,41 @@ DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice1* dml_device) {
   return feature_levels_supported.MaxSupportedFeatureLevel;
 }
 
+std::string_view DMLFeatureLevelToString(DML_FEATURE_LEVEL dml_feature_level) {
+  switch (dml_feature_level) {
+    case DML_FEATURE_LEVEL_1_0:
+      return "DML_FEATURE_LEVEL_1_0";
+    case DML_FEATURE_LEVEL_2_0:
+      return "DML_FEATURE_LEVEL_2_0";
+    case DML_FEATURE_LEVEL_2_1:
+      return "DML_FEATURE_LEVEL_2_1";
+    case DML_FEATURE_LEVEL_3_0:
+      return "DML_FEATURE_LEVEL_3_0";
+    case DML_FEATURE_LEVEL_3_1:
+      return "DML_FEATURE_LEVEL_3_1";
+    case DML_FEATURE_LEVEL_4_0:
+      return "DML_FEATURE_LEVEL_4_0";
+    case DML_FEATURE_LEVEL_4_1:
+      return "DML_FEATURE_LEVEL_4_1";
+    case DML_FEATURE_LEVEL_5_0:
+      return "DML_FEATURE_LEVEL_5_0";
+    case DML_FEATURE_LEVEL_5_1:
+      return "DML_FEATURE_LEVEL_5_1";
+    case DML_FEATURE_LEVEL_5_2:
+      return "DML_FEATURE_LEVEL_5_2";
+    case DML_FEATURE_LEVEL_6_0:
+      return "DML_FEATURE_LEVEL_6_0";
+    case DML_FEATURE_LEVEL_6_1:
+      return "DML_FEATURE_LEVEL_6_1";
+    case DML_FEATURE_LEVEL_6_2:
+      return "DML_FEATURE_LEVEL_6_2";
+    case DML_FEATURE_LEVEL_6_4:
+      return "DML_FEATURE_LEVEL_6_4";
+    default:
+      return "Unknown DML_FEATURE_LEVEL";
+  }
+}
+
 D3D12_RESOURCE_BARRIER CreateTransitionBarrier(ID3D12Resource* resource,
                                                D3D12_RESOURCE_STATES before,
                                                D3D12_RESOURCE_STATES after) {

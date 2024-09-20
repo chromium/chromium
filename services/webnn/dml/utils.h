@@ -33,6 +33,8 @@ Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice1* dml_device);
 // Returns the maximum feature level supported by the DML device.
 DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice1* dml_device);
 
+std::string_view DMLFeatureLevelToString(DML_FEATURE_LEVEL dml_feature_level);
+
 // Creates a transition barrier which is used to specify the resource is
 // transitioning from `before` to `after` states.
 D3D12_RESOURCE_BARRIER COMPONENT_EXPORT(WEBNN_SERVICE)

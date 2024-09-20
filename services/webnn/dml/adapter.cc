@@ -10,6 +10,7 @@
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "services/webnn/dml/command_queue.h"
@@ -224,33 +225,35 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   // Create dml device.
   Microsoft::WRL::ComPtr<IDMLDevice1> dml_device;
   auto dml_create_device1_proc = platform_functions->dml_create_device1_proc();
-  hr = dml_create_device1_proc(d3d12_device.Get(), flags,
-                               min_required_dml_feature_level,
+  hr = dml_create_device1_proc(d3d12_device.Get(), flags, DML_FEATURE_LEVEL_1_0,
                                IID_PPV_ARGS(&dml_device));
-  if (FAILED(hr)) {
-    if (hr == DXGI_ERROR_SDK_COMPONENT_MISSING) {
-      // DirectML debug layer can fail to load even when it has been installed
-      // on the system. Try again without the debug flag and see if we're
-      // successful.
-      flags = flags & ~DML_CREATE_DEVICE_FLAG_DEBUG;
-      hr = dml_create_device1_proc(d3d12_device.Get(), flags,
-                                   min_required_dml_feature_level,
-                                   IID_PPV_ARGS(&dml_device));
-    }
 
-    if (FAILED(hr)) {
-      if (hr == DXGI_ERROR_UNSUPPORTED) {
-        return HandleAdapterFailure(mojom::Error::Code::kNotSupportedError,
-                                    "DML feature level not supported.", hr);
-      } else {
-        return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
-                                    "Failed to create DirectML device.", hr);
-      }
-    }
+  if (hr == DXGI_ERROR_SDK_COMPONENT_MISSING) {
+    // DirectML debug layer can fail to load even when it has been installed
+    // on the system. Try again without the debug flag and see if we're
+    // successful.
+    flags = flags & ~DML_CREATE_DEVICE_FLAG_DEBUG;
+    hr = dml_create_device1_proc(d3d12_device.Get(), flags,
+                                 DML_FEATURE_LEVEL_1_0,
+                                 IID_PPV_ARGS(&dml_device));
+  }
+
+  if (FAILED(hr)) {
+    return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
+                                "Failed to create DirectML device.", hr);
   }
 
   const DML_FEATURE_LEVEL max_supported_dml_feature_level =
       GetMaxSupportedDMLFeatureLevel(dml_device.Get());
+  if (max_supported_dml_feature_level < min_required_dml_feature_level) {
+    return HandleAdapterFailure(
+        mojom::Error::Code::kNotSupportedError,
+        base::StrCat({"The current supported ",
+                      DMLFeatureLevelToString(max_supported_dml_feature_level),
+                      " is lower than the minimum required ",
+                      DMLFeatureLevelToString(min_required_dml_feature_level),
+                      "."}));
+  }
 
   // Create command queue.
   scoped_refptr<CommandQueue> command_queue =
