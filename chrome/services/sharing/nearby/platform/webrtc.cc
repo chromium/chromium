@@ -384,7 +384,8 @@ void WebRtcMedium::FetchIceServers(webrtc::PeerConnectionObserver* observer,
       base::UnsafeDanglingUntriaged(observer), std::move(callback)));
 }
 
-void WebRtcMedium::InitWebRTCThread(rtc::Thread** thread_to_set) {
+void WebRtcMedium::InitWebRTCThread(
+    raw_ptr<rtc::Thread, DanglingUntriaged>* thread_to_set) {
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
   webrtc::ThreadWrapper::current()->set_send_allowed(true);
   *thread_to_set = webrtc::ThreadWrapper::current();
@@ -519,12 +520,15 @@ void WebRtcMedium::OnIceServersFetched(
   // Add |ice_servers| into the rtc_config.servers.
   for (const auto& ice_server : ice_servers) {
     webrtc::PeerConnectionInterface::IceServer ice_turn_server;
-    for (const auto& url : ice_server->urls)
+    for (const auto& url : ice_server->urls) {
       ice_turn_server.urls.push_back(url.spec());
-    if (ice_server->username)
+    }
+    if (ice_server->username) {
       ice_turn_server.username = *ice_server->username;
-    if (ice_server->credential)
+    }
+    if (ice_server->credential) {
       ice_turn_server.password = *ice_server->credential;
+    }
     rtc_config.servers.push_back(ice_turn_server);
   }
 
