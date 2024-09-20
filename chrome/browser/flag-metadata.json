@@ -8799,11 +8799,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "time-of-day-dlc",
-    "owners": [ "esum@chromium.org", "assistive-eng@google.com" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "tint-composited-content",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & development on ChromeOS, which has no way to
