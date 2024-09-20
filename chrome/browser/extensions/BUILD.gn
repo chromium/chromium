@@ -261,8 +261,6 @@ source_set("extensions") {
     "api/safe_browsing_private/safe_browsing_private_event_router.h",
     "api/safe_browsing_private/safe_browsing_private_event_router_factory.cc",
     "api/safe_browsing_private/safe_browsing_private_event_router_factory.h",
-    "api/search/search_api.cc",
-    "api/search/search_api.h",
     "api/sessions/session_id.cc",
     "api/sessions/session_id.h",
     "api/sessions/sessions_api.cc",

@@ -47,6 +47,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/resources_private",
     "//chrome/browser/extensions/api/safe_browsing_private",
     "//chrome/browser/extensions/api/scripting",
+    "//chrome/browser/extensions/api/search",
     "//chrome/browser/extensions/api/tab_capture",
     "//chrome/browser/extensions/api/tab_groups",
     "//chrome/browser/extensions/api/webrtc_audio_private",
