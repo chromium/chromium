@@ -21,6 +21,20 @@ import org.chromium.ui.display.DisplayUtil;
 /** UI utilities for accessing form factor information. */
 public class DeviceFormFactor {
     /**
+     * Phone form factor.
+     *
+     * <p>Identified by <code>isNonMultiDisplayContextOnTablet() == false</code>.
+     */
+    public static final String PHONE = "Phone";
+
+    /**
+     * Tablet form factor, including {@code #LARGETABLET} below.
+     *
+     * <p>Identified by <code>isNonMultiDisplayContextOnTablet() == true</code>.
+     */
+    public static final String TABLET = "Tablet";
+
+    /**
      * Minimum screen size in dp to be considered a tablet. Matches the value used by res/
      * directories. E.g.: res/values-sw600dp/values.xml
      */

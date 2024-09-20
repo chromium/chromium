@@ -38,7 +38,7 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Public transit tests for the Hub's tab switcher panes. */
 // TODO(crbug/324919909): Migrate more tests from TabSwitcherLayoutTest to here or other test
@@ -47,7 +47,7 @@ import org.chromium.ui.test.util.UiDisableIf;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@ImportantFormFactors(UiDisableIf.TABLET)
+@ImportantFormFactors(DeviceFormFactor.TABLET)
 public class TabSwitcherPanePublicTransitTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
