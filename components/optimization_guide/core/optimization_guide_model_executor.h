@@ -84,11 +84,17 @@ struct SamplingParams {
 struct SessionConfigParams {
   std::optional<SamplingParams> sampling_params;
 
-  // Whether to disable server fallback if on-device model is unavailable.
-  //
-  // This API will change but is done here quickly for simplicity while the
-  // capabilities API gets designed. Please ask owners before using this API.
-  bool disable_server_fallback = false;
+  enum class ExecutionMode {
+    // Allows for infrastructure to choose what is most appropriate.
+    kDefault,
+    // Only allows for on-device execution.
+    kOnDeviceOnly,
+    // Only allows for server execution.
+    kServerOnly,
+  };
+
+  // How the execution of this feature should be configured.
+  ExecutionMode execution_mode = ExecutionMode::kDefault;
 };
 
 // Reasons why the on-device model was not available for use.

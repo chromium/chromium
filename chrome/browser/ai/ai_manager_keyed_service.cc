@@ -212,8 +212,9 @@ class CreateOnDeviceSessionTask
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
   StartSession() {
     optimization_guide::SessionConfigParams config_params =
-        optimization_guide::SessionConfigParams{.disable_server_fallback =
-                                                    true};
+        optimization_guide::SessionConfigParams{
+            .execution_mode = optimization_guide::SessionConfigParams::
+                ExecutionMode::kOnDeviceOnly};
     return service_->StartSession(feature_, config_params);
   }
 
@@ -337,7 +338,9 @@ std::unique_ptr<AITextSession> AIManagerKeyedService::CreateTextSessionInternal(
   }
 
   optimization_guide::SessionConfigParams config_params =
-      optimization_guide::SessionConfigParams{.disable_server_fallback = true};
+      optimization_guide::SessionConfigParams{
+          .execution_mode = optimization_guide::SessionConfigParams::
+              ExecutionMode::kOnDeviceOnly};
   if (sampling_params) {
     config_params.sampling_params = optimization_guide::SamplingParams{
         .top_k = sampling_params->top_k,

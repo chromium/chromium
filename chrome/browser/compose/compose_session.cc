@@ -230,9 +230,15 @@ ComposeSession::ComposeSession(
   callback_ = std::move(callback);
   active_mojo_state_ = compose::mojom::ComposeState::New();
   if (executor_) {
+    optimization_guide::SessionConfigParams config_params = {
+        .execution_mode = base::FeatureList::IsEnabled(
+                              compose::features::kComposeAllowOnDeviceExecution)
+                              ? optimization_guide::SessionConfigParams::
+                                    ExecutionMode::kDefault
+                              : optimization_guide::SessionConfigParams::
+                                    ExecutionMode::kServerOnly};
     session_ = executor_->StartSession(
-        optimization_guide::ModelBasedCapabilityKey::kCompose,
-        /*config_params=*/std::nullopt);
+        optimization_guide::ModelBasedCapabilityKey::kCompose, config_params);
   }
 }
 
