@@ -81,6 +81,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   bool keepalive() const;
   bool isHistoryNavigation() const;
   AbortSignal* signal() const { return signal_.Get(); }
+  String duplex() const;
   String targetAddressSpace() const;
 
   // From Request.idl:

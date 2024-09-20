@@ -1032,6 +1032,10 @@ String Request::integrity() const {
   return request_->Integrity();
 }
 
+String Request::duplex() const {
+  return "half";
+}
+
 bool Request::keepalive() const {
   return request_->Keepalive();
 }

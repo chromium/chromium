@@ -60,6 +60,7 @@ enum ReferrerPolicy {
     readonly attribute DOMString integrity;
     readonly attribute boolean keepalive;
     readonly attribute AbortSignal signal;
+    readonly attribute RequestDuplex duplex;
     [RuntimeEnabled=PrivateNetworkAccessPermissionPrompt] readonly attribute IPAddressSpace targetAddressSpace;
 
     [MeasureAs=RequestIsHistoryNavigation] readonly attribute boolean isHistoryNavigation;
