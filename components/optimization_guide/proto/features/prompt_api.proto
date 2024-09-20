@@ -6,8 +6,6 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
-import "components/optimization_guide/proto/features/common_quality_data.proto";
-
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
