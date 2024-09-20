@@ -11955,6 +11955,21 @@
             ]
         }
     ],
+    "IOSInternalAdditionalFeaturesSwitch": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InternalAdditionalFeaturesSwitch"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [
