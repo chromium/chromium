@@ -1007,8 +1007,6 @@ source_set("extensions") {
     sources += [
       "api/certificate_provider/certificate_provider_api.cc",
       "api/certificate_provider/certificate_provider_api.h",
-      "api/enterprise_networking_attributes/enterprise_networking_attributes_api.cc",
-      "api/enterprise_networking_attributes/enterprise_networking_attributes_api.h",
       "api/file_system/consent_provider_impl.cc",
       "api/file_system/consent_provider_impl.h",
       "api/file_system/request_file_system_notification.cc",
