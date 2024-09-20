@@ -64,8 +64,9 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
       kTargetingUserPrefParsingFail = 41,
       kMissingActionPerformerAction = 42,
       kUnknownMinorUserState = 43,
+      kNullptrProfile = 44,
 
-      kMaxValue = kUnknownMinorUserState,
+      kMaxValue = kNullptrProfile,
     };
 
 // Records errors encountered during the campaigns loading and matching flow.
