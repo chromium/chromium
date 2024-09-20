@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/lacros/desk_template_client_lacros.h"
+
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/lacros/desk_template_client_lacros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,6 +30,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
 #include "ui/platform_window/platform_window.h"
@@ -400,7 +402,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+  client.CreateBrowserWithRestoredData(expected_bounds,
+                                       ui::mojom::WindowShowState::kDefault,
                                        std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
@@ -421,8 +424,9 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(
-      expected_bounds, ui::SHOW_STATE_MINIMIZED, std::move(launch_parameters));
+  client.CreateBrowserWithRestoredData(expected_bounds,
+                                       ui::mojom::WindowShowState::kMinimized,
+                                       std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
   // by the method under test.
@@ -433,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
   // Test that the browser gets correctly minimized.
   views::test::WaitForWidgetShowState(
       BrowserView::GetBrowserViewForBrowser(browser())->GetWidget(),
-      ui::SHOW_STATE_MINIMIZED);
+      ui::mojom::WindowShowState::kMinimized);
 }
 
 IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
@@ -448,7 +452,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+  client.CreateBrowserWithRestoredData(expected_bounds,
+                                       ui::mojom::WindowShowState::kDefault,
                                        std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
@@ -471,7 +476,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+  client.CreateBrowserWithRestoredData(expected_bounds,
+                                       ui::mojom::WindowShowState::kDefault,
                                        std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
@@ -494,7 +500,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+  client.CreateBrowserWithRestoredData(expected_bounds,
+                                       ui::mojom::WindowShowState::kDefault,
                                        std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
@@ -515,7 +522,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+  client.CreateBrowserWithRestoredData(expected_bounds,
+                                       ui::mojom::WindowShowState::kDefault,
                                        std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
@@ -537,7 +545,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+  client.CreateBrowserWithRestoredData(expected_bounds,
+                                       ui::mojom::WindowShowState::kDefault,
                                        std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
@@ -560,7 +569,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+  client.CreateBrowserWithRestoredData(expected_bounds,
+                                       ui::mojom::WindowShowState::kDefault,
                                        std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
@@ -583,7 +593,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+  client.CreateBrowserWithRestoredData(expected_bounds,
+                                       ui::mojom::WindowShowState::kDefault,
                                        std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created

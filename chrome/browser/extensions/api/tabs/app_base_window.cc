@@ -7,6 +7,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/app_window/size_constraints.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace extensions {
@@ -39,7 +40,7 @@ gfx::Rect AppBaseWindow::GetRestoredBounds() const {
   return GetBaseWindow()->GetRestoredBounds();
 }
 
-ui::WindowShowState AppBaseWindow::GetRestoredState() const {
+ui::mojom::WindowShowState AppBaseWindow::GetRestoredState() const {
   return GetBaseWindow()->GetRestoredState();
 }
 

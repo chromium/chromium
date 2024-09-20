@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget.h"
 
 AppWindowBase::AppWindowBase(const ash::ShelfID& shelf_id,
@@ -51,9 +52,9 @@ gfx::Rect AppWindowBase::GetRestoredBounds() const {
   return gfx::Rect();
 }
 
-ui::WindowShowState AppWindowBase::GetRestoredState() const {
+ui::mojom::WindowShowState AppWindowBase::GetRestoredState() const {
   NOTREACHED_IN_MIGRATION();
-  return ui::SHOW_STATE_NORMAL;
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 gfx::Rect AppWindowBase::GetBounds() const {

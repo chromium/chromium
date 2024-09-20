@@ -13,6 +13,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/font.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -94,14 +95,14 @@ bool DesktopBrowserFrameAura::ShouldSaveWindowPlacement() const {
 
 void DesktopBrowserFrameAura::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   *bounds = GetWidget()->GetRestoredBounds();
   if (IsMaximized())
-    *show_state = ui::SHOW_STATE_MAXIMIZED;
+    *show_state = ui::mojom::WindowShowState::kMaximized;
   else if (IsMinimized())
-    *show_state = ui::SHOW_STATE_MINIMIZED;
+    *show_state = ui::mojom::WindowShowState::kMinimized;
   else
-    *show_state = ui::SHOW_STATE_NORMAL;
+    *show_state = ui::mojom::WindowShowState::kNormal;
 }
 
 content::KeyboardEventProcessingResult

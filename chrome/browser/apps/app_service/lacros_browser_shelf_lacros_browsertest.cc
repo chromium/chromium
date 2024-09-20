@@ -11,6 +11,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/app_constants/constants.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_show_state_waiter.h"
@@ -50,7 +51,8 @@ IN_PROC_BROWSER_TEST_F(LacrosBrowserShelfLacrosBrowserTest, ClickOnShelf) {
   test_controller->SelectItemInShelf(app_constants::kLacrosAppId,
                                      success_future.GetCallback());
   ASSERT_TRUE(success_future.Take());
-  views::test::WaitForWidgetShowState(widget, ui::SHOW_STATE_MINIMIZED);
+  views::test::WaitForWidgetShowState(widget,
+                                      ui::mojom::WindowShowState::kMinimized);
   ASSERT_FALSE(browser()->window()->IsVisible());
   ASSERT_TRUE(browser()->window()->IsMinimized());
 

@@ -32,6 +32,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
 
@@ -47,7 +48,7 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
 
   Browser* AddBrowser() {
     Browser::CreateParams native_params(profile_.get(), true);
-    native_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+    native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
     std::unique_ptr<Browser> browser =
         CreateBrowserWithTestWindowForParams(native_params);
     Browser* browser_ptr = browser.get();

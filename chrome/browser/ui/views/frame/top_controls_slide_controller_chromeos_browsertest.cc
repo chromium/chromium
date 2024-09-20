@@ -49,6 +49,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
@@ -579,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisabledForHostedApps) {
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       "test_browser_app", true /* trusted_source */, gfx::Rect(),
       browser()->profile(), true);
-  params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+  params.initial_show_state = ui::mojom::WindowShowState::kDefault;
   Browser* browser = Browser::Create(params);
   AddBlankTabAndShow(browser);
 

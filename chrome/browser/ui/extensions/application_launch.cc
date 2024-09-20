@@ -57,6 +57,7 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/geometry/rect.h"
@@ -167,14 +168,15 @@ GURL UrlForExtension(const extensions::Extension* extension,
   return url;
 }
 
-ui::WindowShowState DetermineWindowShowState(Profile* profile,
-                                             apps::LaunchContainer container,
-                                             const Extension* extension) {
+ui::mojom::WindowShowState DetermineWindowShowState(
+    Profile* profile,
+    apps::LaunchContainer container,
+    const Extension* extension) {
   if (!extension || container != apps::LaunchContainer::kLaunchContainerWindow)
-    return ui::SHOW_STATE_DEFAULT;
+    return ui::mojom::WindowShowState::kDefault;
 
   if (IsRunningInForcedAppMode()) {
-    return ui::SHOW_STATE_FULLSCREEN;
+    return ui::mojom::WindowShowState::kFullscreen;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -183,14 +185,14 @@ ui::WindowShowState DetermineWindowShowState(Profile* profile,
   extensions::LaunchType launch_type =
       extensions::GetLaunchType(ExtensionPrefs::Get(profile), extension);
   if (launch_type == extensions::LAUNCH_TYPE_FULLSCREEN) {
-    return ui::SHOW_STATE_MAXIMIZED;
+    return ui::mojom::WindowShowState::kMaximized;
   }
   if (launch_type == extensions::LAUNCH_TYPE_WINDOW) {
-    return ui::SHOW_STATE_DEFAULT;
+    return ui::mojom::WindowShowState::kDefault;
   }
 #endif
 
-  return ui::SHOW_STATE_DEFAULT;
+  return ui::mojom::WindowShowState::kDefault;
 }
 
 WebContents* OpenApplicationTab(Profile* profile,

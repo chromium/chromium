@@ -242,6 +242,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/point.h"
@@ -2248,7 +2249,7 @@ void Browser::RestoreFromWebAPI() {
   window_->Restore();
 }
 
-ui::WindowShowState Browser::GetWindowShowState() const {
+ui::mojom::WindowShowState Browser::GetWindowShowState() const {
   return window_->GetWindowShowState();
 }
 

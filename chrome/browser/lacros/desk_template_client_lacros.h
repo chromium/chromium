@@ -11,7 +11,7 @@
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "url/gurl.h"
 
 class Profile;

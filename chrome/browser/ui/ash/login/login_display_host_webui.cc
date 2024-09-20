@@ -106,6 +106,7 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -971,7 +972,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = CalculateScreenBounds(gfx::Size());
-  params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  params.show_state = ui::mojom::WindowShowState::kFullscreen;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   ash_util::SetupWidgetInitParamsForContainer(

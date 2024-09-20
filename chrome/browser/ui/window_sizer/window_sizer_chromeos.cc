@@ -16,6 +16,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -41,7 +42,7 @@ WindowSizerChromeOS::~WindowSizerChromeOS() = default;
 void WindowSizerChromeOS::DetermineWindowBoundsAndShowState(
     const gfx::Rect& specified_bounds,
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) {
+    ui::mojom::WindowShowState* show_state) {
   // If we got *both* the bounds and show state, we're done.
   if (GetBrowserBounds(bounds, show_state))
     return;
@@ -80,7 +81,7 @@ gfx::Rect WindowSizerChromeOS::GetDefaultWindowBounds(
 
 bool WindowSizerChromeOS::GetBrowserBounds(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   if (!browser())
     return false;
 
@@ -119,7 +120,8 @@ bool WindowSizerChromeOS::GetBrowserBounds(
     }
   }
 
-  if (browser()->is_type_normal() && *show_state == ui::SHOW_STATE_DEFAULT) {
+  if (browser()->is_type_normal() &&
+      *show_state == ui::mojom::WindowShowState::kDefault) {
     display::Display display =
         display::Screen::GetScreen()->GetDisplayMatching(*bounds);
     gfx::Rect work_area = display.work_area();
@@ -129,7 +131,7 @@ bool WindowSizerChromeOS::GetBrowserBounds(
       // |bounds| returned here become the restore bounds once the window
       // gets maximized after this method returns. Return a sensible default
       // in order to make restored state visibly different from maximized.
-      *show_state = ui::SHOW_STATE_MAXIMIZED;
+      *show_state = ui::mojom::WindowShowState::kMaximized;
       *bounds = GetDefaultWindowBounds(display);
       determined = true;
     }
@@ -139,13 +141,13 @@ bool WindowSizerChromeOS::GetBrowserBounds(
 
 void WindowSizerChromeOS::GetTabbedBrowserBounds(
     gfx::Rect* bounds_in_screen,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   DCHECK(show_state);
   DCHECK(bounds_in_screen);
   DCHECK(browser()->is_type_normal());
   DCHECK(bounds_in_screen->IsEmpty());
 
-  const ui::WindowShowState passed_show_state = *show_state;
+  const ui::mojom::WindowShowState passed_show_state = *show_state;
 
   bool is_saved_bounds = GetSavedWindowBounds(bounds_in_screen, show_state);
   display::Display display = GetDisplayForNewWindow(*bounds_in_screen);
@@ -164,12 +166,12 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
                    switches::kDisableAutoMaximizeForTests)))) {
     // No browsers, no saved bounds: assume first run. Maximize if set by policy
     // or if the screen is narrower than a predetermined size.
-    *show_state = ui::SHOW_STATE_MAXIMIZED;
+    *show_state = ui::mojom::WindowShowState::kMaximized;
   } else {
     // Take the show state from the last active window and copy its restored
     // bounds only if we don't have saved bounds.
     gfx::Rect bounds_copy = *bounds_in_screen;
-    ui::WindowShowState show_state_copy = passed_show_state;
+    ui::mojom::WindowShowState show_state_copy = passed_show_state;
     if (state_provider() && state_provider()->GetLastActiveWindowState(
                                 &bounds_copy, &show_state_copy)) {
       *show_state = show_state_copy;
@@ -185,7 +187,7 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
 
 bool WindowSizerChromeOS::GetAppBrowserBoundsFromLastActive(
     gfx::Rect* bounds_in_screen,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   DCHECK(show_state);
   DCHECK(bounds_in_screen);
   DCHECK(browser()->app_controller());

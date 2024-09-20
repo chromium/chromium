@@ -48,6 +48,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -193,7 +194,7 @@ const gfx::Rect BrowserLiveTabContext::GetRestoredBounds() const {
   return browser_->window()->GetRestoredBounds();
 }
 
-ui::WindowShowState BrowserLiveTabContext::GetRestoredState() const {
+ui::mojom::WindowShowState BrowserLiveTabContext::GetRestoredState() const {
   return browser_->window()->GetRestoredState();
 }
 
@@ -362,7 +363,7 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
     sessions::SessionWindow::WindowType type,
     const std::string& app_name,
     const gfx::Rect& bounds,
-    ui::WindowShowState show_state,
+    ui::mojom::WindowShowState show_state,
     const std::string& workspace,
     const std::string& user_title,
     const std::map<std::string, std::string>& extra_data) {

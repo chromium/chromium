@@ -36,6 +36,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/mojom/themes.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/font_list.h"
@@ -251,8 +252,9 @@ bool BrowserFrame::ShouldDrawFrameHeader() const {
   return true;
 }
 
-void BrowserFrame::GetWindowPlacement(gfx::Rect* bounds,
-                                      ui::WindowShowState* show_state) const {
+void BrowserFrame::GetWindowPlacement(
+    gfx::Rect* bounds,
+    ui::mojom::WindowShowState* show_state) const {
   return native_browser_frame_->GetWindowPlacement(bounds, show_state);
 }
 

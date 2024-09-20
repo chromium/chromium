@@ -79,6 +79,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -557,8 +558,8 @@ Browser::CreateParams CreateParamsForApp(const webapps::AppId& app_id,
           : Browser::CreateParams::CreateForApp(
                 app_name, trusted_source, window_bounds, profile, user_gesture);
   params.initial_show_state = IsRunningInForcedAppMode()
-                                  ? ui::SHOW_STATE_FULLSCREEN
-                                  : ui::SHOW_STATE_DEFAULT;
+                                  ? ui::mojom::WindowShowState::kFullscreen
+                                  : ui::mojom::WindowShowState::kDefault;
   return params;
 }
 

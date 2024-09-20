@@ -42,6 +42,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -218,8 +219,8 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   // save back-and-forth communication with the window manager. Right now all
   // lock screen apps either end up maximized (e.g. Keep) or are not resizable.
   if (create_params.show_on_lock_screen && create_params.resizable) {
-    DCHECK_EQ(ui::SHOW_STATE_DEFAULT, init_params->show_state);
-    init_params->show_state = ui::SHOW_STATE_MAXIMIZED;
+    DCHECK_EQ(ui::mojom::WindowShowState::kDefault, init_params->show_state);
+    init_params->show_state = ui::mojom::WindowShowState::kMaximized;
   }
 
   const int32_t restore_window_id =
@@ -294,11 +295,11 @@ gfx::Rect ChromeNativeAppWindowViewsAuraAsh::GetRestoredBounds() const {
   return ChromeNativeAppWindowViewsAura::GetRestoredBounds();
 }
 
-ui::WindowShowState
-ChromeNativeAppWindowViewsAuraAsh::GetRestoredState() const {
+ui::mojom::WindowShowState ChromeNativeAppWindowViewsAuraAsh::GetRestoredState()
+    const {
   // Use kRestoreShowStateKey to get the window restore show state in case a
   // window is minimized/hidden.
-  ui::WindowShowState restore_state =
+  ui::mojom::WindowShowState restore_state =
       GetNativeWindow()->GetProperty(aura::client::kRestoreShowStateKey);
 
   bool is_fullscreen = false;
@@ -307,10 +308,10 @@ ChromeNativeAppWindowViewsAuraAsh::GetRestoredState() const {
     // immersive fullscreen.
     restore_state = chromeos::ToWindowShowState(GetNativeWindow()->GetProperty(
         ash::kRestoreWindowStateTypeOverrideKey));
-    is_fullscreen = restore_state == ui::SHOW_STATE_FULLSCREEN;
+    is_fullscreen = restore_state == ui::mojom::WindowShowState::kFullscreen;
   } else {
     if (IsMaximized())
-      return ui::SHOW_STATE_MAXIMIZED;
+      return ui::mojom::WindowShowState::kMaximized;
     is_fullscreen = IsFullscreen();
   }
 
@@ -321,7 +322,7 @@ ChromeNativeAppWindowViewsAuraAsh::GetRestoredState() const {
       // type makes for a bad experience.
       return GetNativeWindow()->GetProperty(aura::client::kRestoreShowStateKey);
     }
-    return ui::SHOW_STATE_FULLSCREEN;
+    return ui::mojom::WindowShowState::kFullscreen;
   }
 
   return GetRestorableState(restore_state);
@@ -598,8 +599,9 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowPropertyChanged(
 
   auto new_state = window->GetProperty(aura::client::kShowStateKey);
 
-  if (new_state != ui::SHOW_STATE_FULLSCREEN &&
-      new_state != ui::SHOW_STATE_MINIMIZED && app_window()->IsFullscreen()) {
+  if (new_state != ui::mojom::WindowShowState::kFullscreen &&
+      new_state != ui::mojom::WindowShowState::kMinimized &&
+      app_window()->IsFullscreen()) {
     app_window()->Restore();
   }
 

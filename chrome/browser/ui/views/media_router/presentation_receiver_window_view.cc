@@ -41,6 +41,7 @@
 #include "content/public/common/content_constants.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
@@ -85,11 +86,12 @@ class FullscreenWindowObserver : public aura::WindowObserver {
                                const void* key,
                                intptr_t old) override {
     if (key == aura::client::kShowStateKey) {
-      ui::WindowShowState new_state =
+      ui::mojom::WindowShowState new_state =
           window->GetProperty(aura::client::kShowStateKey);
-      ui::WindowShowState old_state = static_cast<ui::WindowShowState>(old);
-      if (old_state == ui::SHOW_STATE_FULLSCREEN ||
-          new_state == ui::SHOW_STATE_FULLSCREEN) {
+      ui::mojom::WindowShowState old_state =
+          static_cast<ui::mojom::WindowShowState>(old);
+      if (old_state == ui::mojom::WindowShowState::kFullscreen ||
+          new_state == ui::mojom::WindowShowState::kFullscreen) {
         on_fullscreen_change_.Run();
       }
     }

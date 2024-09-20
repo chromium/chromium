@@ -76,6 +76,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/aura/env.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -3955,9 +3956,9 @@ void NewBrowserWindowStateStep2(DetachToBrowserTabDragControllerTest* test,
   Browser* new_browser = test->browser_list()->get(2);
   aura::Window* window = new_browser->window()->GetNativeWindow();
   EXPECT_NE(window->GetProperty(aura::client::kShowStateKey),
-            ui::SHOW_STATE_MAXIMIZED);
+            ui::mojom::WindowShowState::kMaximized);
   EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
-            ui::SHOW_STATE_DEFAULT);
+            ui::mojom::WindowShowState::kDefault);
 
   EXPECT_TRUE(test->ReleaseInput());
 }
@@ -3970,7 +3971,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        NewBrowserWindowState) {
   // Create a browser window whose initial show state is MAXIMIZED.
   Browser::CreateParams params(browser()->profile(), /*user_gesture=*/false);
-  params.initial_show_state = ui::SHOW_STATE_MAXIMIZED;
+  params.initial_show_state = ui::mojom::WindowShowState::kMaximized;
   Browser* browser = Browser::Create(params);
   AddBlankTabAndShow(browser);
   TabStrip* tab_strip = GetTabStripForBrowser(browser);
@@ -3980,7 +3981,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   browser->window()->Maximize();
   EXPECT_EQ(browser->window()->GetNativeWindow()->GetProperty(
                 aura::client::kShowStateKey),
-            ui::SHOW_STATE_MAXIMIZED);
+            ui::mojom::WindowShowState::kMaximized);
 
   // Drag it far enough that the first tab detaches.
   DragTabAndNotify(
@@ -4623,7 +4624,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   gfx::Rect work_area = displays.second.work_area();
   work_area.Inset(gfx::Insets::TLBR(20, 20, 60, 20));
   Browser::CreateParams params(browser()->profile(), true);
-  params.initial_show_state = ui::SHOW_STATE_NORMAL;
+  params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   params.initial_bounds = work_area;
   Browser* browser2 = Browser::Create(params);
   AddBlankTabAndShow(browser2);

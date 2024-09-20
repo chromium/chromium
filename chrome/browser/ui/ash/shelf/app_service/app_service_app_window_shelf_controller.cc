@@ -57,6 +57,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
@@ -208,9 +209,9 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   // shelf then it is added to a shelf by `ASAWSC::OnWindowVisibilityChanged()`
   // but when the window is created as a minimized window there is no change in
   // visible state and it is not added to the shelf. Hence, when a widget has a
-  // `initial_show_state_` as ui::SHOW_STATE_MINIMIZED, it should add itself to
-  // a shelf during initialization. The below code is applicable only for Lacros
-  // browser app.
+  // `initial_show_state_` as ui::mojom::WindowShowState::kMinimized, it should
+  // add itself to a shelf during initialization. The below code is applicable
+  // only for Lacros browser app.
   auto shelf_id = GetShelfId(window);
   if (!shelf_id.IsNull() &&
       GetAppType(shelf_id.app_id) == apps::AppType::kStandaloneBrowser &&

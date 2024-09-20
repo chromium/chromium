@@ -109,6 +109,7 @@
 #include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -533,7 +534,7 @@ void BrowserManager::CreateBrowserWithRestoredData(
     const std::vector<GURL>& urls,
     const gfx::Rect& bounds,
     const std::vector<tab_groups::TabGroupInfo>& tab_group_infos,
-    ui::WindowShowState show_state,
+    ui::mojom::WindowShowState show_state,
     int32_t active_tab_index,
     int32_t first_non_pinned_tab_index,
     const std::string& app_name,

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/linux/device_scale_factor_observer.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"  // nogncheck
 
@@ -77,7 +78,7 @@ class BrowserDesktopWindowTreeHostLinux
   void Init(const views::Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
   void CloseNow() override;
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
   bool SupportsMouseLock() override;
   void LockMouse(aura::Window* window) override;

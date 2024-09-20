@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/context_menu_controller.h"
@@ -118,7 +119,7 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
 
   // Retrieves the window placement (show state and bounds) for restoring.
   void GetWindowPlacement(gfx::Rect* bounds,
-                          ui::WindowShowState* show_state) const;
+                          ui::mojom::WindowShowState* show_state) const;
 
   // Returns HANDLED if the |event| was handled by the platform implementation
   // before sending it to the renderer. E.g., it may be swallowed by a native

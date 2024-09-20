@@ -97,6 +97,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -641,12 +642,12 @@ class SessionRestoreImpl : public BrowserListObserver {
     Browser* browser_to_activate = nullptr;
 
     // Determine if there is a visible window, or if the active window exists.
-    // Even if all windows are ui::SHOW_STATE_MINIMIZED, if one of them is the
-    // active window it will be made visible by the call to
+    // Even if all windows are ui::mojom::WindowShowState::kMinimized, if one of
+    // them is the active window it will be made visible by the call to
     // browser_to_activate->window()->Activate() later on in this method.
     bool has_visible_browser = false;
     for (const auto& window : *windows) {
-      if (window->show_state != ui::SHOW_STATE_MINIMIZED ||
+      if (window->show_state != ui::mojom::WindowShowState::kMinimized ||
           window->window_id == active_window_id) {
         has_visible_browser = true;
       }
@@ -693,10 +694,10 @@ class SessionRestoreImpl : public BrowserListObserver {
             "SessionRestore-CreateRestoredBrowser-Start", false);
 #endif
         // Change the initial show state of the created browser to
-        // SHOW_STATE_NORMAL if there are no visible browsers.
-        ui::WindowShowState show_state = window->show_state;
+        // WindowShowState::kNormal if there are no visible browsers.
+        ui::mojom::WindowShowState show_state = window->show_state;
         if (!has_visible_browser) {
-          show_state = ui::SHOW_STATE_NORMAL;
+          show_state = ui::mojom::WindowShowState::kNormal;
           has_visible_browser = true;
         }
         browser = CreateRestoredBrowser(
@@ -1030,7 +1031,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       gfx::Rect bounds,
       const std::string& workspace,
       bool visible_on_all_workspaces,
-      ui::WindowShowState show_state,
+      ui::mojom::WindowShowState show_state,
       const std::string& app_name,
       const std::string& user_title,
       const std::map<std::string, std::string>& extra_data,

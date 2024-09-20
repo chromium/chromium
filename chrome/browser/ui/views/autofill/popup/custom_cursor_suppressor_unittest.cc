@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "url/gurl.h"
 
@@ -189,7 +190,7 @@ TEST_F(CustomCursorSuppressorTest, MultipleBrowsers) {
 
   // Set up a second browser window.
   Browser::CreateParams native_params(profile(), true);
-  native_params.initial_show_state = ui::SHOW_STATE_NORMAL;
+  native_params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   std::unique_ptr<Browser> browser2(
       CreateBrowserWithTestWindowForParams(native_params));
   ASSERT_THAT(*BrowserList::GetInstance(), SizeIs(2));
@@ -219,7 +220,7 @@ TEST_F(CustomCursorSuppressorTest, BrowserAddition) {
 
   // Open a second browser window while the suppression is already on.
   Browser::CreateParams native_params(profile(), true);
-  native_params.initial_show_state = ui::SHOW_STATE_NORMAL;
+  native_params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   std::unique_ptr<Browser> browser2(
       CreateBrowserWithTestWindowForParams(native_params));
   ASSERT_THAT(*BrowserList::GetInstance(), SizeIs(2));

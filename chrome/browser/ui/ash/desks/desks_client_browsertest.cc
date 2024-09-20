@@ -128,6 +128,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -2205,8 +2206,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
-  auto normalize_state = [](ui::WindowShowState state) {
-    return state == ui::SHOW_STATE_DEFAULT ? ui::SHOW_STATE_NORMAL : state;
+  auto normalize_state = [](ui::mojom::WindowShowState state) {
+    return state == ui::mojom::WindowShowState::kDefault
+               ? ui::mojom::WindowShowState::kNormal
+               : state;
   };
   EXPECT_EQ(
       normalize_state(window->GetProperty(aura::client::kShowStateKey)),
@@ -3195,7 +3198,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest,
   // Add our browser under test, this is the only way to launch an app
   // via the BrowserManager.
   crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
-      {GURL(kExampleUrl1)}, {0, 0, 256, 256}, {}, ui::SHOW_STATE_DEFAULT,
+      {GURL(kExampleUrl1)}, {0, 0, 256, 256}, {},
+      ui::mojom::WindowShowState::kDefault,
       /*active_tab_index=*/0, /*first_non_pinned_tab_index=*/0, kTestAppName,
       kTestWindowId, /*lacros_profile_id=*/0);
   LacrosWindowWaiter waiter;

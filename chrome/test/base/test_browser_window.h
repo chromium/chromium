@@ -25,6 +25,7 @@
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/new_badge_controller.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
@@ -102,7 +103,7 @@ class TestBrowserWindow : public BrowserWindow {
   }
   void ZoomChangedForActiveTab(bool can_show_bubble) override {}
   gfx::Rect GetRestoredBounds() const override;
-  ui::WindowShowState GetRestoredState() const override;
+  ui::mojom::WindowShowState GetRestoredState() const override;
   gfx::Rect GetBounds() const override;
   gfx::Size GetContentsSize() const override;
   void SetContentsSize(const gfx::Size& size) override;
@@ -113,7 +114,7 @@ class TestBrowserWindow : public BrowserWindow {
   void Restore() override {}
   void OnCanResizeFromWebAPIChanged() override {}
   bool GetCanResize() override;
-  ui::WindowShowState GetWindowShowState() const override;
+  ui::mojom::WindowShowState GetWindowShowState() const override;
   bool ShouldHideUIForFullscreen() const override;
   bool IsFullscreen() const override;
   bool IsFullscreenBubbleVisible() const override;

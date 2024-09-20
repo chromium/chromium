@@ -33,6 +33,7 @@
 #include "extensions/browser/extension_util.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
@@ -228,13 +229,14 @@ gfx::Rect ChromeNativeAppWindowViews::GetRestoredBounds() const {
   return widget()->GetRestoredBounds();
 }
 
-ui::WindowShowState ChromeNativeAppWindowViews::GetRestoredState() const {
+ui::mojom::WindowShowState ChromeNativeAppWindowViews::GetRestoredState()
+    const {
   if (IsMaximized())
-    return ui::SHOW_STATE_MAXIMIZED;
+    return ui::mojom::WindowShowState::kMaximized;
   if (IsFullscreen())
-    return ui::SHOW_STATE_FULLSCREEN;
+    return ui::mojom::WindowShowState::kFullscreen;
 
-  return ui::SHOW_STATE_NORMAL;
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 ui::ZOrderLevel ChromeNativeAppWindowViews::GetZOrderLevel() const {

@@ -47,6 +47,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace extensions {
 
@@ -337,21 +338,21 @@ SessionsGetDevicesFunction::CreateWindowModel(
 
   api::windows::WindowState state = api::windows::WindowState::kNone;
   switch (window.show_state) {
-    case ui::SHOW_STATE_NORMAL:
+    case ui::mojom::WindowShowState::kNormal:
       state = api::windows::WindowState::kNormal;
       break;
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       state = api::windows::WindowState::kMinimized;
       break;
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       state = api::windows::WindowState::kMaximized;
       break;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       state = api::windows::WindowState::kFullscreen;
       break;
-    case ui::SHOW_STATE_DEFAULT:
-    case ui::SHOW_STATE_INACTIVE:
-    case ui::SHOW_STATE_END:
+    case ui::mojom::WindowShowState::kDefault:
+    case ui::mojom::WindowShowState::kInactive:
+    case ui::mojom::WindowShowState::kEnd:
       break;
   }
 

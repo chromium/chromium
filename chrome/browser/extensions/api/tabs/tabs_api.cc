@@ -122,6 +122,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -238,22 +239,23 @@ bool MatchesBool(const std::optional<bool>& boolean, bool value) {
   return !boolean || *boolean == value;
 }
 
-ui::WindowShowState ConvertToWindowShowState(windows::WindowState state) {
+ui::mojom::WindowShowState ConvertToWindowShowState(
+    windows::WindowState state) {
   switch (state) {
     case windows::WindowState::kNormal:
-      return ui::SHOW_STATE_NORMAL;
+      return ui::mojom::WindowShowState::kNormal;
     case windows::WindowState::kMinimized:
-      return ui::SHOW_STATE_MINIMIZED;
+      return ui::mojom::WindowShowState::kMinimized;
     case windows::WindowState::kMaximized:
-      return ui::SHOW_STATE_MAXIMIZED;
+      return ui::mojom::WindowShowState::kMaximized;
     case windows::WindowState::kFullscreen:
     case windows::WindowState::kLockedFullscreen:
-      return ui::SHOW_STATE_FULLSCREEN;
+      return ui::mojom::WindowShowState::kFullscreen;
     case windows::WindowState::kNone:
-      return ui::SHOW_STATE_DEFAULT;
+      return ui::mojom::WindowShowState::kDefault;
   }
   NOTREACHED_IN_MIGRATION();
-  return ui::SHOW_STATE_DEFAULT;
+  return ui::mojom::WindowShowState::kDefault;
 }
 
 bool IsValidStateForWindowsCreateFunction(
@@ -699,7 +701,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     }
 
     // Initialize default window bounds according to window type.
-    ui::WindowShowState ignored_show_state = ui::SHOW_STATE_DEFAULT;
+    ui::mojom::WindowShowState ignored_show_state =
+        ui::mojom::WindowShowState::kDefault;
     WindowSizer::GetBrowserWindowBoundsAndShowState(
         gfx::Rect(), nullptr, &window_bounds, &ignored_show_state);
 
@@ -770,7 +773,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
         /*trusted_source=*/false, window_bounds, window_profile,
         user_gesture());
   }
-  create_params.initial_show_state = ui::SHOW_STATE_NORMAL;
+  create_params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   if (create_data && create_data->state != windows::WindowState::kNone) {
     if (create_data->state == windows::WindowState::kLockedFullscreen &&
         !ExtensionHasLockedFullscreenPermission(extension())) {
@@ -867,12 +870,13 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   }
 
 // Despite creating the window with initial_show_state() ==
-// ui::SHOW_STATE_MINIMIZED above, on Linux the window is not created as
-// minimized.
+// ui::mojom::WindowShowState::kMinimized above, on Linux the window is not
+// created as minimized.
 // TODO(crbug.com/40254339): Remove this workaround when linux is fixed.
 // TODO(crbug.com/40254339): Find a fix for wayland as well.
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
-  if (new_window->initial_show_state() == ui::SHOW_STATE_MINIMIZED) {
+  if (new_window->initial_show_state() ==
+      ui::mojom::WindowShowState::kMinimized) {
     new_window->window()->Minimize();
   }
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
@@ -955,11 +959,12 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   if (set_window_bounds && !WindowBoundsIntersectDisplays(window_bounds))
     return RespondNow(Error(tabs_constants::kInvalidWindowBoundsError));
 
-  ui::WindowShowState show_state =
+  ui::mojom::WindowShowState show_state =
       ConvertToWindowShowState(params->update_info.state);
-  if (set_window_bounds && (show_state == ui::SHOW_STATE_MINIMIZED ||
-                            show_state == ui::SHOW_STATE_MAXIMIZED ||
-                            show_state == ui::SHOW_STATE_FULLSCREEN)) {
+  if (set_window_bounds &&
+      (show_state == ui::mojom::WindowShowState::kMinimized ||
+       show_state == ui::mojom::WindowShowState::kMaximized ||
+       show_state == ui::mojom::WindowShowState::kFullscreen)) {
     return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
   }
 
@@ -967,10 +972,11 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
     bool focused = *params->update_info.focused;
     // A window cannot be focused and minimized, or not focused and maximized
     // or fullscreened.
-    if (focused && show_state == ui::SHOW_STATE_MINIMIZED)
+    if (focused && show_state == ui::mojom::WindowShowState::kMinimized) {
       return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
-    if (!focused && (show_state == ui::SHOW_STATE_MAXIMIZED ||
-                     show_state == ui::SHOW_STATE_FULLSCREEN)) {
+    }
+    if (!focused && (show_state == ui::mojom::WindowShowState::kMaximized ||
+                     show_state == ui::mojom::WindowShowState::kFullscreen)) {
       return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
     }
   }
@@ -989,20 +995,20 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
     SetLockedFullscreenState(browser, /*pinned=*/true);
   }
 
-  if (show_state != ui::SHOW_STATE_FULLSCREEN &&
-      show_state != ui::SHOW_STATE_DEFAULT) {
+  if (show_state != ui::mojom::WindowShowState::kFullscreen &&
+      show_state != ui::mojom::WindowShowState::kDefault) {
     browser->extension_window_controller()->SetFullscreenMode(
         false, extension()->url());
   }
 
   switch (show_state) {
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       browser->window()->Minimize();
       break;
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       browser->window()->Maximize();
       break;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       if (browser->window()->IsMinimized() ||
           browser->window()->IsMaximized()) {
         browser->window()->Restore();
@@ -1010,7 +1016,7 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
       browser->extension_window_controller()->SetFullscreenMode(
           true, extension()->url());
       break;
-    case ui::SHOW_STATE_NORMAL:
+    case ui::mojom::WindowShowState::kNormal:
       browser->window()->Restore();
       break;
     default:

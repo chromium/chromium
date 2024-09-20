@@ -38,6 +38,7 @@
 #include "components/user_education/common/new_badge_controller.h"
 #include "ui/base/base_window.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/origin.h"
@@ -708,7 +709,7 @@ class BrowserWindow : public ui::BaseWindow {
   // "native" resizability.
   virtual bool GetCanResize() = 0;
 
-  virtual ui::WindowShowState GetWindowShowState() const = 0;
+  virtual ui::mojom::WindowShowState GetWindowShowState() const = 0;
 
   // Shows the Chrome Labs bubble if enabled.
   virtual void ShowChromeLabs() = 0;

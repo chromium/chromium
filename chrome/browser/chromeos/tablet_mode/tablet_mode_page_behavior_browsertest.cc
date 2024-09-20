@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace {
 
@@ -119,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       "test_browser_app", true /* trusted_source */, gfx::Rect(),
       browser()->profile(), true);
-  params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+  params.initial_show_state = ui::mojom::WindowShowState::kDefault;
   Browser* browser = Browser::Create(params);
   AddBlankTabAndShow(browser);
 

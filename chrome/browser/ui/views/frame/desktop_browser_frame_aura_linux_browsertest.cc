@@ -13,6 +13,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -29,7 +30,7 @@ gfx::Size GetWindowSize(Browser* browser) {
   const NativeBrowserFrame* const frame =
       browser_view->frame()->native_browser_frame();
   gfx::Rect bounds;
-  ui::WindowShowState show_state;
+  ui::mojom::WindowShowState show_state;
   frame->GetWindowPlacement(&bounds, &show_state);
   return bounds.size();
 }

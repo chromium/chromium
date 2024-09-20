@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 // #include "content/public/test/browser_task_environment.h"
 // #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -43,7 +44,7 @@ class TabOrganizationTriggerObserverTest : public BrowserWithTestWindowTest {
 
   Browser* AddBrowser() {
     Browser::CreateParams native_params(profile_.get(), true);
-    native_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+    native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
     std::unique_ptr<Browser> browser =
         CreateBrowserWithTestWindowForParams(native_params);
     Browser* browser_ptr = browser.get();

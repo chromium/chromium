@@ -249,6 +249,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/theme_provider.h"
@@ -1897,14 +1898,14 @@ void BrowserView::ZoomChangedForActiveTab(bool can_show_bubble) {
 
 gfx::Rect BrowserView::GetRestoredBounds() const {
   gfx::Rect bounds;
-  ui::WindowShowState state;
+  ui::mojom::WindowShowState state;
   frame_->GetWindowPlacement(&bounds, &state);
   return bounds;
 }
 
-ui::WindowShowState BrowserView::GetRestoredState() const {
+ui::mojom::WindowShowState BrowserView::GetRestoredState() const {
   gfx::Rect bounds;
-  ui::WindowShowState state;
+  ui::mojom::WindowShowState state;
   frame_->GetWindowPlacement(&bounds, &state);
   return state;
 }
@@ -2757,16 +2758,16 @@ bool BrowserView::GetCanResize() {
 }
 
 // TODO(laurila, crbug.com/1466855): Map into new `ui::DisplayState` enum
-// instead of `ui::WindowShowState`.
-ui::WindowShowState BrowserView::GetWindowShowState() const {
+// instead of `ui::mojom::WindowShowState`.
+ui::mojom::WindowShowState BrowserView::GetWindowShowState() const {
   if (IsMaximized()) {
-    return ui::SHOW_STATE_MAXIMIZED;
+    return ui::mojom::WindowShowState::kMaximized;
   } else if (IsMinimized()) {
-    return ui::SHOW_STATE_MINIMIZED;
+    return ui::mojom::WindowShowState::kMinimized;
   } else if (IsFullscreen()) {
-    return ui::SHOW_STATE_FULLSCREEN;
+    return ui::mojom::WindowShowState::kFullscreen;
   } else {
-    return ui::SHOW_STATE_DEFAULT;
+    return ui::mojom::WindowShowState::kDefault;
   }
 }
 
@@ -4002,7 +4003,7 @@ bool BrowserView::ShouldSaveWindowPlacement() const {
 }
 
 void BrowserView::SaveWindowPlacement(const gfx::Rect& bounds,
-                                      ui::WindowShowState show_state) {
+                                      ui::mojom::WindowShowState show_state) {
   DCHECK(ShouldSaveWindowPlacement());
 
   WidgetDelegate::SaveWindowPlacement(bounds, show_state);
@@ -4021,7 +4022,7 @@ void BrowserView::SaveWindowPlacement(const gfx::Rect& bounds,
 bool BrowserView::GetSavedWindowPlacement(
     const views::Widget* widget,
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   chrome::GetSavedWindowBoundsAndShowState(browser_.get(), bounds, show_state);
   // TODO(crbug.com/40092782): Generalize this code for app and non-app popups?
   if (chrome::SavedBoundsAreContentBounds(browser_.get()) &&
@@ -4060,7 +4061,7 @@ bool BrowserView::GetSavedWindowPlacement(
     rect.AdjustToFit(display.work_area());
 
     *bounds = rect;
-    *show_state = ui::SHOW_STATE_NORMAL;
+    *show_state = ui::mojom::WindowShowState::kNormal;
   }
 
   // We return true because we can _always_ locate reasonable bounds using the

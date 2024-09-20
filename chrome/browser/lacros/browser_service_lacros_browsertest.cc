@@ -56,6 +56,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/screen.h"
 
 using crosapi::mojom::BrowserInitParams;
@@ -127,7 +128,8 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
   void VerifyFullscreenWindow() {
     // Verify the browser status.
     Browser* browser = BrowserList::GetInstance()->GetLastActive();
-    EXPECT_EQ(browser->initial_show_state(), ui::SHOW_STATE_FULLSCREEN);
+    EXPECT_EQ(browser->initial_show_state(),
+              ui::mojom::WindowShowState::kFullscreen);
     EXPECT_TRUE(browser->is_trusted_source());
     EXPECT_TRUE(browser->window()->IsFullscreen());
     EXPECT_TRUE(browser->window()->IsVisible());

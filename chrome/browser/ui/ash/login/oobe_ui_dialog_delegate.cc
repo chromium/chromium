@@ -38,6 +38,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -291,7 +292,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   layout_view_ = new LayoutWidgetDelegateView(this, dialog_view_);
   params.delegate = layout_view_.get();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  params.show_state = ui::mojom::WindowShowState::kFullscreen;
 
   widget_ = new views::Widget();
   widget_->Init(std::move(params));

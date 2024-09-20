@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "chrome/browser/ui/views/frame/minimize_button_metrics_win.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
 class BrowserFrame;
@@ -58,7 +59,7 @@ class BrowserDesktopWindowTreeHostWin
 
   // Overridden from DesktopWindowTreeHostWin:
   void Init(const views::Widget::InitParams& params) override;
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
   std::string GetWorkspace() const override;
   int GetInitialShowState() const override;

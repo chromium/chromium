@@ -57,6 +57,7 @@
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
@@ -79,9 +80,8 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
     helper_.SetService(session_service_.get());
 
     service()->SetWindowType(window_id, Browser::TYPE_NORMAL);
-    service()->SetWindowBounds(window_id,
-                               window_bounds,
-                               ui::SHOW_STATE_NORMAL);
+    service()->SetWindowBounds(window_id, window_bounds,
+                               ui::mojom::WindowShowState::kNormal);
     service()->SetWindowWorkspace(window_id, window_workspace);
   }
 
@@ -187,9 +187,8 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
 
     const gfx::Rect window2_bounds(3, 4, 5, 6);
     service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
-    service()->SetWindowBounds(window2_id,
-                               window2_bounds,
-                               ui::SHOW_STATE_MAXIMIZED);
+    service()->SetWindowBounds(window2_id, window2_bounds,
+                               ui::mojom::WindowShowState::kMaximized);
     helper_.PrepareTabInWindow(window2_id, tab2_id, 0, true);
     UpdateNavigation(window2_id, tab2_id, *nav2, true);
   }
@@ -375,15 +374,15 @@ TEST_F(SessionServiceTest, TwoWindows) {
   sessions::SessionTab* rt2;
   if (windows[0]->window_id == window_id) {
     ASSERT_EQ(window2_id, windows[1]->window_id);
-    ASSERT_EQ(ui::SHOW_STATE_NORMAL, windows[0]->show_state);
-    ASSERT_EQ(ui::SHOW_STATE_MAXIMIZED, windows[1]->show_state);
+    ASSERT_EQ(ui::mojom::WindowShowState::kNormal, windows[0]->show_state);
+    ASSERT_EQ(ui::mojom::WindowShowState::kMaximized, windows[1]->show_state);
     rt1 = windows[0]->tabs[0].get();
     rt2 = windows[1]->tabs[0].get();
   } else {
     ASSERT_EQ(window2_id, windows[0]->window_id);
     ASSERT_EQ(window_id, windows[1]->window_id);
-    ASSERT_EQ(ui::SHOW_STATE_MAXIMIZED, windows[0]->show_state);
-    ASSERT_EQ(ui::SHOW_STATE_NORMAL, windows[1]->show_state);
+    ASSERT_EQ(ui::mojom::WindowShowState::kMaximized, windows[0]->show_state);
+    ASSERT_EQ(ui::mojom::WindowShowState::kNormal, windows[1]->show_state);
     rt1 = windows[1]->tabs[0].get();
     rt2 = windows[0]->tabs[0].get();
   }
@@ -409,9 +408,8 @@ TEST_F(SessionServiceTest, WindowWithNoTabsGetsPruned) {
 
   const gfx::Rect window2_bounds(3, 4, 5, 6);
   service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
-  service()->SetWindowBounds(window2_id,
-                             window2_bounds,
-                             ui::SHOW_STATE_NORMAL);
+  service()->SetWindowBounds(window2_id, window2_bounds,
+                             ui::mojom::WindowShowState::kNormal);
   helper_.PrepareTabInWindow(window2_id, tab2_id, 0, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
@@ -531,9 +529,8 @@ TEST_F(SessionServiceTest, WindowCloseCommittedAfterNavigate) {
   ASSERT_NE(window2_id, window_id);
 
   service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
-  service()->SetWindowBounds(window2_id,
-                             window_bounds,
-                             ui::SHOW_STATE_NORMAL);
+  service()->SetWindowBounds(window2_id, window_bounds,
+                             ui::mojom::WindowShowState::kNormal);
 
   SerializedNavigationEntry nav1 =
       ContentTestHelper::CreateNavigation("http://google.com", "abc");
@@ -892,14 +889,13 @@ TEST_F(SessionServiceTest, DontPersistDefault) {
       ContentTestHelper::CreateNavigation("http://google.com", "abc");
   helper_.PrepareTabInWindow(window_id, tab_id, 0, true);
   UpdateNavigation(window_id, tab_id, nav1, true);
-  service()->SetWindowBounds(window_id,
-                             window_bounds,
-                             ui::SHOW_STATE_DEFAULT);
+  service()->SetWindowBounds(window_id, window_bounds,
+                             ui::mojom::WindowShowState::kDefault);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
   ReadWindows(&windows, nullptr);
   ASSERT_EQ(1U, windows.size());
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, windows[0]->show_state);
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal, windows[0]->show_state);
 }
 
 TEST_F(SessionServiceTest, KeepPostDataWithoutPasswords) {

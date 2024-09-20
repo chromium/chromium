@@ -56,6 +56,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/button/button.h"
@@ -478,7 +479,7 @@ class BrowserView : public BrowserWindow,
   void OnTabDetached(content::WebContents* contents, bool was_active) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
   gfx::Rect GetRestoredBounds() const override;
-  ui::WindowShowState GetRestoredState() const override;
+  ui::mojom::WindowShowState GetRestoredState() const override;
   gfx::Rect GetBounds() const override;
   gfx::Size GetContentsSize() const override;
   void SetContentsSize(const gfx::Size& size) override;
@@ -489,7 +490,7 @@ class BrowserView : public BrowserWindow,
   void Restore() override;
   void OnCanResizeFromWebAPIChanged() override;
   bool GetCanResize() override;
-  ui::WindowShowState GetWindowShowState() const override;
+  ui::mojom::WindowShowState GetWindowShowState() const override;
   void EnterFullscreen(const GURL& url,
                        ExclusiveAccessBubbleType bubble_type,
                        int64_t display_id) override;
@@ -678,10 +679,11 @@ class BrowserView : public BrowserWindow,
   std::string GetWindowName() const override;
   bool ShouldSaveWindowPlacement() const override;
   void SaveWindowPlacement(const gfx::Rect& bounds,
-                           ui::WindowShowState show_state) override;
-  bool GetSavedWindowPlacement(const views::Widget* widget,
-                               gfx::Rect* bounds,
-                               ui::WindowShowState* show_state) const override;
+                           ui::mojom::WindowShowState show_state) override;
+  bool GetSavedWindowPlacement(
+      const views::Widget* widget,
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
   views::View* GetContentsView() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::View* CreateOverlayView() override;

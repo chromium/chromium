@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -20,7 +21,8 @@ constexpr int kDefaultWidth = 1920;
 constexpr int kDefaultHeight = 1200;
 constexpr int kDefaultOffsetX = 0;
 constexpr int kDefaultOffsetY = 0;
-constexpr ui::WindowShowState kDefaultShowState = ui::SHOW_STATE_MAXIMIZED;
+constexpr ui::mojom::WindowShowState kDefaultShowState =
+    ui::mojom::WindowShowState::kMaximized;
 
 class BrowserWindowStateTest : public testing::Test {
  public:
@@ -31,7 +33,7 @@ class BrowserWindowStateTest : public testing::Test {
         command_line_(base::CommandLine::NO_PROGRAM) {}
 
   gfx::Rect bounds_;
-  ui::WindowShowState show_state_;
+  ui::mojom::WindowShowState show_state_;
   base::CommandLine command_line_;
 };
 
@@ -69,7 +71,7 @@ TEST_F(BrowserWindowStateTest, WindowSizeOverridesShowState) {
   EXPECT_EQ(bounds_.y(), kDefaultOffsetY);
   EXPECT_EQ(bounds_.width(), 100);
   EXPECT_EQ(bounds_.height(), 200);
-  EXPECT_EQ(show_state_, ui::SHOW_STATE_NORMAL);
+  EXPECT_EQ(show_state_, ui::mojom::WindowShowState::kNormal);
 }
 
 TEST_F(BrowserWindowStateTest, WindowPositionOverridesShowState) {
@@ -81,7 +83,7 @@ TEST_F(BrowserWindowStateTest, WindowPositionOverridesShowState) {
   EXPECT_EQ(bounds_.y(), 200);
   EXPECT_EQ(bounds_.width(), kDefaultWidth);
   EXPECT_EQ(bounds_.height(), kDefaultHeight);
-  EXPECT_EQ(show_state_, ui::SHOW_STATE_NORMAL);
+  EXPECT_EQ(show_state_, ui::mojom::WindowShowState::kNormal);
 }
 
 }  // namespace internal

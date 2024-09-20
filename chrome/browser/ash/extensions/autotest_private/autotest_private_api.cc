@@ -239,6 +239,7 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/text_input_method.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -5706,7 +5707,7 @@ AutotestPrivateSetWindowBoundsFunction::Run() {
 
   auto* state = ash::WindowState::Get(window);
   if (!state || chromeos::ToWindowShowState(state->GetStateType()) !=
-                    ui::SHOW_STATE_NORMAL) {
+                    ui::mojom::WindowShowState::kNormal) {
     return RespondNow(
         Error("Cannot set bounds of window not in normal show state."));
   }

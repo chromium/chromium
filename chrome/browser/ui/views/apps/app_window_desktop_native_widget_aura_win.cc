@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/views/apps/app_window_desktop_window_tree_host_win.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_win.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 
 AppWindowDesktopNativeWidgetAuraWin::AppWindowDesktopNativeWidgetAuraWin(
@@ -32,7 +33,8 @@ void AppWindowDesktopNativeWidgetAuraWin::Maximize() {
   // TODO(jackhou): Make this behavior the same as other platforms, i.e. calling
   // Maximize() does not also show the window.
   if (tree_host_ && !tree_host_->IsVisible()) {
-    DesktopNativeWidgetAura::Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+    DesktopNativeWidgetAura::Show(ui::mojom::WindowShowState::kNormal,
+                                  gfx::Rect());
   }
   DesktopNativeWidgetAura::Maximize();
 }
@@ -43,7 +45,8 @@ void AppWindowDesktopNativeWidgetAuraWin::Minimize() {
   // TODO(jackhou): Make this behavior the same as other platforms, i.e. calling
   // Minimize() does not also show the window.
   if (tree_host_ && !tree_host_->IsVisible()) {
-    DesktopNativeWidgetAura::Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+    DesktopNativeWidgetAura::Show(ui::mojom::WindowShowState::kNormal,
+                                  gfx::Rect());
   }
   DesktopNativeWidgetAura::Minimize();
 }

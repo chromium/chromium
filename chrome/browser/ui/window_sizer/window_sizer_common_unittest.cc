@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/window_sizer/window_sizer_common_unittest.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -15,6 +16,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
@@ -55,21 +57,23 @@ class TestScreen : public display::ScreenBase {
 
 TestStateProvider::TestStateProvider()
     : has_persistent_data_(false),
-      persistent_show_state_(ui::SHOW_STATE_DEFAULT),
+      persistent_show_state_(ui::mojom::WindowShowState::kDefault),
       has_last_active_data_(false),
-      last_active_show_state_(ui::SHOW_STATE_DEFAULT) {}
+      last_active_show_state_(ui::mojom::WindowShowState::kDefault) {}
 
-void TestStateProvider::SetPersistentState(const gfx::Rect& bounds,
-                                           const gfx::Rect& work_area,
-                                           ui::WindowShowState show_state) {
+void TestStateProvider::SetPersistentState(
+    const gfx::Rect& bounds,
+    const gfx::Rect& work_area,
+    ui::mojom::WindowShowState show_state) {
   persistent_bounds_ = bounds;
   persistent_work_area_ = work_area;
   persistent_show_state_ = show_state;
   has_persistent_data_ = true;
 }
 
-void TestStateProvider::SetLastActiveState(const gfx::Rect& bounds,
-                                           ui::WindowShowState show_state) {
+void TestStateProvider::SetLastActiveState(
+    const gfx::Rect& bounds,
+    ui::mojom::WindowShowState show_state) {
   last_active_bounds_ = bounds;
   last_active_show_state_ = show_state;
   has_last_active_data_ = true;
@@ -78,22 +82,24 @@ void TestStateProvider::SetLastActiveState(const gfx::Rect& bounds,
 bool TestStateProvider::GetPersistentState(
     gfx::Rect* bounds,
     gfx::Rect* saved_work_area,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   DCHECK(show_state);
   *bounds = persistent_bounds_;
   *saved_work_area = persistent_work_area_;
-  if (*show_state == ui::SHOW_STATE_DEFAULT)
+  if (*show_state == ui::mojom::WindowShowState::kDefault) {
     *show_state = persistent_show_state_;
+  }
   return has_persistent_data_;
 }
 
 bool TestStateProvider::GetLastActiveWindowState(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   DCHECK(show_state);
   *bounds = last_active_bounds_;
-  if (*show_state == ui::SHOW_STATE_DEFAULT)
+  if (*show_state == ui::mojom::WindowShowState::kDefault) {
     *show_state = last_active_show_state_;
+  }
   return has_last_active_data_;
 }
 
@@ -147,11 +153,12 @@ gfx::Rect WindowSizerTestUtil::GetWindowBounds() {
   auto provider = std::make_unique<TestStateProvider>();
   if (!persisted_bounds_.IsEmpty() || !persisted_work_area_.IsEmpty())
     provider->SetPersistentState(persisted_bounds_, persisted_work_area_,
-                                 ui::SHOW_STATE_DEFAULT);
+                                 ui::mojom::WindowShowState::kDefault);
   if (!last_active_bounds_.IsEmpty())
-    provider->SetLastActiveState(last_active_bounds_, ui::SHOW_STATE_DEFAULT);
+    provider->SetLastActiveState(last_active_bounds_,
+                                 ui::mojom::WindowShowState::kDefault);
 
-  ui::WindowShowState ignored;
+  ui::mojom::WindowShowState ignored;
   gfx::Rect out_bounds;
   WindowSizer::GetBrowserWindowBoundsAndShowState(
       std::move(provider), specified_bounds_, /*browser=*/nullptr, &out_bounds,

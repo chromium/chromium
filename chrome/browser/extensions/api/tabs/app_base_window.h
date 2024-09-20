@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 namespace extensions {
 
@@ -33,7 +34,7 @@ class AppBaseWindow : public ui::BaseWindow {
   bool IsFullscreen() const override;
   gfx::NativeWindow GetNativeWindow() const override;
   gfx::Rect GetRestoredBounds() const override;
-  ui::WindowShowState GetRestoredState() const override;
+  ui::mojom::WindowShowState GetRestoredState() const override;
   gfx::Rect GetBounds() const override;
   void Show() override;
   void Hide() override;

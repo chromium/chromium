@@ -89,6 +89,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/types/display_constants.h"
@@ -180,7 +181,7 @@ void CreateAndSaveWindowInfo(
     const base::Uuid& desk_uuid,
     const gfx::Rect& current_bounds,
     chromeos::WindowStateType window_state_type,
-    std::optional<ui::WindowShowState> pre_minimized_show_state,
+    std::optional<ui::mojom::WindowShowState> pre_minimized_show_state,
     std::optional<uint32_t> snap_percentage) {
   ::app_restore::WindowInfo window_info;
   window_info.window = window;
@@ -209,7 +210,7 @@ void CreateAndSaveWindowInfo(
     const base::Uuid& desk_uuid,
     const gfx::Rect& current_bounds,
     chromeos::WindowStateType window_state_type,
-    std::optional<ui::WindowShowState> pre_minimized_show_state,
+    std::optional<ui::mojom::WindowShowState> pre_minimized_show_state,
     std::optional<uint32_t> snap_percentage) {
   // A window is needed for `SaveWindowInfo()`, but all it needs is a layer and
   // `kWindowIdKey` to be set. `window` needs to be alive when save is called
@@ -473,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   SaveDefaultAppLaunchInfo();
   CreateAndSaveWindowInfo(kWindowId2, kDeskId, kDeskUuid, kCurrentBounds,
                           chromeos::WindowStateType::kMinimized,
-                          ui::SHOW_STATE_MAXIMIZED,
+                          ui::mojom::WindowShowState::kMaximized,
                           /*snap_percentage=*/std::nullopt);
 
   AppLaunchInfoSaveWaiter::Wait();
