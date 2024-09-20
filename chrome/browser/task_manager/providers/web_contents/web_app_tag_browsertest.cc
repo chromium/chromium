@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_expected_support.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/common/web_app_id.h"
@@ -157,14 +159,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, TabNavigatedAwayNotWebAppTask) {
 class WebAppTagIsolatedWebAppTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  protected:
-  webapps::AppId InstallIsolatedWebApp() {
-    server_ =
-        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-    web_app::IsolatedWebAppUrlInfo url_info =
-        InstallDevModeProxyIsolatedWebApp(server_->GetOrigin());
-    return url_info.app_id();
-  }
-
   const std::vector<raw_ptr<WebContentsTag, VectorExperimental>>& tracked_tags()
       const {
     return WebContentsTagsManager::GetInstance()->tracked_tags();
@@ -181,17 +175,20 @@ class WebAppTagIsolatedWebAppTest
       observer.WaitForNavigationFinished();
     }
   }
-
-  net::EmbeddedTestServer* server() { return server_.get(); }
-
- private:
-  std::unique_ptr<net::EmbeddedTestServer> server_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest, IsolatedWebAppTaskCreated) {
   EXPECT_EQ(1U, tracked_tags().size());
 
-  webapps::AppId app_id = InstallIsolatedWebApp();
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+          .AddHtml(
+              "/",
+              "<html><head><title>IWA Document Title</title></head></html>")
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
+  webapps::AppId app_id = url_info.app_id();
   MockWebContentsTaskManager task_manager;
   EXPECT_TRUE(task_manager.tasks().empty());
 
@@ -213,14 +210,24 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest, IsolatedWebAppTaskCreated) {
 
   EXPECT_THAT(
       task_manager.tasks(),
-      Contains(Pointee(Property(&Task::title, u"App: Isolated Web App"))));
+      Contains(Pointee(Property(&Task::title, u"App: IWA Document Title"))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
                        IsolatedWebAppTaskTitleFallbackToAppName) {
   EXPECT_EQ(1U, tracked_tags().size());
 
-  webapps::AppId app_id = InstallIsolatedWebApp();
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().SetName("IWA Name"))
+          .AddHtml(
+              "/",
+              "<html><head><title>IWA Document Title</title></head></html>")
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
+  webapps::AppId app_id = url_info.app_id();
+
   MockWebContentsTaskManager task_manager;
   EXPECT_TRUE(task_manager.tasks().empty());
 
@@ -242,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
 
   EXPECT_THAT(
       task_manager.tasks(),
-      Contains(Pointee(Property(&Task::title, u"App: Isolated Web App"))));
+      Contains(Pointee(Property(&Task::title, u"App: IWA Document Title"))));
 
   GURL iwa_url =
       browser->tab_strip_model()->GetActiveWebContents()->GetLastCommittedURL();
@@ -255,9 +262,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_THAT(
-      task_manager.tasks(),
-      Contains(Pointee(Property(&Task::title, u"App: Simple Isolated App"))));
+  EXPECT_THAT(task_manager.tasks(),
+              Contains(Pointee(Property(&Task::title, u"App: IWA Name"))));
 }
 
 }  // namespace task_manager

@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/custom_handlers/protocol_handler_registry.h"
+
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -19,10 +22,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/custom_handlers/protocol_handler.h"
-#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -371,24 +374,16 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerAndServiceWorkerInterceptor,
                             "pageWithCustomSchemeHandledByServiceWorker();"));
 }
 
-class ChromeRegisterProtocolHandlerIsolatedWebAppsTest
-    : public web_app::IsolatedWebAppBrowserTestHarness {
- protected:
-  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp() {
-    server_ =
-        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-    web_app::IsolatedWebAppUrlInfo url_info =
-        InstallDevModeProxyIsolatedWebApp(server_->GetOrigin());
-    return url_info;
-  }
-
- private:
-  std::unique_ptr<net::EmbeddedTestServer> server_;
-};
+using ChromeRegisterProtocolHandlerIsolatedWebAppsTest =
+    web_app::IsolatedWebAppBrowserTestHarness;
 
 IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerIsolatedWebAppsTest,
                        Basic) {
-  auto url_info = InstallIsolatedWebApp();
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
+
   Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
