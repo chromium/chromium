@@ -124,17 +124,13 @@ class WTF_EXPORT TextCodec {
                              UnencodableHandling) = 0;
   // EncodeInto is meant only to encode UTF8 bytes into an unsigned char*
   // buffer; therefore this method is only usefully overridden by TextCodecUTF8.
-  virtual EncodeIntoResult EncodeInto(const LChar*,
-                                      wtf_size_t length,
-                                      unsigned char* destination,
-                                      size_t capacity) {
+  virtual EncodeIntoResult EncodeInto(base::span<const LChar>,
+                                      base::span<uint8_t> destination) {
     NOTREACHED_IN_MIGRATION();
     return EncodeIntoResult{0, 0};
   }
-  virtual EncodeIntoResult EncodeInto(const UChar*,
-                                      wtf_size_t length,
-                                      unsigned char* destination,
-                                      size_t capacity) {
+  virtual EncodeIntoResult EncodeInto(base::span<const UChar>,
+                                      base::span<uint8_t> destination) {
     NOTREACHED_IN_MIGRATION();
     return EncodeIntoResult{0, 0};
   }

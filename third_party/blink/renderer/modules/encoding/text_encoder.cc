@@ -92,18 +92,10 @@ TextEncoderEncodeIntoResult* TextEncoder::encodeInto(
   TextEncoderEncodeIntoResult* encode_into_result =
       TextEncoderEncodeIntoResult::Create();
 
-  TextCodec::EncodeIntoResult encode_into_result_data;
-  unsigned char* destination_buffer = destination->Data();
-  if (source.Is8Bit()) {
-    encode_into_result_data =
-        codec_->EncodeInto(source.Characters8(), source.length(),
-                           destination_buffer, destination->length());
-  } else {
-    encode_into_result_data =
-        codec_->EncodeInto(source.Characters16(), source.length(),
-                           destination_buffer, destination->length());
-  }
-
+  TextCodec::EncodeIntoResult encode_into_result_data =
+      WTF::VisitCharacters(source, [this, &destination](auto chars) {
+        return codec_->EncodeInto(chars, destination->ByteSpan());
+      });
   encode_into_result->setRead(encode_into_result_data.code_units_read);
   encode_into_result->setWritten(encode_into_result_data.bytes_written);
   return encode_into_result;
