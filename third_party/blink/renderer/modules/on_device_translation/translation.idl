@@ -33,6 +33,7 @@ interface Translation {
   );
   [
     RuntimeEnabled=LanguageDetectionAPI,
+    Exposed=Window,
     Measure,
     CallWith=ScriptState,
     RaisesException
@@ -40,6 +41,7 @@ interface Translation {
   Promise<TranslationAvailability> canDetect();
   [
     RuntimeEnabled=LanguageDetectionAPI,
+    Exposed=Window,
     Measure,
     CallWith=ScriptState,
     RaisesException

@@ -1126,10 +1126,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter storageFormat
 [Worker]     getter width
 [Worker]     method constructor
-[Worker] interface LanguageDetector
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method detect
 [Worker] interface LanguageTranslator
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -1907,10 +1903,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method terminate
 [Worker] interface Translation
 [Worker]     attribute @@toStringTag
-[Worker]     method canDetect
 [Worker]     method canTranslate
 [Worker]     method constructor
-[Worker]     method createDetector
 [Worker]     method createTranslator
 [Worker] interface TrustedHTML
 [Worker]     static method fromLiteral
