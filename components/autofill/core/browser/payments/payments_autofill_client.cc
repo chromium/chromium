@@ -19,6 +19,10 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 
+#if !BUILDFLAG(IS_IOS)
+#include "components/webauthn/core/browser/internal_authenticator.h"
+#endif  // !BUILDFLAG(IS_IOS)
+
 namespace autofill::payments {
 
 PaymentsAutofillClient::~PaymentsAutofillClient() = default;
