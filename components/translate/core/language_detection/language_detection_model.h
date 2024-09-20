@@ -22,7 +22,10 @@ BASE_DECLARE_FEATURE(kTruncateLanguageDetectionSample);
 class LanguageDetectionModel {
  public:
   explicit LanguageDetectionModel(
-      language_detection::LanguageDetectionModel* tflite_model_);
+      language_detection::LanguageDetectionModel& shared_tflite_model);
+  explicit LanguageDetectionModel(
+      std::unique_ptr<language_detection::LanguageDetectionModel>
+          owned_tflite_model);
   ~LanguageDetectionModel();
 
   // Updates the language detection model for use by memory-mapping
@@ -64,7 +67,9 @@ class LanguageDetectionModel {
       const std::u16string& sampled_str) const;
 
   // The tflite classifier that can determine the language of text.
-  const raw_ptr<language_detection::LanguageDetectionModel> tflite_model_;
+  std::unique_ptr<language_detection::LanguageDetectionModel>
+      owned_tflite_model_;
+  const raw_ref<language_detection::LanguageDetectionModel> tflite_model_;
 };
 
 }  // namespace translate

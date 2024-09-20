@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
-
 #import <Foundation/Foundation.h>
 
 #import <memory>
@@ -12,6 +10,7 @@
 #import "components/language/core/browser/language_prefs.h"
 #import "components/language/core/browser/pref_names.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
+#import "components/language_detection/core/language_detection_model.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/translate/core/browser/mock_translate_ranker.h"
@@ -22,6 +21,7 @@
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
 #import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
 #import "ios/web_view/internal/translate/web_view_translate_client.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -73,7 +73,9 @@ class TestLanguageModel : public language::LanguageModel {
 
 class CWVTranslationControllerTest : public TestWithLocaleAndResources {
  protected:
-  CWVTranslationControllerTest() : language_detection_model_(nullptr) {
+  CWVTranslationControllerTest()
+      : language_detection_model_(
+            std::make_unique<language_detection::LanguageDetectionModel>()) {
     web::WebState::CreateParams params(&browser_state_);
     web_state_ = web::WebState::Create(params);
     web_state_->SetKeepRenderProcessAlive(true);

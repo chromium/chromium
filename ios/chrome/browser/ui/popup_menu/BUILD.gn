@@ -137,6 +137,7 @@ source_set("unit_tests") {
     "//components/bookmarks/test",
     "//components/feature_engagement/test:test_support",
     "//components/language/ios/browser",
+    "//components/language_detection/core",
     "//components/password_manager/core/browser:test_support",
     "//components/prefs",
     "//components/prefs:test_support",

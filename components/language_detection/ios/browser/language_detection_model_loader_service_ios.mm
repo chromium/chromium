@@ -13,35 +13,13 @@
 
 namespace language_detection {
 
-// Container class owning both a language_detection::LanguageDetectionModel
-// and a translate::LanguageDetectionModel and orchestrating their lifetime.
-class LanguageDetectionModelLoaderServiceIOS::ModelContainer {
- public:
-  ModelContainer() = default;
-
-  ModelContainer(const ModelContainer&) = delete;
-  ModelContainer& operator=(const ModelContainer&) = delete;
-
-  ~ModelContainer() = default;
-
-  translate::LanguageDetectionModel* model() { return &outer_model_; }
-
-  bool IsAvailable() const { return outer_model_.IsAvailable(); }
-
-  void UpdateWithFileAsync(base::File model_file, base::OnceClosure callback) {
-    inner_model_.UpdateWithFileAsync(std::move(model_file), base::DoNothing());
-  }
-
- private:
-  language_detection::LanguageDetectionModel inner_model_;
-  translate::LanguageDetectionModel outer_model_{&inner_model_};
-};
-
 LanguageDetectionModelLoaderServiceIOS::LanguageDetectionModelLoaderServiceIOS(
     language_detection::LanguageDetectionModelService*
         language_detection_model_service)
     : language_detection_model_service_(language_detection_model_service),
-      model_container_(std::make_unique<ModelContainer>()) {
+      language_detection_model_(
+          std::make_unique<translate::LanguageDetectionModel>(
+              std::make_unique<language_detection::LanguageDetectionModel>())) {
   if (language_detection_model_service_) {
     language_detection_model_service_->GetLanguageDetectionModelFile(
         base::BindOnce(&LanguageDetectionModelLoaderServiceIOS::
@@ -56,19 +34,19 @@ LanguageDetectionModelLoaderServiceIOS::
 translate::LanguageDetectionModel*
 LanguageDetectionModelLoaderServiceIOS::GetLanguageDetectionModel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return model_container_->model();
+  return language_detection_model_.get();
 }
 
 bool LanguageDetectionModelLoaderServiceIOS::IsModelAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return model_container_->IsAvailable();
+  return language_detection_model_->IsAvailable();
 }
 
 void LanguageDetectionModelLoaderServiceIOS::
     OnLanguageDetectionModelFileReceived(base::File model_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  model_container_->UpdateWithFileAsync(std::move(model_file),
-                                        base::DoNothing());
+  language_detection_model_->UpdateWithFileAsync(std::move(model_file),
+                                                 base::DoNothing());
 }
 
 }  // namespace language_detection

@@ -19,6 +19,7 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
+#import "components/language_detection/core/language_detection_model.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -154,7 +155,9 @@ std::unique_ptr<PrefServiceSyncable> CreatePrefServiceForBrowserState() {
 
 class OverflowMenuMediatorTest : public PlatformTest {
  public:
-  OverflowMenuMediatorTest() : language_detection_model_(nullptr) {
+  OverflowMenuMediatorTest()
+      : language_detection_model_(
+            std::make_unique<language_detection::LanguageDetectionModel>()) {
     pref_service_.registry()->RegisterBooleanPref(
         translate::prefs::kOfferTranslateEnabled, true);
     pref_service_.registry()->RegisterStringPref(prefs::kSupervisedUserId,

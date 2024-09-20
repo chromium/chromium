@@ -23,14 +23,12 @@ namespace translate {
 class LanguageDetectionModelValidTest : public testing::Test {
  public:
   LanguageDetectionModelValidTest()
-      : tflite_model_(language_detection::GetValidLanguageModel()),
-        language_detection_model_(
-            std::make_unique<LanguageDetectionModel>(tflite_model_.get())) {}
+      : language_detection_model_(std::make_unique<LanguageDetectionModel>(
+            language_detection::GetValidLanguageModel())) {}
 
  protected:
   base::test::TaskEnvironment environment_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<language_detection::LanguageDetectionModel> tflite_model_;
   std::unique_ptr<LanguageDetectionModel> language_detection_model_;
 };
 

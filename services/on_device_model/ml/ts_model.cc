@@ -57,7 +57,6 @@ class TsModel final : public on_device_model::mojom::TextSafetyModel {
 
   const raw_ref<const ChromeML> chrome_ml_;
   ChromeMLTSModel model_ = 0;
-  std::unique_ptr<language_detection::LanguageDetectionModel> tflite_model_;
   std::unique_ptr<translate::LanguageDetectionModel> language_detector_;
   base::MemoryMappedFile data_;
   base::MemoryMappedFile sp_model_;
@@ -90,13 +89,12 @@ std::unique_ptr<TsModel> TsModel::Create(
 
 bool TsModel::InitLanguageDetection(
     on_device_model::mojom::LanguageModelAssetsPtr assets) {
-  tflite_model_ =
+  auto tflite_model =
       std::make_unique<language_detection::LanguageDetectionModel>();
-  tflite_model_->UpdateWithFile(std::move(assets->model));
-  tflite_model_->DetachFromSequence();
+  tflite_model->UpdateWithFile(std::move(assets->model));
 
-  language_detector_ =
-      std::make_unique<translate::LanguageDetectionModel>(tflite_model_.get());
+  language_detector_ = std::make_unique<translate::LanguageDetectionModel>(
+      std::move(tflite_model));
   return language_detector_->IsAvailable();
 }
 
