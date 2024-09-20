@@ -327,6 +327,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         session->mutable_duration()->set_seconds(120);
+        session->set_session_state(::boca::Session::ACTIVE);
         auto* teacher = session->mutable_teacher();
         teacher->set_email("teacher@email.com");
         teacher->set_full_name("teacher");
@@ -403,6 +404,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         session->mutable_duration()->set_seconds(120);
+        session->set_session_state(::boca::Session::ACTIVE);
         request->callback().Run(std::move(session));
       })));
 
@@ -448,6 +450,49 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNullPtrInputTest) {
 
   boca_app_handler_->GetSession(future_1.GetCallback());
 
+  auto result = future_1.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(mojom::GetSessionError::kEmpty, result->get_error());
+}
+
+TEST_F(BocaAppPageHandlerTest, GetSessionWithNonActiveSessionTest) {
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
+
+  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        request->callback().Run(std::make_unique<::boca::Session>());
+      })));
+
+  boca_app_handler_->GetSession(future_1.GetCallback());
+  auto result = future_1.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(mojom::GetSessionError::kEmpty, result->get_error());
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       GetSessionWithEmptySessionConfigShouldNotCrashTest) {
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
+
+  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        auto session = std::make_unique<::boca::Session>();
+        session->set_session_state(::boca::Session::ACTIVE);
+        request->callback().Run(std::make_unique<::boca::Session>());
+      })));
+
+  boca_app_handler_->GetSession(future_1.GetCallback());
   auto result = future_1.Take();
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(mojom::GetSessionError::kEmpty, result->get_error());
