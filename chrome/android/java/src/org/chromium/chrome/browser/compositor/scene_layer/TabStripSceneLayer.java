@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.ui.resources.ResourceManager;
@@ -93,17 +92,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             float topPaddingDp) {
         if (mNativePtr == 0) return;
         final boolean visible = yOffset > -layoutHelper.getHeight();
-
-        // When BrowserControlsInViz is enabled, this function will be called sparingly during a
-        // scroll to reduce/remove browser frames. If the tab strip isn't visible,
-        // beginBuildingFrame would cause the layer tree to be hidden. Later, when the TabStrip is
-        // scrolled back into view, beginBuildingFrame would need to be called again to unhide the
-        // layer tree, but we don't want either of these 2 calls to happen because it would result
-        // in 2 more browser frames. So, we short circuit to keep the layer tree always visible.
-
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && !visible) {
-            return;
-        }
 
         // This will hide the tab strips if necessary.
         TabStripSceneLayerJni.get()
