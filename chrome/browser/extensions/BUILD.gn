@@ -783,6 +783,7 @@ source_set("extensions") {
     "//chrome/browser/ui/apps",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/hats",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/window_sizer",

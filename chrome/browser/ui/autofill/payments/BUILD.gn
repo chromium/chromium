@@ -165,6 +165,7 @@ source_set("impl") {
       "save_payment_icon_controller.cc",
       "virtual_card_manual_fallback_bubble_controller_impl.cc",
     ]
+    deps += [ "//chrome/browser/ui/hats" ]
   }
 }
 
@@ -289,6 +290,8 @@ source_set("unit_tests") {
       "//chrome/app:generated_resources_grit",
       "//chrome/browser/autofill",
       "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/hats:test_support",
       "//components/commerce/core:feature_list",
       "//content/test:test_support",
       "//ui/gfx",

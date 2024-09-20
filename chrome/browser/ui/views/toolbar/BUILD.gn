@@ -117,6 +117,7 @@ source_set("toolbar") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:mixers",
     "//chrome/browser/ui/customize_chrome",
+    "//chrome/browser/ui/hats",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/views/side_panel:side_panel_enums",

@@ -388,6 +388,7 @@ static_library("safe_browsing") {
         "//build:chromeos_buildflags",
         "//chrome/app/vector_icons:vector_icons",
         "//chrome/browser/enterprise/connectors/analysis:features",
+        "//chrome/browser/ui/hats",
         "//chrome/common",
         "//chrome/common/safe_browsing:archive_analyzer_results",
         "//chrome/common/safe_browsing:binary_feature_extractor",

@@ -130,6 +130,7 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/hats",
     "//components/autofill/content/browser",
     "//components/autofill/content/browser:risk_proto",
     "//components/compose/core/browser",
@@ -234,6 +235,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/hats",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
@@ -282,6 +284,7 @@ source_set("unit_tests") {
       "save_address_bubble_controller_unittest.cc",
       "update_address_bubble_controller_unittest.cc",
     ]
+    deps += [ "//chrome/browser/ui/hats:test_support" ]
   }
 
   if (enable_dice_support) {
