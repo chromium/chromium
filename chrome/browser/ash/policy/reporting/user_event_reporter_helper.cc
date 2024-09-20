@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
@@ -23,7 +25,6 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/sha2.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace reporting {
@@ -116,8 +117,9 @@ std::string UserEventReporterHelper::GetDeviceDmToken() const {
 std::string UserEventReporterHelper::GetUniqueUserIdForThisDevice(
     std::string_view user_email) const {
   const std::string device_dm_token = GetDeviceDmToken();
-  return device_dm_token.empty() ? device_dm_token
-                                 : crypto::SHA256HashString(base::StrCat(
-                                       {user_email, device_dm_token}));
+  return device_dm_token.empty()
+             ? device_dm_token
+             : base::NumberToString(base::PersistentHash(
+                   base::StrCat({user_email, device_dm_token})));
 }
 }  // namespace reporting
