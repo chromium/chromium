@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -16,6 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -52,12 +57,15 @@ public class HubToolbarViewRenderTest {
                     .setRevision(6)
                     .build();
 
+    @Mock private TabSwitcherDrawable.Observer mTabSwitcherDrawableObserver;
+
     private Activity mActivity;
     private HubToolbarView mToolbar;
     private PropertyModel mPropertyModel;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -198,8 +206,10 @@ public class HubToolbarViewRenderTest {
                         mActivity,
                         BrandedColorScheme.APP_DEFAULT,
                         TabSwitcherDrawableLocation.HUB_TOOLBAR);
+        tabSwitcherDrawable.addTabSwitcherDrawableObserver(mTabSwitcherDrawableObserver);
         tabSwitcherDrawable.updateForTabCount(/* tabCount= */ 1, /* incognito= */ false);
         tabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+        verify(mTabSwitcherDrawableObserver, times(2)).onDrawableStateChanged();
 
         FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
@@ -217,7 +227,9 @@ public class HubToolbarViewRenderTest {
         mRenderTestRule.render(mToolbar, "onGTSTabSwitcherDrawableNotificationOn");
 
         tabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ false);
+        verify(mTabSwitcherDrawableObserver, times(3)).onDrawableStateChanged();
         mRenderTestRule.render(mToolbar, "onGTSTabSwitcherDrawableNotificationOff");
+        tabSwitcherDrawable.removeTabSwitcherDrawableObserver(mTabSwitcherDrawableObserver);
     }
 
     @Test
@@ -229,8 +241,10 @@ public class HubToolbarViewRenderTest {
                         mActivity,
                         BrandedColorScheme.INCOGNITO,
                         TabSwitcherDrawableLocation.HUB_TOOLBAR);
+        tabSwitcherDrawable.addTabSwitcherDrawableObserver(mTabSwitcherDrawableObserver);
         tabSwitcherDrawable.updateForTabCount(/* tabCount= */ 1, /* incognito= */ true);
         tabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+        verify(mTabSwitcherDrawableObserver, times(2)).onDrawableStateChanged();
 
         FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
@@ -249,7 +263,9 @@ public class HubToolbarViewRenderTest {
         mRenderTestRule.render(mToolbar, "onIncognitoTabSwitcherDrawableNotificationOn");
 
         tabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ false);
+        verify(mTabSwitcherDrawableObserver, times(3)).onDrawableStateChanged();
         mRenderTestRule.render(mToolbar, "onIncognitoTabSwitcherDrawableNotificationOff");
+        tabSwitcherDrawable.removeTabSwitcherDrawableObserver(mTabSwitcherDrawableObserver);
     }
 
     @Test

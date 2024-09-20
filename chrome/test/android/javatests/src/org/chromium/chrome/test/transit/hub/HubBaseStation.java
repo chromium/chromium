@@ -13,12 +13,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.LogicalElement.uiThreadLogicalElement;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
-import androidx.annotation.StringRes;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
@@ -51,8 +51,10 @@ public abstract class HubBaseStation extends Station {
     public static final ViewSpec HUB_PANE_SWITCHER =
             viewSpec(allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
 
+    // The non-regular toggle tab button contentDescription is a substring found in the string:
+    // R.string.accessibility_tab_switcher_standard_stack.
     public static final ViewSpec REGULAR_TOGGLE_TAB_BUTTON =
-            viewSpec(withContentDescription(R.string.accessibility_tab_switcher_standard_stack));
+            viewSpec(withContentDescription(containsString("standard tab")));
 
     public static final ViewSpec INCOGNITO_TOGGLE_TAB_BUTTON =
             viewSpec(withContentDescription(R.string.accessibility_tab_switcher_incognito_stack));
@@ -144,12 +146,12 @@ public abstract class HubBaseStation extends Station {
                     "Hub pane switcher is not visible to switch to " + paneId);
         }
 
-        @StringRes
-        int contentDescriptionId = HubStationUtils.getContentDescriptionForIdPaneSelection(paneId);
+        String contentDescription =
+                HubStationUtils.getContentDescriptionSubstringForIdPaneSelection(paneId);
         return travelToSync(
                 destinationStation,
                 () -> {
-                    clickPaneSwitcherForPaneWithContentDescription(contentDescriptionId);
+                    clickPaneSwitcherForPaneWithContentDescription(contentDescription);
                 });
     }
 
@@ -167,16 +169,13 @@ public abstract class HubBaseStation extends Station {
         return whether(activity.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
     }
 
-    private void clickPaneSwitcherForPaneWithContentDescription(
-            @StringRes int contentDescriptionRes) {
+    private void clickPaneSwitcherForPaneWithContentDescription(String contentDescription) {
         // TODO(crbug.com/40287437): Content description seems reasonable for now, this might get
-        // harder
-        // once we use a recycler view with text based buttons.
-        String contentDescription = getActivity().getString(contentDescriptionRes);
+        // harder once we use a recycler view with text based buttons.
         onView(
                         allOf(
                                 isDescendantOfA(HUB_PANE_SWITCHER.getViewMatcher()),
-                                withContentDescription(contentDescription)))
+                                withContentDescription(containsString(contentDescription))))
                 .perform(click());
     }
 

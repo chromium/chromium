@@ -14,8 +14,10 @@ import java.util.Objects;
 
 /** Resolves a non-resource drawable's button data. */
 public class DrawableButtonData implements DisplayButtonData {
+    // The content description should be of type @StringRes, with the exception of use from the
+    // TabSwitcherDrawable which will use a @PluralsRes type.
+    protected final int mContentDescriptionRes;
     private final @StringRes int mTextRes;
-    private final @StringRes int mContentDescriptionRes;
     private final Drawable mDrawable;
 
     /**
@@ -24,7 +26,7 @@ public class DrawableButtonData implements DisplayButtonData {
      * @param drawable The non-resource {@link Drawable} to display.
      */
     public DrawableButtonData(
-            @StringRes int textRes, @StringRes int contentDescriptionRes, Drawable drawable) {
+            @StringRes int textRes, int contentDescriptionRes, Drawable drawable) {
         mTextRes = textRes;
         mContentDescriptionRes = contentDescriptionRes;
         mDrawable = drawable;

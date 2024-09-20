@@ -43,6 +43,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimationData.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageView.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TabSwitcherDrawableButtonData.java",
   ]
 
   deps = [

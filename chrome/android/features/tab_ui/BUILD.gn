@@ -212,6 +212,7 @@ android_library("test_support_javalib") {
     "//content/public/android:content_main_dex_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
+    "//third_party/android_deps:org_mockito_mockito_core_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

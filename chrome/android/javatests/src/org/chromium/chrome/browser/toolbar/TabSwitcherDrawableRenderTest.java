@@ -76,7 +76,10 @@ public class TabSwitcherDrawableRenderTest {
         View toolbarView = activity.findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_regular_off");
 
-        mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+                });
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_regular_on");
     }
 
@@ -89,7 +92,10 @@ public class TabSwitcherDrawableRenderTest {
         sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ false);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
 
-        mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+                });
         View toolbarView = activity.findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_new_tab_page");
     }
@@ -103,7 +109,10 @@ public class TabSwitcherDrawableRenderTest {
         sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ true);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
 
-        mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+                });
         View toolbarView = activity.findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_incognito_no_show");
     }
@@ -122,7 +131,10 @@ public class TabSwitcherDrawableRenderTest {
         sActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
 
-        mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+                });
         View toolbarView = activity.findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_themed_toolbar");
     }

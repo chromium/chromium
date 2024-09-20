@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.PluralsRes;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
@@ -23,13 +24,14 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
-import org.chromium.chrome.browser.hub.DrawableButtonData;
 import org.chromium.chrome.browser.hub.HubColorScheme;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
+import org.chromium.chrome.browser.hub.TabSwitcherDrawableButtonData;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -46,6 +48,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -58,7 +61,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import java.util.function.DoubleConsumer;
 
 /** A {@link Pane} representing the regular tab switcher. */
-public class TabSwitcherPane extends TabSwitcherPaneBase {
+public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherDrawable.Observer {
     private static final int ON_CREATION_IPH_DELAY = 100;
 
     private final TabModelObserver mTabModelObserver =
@@ -98,6 +101,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
 
     private @Nullable OnSharedPreferenceChangeListener mPriceAnnotationsPrefListener;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
+    private TabSwitcherDrawable mTabSwitcherDrawable;
 
     /**
      * @param context The activity context.
@@ -131,13 +135,10 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         mTabModelFilterSupplier = tabModelFilterSupplier;
         mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;
 
-        // TODO(crbug.com/40946413): Update this string to not be an a11y string and it should
-        // probably just say "Tabs".
-        mReferenceButtonDataSupplier.set(
-                new DrawableButtonData(
-                        R.string.accessibility_tab_switcher_standard_stack,
-                        R.string.accessibility_tab_switcher_standard_stack,
-                        tabSwitcherDrawableCoordinator.getTabSwitcherDrawable()));
+        mTabSwitcherDrawable = tabSwitcherDrawableCoordinator.getTabSwitcherDrawable();
+        mTabSwitcherDrawable.addTabSwitcherDrawableObserver(this);
+        // Set the TabSwitcherDrawable state on an initial run through.
+        onDrawableStateChanged();
 
         mNewTabButtonDataSupplier.set(
                 new DelegateButtonData(
@@ -177,6 +178,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                     mPriceAnnotationsPrefListener);
         }
         removeObservers();
+        mTabSwitcherDrawable.removeTabSwitcherDrawableObserver(this);
     }
 
     @Override
@@ -424,5 +426,28 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                         .setAnchorView(anchorView)
                         .build();
         mUserEducationHelper.requestShowIPH(command);
+    }
+
+    // TabSwitcherDrawable.Observer implementation.
+
+    @Override
+    public void onDrawableStateChanged() {
+        @PluralsRes
+        int tabSwitcherButtonDescRes = getTabSwitcherDrawableDescription(mTabSwitcherDrawable);
+        mReferenceButtonDataSupplier.set(
+                new TabSwitcherDrawableButtonData(
+                        R.string.tab_switcher_standard_stack_text,
+                        tabSwitcherButtonDescRes,
+                        mTabSwitcherDrawable,
+                        mTabModelFilterSupplier.get().getTabModel().getCount()));
+    }
+
+    private @PluralsRes int getTabSwitcherDrawableDescription(TabSwitcherDrawable drawable) {
+        @PluralsRes int drawableDescRes = R.plurals.accessibility_tab_switcher_standard_stack;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                && drawable.getShowIconNotificationStatus()) {
+            drawableDescRes = R.plurals.accessibility_tab_switcher_standard_stack_with_notification;
+        }
+        return drawableDescRes;
     }
 }

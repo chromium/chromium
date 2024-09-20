@@ -2881,8 +2881,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Tab switcher -->
-      <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_STANDARD_STACK" desc="Content description for the standard stack selection 'button'.">
-        Standard tabs
+      <message name="IDS_TAB_SWITCHER_STANDARD_STACK_TEXT" desc="Text for the standard stack selection 'button'.">
+        Tabs
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_STANDARD_STACK" desc="Content description for the standard stack selection 'button'. NUMBER_OF_TABS is the number of tabs within the tab switcher.">
+        {NUMBER_OF_TABS, plural,
+          =1 {<ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> standard tab}
+          other {<ph name="TABS_COUNT_MANY">%1$d<ex>2</ex></ph> standard tabs}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_STANDARD_STACK_WITH_NOTIFICATION" desc="Content description for the standard stack selection 'button' with a notification icon.">
+        {NUMBER_OF_TABS, plural,
+          =1 {<ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> standard tab with new activity in shared tab groups}
+          other {<ph name="TABS_COUNT_MANY">%1$d<ex>2</ex></ph> standard tabs with new activity in shared tab groups}
+        }
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_INCOGNITO_STACK" desc="Content description for the Incognito stack selection 'button'.">
         Incognito tabs

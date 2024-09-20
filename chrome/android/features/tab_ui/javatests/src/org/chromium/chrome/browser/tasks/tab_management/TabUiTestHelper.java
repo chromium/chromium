@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -39,7 +40,6 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -757,16 +757,17 @@ public class TabUiTestHelper {
         assertTrue(isIncognito != cta.getTabModelSelector().isIncognitoSelected());
         assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
 
-        @StringRes
-        int contentDescription =
+        // The non-incognito contentDescription is a substring found in the following string:
+        // R.string.accessibility_tab_switcher_standard_stack.
+        String contentDescription =
                 isIncognito
-                        ? R.string.accessibility_tab_switcher_incognito_stack
-                        : R.string.accessibility_tab_switcher_standard_stack;
+                        ? cta.getString(R.string.accessibility_tab_switcher_incognito_stack)
+                        : "standard tab";
         onView(
                         allOf(
                                 isDescendantOfA(
                                         withId(org.chromium.chrome.browser.hub.R.id.hub_toolbar)),
-                                withContentDescription(contentDescription)))
+                                withContentDescription(containsString(contentDescription))))
                 .perform(click());
 
         CriteriaHelper.pollUiThread(

@@ -57,6 +57,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
@@ -95,6 +96,7 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link TabSwitcherPane} and {@link TabSwitcherPaneBase}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabSwitcherPaneUnitTest {
     private static final int TAB_ID = 723849;
 
@@ -224,6 +226,7 @@ public class TabSwitcherPaneUnitTest {
         mHandleBackPressChangeSupplier.set(false);
         when(mTabSwitcherPaneDrawableCoordinator.getTabSwitcherDrawable())
                 .thenReturn(mTabSwitcherDrawable);
+        when(mTabSwitcherDrawable.getShowIconNotificationStatus()).thenReturn(true);
         doAnswer(
                         invocation -> {
                             return mHandleBackPressChangeSupplier.get()
@@ -441,10 +444,33 @@ public class TabSwitcherPaneUnitTest {
         DisplayButtonData buttonData = mTabSwitcherPane.getReferenceButtonDataSupplier().get();
 
         assertEquals(
-                mContext.getString(R.string.accessibility_tab_switcher_standard_stack),
+                mContext.getString(R.string.tab_switcher_standard_stack_text),
                 buttonData.resolveText(mContext));
         assertEquals(
-                mContext.getString(R.string.accessibility_tab_switcher_standard_stack),
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.accessibility_tab_switcher_standard_stack,
+                                mTabModel.getCount(),
+                                mTabModel.getCount()),
+                buttonData.resolveContentDescription(mContext));
+        assertEquals(mTabSwitcherDrawable, buttonData.resolveIcon(mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testReferenceButton_WithNotification() {
+        DisplayButtonData buttonData = mTabSwitcherPane.getReferenceButtonDataSupplier().get();
+
+        assertEquals(
+                mContext.getString(R.string.tab_switcher_standard_stack_text),
+                buttonData.resolveText(mContext));
+        assertEquals(
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals
+                                        .accessibility_tab_switcher_standard_stack_with_notification,
+                                mTabModel.getCount(),
+                                mTabModel.getCount()),
                 buttonData.resolveContentDescription(mContext));
         assertEquals(mTabSwitcherDrawable, buttonData.resolveIcon(mContext));
     }
