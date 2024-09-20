@@ -1113,7 +1113,7 @@
 <translation id="3062655045399308513">刪除瀏覽資料…</translation>
 <translation id="306573536155379004">已啟動遊戲。</translation>
 <translation id="3067505415088964188">價格較低</translation>
-<translation id="3068118691172921711">1 分鐘後開始將檔案上傳至 <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="3068118691172921711">1 分鐘後開始上傳檔案至 <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="3076865167425975822">作業系統</translation>
 <translation id="3080254622891793721">圖片</translation>
 <translation id="3082007635241601060">允許 Google 使用你的購物車，尋找可用的個人化折扣</translation>
@@ -1973,7 +1973,7 @@
 <translation id="4628678854894591460">假期專案</translation>
 <translation id="4628948037717959914">相片</translation>
 <translation id="4629370161347991046">A4 x 6</translation>
-<translation id="462989688138616749"><ph name="HOURS" /> 小時後開始將檔案上傳至 <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="462989688138616749"><ph name="HOURS" /> 小時後開始上傳檔案至 <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="4631649115723685955">已連結現金回饋</translation>
 <translation id="4631881646528206880">虛擬卡片註冊</translation>
 <translation id="4635278307999235413">正在將資料傳送到管理控制台</translation>
@@ -2094,7 +2094,7 @@
 <translation id="484988093836683706">使用裝置解鎖功能</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速建立新記事</translation>
-<translation id="4855395119669662878">系統管理員會在 <ph name="DATE_TIME" /> 開始將你的檔案上傳至 <ph name="CLOUD_PROVIDER" />。檔案上傳作業完成前，請勿中斷裝置連線。上傳期間，你只能讀取本機檔案。</translation>
+<translation id="4855395119669662878">系統管理員會在 <ph name="DATE_TIME" /> 開始將你的檔案上傳至 <ph name="CLOUD_PROVIDER" />。上傳完成前，請勿中斷裝置連線。上傳期間，你只能讀取本機檔案。</translation>
 <translation id="485902285759009870">正在驗證動態密碼...</translation>
 <translation id="4860260582253463350">如要繼續使用 YouTube，我們必須先確認你的身分。你將會根據家長或監護人在 Family Link 中的設定，取得可用功能。</translation>
 <translation id="4864406669374375262">已將版本字串複製到剪貼簿</translation>
@@ -2150,7 +2150,7 @@
 <translation id="4933468175699107356">按一下滑鼠右鍵即可在任何表單自動填入已儲存的資訊，例如姓名或地址</translation>
 <translation id="4934780484581617878">視窗管理</translation>
 <translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
-<translation id="4936573216809994970">1 小時後開始將檔案上傳至 <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="4936573216809994970">1 小時後開始上傳檔案至 <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="4936675324097895694">金融</translation>
 <translation id="4943620199112228840">使用麥克風</translation>
 <translation id="4943872375798546930">沒有結果</translation>
@@ -4463,7 +4463,7 @@
 <translation id="9192361865877479444">金屬 (霧面)</translation>
 <translation id="9192947025498305328">純淨美妝</translation>
 <translation id="9199905725844810519">列印功能已遭封鎖</translation>
-<translation id="9204089334327209740">上傳作業完成後，你可以在 <ph name="CLOUD_PROVIDER" /> 中修改檔案。系統會自動移除本機儲存空間 (包括垃圾桶中的所有檔案)。</translation>
+<translation id="9204089334327209740">上傳完成後，你可以在 <ph name="CLOUD_PROVIDER" /> 中修改檔案。系統會自動移除本機儲存空間中的檔案 (包括垃圾桶中的所有檔案)。</translation>
 <translation id="9205078245616868884">您已使用同步通關密語對資料進行加密，請輸入通關密語開始進行同步。</translation>
 <translation id="920643408853370361">旅遊保險</translation>
 <translation id="9207861905230894330">無法新增文章。</translation>
@@ -4484,7 +4484,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />我們使用的資料：<ph name="END_BOLD" />系統會根據你的近期瀏覽記錄 (即在這部裝置上使用 Chrome 造訪的網站清單) 推測廣告主題。</translation>
 <translation id="937885410143139026">資料已傳送到管理控制台</translation>
 <translation id="939736085109172342">新增資料夾</translation>
-<translation id="940524522703752213"><ph name="MINUTES" /> 分鐘後開始將檔案上傳至 <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="940524522703752213"><ph name="MINUTES" /> 分鐘後開始上傳檔案至 <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="944540589955480312">使用 Google 帳戶中儲存的密碼和密碼金鑰</translation>
 <translation id="945646848072568856">Chrome 會禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。</translation>
 <translation id="945855313015696284">查看下方資訊並刪除所有無效的卡片</translation>

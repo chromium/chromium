@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Impossible de se connecter à Internet.</translation>
 <translation id="1227113644794103810">Onglets inactifs</translation>
 <translation id="1231733316453485619">Activer la synchronisation ?</translation>
+<translation id="1253032109800629289">Masquer "Recevoir des notifications de suivi des prix"</translation>
 <translation id="1258491128795710625">Nouveautés</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1263433075299269530">Dernier onglet ouvert</translation>
@@ -395,6 +396,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Envoyer à Google les URL des pages que vous consultez présentant un risque pour votre sécurité</translation>
 <translation id="2883151425485251736">Voir et modifier les thèmes que vous avez masqués dans votre compte</translation>
+<translation id="2888631381369839306">Notifications de suivi des prix activées</translation>
 <translation id="288902476966286676">Retour à l'expéditeur</translation>
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
 <translation id="2905479111267140204">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe réutilisés qui peuvent compromettre votre sécurité.</translation>
@@ -577,6 +579,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3851938967634752633">Les mots de passe pour <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et <ph name="NUMBER_OF_ACCOUNTS" /> autres seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861908220442487587">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, déplacez-la vers votre compte Google (<ph name="USER_EMAIL" />)</translation>
+<translation id="3868495844258915202">Afficher l'URL complète</translation>
 <translation id="3876833929577368454">Me demander à chaque fois</translation>
 <translation id="3885587018298784481">Rejoindre un groupe familial</translation>
 <translation id="3888863481921783344">Cela permettra d'afficher les participants potentiels à votre événement.</translation>
@@ -864,6 +867,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5211488077761630279">Autoriser <ph name="SITE_NAME" /> à utiliser <ph name="PERMISSION" /> ?</translation>
 <translation id="5217245356412073535">Vous pouvez remplacer le mode d'affichage par défaut du site par le mode ordinateur de bureau dans Paramètres &gt; Paramètres de contenu</translation>
+<translation id="5217329997012062137">Lorsque vous utilisez Google Lens, une capture d'écran de la page est envoyée à Google.</translation>
 <translation id="5220945116117011963">Créer des événements d'agenda à partir de dates</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5228579091201413441">Activer la synchronisation</translation>
@@ -876,6 +880,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5271265092610673171">{count,plural, =1{Renseignez le champ obligatoire avant d'enregistrer.}one{Renseignez le champ obligatoire avant d'enregistrer.}other{Renseignez les champs obligatoires avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
 <translation id="5279600392753459966">Tout bloquer</translation>
+<translation id="5282340693022193851">Pour recevoir des notifications de suivi des prix, activez les notifications dans les réglages iOS.</translation>
 <translation id="5294624619177114121">Notifications mobiles</translation>
 <translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" /> ?</translation>
 <translation id="5300589172476337783">Afficher</translation>
@@ -1638,6 +1643,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8712534545803964353">Trouver sur la page…</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8722229818691036192">Comptes sur cet appareil</translation>
+<translation id="8722649775263832315">Appuyez sur n'importe quel élément ou surlignez-le pour le rechercher avec Google Lens</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8728922029615312208">Tout fermer</translation>
 <translation id="8730621377337864115">OK</translation>

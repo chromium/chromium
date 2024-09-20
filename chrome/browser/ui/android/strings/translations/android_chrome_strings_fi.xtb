@@ -596,6 +596,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Lens ei ole käytettävissä tällä tilillä.</translation>
 <translation id="3830886834687455630">Päivitä Google Play Palvelut, niin voit tarkistaa salasanasi</translation>
+<translation id="3843603704176567761">Salasanat lakkaavat ehkä pian toimimasta tällä laitteella. Päivitä Google Play Palvelut, jotta voit jatkaa salasanojen käyttöä.</translation>
 <translation id="3845098929839618392">Avaa incognito-välilehdellä</translation>
 <translation id="3847319713229060696">Auta lisäämään verkon turvallisuutta kaikille</translation>
 <translation id="3856096718352044181">Varmista, että tämä on kelvollinen palveluntarjoaja, tai yritä myöhemmin uudelleen</translation>
@@ -677,6 +678,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4257230861809842349">Poistetaanko salasanat Google Salasanoista?</translation>
 <translation id="426652736638196239">IBAN-numero tallennetaan vain tälle laitteelle</translation>
 <translation id="4269820728363426813">Kopioi linkin osoite</translation>
+<translation id="4270730597186910506">Seuraa tuotetta tai lopeta sen seuranta.</translation>
 <translation id="4277529130885813215">Käytä toista laitetta</translation>
 <translation id="4282440837784183472">Organisaatiosi (<ph name="MANAGED_DOMAIN" />) hallinnoi tiliä, jolle kirjaudut, ja Chromen käyttöä. Järjestelmänvalvoja voi ottaa tiettyjä ominaisuuksia käyttöön tai rajoittaa niitä.</translation>
 <translation id="4285846616383034558">Evästeet, välimuisti ja muu sivustodata</translation>

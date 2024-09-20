@@ -579,6 +579,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3851938967634752633">Passwörter für <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> und <ph name="NUMBER_OF_ACCOUNTS" /> weitere werden gelöscht. Deine Konten werden nicht gelöscht.</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3861908220442487587">Diese Adresse wird nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, verschiebe sie in dein Google-Konto <ph name="USER_EMAIL" />.</translation>
+<translation id="3868495844258915202">Vollständige URL anzeigen</translation>
 <translation id="3876833929577368454">Jedesmal fragen</translation>
 <translation id="3885587018298784481">Einer Familiengruppe beitreten</translation>
 <translation id="3888863481921783344">Dadurch werden dir Personen angezeigt, die du zu deinem Termin einladen kannst.</translation>
@@ -866,6 +867,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5210365745912300556">Schließen</translation>
 <translation id="5211488077761630279">Zulassen, dass „<ph name="SITE_NAME" />“ <ph name="PERMISSION" /> verwendet?</translation>
 <translation id="5217245356412073535">Du kannst in den Einstellungen &gt; den Inhaltseinstellungen die Desktop-Ansicht als Standardeinstellung festlegen</translation>
+<translation id="5217329997012062137">Wenn du Google Lens verwendest, wird ein Screenshot der Seite an Google gesendet.</translation>
 <translation id="5220945116117011963">Kalendertermine anhand von Datumsangaben erstellen</translation>
 <translation id="5222676887888702881">Abmelden</translation>
 <translation id="5228579091201413441">Synchronisierung aktivieren</translation>
@@ -1641,6 +1643,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8712534545803964353">Auf Seite suchen…</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8722229818691036192">Konten auf diesem Gerät</translation>
+<translation id="8722649775263832315">Markiere einen beliebigen Bereich oder tippe darauf, um mit Google Lens zu suchen</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8728922029615312208">Alle schließen</translation>
 <translation id="8730621377337864115">Fertig</translation>

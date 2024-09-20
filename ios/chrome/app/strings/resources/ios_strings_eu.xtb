@@ -579,6 +579,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> eta beste <ph name="NUMBER_OF_ACCOUNTS" /> webgunetako pasahitzak ezabatuko dira. Zure kontuak ez dira ezabatuko.</translation>
 <translation id="3858860766373142691">Izena</translation>
 <translation id="3861908220442487587">Gailu honetan soilik dago gordeta helbidea. Beste gailuetan erabiltzeko, eraman ezazu zure Google-ko kontura (<ph name="USER_EMAIL" />)</translation>
+<translation id="3868495844258915202">Erakutsi URL osoa</translation>
 <translation id="3876833929577368454">Galdetu beti</translation>
 <translation id="3885587018298784481">Sartu familia-talde batean</translation>
 <translation id="3888863481921783344">Agian gertaerara gonbidatu nahi dituzun pertsonak erakusteko erabiliko da hau.</translation>
@@ -866,6 +867,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5210365745912300556">Itxi fitxa</translation>
 <translation id="5211488077761630279">Zure <ph name="PERMISSION" /> erabiltzeko baimena eman nahi diozu "<ph name="SITE_NAME" />" webguneari?</translation>
 <translation id="5217245356412073535">Webgunearen ikuspegi lehenetsia ordenagailuetarako ikuspegira aldatzeko, joan Ezarpenak &gt; Edukiaren ezarpenak atalera</translation>
+<translation id="5217329997012062137">Google Lens erabiltzen duzunean, orriaren pantaila-argazki bat bidaltzen zaio Google-ri.</translation>
 <translation id="5220945116117011963">Sortu egutegiko gertaerak daten bidez</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
 <translation id="5228579091201413441">Gaitu sinkronizazioa</translation>
@@ -1641,6 +1643,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8712534545803964353">Bilatu orrian…</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8722229818691036192">Gailuko kontuak</translation>
+<translation id="8722649775263832315">Zerbait Google Lens bidez bilatzeko, sakatu edo nabarmen ezazu</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8728922029615312208">Itxi guztiak</translation>
 <translation id="8730621377337864115">Eginda</translation>

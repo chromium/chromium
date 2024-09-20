@@ -579,6 +579,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> અને અન્ય <ph name="NUMBER_OF_ACCOUNTS" /> માટેના પાસવર્ડ ડિલીટ કરવામાં આવશે. તમારા એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3861908220442487587">આ સરનામું ફક્ત આ ડિવાઇસ પર સાચવેલું છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં ખસેડો, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">સંપૂર્ણ URL બતાવો</translation>
 <translation id="3876833929577368454">દર વખતે મને કહો </translation>
 <translation id="3885587018298784481">કોઈ ફૅમિલી ગ્રૂપમાં જોડાઓ</translation>
 <translation id="3888863481921783344">તમારી ઇવેન્ટ માટે તમને સંભવિત આમંત્રિતો બતાવવા માટે, આનો ઉપયોગ કરવામાં આવશે.</translation>
@@ -866,6 +867,7 @@
 <translation id="5210365745912300556">ટૅબ બંધ કરો</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />"ને તમારા <ph name="PERMISSION" />નો ઉપયોગ કરવાની મંજૂરી આપીએ?</translation>
 <translation id="5217245356412073535">તમે સેટિંગ &gt; કન્ટેન્ટ સેટિંગમાં જઈને ડિફૉલ્ટ સાઇટ વ્યૂ બદલીને ડેસ્કટૉપ વ્યૂ મોડ કરી શકો છો</translation>
+<translation id="5217329997012062137">જ્યારે તમે Google Lensનો ઉપયોગ કરો, ત્યારે આ પેજનો સ્ક્રીનશૉટ Googleને મોકલવામાં આવે છે.</translation>
 <translation id="5220945116117011963">તારીખ દ્વારા કૅલેન્ડર ઇવેન્ટ બનાવો</translation>
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
 <translation id="5228579091201413441">સિંક ચાલુ કરો</translation>
@@ -1641,6 +1643,7 @@
 <translation id="8712534545803964353">પેજમાં શોધો…</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8722229818691036192">આ ડિવાઇસ પરના એકાઉન્ટ</translation>
+<translation id="8722649775263832315">Google Lens વડે કોઈપણ વસ્તુ શોધવા માટે ટૅપ કરો અથવા હાઇલાઇટ કરો</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8728922029615312208">બધા બંધ કરો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>

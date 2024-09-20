@@ -579,6 +579,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />، <ph name="SECOND_WEBSITE" /> اور <ph name="NUMBER_OF_ACCOUNTS" /> دیگر کے پاسورڈز حذف ہو جائيں گے۔ آپ کے اکاؤنٹس حذف نہیں ہوں گے۔</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3861908220442487587">‏یہ پتہ صرف اس آلے پر محفوظ ہوتا ہے۔ اسے اپنے دوسرے آلات پر استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="USER_EMAIL" /> پر منتقل کریں</translation>
+<translation id="3868495844258915202">‏مکمل URL دکھائیں</translation>
 <translation id="3876833929577368454">ہر بار مجھ سے پوچھیں</translation>
 <translation id="3885587018298784481">فیملی گروپ میں شامل ہوں</translation>
 <translation id="3888863481921783344">اس کا استعمال آپ کو آپ کے ایونٹ کے ممکنہ مدعو کنندگان دکھانے کے لیے کیا جائے گا۔</translation>
@@ -866,6 +867,7 @@
 <translation id="5210365745912300556">ٹیب بند کریں</translation>
 <translation id="5211488077761630279">اپنے <ph name="PERMISSION" /> کا استعمال کرنے کے لیے "<ph name="SITE_NAME" />" کو اجازت دیں؟</translation>
 <translation id="5217245356412073535">آپ ترتیبات &gt; مواد کی ترتیبات میں ڈیفالٹ سائٹ منظر کو ڈیسک ٹاپ میں تبدیل کر سکتے ہیں</translation>
+<translation id="5217329997012062137">‏جب آپ Google لینز استعمال کرتے ہیں تو صفحہ کا اسکرین شاٹ Google کو بھیجا جاتا ہے۔</translation>
 <translation id="5220945116117011963">تاریخوں سے کیلنڈر ایونٹس تخلیق کریں</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="5228579091201413441">مطابقت پذیری فعال کریں</translation>
@@ -1641,6 +1643,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8712534545803964353">صفحہ میں تلاش کریں…</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8722229818691036192">اس آلے پر موجود اکاؤنٹس</translation>
+<translation id="8722649775263832315">‏‫Google لینز کے ساتھ کچھ بھی تلاش کرنے کے لیے تھپتھپائیں یا نمایاں کریں</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8728922029615312208">تمام بند کریں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>

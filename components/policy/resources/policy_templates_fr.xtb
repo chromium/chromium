@@ -6796,6 +6796,13 @@ Si cette règle n'est pas configurée, la valeur globale par défaut est utilis�
 <translation id="6207607210601267301">Désactiver l'authentification sans code PIN pour l'hôte d'accès à distance</translation>
 <translation id="6208896993204286313">Enregistrer les informations sur les règles concernant <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enregistrer les informations sur la version de <ph name="PRODUCT_NAME" /> et l'OS</translation>
+<translation id="6215023506958127056">Permet de contrôler l'installation d'extensions externes.
+
+Si cette règle est activée, les extensions externes ne pourront pas être installées.
+
+Si cette règle est désactivée ou si elle n'est pas configurée, les extensions externes pourront être installées.
+
+Les extensions externes et leur installation sont décrites sur https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions.</translation>
 <translation id="6220835555850906733">Si cette règle est activée ou si elle n'est pas configurée, toutes les sorties audio compatibles sur les appareils des utilisateurs sont autorisées.
 
       Si cette règle est désactivée, aucune sortie audio n'est autorisée lorsque les utilisateurs sont connectés.

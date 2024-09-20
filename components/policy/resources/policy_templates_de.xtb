@@ -6776,6 +6776,13 @@ Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Sta
 <translation id="6207607210601267301">Authentifizierung ohne PIN für den Host für den Remote-Zugriff deaktivieren</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" />-Richtliniendaten erfassen</translation>
 <translation id="6210259502936598222">Informationen zu Betriebssystem und <ph name="PRODUCT_NAME" />-Version erfassen</translation>
+<translation id="6215023506958127056">Hiermit kann die Installation externer Erweiterungen verwaltet werden.
+
+Wenn diese Richtlinie aktiviert ist, können externe Erweiterungen nicht installiert werden.
+
+Ist sie deaktiviert oder nicht konfiguriert, können externe Erweiterungen installiert werden.
+
+Informationen zu externen Erweiterungen und ihrer Installation sind unter https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions verfügbar.</translation>
 <translation id="6220835555850906733">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist jede unterstützte Audioausgabe auf den Geräten der Nutzer zulässig.
 
       Ist die Richtlinie deaktiviert, ist keine Audioausgabe zulässig, während Nutzer angemeldet sind.

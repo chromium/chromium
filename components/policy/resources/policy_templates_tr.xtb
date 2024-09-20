@@ -6909,6 +6909,13 @@ Politika ayarlanmadan bırakılırsa genel varsayılan değer tüm siteler için
 <translation id="6207607210601267301">Uzaktan erişim ana makinesi için PIN'siz kimlik doğrulamayı devre dışı bırak</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" /> Politika Bilgilerini bildir</translation>
 <translation id="6210259502936598222">OS ve <ph name="PRODUCT_NAME" /> Sürümü Bilgilerini bildir</translation>
+<translation id="6215023506958127056">Harici uzantıların yüklenmesini kontrol eder.
+
+Bu politika Etkin değerine ayarlanırsa harici uzantıların yüklenmesi engellenir.
+
+Bu politika Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa harici uzantılar yüklenebilir.
+
+Harici uzantılar ve bu uzantıları yüklemeyle ilgili bilgiyi https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions adresinde bulabilirsiniz.</translation>
 <translation id="6220835555850906733">Politikayı Etkin değerine ayarlamak veya ayarlamadan bırakmak, kullanıcıların cihazlarında tüm desteklenen ses çıkışlarına izin verir.
 
       Politikayı Devre dışı değerine ayarlamak, kullanıcılar oturum açmış durumdayken hiçbir ses çıkışına izin vermez.

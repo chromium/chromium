@@ -579,6 +579,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> va <ph name="NUMBER_OF_ACCOUNTS" /> ta hisob parollari oʻchiriladi. Hisoblaringiz oʻchirilmaydi.</translation>
 <translation id="3858860766373142691">Ism</translation>
 <translation id="3861908220442487587">Bu manzil faqat shu qurilmaga saqlangan. Undan boshqa qurilmalaringizda foydalanish uchun Google hisobingizga (<ph name="USER_EMAIL" />) oʻtkazing</translation>
+<translation id="3868495844258915202">Toʻliq URL manzil</translation>
 <translation id="3876833929577368454">Har safar soʻralsin</translation>
 <translation id="3885587018298784481">Oilaviy guruhga kiring</translation>
 <translation id="3888863481921783344">Bu sizga tadbiringizga ehtimoliy takliflarni koʻrsatish uchun ishlatiladi.</translation>
@@ -866,6 +867,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5210365745912300556">Tabni yopish</translation>
 <translation id="5211488077761630279">“<ph name="SITE_NAME" />” saytiga <ph name="PERMISSION" /> ruxsati berilsinmi?</translation>
 <translation id="5217245356412073535">Sayt standart kompyuter versiyada ochilishini Sozlamalar &gt; Kontent sozlamalari orqali oʻzgartirish mumkin</translation>
+<translation id="5217329997012062137">Google Lens ishlatilganda sahifa skrinshoti Google serverlariga yuboriladi.</translation>
 <translation id="5220945116117011963">Sanalardan taqvim tadbirlarini yaratish</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="5228579091201413441">Sinxronlashni yoqish</translation>
@@ -1641,6 +1643,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8712534545803964353">Sahifa ichidan qidirish…</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8722229818691036192">Bu qurilmadagi hisoblar</translation>
+<translation id="8722649775263832315">Google Lens orqali qidirish uchun istalgan obyektni bosing yoki belgilang</translation>
 <translation id="8725066075913043281">Qayta urinib ko‘ring</translation>
 <translation id="8728922029615312208">Hammasini yopish</translation>
 <translation id="8730621377337864115">Tayyor</translation>

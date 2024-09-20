@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Не може да се поврзе на интернет.</translation>
 <translation id="1227113644794103810">Неактивни картички</translation>
 <translation id="1231733316453485619">Да се вклучи синхронизација?</translation>
+<translation id="1253032109800629289">Скриј „Добивајте известувања за „Следење цена““</translation>
 <translation id="1258491128795710625">Што има ново</translation>
 <translation id="1263231323834454256">Список за читање</translation>
 <translation id="1263433075299269530">Вашата последно отворена картичка</translation>
@@ -395,6 +396,7 @@
 <translation id="2870560284913253234">Локација</translation>
 <translation id="2876369937070532032">Испраќа URL-адреси од некои страници што ги посетувате до Google, во случаите кога ви е загрозена безбедноста</translation>
 <translation id="2883151425485251736">Гледајте и менувајте теми што сте ги сокриле од вашата сметка</translation>
+<translation id="2888631381369839306">Известувањата за „Следење цена“ се вклучени</translation>
 <translation id="288902476966286676">Вратете на испраќачот</translation>
 <translation id="2894757982205307093">Нова картичка во групата</translation>
 <translation id="2905479111267140204">Имате <ph name="NUMBER_OF_PASSWORDS" /> повторно употребени лозинки што би можеле да претставуваат ризик за вашата безбедност.</translation>
@@ -577,6 +579,7 @@
 <translation id="3851938967634752633">Лозинките за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и <ph name="NUMBER_OF_ACCOUNTS" /> други ќе се избришат. Сметките нема да се избришат.</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3861908220442487587">Адресава е зачувана само на уредов. За да ја користите на другите уреди, преместете ја во вашата сметка на Google, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Прикажи ја целосната URL-адреса</translation>
 <translation id="3876833929577368454">Прашувај ме секогаш</translation>
 <translation id="3885587018298784481">Придружете се на семејна група</translation>
 <translation id="3888863481921783344">Ова ќе се користи за да ви ги покаже лицата што може да ги поканите на настанот.</translation>
@@ -864,6 +867,7 @@
 <translation id="5210365745912300556">Затвори ја картичката</translation>
 <translation id="5211488077761630279">Дозволувате „<ph name="SITE_NAME" />“ да користи <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Може да го промените стандардниот приказ на сајтот во приказ на компјутер така што ќе појдете во „Поставки &gt; Поставки за содржини“</translation>
+<translation id="5217329997012062137">При користење Google Lens, до Google се испраќа слика од екранот на страницата.</translation>
 <translation id="5220945116117011963">Создајте настани во календар од датуми</translation>
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5228579091201413441">Овозможи синхронизација</translation>
@@ -876,6 +880,7 @@
 <translation id="5271265092610673171">{count,plural, =1{Задолжително поле е празно. Пополнете го пред да зачувате.}one{Некои задолжителни полиња се празни. Пополнете ги пред да зачувате.}other{Некои задолжителни полиња се празни. Пополнете ги пред да зачувате.}}</translation>
 <translation id="5271549068863921519">Сними ја лозинката</translation>
 <translation id="5279600392753459966">Блокирај ги сите</translation>
+<translation id="5282340693022193851">За да добивате известувања за „Следење цена“, вклучете ги известувањата во Settings на iOS.</translation>
 <translation id="5294624619177114121">Известувања на мобилен</translation>
 <translation id="5295239312320826323">Да се отстрани сметката <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -1638,6 +1643,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8712534545803964353">Најди на страницата…</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8722229818691036192">Сметки на уредов</translation>
+<translation id="8722649775263832315">Допрете или нагласете за да пребарате што било со Google Lens</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
 <translation id="8728922029615312208">Затвори ги сите</translation>
 <translation id="8730621377337864115">Готово</translation>

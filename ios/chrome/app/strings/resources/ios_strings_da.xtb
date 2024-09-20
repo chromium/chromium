@@ -579,6 +579,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3851938967634752633">Adgangskoderne til <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> andre slettes. Dine konti slettes ikke.</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861908220442487587">Denne adresse gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du flytte den til din Google-konto, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Vis hele webadressen</translation>
 <translation id="3876833929577368454">Spørg mig hver gang</translation>
 <translation id="3885587018298784481">Bliv medlem af en familiegruppe</translation>
 <translation id="3888863481921783344">Dette bruges til at vise dig mulige gæster til din begivenhed.</translation>
@@ -866,6 +867,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5210365745912300556">Luk fanen</translation>
 <translation id="5211488077761630279">Vil du tillade, at "<ph name="SITE_NAME" />" bruger <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Du kan også ændre websitets standardvisning til computervenlig visning under Indstillinger &gt; Indstillinger for indhold</translation>
+<translation id="5217329997012062137">Når du bruger Google Lens, sendes der et screenshot af siden til Google.</translation>
 <translation id="5220945116117011963">Opret kalenderbegivenheder ud fra datoer</translation>
 <translation id="5222676887888702881">Log ud</translation>
 <translation id="5228579091201413441">Aktivér synkronisering</translation>
@@ -1641,6 +1643,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8712534545803964353">Find på siden…</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8722229818691036192">Konti på denne enhed</translation>
+<translation id="8722649775263832315">Tryk eller fremhæv for at søge efter noget med Google Lens</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8728922029615312208">Luk alle</translation>
 <translation id="8730621377337864115">Udfør</translation>

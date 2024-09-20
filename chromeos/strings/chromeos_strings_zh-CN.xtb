@@ -124,7 +124,7 @@
 <translation id="1561927818299383735">背光颜色</translation>
 <translation id="1564356849266217610">欧根纱</translation>
 <translation id="1565038567006703504">无法更新<ph name="DEVICE_NAME" /></translation>
-<translation id="1567064801249837505">影集</translation>
+<translation id="1567064801249837505">相册</translation>
 <translation id="1572585716423026576">设为壁纸</translation>
 <translation id="1578784163189013834">选择屏保背景</translation>
 <translation id="1588438908519853928">正常</translation>
@@ -143,7 +143,7 @@
 <translation id="1642396894598555413">自行车</translation>
 <translation id="1643449475550628585">每天更改一次壁纸图片</translation>
 <translation id="1644574205037202324">历史记录</translation>
-<translation id="1651925268237749928">您已选择一个共享影集。他人可以添加或更改照片。您的壁纸可能会使用尚不在此影集内的照片。</translation>
+<translation id="1651925268237749928">您已选择一个共享相册。他人可以添加或更改照片。您的壁纸可能会使用尚不在此相册内的照片。</translation>
 <translation id="1661512400125589646">暂停</translation>
 <translation id="1661865805917886535">系统可能会将一些账号信息和系统信息发送给 Google。我们会借助这些信息来解决技术问题和提升服务质量，并且会在此过程中严格遵守 Google 的隐私权政策 (<ph name="PRIVACYPOLICYURL" />) 和服务条款 (<ph name="TERMSOFSERVICEURL" />)。如需提出内容更改请求，请前往“法律帮助”页面 (<ph name="LEGALHELPPAGEURL" />)。</translation>
 <translation id="1662699081856352167">已成功生成摘要</translation>
@@ -279,7 +279,7 @@
 <translation id="2217935453350629363">当前速度</translation>
 <translation id="221994303562837085">停止录制</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
-<translation id="222447520299472966">您需要选择至少 1 个画廊影集</translation>
+<translation id="222447520299472966">您需要选择至少 1 个画廊相册</translation>
 <translation id="2230005943220647148">摄氏度</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="2230624078793142213">创建更多壁纸</translation>
@@ -358,7 +358,7 @@
 <translation id="2620436844016719705">系统</translation>
 <translation id="2637303424821734920">已关闭 - 如要显示本地天气，请<ph name="BEGIN_LINK" />开启系统位置信息使用权<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">登录账号图片</translation>
-<translation id="2640549051766135490">已选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
+<translation id="2640549051766135490">已选择相册“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="2645380101799517405">控件</translation>
 <translation id="2652403576514495859">启用或停用语音输入</translation>
 <translation id="2653659639078652383">提交</translation>
@@ -441,7 +441,7 @@
 <translation id="319101249942218879">头像图片变了</translation>
 <translation id="3192947282887913208">音频文件</translation>
 <translation id="3199982728237701504">文件馈送器（双面）</translation>
-<translation id="3201315366910775591">他人可以更新共享影集</translation>
+<translation id="3201315366910775591">他人可以更新共享相册</translation>
 <translation id="3211671540163313381">按键映射方向键</translation>
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3226657629376379887">布局操作菜单</translation>
@@ -609,7 +609,7 @@
 <translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="409469431304488632">实验</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
-<translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
+<translation id="4110686435123617899">选择相册“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB 触控板</translation>
 <translation id="4113067922640381334">现在，您可以使用新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁纸<ph name="END_LINK_WALLPAPER_SUBPAGE" />了</translation>
 <translation id="4117637339509843559">深色模式</translation>
@@ -758,7 +758,7 @@
 <translation id="4838825304062068169">冰川</translation>
 <translation id="48409034532829769">您的管理员已将“<ph name="APP_NAME" />”设为自动启动。此应用可能无法关闭。</translation>
 <translation id="484462545196658690">自动</translation>
-<translation id="4847902821209177679">已选中 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" />，按 Enter 键即可从 <ph name="TOPIC_SOURCE" />中选择影集</translation>
+<translation id="4847902821209177679">已选中 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" />，按 Enter 键即可从 <ph name="TOPIC_SOURCE" />中选择相册</translation>
 <translation id="484790837831576105">(Android) DNS 解析</translation>
 <translation id="4848429997038228357">正在运行</translation>
 <translation id="4854586501323951986">内置触摸屏</translation>
@@ -830,7 +830,7 @@
 <translation id="517075088756846356">请拔下并重新插入<ph name="DEVICE_NAME" />电源线，以继续更新流程</translation>
 <translation id="5180108905184566358">猴面包树</translation>
 <translation id="5180712487038406644">富有表现力</translation>
-<translation id="5190187232518914472">重现您的美好回忆。如需添加或编辑影集，请转至 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />。</translation>
+<translation id="5190187232518914472">重现您的美好回忆。如需添加或编辑相册，请转至 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />。</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5220549459260334974">已下载 <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">退出</translation>
@@ -952,7 +952,7 @@
 <translation id="584953448295717128">已自动检测到 APN。</translation>
 <translation id="5849570051105887917">家用移动网络提供商代码</translation>
 <translation id="5856267793478861942"><ph name="ATTACH" />（<ph name="IA" />）</translation>
-<translation id="5859603669299126575">画廊中的影集</translation>
+<translation id="5859603669299126575">画廊中的相册</translation>
 <translation id="5859969039821714932">此快捷键不可用。请按下不含 <ph name="KEY" /> 键的新快捷键。</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
@@ -1011,7 +1011,7 @@
 <translation id="6112878310391905610">此设置由您的管理员管理</translation>
 <translation id="6113701710518389813">向上</translation>
 <translation id="6116005346231504406">创建第一个控件</translation>
-<translation id="6117895505466548728"><ph name="TITLE" />，以及另外 <ph name="NUMBER" /> 个影集</translation>
+<translation id="6117895505466548728"><ph name="TITLE" />，以及另外 <ph name="NUMBER" /> 个相册</translation>
 <translation id="6120815036186828722">正在聆听语音…</translation>
 <translation id="6122191549521593678">在线</translation>
 <translation id="6122277663991249694">Chrome 操作系统输入法服务</translation>
@@ -1099,7 +1099,7 @@
 <translation id="6492891353338939218">仿古</translation>
 <translation id="6494974875566443634">自定义</translation>
 <translation id="6500818810472529210">查看“Google 搜索”中的结果</translation>
-<translation id="650266656685499220">如需创建影集，请转至 Google 相册。</translation>
+<translation id="650266656685499220">如需创建相册，请转至 Google 相册。</translation>
 <translation id="6505750420152840539">黎明到黄昏</translation>
 <translation id="6516990319416533844">若要测试电池充电速率，请先耗掉少许电池电量</translation>
 <translation id="6517239166834772319">探索</translation>
@@ -1171,7 +1171,7 @@
 <translation id="6866732840889595464">雏菊</translation>
 <translation id="6871256179359663621">浅紫色</translation>
 <translation id="6889786074662672253">重启期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。这可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
-<translation id="6900701049656042631">此影集内尚无任何照片。若要添加照片，请前往 <ph name="LINK" /></translation>
+<translation id="6900701049656042631">此相册内尚无任何照片。若要添加照片，请前往 <ph name="LINK" /></translation>
 <translation id="6902359863093437070">利用 AI 创建背景</translation>
 <translation id="6905163627763043954">试用一下</translation>
 <translation id="6905724422583748843">返回“<ph name="PAGE_NAME" />”</translation>
@@ -1448,7 +1448,7 @@
 <translation id="819278132617411009">使用 Google AI 提高工作效率</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
-<translation id="8226628635270268143">选择您喜爱的照片和影集</translation>
+<translation id="8226628635270268143">选择您喜爱的照片和相册</translation>
 <translation id="8227119283605456246">附上文件</translation>
 <translation id="8227488649450500937">请尝试以下提示之一，或参阅<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
@@ -1534,7 +1534,7 @@
 <translation id="8670057600920888023">生成式 AI 尚处于实验阶段，生成的内容可能不准确、具有误导性或冒犯性。</translation>
 <translation id="8670574982334489519">右侧</translation>
 <translation id="8675354002693747642">预共享密钥</translation>
-<translation id="8677859815076891398">无任何影集。请在 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />中创建一个影集。</translation>
+<translation id="8677859815076891398">无任何相册。请在 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />中创建一个相册。</translation>
 <translation id="8682949824227998083">日本拉面</translation>
 <translation id="8689520252402395106">请重新插入<ph name="DEVICE_NAME" /> USB 线，以继续更新流程</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />使用向左键或向右键即可管理此功能。</translation>
@@ -1552,7 +1552,7 @@
 <translation id="8756235582947991808">如何利用 AI 创作内容以及一些注意事项</translation>
 <translation id="8760616037557661287">先前的提示</translation>
 <translation id="8764414543112028321">WireGuard</translation>
-<translation id="87646919272181953">Google 相册中的影集</translation>
+<translation id="87646919272181953">Google 相册中的相册</translation>
 <translation id="8775713578693478175">调制解调器 APN</translation>
 <translation id="877735394245039557">正在下载模型</translation>
 <translation id="877985182522063539">A4</translation>
