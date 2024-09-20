@@ -11,7 +11,7 @@
 // and users to perform Feed related operations e.g. Creating a Feed, Following
 // a Website, etc. This also manages feed background refresh.
 // TODO(crbug.com/326035952): Update for multuple browser states.
-@interface FeedAppAgent : SceneObservingAppAgent
+@interface DiscoverFeedAppAgent : SceneObservingAppAgent
 @end
 
 #endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_APP_AGENT_H_

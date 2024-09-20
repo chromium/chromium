@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
-@implementation FeedAppAgent {
+@implementation DiscoverFeedAppAgent {
   // Set to YES when the app is foregrounded.
   BOOL _wasForegroundedAtLeastOnce;
 }
@@ -172,7 +172,7 @@
   if (!IsFeedBackgroundRefreshCapabilityEnabled()) {
     return;
   }
-  __weak FeedAppAgent* weakSelf = self;
+  __weak DiscoverFeedAppAgent* weakSelf = self;
   [BGTaskScheduler.sharedScheduler
       registerForTaskWithIdentifier:kFeedBackgroundRefreshTaskIdentifier
                          usingQueue:nil

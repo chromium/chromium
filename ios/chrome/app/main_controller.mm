@@ -898,8 +898,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [refreshAgent addAppRefreshProvider:[[TestRefresher alloc]
                                           initWithAppState:self.appState]];
 
-  // TODO(crbug.com/355142171): Remove the FeedAppAgent.
-  [appState addAgent:[[FeedAppAgent alloc] init]];
+  // TODO(crbug.com/355142171): Remove the DiscoverFeedAppAgent.
+  [appState addAgent:[[DiscoverFeedAppAgent alloc] init]];
 
   // Create the window accessibility agent only when multiple windows are
   // possible.
