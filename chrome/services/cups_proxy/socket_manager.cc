@@ -40,15 +40,13 @@ const char kCupsSocketPath[] = "/run/cups/cups.sock";
 
 // Returns true if |response_buffer| represents a full HTTP response.
 bool FinishedReadingResponse(const std::vector<uint8_t>& response_buffer) {
-  std::string response = ipp_converter::ConvertToString(response_buffer);
-  size_t end_of_headers =
-      net::HttpUtil::LocateEndOfHeaders(response.data(), response.size());
+  size_t end_of_headers = net::HttpUtil::LocateEndOfHeaders(response_buffer);
   if (end_of_headers < 0) {
     return false;
   }
 
   std::string raw_headers = net::HttpUtil::AssembleRawHeaders(
-      std::string_view(response.data(), end_of_headers));
+      base::as_string_view(base::span(response_buffer).first(end_of_headers)));
   auto parsed_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
 
@@ -58,7 +56,7 @@ bool FinishedReadingResponse(const std::vector<uint8_t>& response_buffer) {
     return false;
   }
 
-  if (response.size() < end_of_headers + content_length) {
+  if (response_buffer.size() < end_of_headers + content_length) {
     return false;
   }
 

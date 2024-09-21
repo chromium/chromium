@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
 
+#include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -153,9 +154,8 @@ bool MultipartImageResourceParser::ParseHeaders() {
     response.AddHttpHeaderField(header.key, header.value);
 
   wtf_size_t end = 0;
-  auto data = base::span(data_).subspan(pos);
-  if (!ParseMultipartHeadersFromBody(data.data(), data.size(), &response,
-                                     &end)) {
+  if (!ParseMultipartHeadersFromBody(base::as_byte_span(data_).subspan(pos),
+                                     &response, &end)) {
     return false;
   }
   data_.EraseAt(0, end + pos);

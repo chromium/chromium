@@ -790,14 +790,13 @@ void ParseCommaDelimitedHeader(const String& header_value,
     header_set.insert(value.StripWhiteSpace(IsWhitespace));
 }
 
-bool ParseMultipartHeadersFromBody(const char* bytes,
-                                   wtf_size_t size,
+bool ParseMultipartHeadersFromBody(base::span<const uint8_t> bytes,
                                    ResourceResponse* response,
                                    wtf_size_t* end) {
   DCHECK(IsMainThread());
 
   size_t headers_end_pos =
-      net::HttpUtil::LocateEndOfAdditionalHeaders(bytes, size, 0);
+      net::HttpUtil::LocateEndOfAdditionalHeaders(bytes, 0);
 
   if (headers_end_pos == std::string::npos)
     return false;
@@ -807,7 +806,7 @@ bool ParseMultipartHeadersFromBody(const char* bytes,
   // Eat headers and prepend a status line as is required by
   // HttpResponseHeaders.
   std::string headers("HTTP/1.1 200 OK\r\n");
-  headers.append(bytes, headers_end_pos);
+  headers.append(base::as_string_view(bytes.first(headers_end_pos)));
 
   auto response_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
@@ -836,14 +835,13 @@ bool ParseMultipartHeadersFromBody(const char* bytes,
   return true;
 }
 
-bool ParseMultipartFormHeadersFromBody(const char* bytes,
-                                       wtf_size_t size,
+bool ParseMultipartFormHeadersFromBody(base::span<const uint8_t> bytes,
                                        HTTPHeaderMap* header_fields,
                                        wtf_size_t* end) {
   DCHECK_EQ(0u, header_fields->size());
 
   size_t headers_end_pos =
-      net::HttpUtil::LocateEndOfAdditionalHeaders(bytes, size, 0);
+      net::HttpUtil::LocateEndOfAdditionalHeaders(bytes, 0);
 
   if (headers_end_pos == std::string::npos)
     return false;
@@ -853,7 +851,7 @@ bool ParseMultipartFormHeadersFromBody(const char* bytes,
   // Eat headers and prepend a status line as is required by
   // HttpResponseHeaders.
   std::string headers("HTTP/1.1 200 OK\r\n");
-  headers.append(bytes, headers_end_pos);
+  headers.append(base::as_string_view(bytes.first(headers_end_pos)));
 
   auto responseHeaders = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));

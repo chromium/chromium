@@ -22,18 +22,4 @@ std::vector<uint8_t> ConvertToByteBuffer(std::string_view char_buffer) {
   return byte_buffer;
 }
 
-// Implicit conversion is safe since the conversion preserves memory layout.
-std::vector<char> ConvertToCharBuffer(base::span<const uint8_t> byte_buffer) {
-  std::vector<char> char_buffer;
-  char_buffer.resize(byte_buffer.size());
-
-  base::ranges::copy(byte_buffer, char_buffer.begin());
-  return char_buffer;
-}
-
-std::string ConvertToString(base::span<const uint8_t> byte_buffer) {
-  std::vector<char> char_buffer = ConvertToCharBuffer(byte_buffer);
-  return std::string(char_buffer.begin(), char_buffer.end());
-}
-
 }  // namespace ipp_converter

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -342,7 +343,7 @@ bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
   device->set_response_time(response_time);
 
   size_t headers_end =
-      HttpUtil::LocateEndOfHeaders(response.c_str(), response.size());
+      HttpUtil::LocateEndOfHeaders(base::as_byte_span(response));
   if (headers_end == 0 || headers_end == std::string::npos) {
     return false;
   }

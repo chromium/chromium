@@ -11,6 +11,7 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
@@ -326,7 +327,7 @@ TEST(HTTPParsersTest, ParseHTTPRefresh) {
 
 TEST(HTTPParsersTest, ParseMultipartHeadersResult) {
   struct {
-    const char* data;
+    const std::string_view data;
     const bool result;
     const size_t end;
   } tests[] = {
@@ -343,8 +344,7 @@ TEST(HTTPParsersTest, ParseMultipartHeadersResult) {
     ResourceResponse response;
     wtf_size_t end = 0;
     bool result = ParseMultipartHeadersFromBody(
-        tests[i].data, static_cast<wtf_size_t>(strlen(tests[i].data)),
-        &response, &end);
+        base::as_byte_span(tests[i].data), &response, &end);
     EXPECT_EQ(tests[i].result, result);
     EXPECT_EQ(tests[i].end, end);
   }
@@ -366,7 +366,7 @@ TEST(HTTPParsersTest, ParseMultipartHeaders) {
       "\n";
   wtf_size_t end = 0;
   bool result = ParseMultipartHeadersFromBody(
-      kData, static_cast<wtf_size_t>(strlen(kData)), &response, &end);
+      base::byte_span_from_cstring(kData), &response, &end);
 
   EXPECT_TRUE(result);
   EXPECT_EQ(strlen(kData), end);
@@ -383,7 +383,7 @@ TEST(HTTPParsersTest, ParseMultipartHeadersContentCharset) {
   const char kData[] = "content-type: text/html; charset=utf-8\n\n";
   wtf_size_t end = 0;
   bool result = ParseMultipartHeadersFromBody(
-      kData, static_cast<wtf_size_t>(strlen(kData)), &response, &end);
+      base::byte_span_from_cstring(kData), &response, &end);
 
   EXPECT_TRUE(result);
   EXPECT_EQ(strlen(kData), end);

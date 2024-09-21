@@ -162,7 +162,7 @@ class TestHttpClient {
   bool IsCompleteResponse(const std::string& response) {
     // Check end of headers first.
     size_t end_of_headers =
-        HttpUtil::LocateEndOfHeaders(response.data(), response.size());
+        HttpUtil::LocateEndOfHeaders(base::as_byte_span(response));
     if (end_of_headers == std::string::npos) {
       return false;
     }

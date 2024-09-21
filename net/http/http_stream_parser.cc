@@ -996,9 +996,8 @@ int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
 
   // Look for the start of the status line, if it hasn't been found yet.
   if (response_header_start_offset_ == std::string::npos) {
-    auto buffer = base::as_chars(read_buf_->span_before_offset());
     response_header_start_offset_ =
-        HttpUtil::LocateStartOfStatusLine(buffer.data(), buffer.size());
+        HttpUtil::LocateStartOfStatusLine(read_buf_->span_before_offset());
   }
 
   if (response_header_start_offset_ != std::string::npos) {
@@ -1012,8 +1011,7 @@ int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
         (base::ClampedNumeric<size_t>(read_buf_->offset()) - new_bytes - 3)
             .RawValue();
     size_t search_start = std::max(response_header_start_offset_, lower_bound);
-    auto buffer = base::as_chars(read_buf_->span_before_offset());
-    end_offset = HttpUtil::LocateEndOfHeaders(buffer.data(), buffer.size(),
+    end_offset = HttpUtil::LocateEndOfHeaders(read_buf_->span_before_offset(),
                                               search_start);
   } else if (read_buf_->offset() >= 8) {
     // Enough data to decide that this is an HTTP/0.9 response.

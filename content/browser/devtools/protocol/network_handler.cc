@@ -2938,8 +2938,7 @@ void NetworkHandler::ContinueInterceptedRequest(
     const protocol::Binary& raw = raw_response.value();
 
     std::string raw_headers;
-    size_t header_size = net::HttpUtil::LocateEndOfHeaders(
-        reinterpret_cast<const char*>(raw.data()), raw.size());
+    size_t header_size = net::HttpUtil::LocateEndOfHeaders(raw);
     if (header_size == std::string::npos) {
       LOG(WARNING) << "Can't find headers in raw response";
       header_size = 0;

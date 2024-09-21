@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -311,10 +312,8 @@ bool MultipartParser::ParseHeaderFields(base::span<const char>& bytes,
   }
 
   wtf_size_t end = 0u;
-  if (!ParseMultipartFormHeadersFromBody(
-          header_bytes.data(),
-          base::checked_cast<wtf_size_t>(header_bytes.size()), header_fields,
-          &end)) {
+  if (!ParseMultipartFormHeadersFromBody(base::as_bytes(header_bytes),
+                                         header_fields, &end)) {
     // Store the current header bytes for the next call unless that has
     // already been done.
     if (buffered_header_bytes_.empty()) {

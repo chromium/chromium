@@ -364,7 +364,7 @@ TEST(HttpUtilTest, Quote) {
 
 TEST(HttpUtilTest, LocateEndOfHeaders) {
   struct {
-    const char* const input;
+    const std::string_view input;
     size_t expected_result;
   } tests[] = {
       {"\r\n", std::string::npos},
@@ -380,15 +380,14 @@ TEST(HttpUtilTest, LocateEndOfHeaders) {
       {"foo\nbar\r\n\njunk", 10},
   };
   for (const auto& test : tests) {
-    size_t input_len = strlen(test.input);
-    size_t eoh = HttpUtil::LocateEndOfHeaders(test.input, input_len);
+    size_t eoh = HttpUtil::LocateEndOfHeaders(base::as_byte_span(test.input));
     EXPECT_EQ(test.expected_result, eoh);
   }
 }
 
 TEST(HttpUtilTest, LocateEndOfAdditionalHeaders) {
   struct {
-    const char* const input;
+    const std::string_view input;
     size_t expected_result;
   } tests[] = {
       {"\r\n", 2},
@@ -404,8 +403,8 @@ TEST(HttpUtilTest, LocateEndOfAdditionalHeaders) {
       {"foo\nbar\r\n\njunk", 10},
   };
   for (const auto& test : tests) {
-    size_t input_len = strlen(test.input);
-    size_t eoh = HttpUtil::LocateEndOfAdditionalHeaders(test.input, input_len);
+    size_t eoh =
+        HttpUtil::LocateEndOfAdditionalHeaders(base::as_byte_span(test.input));
     EXPECT_EQ(test.expected_result, eoh);
   }
 }

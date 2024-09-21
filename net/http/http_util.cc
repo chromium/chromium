@@ -575,15 +575,15 @@ std::string HttpUtil::Quote(std::string_view str) {
 // some slop at the start. If the "http" string could not be found
 // then returns std::string::npos.
 // static
-size_t HttpUtil::LocateStartOfStatusLine(const char* buf, size_t buf_len) {
+size_t HttpUtil::LocateStartOfStatusLine(base::span<const uint8_t> buf) {
   const size_t slop = 4;
   const size_t http_len = 4;
 
-  if (buf_len >= http_len) {
-    size_t i_max = std::min(buf_len - http_len, slop);
+  if (buf.size() >= http_len) {
+    size_t i_max = std::min(buf.size() - http_len, slop);
     for (size_t i = 0; i <= i_max; ++i) {
-      if (base::EqualsCaseInsensitiveASCII(std::string_view(buf + i, http_len),
-                                           "http")) {
+      if (base::EqualsCaseInsensitiveASCII(
+              base::as_string_view(buf.subspan(i, http_len)), "http")) {
         return i;
       }
     }
@@ -591,8 +591,7 @@ size_t HttpUtil::LocateStartOfStatusLine(const char* buf, size_t buf_len) {
   return std::string::npos;  // Not found
 }
 
-static size_t LocateEndOfHeadersHelper(const char* buf,
-                                       size_t buf_len,
+static size_t LocateEndOfHeadersHelper(base::span<const uint8_t> buf,
                                        size_t i,
                                        bool accept_empty_header_list) {
   char last_c = '\0';
@@ -604,7 +603,7 @@ static size_t LocateEndOfHeadersHelper(const char* buf,
     was_lf = true;
   }
 
-  for (; i < buf_len; ++i) {
+  for (; i < buf.size(); ++i) {
     char c = buf[i];
     if (c == '\n') {
       if (was_lf)
@@ -618,14 +617,13 @@ static size_t LocateEndOfHeadersHelper(const char* buf,
   return std::string::npos;
 }
 
-size_t HttpUtil::LocateEndOfAdditionalHeaders(const char* buf,
-                                              size_t buf_len,
+size_t HttpUtil::LocateEndOfAdditionalHeaders(base::span<const uint8_t> buf,
                                               size_t i) {
-  return LocateEndOfHeadersHelper(buf, buf_len, i, true);
+  return LocateEndOfHeadersHelper(buf, i, true);
 }
 
-size_t HttpUtil::LocateEndOfHeaders(const char* buf, size_t buf_len, size_t i) {
-  return LocateEndOfHeadersHelper(buf, buf_len, i, false);
+size_t HttpUtil::LocateEndOfHeaders(base::span<const uint8_t> buf, size_t i) {
+  return LocateEndOfHeadersHelper(buf, i, false);
 }
 
 // In order for a line to be continuable, it must specify a
@@ -678,7 +676,7 @@ std::string HttpUtil::AssembleRawHeaders(std::string_view input) {
   // Skip any leading slop, since the consumers of this output
   // (HttpResponseHeaders) don't deal with it.
   size_t status_begin_offset =
-      LocateStartOfStatusLine(input.data(), input.size());
+      LocateStartOfStatusLine(base::as_byte_span(input));
   if (status_begin_offset != std::string::npos)
     input.remove_prefix(status_begin_offset);
 
