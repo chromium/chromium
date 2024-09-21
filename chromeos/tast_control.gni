@@ -75,9 +75,6 @@ tast_disabled_tests_from_chrome_all = [
   "nacl.Pnacl.lacros@jacuzzi",
   "nacl.Pnacl.lacros@volteer",
 
-  # b/344964853
-  "apps.LaunchHelpAppInBrowserMenu.stable_fieldtrial_testing_config_on@betty",
-
   # b/346793249, b/330290054
   "videoconferencing.OpenCLCacher",
 
