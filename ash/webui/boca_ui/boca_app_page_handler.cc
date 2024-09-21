@@ -5,6 +5,7 @@
 #include "ash/webui/boca_ui/boca_app_page_handler.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -14,6 +15,7 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
@@ -23,6 +25,7 @@
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "content/public/browser/web_ui.h"
 
 namespace ash::boca {
@@ -137,7 +140,9 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
   }
 
   session_client_impl_->CreateSession(std::move(request));
-  NotifyLocalConfigUpdate(std::move(config));
+  if (auto caption_config = std::move(config->caption_config)) {
+    NotifyLocalCaptionConfigUpdate(std::move(caption_config));
+  }
 }
 
 void BocaAppHandler::GetSession(GetSessionCallback callback) {
@@ -212,15 +217,42 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
   session_client_impl_->GetSession(std::move(get_session_request));
 }
 
-void BocaAppHandler::NotifyLocalConfigUpdate(mojom::ConfigPtr config) {
-  if (auto caption_config = std::move(config->caption_config)) {
-    ::boca::CaptionsConfig local_caption_config;
-    // TODO(b/362291997):Update mojom to rename 'local_only' to be 'local'.
-    local_caption_config.set_captions_enabled(caption_config->local_only);
-    local_caption_config.set_translations_enabled(caption_config->local_only);
-    BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
-        std::move(local_caption_config));
+void BocaAppHandler::EndSession(EndSessionCallback callback) {
+  auto* session =
+      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  if (!session) {
+    std::move(callback).Run(mojom::UpdateSessionError::kInvalid);
+    return;
   }
+  std::unique_ptr<UpdateSessionRequest> request =
+      std::make_unique<UpdateSessionRequest>(
+          session_client_impl_->sender(), user_identity_, session->session_id(),
+          base::BindOnce(
+              [](EndSessionCallback callback,
+                 base::expected<std::unique_ptr<::boca::Session>,
+                                google_apis::ApiErrorCode> result) {
+                if (!result.has_value()) {
+                  std::move(callback).Run(
+                      mojom::UpdateSessionError::kHTTPError);
+                  return;
+                }
+                std::move(callback).Run(std::nullopt);
+                BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+                    std::move(result.value()));
+              },
+              std::move(callback)));
+  request->set_session_state(
+      std::make_unique<::boca::Session::SessionState>(::boca::Session::PAST));
+  session_client_impl_->UpdateSession(std::move(request));
+}
+
+void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
+    mojom::CaptionConfigPtr config) {
+  ::boca::CaptionsConfig local_caption_config;
+  local_caption_config.set_captions_enabled(config->local);
+  local_caption_config.set_translations_enabled(config->local);
+  BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
+      std::move(local_caption_config));
 }
 
 }  // namespace ash::boca

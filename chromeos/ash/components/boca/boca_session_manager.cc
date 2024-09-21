@@ -118,6 +118,10 @@ void BocaSessionManager::UpdateCurrentSession(
   NotifyRosterUpdate();
 }
 
+::boca::Session* BocaSessionManager::GetCurrentSession() {
+  return current_session_.get();
+}
+
 bool BocaSessionManager::IsProfileActive() {
   return user_manager::UserManager::IsInitialized() &&
          user_manager::UserManager::Get()->GetActiveUser() &&

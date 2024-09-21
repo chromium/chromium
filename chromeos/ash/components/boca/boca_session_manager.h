@@ -113,6 +113,7 @@ class BocaSessionManager
   void ParseSessionResponse(base::expected<std::unique_ptr<::boca::Session>,
                                            google_apis::ApiErrorCode> result);
   virtual void UpdateCurrentSession(std::unique_ptr<::boca::Session> session);
+  virtual ::boca::Session* GetCurrentSession();
 
   // Local events.
   virtual void NotifyLocalCaptionEvents(::boca::CaptionsConfig caption_config);

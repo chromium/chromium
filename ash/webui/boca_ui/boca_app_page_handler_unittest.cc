@@ -59,6 +59,10 @@ class MockSessionClientImpl : public SessionClientImpl {
               GetSession,
               (std::unique_ptr<GetSessionRequest>),
               (override));
+  MOCK_METHOD(void,
+              UpdateSession,
+              (std::unique_ptr<UpdateSessionRequest>),
+              (override));
 };
 
 class MockBocaAppClient : public BocaAppClient {
@@ -85,6 +89,7 @@ class MockSessionManager : public BocaSessionManager {
               UpdateCurrentSession,
               (std::unique_ptr<::boca::Session>),
               (override));
+  MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
   ~MockSessionManager() override = default;
 };
 
@@ -506,6 +511,99 @@ TEST_F(BocaAppPageHandlerTest,
   auto result = future_1.Take();
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(mojom::GetSessionError::kEmpty, result->get_error());
+}
+
+TEST_F(BocaAppPageHandlerTest, EndSessionSucceed) {
+  auto* session_id = "123";
+  auto session = std::make_unique<::boca::Session>();
+  session->mutable_duration()->set_seconds(120);
+  session->set_session_state(::boca::Session::ACTIVE);
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_)).Times(1);
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id(kGaiaId);
+  UpdateSessionRequest request(nullptr, teacher, session_id,
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            ASSERT_EQ(kGaiaId, request->teacher().gaia_id());
+            ASSERT_EQ(::boca::Session::PAST, *request->session_state());
+            request->callback().Run(std::make_unique<::boca::Session>());
+          })));
+
+  boca_app_handler_->EndSession(future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, EndSessionWithHTTPFailure) {
+  auto* session_id = "123";
+  auto session = std::make_unique<::boca::Session>();
+  session->mutable_duration()->set_seconds(120);
+  session->set_session_state(::boca::Session::ACTIVE);
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id(kGaiaId);
+  UpdateSessionRequest request(nullptr, teacher, session_id,
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            ASSERT_EQ(kGaiaId, request->teacher().gaia_id());
+            ASSERT_EQ(::boca::Session::PAST, *request->session_state());
+            request->callback().Run(
+                base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+          })));
+
+  boca_app_handler_->EndSession(future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_TRUE(future_1.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, EndSessionWithEmptyResponse) {
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(nullptr));
+
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  boca_app_handler_->EndSession(future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
 
 }  // namespace

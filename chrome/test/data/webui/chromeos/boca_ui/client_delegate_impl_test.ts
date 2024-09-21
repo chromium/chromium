@@ -79,7 +79,7 @@ class MockRemoteHandler extends PageHandlerRemote {
           captionConfig: {
             captionEnabled: true,
             transcriptionEnabled: true,
-            localOnly: true,
+            local: true,
           },
         },
         config);
@@ -122,7 +122,7 @@ class MockRemoteHandler extends PageHandlerRemote {
           captionConfig: {
             captionEnabled: true,
             transcriptionEnabled: true,
-            localOnly: true,
+            local: true,
           },
         },
       },
@@ -224,7 +224,7 @@ suite('ClientDelegateTest', function() {
           },
           captionConfig: {
             captionEnabled: true,
-            localOnly: true,
+            local: true,
             transcriptionEnabled: true,
           },
         });
@@ -265,7 +265,7 @@ suite('ClientDelegateTest', function() {
             },
             captionConfig: {
               captionEnabled: true,
-              localOnly: true,
+              local: true,
               transcriptionEnabled: true,
             },
           },

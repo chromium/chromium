@@ -62,8 +62,8 @@ struct Config{
 struct CaptionConfig {
   // If caption is enabled.
   bool caption_enabled;
-  // If the caption will be persisted to local only.
-  bool local_only;
+  // If the caption is enabled for local device.
+  bool local;
   // If transcription is enabled.
   bool transcription_enabled;
 };
@@ -97,6 +97,11 @@ union SessionResult {
  Config config;
 };
 
+enum UpdateSessionError{
+  kInvalid,
+  kHTTPError,
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
@@ -113,6 +118,8 @@ interface PageHandler {
   CreateSession(Config config) => (bool success);
   // Retrieves the current session.
   GetSession() => (SessionResult result);
+  // End session.
+  EndSession() => (UpdateSessionError? error);
 };
 
 // Implemented by renderer process

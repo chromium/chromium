@@ -7,10 +7,12 @@
 
 #include <memory>
 
+#include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
+#include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "components/account_id/account_id.h"
 #include "content/public/browser/web_ui.h"
@@ -44,8 +46,8 @@ class BocaAppHandler : public mojom::PageHandler {
   void CreateSession(mojom::ConfigPtr config,
                      CreateSessionCallback callback) override;
   void GetSession(GetSessionCallback callback) override;
-
-  void NotifyLocalConfigUpdate(mojom::ConfigPtr config);
+  void EndSession(EndSessionCallback callback) override;
+  void NotifyLocalCaptionConfigUpdate(mojom::CaptionConfigPtr config);
 
  private:
   TabInfoCollector tab_info_collector_;
