@@ -378,9 +378,16 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   }
 
   private addNewCommandPair_(newCommandPair: FaceGazeCommandPair): void {
-    this.push(
-        FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
-        newCommandPair);
+    // Ensure pause/resume face control is at the top of the displayed list.
+    if (newCommandPair.action === MacroName.TOGGLE_FACEGAZE) {
+      this.unshift(
+          FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
+          newCommandPair);
+    } else {
+      this.push(
+          FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
+          newCommandPair);
+    }
   }
 
   private updateCommandPairGesture_(

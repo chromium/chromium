@@ -22,6 +22,7 @@ export const FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF =
 
 // Currently supported macros in FaceGaze.
 export const FaceGazeActions: MacroName[] = [
+  MacroName.TOGGLE_FACEGAZE,
   MacroName.MOUSE_CLICK_LEFT,
   MacroName.MOUSE_CLICK_LEFT_DOUBLE,
   MacroName.MOUSE_CLICK_RIGHT,
@@ -214,6 +215,8 @@ export class FaceGazeUtils {
   static getMacroDisplayText(macro: MacroName): string {
     // TODO(b:341770655): Localize these strings.
     switch (macro) {
+      case MacroName.TOGGLE_FACEGAZE:
+        return 'Pause or resume face control';
       case MacroName.MOUSE_CLICK_LEFT:
         return 'Click a mouse button';
       case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
