@@ -29,7 +29,7 @@ class OpenTabProviderTest : public testing::Test {
 TEST_F(OpenTabProviderTest, TestNoResults) {
   AutocompleteInput input(u"test",
                           metrics::OmniboxEventProto::PageClassification::
-                              OmniboxEventProto_PageClassification_HUB,
+                              OmniboxEventProto_PageClassification_ANDROID_HUB,
                           TestSchemeClassifier());
   open_tab_provider().Start(input, /* minimal_changes= */ false);
   ASSERT_EQ(0UL, open_tab_provider().matches().size());
@@ -43,7 +43,7 @@ TEST_F(OpenTabProviderTest, TestTitleMatch) {
 
   AutocompleteInput input(u"test",
                           metrics::OmniboxEventProto::PageClassification::
-                              OmniboxEventProto_PageClassification_HUB,
+                              OmniboxEventProto_PageClassification_ANDROID_HUB,
                           TestSchemeClassifier());
   open_tab_provider().Start(input, /* minimal_changes= */ false);
   ASSERT_EQ(1UL, open_tab_provider().matches().size());
@@ -57,7 +57,7 @@ TEST_F(OpenTabProviderTest, TestURLMatch) {
 
   AutocompleteInput input(u"test",
                           metrics::OmniboxEventProto::PageClassification::
-                              OmniboxEventProto_PageClassification_HUB,
+                              OmniboxEventProto_PageClassification_ANDROID_HUB,
                           TestSchemeClassifier());
   open_tab_provider().Start(input, /* minimal_changes= */ false);
   ASSERT_EQ(1UL, open_tab_provider().matches().size());
