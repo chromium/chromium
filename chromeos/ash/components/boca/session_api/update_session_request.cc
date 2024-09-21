@@ -71,6 +71,13 @@ bool UpdateSessionRequest::GetContentData(std::string* upload_content_type,
   *upload_content_type = boca::kContentTypeApplicationJson;
 
   base::Value::Dict root;
+
+  // Mandatory data for all update request.
+  root.Set(kSessionId, session_id_);
+  base::Value::Dict teacher;
+  teacher.Set(kGaiaId, teacher_.gaia_id());
+  root.Set(kTeacher, std::move(teacher));
+
   if (duration_) {
     base::Value::Dict duration;
     duration.Set(kSeconds, static_cast<int>(duration_->InSeconds()));

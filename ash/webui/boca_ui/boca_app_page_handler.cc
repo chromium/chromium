@@ -226,7 +226,7 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
 void BocaAppHandler::EndSession(EndSessionCallback callback) {
   auto* session =
       BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
-  if (!session) {
+  if (!session || session->session_state() != ::boca::Session::ACTIVE) {
     std::move(callback).Run(mojom::UpdateSessionError::kInvalid);
     return;
   }
@@ -256,7 +256,8 @@ void BocaAppHandler::UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
                                         UpdateOnTaskConfigCallback callback) {
   auto* session =
       BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
-  if (!session || !config) {
+  if (!session || session->session_state() != ::boca::Session::ACTIVE ||
+      !config) {
     std::move(callback).Run(mojom::UpdateSessionError::kInvalid);
     return;
   }
@@ -289,7 +290,7 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
   // Dispatch remote caption config.
   auto* session =
       BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
-  if (!session) {
+  if (!session || session->session_state() != ::boca::Session::ACTIVE) {
     std::move(callback).Run(mojom::UpdateSessionError::kInvalid);
     return;
   }

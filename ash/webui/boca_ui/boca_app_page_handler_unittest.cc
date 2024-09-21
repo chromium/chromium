@@ -682,6 +682,21 @@ TEST_F(BocaAppPageHandlerTest, EndSessionWithEmptyResponse) {
   EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
 
+TEST_F(BocaAppPageHandlerTest, EndSessionWithNonActiveResponse) {
+  ::boca::Session session;
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
+
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  boca_app_handler_->EndSession(future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
+}
+
 TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigSucceed) {
   auto session = GetCommonActiveSessionProto();
 
@@ -742,6 +757,22 @@ TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithEmptySession) {
   EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
 
+TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithNonActiveSession) {
+  ::boca::Session non_active_session;
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&non_active_session));
+
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
+                                        future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
+}
+
 TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithHTTPFailure) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
@@ -784,6 +815,23 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithEmptySession) {
       .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(nullptr));
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithNonActiveSession) {
+  ::boca::Session session;
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;

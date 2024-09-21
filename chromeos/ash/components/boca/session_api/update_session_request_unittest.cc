@@ -160,7 +160,9 @@ TEST_F(UpdateSessionTest, UpdateSessionWithEndSessionInputAndSucceed) {
   EXPECT_EQ("/v1/teachers/1/sessions/sessionId?updateMask=sessionState",
             http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
-  auto* contentData = "{\"sessionState\":3}";
+  auto* contentData =
+      "{\"sessionId\":\"sessionId\",\"sessionState\":3,\"teacher\":{\"gaiaId\":"
+      "\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_TRUE(result.has_value());
@@ -192,7 +194,9 @@ TEST_F(UpdateSessionTest, UpdateSessionWithExendSessionInputAndSucceed) {
   EXPECT_EQ("/v1/teachers/1/sessions/sessionId?updateMask=duration",
             http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
-  auto* contentData = "{\"duration\":{\"seconds\":120}}";
+  auto* contentData =
+      "{\"duration\":{\"seconds\":120},\"sessionId\":\"sessionId\",\"teacher\":"
+      "{\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_TRUE(result.has_value());
@@ -228,7 +232,9 @@ TEST_F(UpdateSessionTest,
       "/v1/teachers/1/sessions/sessionId?updateMask=sessionState,duration",
       http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
-  auto* contentData = "{\"duration\":{\"seconds\":60},\"sessionState\":3}";
+  auto* contentData =
+      "{\"duration\":{\"seconds\":60},\"sessionId\":\"sessionId\","
+      "\"sessionState\":3,\"teacher\":{\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_TRUE(result.has_value());
@@ -291,15 +297,15 @@ TEST_F(UpdateSessionTest, UpdateSessionWithUpdateSessionConfigAndSucceed) {
             http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   auto* contentData =
-      "{\"studentGroupConfigs\":"
-      "{\"main\":{\"captionsConfig\":{\"captionsEnabled\":true,"
-      "\"translationsEnabled\":true},\"onTaskConfig\":{\"activeBundle\":{"
-      "\"contentConfigs\":[{\"faviconUrl\":\"data:image/"
+      "{\"sessionId\":\"sessionId\",\"studentGroupConfigs\":{\"main\":{"
+      "\"captionsConfig\":{\"captionsEnabled\":true,\"translationsEnabled\":"
+      "true},\"onTaskConfig\":{\"activeBundle\":{\"contentConfigs\":[{"
+      "\"faviconUrl\":\"data:image/"
       "123\",\"lockedNavigationOptions\":{\"navigationType\":1},\"title\":"
       "\"google\",\"url\":\"https://google.com\"},{\"faviconUrl\":\"data:image/"
       "123\",\"lockedNavigationOptions\":{\"navigationType\":2},\"title\":"
       "\"youtube\",\"url\":\"https://"
-      "youtube.com\"}],\"locked\":true}}}}}";
+      "youtube.com\"}],\"locked\":true}}}},\"teacher\":{\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_TRUE(result.value());
@@ -331,7 +337,9 @@ TEST_F(UpdateSessionTest, UpdateSessionWithDurationAndFail) {
   EXPECT_EQ("/v1/teachers/1/sessions/sessionId?updateMask=duration",
             http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
-  auto* contentData = "{\"duration\":{\"seconds\":60}}";
+  auto* contentData =
+      "{\"duration\":{\"seconds\":60},\"sessionId\":\"sessionId\",\"teacher\":{"
+      "\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(google_apis::HTTP_INTERNAL_SERVER_ERROR, result.error());

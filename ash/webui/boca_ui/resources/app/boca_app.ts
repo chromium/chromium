@@ -155,6 +155,19 @@ export declare interface ClientApiDelegate {
    * Retrivies the current session.
    */
   getSession(): Promise<Session|null>;
+  /**
+   * End the current session
+   */
+  endSession(): Promise<boolean>;
+  /**
+   * Update on task config
+   */
+  updateOnTaskConfig(onTaskConfig: OnTaskConfig): Promise<boolean>;
+
+  /**
+   * Update caption config
+   */
+  updateCaptionConfig(captionConfig: CaptionConfig): Promise<boolean>;
 }
 
 /**

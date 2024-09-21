@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import {Config, Course, Identity, PageHandlerRemote, SessionResult, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, SessionResult, UpdateSessionError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -48,8 +48,7 @@ class MockRemoteHandler extends PageHandlerRemote {
         {
           sessionDuration: {
             // BigInt serialized as string.
-            // TODO(b/365141108) Fix this after we remove hard-coded duration.
-            microseconds: 120000000n,
+            microseconds: 7200000000n,
           },
           students: [
             {id: '1', name: 'cat', email: 'cat@gmail.com'},
@@ -127,6 +126,50 @@ class MockRemoteHandler extends PageHandlerRemote {
         },
       },
     });
+  }
+
+  override updateOnTaskConfig(config: OnTaskConfig):
+      Promise<{error: UpdateSessionError | null}> {
+    assertDeepEquals(
+        {
+          isLocked: true,
+          tabs: [
+            {
+              tab: {
+                url: {url: 'http://google.com/'},
+                title: 'google',
+                favicon: 'data/image',
+              },
+              navigationType: 0,
+            },
+            {
+              tab: {
+                url: {url: 'http://youtube.com/'},
+                title: 'youtube',
+                favicon: 'data/image',
+              },
+              navigationType: 1,
+            },
+          ],
+        },
+        config);
+    return Promise.resolve({error: null});
+  }
+
+  override updateCaptionConfig(config: CaptionConfig):
+      Promise<{error: UpdateSessionError | null}> {
+    assertDeepEquals(
+        {
+          captionEnabled: true,
+          transcriptionEnabled: true,
+          local: true,
+        },
+        config);
+    return Promise.resolve({error: null});
+  }
+
+  override endSession(): Promise<{error: UpdateSessionError | null}> {
+    return Promise.resolve({error: null});
   }
 }
 
@@ -272,6 +315,48 @@ suite('ClientDelegateTest', function() {
           activity: [],
         },
         result);
+  });
+
+  test(
+      'client delegate should translate data for update on task config',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().updateOnTaskConfig({
+              isLocked: true,
+              tabs: [
+                {
+                  tab: {
+                    title: 'google',
+                    url: 'http://google.com/',
+                    favicon: 'data/image',
+                  },
+                  navigationType: 0,
+                },
+                {
+                  tab: {
+                    title: 'youtube',
+                    url: 'http://youtube.com/',
+                    favicon: 'data/image',
+                  },
+                  navigationType: 1,
+                },
+              ],
+            });
+        assertTrue(result);
+      });
+
+  test('client delegate should translate data for caption config', async () => {
+    const result = await clientDelegateImpl.getInstance().updateCaptionConfig({
+      captionEnabled: true,
+      local: true,
+      transcriptionEnabled: true,
+    });
+    assertTrue(result);
+  });
+
+  test('client delegate should translate data for end session', async () => {
+    const result = await clientDelegateImpl.getInstance().endSession();
+    assertTrue(result);
   });
 
 });
