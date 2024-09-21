@@ -120,6 +120,13 @@ interface PageHandler {
   GetSession() => (SessionResult result);
   // End session.
   EndSession() => (UpdateSessionError? error);
+  // Update OnTask config.
+  UpdateOnTaskConfig(OnTaskConfig on_task_config)
+  => (UpdateSessionError? error);
+  // Update caption config.
+  UpdateCaptionConfig(CaptionConfig caption_config)
+  => (UpdateSessionError? error);
+
 };
 
 // Implemented by renderer process

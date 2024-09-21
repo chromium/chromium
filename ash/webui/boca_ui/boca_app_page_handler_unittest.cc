@@ -46,6 +46,97 @@ namespace {
 constexpr char kGaiaId[] = "123";
 constexpr char kUserEmail[] = "cat@gmail.com";
 
+mojom::OnTaskConfigPtr GetCommonTestLockOnTaskConfig() {
+  std::vector<mojom::ControlledTabPtr> tabs;
+  tabs.push_back(mojom::ControlledTab::New(
+      mojom::TabInfo::New("google", ::GURL("http://google.com/"), "data/image"),
+      /*=navigation_type*/ mojom::NavigationType::kOpen));
+  tabs.push_back(mojom::ControlledTab::New(
+      mojom::TabInfo::New("youtube", ::GURL("http://youtube.com/"),
+                          "data/image"),
+      /*=navigation_type*/ mojom::NavigationType::kBlock));
+  return mojom::OnTaskConfig::New(/*=is_locked*/ true, std::move(tabs));
+}
+
+mojom::OnTaskConfigPtr GetCommonTestUnLockedOnTaskConfig() {
+  std::vector<mojom::ControlledTabPtr> tabs;
+  tabs.push_back(mojom::ControlledTab::New(
+      mojom::TabInfo::New("google", ::GURL("http://google.com/"), "data/image"),
+      /*=navigation_type*/ mojom::NavigationType::kOpen));
+  return mojom::OnTaskConfig::New(/*=is_locked*/ false, std::move(tabs));
+}
+
+::boca::OnTaskConfig GetCommonTestLockOnTaskConfigProto() {
+  ::boca::OnTaskConfig on_task_config;
+  auto* active_bundle = on_task_config.mutable_active_bundle();
+  active_bundle->set_locked(true);
+  auto* content = active_bundle->mutable_content_configs()->Add();
+  content->set_url("http://google.com/");
+  content->set_favicon_url("data/image");
+  content->set_title("google");
+  content->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions_NavigationType_OPEN_NAVIGATION);
+  auto* content_1 = active_bundle->mutable_content_configs()->Add();
+  content_1->set_url("http://youtube.com/");
+  content_1->set_favicon_url("data/image");
+  content_1->set_title("youtube");
+  content_1->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions_NavigationType_BLOCK_NAVIGATION);
+  return on_task_config;
+}
+
+::boca::OnTaskConfig GetCommonTestUnLockOnTaskConfigProto() {
+  ::boca::OnTaskConfig on_task_config;
+  auto* active_bundle = on_task_config.mutable_active_bundle();
+  active_bundle->set_locked(false);
+  auto* content = active_bundle->mutable_content_configs()->Add();
+  content->set_url("http://google.com/");
+  content->set_favicon_url("data/image");
+  content->set_title("google");
+  content->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions_NavigationType_OPEN_NAVIGATION);
+  return on_task_config;
+}
+
+mojom::CaptionConfigPtr GetCommonCaptionConfig() {
+  return mojom::CaptionConfig::New(true, true, true);
+}
+
+::boca::CaptionsConfig GetCommonCaptionConfigProto() {
+  ::boca::CaptionsConfig config;
+  config.set_captions_enabled(true);
+  config.set_translations_enabled(true);
+  return config;
+}
+
+::boca::Session GetCommonActiveSessionProto() {
+  ::boca::Session session;
+  session.mutable_duration()->set_seconds(120);
+  session.set_session_state(::boca::Session::ACTIVE);
+  auto* teacher = session.mutable_teacher();
+  teacher->set_gaia_id("123");
+
+  ::boca::SessionConfig session_config;
+  auto* caption_config_1 = session_config.mutable_captions_config();
+
+  caption_config_1->set_captions_enabled(false);
+  caption_config_1->set_translations_enabled(false);
+
+  auto* active_bundle =
+      session_config.mutable_on_task_config()->mutable_active_bundle();
+  active_bundle->set_locked(false);
+  auto* content = active_bundle->mutable_content_configs()->Add();
+  content->set_url("http://default.com/");
+  content->set_favicon_url("data/image");
+  content->set_title("default");
+  content->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions_NavigationType_OPEN_NAVIGATION);
+
+  (*session.mutable_student_group_configs())[kMainStudentGroupName] =
+      std::move(session_config);
+  return session;
+}
+
 class MockSessionClientImpl : public SessionClientImpl {
  public:
   explicit MockSessionClientImpl(
@@ -146,24 +237,9 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
   students.push_back(mojom::Identity::New("1", "a", "a@gmail.com"));
   students.push_back(mojom::Identity::New("2", "b", "b@gmail.com"));
 
-  const auto caption_config = mojom::CaptionConfig::New();
-  caption_config->caption_enabled = true;
-  caption_config->transcription_enabled = true;
-
-  std::vector<mojom::ControlledTabPtr> tabs;
-  tabs.push_back(mojom::ControlledTab::New(
-      mojom::TabInfo::New("google", ::GURL("http://google.com/"), "data/image"),
-      /*=navigation_type*/ mojom::NavigationType::kOpen));
-  tabs.push_back(mojom::ControlledTab::New(
-      mojom::TabInfo::New("youtube", ::GURL("http://youtube.com/"),
-                          "data/image"),
-      /*=navigation_type*/ mojom::NavigationType::kBlock));
-  const auto on_task_config =
-      mojom::OnTaskConfig::New(/*=is_locked*/ true, std::move(tabs));
-
-  const auto config =
-      mojom::Config::New(session_duration, nullptr, std::move(students),
-                         on_task_config->Clone(), caption_config->Clone());
+  const auto config = mojom::Config::New(
+      session_duration, nullptr, std::move(students),
+      GetCommonTestLockOnTaskConfig(), GetCommonCaptionConfig());
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
                                         google_apis::ApiErrorCode>>
@@ -606,5 +682,440 @@ TEST_F(BocaAppPageHandlerTest, EndSessionWithEmptyResponse) {
   EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
 
+TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigSucceed) {
+  auto session = GetCommonActiveSessionProto();
+
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_)).Times(1);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            EXPECT_EQ(session.teacher().gaia_id(),
+                      request->teacher().gaia_id());
+            ASSERT_EQ(GetCommonTestLockOnTaskConfigProto().SerializeAsString(),
+                      request->on_task_config()->SerializeAsString());
+            // Use latest caption cofig value from session.
+            ASSERT_EQ(GetCommonActiveSessionProto()
+                          .student_group_configs()
+                          .at(kMainStudentGroupName)
+                          .captions_config()
+                          .SerializeAsString(),
+                      request->captions_config()->SerializeAsString());
+            request->callback().Run(std::make_unique<::boca::Session>(
+                GetCommonActiveSessionProto()));
+          })));
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
+                                        future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithEmptySession) {
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(nullptr));
+
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
+                                        future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithHTTPFailure) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .Times(2)
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            ASSERT_EQ(session.teacher().gaia_id(),
+                      request->teacher().gaia_id());
+            request->callback().Run(
+                base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+          })));
+
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
+                                        future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::UpdateSessionError::kHTTPError, future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithEmptySession) {
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(nullptr));
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(3)
+      .WillRepeatedly(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_)).Times(1);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            ASSERT_EQ(session.teacher().gaia_id(),
+                      request->teacher().gaia_id());
+            ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
+                      request->captions_config()->SerializeAsString());
+            // Use latest on task cofig value from session.
+            ASSERT_EQ(GetCommonActiveSessionProto()
+                          .student_group_configs()
+                          .at(kMainStudentGroupName)
+                          .on_task_config()
+                          .SerializeAsString(),
+                      request->on_task_config()->SerializeAsString());
+            request->callback().Run(std::make_unique<::boca::Session>(
+                GetCommonActiveSessionProto()));
+          })));
+
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithHTTPFailure) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .Times(2)
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(3)
+      .WillRepeatedly(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            ASSERT_EQ(session.teacher().gaia_id(),
+                      request->teacher().gaia_id());
+            request->callback().Run(
+                base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+          })));
+
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::UpdateSessionError::kHTTPError, future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       UpdateOnTaskConfigWithPendingCaptionConfigShouldNotOverride) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(5)
+      .WillRepeatedly(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_)).Times(2);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .Times(2)
+      .WillRepeatedly(Return(&session));
+  // Failed remote caption update should still dispatch local events.
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
+
+  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
+        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
+                  request->captions_config()->SerializeAsString());
+        // Use latest on task cofig value from session.
+        ASSERT_EQ(GetCommonActiveSessionProto()
+                      .student_group_configs()
+                      .at(kMainStudentGroupName)
+                      .on_task_config()
+                      .SerializeAsString(),
+                  request->on_task_config()->SerializeAsString());
+        request->callback().Run(std::unique_ptr<::boca::Session>());
+      })))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
+        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
+                  request->captions_config()->SerializeAsString());
+        // Use pending on task config.
+        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
+                  request->on_task_config()->SerializeAsString());
+        request->callback().Run(std::unique_ptr<::boca::Session>());
+      })));
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
+                                        future_2.GetCallback());
+
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get().has_value());
+
+  ASSERT_TRUE(future_2.Wait());
+  EXPECT_FALSE(future_2.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       UpdateCaptionConfigWithPendingOnTaskConfigShouldNotOverride) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(5)
+      .WillRepeatedly(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_)).Times(2);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .Times(2)
+      .WillRepeatedly(Return(&session));
+  // Failed remote caption update should still dispatch local events.
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
+
+  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
+        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
+                  request->on_task_config()->SerializeAsString());
+        // Use latest caption cofig value from session.
+        ASSERT_EQ(GetCommonActiveSessionProto()
+                      .student_group_configs()
+                      .at(kMainStudentGroupName)
+                      .captions_config()
+                      .SerializeAsString(),
+                  request->captions_config()->SerializeAsString());
+        request->callback().Run(std::unique_ptr<::boca::Session>());
+      })))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
+        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
+                  request->on_task_config()->SerializeAsString());
+        // Use pending on task config.
+        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
+                  request->captions_config()->SerializeAsString());
+        request->callback().Run(std::unique_ptr<::boca::Session>());
+      })));
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
+                                        future_1.GetCallback());
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_2.GetCallback());
+
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get().has_value());
+  ASSERT_TRUE(future_2.Wait());
+  EXPECT_FALSE(future_2.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       UpdateOnTaskConfigWithFailedCaptionConfigShouldUseSessionData) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(5)
+      .WillRepeatedly(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_)).Times(1);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .Times(3)
+      .WillRepeatedly(Return(&session));
+  // Failed remote caption update should still dispatch local events.
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
+
+  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
+        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
+                  request->captions_config()->SerializeAsString());
+        // Use session on task config.
+        ASSERT_EQ(GetCommonActiveSessionProto()
+                      .student_group_configs()
+                      .at(kMainStudentGroupName)
+                      .on_task_config()
+                      .SerializeAsString(),
+                  request->on_task_config()->SerializeAsString());
+        request->callback().Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+      })))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
+        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
+                  request->on_task_config()->SerializeAsString());
+        // Use session caption config.
+        ASSERT_EQ(GetCommonActiveSessionProto()
+                      .student_group_configs()
+                      .at(kMainStudentGroupName)
+                      .captions_config()
+                      .SerializeAsString(),
+                  request->captions_config()->SerializeAsString());
+        request->callback().Run(
+            std::make_unique<::boca::Session>(GetCommonActiveSessionProto()));
+      })));
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
+                                        future_2.GetCallback());
+
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_TRUE(future_1.Get().has_value());
+  ASSERT_TRUE(future_2.Wait());
+  EXPECT_FALSE(future_2.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       UpdateCaptionConfigWithFailedOnTaskConfigShouldUseSessionData) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(5)
+      .WillRepeatedly(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_)).Times(1);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .Times(3)
+      .WillRepeatedly(Return(&session));
+  // Failed remote caption update should still dispatch local events.
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
+
+  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
+        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
+                  request->on_task_config()->SerializeAsString());
+        // Use latest caption cofig value from session.
+        ASSERT_EQ(GetCommonActiveSessionProto()
+                      .student_group_configs()
+                      .at(kMainStudentGroupName)
+                      .captions_config()
+                      .SerializeAsString(),
+                  request->captions_config()->SerializeAsString());
+        request->callback().Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+      })))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
+        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
+                  request->captions_config()->SerializeAsString());
+        // Use session on task config.
+        ASSERT_EQ(GetCommonActiveSessionProto()
+                      .student_group_configs()
+                      .at(kMainStudentGroupName)
+                      .on_task_config()
+                      .SerializeAsString(),
+                  request->on_task_config()->SerializeAsString());
+        request->callback().Run(
+            std::make_unique<::boca::Session>(GetCommonActiveSessionProto()));
+      })));
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
+                                        future_1.GetCallback());
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_2.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_TRUE(future_1.Get().has_value());
+  ASSERT_TRUE(future_2.Wait());
+  EXPECT_FALSE(future_2.Get().has_value());
+}
 }  // namespace
 }  // namespace ash::boca

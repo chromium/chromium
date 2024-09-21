@@ -47,17 +47,37 @@ class BocaAppHandler : public mojom::PageHandler {
                      CreateSessionCallback callback) override;
   void GetSession(GetSessionCallback callback) override;
   void EndSession(EndSessionCallback callback) override;
+  void UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
+                          UpdateOnTaskConfigCallback callback) override;
+  void UpdateCaptionConfig(mojom::CaptionConfigPtr config,
+                           UpdateCaptionConfigCallback callback) override;
+
   void NotifyLocalCaptionConfigUpdate(mojom::CaptionConfigPtr config);
 
  private:
+  void OnUpdatedOnTaskConfig(UpdateOnTaskConfigCallback callback,
+                             base::expected<std::unique_ptr<::boca::Session>,
+                                            google_apis::ApiErrorCode> result);
+  void OnUpdatedCaptionConfig(UpdateCaptionConfigCallback callback,
+                              base::expected<std::unique_ptr<::boca::Session>,
+                                             google_apis::ApiErrorCode> result);
+
+  SEQUENCE_CHECKER(sequence_checker_);
   TabInfoCollector tab_info_collector_;
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;
   std::unique_ptr<SessionClientImpl> session_client_impl_;
+  // Lastest config is not always the same as the instance maintained in
+  // boca_session_manager as it contains the async config that hasn't been
+  // committed yet. OnTask and caption config use the same server endpoint. We
+  // keep track of pending config to avoid override in race.
+  std::unique_ptr<::boca::OnTaskConfig> latest_ontask_config_;
+  std::unique_ptr<::boca::CaptionsConfig> latest_caption_config_;
   // Track the identity of the current app user.
   ::boca::UserIdentity user_identity_;
   mojo::Receiver<boca::mojom::PageHandler> receiver_;
   mojo::Remote<boca::mojom::Page> remote_;
   raw_ptr<BocaUI> boca_ui_;  // Owns |this|.
+  base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
 }  // namespace ash::boca
 
