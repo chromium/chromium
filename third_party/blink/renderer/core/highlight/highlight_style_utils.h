@@ -26,6 +26,11 @@ class ComputedStyle;
 class Node;
 struct PaintInfo;
 
+enum class SearchTextIsCurrent : bool {
+  kNo,
+  kYes,
+};
+
 class CORE_EXPORT HighlightStyleUtils {
   STATIC_ONLY(HighlightStyleUtils);
 
@@ -68,32 +73,34 @@ class CORE_EXPORT HighlightStyleUtils {
                             const ComputedStyle* pseudo_style,
                             PseudoId pseudo,
                             const CSSProperty& property,
-                            std::optional<Color> current_color);
+                            std::optional<Color> current_color,
+                            SearchTextIsCurrent);
   static std::optional<Color> MaybeResolveColor(
       const Document&,
       const ComputedStyle& originating_style,
       const ComputedStyle* pseudo_style,
       PseudoId pseudo,
-      const CSSProperty& property);
+      const CSSProperty& property,
+      SearchTextIsCurrent);
   static std::optional<AppliedTextDecoration> SelectionTextDecoration(
       const Document& document,
       const ComputedStyle& style,
       const ComputedStyle& pseudo_style);
-  static Color HighlightBackgroundColor(
-      const Document&,
-      const ComputedStyle&,
-      Node*,
-      std::optional<Color>,
-      PseudoId,
-      const AtomicString& pseudo_argument = g_null_atom);
+  static Color HighlightBackgroundColor(const Document&,
+                                        const ComputedStyle&,
+                                        Node*,
+                                        std::optional<Color>,
+                                        PseudoId,
+                                        SearchTextIsCurrent);
   static HighlightTextPaintStyle HighlightPaintingStyle(
       const Document&,
-      const ComputedStyle&,
+      const ComputedStyle& originating_style,
+      const ComputedStyle* pseudo_style,
       Node*,
       PseudoId,
       const TextPaintStyle&,
       const PaintInfo&,
-      const AtomicString& pseudo_argument = g_null_atom);
+      SearchTextIsCurrent);
   static const ComputedStyle* HighlightPseudoStyle(
       Node* node,
       const ComputedStyle& style,

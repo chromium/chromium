@@ -33,6 +33,10 @@ bool HighlightStyleMapEquals(const CustomHighlightsStyleMap& a,
 bool StyleHighlightData::operator==(const StyleHighlightData& other) const {
   return base::ValuesEquivalent(selection_, other.selection_) &&
          base::ValuesEquivalent(target_text_, other.target_text_) &&
+         base::ValuesEquivalent(search_text_current_,
+                                other.search_text_current_) &&
+         base::ValuesEquivalent(search_text_not_current_,
+                                other.search_text_not_current_) &&
          base::ValuesEquivalent(spelling_error_, other.spelling_error_) &&
          base::ValuesEquivalent(grammar_error_, other.grammar_error_) &&
          HighlightStyleMapEquals(custom_highlights_, other.custom_highlights_);

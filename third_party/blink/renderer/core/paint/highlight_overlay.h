@@ -30,6 +30,8 @@ class CORE_EXPORT HighlightOverlay {
     kGrammar,
     kSpelling,
     kTargetText,
+    kSearchText,
+    kSearchTextCurrent,
     kSelection,
   };
 
@@ -228,7 +230,8 @@ class CORE_EXPORT HighlightOverlay {
       const DocumentMarkerVector& custom,
       const DocumentMarkerVector& grammar,
       const DocumentMarkerVector& spelling,
-      const DocumentMarkerVector& target);
+      const DocumentMarkerVector& target,
+      const DocumentMarkerVector& search);
 
   // Given details of a fragment and how it is highlighted, returns the start
   // and end transitions (edges) of the layers, in offset and layer order.
@@ -241,7 +244,8 @@ class CORE_EXPORT HighlightOverlay {
       const DocumentMarkerVector& custom,
       const DocumentMarkerVector& grammar,
       const DocumentMarkerVector& spelling,
-      const DocumentMarkerVector& target);
+      const DocumentMarkerVector& target,
+      const DocumentMarkerVector& search);
 
   // Given highlight |layers| and |edges|, returns the ranges of text that can
   // be painted in the same layer with the same decorations, clamping the result

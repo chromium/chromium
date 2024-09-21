@@ -61,14 +61,14 @@ TEST_F(HighlightOverlayTest, ComputeLayers) {
 
   EXPECT_EQ(HighlightOverlay::ComputeLayers(GetDocument(), text, style,
                                             text_style, paint_info, nullptr,
-                                            *none, *none, *none, *none),
+                                            *none, *none, *none, *none, *none),
             HeapVector<HighlightLayer>{
                 HighlightLayer{HighlightLayerType::kOriginating}})
       << "should return kOriginating when nothing is highlighted";
 
   EXPECT_EQ(HighlightOverlay::ComputeLayers(GetDocument(), text, style,
                                             text_style, paint_info, &selection,
-                                            *none, *none, *none, *none),
+                                            *none, *none, *none, *none, *none),
             (HeapVector<HighlightLayer>{
                 HighlightLayer{HighlightLayerType::kOriginating},
                 HighlightLayer{HighlightLayerType::kSelection},
@@ -78,24 +78,31 @@ TEST_F(HighlightOverlayTest, ComputeLayers) {
   auto* grammar = MakeGarbageCollected<DocumentMarkerVector>();
   auto* spelling = MakeGarbageCollected<DocumentMarkerVector>();
   auto* target = MakeGarbageCollected<DocumentMarkerVector>();
-  grammar->push_back(MakeGarbageCollected<GrammarMarker>(0, 1, ""));
-  grammar->push_back(MakeGarbageCollected<GrammarMarker>(0, 1, ""));
-  spelling->push_back(MakeGarbageCollected<SpellingMarker>(0, 1, ""));
-  spelling->push_back(MakeGarbageCollected<SpellingMarker>(0, 1, ""));
-  target->push_back(MakeGarbageCollected<TextFragmentMarker>(0, 1));
-  target->push_back(MakeGarbageCollected<TextFragmentMarker>(0, 1));
+  auto* search = MakeGarbageCollected<DocumentMarkerVector>();
+  grammar->push_back(MakeGarbageCollected<GrammarMarker>(1, 2, ""));
+  grammar->push_back(MakeGarbageCollected<GrammarMarker>(2, 3, ""));
+  spelling->push_back(MakeGarbageCollected<SpellingMarker>(1, 2, ""));
+  spelling->push_back(MakeGarbageCollected<SpellingMarker>(2, 3, ""));
+  target->push_back(MakeGarbageCollected<TextFragmentMarker>(1, 2));
+  target->push_back(MakeGarbageCollected<TextFragmentMarker>(2, 3));
+  search->push_back(MakeGarbageCollected<TextMatchMarker>(
+      1, 2, TextMatchMarker::MatchStatus::kActive));
+  search->push_back(MakeGarbageCollected<TextMatchMarker>(
+      2, 3, TextMatchMarker::MatchStatus::kInactive));
 
   EXPECT_EQ(HighlightOverlay::ComputeLayers(
                 GetDocument(), text, style, text_style, paint_info, nullptr,
-                *none, *grammar, *spelling, *target),
+                *none, *grammar, *spelling, *target, *search),
             (HeapVector<HighlightLayer>{
                 HighlightLayer{HighlightLayerType::kOriginating},
                 HighlightLayer{HighlightLayerType::kGrammar},
                 HighlightLayer{HighlightLayerType::kSpelling},
                 HighlightLayer{HighlightLayerType::kTargetText},
+                HighlightLayer{HighlightLayerType::kSearchText},
+                HighlightLayer{HighlightLayerType::kSearchTextCurrent},
             }))
-      << "should return kGrammar + kSpelling + kTargetText no more than once "
-         "each";
+      << "should return kGrammar + kSpelling + kTargetText + kSearchText no "
+         "more than once each";
 
   HighlightRegistry* registry =
       HighlightRegistry::From(*text->GetDocument().domWindow());
@@ -122,7 +129,7 @@ TEST_F(HighlightOverlayTest, ComputeLayers) {
   EXPECT_EQ(
       HighlightOverlay::ComputeLayers(GetDocument(), text, style, text_style,
                                       paint_info, nullptr, custom, *none, *none,
-                                      *none),
+                                      *none, *none),
       (HeapVector<HighlightLayer>{
           HighlightLayer{HighlightLayerType::kOriginating},
           HighlightLayer{HighlightLayerType::kCustom, AtomicString("foo")},
@@ -156,36 +163,37 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
 
   layers = HighlightOverlay::ComputeLayers(GetDocument(), text, text_style,
                                            paint_style, paint_info, nullptr,
-                                           *none, *none, *none, *none);
-  EXPECT_EQ(HighlightOverlay::ComputeEdges(text, false, originating, layers,
-                                           nullptr, *none, *none, *none, *none),
-            (Vector<HighlightEdge>{}))
+                                           *none, *none, *none, *none, *none);
+  EXPECT_EQ(
+      HighlightOverlay::ComputeEdges(text, false, originating, layers, nullptr,
+                                     *none, *none, *none, *none, *none),
+      (Vector<HighlightEdge>{}))
       << "should return no edges when nothing is highlighted";
 
   layers = HighlightOverlay::ComputeLayers(GetDocument(), text, text_style,
                                            paint_style, paint_info, &selection,
-                                           *none, *none, *none, *none);
-  EXPECT_EQ(
-      HighlightOverlay::ComputeEdges(nullptr, false, originating, layers,
-                                     &selection, *none, *none, *none, *none),
-      (Vector<HighlightEdge>{
-          HighlightEdge{{1, 3},
-                        HighlightLayerType::kSelection,
-                        1,
-                        HighlightEdgeType::kStart},
-          HighlightEdge{{1, 3},
-                        HighlightLayerType::kSelection,
-                        1,
-                        HighlightEdgeType::kEnd},
-      }))
+                                           *none, *none, *none, *none, *none);
+  EXPECT_EQ(HighlightOverlay::ComputeEdges(nullptr, false, originating, layers,
+                                           &selection, *none, *none, *none,
+                                           *none, *none),
+            (Vector<HighlightEdge>{
+                HighlightEdge{{1, 3},
+                              HighlightLayerType::kSelection,
+                              1,
+                              HighlightEdgeType::kStart},
+                HighlightEdge{{1, 3},
+                              HighlightLayerType::kSelection,
+                              1,
+                              HighlightEdgeType::kEnd},
+            }))
       << "should still return non-marker edges when node is nullptr";
 
   layers = HighlightOverlay::ComputeLayers(GetDocument(), br, br_style,
                                            paint_style, paint_info, &selection,
-                                           *none, *none, *none, *none);
+                                           *none, *none, *none, *none, *none);
   EXPECT_EQ(
       HighlightOverlay::ComputeEdges(br, false, originating, layers, &selection,
-                                     *none, *none, *none, *none),
+                                     *none, *none, *none, *none, *none),
       (Vector<HighlightEdge>{
           HighlightEdge{{1, 3},
                         HighlightLayerType::kSelection,
@@ -201,19 +209,22 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
   auto* grammar = MakeGarbageCollected<DocumentMarkerVector>();
   auto* spelling = MakeGarbageCollected<DocumentMarkerVector>();
   auto* target = MakeGarbageCollected<DocumentMarkerVector>();
+  auto* search = MakeGarbageCollected<DocumentMarkerVector>();
   grammar->push_back(MakeGarbageCollected<GrammarMarker>(3, 4, ""));
   grammar->push_back(MakeGarbageCollected<GrammarMarker>(4, 5, ""));
   target->push_back(MakeGarbageCollected<TextFragmentMarker>(4, 5));
+  search->push_back(MakeGarbageCollected<TextMatchMarker>(
+      4, 5, TextMatchMarker::MatchStatus::kActive));
   spelling->push_back(MakeGarbageCollected<SpellingMarker>(4, 5, ""));
   spelling->push_back(MakeGarbageCollected<SpellingMarker>(5, 6, ""));
 
-  layers = HighlightOverlay::ComputeLayers(GetDocument(), text, text_style,
-                                           paint_style, paint_info, &selection,
-                                           *none, *grammar, *spelling, *target);
+  layers = HighlightOverlay::ComputeLayers(
+      GetDocument(), text, text_style, paint_style, paint_info, &selection,
+      *none, *grammar, *spelling, *target, *search);
   EXPECT_EQ(
       HighlightOverlay::ComputeEdges(text, false, originating, layers,
                                      &selection, *none, *grammar, *spelling,
-                                     *target),
+                                     *target, *search),
       (Vector<HighlightEdge>{
           HighlightEdge{{1, 2},
                         HighlightLayerType::kGrammar,
@@ -221,7 +232,7 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
                         HighlightEdgeType::kStart},
           HighlightEdge{{1, 3},
                         HighlightLayerType::kSelection,
-                        4,
+                        6,
                         HighlightEdgeType::kStart},
           HighlightEdge{
               {1, 2}, HighlightLayerType::kGrammar, 1, HighlightEdgeType::kEnd},
@@ -237,6 +248,10 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
                         HighlightLayerType::kTargetText,
                         3,
                         HighlightEdgeType::kStart},
+          HighlightEdge{{2, 3},
+                        HighlightLayerType::kSearchTextCurrent,
+                        5,
+                        HighlightEdgeType::kStart},
           HighlightEdge{
               {2, 3}, HighlightLayerType::kGrammar, 1, HighlightEdgeType::kEnd},
           HighlightEdge{{2, 3},
@@ -247,9 +262,13 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
                         HighlightLayerType::kTargetText,
                         3,
                         HighlightEdgeType::kEnd},
+          HighlightEdge{{2, 3},
+                        HighlightLayerType::kSearchTextCurrent,
+                        5,
+                        HighlightEdgeType::kEnd},
           HighlightEdge{{1, 3},
                         HighlightLayerType::kSelection,
-                        4,
+                        6,
                         HighlightEdgeType::kEnd},
           HighlightEdge{{3, 4},
                         HighlightLayerType::kSpelling,
@@ -267,11 +286,11 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
   EXPECT_EQ(
       HighlightOverlay::ComputeEdges(text, false, originating2, layers,
                                      &selection, *none, *grammar, *spelling,
-                                     *target),
+                                     *target, *search),
       (Vector<HighlightEdge>{
           HighlightEdge{{1, 3},
                         HighlightLayerType::kSelection,
-                        4,
+                        6,
                         HighlightEdgeType::kStart},
           HighlightEdge{{2, 3},
                         HighlightLayerType::kGrammar,
@@ -285,6 +304,10 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
                         HighlightLayerType::kTargetText,
                         3,
                         HighlightEdgeType::kStart},
+          HighlightEdge{{2, 3},
+                        HighlightLayerType::kSearchTextCurrent,
+                        5,
+                        HighlightEdgeType::kStart},
           HighlightEdge{
               {2, 3}, HighlightLayerType::kGrammar, 1, HighlightEdgeType::kEnd},
           HighlightEdge{{2, 3},
@@ -295,9 +318,13 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
                         HighlightLayerType::kTargetText,
                         3,
                         HighlightEdgeType::kEnd},
+          HighlightEdge{{2, 3},
+                        HighlightLayerType::kSearchTextCurrent,
+                        5,
+                        HighlightEdgeType::kEnd},
           HighlightEdge{{1, 3},
                         HighlightLayerType::kSelection,
-                        4,
+                        6,
                         HighlightEdgeType::kEnd},
       }))
       << "should skip edge pairs that are completely outside fragment";
@@ -355,7 +382,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
 
   HeapVector<HighlightLayer> layers = HighlightOverlay::ComputeLayers(
       GetDocument(), text, text_style, paint_style, paint_info, &selection,
-      custom, *grammar, *spelling, *target);
+      custom, *grammar, *spelling, *target, *none);
 
   // Set up paint styles for each layer
   Color originating_color(0, 0, 0);
@@ -428,10 +455,11 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   //                                  ::spelling-error, not active
   //                                  ::target-text, not active
   //                                  ::selection, not active
+  //                                  ::search-text, not active
 
   Vector<HighlightEdge> edges = HighlightOverlay::ComputeEdges(
       text, false, originating_dom_offsets, layers, nullptr, *none, *none,
-      *none, *none);
+      *none, *none, *none);
 
   // clang-format off
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges),
@@ -449,10 +477,11 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   //       [ ] [  ]      [ ]          ::spelling-error, changed!
   //                [      ]          ::target-text, changed!
   //              [    ]              ::selection, changed!
+  //                                  ::search-text, not active
 
   Vector<HighlightEdge> edges2 = HighlightOverlay::ComputeEdges(
       text, false, originating_dom_offsets, layers, &selection, custom,
-      *grammar, *spelling, *target);
+      *grammar, *spelling, *target, *none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges2),
             (HeapVector<HighlightPart>{
@@ -544,6 +573,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   //       [ ] [  ]      [ ]          ::spelling-error, as above
   //                [      ]          ::target-text, as above
   //              [    ]              ::selection, as above
+  //                                  ::search-text, not active
 
   foo_range->setStart(text, 6);
   registry->ScheduleRepaint();
@@ -551,7 +581,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   custom = marker_controller.MarkersFor(*text, DocumentMarker::MarkerTypes::CustomHighlight());
   Vector<HighlightEdge> edges3 = HighlightOverlay::ComputeEdges(
       text, false, originating_dom_offsets, layers, &selection, custom,
-      *grammar, *spelling, *target);
+      *grammar, *spelling, *target, *none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges3),
             (HeapVector<HighlightPart>{
@@ -640,12 +670,13 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   //       [ ] [  ]      [ ]          ::spelling-error, as above
   //                [      ]          ::target-text, as above
   //              [    ]              ::selection, as above
+  //                                  ::search-text, not active
 
   TextFragmentPaintInfo originating2{"", 8, 18};
   TextOffsetRange originating2_dom_offsets{8, 18};
   Vector<HighlightEdge> edges4 = HighlightOverlay::ComputeEdges(
       text, false, originating2_dom_offsets, layers, &selection, custom,
-      *grammar, *spelling, *target);
+      *grammar, *spelling, *target, *none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating2, layers, edges4),
             (HeapVector<HighlightPart>{
@@ -717,10 +748,11 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   //       [ ] [  ]      [ ]          ::spelling-error, as above
   //                                  ::target-text, changed!
   //                                  ::selection, changed!
+  //                                  ::search-text, not active
 
   Vector<HighlightEdge> edges5 = HighlightOverlay::ComputeEdges(
       text, false, originating2_dom_offsets, layers, nullptr, *none, *none,
-      *spelling, *none);
+      *spelling, *none, *none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating2, layers, edges5),
             (HeapVector<HighlightPart>{
@@ -749,12 +781,13 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   //       [ ] [  ]      [ ]          ::spelling-error, as above
   //                                  ::target-text, as above
   //                                  ::selection, as above
+  //                                  ::search-text, not active
 
   TextFragmentPaintInfo originating3{"", 1, 4};
   TextOffsetRange originating3_dom_offsets{1, 4};
   Vector<HighlightEdge> edges6 = HighlightOverlay::ComputeEdges(
       text, false, originating3_dom_offsets, layers, &selection, custom,
-      *grammar, *spelling, *target);
+      *grammar, *spelling, *target, *none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating3, layers, edges6),
             (HeapVector<HighlightPart>{
@@ -771,12 +804,13 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   //       [ ] [  ]      [ ]          ::spelling-error, as above
   //                                  ::target-text, as above
   //                                  ::selection, as above
+  //                                  ::search-text, not active
 
   TextFragmentPaintInfo originating4{"", 25, 28};
   TextOffsetRange originating4_dom_offsets{25, 28};
   Vector<HighlightEdge> edges7 = HighlightOverlay::ComputeEdges(
       text, false, originating4_dom_offsets, layers, &selection, custom,
-      *grammar, *spelling, *target);
+      *grammar, *spelling, *target, *none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating4, layers, edges7),
             (HeapVector<HighlightPart>{

@@ -2181,7 +2181,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoTrue:
       return true;
     case CSSSelector::kPseudoCurrent:
-      if (context.previously_matched_pseudo_element == kPseudoIdSearchText) {
+      if (context.previously_matched_pseudo_element != kPseudoIdSearchText) {
         return false;
       }
       return context.search_text_request_is_current;

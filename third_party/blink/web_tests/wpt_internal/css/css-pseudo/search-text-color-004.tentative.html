@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: ‘currentColor’ in ‘color’ of highlight overlays above ::search-text</title>
+<link rel="author" title="Delan Azabani" href="mailto:dazabani@igalia.com">
+<meta name="assert" content="This test checks that ::selection takes the :current or :not(:current) state of ::search-text into account when resolving ‘currentColor’ in ‘color’, unless the UA decides to paint ::search-text over ::selection.">
+<link rel="match" href="search-text-color-004-ref1.html">
+<link rel="match" href="search-text-color-004-ref2.html">
+<meta name="fuzzy" content="0-100;0-10">
+<link rel="stylesheet" href="support/highlights.css">
+<script src="../support/markers.js"></script>
+<style>
+  ::search-text {
+    color: yellow;
+    background-color: blue;
+  }
+  ::search-text:current {
+    color: lime;
+  }
+  ::selection {
+    color: currentColor;
+    background-color: black;
+  }
+</style>
+<div class="highlight_reftest" id="target">test test</div>
+<script>
+  addSearchTextMarker(target, 0, 4, true);
+  addSearchTextMarker(target, 5, 9);
+  setSelection(target, 0, 9);
+</script>
