@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/time/time.h"
-
 #include <stdint.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+
 #include <limits>
 
 #include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 
@@ -41,18 +41,20 @@ typedef time64_t SysTime;
 
 SysTime SysTimeFromTimeStruct(struct tm* timestruct, bool is_local) {
   base::AutoLock locked(*GetSysTimeToTimeStructLock());
-  if (is_local)
+  if (is_local) {
     return mktime64(timestruct);
-  else
+  } else {
     return timegm64(timestruct);
+  }
 }
 
 void SysTimeToTimeStruct(SysTime t, struct tm* timestruct, bool is_local) {
   base::AutoLock locked(*GetSysTimeToTimeStructLock());
-  if (is_local)
+  if (is_local) {
     localtime64_r(&t, timestruct);
-  else
+  } else {
     gmtime64_r(&t, timestruct);
+  }
 }
 
 #elif BUILDFLAG(IS_AIX)
@@ -83,18 +85,20 @@ typedef time_t SysTime;
 
 SysTime SysTimeFromTimeStruct(struct tm* timestruct, bool is_local) {
   base::AutoLock locked(*GetSysTimeToTimeStructLock());
-  if (is_local)
+  if (is_local) {
     return mktime(timestruct);
-  else
+  } else {
     return aix_timegm(timestruct);
+  }
 }
 
 void SysTimeToTimeStruct(SysTime t, struct tm* timestruct, bool is_local) {
   base::AutoLock locked(*GetSysTimeToTimeStructLock());
-  if (is_local)
+  if (is_local) {
     localtime_r(&t, timestruct);
-  else
+  } else {
     gmtime_r(&t, timestruct);
+  }
 }
 
 #else  // MacOS (and iOS 64-bit), Linux/ChromeOS, or any other POSIX-compliant.
@@ -108,10 +112,11 @@ SysTime SysTimeFromTimeStruct(struct tm* timestruct, bool is_local) {
 
 void SysTimeToTimeStruct(SysTime t, struct tm* timestruct, bool is_local) {
   base::AutoLock locked(*GetSysTimeToTimeStructLock());
-  if (is_local)
+  if (is_local) {
     localtime_r(&t, timestruct);
-  else
+  } else {
     gmtime_r(&t, timestruct);
+  }
 }
 
 #endif  // BUILDFLAG(IS_ANDROID) && !defined(__LP64__)
@@ -137,7 +142,8 @@ void Time::Explode(bool is_local, Exploded* exploded) const {
   // Split the |millis_since_unix_epoch| into separate seconds and millisecond
   // components because the platform calendar-explode operates at one-second
   // granularity.
-  SysTime seconds = millis_since_unix_epoch / Time::kMillisecondsPerSecond;
+  auto seconds = base::checked_cast<SysTime>(millis_since_unix_epoch /
+                                             Time::kMillisecondsPerSecond);
   int64_t millisecond = millis_since_unix_epoch % Time::kMillisecondsPerSecond;
   if (millisecond < 0) {
     // Make the the |millisecond| component positive, within the range [0,999],
@@ -181,7 +187,7 @@ bool Time::FromExploded(bool is_local, const Exploded& exploded, Time* time) {
   timestruct.tm_yday = 0;                     // mktime/timegm ignore this
   timestruct.tm_isdst = -1;                   // attempt to figure it out
 #if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_SOLARIS) && !BUILDFLAG(IS_AIX)
-  timestruct.tm_gmtoff = 0;   // not a POSIX field, so mktime/timegm ignore
+  timestruct.tm_gmtoff = 0;      // not a POSIX field, so mktime/timegm ignore
   timestruct.tm_zone = nullptr;  // not a POSIX field, so mktime/timegm ignore
 #endif
 
@@ -210,12 +216,13 @@ bool Time::FromExploded(bool is_local, const Exploded& exploded, Time* time) {
 
     // seconds_isdst0 or seconds_isdst1 can be -1 for some timezones.
     // E.g. "CLST" (Chile Summer Time) returns -1 for 'tm_isdt == 1'.
-    if (seconds_isdst0 < 0)
+    if (seconds_isdst0 < 0) {
       seconds = seconds_isdst1;
-    else if (seconds_isdst1 < 0)
+    } else if (seconds_isdst1 < 0) {
       seconds = seconds_isdst0;
-    else
+    } else {
       seconds = std::min(seconds_isdst0, seconds_isdst1);
+    }
   }
 
   // Handle overflow.  Clamping the range to what mktime and timegm might
@@ -274,10 +281,11 @@ bool Time::FromExploded(bool is_local, const Exploded& exploded, Time* time) {
   // return the first day of the next month. Thus round-trip the time and
   // compare the initial |exploded| with |utc_to_exploded| time.
   Time::Exploded to_exploded;
-  if (!is_local)
+  if (!is_local) {
     converted_time.UTCExplode(&to_exploded);
-  else
+  } else {
     converted_time.LocalExplode(&to_exploded);
+  }
 
   if (ExplodedMostlyEquals(to_exploded, exploded)) {
     *time = converted_time;
