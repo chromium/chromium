@@ -437,7 +437,7 @@
     },
     {
       name: "search",
-      interfaceName: "HTMLElement",
+      interfaceName: "HTMLSearchElement",
     },
     {
       name: "section",
