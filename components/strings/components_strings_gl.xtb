@@ -2849,7 +2849,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="629730747756840877">Conta</translation>
 <translation id="6298456705131259420">Afecta aos sitios incluídos aquí. Ao inserir “[*.]” antes dun nome de dominio, créase unha excepción para todo o dominio. Por exemplo, se engades [*.]google.com, as cookies de terceiros tamén poderán estar activas en mail.google.com, xa que forma parte de google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{O dispositivo reiniciarase agora}=1{O dispositivo reiniciarase en 1 segundo}other{O dispositivo reiniciarase en # segundos}}</translation>
-<translation id="6301104306974789820">Obter notificacións de seguimento do prezo</translation>
+<translation id="6301104306974789820">Obter notificacións de seguimento de prezos</translation>
 <translation id="6302546952464230349">Mostrar os detalles do permiso de <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Software multimedia</translation>
 <translation id="6305205051461490394">Non se pode acceder a <ph name="URL" />.</translation>
