@@ -117,13 +117,16 @@ class WebAppNavigationCapturingIPHPromoTest
     return embedded_test_server()->GetURL(kDestinationPageScopeB);
   }
 
-  webapps::AppId InstallTestWebApp(const GURL& start_url) {
+  webapps::AppId InstallTestWebApp(
+      const GURL& start_url,
+      blink::Manifest::LaunchHandler input_handler =
+          blink::Manifest::LaunchHandler(
+              blink::mojom::ManifestLaunchHandler_ClientMode::kAuto)) {
     auto web_app_info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
-    web_app_info->launch_handler = blink::Manifest::LaunchHandler(
-        blink::mojom::ManifestLaunchHandler_ClientMode::kAuto);
+    web_app_info->launch_handler = input_handler;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     const webapps::AppId app_id = web_app::test::InstallWebApp(
@@ -275,6 +278,33 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   ASSERT_NE(nullptr, app_browser);
   EXPECT_TRUE(
       IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id_b));
+}
+
+// Flaky on Mac http://crbug.com/366580804
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IPHShownForFocusExisting DISABLED_IPHShownForFocusExisting
+#else
+#define MAYBE_IPHShownForFocusExisting IPHShownForFocusExisting
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
+                       MAYBE_IPHShownForFocusExisting) {
+  const webapps::AppId app_id = InstallTestWebApp(
+      GetDestinationUrl(),
+      blink::Manifest::LaunchHandler(
+          blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting));
+
+  content::WebContents* source_contents = OpenStartPageInTab();
+  ASSERT_NE(nullptr, source_contents);
+
+  Browser* browser_b =
+      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  ASSERT_NE(nullptr, browser_b);
+
+  SimulateClickOnElement(source_contents, kToSiteBTargetBlankNoopener,
+                         ClickMethod::kLeftClick);
+
+  EXPECT_TRUE(
+      IsNavCapturingIphVisible(/*expect_visible=*/true, browser_b, app_id));
 }
 
 // Flaky on Mac http://crbug.com/366580804

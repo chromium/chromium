@@ -1099,6 +1099,9 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
         provider->navigation_capturing_log().StoreNavigationCapturedDebugData(
             base::Value(std::move(debug_data)));
 
+        MaybeShowNavigationCaptureIph(app_id, profile,
+                                      existing_browser_and_tab->first);
+
         return {AppNavigationResult{/*browser= */ nullptr, -1,
                                     /*enqueue_launch_params=*/false,
                                     /*show_iph=*/true}};
