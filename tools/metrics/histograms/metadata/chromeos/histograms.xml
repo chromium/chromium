@@ -3044,6 +3044,18 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Regmon.PolicyViolation"
+    enum="NetworkAnnotationHashCodes" expires_after="2025-09-19">
+  <owner>chiav@chromium.org</owner>
+  <owner>crmullins@chromium.org</owner>
+  <summary>
+    Records a count of observed first-party network requests that should have
+    been disabled based on current policy values. This metric is keyed by
+    network annotation hash code, to help identify potentially misconfigured
+    network annotations.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.RgbKeyboard.RgbKeyboardCapabilityType"
     enum="RgbKeyboardCapabilityType" expires_after="2025-01-26">
   <owner>michaelcheco@google.com</owner>

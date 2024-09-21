@@ -1481,6 +1481,26 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="11" label="Assistant"/>
 </enum>
 
+<enum name="NetworkAnnotationHashCodes">
+  <summary>
+    Hash codes mapping to Chrome Network Annotation IDs. More info can be found
+    at tools/traffic_annotation/scripts/auditor/README.md.
+  </summary>
+  <int value="4306022" label="safe_browsing_binary_upload_app"/>
+  <int value="24186190" label="webrtc_event_log_uploader"/>
+  <int value="28498700" label="chrome_plugin_vm_api"/>
+  <int value="46208118" label="quick_answers_loader"/>
+  <int value="50127013" label="wallpaper_download_google_photo"/>
+  <int value="62443804" label="webrtc_log_upload"/>
+  <int value="86429515" label="calendar_get_events"/>
+  <int value="88863520" label="autofill_query"/>
+  <int value="99742369" label="remoting_log_to_server"/>
+  <int value="104798869" label="autofill_upload"/>
+  <int value="108804096" label="domain_reliability_report_upload"/>
+  <int value="108903331" label="signed_in_profile_avatar"/>
+  <int value="134729048" label="chrome_feedback_report_app"/>
+</enum>
+
 <enum name="OptInCardAction">
   <int value="0" label="ShowCard"/>
   <int value="1" label="AcceptButtonPressed"/>
