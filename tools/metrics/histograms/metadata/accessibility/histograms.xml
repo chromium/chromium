@@ -2923,17 +2923,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.WinHighContrastTheme"
-    enum="AccessibilityHighContrastColorScheme" expires_after="2025-08-30">
-  <owner>aleventhal@chromium.org</owner>
-  <owner>almaher@microsoft.com</owner>
-  <summary>
-    Tracks which Windows high contrast theme is set in system settings (logged
-    once 45 secs after startup). AccessibilityHighContrastColorScheme::None
-    indicates that high contrast mode is not enabled.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.WinStickyKeys" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->

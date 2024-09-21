@@ -92,14 +92,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Tab switcher UI shown and used to switch tabs"/>
 </enum>
 
-<enum name="AccessibilityHighContrastColorScheme">
-  <summary>Tracks the color scheme used when high contrast is enabled.</summary>
-  <int value="0" label="None"/>
-  <int value="1" label="Dark"/>
-  <int value="2" label="Light"/>
-  <int value="3" label="Custom"/>
-</enum>
-
 <enum name="AccessibilityId">
   <int value="1" label="SpokenFeedback"/>
   <int value="2" label="SelectToSpeak"/>
