@@ -11358,6 +11358,21 @@
             ]
         }
     ],
+    "HistorySyncAlternativeIllustration": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAlternateHistorySyncIllustration"
+                    ]
+                }
+            ]
+        }
+    ],
     "HlsBuiltinPlayer": [
         {
             "platforms": [
