@@ -2233,6 +2233,7 @@
 <translation id="2546991196809436099">Щоб збільшити елементи на екрані, наблизьте область. Щоб увімкнути або вимкнути лупу, натисніть клавішу пошуку + Ctrl + M.</translation>
 <translation id="2548347166720081527">Дозволено: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Скинути кеш профілю eSIM-карти</translation>
+<translation id="2549766998450508148">Натисніть одну із чотирьох клавіш-модифікаторів (Ctrl, Alt, Shift або клавішу пошуку) і ще 1 клавішу. Також можна вибрати одну клавішу.</translation>
 <translation id="2549985041256363841">Почати запис</translation>
 <translation id="2550212893339833758">Змінна пам’ять</translation>
 <translation id="2550596535588364872">Дозволити розширенню <ph name="EXTENSION_NAME" /> відкрити файл <ph name="FILE_NAME" />?</translation>
@@ -7799,6 +7800,7 @@
 <translation id="6670983860904543332">Завдяки автоматичному оновленню ви можете користуватися найновішими функціями. Перегляньте деталі останніх оновлень.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{адресу}one{# адресу}few{# адреси}many{# адрес}other{# адреси}}</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" /> налаштовує керування</translation>
+<translation id="6672697278890207089">Введіть парольну фразу</translation>
 <translation id="6672917148207387131">Додати домен <ph name="DOMAIN" /></translation>
 <translation id="6673353404516008367">Режим анонімного перегляду забезпечує <ph name="BEGIN_LINK" />приватний перегляд веб-сторінок<ph name="END_LINK" />, щоб їх не бачили інші користувачі, які мають доступ до вашого пристрою.</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
@@ -10641,6 +10643,7 @@
 <translation id="8715480913140015283">Фонова вкладка використовує камеру</translation>
 <translation id="8716931980467311658">Видалити всі додатки та дані Linux у папці "Файли Linux" на цьому пристрої <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Скопіювати посилання</translation>
+<translation id="8718560545710680911">Запитати на цій сторінці</translation>
 <translation id="8718994464069323380">Виявлено сенсорний екран</translation>
 <translation id="8719472795285728850">Прослуховування дії розширення…</translation>
 <translation id="8719665168401479425">Виконувати дії за допомогою мімічних жестів</translation>

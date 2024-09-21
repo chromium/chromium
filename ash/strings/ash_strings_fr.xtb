@@ -642,7 +642,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3290356915286466215">Non sécurisé</translation>
 <translation id="3291862315280588024">Atteindre le début du mot précédent</translation>
 <translation id="3294437725009624529">Invité</translation>
-<translation id="3298690094479023523">Impossible de valider votre code ou votre mot de passe pour la deuxième fois. Réessayez.</translation>
 <translation id="3300193645498960160">Vous recevrez une notification si vous parlez lorsque le son est coupé. Votre appareil ne transmet jamais les données audio.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> appareils connectés au point d'accès <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Mode ordinateur portable activé</translation>
@@ -2289,7 +2288,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8847100217801213944">Afficher la température en Fahrenheit</translation>
 <translation id="8849001918648564819">Masqué</translation>
-<translation id="8853703225951107899">Impossible de valider votre code ou votre mot de passe pour la deuxième fois. Remarque : si vous avez modifié votre mot de passe récemment, utilisez l'ancien. Votre nouveau mot de passe ne sera appliqué qu'une fois que vous serez déconnecté.</translation>
 <translation id="8855885154700222542">Touche de plein écran</translation>
 <translation id="8858369206579825206">Paramètres de confidentialité</translation>
 <translation id="8860366331836346216">Ajouter une eSIM</translation>

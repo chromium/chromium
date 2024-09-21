@@ -642,7 +642,6 @@
 <translation id="3290356915286466215">Nem bizt.</translation>
 <translation id="3291862315280588024">Ugrás az előző szó elejére</translation>
 <translation id="3294437725009624529">Vendég</translation>
-<translation id="3298690094479023523">PIN-kódjának vagy jelszavának ellenőrzése még mindig nem sikerült. Próbálja újra.</translation>
 <translation id="3300193645498960160">Értesítést kap, ha némított állapotban beszél. A hanganyag sosem kerül ki az eszközről.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> eszköz csatlakozik a következő hotspothoz: <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Visszaváltott laptop módra</translation>
@@ -2290,7 +2289,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8845001906332463065">Súgó</translation>
 <translation id="8847100217801213944">Hőmérséklet megjelenítése Fahrenheit-fokban</translation>
 <translation id="8849001918648564819">Rejtett</translation>
-<translation id="8853703225951107899">PIN-kódjának vagy jelszavának ellenőrzése még mindig nem sikerült. Megjegyzés: Ha nemrég módosította jelszavát, akkor használja a régit. Az új jelszó beállítása a kijelentkezés után lép érvénybe.</translation>
 <translation id="8855885154700222542">Teljes képernyő billentyű</translation>
 <translation id="8858369206579825206">Adatvédelmi beállítások</translation>
 <translation id="8860366331836346216">eSIM hozzáadása</translation>

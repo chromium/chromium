@@ -642,7 +642,6 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3291862315280588024">Ir al comienzo de la palabra anterior</translation>
 <translation id="3294437725009624529">Invitado</translation>
-<translation id="3298690094479023523">Aún no se pudo verificar tu PIN o contraseña. Vuelve a intentarlo.</translation>
 <translation id="3300193645498960160">Recibirás una notificación si hablas con el micrófono silenciado. El audio nunca sale del dispositivo.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivos conectados al hotspot de <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Se cambió al modo laptop</translation>
@@ -2290,7 +2289,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8847100217801213944">Mostrar la temperatura en grados Fahrenheit</translation>
 <translation id="8849001918648564819">Oculta</translation>
-<translation id="8853703225951107899">Aún no se pudo verificar tu PIN o contraseña. Nota: Si cambiaste la contraseña recientemente, usa la anterior. Se aplicará la nueva cuando salgas de la cuenta.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controles de privacidad</translation>
 <translation id="8860366331836346216">Agregar eSIM</translation>

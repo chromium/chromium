@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Переглянути інформацію про магазин</translation>
 <translation id="6557858706263317126">Ще <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Перемістити вкладку ліворуч</translation>
+<translation id="6590332670428149473">Відкрити меню дій для спільної групи вкладок "<ph name="TITLE_OF_GROUP" />", колір: <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Показати</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> вкладку змінено}one{<ph name="MANY_CHANGED" /> вкладку змінено}few{<ph name="MANY_CHANGED" /> вкладки змінено}many{<ph name="MANY_CHANGED" /> вкладок змінено}other{<ph name="MANY_CHANGED" /> вкладки змінено}}</translation>
 <translation id="6694634756612002311">Керувати параметрами спільного доступу</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Розгорнути групу з <ph name="TABS_COUNT_ONE" /> вкладкою.}one{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладкою.}few{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками.}many{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками.}other{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="9090098097337832354">Інформацію про цей магазин закрито</translation>
 <translation id="9111228330448174435">Показувати вікно створення нової групи вкладок</translation>
+<translation id="9114502155681725011">Відкрити меню дій для групи вкладок "<ph name="TITLE_OF_GROUP" />", колір: <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Переходьте між вкладками в групі вкладок унизу екрана</translation>
 <translation id="9169594135889675189">Додати нову вкладку в групу</translation>
 <translation id="9216898458513705996">Вкладки залишатимуться відкритими на цьому пристрої, однак групу буде видалено з усіх пристроїв, на яких ви ввійшли в обліковий запис <ph name="USER_EMAIL" /></translation>

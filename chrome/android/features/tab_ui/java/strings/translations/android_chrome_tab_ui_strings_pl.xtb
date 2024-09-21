@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Wyświetl informacje o sklepie</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Przenieś kartę w lewo</translation>
+<translation id="6590332670428149473">Otwórz menu czynności udostępnionej grupy kart <ph name="TITLE_OF_GROUP" />, kolor <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Pokaż mi</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Zmieniono <ph name="ONE_CHANGED" /> kartę}few{Zmieniono <ph name="MANY_CHANGED" /> karty}many{Zmieniono <ph name="MANY_CHANGED" /> kart}other{Zmieniono <ph name="MANY_CHANGED" /> karty}}</translation>
 <translation id="6694634756612002311">Zarządzaj udostępnianiem</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Rozwiń grupę kart z <ph name="TABS_COUNT_ONE" /> kartą.}few{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}many{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}other{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="9090098097337832354">Informacje o tym sklepie zostały zamknięte</translation>
 <translation id="9111228330448174435">Pokazuj okno podczas tworzenia nowej grupy kart</translation>
+<translation id="9114502155681725011">Otwórz menu czynności grupy kart <ph name="TITLE_OF_GROUP" />, kolor <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">W grupie kart w dolnej części ekranu możesz przełączać się między kartami</translation>
 <translation id="9169594135889675189">Dodaj nową kartę do grupy</translation>
 <translation id="9216898458513705996">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie usunięta ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>

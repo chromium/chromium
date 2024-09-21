@@ -642,7 +642,6 @@
 <translation id="3290356915286466215">保護なし</translation>
 <translation id="3291862315280588024">1 つ前の単語の先頭に移動</translation>
 <translation id="3294437725009624529">ゲスト</translation>
-<translation id="3298690094479023523">PIN またはパスワードはまだ確認されていません。もう一度お試しください。</translation>
 <translation id="3300193645498960160">ミュートしているときに話すと、通知されます。音声がデバイスの外部に送信されることはありません。</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 台のデバイスが <ph name="DEVICE_NAME" /> のアクセス ポイントに接続されています</translation>
 <translation id="3307642347673023554">ノートパソコン モードに切り替えました</translation>
@@ -2289,7 +2288,6 @@
 <translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8847100217801213944">温度を華氏で表示</translation>
 <translation id="8849001918648564819">非表示</translation>
-<translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
 <translation id="8855885154700222542">全画面表示キー</translation>
 <translation id="8858369206579825206">プライバシー管理</translation>
 <translation id="8860366331836346216">eSIM を追加</translation>

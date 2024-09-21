@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">സാധനങ്ങൾ മാറ്റലും സ്ഥലം മാറലും</translation>
 <translation id="1270502636509132238">പിക്കപ്പ് രീതി</translation>
 <translation id="1273592791152866347">നിരക്ക് ട്രാക്ക് ചെയ്യൽ ഓഫാണ്</translation>
+<translation id="1277711244058668002">തംബ്‌സ് അപ്പ് ബട്ടൺ, നിങ്ങൾ ഈ നിർദ്ദേശം ലൈക്ക് ചെയ്യുന്നു എന്ന ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="127777513559587977">ടി വി ടോക്ക് ഷോകൾ</translation>
 <translation id="1281476433249504884">സ്റ്റാക്കർ 1</translation>
 <translation id="1281536351321444151">അടുത്ത തവണ സ്വയമേവ പൂരിപ്പിക്കാൻ, ഈ IBAN നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക</translation>
@@ -464,6 +465,7 @@
 <translation id="1812527064848182527">ലാൻഡ്‌സ്‌കേപ്പ്</translation>
 <translation id="1812975699435941848">ആരോഗ്യ വിദ്യാഭ്യാസവും മെഡിക്കൽ പരിശീലനവും</translation>
 <translation id="1816436748874040213">പങ്കിട്ട ടാബുകൾ സ്ക്രോൾ ചെയ്യാനും സൂം ചെയ്യാനും ആവശ്യപ്പെടാം</translation>
+<translation id="1816707915923025275">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം തിരയാൻ @history എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="1817364650920811003">റോൾ: Chrome നുറുങ്ങ്. ഉപയോഗസഹായി ലേബൽ: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">അൺബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="1818585559878922121">ഡോക്യുമെന്ററി സിനിമകൾ</translation>
@@ -669,6 +671,7 @@
 <translation id="2188375229972301266">താഴെ ഒന്നിലധികം പഞ്ച് ചെയ്യുക</translation>
 <translation id="2194856509914051091">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
 <translation id="2197398642355049178">നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങൾ</translation>
+<translation id="2200678913752027654">തംബ്‌സ് ഡൗൺ ബട്ടൺ, നിങ്ങൾ ഈ നിർദ്ദേശം എന്തുകൊണ്ട് ഡിസ്‌ലൈക്ക് ചെയ്യുന്നു എന്നതിനെ കുറിച്ചുള്ള വിശദമായ ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാനുള്ള ഫോം തുറക്കാൻ Enter അമർത്തുക</translation>
 <translation id="2202627062836089804">നിങ്ങളുടെ കാർഡിന്റെ പുറകിൽ</translation>
 <translation id="2204482073374652408">അപ്‌ഡേറ്റ് ചെയ്യൽ പൂർത്തിയായി!</translation>
 <translation id="2207770355672215546">ഏത് കാർഡ് ആണെങ്കിലും എപ്പോഴും അനുവദിക്കുക</translation>
@@ -1135,6 +1138,7 @@
 <translation id="3111155154146792758">തീകായാനുള്ള ഇടങ്ങളും സ്റ്റൗകളും</translation>
 <translation id="3112892588078695695">ഫോൺ നമ്പർ: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">മൂന്നാമത്തെ ഷിഫ്റ്റ്</translation>
+<translation id="3113930177999394798">AI ഉപയോഗിച്ച് നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം തിരയാൻ @history എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="3114040155724590991">Android സിസ്റ്റം അപ്ഡേറ്റ് ചെയ്യുന്നു
     നിങ്ങളുടെ ആപ്പ് ആരംഭിക്കാൻ പതിവിലും കൂടുതൽ സമയമെടുത്തേക്കാം.</translation>
 <translation id="3115363211799416195">{0,plural, =1{രഹസ്യാത്മക ഫയൽ ഡൗൺലോഡ് ചെയ്യണോ?}other{രഹസ്യാത്മക ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യണോ?}}</translation>
@@ -1308,6 +1312,7 @@
 <translation id="3414275587143250384">ഡിസ്ട്രിബ്യൂട്ടഡ്, ക്ലൗഡ് കമ്പ്യൂട്ടിംഗ്</translation>
 <translation id="3414952576877147120">വലുപ്പം:</translation>
 <translation id="341513675006332771">'Chrome ദിനോസർ ഗെയിം കളിക്കുക' ബട്ടൺ, Chrome-ൽ ദിനോസർ റൺ ഗെയിം കളിക്കാൻ സജീവമാക്കുക</translation>
+<translation id="3415471717466570460">നിങ്ങളുടെ തിരയലുകൾ, മികച്ച പൊരുത്തങ്ങൾ, അവയുടെ പേജ് ഉള്ളടക്കം എന്നിവ Google-ലേക്ക് അയയ്‌ക്കുന്നു, ഈ ഫീച്ചർ മെച്ചപ്പെടുത്താൻ അവ അവലോകകർ കാണുകയും ചെയ്തേക്കാം. ഇതൊരു പരീക്ഷണാത്മക ഫീച്ചറാണ്, ഇത് എല്ലായ്‌പ്പോഴും ശരിയായിരിക്കണമെന്നില്ല.</translation>
 <translation id="3422248202833853650">ഇടം സൃഷ്‌ടിക്കാൻ മറ്റ് പ്രോഗ്രാമുകളിൽ നിന്ന് പുറത്തുകടക്കുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> നിലവിൽ ലഭ്യമല്ല.</translation>
 <translation id="3423742043356668186">സിസ്റ്റം വ്യക്തമാക്കിയത്</translation>
@@ -1741,6 +1746,7 @@
 <translation id="4177501066905053472">പരസ്യ വിഷയങ്ങൾ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">നിരക്ക് ട്രാക്ക് ചെയ്യൽ അവസാനിപ്പിക്കുക</translation>
+<translation id="4190446002599583608">AI ഉപയോഗിച്ച് ചരിത്രം തിരയൽ</translation>
 <translation id="4191334393248735295">നീളം</translation>
 <translation id="4195459680867822611">'Chrome നുറുങ്ങുകൾ കാണുക' ബട്ടൺ, Chrome ഫീച്ചറുകളെ കുറിച്ച് അറിയാൻ സജീവമാക്കുക</translation>
 <translation id="4195643157523330669">പുതിയ ടാബില്‍ തുറക്കുക</translation>
@@ -1784,6 +1790,7 @@
 <translation id="4235360514405112390">സാധുത</translation>
 <translation id="4239799716689808527">ലേബലുകൾ</translation>
 <translation id="4242380780309416996">എൻവലപ്പ് (ഹെവി‌വെയിറ്റ്)</translation>
+<translation id="4242981939686657948">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം തിരയാനുള്ള കൂടുതൽ ഫലപ്രദമായ മാർഗ്ഗത്തിന്, ഓണാക്കുക</translation>
 <translation id="4244926541863471678">ഫിലിം</translation>
 <translation id="4246517972543675653">വിദേശ പഠനം</translation>
 <translation id="4250431568374086873">ഈ സൈറ്റിലുള്ള നിങ്ങളുടെ കണക്ഷൻ പൂർണ്ണമായും സുരക്ഷിതമല്ല</translation>
@@ -2380,6 +2387,7 @@
 <translation id="5371425731340848620">കാർഡ് അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"നിങ്ങളുടെ സമയം പിന്നിലാണ്" അല്ലെങ്കിൽ "നിങ്ങളുടെ സമയം മുന്നിലാണ്" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5379618281582508161">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ഈ പാസ്‌വേഡ് ലഭിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കൂ</translation>
 <translation id="5380953781541843508">ആരോഹണക്രമത്തിൽ</translation>
 <translation id="5381318171304904246">തുടരുകയാണെങ്കിൽ, നിങ്ങളെ ബാങ്കിന്റെ വെബ്‌സൈറ്റിലേക്ക് റീഡയറക്റ്റ് ചെയ്യും. പരിശോധിച്ചുറപ്പിച്ചതിന് ശേഷം, വാങ്ങൽ പൂർത്തിയാക്കാൻ നിങ്ങളെ സ്വയമേവ ഇവിടേക്ക് തിരികെ റീഡയറക്റ്റ് ചെയ്യും.</translation>
 <translation id="5383478552402031184">ഫ്ലോറിംഗ്</translation>
@@ -2649,6 +2657,7 @@
 <translation id="5887687176710214216">അവസാനം സന്ദർശിച്ചത് ഇന്നലെയാണ്</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
 <translation id="5895187275912066135">ഇനിപ്പറയുന്നദിവസം നല്‍‌കി</translation>
+<translation id="5898767305816764989">തംബ്‌സ് അപ്പ് ബട്ടൺ, നിങ്ങൾ <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> ലൈക്ക് ചെയ്യുന്നു എന്ന ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="5901630391730855834">മഞ്ഞ</translation>
 <translation id="5903264686717710770">ശീര്‍ഷകം:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (സമന്വയിപ്പിച്ചത്)</translation>
@@ -3401,6 +3410,7 @@
 കൂടുതൽ വിശദാംശങ്ങൾ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">നിങ്ങളുടെ അഡ്‌മിൻ പറയുന്നു: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">തംബ്‌സ് ഡൗൺ ബട്ടൺ, നിങ്ങൾ എന്തുകൊണ്ട് <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> ഡിസ്‌ലൈക്ക് ചെയ്യുന്നു എന്നതിനെ കുറിച്ചുള്ള വിശദമായ ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാനുള്ള ഫോം തുറക്കാൻ Enter അമർത്തുക</translation>
 <translation id="7256634549594854023">പിൻഭാഗത്തെ ട്രേ</translation>
 <translation id="7257453341537973799">കരിയർ റിസോഴ്‌സുകളും പ്ലാനിംഗും</translation>
 <translation id="725866823122871198">നിങ്ങളുടെ കമ്പ്യൂട്ടറിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്കുള്ള സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാവില്ല.</translation>
@@ -4085,7 +4095,6 @@
 <translation id="8473863474539038330">വിലാസങ്ങളും മറ്റും</translation>
 <translation id="8474910779563686872">ഡെവലപ്പർ വിശദാംശങ്ങൾ കാണിക്കുക</translation>
 <translation id="8479754468255770962">താഴെ ഇടതുവശത്ത് സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
-<translation id="8479926481822108747">നിങ്ങളുടെ ട്രാക്ക് ചെയ്യൽ പരിരക്ഷകൾ മാനേജ് ചെയ്യാൻ</translation>
 <translation id="8483229036294884935">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ നിന്ന് ഈ വിലാസം ഇല്ലാതാക്കും, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">ഇതിന് ബാധകമാക്കുന്നു</translation>
 <translation id="8490137692873530638">സ്റ്റാക്കർ 10</translation>

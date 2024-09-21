@@ -2214,6 +2214,7 @@
 <translation id="2546991196809436099">സ്ക്രീനിലെ ഇനങ്ങൾ വലുതാക്കാൻ സൂം ഇൻ ചെയ്യുക. മാഗ്നിഫയർ ഓണാക്കാനും ഓഫാക്കാനും Search + Ctrl + M ഉപയോഗിക്കുക.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="2548545707296594436">eSIM പ്രൊഫൈൽ കാഷെ റീസെറ്റ് ചെയ്യുക</translation>
+<translation id="2549766998450508148">1-4 മോഡിഫയർ കീകളും (ctrl, alt, shift അല്ലെങ്കിൽ തിരയൽ) മറ്റൊരു കീയും അമർത്തുക. നിങ്ങൾക്ക് ഒറ്റ കീ തിരഞ്ഞെടുക്കാനും കഴിയും.</translation>
 <translation id="2549985041256363841">റെക്കോർഡിംഗ് ആരംഭിക്കൂ</translation>
 <translation id="2550212893339833758">സ്വാപ്പുചെയ്‌ത മെമ്മറി</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> തുറക്കാൻ <ph name="EXTENSION_NAME" />-നെ അനുവദിക്കണോ?</translation>
@@ -7779,6 +7780,7 @@
 <translation id="6670983860904543332">സ്വയമേവയുള്ള അപ്‌ഡേറ്റുകളിലൂടെ നിങ്ങൾക്ക് ഏറ്റവും പുതിയ ഫീച്ചറുകൾ ലഭിക്കുന്നു. പുതിയ അപ്‌ഡേറ്റുകളിൽ നിന്നുള്ള ഹൈലൈറ്റുകൾ അടുത്തറിയൂ.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{ഒരു വിലാസം}other{# വിലാസങ്ങൾ}}</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" />-ന്റെ മാനേജ്മെന്റിന് സജ്ജീകരിക്കുന്നു</translation>
+<translation id="6672697278890207089">നിങ്ങളുടെ പാസ്ഫ്രെയ്സ് നല്‍കുക</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ചേർക്കുക</translation>
 <translation id="6673353404516008367">അദൃശ്യ മോഡ്, നിങ്ങളുടെ ഉപകരണം ഉപയോഗിക്കുന്ന <ph name="BEGIN_LINK" />മറ്റുള്ളവരിൽ നിന്ന് നിങ്ങളുടെ ബ്രൗസിംഗിനെ സ്വകാര്യമായി സൂക്ഷിക്കുന്നു<ph name="END_LINK" /></translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
@@ -10621,6 +10623,7 @@
 <translation id="8715480913140015283">പശ്ചാത്തല ടാബ് നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
 <translation id="8716931980467311658">ഈ <ph name="DEVICE_TYPE" /> നിന്നുള്ള നിങ്ങളുടെ Linux ഫയലുകളുടെ ഫോൾഡറിലുള്ള എല്ലാ Linux ആപ്പുകളും ഡാറ്റയും ഇല്ലാതാക്കണോ?</translation>
 <translation id="8717864919010420084">ലിങ്ക് പകർത്തുക</translation>
+<translation id="8718560545710680911">ഈ പേജ് വഴി ചോദിക്കുക</translation>
 <translation id="8718994464069323380">ടച്ച് സ്‌ക്രീൻ കണ്ടെത്തി</translation>
 <translation id="8719472795285728850">വിപുലീകരണ ആക്‌റ്റിവിറ്റികൾ കേൾക്കുന്നു...</translation>
 <translation id="8719665168401479425">പ്രവർത്തനങ്ങൾ ചെയ്യാൻ മുഖ ജെസ്ച്ചറുകൾ ഉപയോഗിക്കുക</translation>

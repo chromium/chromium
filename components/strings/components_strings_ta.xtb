@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">இடமாற்றம் &amp; இடப்பெயர்வு</translation>
 <translation id="1270502636509132238">பிக்அப் முறை</translation>
 <translation id="1273592791152866347">விலையைக் கண்காணிப்பது நிறுத்தப்பட்டுள்ளது</translation>
+<translation id="1277711244058668002">தம்ஸ்-அப் பட்டன், இதை அழுத்திய பிறகு நீங்கள் விரும்பும் இந்தப் பரிந்துரை குறித்த கருத்தைச் சமர்ப்பிக்க Enter பட்டனை அழுத்தவும்.</translation>
 <translation id="127777513559587977">டிவி உரையாடல் நிகழ்ச்சிகள்</translation>
 <translation id="1281476433249504884">ஸ்டேக்கர் 1</translation>
 <translation id="1281536351321444151">இந்த IBAN அடுத்த முறை தானாக நிரப்பப்பட இதை உங்கள் Google கணக்கில் சேமியுங்கள்</translation>
@@ -464,6 +465,7 @@
 <translation id="1812527064848182527">லேண்ட்ஸ்கேப்</translation>
 <translation id="1812975699435941848">சுகாதாரக் கல்வி &amp; மருத்துவப் பயிற்சி</translation>
 <translation id="1816436748874040213">பகிர்ந்த பக்கங்களில் ஸ்க்ரோல் செய்யவும், அளவை மாற்றவும் அனுமதி கேட்கும்</translation>
+<translation id="1816707915923025275">நீங்கள் இதுவரை இணையத்தில் பார்த்தவற்றைத் தேட @history என்று டைப் செய்யுங்கள்</translation>
 <translation id="1817364650920811003">பொறுப்பு: Chrome உதவிக்குறிப்பு. அணுகல்தன்மை லேபிள்: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">அனுமதி</translation>
 <translation id="1818585559878922121">ஆவணத் திரைப்படங்கள்</translation>
@@ -669,6 +671,7 @@
 <translation id="2188375229972301266">மல்டிப்பில் பஞ்ச் பாட்டம்</translation>
 <translation id="2194856509914051091">கருத்தில்கொள்ள வேண்டியவை</translation>
 <translation id="2197398642355049178">உங்கள் தலைப்புகள்</translation>
+<translation id="2200678913752027654">தம்ஸ்-டவுன் பட்டன், இதை அழுத்திய பிறகு இந்தப் பரிந்துரையை நீங்கள் ஏன் விரும்பவில்லை என்பது குறித்த விரிவான கருத்தைச் சமர்ப்பிப்பதற்கான படிவத்தைத் திறக்க Enter பட்டனை அழுத்தவும்.</translation>
 <translation id="2202627062836089804">உங்கள் கார்டின் பின்பக்கம்</translation>
 <translation id="2204482073374652408">புதுப்பிக்கப்பட்டது!</translation>
 <translation id="2207770355672215546">எந்தவொரு கார்டுடனும் எப்போதும் அனுமதி</translation>
@@ -1135,6 +1138,7 @@
 <translation id="3111155154146792758">ஃபயர்பிளேஸ் &amp; அடுப்புகள்</translation>
 <translation id="3112892588078695695">ஃபோன் எண்: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">மூன்றாம் ஷிஃப்ட்</translation>
+<translation id="3113930177999394798">AI மூலம், நீங்கள் இதுவரை இணையத்தில் பார்த்தவற்றைத் தேட @history என்று டைப் செய்யுங்கள்.</translation>
 <translation id="3114040155724590991">Android சிஸ்டம் புதுப்பிக்கப்படுகிறது
     உங்கள் ஆப்ஸ் தொடங்குவதற்கு வழக்கத்திற்கு மாறாக அதிக நேரம் ஆகலாம்.</translation>
 <translation id="3115363211799416195">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் பதிவிறக்க வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் பதிவிறக்க வேண்டுமா?}}</translation>
@@ -1306,6 +1310,7 @@
 <translation id="3414275587143250384">டிஸ்ட்ரிபியூட்டட் மற்றும் கிளவுடு கம்ப்யூட்டிங்</translation>
 <translation id="3414952576877147120">அளவு:</translation>
 <translation id="341513675006332771">Chrome டைனோசர் கேமை விளையாடுவதற்கான பட்டன். Chromeமில் டைனோசர் கேமை விளையாட இதை இயக்குங்கள்</translation>
+<translation id="3415471717466570460">நீங்கள் தேடுபவை, சிறப்பாகப் பொருந்துபவை, அந்தப் பக்கத்திலுள்ள உள்ளடக்கம் ஆகியவை Googleளுக்கு அனுப்பப்படுவதுடன், இந்த அம்சத்தை மேம்படுத்துவதற்காக மதிப்பாய்வாளர்களுக்குக் காட்டப்படலாம். இது பரிசோதனை நிலையில் உள்ள அம்சம் என்பதால் சில சமயங்களில் சரியாகச் செயல்படாமல் போகலாம்.</translation>
 <translation id="3422248202833853650">பிற நிரல்களிலிருந்து வெளியேறி, நினைவகத்தைக் காலியாக்கவும்.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" />ஐத் தற்போது அணுக முடியவில்லை.</translation>
 <translation id="3423742043356668186">சிஸ்டம் அமைத்தது</translation>
@@ -1738,6 +1743,7 @@
 <translation id="4177501066905053472">விளம்பரத் தலைப்புகள்</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">விலையைக் கண்காணிப்பதை நிறுத்து</translation>
+<translation id="4190446002599583608">AI வழங்கும் ‘பதிவுகள் தேடல்’</translation>
 <translation id="4191334393248735295">நீளம்</translation>
 <translation id="4195459680867822611">Chrome உதவிக்குறிப்புகளைக் காட்டும் பட்டன். Chrome அம்சங்கள் குறித்துத் தெரிந்துகொள்ள இதை இயக்குங்கள்</translation>
 <translation id="4195643157523330669">புதிய தாவலில் திற</translation>
@@ -1781,6 +1787,7 @@
 <translation id="4235360514405112390">செல்லுபடியானது</translation>
 <translation id="4239799716689808527">லேபிள்கள்</translation>
 <translation id="4242380780309416996">ஹெவிவெயிட் என்வெலப்</translation>
+<translation id="4242981939686657948">நீங்கள் இதுவரை இணையத்தில் பார்த்தவற்றைத் திறம்படத் தேடுவதற்கு இதை இயக்கவும்:</translation>
 <translation id="4244926541863471678">ஃபிலிம்</translation>
 <translation id="4246517972543675653">வெளிநாட்டுக் கல்வி</translation>
 <translation id="4250431568374086873">இந்தத் தளத்திற்கான உங்கள் இணைப்பு, முழுப் பாதுகாப்புடன் இல்லை</translation>
@@ -2646,6 +2653,7 @@
 <translation id="5887687176710214216">கடைசியாகப் பார்த்தது: நேற்று</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="5895187275912066135">வழங்கப்பட்டது</translation>
+<translation id="5898767305816764989">தம்ஸ்-அப் பட்டன், இதை அழுத்திய பிறகு நீங்கள் விரும்பும் <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> குறித்த கருத்தைச் சமர்ப்பிக்க Enter பட்டனை அழுத்தவும்.</translation>
 <translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5903264686717710770">தலைப்பு:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ஒத்திசைக்கப்பட்டது)</translation>
@@ -3397,6 +3405,7 @@
 கூடுதல் விவரங்கள்:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">நிர்வாகி இவ்வாறு கூறுகிறார்: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">தம்ஸ்-டவுன் பட்டன், இதை அழுத்திய பிறகு <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> ஐ நீங்கள் ஏன் விரும்பவில்லை என்பது குறித்த விரிவான கருத்தைச் சமர்ப்பிப்பதற்கான படிவத்தைத் திறக்க Enter பட்டனை அழுத்தவும்.</translation>
 <translation id="7256634549594854023">பின்பக்க டிரே</translation>
 <translation id="7257453341537973799">தொழில் தகவல்கள் மற்றும் திட்டமிடல்</translation>
 <translation id="725866823122871198">உங்கள் கம்ப்யூட்டரின் தேதியும் நேரமும் (<ph name="DATE_AND_TIME" />) தவறாக இருப்பதால் <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> க்கான தனிப்பட்ட இணைப்பை ஏற்படுத்த முடியவில்லை.</translation>
@@ -4083,7 +4092,6 @@
 <translation id="8473863474539038330">முகவரிகள் மற்றும் பல</translation>
 <translation id="8474910779563686872">டெவெலப்பர் விவரங்களைக் காட்டு</translation>
 <translation id="8479754468255770962">ஸ்டேப்பில் பாட்டம் லெஃப்ட்</translation>
-<translation id="8479926481822108747">உங்கள் கண்காணிப்புத் தடுப்புகளை நிர்வகியுங்கள்</translation>
 <translation id="8483229036294884935">இந்த முகவரி உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) இருந்து நீக்கப்படும்</translation>
 <translation id="8488350697529856933">இதற்குப் பொருந்தும்</translation>
 <translation id="8490137692873530638">ஸ்டேக்கர் 10</translation>

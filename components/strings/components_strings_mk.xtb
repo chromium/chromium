@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">Преселување и преместување</translation>
 <translation id="1270502636509132238">Начин на подигнување</translation>
 <translation id="1273592791152866347">Следењето на цената е исклучено</translation>
+<translation id="1277711244058668002">Копче „Ми се допаѓа“, притиснете Enter за да испратите повратни информации дека ви се допаѓа предлогов</translation>
 <translation id="127777513559587977">Разговорни емисии на ТВ</translation>
 <translation id="1281476433249504884">Фиока за складирање 1</translation>
 <translation id="1281536351321444151">За автоматско пополнување на овој IBAN следниот пат, зачувајте го во вашата сметка на Google</translation>
@@ -464,6 +465,7 @@
 <translation id="1812527064848182527">пејзаж</translation>
 <translation id="1812975699435941848">Здравствено образование и медицинска обука</translation>
 <translation id="1816436748874040213">Може да се бара да се лизгаат и зумираат споделените картички</translation>
+<translation id="1816707915923025275">Напишете @историја за да ја пребарате вашата историја на прелистувањето</translation>
 <translation id="1817364650920811003">Улога: совет на Chrome. Етикета за пристапност: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Одблокирај</translation>
 <translation id="1818585559878922121">Документарни филмови</translation>
@@ -669,6 +671,7 @@
 <translation id="2188375229972301266">Повеќе дупки долу</translation>
 <translation id="2194856509914051091">Нешта што треба да се земат предвид</translation>
 <translation id="2197398642355049178">Вашите теми</translation>
+<translation id="2200678913752027654">Копче „Не ми се допаѓа“, притиснете Enter за да се отвори формулар за испраќање детални повратни информации за тоа зошто не ви се допаѓа предлогов</translation>
 <translation id="2202627062836089804">задната страна од картичката</translation>
 <translation id="2204482073374652408">Ажурирањето е завршено!</translation>
 <translation id="2207770355672215546">Секогаш дозволувај, со која било картичка</translation>
@@ -1135,6 +1138,7 @@
 <translation id="3111155154146792758">Камини и печки</translation>
 <translation id="3112892588078695695">Телефонски број: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Трета смена</translation>
+<translation id="3113930177999394798">Напишете @историја за да ја пребарате вашата историја на прелистувањето, што е овозможено од AI</translation>
 <translation id="3114040155724590991">Се ажурира системот на Android
     Стартувањето на апликацијата може да трае подолго од вообичаено.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Да се преземе доверлива датотека?}one{Да се преземат доверливи датотеки?}other{Да се преземат доверливи датотеки?}}</translation>
@@ -1309,6 +1313,7 @@
 <translation id="3414275587143250384">Дистрибуирани и компјутерски услуги во облак</translation>
 <translation id="3414952576877147120">Големина:</translation>
 <translation id="341513675006332771">Копче за играње на играта „Диносаурус на Chrome“, активирајте го за да ја играте играта „Трчање на диносаурусот“ во Chrome</translation>
+<translation id="3415471717466570460">За да се подобри функцијава, пребарувањата, најдобрите совпаѓања и содржините на нивните страници се испраќаат до Google, а може да ги гледаат и прегледувачи. Ова е експериментална функција, па нема секогаш да прикажува точни информации.</translation>
 <translation id="3422248202833853650">Обидете се да излезете од другите програми за да ослободите меморија.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> е моментално недостапен.</translation>
 <translation id="3423742043356668186">Одредено од системот</translation>
@@ -1742,6 +1747,7 @@
 <translation id="4177501066905053472">Теми на реклами</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Отследи ја цената</translation>
+<translation id="4190446002599583608">Пребарување на историјата, овозможено од AI</translation>
 <translation id="4191334393248735295">Должина</translation>
 <translation id="4195459680867822611">Копче за гледање совети за Chrome, активирајте го за да дознаете за функциите на Chrome</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
@@ -1785,6 +1791,7 @@
 <translation id="4235360514405112390">Важечки</translation>
 <translation id="4239799716689808527">Етикети</translation>
 <translation id="4242380780309416996">Коверт (тежок)</translation>
+<translation id="4242981939686657948">За помоќно пребарување низ вашата историја на прелистувањето, вклучете</translation>
 <translation id="4244926541863471678">Филм</translation>
 <translation id="4246517972543675653">Студии во странство</translation>
 <translation id="4250431568374086873">Врската со овој сајт не е потполно безбедна</translation>
@@ -2650,6 +2657,7 @@
 <translation id="5887687176710214216">Последно посетено вчера</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5895187275912066135">Издадено на</translation>
+<translation id="5898767305816764989">Копче „Ми се допаѓа“, притиснете Enter за да испратите повратни информации дека ви се допаѓа, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Жолта боја</translation>
 <translation id="5903264686717710770">Наслов:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхронизирани)</translation>
@@ -3401,6 +3409,7 @@
 Дополнителни детали:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Порака од администраторот: „<ph name="CUSTOM_MESSAGE" />“</translation>
+<translation id="7255540419660272073">Копче „Не ми се допаѓа“, притиснете Enter за да се отвори формулар за испраќање детални повратни информации за тоа зошто не ви се допаѓа, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Задна фиока</translation>
 <translation id="7257453341537973799">Ресурси за кариера и планирање</translation>
 <translation id="725866823122871198">Не може да се воспостави приватна врска до <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бидејќи датумот и времето на вашиот компјутер (<ph name="DATE_AND_TIME" />) се погрешни.</translation>
@@ -4087,7 +4096,6 @@
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="8474910779563686872">Прикажи ги деталите за програмерот</translation>
 <translation id="8479754468255770962">Спојување долу лево</translation>
-<translation id="8479926481822108747">управување со вашите заштити од следење</translation>
 <translation id="8483229036294884935">Адресава ќе биде избришана од вашата сметка на Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Се однесува на</translation>
 <translation id="8490137692873530638">Фиока за складирање 10</translation>

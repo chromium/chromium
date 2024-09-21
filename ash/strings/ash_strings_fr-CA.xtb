@@ -642,7 +642,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3290356915286466215">Non sécurisé</translation>
 <translation id="3291862315280588024">Aller au début du mot précédent</translation>
 <translation id="3294437725009624529">Invité</translation>
-<translation id="3298690094479023523">Votre NIP ou votre mot de passe n'a toujours pas pu être vérifié. Réessayez.</translation>
 <translation id="3300193645498960160">Vous serez averti si vous parlez en sourdine. Le son ne quitte jamais votre appareil.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> appareils connectés au point d'accès sans fil <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Mode ordinateur portable activé</translation>
@@ -2287,7 +2286,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8847100217801213944">Afficher la température en degrés Fahrenheit</translation>
 <translation id="8849001918648564819">Caché</translation>
-<translation id="8853703225951107899">Votre NIP ou votre mot de passe n'a toujours pas pu être vérifié. Remarque : Si vous avez récemment changé votre mot de passe, servez-vous de votre ancien mot de passe. Votre nouveau mot de passe sera appliqué lorsque vous vous déconnecterez.</translation>
 <translation id="8855885154700222542">Touche mode Plein écran</translation>
 <translation id="8858369206579825206">Paramètres de confidentialité</translation>
 <translation id="8860366331836346216">Ajouter une carte eSIM</translation>

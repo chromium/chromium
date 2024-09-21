@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Прилагоди области за скенирање</translation>
 <translation id="1343442362630695901">слано језеро</translation>
 <translation id="1348657754632799065">Трака за снимање</translation>
+<translation id="1350909945461913813">Обавезно сачувајте све што сте радили</translation>
 <translation id="1367951781824006909">Изабери датотеку</translation>
 <translation id="1371650399987522809">Повратне информације за позадину коју омогућава oмогућава Google AI</translation>
 <translation id="1374385338586507108">Дефиниција</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Верзија пакета за развој софтвера:</translation>
 <translation id="2016697457005847575">Испробајте кораке за решавање проблема</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Одаберите тему, па изаберите подвучене речи да бисте персонализовали AI слике.</translation>
 <translation id="2045814230297767491">прибор за јело</translation>
 <translation id="2047316797244836561">Повежите се на мрежу и поново учитајте страницу да бисте видели чувар екрана.</translation>
 <translation id="2056550196601855911">IPv4 или IPv6</translation>
@@ -319,6 +321,7 @@
 <translation id="242825218556404975">Није откривен никакав говор</translation>
 <translation id="2446553403094072641">Прецизност покретног зареза</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2468124392950503650">Изаберите упит за прављење или погледајте <ph name="BEGIN_LINK_PROMPTING_GUIDE" />водич за упите<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Користите Помоћ при писању да бисте направили радну верзију или побољшали постојећи рад који омогућава Google вештачка интелигенција</translation>
 <translation id="2480572840229215612">крабе</translation>
 <translation id="248546197012830854">Уређај је офлајн. Повежите се на WiFi мрежу да бисте видели садржај помоћи.</translation>
@@ -687,6 +690,7 @@
 <translation id="4474142134969976028">Нема подударних резултата</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Пинговање мрежног пролаза који није подразумеван није успело</translation>
+<translation id="4486524074141928967">Бићете одјављени у <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Пречица није доступна. Притисните нову пречицу помоћу модификујућег тастера (ctrl, alt, shift или <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Боја интерфејса</translation>
 <translation id="4503223151711056411">Стрелица налево</translation>
@@ -910,6 +914,7 @@
 <translation id="5595623927872580850">сиве</translation>
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="5600027863942488546">Тастер <ph name="KEY_NAME" /> је тестиран</translation>
+<translation id="5613201299517339763">Одјављени сте</translation>
 <translation id="5620281292257375798">Само интерно</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">сажетак</translation>
@@ -974,6 +979,7 @@
 <translation id="5931523347251946569">Фајл није пронађен</translation>
 <translation id="5938286923316838007">Не можемо да направимо називе снимака за овај садржај</translation>
 <translation id="5939518447894949180">Ресетуј</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> администратор је подесио када овај <ph name="DEVICE_TYPE" /> може да се користи</translation>
 <translation id="594552776027197022">Генеришите насумични пар кључева</translation>
 <translation id="5946538341867151940">Још увек нисте повезани. Ако мобилни оператер препоручује прилагођени назив приступне тачке, унесите га тако што ћете изабрати „+ Нови назив приступне тачке“</translation>
 <translation id="5947266287934282605">Ако је последњи дан у месецу пре овог дана, подаци ће се ресетовати последњег дана у месецу</translation>
@@ -1065,6 +1071,7 @@
 <translation id="6352210854422428614">друга планета</translation>
 <translation id="6359706544163531585">Онемогући светлу тему</translation>
 <translation id="6359919876285606596">Ова радња је трајна и не можете да је опозовете</translation>
+<translation id="6368342879959028556">Када изаберете Направи помоћу вештачке интелигенције, напишите прилагођени упит. Можете и да изаберете AI позадине да бисте одабрали тему, па да изаберете подвучене речи да бисте персонализовали AI позадину.</translation>
 <translation id="636850387210749493">Пријављивање за издање за предузећа</translation>
 <translation id="6373461326814131011">Језерце</translation>
 <translation id="6379086450106841622">Додирни екран</translation>
@@ -1088,6 +1095,7 @@
 <translation id="6447630859861661624">Отворите подешавања налога</translation>
 <translation id="6462978824459367242">Дугме Додај назив приступне тачке је сада омогућено</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Желите да поново скенирате страницу?}=1{Желите да поново скенирате {PAGE_NUMBER}. страницу?}one{Желите да поново скенирате {PAGE_NUMBER}. страницу?}few{Желите да поново скенирате {PAGE_NUMBER}. страницу?}other{Желите да поново скенирате {PAGE_NUMBER}. страницу?}}</translation>
+<translation id="6468146470109254228">Три најновија упита и резултата. Можете да им приступите само док користите позадину и стил.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">чамци</translation>
 <translation id="64778964625672495">тамноцрвен(а)</translation>
@@ -1133,6 +1141,16 @@
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659594942844771486">Картица</translation>
 <translation id="66621959568103627">коралнорозе</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+<ph name="LINE_BREAK" />
+          Изаберите Инспириши ме да бисте добили више јединствених и разноврснијих опција за AI слике.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Када правите садржај помоћу вештачке интелигенције, упит се шаље серверима Google вештачке интелигенције ради генерисања слика и побољшања производа, у складу са <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google политиком приватности<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративни AI је експерименталан, у раном развоју и тренутно има ограничену доступност.</translation>
 <translation id="6673898378497337661">повећајте осветљеност тастатуре</translation>
 <translation id="6692996468359469499">Пронађите информације у вези са вашим избором</translation>
 <translation id="6694534975463174713">брава</translation>

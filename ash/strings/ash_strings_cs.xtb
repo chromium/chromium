@@ -642,7 +642,6 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3290356915286466215">Nezabezpečeno</translation>
 <translation id="3291862315280588024">Přesunout na začátek předchozího slova</translation>
 <translation id="3294437725009624529">Host</translation>
-<translation id="3298690094479023523">Váš PIN nebo heslo se stále nepodařilo ověřit. Zkuste to znovu.</translation>
 <translation id="3300193645498960160">Pokud budete mluvit s vypnutým zvukem, zobrazí se vám oznámení. Zvuk nikdy neopustí vaše zařízení.</translation>
 <translation id="3306386552969601301">K hotspotu zařízení <ph name="DEVICE_NAME" /> je připojen tento počet zařízení: <ph name="DEVICECOUNT" /></translation>
 <translation id="3307642347673023554">Přepnuto na režim notebooku</translation>
@@ -2287,7 +2286,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8845001906332463065">Nápověda</translation>
 <translation id="8847100217801213944">Zobrazit teplotu ve stupních Fahrenheita</translation>
 <translation id="8849001918648564819">Skryté</translation>
-<translation id="8853703225951107899">Váš PIN nebo heslo se stále nepodařilo ověřit. Poznámka: Pokud jste heslo nedávno změnili, použijte staré heslo. Nové heslo bude možné použít až po odhlášení.</translation>
 <translation id="8855885154700222542">Tlačítko celé obrazovky</translation>
 <translation id="8858369206579825206">Nastavení ochrany soukromí</translation>
 <translation id="8860366331836346216">Přidat eSIM</translation>

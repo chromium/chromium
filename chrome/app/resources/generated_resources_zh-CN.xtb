@@ -7766,6 +7766,7 @@
 <translation id="6670983860904543332">自动更新可为您提供最新功能。探索近期更新中的亮点。</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
 <translation id="6671497123040790595">正在设置为受 <ph name="MANAGER" /> 管理</translation>
+<translation id="6672697278890207089">请输入密码</translation>
 <translation id="6672917148207387131">添加 <ph name="DOMAIN" /></translation>
 <translation id="6673353404516008367">无痕模式可<ph name="BEGIN_LINK" />实现私密浏览<ph name="END_LINK" />，其他使用此设备的人员无法得知您的浏览信息</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>

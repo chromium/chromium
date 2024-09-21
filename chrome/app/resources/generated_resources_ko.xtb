@@ -7796,6 +7796,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6670983860904543332">자동 업데이트를 통해 최신 기능을 사용할 수 있습니다. 최근 업데이트의 주요 정보를 살펴보세요.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{주소 1개}other{주소 #개}}</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" />에서 관리 설정 중</translation>
+<translation id="6672697278890207089">암호 입력</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> 추가</translation>
 <translation id="6673353404516008367">시크릿 모드를 사용하면 내 기기를 사용하는 다른 사용자에게 <ph name="BEGIN_LINK" />내 탐색 기록을 비공개로<ph name="END_LINK" /> 유지할 수 있습니다.</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" />(USB)</translation>

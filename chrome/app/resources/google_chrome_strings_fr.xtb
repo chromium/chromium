@@ -402,6 +402,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="608006075545470555">Ajouter un profil professionnel à ce navigateur</translation>
 <translation id="6097822892606850415">Écrivez avec plus d'assurance grâce à l'IA</translation>
 <translation id="6113794647360055231">Chrome s'est amélioré</translation>
+<translation id="6116252277240876590">Cette langue est utilisée pour afficher les menus, les paramètres, les alertes et d'autres textes dans Chrome</translation>
 <translation id="6134085236017727171">Pour que Chrome puisse utiliser votre micro, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ces onglets utilisent des ressources supplémentaires. Pour améliorer les performances, autorisez Chrome à les désactiver.</translation>
 <translation id="6145313976051292476">Ouvrir les PDF dans Chrome</translation>
@@ -602,6 +603,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8498858610309223613">Une mise à jour spéciale de sécurité pour Google Chrome vient d'être installée. Veuillez redémarrer le navigateur. Vos onglets seront restaurés.</translation>
 <translation id="8516431725144212809">Vos centres d'intérêt estimés par Chrome</translation>
 <translation id="8521348052903287641">Règle de trafic entrant pour Google Chrome pour les développeurs autorisant le trafic mDNS.</translation>
+<translation id="852529348814672339">Afficher Chrome dans cette langue</translation>
 <translation id="8550334526674375523">Ce profil professionnel est parfaitement séparé de votre profil personnel.</translation>
 <translation id="8555465886620020932">Erreur du service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Utilisez les profils Chrome pour dissocier toutes vos données Chrome. Vous pouvez ainsi faire plus facilement la distinction entre vos contenus personnels et professionnels.</translation>

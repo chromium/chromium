@@ -642,7 +642,6 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3291862315280588024">Ves al començament de la paraula anterior</translation>
 <translation id="3294437725009624529">Convidat</translation>
-<translation id="3298690094479023523">El PIN o la contrasenya continuen sense poder-se verificar. Torna-ho a provar.</translation>
 <translation id="3300193645498960160">Si parles mentre el micròfon està silenciat, rebràs una notificació. No s'emetrà àudio des del dispositiu.</translation>
 <translation id="3306386552969601301">Hi ha <ph name="DEVICECOUNT" /> dispositius connectats al punt d'accés Wi-Fi de <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">S'ha canviat a mode de portàtil</translation>
@@ -2289,7 +2288,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8847100217801213944">Mostra la temperatura en graus Fahrenheit</translation>
 <translation id="8849001918648564819">Amagat</translation>
-<translation id="8853703225951107899">El PIN o la contrasenya continuen sense poder-se verificar. Nota: si fa poc que has canviat la contrasenya, fes servir l'antiga. La contrasenya nova s'aplicarà un cop hagis tancat la sessió.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controls de privadesa</translation>
 <translation id="8860366331836346216">Afegeix una eSIM</translation>

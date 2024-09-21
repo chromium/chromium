@@ -642,7 +642,6 @@
 <translation id="3290356915286466215">无保护</translation>
 <translation id="3291862315280588024">移动到上一个字词的开头</translation>
 <translation id="3294437725009624529">访客</translation>
-<translation id="3298690094479023523">仍然无法验证您的 PIN 码或密码。请重试。</translation>
 <translation id="3300193645498960160">如果您在静音状态下说话，会收到通知。音频只会存储在您的设备上。</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 部设备已连接到 <ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="3307642347673023554">已切换到笔记本电脑模式</translation>
@@ -2287,7 +2286,6 @@
 <translation id="8845001906332463065">获取帮助</translation>
 <translation id="8847100217801213944">以华氏度显示温度</translation>
 <translation id="8849001918648564819">已隐藏</translation>
-<translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
 <translation id="8855885154700222542">全屏键</translation>
 <translation id="8858369206579825206">隐私控制</translation>
 <translation id="8860366331836346216">添加 eSIM 卡</translation>

@@ -642,7 +642,6 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3290356915286466215">Niezabezpieczona</translation>
 <translation id="3291862315280588024">Przejdź do początku poprzedniego słowa</translation>
 <translation id="3294437725009624529">Gość</translation>
-<translation id="3298690094479023523">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Spróbuj ponownie.</translation>
 <translation id="3300193645498960160">Powiadomimy Cię, gdy będziesz mówić, a mikrofon będzie wyciszony. Dźwięk nigdy nie jest wysyłany poza Twoje urządzenie.</translation>
 <translation id="3306386552969601301">Urządzenia połączone z hotspotem <ph name="DEVICE_NAME" />: <ph name="DEVICECOUNT" /></translation>
 <translation id="3307642347673023554">Przełączono na tryb laptopa</translation>
@@ -2288,7 +2287,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8845001906332463065">Uzyskaj pomoc</translation>
 <translation id="8847100217801213944">Pokazuj temperaturę w stopniach Fahrenheita</translation>
 <translation id="8849001918648564819">Ukryte</translation>
-<translation id="8853703225951107899">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Uwaga: jeśli Twoje hasło zostało ostatnio zmienione, użyj starego hasła. Nowe hasło zacznie obowiązywać, gdy się wylogujesz.</translation>
 <translation id="8855885154700222542">Klawisz trybu pełnoekranowego</translation>
 <translation id="8858369206579825206">Ustawienia prywatności</translation>
 <translation id="8860366331836346216">Dodaj eSIM</translation>

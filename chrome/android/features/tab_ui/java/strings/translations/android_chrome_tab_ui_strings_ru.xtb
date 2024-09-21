@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Посмотреть сведения о магазине</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Переместить вкладку влево</translation>
+<translation id="6590332670428149473">Открыть меню действий для группы вкладок "<ph name="TITLE_OF_GROUP" />" с общим доступом, которой присвоен цвет "<ph name="COLOR_NAME" />".</translation>
 <translation id="6615455863669487791">Показать</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Изменена <ph name="ONE_CHANGED" /> вкладка.}one{Изменена <ph name="MANY_CHANGED" /> вкладка.}few{Изменены <ph name="MANY_CHANGED" /> вкладки.}many{Изменено <ph name="MANY_CHANGED" /> вкладок.}other{Изменено <ph name="MANY_CHANGED" /> вкладки.}}</translation>
 <translation id="6694634756612002311">Управление доступом</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Развернуть группу вкладок. В ней <ph name="TABS_COUNT_ONE" /> вкладка.}one{Развернуть группу вкладок. В ней <ph name="TABS_COUNT_MANY" /> вкладка.}few{Развернуть группу вкладок. В ней <ph name="TABS_COUNT_MANY" /> вкладки.}many{Развернуть группу вкладок. В ней <ph name="TABS_COUNT_MANY" /> вкладок.}other{Развернуть группу вкладок. В ней <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="9090098097337832354">Информация об этом магазине закрыта</translation>
 <translation id="9111228330448174435">Показывать диалоговое окно при создании группы вкладок</translation>
+<translation id="9114502155681725011">Открыть меню действий для группы вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />".</translation>
 <translation id="9150694013019234766">В нижней части экрана можно переключаться между вкладками, объединенными в группы</translation>
 <translation id="9169594135889675189">Добавить новую вкладку в группу</translation>
 <translation id="9216898458513705996">Хотя здесь вкладки останутся открытыми, группа будет удалена на всех устройствах, на которых выполнен вход в аккаунт <ph name="USER_EMAIL" />.</translation>

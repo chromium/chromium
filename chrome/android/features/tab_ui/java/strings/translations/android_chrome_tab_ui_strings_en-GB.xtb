@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">View shop info</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Move tab left</translation>
+<translation id="6590332670428149473">Open the tab group action menu for shared tab group <ph name="TITLE_OF_GROUP" />, colour <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Show me</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab changed}other{<ph name="MANY_CHANGED" /> tabs changed}}</translation>
 <translation id="6694634756612002311">Manage sharing</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Expand tab group with <ph name="TABS_COUNT_ONE" /> tab.}other{Expand tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="9090098097337832354">Information about this shop closed</translation>
 <translation id="9111228330448174435">Show dialogue on new tab group creation</translation>
+<translation id="9114502155681725011">Open the tab group action menu for tab group <ph name="TITLE_OF_GROUP" />, colour <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Switch between tabs in your tab group near bottom of screen</translation>
 <translation id="9169594135889675189">Add new tab to group</translation>
 <translation id="9216898458513705996">The tabs will remain open on this device but the group will be deleted from all devices signed in to <ph name="USER_EMAIL" /></translation>

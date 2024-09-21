@@ -642,7 +642,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3290356915286466215">Kaitsmata</translation>
 <translation id="3291862315280588024">Eelmise sõna algusesse teisaldamine</translation>
 <translation id="3294437725009624529">Külaline</translation>
-<translation id="3298690094479023523">Teie PIN-koodi või parooli ei õnnestunud ikka kinnitada. Proovige uuesti.</translation>
 <translation id="3300193645498960160">Teid teavitatakse, kui räägite vaigistatuna. Teie seade ei edasta heli.</translation>
 <translation id="3306386552969601301">Seadme <ph name="DEVICE_NAME" /> kuumkohaga on ühendatud <ph name="DEVICECOUNT" /> seadet</translation>
 <translation id="3307642347673023554">Lülitati sülearvutirežiimile</translation>
@@ -2290,7 +2289,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8845001906332463065">Otsige abi</translation>
 <translation id="8847100217801213944">Näita temperatuuri Fahrenheiti järgi</translation>
 <translation id="8849001918648564819">Peidetud</translation>
-<translation id="8853703225951107899">Teie PIN-koodi või parooli ei saanud ikka kinnitada. Märkus. Kui muutsite hiljuti parooli, siis kasutage vana parooli. Uus parool rakendatakse väljalogimisel.</translation>
 <translation id="8855885154700222542">Täisekraani klahv</translation>
 <translation id="8858369206579825206">Privaatsuse seaded</translation>
 <translation id="8860366331836346216">eSIM-i lisamine</translation>

@@ -642,7 +642,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3290356915286466215">Güvenli değil</translation>
 <translation id="3291862315280588024">Önceki kelimenin başına git</translation>
 <translation id="3294437725009624529">Misafir</translation>
-<translation id="3298690094479023523">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Tekrar deneyin.</translation>
 <translation id="3300193645498960160">Mikrofonunuz kapalıyken konuşursanız bildirim alırsınız. Cihazınızdan hiç ses aktarılmaz.</translation>
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> hotspot'una <ph name="DEVICECOUNT" /> cihaz bağlı</translation>
 <translation id="3307642347673023554">Dizüstü bilgisayar moduna geçildi</translation>
@@ -2289,7 +2288,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8847100217801213944">Sıcaklığı fahrenhayt olarak göster</translation>
 <translation id="8849001918648564819">Gizli</translation>
-<translation id="8853703225951107899">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Not: Şifrenizi yakın zamanda değiştirdiyseniz eski şifrenizi kullanın. Yeni şifreniz, oturumunuzu kapattıktan sonra geçerli olacaktır.</translation>
 <translation id="8855885154700222542">Tam ekran tuşu</translation>
 <translation id="8858369206579825206">Gizlilik denetimleri</translation>
 <translation id="8860366331836346216">eSIM ekle</translation>

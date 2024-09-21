@@ -7778,6 +7778,7 @@
 <translation id="6670983860904543332">Ավտոմատ թարմացումների շնորհիվ դուք ստանում եք վերջին գործառույթներից օգտվելու հնարավորություն։ Դիտեք վերջին թարմացումների կարևորագույն կետերը։</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{հասցե}one{# հասցե}other{# հասցե}}</translation>
 <translation id="6671497123040790595">Կառավարման պարամետրերը կարգավորվում են <ph name="MANAGER" /> տիրույթի կողմից</translation>
+<translation id="6672697278890207089">Մուտքագրեք ձեր անցաբառը</translation>
 <translation id="6672917148207387131">Ավելացնել <ph name="DOMAIN" /> տիրույթը</translation>
 <translation id="6673353404516008367">Ինկոգնիտո ռեժիմը թույլ է տալիս <ph name="BEGIN_LINK" />գաղտնի պահել ձեր դիտարկումները<ph name="END_LINK" /> այս սարքի մյուս օգտագործողներից</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>

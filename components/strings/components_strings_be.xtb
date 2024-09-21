@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">Пераезд і перавозка</translation>
 <translation id="1270502636509132238">Спосаб прыняцця</translation>
 <translation id="1273592791152866347">Адсочванне цаны выключана</translation>
+<translation id="1277711244058668002">Кнопка "Падабаецца": націсніце Увод, каб адправіць водгук пра тое, што вам спадабалася гэта прапанова</translation>
 <translation id="127777513559587977">Тэлевізійныя ток-шоу</translation>
 <translation id="1281476433249504884">Укладчык 1</translation>
 <translation id="1281536351321444151">Каб у наступны раз увесці гэты IBAN аўтаматычна, захавайце яго ва ўліковы запіс Google</translation>
@@ -464,6 +465,7 @@
 <translation id="1812527064848182527">альбомная</translation>
 <translation id="1812975699435941848">Адукацыя ў сферы аховы здароўя і медыцынская падрыхтоўка</translation>
 <translation id="1816436748874040213">Запытваць дазвол на змяненне маштабу і прагортванне змесціва абагуленых укладак</translation>
+<translation id="1816707915923025275">Для пошуку ў гісторыі прагляду сайтаў увядзіце @history</translation>
 <translation id="1817364650920811003">Роля: парада Chrome. Метка спецыяльных магчымасцей: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Разблакіраваць</translation>
 <translation id="1818585559878922121">Дакументальныя фільмы</translation>
@@ -669,6 +671,7 @@
 <translation id="2188375229972301266">Некалькі дзірак знізу</translation>
 <translation id="2194856509914051091">Інфармацыя для разгляду</translation>
 <translation id="2197398642355049178">Вашы тэмы</translation>
+<translation id="2200678913752027654">Кнопка "Не падабаецца": націсніце Увод, каб адкрыць форму адпраўкі падрабязнага водгуку пра тое, чаму вам не спадабалася гэта прапанова</translation>
 <translation id="2202627062836089804">адваротным баку карткі</translation>
 <translation id="2204482073374652408">Абнаўленне завершана!</translation>
 <translation id="2207770355672215546">Заўсёды дазваляць з любой карткай</translation>
@@ -1136,6 +1139,7 @@
 <translation id="3111155154146792758">Каміны і печы</translation>
 <translation id="3112892588078695695">Нумар тэлефона: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">Трэцяя змена</translation>
+<translation id="3113930177999394798">Для пошуку ў гісторыі прагляду сайтаў з дапамогай штучнага інтэлекту ўвядзіце @history</translation>
 <translation id="3114040155724590991">Ідзе абнаўленне сістэмы Android
     Запуск праграмы можа займаць больш часу, чым звычайна.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Спампаваць канфідэнцыяльны файл?}one{Спампаваць канфідэнцыяльныя файлы?}few{Спампаваць канфідэнцыяльныя файлы?}many{Спампаваць канфідэнцыяльныя файлы?}other{Спампаваць канфідэнцыяльныя файлы?}}</translation>
@@ -1310,6 +1314,7 @@
 <translation id="3414275587143250384">Размеркаваныя і воблачныя вылічэнні</translation>
 <translation id="3414952576877147120">Памер:</translation>
 <translation id="341513675006332771">Кнопка гульні "Chrome Dino". Каб пагуляць у "Прабежку з дыназаўрам" у Chrome, націсніце яе.</translation>
+<translation id="3415471717466570460">Для паляпшэння гэтай функцыі пошукавыя запыты, найлепшыя супадзенні і змесціва іх старонак адпраўляюцца ў Google і могуць праглядацца спецыялістамі. Гэта эксперыментальная функцыя, якая не заўсёды працуе бездакорна.</translation>
 <translation id="3422248202833853650">Каб вызваліць памяць, выйдзіце з іншых праграм.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> зараз недаступны.</translation>
 <translation id="3423742043356668186">Указваецца сістэмай</translation>
@@ -1742,6 +1747,7 @@
 <translation id="4177501066905053472">Тэмы рэкламы</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Перастаць адсочваць цану</translation>
+<translation id="4190446002599583608">Пошук у гісторыі з дапамогай штучнага інтэлекту</translation>
 <translation id="4191334393248735295">Даўжыня</translation>
 <translation id="4195459680867822611">Кнопка "Паказаць парады адносна Chrome". Каб азнаёміцца з функцыямі браўзера Chrome, націсніце яе.</translation>
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
@@ -1785,6 +1791,7 @@
 <translation id="4235360514405112390">Сапраўдны</translation>
 <translation id="4239799716689808527">Этыкетачны матэрыял</translation>
 <translation id="4242380780309416996">Канверт са шчыльнага матэрыялу</translation>
+<translation id="4242981939686657948">Каб карыстацца больш эфектыўным пошукам па гісторыі прагляду сайтаў, уключыце</translation>
 <translation id="4244926541863471678">Плёнка</translation>
 <translation id="4246517972543675653">Навучанне за мяжой</translation>
 <translation id="4250431568374086873">Ваша падключэнне да гэтага сайта не цалкам бяспечнае</translation>
@@ -2649,6 +2656,7 @@
 <translation id="5887687176710214216">Апошняе наведванне: учора</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="5895187275912066135">Выдадзены</translation>
+<translation id="5898767305816764989">Кнопка "Падабаецца": націсніце Увод, каб адправіць водгук пра тое, што вам спадабалася, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Жоўты</translation>
 <translation id="5903264686717710770">Назва:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (сінхранізавана)</translation>
@@ -3400,6 +3408,7 @@
 Падрабязныя звесткі:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Паведамленне ад адміністратара: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">Кнопка "Не падабаецца": націсніце Увод, каб адкрыць форму адпраўкі падрабязнага водгуку пра тое, што вам не спадабалася, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Задні латок</translation>
 <translation id="7257453341537973799">Планаванне кар’еры і звязаныя рэсурсы</translation>
 <translation id="725866823122871198">Памылка прыватнага падключэння да дамена <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />: дата і час на вашым камп’ютары (<ph name="DATE_AND_TIME" />) няправільныя.</translation>
@@ -4087,7 +4096,6 @@
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="8474910779563686872">Паказаць падрабязныя звесткі пра распрацоўшчыка</translation>
 <translation id="8479754468255770962">Скаба знізу злева</translation>
-<translation id="8479926481822108747">кіраваць параметрамі абароны ад адсочвання</translation>
 <translation id="8483229036294884935">Гэты адрас будзе выдалены з вашага Уліковага запісу Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8488350697529856933">Аб’ект прымянення</translation>
 <translation id="8490137692873530638">Укладчык 10</translation>

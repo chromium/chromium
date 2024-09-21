@@ -7772,6 +7772,7 @@
 <translation id="6670983860904543332">Автоматты жаңартулар сізге соңғы мүмкіндіктерді қамтамасыз етеді. Соңғы жаңартулардың негізгі мәліметтерін зерттеңіз.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{мекенжай}other{# мекенжай}}</translation>
 <translation id="6671497123040790595">Басқару құралы <ph name="MANAGER" /> арқылы реттелуде</translation>
+<translation id="6672697278890207089">Құпия фразаңызды енгізу</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> қосу</translation>
 <translation id="6673353404516008367">Инкогнито режимі <ph name="BEGIN_LINK" />браузерді қолдану әрекетіңізді<ph name="END_LINK" /> құрылғыңызды пайдаланатын басқа адамдардан құпия сақтайды.</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>

@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">Көчүү жана көчүрүү</translation>
 <translation id="1270502636509132238">Алып кетүү ыкмасы</translation>
 <translation id="1273592791152866347">Баага көз салуу өчүк</translation>
+<translation id="1277711244058668002">Жакты баскычы. Бул сунушту эмне үчүн жактырганыңыз тууралуу пикир билдирүү үчүн Enter баскычын басыңыз</translation>
 <translation id="127777513559587977">Сыналгыдагы ток шоулар</translation>
 <translation id="1281476433249504884">6-төшөгүч</translation>
 <translation id="1281536351321444151">Кийинки жолу бул IBAN кодун автотолтуруу үчүн аны Google аккаунтуңузга сактап коюңуз</translation>
@@ -464,6 +465,7 @@
 <translation id="1812527064848182527">туурасынан</translation>
 <translation id="1812975699435941848">Саламаттыкты сактоо тармагында билим берүү жана медициналык окутуу</translation>
 <translation id="1816436748874040213">Бөлүшүлгөн өтмөктөрдү сыдырып, чоңойтуп/кичирейтүүнү суранса болот</translation>
+<translation id="1816707915923025275">Көрүлгөн вебсайттарды издөө үчүн @history деп териңиз</translation>
 <translation id="1817364650920811003">Роль: Chrome кеңеши. Атайын мүмкүнчүлүктөр энбелгиси: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Бөгөттөн чыгаруу</translation>
 <translation id="1818585559878922121">Даректүү тасмалар</translation>
@@ -669,6 +671,7 @@
 <translation id="2188375229972301266">Төмөнкү жагын бир нече жолу тешүү</translation>
 <translation id="2194856509914051091">Эске ала турган нерселер</translation>
 <translation id="2197398642355049178">Сиздин темаларыңыз</translation>
+<translation id="2200678913752027654">Жаккан жок баскычы. Форманы ачып, бул сунушту эмне үчүн жактырбаганыңыз тууралуу кеңири пикир билдирүү үчүн Enter баскычын басыңыз</translation>
 <translation id="2202627062836089804">картаңыздын аркасы</translation>
 <translation id="2204482073374652408">Жаңыртылды!</translation>
 <translation id="2207770355672215546">Ар дайым уруксат берүү (каалаган карта менен)</translation>
@@ -1135,6 +1138,7 @@
 <translation id="3111155154146792758">Каминдер жана мештер</translation>
 <translation id="3112892588078695695">Телефон номери: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Үчүнчү смена</translation>
+<translation id="3113930177999394798">Көрүлгөн вебсайттарды издөө үчүн @history деп териңиз. ЖИ жардам берет</translation>
 <translation id="3114040155724590991">Android тутуму жаңыртылууда
     Колдонмону иштетүүгө адаттагыдан көбүрөөк убакыт керектелиши мүмкүн.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Купуя файл жүктөлүп алынсынбы?}other{Купуя файлдар жүктөлүп алынсынбы?}}</translation>
@@ -1309,6 +1313,7 @@
 <translation id="3414275587143250384">Дайындарды булутта иштетүү кызматы</translation>
 <translation id="3414952576877147120">Өлчөм:</translation>
 <translation id="341513675006332771">"Chrome Dino оюнун ойноо" баскычы. Dino Run оюнун Chrome'до ойноо үчүн иштетиңиз</translation>
+<translation id="3415471717466570460">Издөген нерселериңиз, дал келгендиктер жана барак мазмуну тууралуу маалымат Google'га жөнөтүлүп, аны түзөтүүчү адамдар бул функцияны жакшыртуу үчүн көрүшү мүмкүн. Бул сынамык функция болгондуктан, ар дайым туура иштебейт.</translation>
 <translation id="3422248202833853650">Эстутумду бошотуу үчүн башка программаларды жаап көрүңүз.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> сайты учурда жеткиликсиз.</translation>
 <translation id="3423742043356668186">Система белгиленди</translation>
@@ -1741,6 +1746,7 @@
 <translation id="4177501066905053472">Жарнамалардын темалары</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Баага көз салууну токтотуу</translation>
+<translation id="4190446002599583608">ЖИ менен таржымалдан издөө</translation>
 <translation id="4191334393248735295">Узундук</translation>
 <translation id="4195459680867822611">"Chrome'догу кеңештерди көрүү" баскычы. Chrome'догу функциялар жөнүндө толук маалымат алуу үчүн иштетиңиз</translation>
 <translation id="4195643157523330669">Жаңы өтмөктө ачуу</translation>
@@ -1784,6 +1790,7 @@
 <translation id="4235360514405112390">Жарактуу</translation>
 <translation id="4239799716689808527">Энбелгилер</translation>
 <translation id="4242380780309416996">Конверт (оор капталган)</translation>
+<translation id="4242981939686657948">Көрүлгөн вебсайттардан жакшылап издөө үчүн төмөнкүнү күйгүзүңүз:</translation>
 <translation id="4244926541863471678">Тасма</translation>
 <translation id="4246517972543675653">Чет өлкөдө окуу</translation>
 <translation id="4250431568374086873">Бул сайтка туташуу толугу менен коопсуз эмес</translation>
@@ -2649,6 +2656,7 @@
 <translation id="5887687176710214216">Кечээ акыркы жолу кирген</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
 <translation id="5895187275912066135">Берилген күнү</translation>
+<translation id="5898767305816764989">Жакты баскычы. Эмне үчүн жактырганыңыз тууралуу пикир билдирүү үчүн Enter баскычын басыңыз, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5903264686717710770">Аталышы:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (шайкештирилген)</translation>
@@ -3400,6 +3408,7 @@
 Кошумча маалымат:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Администраторуңуз мындай дейт: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">Жаккан жок баскычы. Форманы ачып, эмне үчүн жактырбаганыңыз тууралуу кеңири пикир билдирүү үчүн Enter баскычын басыңыз, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Арткы түпкүч</translation>
 <translation id="7257453341537973799">Карьера ресурстары жана пландаштыруу</translation>
 <translation id="725866823122871198">Компьютериңиздин күнү жана убакыты (<ph name="DATE_AND_TIME" />) туура эмес болгондуктан, <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> менен купуя туташуу мүмкүн болбой жатат.</translation>
@@ -4086,7 +4095,6 @@
 <translation id="8473863474539038330">Даректер жана башкалар</translation>
 <translation id="8474910779563686872">Иштеп чыгуучунун чоо-жайын көрүү</translation>
 <translation id="8479754468255770962">Төмөнкү сол жагын илмек менен бекитүү</translation>
-<translation id="8479926481822108747">Көз салуудан коргоо параметрлерин тескөө</translation>
 <translation id="8483229036294884935">Бул дарек <ph name="ACCOUNT" /> Google аккаунтуңуздан өчүрүлөт</translation>
 <translation id="8488350697529856933">Төмөнкүгө колдонулат</translation>
 <translation id="8490137692873530638">10-төшөгүч</translation>

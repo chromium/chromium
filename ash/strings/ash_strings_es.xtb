@@ -642,7 +642,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3291862315280588024">Desplazarse al principio de la palabra anterior</translation>
 <translation id="3294437725009624529">Invitado</translation>
-<translation id="3298690094479023523">Todavía no se ha podido verificar tu PIN o contraseña. Inténtalo de nuevo.</translation>
 <translation id="3300193645498960160">Se te avisará si hablas y el micrófono está silenciado. El audio no saldrá de tu dispositivo.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivos conectados al punto de acceso de <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Se ha cambiado al modo portátil</translation>
@@ -2290,7 +2289,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8847100217801213944">Mostrar temperatura en Fahrenheit</translation>
 <translation id="8849001918648564819">Oculto</translation>
-<translation id="8853703225951107899">Todavía no se ha podido verificar tu PIN o contraseña. Nota: Si has cambiado la contraseña recientemente, utiliza la contraseña anterior. La nueva contraseña se aplicará cuando hayas cerrado la sesión.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controles de privacidad</translation>
 <translation id="8860366331836346216">Añadir eSIM</translation>

@@ -642,7 +642,6 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="3290356915286466215">Sen protección</translation>
 <translation id="3291862315280588024">Móvese ao comezo da palabra anterior</translation>
 <translation id="3294437725009624529">Invitado</translation>
-<translation id="3298690094479023523">Aínda non se puido verificar o teu PIN ou contrasinal. Téntao de novo.</translation>
 <translation id="3300193645498960160">Se falas mentres o dispositivo está silenciado, recibirás unha notificación. O audio non sairá do dispositivo.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivos conectados á zona wifi de <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Cambiouse ao modo de ordenador portátil</translation>
@@ -2290,7 +2289,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8847100217801213944">Mostrar temperatura en Fahrenheit</translation>
 <translation id="8849001918648564819">Oculto</translation>
-<translation id="8853703225951107899">Aínda non se puido verificar o teu PIN ou contrasinal. Nota: Se cambiaches o contrasinal recentemente, utiliza o antigo. O contrasinal novo aplicarase en canto peches sesión.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controis de privacidade</translation>
 <translation id="8860366331836346216">Engadir eSIM</translation>

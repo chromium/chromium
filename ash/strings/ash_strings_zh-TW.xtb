@@ -642,7 +642,6 @@
 <translation id="3290356915286466215">不安全</translation>
 <translation id="3291862315280588024">移至前一個字詞的開頭</translation>
 <translation id="3294437725009624529">訪客</translation>
-<translation id="3298690094479023523">系統仍無法驗證 PIN 碼或密碼，請再試一次。</translation>
 <translation id="3300193645498960160">如果在靜音狀態下說話，系統會傳送通知給你。音訊資料只會儲存在裝置上。</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 部裝置已連線至「<ph name="DEVICE_NAME" />」無線基地台</translation>
 <translation id="3307642347673023554">已切換為筆記型電腦模式</translation>
@@ -2284,7 +2283,6 @@
 <translation id="8845001906332463065">尋求協助</translation>
 <translation id="8847100217801213944">顯示溫度 (以華氏為單位)</translation>
 <translation id="8849001918648564819">隱藏</translation>
-<translation id="8853703225951107899">系統仍然無法驗證你的 PIN 碼或密碼。注意：如果你最近變更了密碼，請使用舊密碼。系統會在你登出帳戶後套用新密碼。</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8858369206579825206">隱私權控制項</translation>
 <translation id="8860366331836346216">新增 eSIM 卡</translation>

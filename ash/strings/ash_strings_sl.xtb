@@ -642,7 +642,6 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3290356915286466215">Ni varno</translation>
 <translation id="3291862315280588024">Premik na začetek prejšnje besede</translation>
 <translation id="3294437725009624529">Gost</translation>
-<translation id="3298690094479023523">Vaše kode PIN ali gesla še vedno ni bilo mogoče preveriti. Poskusite znova.</translation>
 <translation id="3300193645498960160">Prejeli boste obvestilo, če govorite med izklopljenim zvokom. Zvok nikoli ne zapusti naprave.</translation>
 <translation id="3306386552969601301">Z dostopno točko naprave <ph name="DEVICE_NAME" /> je povezanih toliko naprav: <ph name="DEVICECOUNT" /></translation>
 <translation id="3307642347673023554">Preklopljeno v način prenosnika</translation>
@@ -2289,7 +2288,6 @@ Nova namestitev</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
 <translation id="8847100217801213944">Prikaz temperature v stopinjah Fahrenheita</translation>
 <translation id="8849001918648564819">Skrito</translation>
-<translation id="8853703225951107899">Vaše kode PIN ali gesla še vedno ni bilo mogoče preveriti. Opomba: Če ste nedavno spremenili geslo, uporabite staro. Novo geslo bo začelo veljati, ko se odjavite.</translation>
 <translation id="8855885154700222542">Tipka za celozaslonski način</translation>
 <translation id="8858369206579825206">Nastavitve zasebnosti</translation>
 <translation id="8860366331836346216">Dodajanje kartice e-SIM</translation>

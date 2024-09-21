@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">మూవింగ్ &amp; రీలొకేషన్</translation>
 <translation id="1270502636509132238">పికప్ పద్ధతి</translation>
 <translation id="1273592791152866347">ధర ట్రాకింగ్ ఆఫ్‌లో ఉంది</translation>
+<translation id="1277711244058668002">బాగుంది అని తెలియజేసే బటన్, మీకు ఈ సూచన నచ్చిందని ఫీడ్‌బ్యాక్‌ను సమర్పించడానికి ఎంటర్ చేయండి</translation>
 <translation id="127777513559587977">టీవీ టాక్ షోలు</translation>
 <translation id="1281476433249504884">స్టాకర్ 1</translation>
 <translation id="1281536351321444151">తర్వాతసారి ఈ IBANను ఆటోఫిల్ చేయడానికి, దాన్ని మీ Google ఖాతాలో సేవ్ చేయండి</translation>
@@ -459,6 +460,7 @@
 <translation id="1812527064848182527">ల్యాండ్‌స్కేప్‌లో ఉంది</translation>
 <translation id="1812975699435941848">ఆరోగ్య విద్య &amp; వైద్యపరమైన శిక్షణ</translation>
 <translation id="1816436748874040213">షేర్ చేసిన ట్యాబ్‌లను స్క్రోల్ చేయడానికి, జూమ్ చేయడానికి అనుమతి అడగవచ్చు</translation>
+<translation id="1816707915923025275">మీ బ్రౌజింగ్ హిస్టరీని సెర్చ్ చేయడానికి @history అని టైప్ చేయండి</translation>
 <translation id="1817364650920811003">రోల్: Chrome చిట్కా. యాక్సెసిబిలిటీ లేబుల్: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">అన్‌బ్లాక్ చేయండి</translation>
 <translation id="1818585559878922121">డాక్యుమెంటరీ సినిమాలు</translation>
@@ -664,6 +666,7 @@
 <translation id="2188375229972301266">దిగువ భాగంలో అనేక రంధ్రాలు</translation>
 <translation id="2194856509914051091">పరిగణించాల్సిన విషయాలు</translation>
 <translation id="2197398642355049178">మీ టాపిక్‌లు</translation>
+<translation id="2200678913752027654">బాగా లేదు అని తెలియజేసే బటన్, మీకు ఈ సూచన ఎందుకు నచ్చలేదు అనే విషయానికి సంబంధించి వివరణాత్మక ఫీడ్‌బ్యాక్‌ను సమర్పించే ఫారమ్‌ను తెరవడానికి ఎంటర్ చేయండి</translation>
 <translation id="2202627062836089804">మీ కార్డ్ వెనుక వైపు</translation>
 <translation id="2204482073374652408">అప్‌డేట్ చేయడం పూర్తయింది!</translation>
 <translation id="2207770355672215546">ఏదైనా కార్డ్‌తో ఎల్లవేళలా అనుమతించండి</translation>
@@ -1130,6 +1133,7 @@
 <translation id="3111155154146792758">ఫైర్‌ప్లేస్‌లు &amp; స్టవ్‌లు</translation>
 <translation id="3112892588078695695">ఫోన్ నంబర్: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">మూడవ షిఫ్ట్</translation>
+<translation id="3113930177999394798">మీ బ్రౌజింగ్ హిస్టరీని సెర్చ్ చేయడానికి @history అని టైప్ చేయండి, AI టెక్నాలజీల ద్వారా అందించబడుతోంది</translation>
 <translation id="3114040155724590991">Android సిస్టమ్‌ను అప్‌డేట్ చేస్తే
     మీ యాప్‌ను ప్రారంభించడానికి సాధారణంగా కంటే ఎక్కువ సమయం పట్టవచ్చు.</translation>
 <translation id="3115363211799416195">{0,plural, =1{గోప్యమైన ఫైల్‌ను డౌన్‌లోడ్ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను డౌన్‌లోడ్ చేయాలా?}}</translation>
@@ -1304,6 +1308,7 @@
 <translation id="3414275587143250384">డిస్ట్రిబ్యూషన్ &amp; క్లౌడ్ కంప్యూటింగ్</translation>
 <translation id="3414952576877147120">సైజ్‌:</translation>
 <translation id="341513675006332771">'Chrome Dino గేమ్‌ను ఆడండి' బటన్, Chromeలో Dino Run గేమ్‌ను ఆడటానికి దీన్ని యాక్టివేట్ చేయండి</translation>
+<translation id="3415471717466570460">మీ సెర్చ్‌లు, వాటి బెస్ట్ మ్యాచ్‌లు, ఇంకా వాటి పేజీలలోని కంటెంట్ గురించిన సమాచారం Googleకు పంపబడుతుంది, ఈ ఫీచర్‌ను మెరుగుపరచడంలో సహాయపడటానికి రివ్యూవర్‌లు ఈ సమాచారాన్ని రివ్యూ చేయవచ్చు. ఇది ప్రయోగాత్మక ఫీచర్, నూటికి నూరు శాతం సరైనదని చెప్పలేము.</translation>
 <translation id="3422248202833853650">మెమరీని ఖాళీ చేయడానికి ఇతర ప్రోగ్రామ్‌ల నుండి నిష్క్రమించడాన్ని ప్రయత్నించండి.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" />ని ప్రస్తుతం చేరుకోవడం సాధ్యపడదు.</translation>
 <translation id="3423742043356668186">సిస్టమ్ పేర్కొన్నవి</translation>
@@ -1737,6 +1742,7 @@
 <translation id="4177501066905053472">యాడ్ టాపిక్‌లు</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ధరను అన్‌ట్రాక్ చేయండి</translation>
+<translation id="4190446002599583608">AI సహాయంతో హిస్టరీ సెర్చ్</translation>
 <translation id="4191334393248735295">పొడవు</translation>
 <translation id="4195459680867822611">'Chrome చిట్కాలను చూడండి' బటన్, Chrome ఫీచర్‌ల గురించి తెలుసుకోవడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="4195643157523330669">కొత్త ట్యాబ్‌లో తెరువు</translation>
@@ -1780,6 +1786,7 @@
 <translation id="4235360514405112390">చెల్లుతుంది</translation>
 <translation id="4239799716689808527">లేబుల్స్</translation>
 <translation id="4242380780309416996">ఎన్వలప్ (హెవీవెయిట్)</translation>
+<translation id="4242981939686657948">మీ బ్రౌజింగ్ హిస్టరీని సెర్చ్ చేయడానికి మరింత శక్తివంతమైన మార్గం కోసం, ఆన్ చేయండి</translation>
 <translation id="4244926541863471678">ఫిల్మ్</translation>
 <translation id="4246517972543675653">విదేశాల్లో చదవడం</translation>
 <translation id="4250431568374086873">ఈ సైట్‌కు మీ కనెక్షన్ పూర్తి స్థాయిలో సురక్షితంగా లేదు</translation>
@@ -2376,6 +2383,7 @@
 <translation id="5371425731340848620">కార్డ్‌ని అప్‌డేట్ చేయండి</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"మీ గడియారం ఆలస్యంగా నడుస్తోంది" లేదా "మీ గడియారం ముందుగా ఉంది" లేదా "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5379618281582508161">మీ పరికరాలన్నింటిలో ఈ పాస్‌వర్డ్‌ను పొందడానికి, మీ గుర్తింపును వెరిఫై చేయండి</translation>
 <translation id="5380953781541843508">ఆరోహణ క్రమంలో</translation>
 <translation id="5381318171304904246">మీరు 'కొనసాగించండి'ని క్లిక్ చేసినప్పుడు, మీ బ్యాంక్ వెబ్‌సైట్‌కు వెళ్తారు. మీరు వెరిఫై చేసిన తర్వాత, మీ కొనుగోలును పూర్తి చేయడానికి మీరు ఆటోమేటిక్‌గా తిరిగి ఈ పేజీకి వస్తారు.</translation>
 <translation id="5383478552402031184">ఫ్లోరింగ్</translation>
@@ -2645,6 +2653,7 @@
 <translation id="5887687176710214216">చివరిగా నిన్న సందర్శించారు</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
 <translation id="5895187275912066135">జారీ చేయబడినది</translation>
+<translation id="5898767305816764989">బాగుంది అని తెలియజేసే బటన్, మీకు నచ్చిందని ఫీడ్‌బ్యాక్‌ను సమర్పించడానికి ఎంటర్ చేయండి, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">పసుపు</translation>
 <translation id="5903264686717710770">శీర్షిక:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (సింక్ చేయబడింది)</translation>
@@ -3397,6 +3406,7 @@
 అదనపు వివరాలు:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">మీ అడ్మినిస్ట్రేటర్ ఇలా అన్నారు: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">బాగా లేదు అని తెలియజేసే బటన్, మీకు ఎందుకు నచ్చలేదు అనే విషయానికి సంబంధించి వివరణాత్మక ఫీడ్‌బ్యాక్‌ను సమర్పించే ఫారమ్‌ను తెరవడానికి ఎంటర్ చేయండి, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">రియర్ ట్రే</translation>
 <translation id="7257453341537973799">కెరీర్ రిసోర్సులు &amp; ప్లానింగ్</translation>
 <translation id="725866823122871198">మీ కంప్యూటర్ తేదీ మరియు సమయం (<ph name="DATE_AND_TIME" />) తప్పుగా ఉన్నందున <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />కు ఒక ప్రైవేట్ కనెక్షన్‌ను ఏర్పాటు చేయడం వీలుకాలేదు.</translation>
@@ -4083,7 +4093,6 @@
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
 <translation id="8474910779563686872">డెవలపర్ వివరాలను చూపు</translation>
 <translation id="8479754468255770962">ఎడమవైపు దిగువ భాగంలో స్టేపుల్</translation>
-<translation id="8479926481822108747">మీ ట్రాకింగ్ రక్షణలను మేనేజ్ చేయండి</translation>
 <translation id="8483229036294884935">ఈ అడ్రస్ మీ Google ఖాతా, <ph name="ACCOUNT" /> నుండి తొలగించబడుతుంది</translation>
 <translation id="8488350697529856933">వీటికి వర్తిస్తుంది</translation>
 <translation id="8490137692873530638">స్టాకర్ 10</translation>

@@ -158,6 +158,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1270328905573953738">Mudanzas e traslados</translation>
 <translation id="1270502636509132238">Método de recollida</translation>
 <translation id="1273592791152866347">O seguimento de prezos está desactivado</translation>
+<translation id="1277711244058668002">Botón Gústame. Preme Introducir para enviar comentarios e indicar que che gusta esta suxestión</translation>
 <translation id="127777513559587977">Programas televisivos de debate</translation>
 <translation id="1281476433249504884">Amontoador 1</translation>
 <translation id="1281536351321444151">Para que a próxima vez se autocomplete este IBAN, gárdao na túa conta de Google</translation>
@@ -464,6 +465,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1812527064848182527">horizontal</translation>
 <translation id="1812975699435941848">Educación sanitaria e formación médica</translation>
 <translation id="1816436748874040213">Pode pedir permiso para desprazarse polas pestanas compartidas e facer zoom</translation>
+<translation id="1816707915923025275">Escribe @historial para facer buscas no teu historial de navegación</translation>
 <translation id="1817364650920811003">Función: Consello de Chrome. Etiqueta de accesibilidade: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Desbloquear</translation>
 <translation id="1818585559878922121">Documentais</translation>
@@ -669,6 +671,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2188375229972301266">Varias perforacións na parte inferior</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2197398642355049178">Os teus temas</translation>
+<translation id="2200678913752027654">Botón Non me gusta. Preme Introducir para abrir un formulario e enviar comentarios detallados sobre o motivo polo que non che gusta esta suxestión</translation>
 <translation id="2202627062836089804">reverso da tarxeta</translation>
 <translation id="2204482073374652408">Rematou a actualización</translation>
 <translation id="2207770355672215546">Permitir sempre con calquera tarxeta</translation>
@@ -1135,6 +1138,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3111155154146792758">Chemineas e estufas</translation>
 <translation id="3112892588078695695">Número de teléfono: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Terceira quenda</translation>
+<translation id="3113930177999394798">Escribe @historial para facer buscas no teu historial de navegación grazas á tecnoloxía de IA</translation>
 <translation id="3114040155724590991">Actualizando sistema Android
     É posible que se tarde máis do habitual en iniciar a aplicación.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Queres descargar o ficheiro confidencial?}other{Queres descargar os ficheiros confidenciais?}}</translation>
@@ -1309,6 +1313,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3414275587143250384">Informática en nube e distribuída</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="341513675006332771">Botón para xogar ao xogo do dinosauro de Chrome. Actívao para xogar a Dino Run en Chrome</translation>
+<translation id="3415471717466570460">As túas buscas, o mellores resultados e o contido das páxinas envíanse a Google. Os membros do equipo de revisión poden ver esa información para mellorar esta función, que é experimental, polo que non sempre acerta.</translation>
 <translation id="3422248202833853650">Proba a saír doutros programas para liberar memoria.</translation>
 <translation id="3422472998109090673">Actualmente non se pode acceder a <ph name="HOST_NAME" />.</translation>
 <translation id="3423742043356668186">Especificado polo sistema</translation>
@@ -1742,6 +1747,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4177501066905053472">Temas dos anuncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Deixar de facer seguimento de prezos</translation>
+<translation id="4190446002599583608">Buscas no historial con tecnoloxía de IA</translation>
 <translation id="4191334393248735295">Lonxitude</translation>
 <translation id="4195459680867822611">Botón para ver consellos de Chrome. Actívao para obter máis información sobre as funcións de Chrome</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
@@ -1785,6 +1791,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4239799716689808527">Etiquetas</translation>
 <translation id="4242380780309416996">Sobre (alta gramaxe)</translation>
+<translation id="4242981939686657948">Para desfrutar dunha maneira máis potente de facer buscas no historial de navegación, activa</translation>
 <translation id="4244926541863471678">Filme</translation>
 <translation id="4246517972543675653">Estudar no estranxeiro</translation>
 <translation id="4250431568374086873">A túa conexión a este sitio non é completamente segura</translation>
@@ -2650,6 +2657,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5887687176710214216">Visitouse onte por última vez</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido o</translation>
+<translation id="5898767305816764989">Botón Gústame. Preme Introducir para enviar comentarios e indicar que che gusta o seguinte: <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
@@ -2877,7 +2885,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="629730747756840877">Conta</translation>
 <translation id="6298456705131259420">Afecta aos sitios incluídos aquí. Ao inserir “[*.]” antes dun nome de dominio, créase unha excepción para todo o dominio. Por exemplo, se engades [*.]google.com, as cookies de terceiros tamén poderán estar activas en mail.google.com, xa que forma parte de google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{O dispositivo reiniciarase agora}=1{O dispositivo reiniciarase en 1 segundo}other{O dispositivo reiniciarase en # segundos}}</translation>
-<translation id="6301104306974789820">Obter notificacións de seguimento do prezo</translation>
+<translation id="6301104306974789820">Obter notificacións de seguimento de prezos</translation>
 <translation id="6302546952464230349">Mostrar os detalles do permiso de <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Software multimedia</translation>
 <translation id="6305205051461490394">Non se pode acceder a <ph name="URL" />.</translation>
@@ -3401,6 +3409,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 Detalles adicionais:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">O teu administrador di o seguinte: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">Botón Non me gusta. Preme Introducir para abrir un formulario e enviar comentarios detallados sobre o motivo polo que non che gusta o seguinte: <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Bandexa traseira</translation>
 <translation id="7257453341537973799">Planificación e recursos profesionais</translation>
 <translation id="725866823122871198">Non se pode establecer unha conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque a data e a hora do ordenador (<ph name="DATE_AND_TIME" />) non son correctas.</translation>
@@ -4087,7 +4096,6 @@ Detalles adicionais:
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474910779563686872">Mostrar detalles do programador</translation>
 <translation id="8479754468255770962">Grampa na parte inferior esquerda</translation>
-<translation id="8479926481822108747">xestionar as proteccións contra o seguimento</translation>
 <translation id="8483229036294884935">Este enderezo eliminarase da túa Conta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8488350697529856933">Aplícase a</translation>
 <translation id="8490137692873530638">Amontoador 10</translation>

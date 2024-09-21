@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">Преместване и преселване</translation>
 <translation id="1270502636509132238">Начин на вземане</translation>
 <translation id="1273592791152866347">Проследяването на цената е изключено</translation>
+<translation id="1277711244058668002">Бутон „Харесва ми“. Натиснете Enter, за да изпратите отзиви, че харесвате това предложение</translation>
 <translation id="127777513559587977">Телевизионни дискусионни предавания</translation>
 <translation id="1281476433249504884">Стакер 1</translation>
 <translation id="1281536351321444151">За да се попълни автоматично този IBAN следващия път, запазете го в профила си в Google</translation>
@@ -464,6 +465,7 @@
 <translation id="1812527064848182527">хоризонтална ориентация</translation>
 <translation id="1812975699435941848">Здравно образование и медицинско обучение</translation>
 <translation id="1816436748874040213">Може да поиска разрешение да превърта и променя мащаба на споделените раздели</translation>
+<translation id="1816707915923025275">Въведете @history, за да търсите в историята си на сърфиране</translation>
 <translation id="1817364650920811003">Роля: Съвет за Chrome. Етикет за достъпност: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Отблокиране</translation>
 <translation id="1818585559878922121">Документални филми</translation>
@@ -669,6 +671,7 @@
 <translation id="2188375229972301266">Няколко перфорации в долната част</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
 <translation id="2197398642355049178">Вашите теми</translation>
+<translation id="2200678913752027654">Бутон „Не ми харесва“. Натиснете Enter, за да отворите формуляр за изпращане на подробни отзиви за причината, поради която не харесвате това предложение</translation>
 <translation id="2202627062836089804">задната страна на картата ви</translation>
 <translation id="2204482073374652408">Актуализирането завърши!</translation>
 <translation id="2207770355672215546">Разрешаване винаги с която и да е карта</translation>
@@ -1135,6 +1138,7 @@
 <translation id="3111155154146792758">Камини и отоплителни печки</translation>
 <translation id="3112892588078695695">Телефонен номер: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Трета смяна</translation>
+<translation id="3113930177999394798">Въведете @history, за да търсите в историята си на сърфиране (базирано на AI)</translation>
 <translation id="3114040155724590991">Системата Android се актуализира
 Стартирането на приложението ви може да отнеме повече време от обикновено.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Да се изтегли ли поверителният файл?}other{Да се изтеглят ли поверителните файлове?}}</translation>
@@ -1309,6 +1313,7 @@
 <translation id="3414275587143250384">Разпределени изчисления и изчисления в облака</translation>
 <translation id="3414952576877147120">Размер:</translation>
 <translation id="341513675006332771">Бутон за стартиране на играта с динозавъра в Chrome. Активирайте, за да играете</translation>
+<translation id="3415471717466570460">Търсенията ви, най-добрите съответствия и съдържанието на страниците се изпращат до Google и може да бъдат видени от проверяващи лица с цел подобряване на тази функция. Това е експериментална функция и понякога греши.</translation>
 <translation id="3422248202833853650">Затворете другите програми, за да освободите памет.</translation>
 <translation id="3422472998109090673">Понастоящем няма достъп до <ph name="HOST_NAME" />.</translation>
 <translation id="3423742043356668186">Дефинирано от системата</translation>
@@ -1742,6 +1747,7 @@
 <translation id="4177501066905053472">Рекламни теми</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> – <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Спиране на проследяването на цената</translation>
+<translation id="4190446002599583608">Търсене в историята, базирано на AI</translation>
 <translation id="4191334393248735295">Продължителност</translation>
 <translation id="4195459680867822611">Бутон за преглед на съветите за Chrome. Активирайте, за да научите повече за функциите на браузъра</translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
@@ -1785,6 +1791,7 @@
 <translation id="4235360514405112390">Валиден сертификат</translation>
 <translation id="4239799716689808527">Етикети</translation>
 <translation id="4242380780309416996">Плик (тежка хартия)</translation>
+<translation id="4242981939686657948">За по-мощен начин за търсене в историята на сърфирането включете</translation>
 <translation id="4244926541863471678">Филмово покритие</translation>
 <translation id="4246517972543675653">Образование в чужбина</translation>
 <translation id="4250431568374086873">Връзката ви с този сайт не е напълно защитена</translation>
@@ -2650,6 +2657,7 @@
 <translation id="5887687176710214216">Последно посещение: вчера</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5895187275912066135">Издаден на</translation>
+<translation id="5898767305816764989">Бутон „Харесва ми“. Натиснете Enter, за да изпратите отзиви, че харесвате това, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Жълто</translation>
 <translation id="5903264686717710770">Заглавие:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхронизирано)</translation>
@@ -3402,6 +3410,7 @@
 Допълнителни подробности:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Съобщение от администратора ви: „<ph name="CUSTOM_MESSAGE" />“</translation>
+<translation id="7255540419660272073">Бутон „Не ми харесва“. Натиснете Enter, за да отворите формуляр за изпращане на подробни отзиви за причината, поради която не харесвате това, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Задна тава</translation>
 <translation id="7257453341537973799">Кариерно планиране и ресурси</translation>
 <translation id="725866823122871198">Не може да се установи частна връзка с/ъс <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, тъй като датата и часът на компютъра ви (<ph name="DATE_AND_TIME" />) са неправилни.</translation>
@@ -4088,7 +4097,6 @@
 <translation id="8473863474539038330">Адреси и др.</translation>
 <translation id="8474910779563686872">Показване на подробностите за програмисти</translation>
 <translation id="8479754468255770962">Телбодиране долу вляво</translation>
-<translation id="8479926481822108747">управлявате функциите за защита от проследяване</translation>
 <translation id="8483229036294884935">Този адрес ще бъде изтрит от профила ви в Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8488350697529856933">Прилага се към</translation>
 <translation id="8490137692873530638">Стакер 10</translation>

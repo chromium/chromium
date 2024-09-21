@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">सामान इधर-उधर ले जाने और जगहें बदलने की सेवाएं</translation>
 <translation id="1270502636509132238">पिकअप का तरीका</translation>
 <translation id="1273592791152866347">कीमत को ट्रैक करने की सुविधा बंद है</translation>
+<translation id="1277711244058668002">'पसंद है' बटन. आपको यह सुझाव पसंद आया, इस बारे में जानकारी देने के लिए Enter दबाएं</translation>
 <translation id="127777513559587977">टीवी टॉक शो</translation>
 <translation id="1281476433249504884">स्टैकर 1</translation>
 <translation id="1281536351321444151">इस IBAN की जानकारी को अपने Google खाते में सेव करें, ताकि अगली बार इसे ऑटोमैटिक भरा जा सके</translation>
@@ -465,6 +466,7 @@
 <translation id="1812527064848182527">लैंडस्केप</translation>
 <translation id="1812975699435941848">स्वास्थ्य शिक्षा और मेडिकल ट्रेनिंग</translation>
 <translation id="1816436748874040213">साइट को शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति का अनुरोध करें</translation>
+<translation id="1816707915923025275">अपना ब्राउज़िंग इतिहास खोजने के लिए, @history टाइप करें</translation>
 <translation id="1817364650920811003">भूमिका: Chrome से जुड़ी सलाह. सुलभता का लेबल: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">अनब्लॉक करें</translation>
 <translation id="1818585559878922121">डॉक्यूमेंट्री फ़िल्में</translation>
@@ -670,6 +672,7 @@
 <translation id="2188375229972301266">नीचे की ओर एक से ज़्यादा पंच</translation>
 <translation id="2194856509914051091">इन बातों का ध्यान रखें</translation>
 <translation id="2197398642355049178">आपकी पसंद के विषय</translation>
+<translation id="2200678913752027654">'नापसंद' बटन. आपको यह सुझाव क्यों पसंद नहीं आया, इस बारे में ज़्यादा जानकारी देने के लिए फ़ॉर्म सबमिट करें. इस फ़ॉर्म को खोलने के लिए, Enter दबाएं</translation>
 <translation id="2202627062836089804">अपने कार्ड के पिछले हिस्से</translation>
 <translation id="2204482073374652408">अपडेट पूरा हुआ!</translation>
 <translation id="2207770355672215546">हमेशा इस्तेमाल की अनुमति दें, चाहे कार्ड कोई भी हो</translation>
@@ -1136,6 +1139,7 @@
 <translation id="3111155154146792758">अंगीठी और स्टोव</translation>
 <translation id="3112892588078695695">फ़ोन नंबर: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">तीसरी शिफ़्ट</translation>
+<translation id="3113930177999394798">एआई का इस्तेमाल करके, अपना ब्राउज़िंग इतिहास खोजने के लिए, @history टाइप करें</translation>
 <translation id="3114040155724590991">Android सिस्टम अपडेट हो रहा है
     आपके ऐप्लिकेशन को चालू करने में सामान्य से ज़्यादा समय लग सकता है.</translation>
 <translation id="3115363211799416195">{0,plural, =1{क्या आपको गोपनीय फ़ाइल डाउनलोड करनी है?}one{क्या आपको गोपनीय फ़ाइल डाउनलोड करनी है?}other{क्या आपको गोपनीय फ़ाइलें डाउनलोड करनी हैं?}}</translation>
@@ -1309,6 +1313,7 @@
 <translation id="3414275587143250384">डिस्ट्रिब्यूटेड और क्लाउड कंप्यूटिंग</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="341513675006332771">'Chrome Dino गेम खेलें' बटन, Chrome में Dino Run गेम खेलने के लिए इसे चालू करें</translation>
+<translation id="3415471717466570460">आपकी खोजों, उनसे सबसे ज़्यादा मेल खाने वाले नतीजों, और उनके पेज पर मौजूद कॉन्टेंट की जानकारी को Google को भेजा जाता है. समीक्षा करने वाले लोग इस जानकारी की समीक्षा कर सकते हैं, ताकि यह सुविधा बेहतर बनाई जा सके. यह सुविधा, एक्सपेरिमेंट के तौर पर उपलब्ध है. ऐसा ज़रूरी नहीं है कि यह सुविधा हमेशा सही तरीके से काम करे.</translation>
 <translation id="3422248202833853650">जगह खाली करने के लिए दूसरे प्रोग्राम से बाहर निकलकर देखें.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> वर्तमान में पहुंच योग्य नहीं है.</translation>
 <translation id="3423742043356668186">दिए गए सिस्टम के लिए</translation>
@@ -1742,6 +1747,7 @@
 <translation id="4177501066905053472">विज्ञापन के विषय</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">कीमत ट्रैक न करें</translation>
+<translation id="4190446002599583608">एआई की मदद से, इतिहास खोजने की सुविधा</translation>
 <translation id="4191334393248735295">अवधि</translation>
 <translation id="4195459680867822611">'Chrome से जुड़ी सलाह देखें' बटन, Chrome की सुविधाओं के बारे में जानने के लिए इसे चालू करें</translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
@@ -1785,6 +1791,7 @@
 <translation id="4235360514405112390">मान्य</translation>
 <translation id="4239799716689808527">लेबल</translation>
 <translation id="4242380780309416996">एन्वेलप (हेवीवेट)</translation>
+<translation id="4242981939686657948">अपना ब्राउज़िंग इतिहास बेहतर तरीके से खोजने के लिए, चालू करें</translation>
 <translation id="4244926541863471678">फ़िल्म</translation>
 <translation id="4246517972543675653">विदेश में पढ़ाई</translation>
 <translation id="4250431568374086873">इस साइट से आपका कनेक्शन पूरी तरह से सुरक्षित नहीं है</translation>
@@ -2650,6 +2657,7 @@
 <translation id="5887687176710214216">साइट पर पिछली बार कल गए</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
 <translation id="5895187275912066135">जारी करने की तारीख</translation>
+<translation id="5898767305816764989">'पसंद है' बटन. आपको <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> पसंद आया, इस बारे में जानकारी देने के लिए Enter दबाएं</translation>
 <translation id="5901630391730855834">पीला</translation>
 <translation id="5903264686717710770">टाइटल :</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक किया गया)</translation>
@@ -3402,6 +3410,7 @@
 ज़्यादा जानकारी:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">आपके एडमिन के मुताबिक: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">'नापसंद' बटन. आपको <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> क्यों पसंद नहीं आया, इस बारे में ज़्यादा जानकारी देने के लिए फ़ॉर्म सबमिट करें. इस फ़ॉर्म को खोलने के लिए, Enter दबाएं</translation>
 <translation id="7256634549594854023">पीछे वाली ट्रे</translation>
 <translation id="7257453341537973799">करियर से जुड़े संसाधन और योजना बनाना</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> से एक निजी कनेक्‍शन स्‍थापित नहीं किया जा सकता क्‍योंकि आपके कंप्‍यूटर का तारीख और समय (<ph name="DATE_AND_TIME" />) गलत है.</translation>
@@ -4088,7 +4097,6 @@
 <translation id="8473863474539038330">पते वगैरह</translation>
 <translation id="8474910779563686872">डेवलपर की जानकारी दिखाएं</translation>
 <translation id="8479754468255770962">नीचे बाईं ओर स्टेपल</translation>
-<translation id="8479926481822108747">ट्रैकिंग सुरक्षा की सुविधा को मैनेज करें</translation>
 <translation id="8483229036294884935">आपके Google खाते, <ph name="ACCOUNT" /> से यह पता मिटा दिया जाएगा</translation>
 <translation id="8488350697529856933">इस पर लागू होती है</translation>
 <translation id="8490137692873530638">स्टैकर 10</translation>

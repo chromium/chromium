@@ -642,7 +642,6 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="3290356915286466215">Nije osigurano</translation>
 <translation id="3291862315280588024">Premještanje na početak prethodne riječi</translation>
 <translation id="3294437725009624529">Gost</translation>
-<translation id="3298690094479023523">Potvrđivanje PIN-a ili lozinke i dalje nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="3300193645498960160">Dobit ćete obavještenje ako govorite dok je isključen zvuk. Zvuk ne napušta vaš uređaj.</translation>
 <translation id="3306386552969601301">Više uređaja (ukupno <ph name="DEVICECOUNT" />) je povezano s pristupnom tačkom uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Promijenjeno u način rada za laptop</translation>
@@ -2289,7 +2288,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8845001906332463065">Potražite pomoć</translation>
 <translation id="8847100217801213944">Prikazuj temperaturu u stepenima Fahrenheita</translation>
 <translation id="8849001918648564819">Skriveno</translation>
-<translation id="8853703225951107899">Potvrđivanje PIN-a ili lozinke i dalje nije uspjelo. Napomena: Ako ste nedavno promijenili lozinku, koristite staru. Nova lozinka će se primijeniti nakon što se odjavite.</translation>
 <translation id="8855885154700222542">Tipka za prikaz preko cijelog ekrana</translation>
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
 <translation id="8860366331836346216">Dodajte eSIM</translation>

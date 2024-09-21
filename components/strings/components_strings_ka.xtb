@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">საცხოვრებელი და სამუშაო ადგილის შეცვლა</translation>
 <translation id="1270502636509132238">წაღების მეთოდი</translation>
 <translation id="1273592791152866347">ფასისთვის თვალის მიდევნება გამოირთო</translation>
+<translation id="1277711244058668002">ზევით აწეული ცერის ღილაკი; დააჭირეთ იმის შესახებ გამოხმაურებისთვის, რომ მოგწონთ ეს შემოთავაზება</translation>
 <translation id="127777513559587977">სატელევიზიო თოქ-შოუები</translation>
 <translation id="1281476433249504884">სტეკერი 1</translation>
 <translation id="1281536351321444151">მომავალში ამ IBAN-ის ავტომატურად შესავსებად შეინახეთ ის თქვენს Google ანგარიშში</translation>
@@ -464,6 +465,7 @@
 <translation id="1812527064848182527">პეიზაჟი</translation>
 <translation id="1812975699435941848">სანიტარიული განათლება და სამედიცინო მომზადება</translation>
 <translation id="1816436748874040213">შეუძლია გაზიარებულ ჩანართებში გადაადგილებისა და ,მათი მასშტაბირების თხოვნა</translation>
+<translation id="1816707915923025275">აკრიფეთ @history დათვალიერების ისტორიის მოსაძიებლად</translation>
 <translation id="1817364650920811003">როლი: Chrome-ის მინიშნება. ხელმისაწვდომობის დონე: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">განბლოკვა</translation>
 <translation id="1818585559878922121">დოკუმენტური ფილმები</translation>
@@ -669,6 +671,7 @@
 <translation id="2188375229972301266">მრავალად გახვრეტა ქვემოთ</translation>
 <translation id="2194856509914051091">გასათვალისწინებელი საკითხები</translation>
 <translation id="2197398642355049178">თქვენი თემები</translation>
+<translation id="2200678913752027654">ქვემოთ დაწეული ცერის ღილაკი; დააჭირეთ შეყვანას, რომ გახსნათ ფორმა იმის შესახებ დეტალურად გამოხმაურებისთვის, თუ რატომ არ მოგწონთ ეს შემოთავაზება</translation>
 <translation id="2202627062836089804">თქვენი ბარათის უკანა ნაწილზე</translation>
 <translation id="2204482073374652408">განახლება დასრულდა!</translation>
 <translation id="2207770355672215546">ყოველთვის დაშვება, ნებისმიერი ბარათის შემთხვევაში</translation>
@@ -1135,6 +1138,7 @@
 <translation id="3111155154146792758">ბუხრები და ქურები</translation>
 <translation id="3112892588078695695">ტელეფონის ნომერი: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">მესამე წანაცვლება</translation>
+<translation id="3113930177999394798">აკრიფეთ @history დათვალიერების ისტორიის მოსაძიებლად, ხელოვნური ინტელექტის დახმარებით</translation>
 <translation id="3114040155724590991">მიმდინარეობს Android-ის სისტემის განახლება
     თქვენი აპის გაშვებას, შესაძლოა, ჩვეულებრივზე მეტი დრო დასჭირდეს.</translation>
 <translation id="3115363211799416195">{0,plural, =1{გსურთ კონფიდენციალური ფაილის ჩამოტვირთვა?}other{გსურთ კონფიდენციალური ფაილების ჩამოტვირთვა?}}</translation>
@@ -1309,6 +1313,7 @@
 <translation id="3414275587143250384">გამოთვლა მონაცემების გადანაწილებისა და ინტერნეტრესურსების დახმარებით</translation>
 <translation id="3414952576877147120">ზომა:</translation>
 <translation id="341513675006332771">Chrome დინოზავრის თამაშის ღილაკი, Chrome-ში მორბენალი დინოზავრის თამაშის სათამაშოდ გაააქტიურეთ ის</translation>
+<translation id="3415471717466570460">თქვენი ძიებები, საუკეთესო შესატყვისები და მათი გვერდების კონტენტი, ამ ფუნქციის გაუმჯობესების მიზნით, გაეგზავნება Google-ს და შეიძლება ისინი ნახონ ადამიანმა მიმომხილველებმა. ეს ექსპერიმენტული საშუალებაა და ყოველთვის არ იქნება ზუსტი.</translation>
 <translation id="3422248202833853650">მეხსიერების გამოსათავისუფლებლად ცადეთ სხვა პროგრამებიდან გამოსვლა.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> ამჟამად მიუწვდომელია.</translation>
 <translation id="3423742043356668186">სისტემის მიერ მითითებული</translation>
@@ -1742,6 +1747,7 @@
 <translation id="4177501066905053472">სარეკლამო თემები</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ფასისთვის თვალის მიდევნების გაუქმება</translation>
+<translation id="4190446002599583608">ისტორიაში ძიება, შექმნილია AI-ს დახმარებით</translation>
 <translation id="4191334393248735295">სიგრძე</translation>
 <translation id="4195459680867822611">Chrome-ის მინიშნებების ნახვის ღილაკი, Chrome-ის ფუნქციების შესახებ ინფორმაციისთვის გაააქტიურეთ ის</translation>
 <translation id="4195643157523330669">ახალ ჩანართში გახსნა</translation>
@@ -1785,6 +1791,7 @@
 <translation id="4235360514405112390">სწორია</translation>
 <translation id="4239799716689808527">ლეიბლები</translation>
 <translation id="4242380780309416996">კონვერტი (მძიმე)</translation>
+<translation id="4242981939686657948">დათვალიერების ისტორიაში უკეთ ძიებისთვის ჩართეთ</translation>
 <translation id="4244926541863471678">აფსკი</translation>
 <translation id="4246517972543675653">სწავლა საზღვარგარეთ</translation>
 <translation id="4250431568374086873">თქვენი კავშირი ამ საიტთან სრულად დაცული არ არის</translation>
@@ -2651,6 +2658,7 @@
 <translation id="5887687176710214216">ბოლო ვიზიტი იყო გუშინ</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
 <translation id="5895187275912066135">გაცემულია</translation>
+<translation id="5898767305816764989">ზევით აწეული ცერის ღილაკი; დააჭირეთ იმის შესახებ გამოხმაურებისთვის, რაც მოგწონთ, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">ყვითელი</translation>
 <translation id="5903264686717710770">სათაური:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (სინქრონიზებული)</translation>
@@ -3402,6 +3410,7 @@
 დამატებითი დეტალები:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">თქვენი ადმინისტრატორის შეტყობინება: „<ph name="CUSTOM_MESSAGE" />“</translation>
+<translation id="7255540419660272073">ქვემოთ დაწეული ცერის ღილაკი; დააჭირეთ შეყვანას, რომ გახსნათ ფორმა იმის შესახებ დეტალურად გამოხმაურებისთვის, რაც არ მოგწონთ, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">უკანა ლანგარი</translation>
 <translation id="7257453341537973799">კარიერული რესურსები და დაგეგმვა</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-თან პირადი კავშირის დამყარება შეუძლებელია, რადგან თქვენი კომპიუტერის თარიღი და დრო (<ph name="DATE_AND_TIME" />) არასწორია.</translation>
@@ -4088,7 +4097,6 @@
 <translation id="8473863474539038330">მისამართები და სხვა</translation>
 <translation id="8474910779563686872">დეველოპერის დეტალების ჩვენება</translation>
 <translation id="8479754468255770962">ქვედა მარცხენა ნაწილის დასტეპლერება</translation>
-<translation id="8479926481822108747">თვალის დევნებისგან თქვენი დაცვის საშუალებების მართვა</translation>
 <translation id="8483229036294884935">ეს მისამართი წაიშლება თქვენი Google ანგარიშიდან (<ph name="ACCOUNT" />)</translation>
 <translation id="8488350697529856933">გამოიყენება</translation>
 <translation id="8490137692873530638">სტეკერი 10</translation>

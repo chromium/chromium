@@ -7783,6 +7783,7 @@
 <translation id="6670983860904543332">ავტომატური განახლებები ნიშნავს, რომ ყოველთვის უახლესი ფუნქციები გექნებათ. გაეცანით მნიშვნელოვან სიახლეებს ბოლოდროინდელ განახლებებში.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{მისამართი}other{# მისამართი}}</translation>
 <translation id="6671497123040790595">მიმდინარეობს <ph name="MANAGER" />-ის მიერ მართვის დაყენება</translation>
+<translation id="6672697278890207089">შეიყვანეთ თქვენი საიდუმლო ფრაზა</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" />-ის დამატება</translation>
 <translation id="6673353404516008367">ინკოგნიტო რეჟიმი <ph name="BEGIN_LINK" />უზრუნველყოფს თქვენ მიერ ვების დათვალიერების მონაცემების კონფიდენციალურობას<ph name="END_LINK" />, როცა მოწყობილობას რამდენიმე ადამიანი იყენებს</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>

@@ -7767,6 +7767,7 @@
 <translation id="6670983860904543332">自動更新により最新機能が提供されます。最近の主な更新内容をご確認ください。</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{住所}other{# 件の住所}}</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" /> の管理対象として設定する</translation>
+<translation id="6672697278890207089">パスフレーズの入力</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> を追加</translation>
 <translation id="6673353404516008367">シークレット モードを使用すると、デバイスを共有する<ph name="BEGIN_LINK" />他のユーザーに知られずにブラウジング<ph name="END_LINK" />できます</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" />（USB）</translation>

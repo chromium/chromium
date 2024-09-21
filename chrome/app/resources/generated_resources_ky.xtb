@@ -7795,6 +7795,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6670983860904543332">Автоматтык түрдө жаңыртуу менен соңку функциялар иштетилет. Соңку жаңыртууларды карап чыгыңыз.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{дарек}other{# дарек}}</translation>
 <translation id="6671497123040790595">Башкаруу <ph name="MANAGER" /> тарабынан жөндөлүүдө</translation>
+<translation id="6672697278890207089">Сыр сүйлөмүңүздү жазыңыз</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> кошуу</translation>
 <translation id="6673353404516008367">Жашыруун режим ушул түзмөктү колдонгон башка кишилерге <ph name="BEGIN_LINK" />сиз баш баккан сайттарды көрсөтпөйт<ph name="END_LINK" /></translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>

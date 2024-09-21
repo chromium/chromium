@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">Μετακομίσεις και μετεγκαταστάσεις</translation>
 <translation id="1270502636509132238">Τρόπος παραλαβής</translation>
 <translation id="1273592791152866347">Η παρακολούθηση τιμής είναι ανενεργή</translation>
+<translation id="1277711244058668002">Κουμπί Μου αρέσει, πατήστε Enter για να υποβάλετε σχόλια ότι σας αρέσει αυτή η πρόταση</translation>
 <translation id="127777513559587977">Τηλεοπτικά talk show</translation>
 <translation id="1281476433249504884">Μονάδα στοίβαξης 1</translation>
 <translation id="1281536351321444151">Για να συμπληρωθεί αυτόματα αυτό το IBAN την επόμενη φορά, αποθηκεύστε το στον Λογαριασμό σας Google</translation>
@@ -464,6 +465,7 @@
 <translation id="1812527064848182527">οριζόντιος προσανατολισμός</translation>
 <translation id="1812975699435941848">Εκπαίδευση υγείας και Ιατρική εκπαίδευση</translation>
 <translation id="1816436748874040213">Μπορεί να ζητήσει να γίνει κύλιση και εστίαση στις κοινόχρηστες καρτέλες</translation>
+<translation id="1816707915923025275">Πληκτρολογήστε @history για αναζήτηση στο ιστορικό περιήγησης</translation>
 <translation id="1817364650920811003">Ρόλος: Συμβουλή για το Chrome. Ετικέτα προσβασιμότητας: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Κατάργηση αποκλεισμού</translation>
 <translation id="1818585559878922121">Ντοκιμαντέρ</translation>
@@ -669,6 +671,7 @@
 <translation id="2188375229972301266">Πολλαπλό τρύπημα στο κάτω μέρος</translation>
 <translation id="2194856509914051091">Λάβετε υπόψη τα εξής</translation>
 <translation id="2197398642355049178">Τα θέματά σας</translation>
+<translation id="2200678913752027654">Κουμπί Δεν εγκρίνω. Πατήστε Enter για να ανοίξετε μια φόρμα για την υποβολή λεπτομερών σχολίων σχετικά με τους λόγους για τους οποίους δεν σας αρέσει αυτή η πρόταση</translation>
 <translation id="2202627062836089804">πίσω μέρος της κάρτας σας</translation>
 <translation id="2204482073374652408">Η ενημέρωση ολοκληρώθηκε!</translation>
 <translation id="2207770355672215546">Να επιτρέπεται πάντα, με οποιαδήποτε κάρτα</translation>
@@ -1135,6 +1138,7 @@
 <translation id="3111155154146792758">Τζάκια και σόμπες</translation>
 <translation id="3112892588078695695">Αριθμός τηλεφώνου: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Τρίτη βάρδια</translation>
+<translation id="3113930177999394798">Πληκτρολογήστε @history για αναζήτηση στο ιστορικό περιήγησης (Με την υποστήριξη AI)</translation>
 <translation id="3114040155724590991">Γίνεται ενημέρωση του συστήματος Android
     Η εκκίνηση της εφαρμογής σας μπορεί να διαρκέσει περισσότερο από το συνηθισμένο.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Λήψη εμπιστευτικού αρχείου;}other{Λήψη εμπιστευτικών αρχείων;}}</translation>
@@ -1309,6 +1313,7 @@
 <translation id="3414275587143250384">Κατανεμημένα συστήματα πληροφορικής και cloud computing</translation>
 <translation id="3414952576877147120">Μέγεθος:</translation>
 <translation id="341513675006332771">Κουμπί Έναρξη παιχνιδιού Chrome Dino, ενεργοποιήστε το για να παίξετε το παιχνίδι Dino Run στο Chrome</translation>
+<translation id="3415471717466570460">Οι αναζητήσεις σας, οι καλύτερες αντιστοιχίσεις και το περιεχόμενο των σελίδων τους αποστέλλονται στην Google και μπορεί να εξεταστούν από αναθεωρητές, με σκοπό τη βελτίωση αυτής της λειτουργίας. Αυτή είναι μια πειραματική λειτουργία που μπορεί να μην λειτουργεί πάντα σωστά.</translation>
 <translation id="3422248202833853650">Δοκιμάστε να εξέλθετε από τα άλλα προγράμματα για να απελευθερώσετε μνήμη.</translation>
 <translation id="3422472998109090673">Προς το παρόν, δεν είναι δυνατή η πρόσβαση στον κεντρικό υπολογιστή <ph name="HOST_NAME" />.</translation>
 <translation id="3423742043356668186">Προσδιορισμός από το σύστημα</translation>
@@ -1742,6 +1747,7 @@
 <translation id="4177501066905053472">Θέματα διαφημίσεων</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Κατάργηση παρακολούθησης τιμής</translation>
+<translation id="4190446002599583608">Αναζήτηση ιστορικού με υποστήριξη AI</translation>
 <translation id="4191334393248735295">Μήκος</translation>
 <translation id="4195459680867822611">Κουμπί Εμφάνιση συμβουλών Chrome, ενεργοποιήστε το για να μάθετε σχετικά με τις λειτουργίες του Chrome</translation>
 <translation id="4195643157523330669">Άνοιγμα σε νέα καρτέλα</translation>
@@ -1786,6 +1792,7 @@
 <translation id="4235360514405112390">Έγκυρο</translation>
 <translation id="4239799716689808527">Ετικέτες</translation>
 <translation id="4242380780309416996">Φάκελος (Βαρύς)</translation>
+<translation id="4242981939686657948">Για έναν πιο ισχυρό τρόπο αναζήτησης στο ιστορικό περιήγησης, ενεργοποιήστε</translation>
 <translation id="4244926541863471678">Φιλμ</translation>
 <translation id="4246517972543675653">Σπουδές στο εξωτερικό</translation>
 <translation id="4250431568374086873">Η σύνδεσή σας σε αυτόν τον ιστότοπο δεν είναι πλήρως ασφαλής</translation>
@@ -2651,6 +2658,7 @@
 <translation id="5887687176710214216">Τελευταία επίσκεψη χθες</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
 <translation id="5895187275912066135">Εκδόθηκε την</translation>
+<translation id="5898767305816764989">Κουμπί Μου αρέσει, πατήστε Enter για να υποβάλετε σχόλια ότι σας αρέσει, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5903264686717710770">Τίτλος:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (συγχρονισμένο)</translation>
@@ -3403,6 +3411,7 @@
 Πρόσθετες λεπτομέρειες:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Ο διαχειριστής σας λέει: <ph name="CUSTOM_MESSAGE" />.</translation>
+<translation id="7255540419660272073">Κουμπί Δεν εγκρίνω, πατήστε Enter για να ανοίξετε μια φόρμα για την υποβολή λεπτομερών σχολίων σχετικά με τους λόγους για τους οποίους δεν σας αρέσει, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Πίσω τροφοδότης χαρτιού</translation>
 <translation id="7257453341537973799">Πόροι και σχεδιασμός καριέρας</translation>
 <translation id="725866823122871198">Δεν είναι δυνατή η επίτευξη ιδιωτικής σύνδεσης με τον τομέα <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> επειδή η ημερομηνία και η ώρα (<ph name="DATE_AND_TIME" />) του υπολογιστή σας είναι λανθασμένες.</translation>
@@ -4089,7 +4098,6 @@
 <translation id="8473863474539038330">Διευθύνσεις και άλλα</translation>
 <translation id="8474910779563686872">Εμφάνιση λεπτομερειών προγραμματιστή</translation>
 <translation id="8479754468255770962">Συρραφή κάτω αριστερά</translation>
-<translation id="8479926481822108747">διαχειριστείτε τα μέτρα προστασίας από παρακολούθηση</translation>
 <translation id="8483229036294884935">Η συγκεκριμένη διεύθυνση θα διαγραφεί από τον Λογαριασμό σας Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Ισχύει για</translation>
 <translation id="8490137692873530638">Μονάδα στοίβαξης 10</translation>

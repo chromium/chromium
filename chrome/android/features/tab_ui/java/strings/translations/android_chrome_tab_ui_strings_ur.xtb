@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">اسٹور کی معلومات دیکھیں</translation>
 <translation id="6557858706263317126"><ph name="HIDDEN_TABS_COUNT" />+</translation>
 <translation id="6562820390860419811">ٹیب کو بائیں منتقل کریں</translation>
+<translation id="6590332670428149473">اشتراک کردہ ٹیب گروپ <ph name="TITLE_OF_GROUP" />، رنگ <ph name="COLOR_NAME" /> کے لیے ٹیب گروپ کارروائی مینو کھولیں۔</translation>
 <translation id="6615455863669487791">مجھے دکھائیں</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ٹیب تبدیل ہو گیا}other{<ph name="MANY_CHANGED" /> ٹیبز تبدیل ہو گئے}}</translation>
 <translation id="6694634756612002311">اشتراک کا نظم کریں</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{ٹیب گروپ کو <ph name="TABS_COUNT_ONE" /> ٹیب کے ساتھ پھیلائیں۔}other{ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ پھیلائیں۔}}</translation>
 <translation id="9090098097337832354">اس اسٹور سے متعلق معلومات بند ہے</translation>
 <translation id="9111228330448174435">نئے ٹیب گروپ کی تخلیق پر ڈائیلاگ دکھائیں</translation>
+<translation id="9114502155681725011">ٹیب گروپ <ph name="TITLE_OF_GROUP" />، رنگ <ph name="COLOR_NAME" /> کے لیے ٹیب گروپ کارروائی مینو کھولیں۔</translation>
 <translation id="9150694013019234766">اسکرین کے نچلے حصے کے قریب ٹیبز کے اپنے گروپ میں ٹیبز کے درمیان سوئچ کریں</translation>
 <translation id="9169594135889675189">گروپ میں نیا ٹیب شامل کریں</translation>
 <translation id="9216898458513705996">اس آلے پر ٹیبز کھلے رہیں گے لیکن گروپ کو ان تمام آلات سے حذف کر دیا جائے گا جو <ph name="USER_EMAIL" /> میں سائن ان ہیں</translation>

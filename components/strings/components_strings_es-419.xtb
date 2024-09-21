@@ -158,6 +158,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1270328905573953738">Mudanzas y traslados</translation>
 <translation id="1270502636509132238">Método de retiro</translation>
 <translation id="1273592791152866347">Se desactivó el seguimiento de precios</translation>
+<translation id="1277711244058668002">Botón Me gusta, presiona Intro para enviar comentarios sobre que te gusta esta sugerencia</translation>
 <translation id="127777513559587977">Programas de conversación en televisión</translation>
 <translation id="1281476433249504884">Apilador 1</translation>
 <translation id="1281536351321444151">Para autocompletar este IBAN la próxima vez, guárdalo en tu Cuenta de Google</translation>
@@ -464,6 +465,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1812527064848182527">horizontal</translation>
 <translation id="1812975699435941848">Educación en salud y medicina</translation>
 <translation id="1816436748874040213">Puede solicitar permiso para desplazarse y hacer zoom en las pestañas compartidas</translation>
+<translation id="1816707915923025275">Escribe @historial para buscar en tu historial de navegación</translation>
 <translation id="1817364650920811003">Rol: Sugerencia de Chrome. Etiqueta de accesibilidad: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Desbloquear</translation>
 <translation id="1818585559878922121">Documentales</translation>
@@ -669,6 +671,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2188375229972301266">Perforaciones múltiples en la parte inferior</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
 <translation id="2197398642355049178">Tus temas</translation>
+<translation id="2200678913752027654">Botón No me gusta, presiona Intro para abrir un formulario y enviar comentarios detallados sobre los motivos por los que no te gusta esta sugerencia</translation>
 <translation id="2202627062836089804">dorso de tu tarjeta</translation>
 <translation id="2204482073374652408">Finalizó la actualización.</translation>
 <translation id="2207770355672215546">Permitir siempre con cualquier tarjeta</translation>
@@ -1135,6 +1138,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3111155154146792758">Chimeneas y estufas</translation>
 <translation id="3112892588078695695">Número de teléfono: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Tercer turno</translation>
+<translation id="3113930177999394798">Escribe @historial para buscar en tu historial de navegación con la tecnología de IA</translation>
 <translation id="3114040155724590991">Actualizando el sistema Android
     Iniciar la app puede tardar más de lo habitual.</translation>
 <translation id="3115363211799416195">{0,plural, =1{¿Quieres descargar el archivo confidencial?}other{¿Quieres descargar los archivos confidenciales?}}</translation>
@@ -1310,6 +1314,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3414275587143250384">Computación distribuida y en la nube</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="341513675006332771">Botón Jugar al juego del dinosaurio de Chrome: actívalo para jugar el juego del dinosaurio de Chrome</translation>
+<translation id="3415471717466570460">Tus búsquedas, los resultados más relevantes y el contenido de sus páginas se envían a Google, y es posible que los revisen personas para mejorar esta función. Esta es una función experimental y puede tener errores.</translation>
 <translation id="3422248202833853650">Prueba cerrar los demás programas para liberar memoria.</translation>
 <translation id="3422472998109090673">No se puede acceder a <ph name="HOST_NAME" /> en este momento.</translation>
 <translation id="3423742043356668186">Sistema especificado</translation>
@@ -1743,6 +1748,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4177501066905053472">Temas de los anuncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Dejar de realizar el seguimiento de precios</translation>
+<translation id="4190446002599583608">History search, con la tecnología de IA</translation>
 <translation id="4191334393248735295">Longitud</translation>
 <translation id="4195459680867822611">Botón Ver sugerencias para Chrome: actívalo para conocer las funciones de Chrome</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
@@ -1786,6 +1792,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4239799716689808527">Etiquetas</translation>
 <translation id="4242380780309416996">Sobre (de alto gramaje)</translation>
+<translation id="4242981939686657948">Para buscar en tu historial de navegación de una forma más eficaz, activa</translation>
 <translation id="4244926541863471678">Lámina</translation>
 <translation id="4246517972543675653">Estudios en el extranjero</translation>
 <translation id="4250431568374086873">Tu conexión con este sitio no es completamente segura</translation>
@@ -2382,6 +2389,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5371425731340848620">Actualizar tarjeta</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"El reloj está atrasado", "El reloj está adelantado" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5379618281582508161">Para obtener esta contraseña en todos tus dispositivos, verifica tu identidad</translation>
 <translation id="5380953781541843508">en orden ascendente</translation>
 <translation id="5381318171304904246">Si continúas, se te redireccionará al sitio web de tu banco. Después de que realices la verificación, regresarás automáticamente para finalizar la compra.</translation>
 <translation id="5383478552402031184">Revestimiento para pisos</translation>
@@ -2651,6 +2659,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5887687176710214216">Última visita: ayer</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido el</translation>
+<translation id="5898767305816764989">Botón Me gusta, presiona Intro para enviar comentarios sobre lo que te gusta, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
@@ -3403,6 +3412,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Tu administrador dice "<ph name="CUSTOM_MESSAGE" />".</translation>
+<translation id="7255540419660272073">Botón de No me gusta, presiona Intro para abrir un formulario y enviar comentarios detallados sobre los motivos por los que no te gusta, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Bandeja trasera</translation>
 <translation id="7257453341537973799">Recursos y planificación profesional</translation>
 <translation id="725866823122871198">No se puede establecer una conexión privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque la fecha y la hora del equipo (<ph name="DATE_AND_TIME" />) son incorrectas.</translation>
@@ -4089,7 +4099,6 @@ Detalles adicionales:
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474910779563686872">Mostrar detalles para desarrolladores</translation>
 <translation id="8479754468255770962">Grapa en la esquina inferior izquierda</translation>
-<translation id="8479926481822108747">administrar tus protecciones contra el seguimiento</translation>
 <translation id="8483229036294884935">Se borrará esta dirección de tu Cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Se aplica a</translation>
 <translation id="8490137692873530638">Apilador 10</translation>

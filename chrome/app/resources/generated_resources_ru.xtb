@@ -2219,6 +2219,7 @@
 <translation id="2546991196809436099">Увеличивать объекты на экране. Включайте и выключайте режим лупы с помощью сочетания клавиш Поиск + Ctrl + M.</translation>
 <translation id="2548347166720081527">Предоставлено разрешение: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Сбросить кеш профиля eSIM</translation>
+<translation id="2549766998450508148">Используйте от одной до четырех клавиш-модификаторов (Ctrl, Alt, Shift, Поиск) и ещё одну клавишу. Вы также можете выбрать отдельную клавишу.</translation>
 <translation id="2549985041256363841">Начать запись</translation>
 <translation id="2550212893339833758">Память подкачки</translation>
 <translation id="2550596535588364872">Разрешить <ph name="EXTENSION_NAME" /> открыть файл <ph name="FILE_NAME" />?</translation>
@@ -7789,6 +7790,7 @@
 <translation id="6670983860904543332">Благодаря автоматическому обновлению у вас всегда есть доступ к самым последним функциям. Оцените некоторые из них.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{адрес}one{# адрес}few{# адреса}many{# адресов}other{# адреса}}</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" />: настройка управления</translation>
+<translation id="6672697278890207089">Введите кодовую фразу</translation>
 <translation id="6672917148207387131">Добавить сайт <ph name="DOMAIN" /></translation>
 <translation id="6673353404516008367">Сведения о ваших действиях в режиме инкогнито <ph name="BEGIN_LINK" />недоступны другим людям<ph name="END_LINK" />, которые используют то же устройство</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
@@ -10631,6 +10633,7 @@
 <translation id="8715480913140015283">На фоновой вкладке используется камера.</translation>
 <translation id="8716931980467311658">Удалить с устройства <ph name="DEVICE_TYPE" /> все приложения для Linux, а также данные из папки "Файлы Linux"?</translation>
 <translation id="8717864919010420084">Скопировать ссылку</translation>
+<translation id="8718560545710680911">Задайте вопрос на основе этой страницы</translation>
 <translation id="8718994464069323380">Обнаружен сенсорный экран.</translation>
 <translation id="8719472795285728850">Прослушивание событий расширений…</translation>
 <translation id="8719665168401479425">Использовать мимические жесты для выполнения действий на экране</translation>

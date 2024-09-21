@@ -7795,6 +7795,7 @@
 <translation id="6670983860904543332">अपने-आप अपडेट होने की सुविधा से आपको नई सुविधाओं का ऐक्सेस मिलता है. हाल ही के अपडेट की हाइलाइट देखें.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{एक पता}one{# पता}other{# पते}}</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" />, मैनेजमेंट को सेट अप कर रहा है</translation>
+<translation id="6672697278890207089">अपना पासफ़्रेज दर्ज करें</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> जोड़ें</translation>
 <translation id="6673353404516008367">गुप्त मोड, आपका डिवाइस इस्तेमाल करने वाले <ph name="BEGIN_LINK" />अन्य लोगों से आपका ब्राउज़िंग डेटा निजी रखता है<ph name="END_LINK" /></translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>

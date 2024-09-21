@@ -642,7 +642,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3290356915286466215">Inte skyddat</translation>
 <translation id="3291862315280588024">Flytta till början av föregående ord</translation>
 <translation id="3294437725009624529">Gäst</translation>
-<translation id="3298690094479023523">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Försök igen.</translation>
 <translation id="3300193645498960160">Du får en avisering om du pratar när ljudet är av. Ljudet lämnar aldrig enheten.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> enheter är anslutna till <ph name="DEVICE_NAME" />-surfzonen</translation>
 <translation id="3307642347673023554">Bytte till laptopläge</translation>
@@ -2289,7 +2288,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8847100217801213944">Visa temperaturen i Fahrenheit</translation>
 <translation id="8849001918648564819">Dold</translation>
-<translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
 <translation id="8855885154700222542">Tangent för helskärm</translation>
 <translation id="8858369206579825206">Integritetsinställningar</translation>
 <translation id="8860366331836346216">Lägg till eSIM</translation>

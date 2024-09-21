@@ -2228,6 +2228,7 @@
 <translation id="2546991196809436099">ဖန်သားပြင်ပေါ်ရှိအရာများကို ပိုကြီးလာစေရန် ဇူးမ်ဆွဲနိုင်သည်။ မှန်ဘီလူး ဖွင့်၊ ပိတ်လုပ်ရန် Search + Ctrl + M ကို သုံးပါ။</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> ကို ခွင့်ပြုထားသည်</translation>
 <translation id="2548545707296594436">eSIM ပရိုဖိုင်ကက်ရှ် ပြင်ဆင်သတ်မှတ်ရန်</translation>
+<translation id="2549766998450508148">၁-၄ မွမ်းမံခလုတ်များ (Ctrl၊ Alt၊ Shift သို့မဟုတ် Search) နှင့် ခလုတ်နောက် ၁ ခုကို နှိပ်ပါ။ ခလုတ်တစ်ခုတည်းကိုလည်း ရွေးနိုင်သည်။</translation>
 <translation id="2549985041256363841">စတင်ရိုက်ကူးရန်</translation>
 <translation id="2550212893339833758">ဖလှယ်ထားသည့် မှတ်ဉာဏ်</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> ကို <ph name="EXTENSION_NAME" /> အား ဖွင့်ခွင့်ပြုလိုပါသလား။</translation>
@@ -7791,6 +7792,7 @@
 <translation id="6670983860904543332">အလိုအလျောက်အပ်ဒိတ်များက သင့်အား နောက်ဆုံးထွက် တူးလ်များ ပံ့ပိုးပေးသည်။ လတ်တလောအပ်ဒိတ်များမှ အထူးအသားပေးများကို လေ့လာပါ။</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{လိပ်စာတစ်ခု}other{လိပ်စာ # ခု}}</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" /> က စီမံခန့်ခွဲမှုကို စနစ်ထည့်သွင်းနေသည်</translation>
+<translation id="6672697278890207089">သင့်စကားဝှက်စာ ထည့်ပါ</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ထည့်ရန်</translation>
 <translation id="6673353404516008367">ရုပ်ဖျက်မုဒ်သည် သင့်စက်သုံးသူများအား <ph name="BEGIN_LINK" />သင်၏ ဘရောက်စ်လုပ်ခြင်းများကို မပြပါ<ph name="END_LINK" /></translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
@@ -10632,6 +10634,7 @@
 <translation id="8715480913140015283">နောက်ခံတဘ်သည် သင့်ကင်မရာကို အသုံးပြုနေသည်</translation>
 <translation id="8716931980467311658">ဤ <ph name="DEVICE_TYPE" /> မှ သင့် Linux ဖိုင်များ ဖိုင်တွဲအတွင်းရှိ Linux အပလီကေးရှင်းနှင့် ဒေတာအားလုံးကို ဖျက်လိုသလား။</translation>
 <translation id="8717864919010420084">လင့်ခ်မိတ္တူကူးရန်</translation>
+<translation id="8718560545710680911">ဤစာမျက်နှာသုံးပုံအကြောင်း မေးရန်</translation>
 <translation id="8718994464069323380">တို့ထိမျက်နှာပြင် တွေ့ရှိသည်</translation>
 <translation id="8719472795285728850">နောက်ဆက်တွဲ လုပ်ဆောင်ချက်များ နားဆင်နေသည်…</translation>
 <translation id="8719665168401479425">လုပ်ဆောင်ချက်များ ဆောင်ရွက်ရန်အတွက် မျက်နှာအမူအရာများ သုံးရန်</translation>
