@@ -1212,15 +1212,15 @@ TEST_F(SidePanelCoordinatorTest, SidePanelWidthPreference) {
   const std::string reading_list_side_panel_id =
       SidePanelEntryIdToString(SidePanelEntry::Id::kReadingList);
 
-  // Verify both side panels do not have a default value.
+  // Verify both side panels do not have a stored width value.
   EXPECT_FALSE(dict.FindInt(bookmarks_side_panel_id).has_value());
   EXPECT_FALSE(dict.FindInt(reading_list_side_panel_id).has_value());
 
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   views::test::RunScheduledLayout(browser_view());
-  const int initial_bookmark_width = side_panel->width();
-  const int expected_bookmark_width = initial_bookmark_width + 100;
+  const int initial_side_panel_width = side_panel->width();
+  const int expected_bookmark_width = initial_side_panel_width + 100;
 
   // Resize the bookmarks side panel.
   side_panel->OnResize(-100, false);
@@ -1229,7 +1229,7 @@ TEST_F(SidePanelCoordinatorTest, SidePanelWidthPreference) {
   views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(side_panel->width(), expected_bookmark_width);
 
-  // Verify the preference value is updated after resize
+  // Verify the preference value is updated after resize.
   EXPECT_EQ(expected_bookmark_width, prefs->GetDict(prefs::kSidePanelIdToWidth)
                                          .FindInt(bookmarks_side_panel_id));
 
@@ -1237,11 +1237,9 @@ TEST_F(SidePanelCoordinatorTest, SidePanelWidthPreference) {
   coordinator_->Show(SidePanelEntry::Id::kReadingList);
   views::test::RunScheduledLayout(browser_view());
 
-  // Verify the side panel keeps the bookmarks resized width since it doesn't
-  // have a default value yet.
-  EXPECT_EQ(expected_bookmark_width, side_panel->width());
-  const int initial_reading_list_width = side_panel->width();
-  const int expected_reading_list_width = initial_reading_list_width - 50;
+  // Verify the reading list side panel keeps the resized width.
+  EXPECT_EQ(initial_side_panel_width, side_panel->width());
+  const int expected_reading_list_width = initial_side_panel_width + 50;
 
   // Resize the reading list side panel.
   side_panel->OnResize(-50, false);
@@ -1250,7 +1248,7 @@ TEST_F(SidePanelCoordinatorTest, SidePanelWidthPreference) {
   // Ensure the reading list width is updated accordingly after resizing.
   EXPECT_EQ(side_panel->width(), expected_reading_list_width);
 
-  // Verify the preference value is updated after resize
+  // Verify the preference value is updated after resize.
   EXPECT_EQ(expected_reading_list_width,
             prefs->GetDict(prefs::kSidePanelIdToWidth)
                 .FindInt(reading_list_side_panel_id));

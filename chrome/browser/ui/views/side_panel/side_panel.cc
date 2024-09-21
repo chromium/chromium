@@ -365,6 +365,27 @@ void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
   static_cast<BorderView*>(border_view_)->SetBorderRadii(background_radii_);
 }
 
+void SidePanel::UpdateWidthOnEntryChanged() {
+  PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
+  ScopedDictPrefUpdate update(pref_service, prefs::kSidePanelIdToWidth);
+  const base::Value::Dict& dict = update.Get();
+  SidePanelUI* coordinator =
+      browser_view_->browser()->GetFeatures().side_panel_ui();
+  if (coordinator) {
+    std::optional<SidePanelEntry::Id> entry_id =
+        coordinator->GetCurrentEntryId();
+    if (entry_id.has_value()) {
+      std::string panel_id = SidePanelEntryIdToString(entry_id.value());
+      std::optional<int> width = dict.FindInt(panel_id);
+      if (width.has_value()) {
+        SetPanelWidth(width.value());
+      } else {
+        SetPanelWidth(GetMinimumSize().width());
+      }
+    }
+  }
+}
+
 void SidePanel::SetHorizontalAlignment(HorizontalAlignment alignment) {
   horizontal_alignment_ = alignment;
 }

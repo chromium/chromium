@@ -665,25 +665,15 @@ void SidePanelCoordinator::PopulateSidePanel(
   UpdateHeaderPinButtonState();
   header_more_info_button_->SetVisible(entry->SupportsMoreInfoButton());
 
+  if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
+    browser_view_->unified_side_panel()->UpdateWidthOnEntryChanged();
+  }
+
   // Notify the observers when the side panel is opened (made visible). However,
   // the observers are not renotified when the side panel entry changes.
   if (opening_side_panel) {
     view_state_observers_.Notify(
         &SidePanelViewStateObserver::OnSidePanelDidOpen);
-  }
-
-  if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
-    const base::Value::Dict& dict =
-        browser_view_->browser()->profile()->GetPrefs()->GetDict(
-            prefs::kSidePanelIdToWidth);
-    std::string current_entry_id = SidePanelEntryIdToString(entry->key().id());
-
-    std::optional<int> default_width = dict.FindInt(current_entry_id);
-
-    if (default_width.has_value()) {
-      auto* sp = browser_view_->unified_side_panel();
-      sp->SetPanelWidth(default_width.value());
-    }
   }
 }
 
