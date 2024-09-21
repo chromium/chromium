@@ -27,7 +27,6 @@
 
 namespace ash {
 enum class AnimationChangeType;
-class ApplicationDragAndDropHost;
 class DragHandle;
 class FocusCycler;
 class HotseatWidget;
@@ -95,9 +94,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   // not include portions of the shelf that extend beyond its own display,
   // as those are not visible to the user.
   gfx::Rect GetVisibleShelfBounds() const;
-
-  // Returns the ApplicationDragAndDropHost for this shelf.
-  ApplicationDragAndDropHost* GetDragAndDropHostForAppList();
 
   // Fetch the LoginShelfView instance.
   // TODO(https://crbug.com/1343114): remove this method after the login shelf

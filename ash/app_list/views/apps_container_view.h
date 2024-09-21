@@ -29,7 +29,6 @@
 
 namespace ash {
 
-class ApplicationDragAndDropHost;
 class AppListFolderItem;
 class AppListFolderView;
 class AppListKeyboardController;
@@ -70,11 +69,6 @@ class ASH_EXPORT AppsContainerView
   // called when the user opens the launcher for the first time or when the user
   // hides and then shows it.
   void ResetForShowApps();
-
-  // Sets |drag_and_drop_host_| for the current app list in both
-  // app_list_folder_view_ and root level apps_grid_view_.
-  void SetDragAndDropHostOfCurrentAppList(
-      ApplicationDragAndDropHost* drag_and_drop_host);
 
   // Returns true if it is currently showing an active folder page.
   bool IsInFolderView() const;

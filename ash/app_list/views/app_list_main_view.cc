@@ -94,11 +94,6 @@ void AppListMainView::ShowAppListWhenReady() {
     GetWidget()->Show();
 }
 
-void AppListMainView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  contents_view_->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
-}
-
 PaginationModel* AppListMainView::GetAppsPaginationModel() {
   return contents_view_->apps_container_view()
       ->apps_grid_view()

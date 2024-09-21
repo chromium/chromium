@@ -1200,8 +1200,7 @@ bool ShelfView::Drag(const gfx::Point& location_in_screen,
   return true;
 }
 
-void ShelfView::EndDrag(bool cancel,
-                        std::unique_ptr<AppDragIconProxy> icon_proxy) {
+void ShelfView::EndDrag(bool cancel) {
   drag_scroll_dir_ = 0;
   scrolling_timer_.Stop();
   speed_up_drag_scrolling_.Stop();
@@ -1210,8 +1209,6 @@ void ShelfView::EndDrag(bool cancel,
     is_active_drag_and_drop_host_ = false;
     return;
   }
-
-  drag_icon_proxy_ = std::move(icon_proxy);
 
   views::View* drag_and_drop_view =
       view_model_->view_at(model_->ItemIndexByID(drag_and_drop_shelf_id_));
@@ -2851,7 +2848,7 @@ void ShelfView::EndDragCallback(
   // TODO(b/271601288): Hook up drop animation with the drag image icon.
   output_drag_op = ui::mojom::DragOperation::kMove;
   drag_image_layer_ = std::move(drag_image_layer_owner);
-  EndDrag(false, /*icon_proxy = */ nullptr);
+  EndDrag(false);
 }
 
 bool ShelfView::GetDropFormats(
@@ -2874,7 +2871,7 @@ bool ShelfView::CanDrop(const OSExchangeData& data) {
 }
 
 void ShelfView::OnDragExited() {
-  EndDrag(/*cancel=*/true, nullptr);
+  EndDrag(/*cancel=*/true);
 }
 
 void ShelfView::OnDragEntered(const ui::DropTargetEvent& event) {

@@ -22,7 +22,6 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
-#include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_keyboard_controller.h"
@@ -915,14 +914,6 @@ void AppsGridView::ClearDragState() {
   dragging_for_reparent_item_ = false;
   extra_page_opened_ = false;
   reparent_drag_cancellation_.Reset();
-}
-
-void AppsGridView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  if (drag_and_drop_host_ == drag_and_drop_host) {
-    return;
-  }
-  drag_and_drop_host_ = drag_and_drop_host;
 }
 
 bool AppsGridView::IsAnimatingView(AppListItemView* view) const {

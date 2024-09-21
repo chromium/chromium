@@ -205,12 +205,9 @@ class ButtonFocusSkipper : public ui::EventHandler {
   std::vector<raw_ptr<views::View, VectorExperimental>> buttons_;
 };
 
-AppListBubbleView::AppListBubbleView(
-    AppListViewDelegate* view_delegate,
-    ApplicationDragAndDropHost* drag_and_drop_host)
+AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate) {
   DCHECK(view_delegate);
-  DCHECK(drag_and_drop_host);
   SetProperty(views::kElementIdentifierKey, kAppListBubbleViewElementId);
 
   const float corner_radius = GetBubbleCornerRadius();
@@ -234,7 +231,7 @@ AppListBubbleView::AppListBubbleView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
       AddChildView(std::make_unique<views::View>()));
-  InitContentsView(drag_and_drop_host);
+  InitContentsView();
 
   // Add assistant page as a top-level child so it will fill the bubble and
   // suggestion chips will appear at the bottom of the bubble view.
@@ -242,7 +239,7 @@ AppListBubbleView::AppListBubbleView(
       view_delegate_->GetAssistantViewDelegate()));
   assistant_page_->SetVisible(false);
 
-  InitFolderView(drag_and_drop_host);
+  InitFolderView();
   // Folder view is laid out manually based on its contents.
   folder_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
@@ -269,16 +266,7 @@ void AppListBubbleView::UpdateSuggestions() {
   apps_page_->UpdateSuggestions();
 }
 
-void AppListBubbleView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  apps_page_->scrollable_apps_grid_view()->SetDragAndDropHostOfCurrentAppList(
-      drag_and_drop_host);
-  folder_view_->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
-      drag_and_drop_host);
-}
-
-void AppListBubbleView::InitContentsView(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
+void AppListBubbleView::InitContentsView() {
   auto* contents = AddChildView(std::make_unique<views::View>());
 
   auto* layout = contents->SetLayoutManager(
@@ -320,8 +308,8 @@ void AppListBubbleView::InitContentsView(
   // another root window.
   apps_page_ =
       pages_container->AddChildView(std::make_unique<AppListBubbleAppsPage>(
-          view_delegate_, drag_and_drop_host, GetAppListConfig(),
-          a11y_announcer_.get(), /*folder_controller=*/this,
+          view_delegate_, GetAppListConfig(), a11y_announcer_.get(),
+          /*folder_controller=*/this,
           /*search_box=*/search_box_view_));
 
   apps_collections_page_ = pages_container->AddChildView(
@@ -387,13 +375,10 @@ views::View::DropCallback AppListBubbleView::GetDropCallback(
       GetTranslatedDropTargetEvent(event, this, scrollable_apps_grid));
 }
 
-void AppListBubbleView::InitFolderView(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
+void AppListBubbleView::InitFolderView() {
   auto folder_view = std::make_unique<AppListFolderView>(
       this, apps_page_->scrollable_apps_grid_view(), a11y_announcer_.get(),
       view_delegate_, /*tablet_mode=*/false);
-  folder_view->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
-      drag_and_drop_host);
   folder_view->UpdateAppListConfig(GetAppListConfig());
   folder_background_view_ =
       AddChildView(std::make_unique<FolderBackgroundView>(folder_view.get()));

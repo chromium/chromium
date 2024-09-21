@@ -484,13 +484,6 @@ void AppsContainerView::ResetForShowApps() {
   }
 }
 
-void AppsContainerView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  apps_grid_view()->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
-  app_list_folder_view()->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
-      drag_and_drop_host);
-}
-
 void AppsContainerView::ReparentFolderItemTransit(
     AppListFolderItem* folder_item) {
   if (app_list_folder_view_->IsAnimationRunning())

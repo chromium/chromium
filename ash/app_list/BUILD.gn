@@ -57,7 +57,6 @@ source_set("app_list") {
     "views/app_list_bubble_search_page.h",
     "views/app_list_bubble_view.cc",
     "views/app_list_bubble_view.h",
-    "views/app_list_drag_and_drop_host.h",
     "views/app_list_folder_controller.h",
     "views/app_list_folder_view.cc",
     "views/app_list_folder_view.h",

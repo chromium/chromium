@@ -304,11 +304,6 @@ void AppListView::Show(AppListViewState preferred_state) {
   time_shown_ = std::nullopt;
 }
 
-void AppListView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  app_list_main_view_->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
-}
-
 void AppListView::CloseOpenedPage() {
   if (HandleCloseOpenFolder())
     return;

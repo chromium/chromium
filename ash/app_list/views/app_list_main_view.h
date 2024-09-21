@@ -18,7 +18,6 @@ namespace ash {
 
 class AppListView;
 class AppListViewDelegate;
-class ApplicationDragAndDropHost;
 class ContentsView;
 class PaginationModel;
 class SearchBoxView;
@@ -43,11 +42,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   void ShowAppListWhenReady();
 
   SearchBoxView* search_box_view() const { return search_box_view_; }
-
-  // If |drag_and_drop_host| is not nullptr it will be called upon drag and drop
-  // operations outside the application list.
-  void SetDragAndDropHostOfCurrentAppList(
-      ApplicationDragAndDropHost* drag_and_drop_host);
 
   ContentsView* contents_view() const { return contents_view_; }
   AppListViewDelegate* view_delegate() { return delegate_; }

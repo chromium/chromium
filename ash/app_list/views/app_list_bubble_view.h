@@ -25,7 +25,6 @@ class ViewShadow;
 
 namespace ash {
 
-class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
 class AppListBubbleAppsPage;
 class AppListBubbleAppsCollectionsPage;
@@ -49,16 +48,10 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   METADATA_HEADER(AppListBubbleView, views::View)
 
  public:
-  AppListBubbleView(AppListViewDelegate* view_delegate,
-                    ApplicationDragAndDropHost* drag_and_drop_host);
+  explicit AppListBubbleView(AppListViewDelegate* view_delegate);
   AppListBubbleView(const AppListBubbleView&) = delete;
   AppListBubbleView& operator=(const AppListBubbleView&) = delete;
   ~AppListBubbleView() override;
-
-  // If |drag_and_drop_host| is not nullptr it will be called upon drag and drop
-  // operations outside the app list (e.g. to the shelf).
-  void SetDragAndDropHostOfCurrentAppList(
-      ApplicationDragAndDropHost* drag_and_drop_host);
 
   // Updates continue tasks and recent apps.
   void UpdateSuggestions();
@@ -162,10 +155,10 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   friend class AssistantTestApiImpl;
 
   // Initializes the main contents (search box, apps page, and search page).
-  void InitContentsView(ApplicationDragAndDropHost* drag_and_drop_host);
+  void InitContentsView();
 
   // Initializes the folder view, which appears on top of all other views.
-  void InitFolderView(ApplicationDragAndDropHost* drag_and_drop_host);
+  void InitFolderView();
 
   // Makes the root apps grid view and other top-level views unfocusable if
   // `disabled` is true, such that focus is contained in the folder view.

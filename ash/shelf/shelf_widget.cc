@@ -791,10 +791,6 @@ gfx::Rect ShelfWidget::GetVisibleShelfBounds() const {
   return screen_util::SnapBoundsToDisplayEdge(shelf_region, GetNativeWindow());
 }
 
-ApplicationDragAndDropHost* ShelfWidget::GetDragAndDropHostForAppList() {
-  return hotseat_widget()->GetShelfView();
-}
-
 LoginShelfView* ShelfWidget::GetLoginShelfView() {
   return shelf_->login_shelf_widget()->login_shelf_view();
 }

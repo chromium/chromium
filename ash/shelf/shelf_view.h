@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/views/app_list_drag_and_drop_host.h"
+#include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -84,7 +84,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public ShelfObserver,
                              public views::ContextMenuController,
                              public views::BoundsAnimatorObserver,
-                             public ApplicationDragAndDropHost,
                              public ShelfTooltipDelegate {
   METADATA_HEADER(ShelfView, views::AccessiblePaneView)
 
@@ -213,16 +212,14 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // drop should be shown or not.
   bool ShouldEventActivateButton(views::View* view, const ui::Event& event);
 
-  // ApplicationDragAndDropHost:
   bool ShouldHandleDrag(const std::string& app_id,
-                        const gfx::Point& location_in_screen) const override;
+                        const gfx::Point& location_in_screen) const;
   bool StartDrag(const std::string& app_id,
                  const gfx::Point& location_in_screen,
-                 const gfx::Rect& drag_icon_bounds_in_screen) override;
+                 const gfx::Rect& drag_icon_bounds_in_screen);
   bool Drag(const gfx::Point& location_in_screen,
-            const gfx::Rect& drag_icon_bounds_in_screen) override;
-  void EndDrag(bool cancel,
-               std::unique_ptr<AppDragIconProxy> icon_proxy) override;
+            const gfx::Rect& drag_icon_bounds_in_screen);
+  void EndDrag(bool cancel);
 
   // Swaps the given button with the next one if |with_next| is true, or with
   // the previous one if |with_next| is false.
