@@ -310,11 +310,13 @@ void CountersAttachmentContext::CreateCounter(const Element& element,
   }
   CounterStack& counter_stack = *counter_stack_it->value;
   // Remove innermost counter with same or previous sibling originating element.
-  while (!counter_stack.empty() && counter_stack.back() &&
-         LayoutTreeBuilderTraversal::ParentElement(
-             *counter_stack.back()->element) ==
-             LayoutTreeBuilderTraversal::ParentElement(element)) {
-    counter_stack.pop_back();
+  if (!counter_stack.empty()) {
+    if (const CounterEntry* last_entry = counter_stack.back()) {
+      if (LayoutTreeBuilderTraversal::ParentElement(*last_entry->element) ==
+          LayoutTreeBuilderTraversal::ParentElement(element)) {
+        counter_stack.pop_back();
+      }
+    }
   }
   counter_stack.push_back(new_entry);
 }
