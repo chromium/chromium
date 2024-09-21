@@ -71,6 +71,8 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "code_section.css",
+    "drop_overlay.css",
     "shared_style.css",
     "shared_vars.css",
   ]
@@ -89,6 +91,7 @@ build_webui("build") {
   ]
 
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

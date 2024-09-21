@@ -5,12 +5,12 @@
 /** @fileoverview Suite of tests for extensions-code-section. */
 import 'chrome://extensions/extensions.js';
 
-import type {ExtensionsCodeSectionElement} from 'chrome://extensions/extensions.js';
+import type {CodeSectionElement} from 'chrome://extensions/extensions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ExtensionCodeSectionTest', function() {
-  let codeSection: ExtensionsCodeSectionElement;
+  let codeSection: CodeSectionElement;
 
   const couldNotDisplayCode: string = 'No code here';
 
@@ -22,7 +22,7 @@ suite('ExtensionCodeSectionTest', function() {
     document.body.appendChild(codeSection);
   });
 
-  test('Layout', function() {
+  test('Layout', async () => {
     const code: chrome.developerPrivate.RequestFileSourceResponse = {
       beforeHighlight: 'this part before the highlight\nAnd this too\n',
       highlight: 'highlight this part\n',
@@ -41,6 +41,8 @@ suite('ExtensionCodeSectionTest', function() {
 
     codeSection.code = code;
     codeSection.isActive = true;
+    await microtasksFinished();
+
     assertTrue(testIsVisible('#main'));
     assertFalse(testIsVisible('#no-code'));
 
@@ -58,7 +60,7 @@ suite('ExtensionCodeSectionTest', function() {
                 '#line-numbers span')!.textContent!.trim());
   });
 
-  test('LongSource', function() {
+  test('LongSource', async () => {
     let lineNums;
 
     function setCodeContent(beforeLineCount: number, afterLineCount: number):
@@ -80,6 +82,8 @@ suite('ExtensionCodeSectionTest', function() {
     }
 
     codeSection.code = setCodeContent(0, 2000);
+    await microtasksFinished();
+
     lineNums =
         codeSection.shadowRoot!
             .querySelector<HTMLElement>('#line-numbers span')!.textContent!;
@@ -97,6 +101,8 @@ suite('ExtensionCodeSectionTest', function() {
                         '#line-numbers .more-code.after')!.hidden);
 
     codeSection.code = setCodeContent(1000, 1000);
+    await microtasksFinished();
+
     lineNums =
         codeSection.shadowRoot!
             .querySelector<HTMLElement>('#line-numbers span')!.textContent!;
@@ -114,6 +120,8 @@ suite('ExtensionCodeSectionTest', function() {
                         '#line-numbers .more-code.after')!.hidden);
 
     codeSection.code = setCodeContent(2000, 0);
+    await microtasksFinished();
+
     lineNums =
         codeSection.shadowRoot!
             .querySelector<HTMLElement>('#line-numbers span')!.textContent!;
