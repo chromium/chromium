@@ -1343,9 +1343,6 @@ crbug.com/1335893 external/wpt/css/css-content/content-none-span.html [ Failure 
 crbug.com/995106 external/wpt/css/css-lists/inline-list.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list-marker.html [ Failure ]
 
-# css-contain
-crbug.com/40275672 external/wpt/css/css-contain/contain-style-counters-002.html [ Failure ]
-
 # css-pseudo
 crbug.com/1500288 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]
 crbug.com/1500288 external/wpt/css/css-pseudo/grammar-spelling-errors-002.html [ Failure ]

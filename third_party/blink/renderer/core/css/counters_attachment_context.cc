@@ -124,6 +124,12 @@ void CountersAttachmentContext::EnterElement(const Element& element) {
   if (!style) {
     return;
   }
+  // Element without a box can't do counters operations
+  // https://drafts.csswg.org/css-lists/#counters-without-boxes
+  const LayoutObject* layout_object = element.GetLayoutObject();
+  if (!layout_object) {
+    return;
+  }
   const CounterDirectiveMap* counter_directives = style->GetCounterDirectives();
   if (!counter_directives) {
     // If this element doesn't have any counter directives on it,
@@ -135,12 +141,6 @@ void CountersAttachmentContext::EnterElement(const Element& element) {
     if (style->ContainsStyle()) {
       EnterStyleContainmentScope();
     }
-    return;
-  }
-  // Element without a box can't do counters operations
-  // https://drafts.csswg.org/css-lists/#counters-without-boxes
-  const LayoutObject* layout_object = element.GetLayoutObject();
-  if (!layout_object) {
     return;
   }
   for (auto& [counter_name, directives] : *counter_directives) {
@@ -186,6 +186,12 @@ void CountersAttachmentContext::LeaveElement(const Element& element) {
   if (!style) {
     return;
   }
+  // Element without a box can't do counters operations
+  // https://drafts.csswg.org/css-lists/#counters-without-boxes
+  const LayoutObject* layout_object = element.GetLayoutObject();
+  if (!layout_object) {
+    return;
+  }
   const CounterDirectiveMap* counter_directives = style->GetCounterDirectives();
   if (!counter_directives) {
     // If this element doesn't have any counter directives on it,
@@ -197,12 +203,6 @@ void CountersAttachmentContext::LeaveElement(const Element& element) {
     if (ElementGeneratesListItemCounter(element)) {
       RemoveCounterIfAncestorExists(element, list_item_);
     }
-    return;
-  }
-  // Element without a box can't do counters operations
-  // https://drafts.csswg.org/css-lists/#counters-without-boxes
-  const LayoutObject* layout_object = element.GetLayoutObject();
-  if (!layout_object) {
     return;
   }
   // Remove style containment boundary if the element has contains style.
