@@ -731,7 +731,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewErrorNoTitle(
   error_message_label->SetProperty(views::kElementIdentifierKey, kErrorMessage);
   error_message_label->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
 
   title_row->AddChildView(std::move(error_message_label));
@@ -922,7 +923,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
   // when the bubble expands.
   padding_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(2));
 
