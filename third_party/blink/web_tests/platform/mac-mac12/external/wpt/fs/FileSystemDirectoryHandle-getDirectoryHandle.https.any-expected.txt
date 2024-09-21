@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Test named 'getDirectoryHandle(create=false) returns existing directories' specified 3 'cleanup' functions, and 1 failed.
+[NOTRUN] getDirectoryHandle(create=true) returns existing directories without erasing
+[NOTRUN] getDirectoryHandle() when a file already exists with the same name
+[NOTRUN] getDirectoryHandle() with empty name
+[NOTRUN] getDirectoryHandle() with "." name
+[NOTRUN] getDirectoryHandle() with ".." name
+[NOTRUN] getDirectoryHandle(create=false) with a path separator when the directory exists
+[NOTRUN] getDirectoryHandle(create=true) with a path separator
+Harness: the test ran to completion.
+
