@@ -234,13 +234,6 @@ const char kHostOfflineReasonZombieStateDetected[] = "ZOMBIE_STATE_DETECTED";
 // will not be enabled.
 const char kWebRtcTraceEventFile[] = "webrtc-trace-event-file";
 
-constexpr char kChromotingOAuthCloudScope[] =
-    "https://www.googleapis.com/auth/chromoting.cloud.host";
-constexpr char kChromotingOAuthCorpScope[] =
-    "https://www.googleapis.com/auth/chromoting.corp.host";
-constexpr char kChromotingOAuthMe2MeScope[] =
-    "https://www.googleapis.com/auth/chromoting.me2me.host";
-
 // Helper to check if a string value is in a Policy allowlist.
 bool IsInAllowlist(std::string_view value,
                    const std::vector<std::string> allowlist) {
@@ -383,12 +376,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnAllowRemoteAccessConnections(const base::Value::Dict& policies);
   bool OnAllowPinAuthenticationUpdate(const base::Value::Dict& policies);
 
-  void InitializeOauth();
-  void OnOauthTokenCallback(OAuthTokenGetter::Status status,
-                            const std::string& user_email,
-                            const std::string& access_token,
-                            const std::string& scopes);
-  bool HasScope(std::string scope);
   void InitializeSignaling();
 
   void StartHostIfReady();
@@ -451,7 +438,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::string cloud_api_key_;
   base::Value::Dict config_;
   std::set<std::string> host_owner_emails_;
-  std::vector<std::string> scopes_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
@@ -1690,10 +1676,12 @@ bool HostProcess::OnAllowRemoteAccessConnections(
   return false;
 }
 
-void HostProcess::InitializeOauth() {
+void HostProcess::InitializeSignaling() {
   DCHECK(!host_id_.empty());  // ApplyConfig() should already have been run.
-
+  DCHECK(!signal_strategy_);
   DCHECK(!oauth_token_getter_);
+  DCHECK(!ftl_signaling_connector_);
+  DCHECK(!heartbeat_sender_);
 
   auto oauth_credentials =
       std::make_unique<OAuthTokenGetter::OAuthAuthorizationCredentials>(
@@ -1703,29 +1691,6 @@ void HostProcess::InitializeOauth() {
   // callback will never be invoked once it is destroyed.
   oauth_token_getter_ = std::make_unique<OAuthTokenGetterImpl>(
       std::move(oauth_credentials), context_->url_loader_factory(), false);
-
-  oauth_token_getter_->CallWithToken(base::BindOnce(
-      &HostProcess::OnOauthTokenCallback, base::Unretained(this)));
-}
-
-void HostProcess::OnOauthTokenCallback(OAuthTokenGetter::Status status,
-                                       const std::string& user_email,
-                                       const std::string& access_token,
-                                       const std::string& scopes) {
-  scopes_ = SplitString(scopes, " ", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-
-  InitializeSignaling();
-}
-
-bool HostProcess::HasScope(std::string scope) {
-  return std::find(scopes_.cbegin(), scopes_.cend(), scope) != scopes_.cend();
-}
-
-void HostProcess::InitializeSignaling() {
-  DCHECK(!signal_strategy_);
-  DCHECK(!ftl_signaling_connector_);
-  DCHECK(!heartbeat_sender_);
 
   log_to_server_ = std::make_unique<RemotingLogToServer>(
       ServerLogEntry::ME2ME,
@@ -1746,43 +1711,19 @@ void HostProcess::InitializeSignaling() {
       base::BindOnce(&HostProcess::OnAuthFailed, base::Unretained(this)));
   ftl_signaling_connector_->Start();
 
-  // Create the appropriate API service client (corp, cloud or me2me) for the
+  // Create the appropriate API service client (corp, cloud, or me2me) for the
   // HeartbeatSender.
   std::unique_ptr<HeartbeatServiceClient> service_client;
-  bool use_cloud_api_service = false;
-  bool use_corp_api_service = false;
-  // First, check if we have the appropriate OAuth scope that can tell us which
-  // service client to create.
-  if (HasScope(kChromotingOAuthCloudScope)) {
-    use_cloud_api_service = true;
-  } else if (HasScope(kChromotingOAuthCorpScope)) {
-    use_corp_api_service = true;
-  } else if (!HasScope(kChromotingOAuthMe2MeScope)) {
-    // No useful scopes found, so rely on our hints.
-    if (is_cloud_host_) {
-      use_cloud_api_service = true;
-    } else if (is_corp_host_) {
-      use_corp_api_service = true;
-    }
-    // Otherwise we default to me2me host.
-  }
-
-  if (use_cloud_api_service) {
+  if (is_cloud_host_) {
     service_client = std::make_unique<CloudHeartbeatServiceClient>(
         host_id_, cloud_api_key_, oauth_token_getter_.get(),
         context_->url_loader_factory());
-  } else if (use_corp_api_service) {
-    // TODO garykac: The corp heartbeat api service client is NYI. Uncomment
-    // this out once it is implemented.
-    // For now, fall back to a basic me2me host.
-    // service_client = std::make_unique<CorpHeartbeatServiceClient>(
-    //    host_id_, oauth_token_getter_.get(),
-    //    context_->url_loader_factory());
-    service_client = std::make_unique<Me2MeHeartbeatServiceClient>(
-        host_id_, is_corp_host_, oauth_token_getter_.get(),
-        context_->url_loader_factory());
+    // TODO: joedow - Implement CorpHeartbeatServiceClient.
+    // } else if (is_corp_host_) {
+    //   service_client = std::make_unique<CorpHeartbeatServiceClient>(
+    //       host_id_, oauth_token_getter_.get(),
+    //       context_->url_loader_factory());
   } else {
-    // Default: Me2Me host
     service_client = std::make_unique<Me2MeHeartbeatServiceClient>(
         host_id_, is_corp_host_, oauth_token_getter_.get(),
         context_->url_loader_factory());
@@ -1835,7 +1776,7 @@ void HostProcess::StartHost() {
 
   SetState(HOST_STARTED);
 
-  InitializeOauth();
+  InitializeSignaling();
 
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
@@ -1999,7 +1940,7 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
     return;
   } else if (!config_.empty()) {
     if (!signal_strategy_) {
-      InitializeOauth();
+      InitializeSignaling();
     }
 
     HOST_LOG << "SendHostOfflineReason: sending " << host_offline_reason << ".";
