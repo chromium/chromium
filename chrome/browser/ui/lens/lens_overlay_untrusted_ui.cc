@@ -168,6 +168,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
               web_ui->GetWebContents())) {
     html_source->AddDouble("invocationTime",
                            controller->GetInvocationTimeSinceEpoch());
+    html_source->AddString("invocationSource",
+                           controller->GetInvocationSourceString());
   }
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
