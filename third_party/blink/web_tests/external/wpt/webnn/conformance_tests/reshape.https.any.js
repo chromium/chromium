@@ -15,13 +15,6 @@
 //     MLOperand input, sequence<[EnforceRange] unsigned long> newShape);
 
 
-const getReshapePrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const reshapeTests = [
   {
     'name': 'reshape float32 tensor to a new shape (reorder all dimensions)',
@@ -1283,7 +1276,7 @@ const reshapeTests = [
 if (navigator.ml) {
   reshapeTests.forEach((test) => {
     webnn_conformance_test(
-        buildGraphAndCompute, getReshapePrecisionTolerance, test);
+        buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

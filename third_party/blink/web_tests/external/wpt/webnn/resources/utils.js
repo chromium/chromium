@@ -11,6 +11,7 @@ const operatorToleranceDict = {
   linear: {float32: 2, float16: 2},
   prelu: {float32: 1, float16: 1},
   relu: {float32: 0, float16: 0},
+  reshape: {float32: 0, float16: 0},
   sigmoid: {float32: 34, float16: 3},
   softplus: {float32: 18, float16: 18},
   softsign: {float32: 3, float16: 3},
@@ -42,13 +43,16 @@ const getPrecisionTolerance = (graphResources, intermediateOperands) => {
   graphResources.operators.forEach(op => {
     switch (op.name) {
       case 'conv2d':
-        toleranceValue += getConv2dPrecisionTolerance(op, graphResources).value;
+        toleranceValue += getConv2dPrecisionTolerance(op, graphResources,
+            intermediateOperands).value;
         break;
       case 'convTranspose2d':
-        toleranceValue += getConv2dPrecisionTolerance(op, graphResources).value;
+        toleranceValue += getConv2dPrecisionTolerance(op, graphResources,
+            intermediateOperands).value;
         break;
       case 'gemm':
-        toleranceValue += getGemmPrecisionTolerance(op, graphResources).value;
+        toleranceValue += getGemmPrecisionTolerance(op, graphResources,
+            intermediateOperands).value;
         break;
       case 'softmax':
         toleranceValue += getSoftmaxPrecisionTolerance(
@@ -548,7 +552,8 @@ const buildGraphAndCompute = async (context, builder, graphResources) => {
   return {result, intermediateOperands};
 };
 
-const getGemmPrecisionTolerance = (op, graphResources) => {
+const getGemmPrecisionTolerance =
+    (op, graphResources, intermediateOperands) => {
   // GEMM : alpha * (A x B) + beta * C
   // An upper bound for the worst serial ordering is bounded by
   // the number of lossy operations, where matrix multiplication
@@ -585,7 +590,8 @@ const getGemmPrecisionTolerance = (op, graphResources) => {
   return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
 };
 
-const getConv2dPrecisionTolerance = (op, graphResources) => {
+const getConv2dPrecisionTolerance =
+    (op, graphResources, intermediateOperands) => {
   // number of reduced input elements multiplied by filter and summed (a sliding
   // dot product like pooling)
   const {inputs} = graphResources;
