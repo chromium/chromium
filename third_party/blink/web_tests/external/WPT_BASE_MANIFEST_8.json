@@ -165270,6 +165270,45 @@
         {}
        ]
       ],
+      "line-clamp-auto-035.tentative.html": [
+       "67e04e27f5f755a14816fb06b530a97796ccc8af",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-036.tentative.html": [
+       "27b97e00ade3dcbb9f09f87c83955df9fbced499",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-036-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-037.tentative.html": [
+       "4a2fc3c82064e12b5ff282c56f4e3a03035ee9e9",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "line-clamp-auto-with-ruby-001.tentative.html": [
        "5f69cc1b71e9eaeceacbbb87140349b5d7590a8c",
        [
@@ -337557,11 +337596,15 @@
         []
        ],
        "line-clamp-auto-032-ref.html": [
-        "3b32f988cd91c6c3acf65a3368788a44d6850eea",
+        "4768c77ddabc93d3519e671c10d584b12e8a69ad",
         []
        ],
        "line-clamp-auto-034-ref.html": [
         "8fae3b278c124db00b8f79eb0cd0b91cb8752217",
+        []
+       ],
+       "line-clamp-auto-036-ref.html": [
+        "0ad96e88d14a735ce9416dba2b31f5f66936b19f",
         []
        ],
        "line-clamp-auto-with-ruby-001-ref.html": [
@@ -365781,19 +365824,19 @@
       }
      },
      "idlharness.any-expected.txt": [
-      "dda597657d99bc1547f05860efed3598ecfb4c26",
+      "c13b71e3f36dbfdceeb5c6ba23f302a4d52afede",
       []
      ],
      "idlharness.any.serviceworker-expected.txt": [
-      "dda597657d99bc1547f05860efed3598ecfb4c26",
+      "c13b71e3f36dbfdceeb5c6ba23f302a4d52afede",
       []
      ],
      "idlharness.any.sharedworker-expected.txt": [
-      "dda597657d99bc1547f05860efed3598ecfb4c26",
+      "c13b71e3f36dbfdceeb5c6ba23f302a4d52afede",
       []
      ],
      "idlharness.any.worker-expected.txt": [
-      "dda597657d99bc1547f05860efed3598ecfb4c26",
+      "c13b71e3f36dbfdceeb5c6ba23f302a4d52afede",
       []
      ],
      "policies": {
@@ -366112,19 +366155,19 @@
        []
       ],
       "request-structure.any-expected.txt": [
-       "c659100a7976895e319cd53f6dd3e9b8440ca95f",
+       "e2c9250a9bdce3acf5b9324eb834fc80841c00ee",
        []
       ],
       "request-structure.any.serviceworker-expected.txt": [
-       "c659100a7976895e319cd53f6dd3e9b8440ca95f",
+       "e2c9250a9bdce3acf5b9324eb834fc80841c00ee",
        []
       ],
       "request-structure.any.sharedworker-expected.txt": [
-       "c659100a7976895e319cd53f6dd3e9b8440ca95f",
+       "e2c9250a9bdce3acf5b9324eb834fc80841c00ee",
        []
       ],
       "request-structure.any.worker-expected.txt": [
-       "c659100a7976895e319cd53f6dd3e9b8440ca95f",
+       "e2c9250a9bdce3acf5b9324eb834fc80841c00ee",
        []
       ],
       "resources": {
@@ -366306,7 +366349,7 @@
        []
       ],
       "response-body-read-task-handling-expected.txt": [
-       "cd0280ac698c306f0e5a6dcc8f38763e4b422111",
+       "fa5dfb70f656636873396e491831e67b00140496",
        []
       ],
       "response-clone.any-expected.txt": [
@@ -368117,7 +368160,15 @@
       []
      ],
      "server-response.https.window_37-40-expected.txt": [
-      "790ca9a0cd01898f14357eb6c45c32b691640f20",
+      "3e5754046dd09426204b45c4a6197c29b67a8185",
+      []
+     ],
+     "server-response.https.window_41-44-expected.txt": [
+      "aadf0662338fbdb9fd25956423f12c5992981e1d",
+      []
+     ],
+     "server-response.https.window_45-48-expected.txt": [
+      "03f1b50cbd4e4eb6e7cdd05a8c7d699de5501bc3",
       []
      ],
      "server-response.https.window_5-8-expected.txt": [
@@ -370160,25 +370211,7 @@
         "afda8f6c8abce451dcf76b6de08476e17f6acb1e",
         []
        ],
-       "broadcastchannel": {
-        "broadcastchannel.window-expected.txt": [
-         "364e8215b9dd15518494306d70b95614c3b8d307",
-         []
-        ],
-        "dedicatedworker.tentative.window-expected.txt": [
-         "475b2491c0677f330ed9f5fa4ac2fa449ccf9d54",
-         []
-        ],
-        "evict-on-message.tentative.window-expected.txt": [
-         "d2462ad5a1c9901ef1e6055f779fbcd7a7e1704a",
-         []
-        ]
-       },
        "eligibility": {
-        "broadcast-channel-expected.txt": [
-         "d2a7d1b017c9e68f6802162c6f7c41d76d3fda19",
-         []
-        ],
         "inflight-fetch-redirects-expected.txt": [
          "ba35bd1eae99b0b84fc266bedeba883a0653952f",
          []
@@ -389712,7 +389745,7 @@
      []
     ],
     "digital-credentials.idl": [
-     "a12ce5a2ba2253fb9011f51c41c0c14caf8d40c3",
+     "2207b25dd57a0b4d47552faaf0de5cc3cd892021",
      []
     ],
     "digital-goods.idl": [
@@ -389973,6 +390006,10 @@
     ],
     "mediacapture-viewport.idl": [
      "a9dcf74e17cdf38d3d3cea8c7323c510d07653a1",
+     []
+    ],
+    "mediaqueries-5.idl": [
+     "52154c96725bd4c0b022e41f23232c3a798a4d6d",
      []
     ],
     "mediasession.idl": [
@@ -390356,7 +390393,7 @@
      []
     ],
     "webauthn.idl": [
-     "b4c0c2de603389016df1ad05ff6d58a50ae02aaa",
+     "2b855144650c7bd42346cca29d6e5a1d2d6e0750",
      []
     ],
     "webcodecs-aac-codec-registration.idl": [
@@ -390412,7 +390449,7 @@
      []
     ],
     "webhid.idl": [
-     "03e72511d961678fe82fee2a70afd44316b51835",
+     "56e3161caed3274adb28f8e56f9a499c6f38fe73",
      []
     ],
     "webidl.idl": [
@@ -390424,7 +390461,7 @@
      []
     ],
     "webnn.idl": [
-     "f8db7b0d5422e8c2cb3bfff8ba8cba54e4234365",
+     "9a71f73954cd1dc99e157c7d60571632959dbf2f",
      []
     ],
     "webrtc-encoded-transform.idl": [
@@ -390460,7 +390497,7 @@
      []
     ],
     "webtransport.idl": [
-     "2136cad41e3fc001a082bfd63f263522f099396b",
+     "6e9d10367369662f07051f64e02097678aa301f3",
      []
     ],
     "webusb.idl": [
@@ -394015,6 +394052,34 @@
      "7f79eccbaa6b9950233ee8968c6b358dd89b5d03",
      []
     ]
+   },
+   "nav-tracking-mitigations": {
+    "META.yml": [
+     "00a8c7b72a17b91a7438358ff7d311516544d36f",
+     []
+    ],
+    "resources": {
+     "cross-origin-client-redirect-with-cookie-header.sub.https.html": [
+      "7676378a23fb1b2ca6540913ea1cb88654046ca9",
+      []
+     ],
+     "cross-origin-client-redirect-with-cookie-header.sub.https.html.headers": [
+      "64415c3575b8916c1da2b1ef595e99070e7834b1",
+      []
+     ],
+     "cross-origin-get-cookie.sub.https.html": [
+      "50277cb28a11ca04f6b90faa416ccbc2c236dc14",
+      []
+     ],
+     "redirect-chain-end.sub.https.html": [
+      "54966d6efd425334d8d0c9ef96186af87747a418",
+      []
+     ],
+     "redirect-chain-start.sub.https.html": [
+      "a1655f4483ea4c79403c704bef4624d60fb7450e",
+      []
+     ]
+    }
    },
    "navigation-api": {
     "META.yml": [
@@ -398974,7 +399039,7 @@
      []
     ],
     "testdriver.js": [
-     "b873b5c616af4bf617c6ae8c6e7307c977687d39",
+     "d05be1d7df9a6a861a682f66bf532090c6c1877f",
      []
     ],
     "testdriver.js.headers": [
@@ -411096,7 +411161,7 @@
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "73010a4a1c3c538d4c759b21803632a24e5d69c2",
+     "4a67d9117621532ad223ed3c7e201706e400bbdb",
      []
     ],
     "resources": {
@@ -412744,19 +412809,19 @@
      ]
     },
     "idlharness.https.any-expected.txt": [
-     "5207241719c27d82ef4db98cd3f4f2c185de0ba1",
+     "939322485203fdeabca5f0ecf46c3441cf0b1f41",
      []
     ],
     "idlharness.https.any.serviceworker-expected.txt": [
-     "5207241719c27d82ef4db98cd3f4f2c185de0ba1",
+     "939322485203fdeabca5f0ecf46c3441cf0b1f41",
      []
     ],
     "idlharness.https.any.sharedworker-expected.txt": [
-     "5207241719c27d82ef4db98cd3f4f2c185de0ba1",
+     "939322485203fdeabca5f0ecf46c3441cf0b1f41",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "5207241719c27d82ef4db98cd3f4f2c185de0ba1",
+     "939322485203fdeabca5f0ecf46c3441cf0b1f41",
      []
     ],
     "resources": {
@@ -472999,7 +473064,7 @@
       ]
      ],
      "nested-declarations-cssom.html": [
-      "bfd56860ef422d020915897399cb60729a497c06",
+      "ee8ba2295230ca485424dff6d47305c3d1266c36",
       [
        null,
        {}
@@ -477717,6 +477782,13 @@
        {}
       ]
      ],
+     "host-part-002.html": [
+      "d508cd9002412b9cc39fce7eeec51c35e1a2d91c",
+      [
+       null,
+       {}
+      ]
+     ],
      "host-stylesheet.html": [
       "2e65c4b1b57bd9959c68e85e11b442c67f2c5a42",
       [
@@ -477805,6 +477877,13 @@
      ],
      "multiple-parts.html": [
       "de02a26e164d283e4f05a0d8eba0f6b98c778700",
+      [
+       null,
+       {}
+      ]
+     ],
+     "multiple-scopes.html": [
+      "2d92126baa3c0eea7e53ff3cbe3f8bb307e608b8",
       [
        null,
        {}
@@ -529437,7 +529516,7 @@
        ]
       ],
       "request-constructor-init-body-override.any.js": [
-       "27bb991871a8a183436ab14613147aba6fc8c231",
+       "c2bbf86f304c2f55c9b9dbaf3cce28daadc59f30",
        [
         "fetch/api/request/request-constructor-init-body-override.any.html",
         {}
@@ -546377,7 +546456,7 @@
       ]
      ],
      "server-response.https.window.js": [
-      "7d519ae303e311279b96953de00a6bc3457ebd0b",
+      "9c2096ee3d7259b76ed8aa98275b737d1a55a3e7",
       [
        "fledge/tentative/server-response.https.window.html?1-4",
        {
@@ -546449,6 +546528,14 @@
          [
           "variant",
           "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
          ]
         ],
         "timeout": "long"
@@ -546525,6 +546612,14 @@
          [
           "variant",
           "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
          ]
         ],
         "timeout": "long"
@@ -546601,6 +546696,14 @@
          [
           "variant",
           "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
          ]
         ],
         "timeout": "long"
@@ -546677,6 +546780,14 @@
          [
           "variant",
           "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
          ]
         ],
         "timeout": "long"
@@ -546753,6 +546864,14 @@
          [
           "variant",
           "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
          ]
         ],
         "timeout": "long"
@@ -546829,6 +546948,14 @@
          [
           "variant",
           "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
          ]
         ],
         "timeout": "long"
@@ -546905,6 +547032,14 @@
          [
           "variant",
           "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
          ]
         ],
         "timeout": "long"
@@ -546981,6 +547116,182 @@
          [
           "variant",
           "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?41-44",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?45-48",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
          ]
         ],
         "timeout": "long"
@@ -547057,6 +547368,14 @@
          [
           "variant",
           "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
          ]
         ],
         "timeout": "long"
@@ -547133,6 +547452,14 @@
          [
           "variant",
           "?37-40"
+         ],
+         [
+          "variant",
+          "?41-44"
+         ],
+         [
+          "variant",
+          "?45-48"
          ]
         ],
         "timeout": "long"
@@ -623658,6 +623985,17 @@
          "/webrtc/RTCPeerConnection-helper.js"
         ]
        ]
+      }
+     ]
+    ]
+   },
+   "nav-tracking-mitigations": {
+    "stateful-client-bounce.sub.https.html": [
+     "798d58fad6570a87237d42926747fe9a41d880d0",
+     [
+      null,
+      {
+       "testdriver": true
       }
      ]
     ]
@@ -702021,6 +702359,225 @@
          [
           "title",
           "test WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "gatherND.https.any.js": [
+      "e8f31d5617b40879853fcd9df31aa1d51cfaf796",
+      [
+       "webnn/conformance_tests/gatherND.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gatherND.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gatherND.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gatherND.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gatherND.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gatherND.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherND operation"
          ],
          [
           "global",
