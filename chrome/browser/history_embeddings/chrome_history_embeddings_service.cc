@@ -12,7 +12,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/proto/features/history_document.pb.h"
 #include "components/optimization_guide/proto/features/history_query.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 
