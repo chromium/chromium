@@ -39,7 +39,7 @@ namespace {
 constexpr int kMarginDip = 8;
 constexpr int kSmallTop = 30;
 constexpr gfx::Rect kDefaultAnchorBoundsInScreen =
-    gfx::Rect(gfx::Point(500, 250), gfx::Size(80, 140));
+    gfx::Rect(gfx::Point(500, 250), gfx::Size(120, 140));
 constexpr char kTestQuery[] = "test-query";
 
 // There are U16 variants as it's not allowed to use `base::UTF8ToUTF16` for

@@ -266,7 +266,7 @@ BASE_FEATURE(kQuickAnswersRichCard,
 // Controls whether to enable Material Next UI for Quick Answers.
 BASE_FEATURE(kQuickAnswersMaterialNextUI,
              "QuickAnswersMaterialNextUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Quick Share v2, which defaults Quick Share to 'Your Devices'
 // visibility, removes the 'Selected Contacts' visibility, removes the Quick
