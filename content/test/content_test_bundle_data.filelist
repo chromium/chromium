@@ -7992,7 +7992,10 @@ data/touch_selection.html
 data/tree_parser_util.js
 data/unload.html
 data/view_transitions/basic-vt-opt-in.html
+data/view_transitions/capture-style.css
 data/view_transitions/green.html
+data/view_transitions/parent-child-opacity.html
+data/view_transitions/parent-child.html
 data/view_transitions/red_jank_second_pageshow.html
 data/virtual-keyboard.html
 data/web_bundle/broken_bundle/index.html

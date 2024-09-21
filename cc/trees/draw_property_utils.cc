@@ -980,7 +980,12 @@ void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
       AddSurfaceToRenderSurfaceList(vt_target, render_surface_list,
                                     property_trees);
     }
-  } else if (!is_root && !target->is_render_surface_list_member()) {
+  }
+
+  // TODO(vmpstr): revisit this later to see if there is a better fix, as this
+  // changes the render list in an incorrect way due to CC assumptions about how
+  // surfaces and view-transition captures interact.
+  if (!is_root && !target->is_render_surface_list_member()) {
     AddSurfaceToRenderSurfaceList(target, render_surface_list, property_trees);
   }
   render_surface->ClearAccumulatedContentRect();
@@ -1170,12 +1175,16 @@ void ComputeListOfNonEmptySurfaces(LayerTreeImpl* layer_tree_impl,
   // surface with a non-empty content rect go into the final render surface
   // layer list. Surfaces with empty content rects or whose target isn't in
   // the final list do not get added to the final list.
+  // Surface which require copy of output (view transition captures) are exempt
+  // because their contents are required regardless of the state of the target
+  // surface.
   bool removed_surface = false;
   for (RenderSurfaceImpl* surface : *initial_surface_list) {
     bool is_root = surface->EffectTreeIndex() == kContentsRootPropertyNodeId;
     RenderSurfaceImpl* target_surface = surface->render_target();
     if (!is_root && (surface->content_rect().IsEmpty() ||
-                     !target_surface->is_render_surface_list_member())) {
+                     (!target_surface->is_render_surface_list_member() &&
+                      !surface->CopyOfOutputRequired()))) {
       surface->set_is_render_surface_list_member(false);
       removed_surface = true;
       target_surface->decrement_num_contributors();

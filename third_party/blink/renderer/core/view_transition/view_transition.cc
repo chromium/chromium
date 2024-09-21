@@ -893,19 +893,16 @@ void ViewTransition::PauseRendering() {
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink", "ViewTransition::PauseRendering",
                                     this);
-  const base::TimeDelta kTimeout = [this]() {
-    if (auto* settings = document_->GetFrame()->GetContentSettingsClient();
-        settings && settings->IncreaseViewTransitionCallbackTimeout()) {
-      return base::Seconds(15);
-    } else {
-      return base::Seconds(4);
-    }
-  }();
+  static const base::TimeDelta timeout_delay =
+      RuntimeEnabledFeatures::
+              ViewTransitionLongCallbackTimeoutForTestingEnabled()
+          ? base::Seconds(15)
+          : base::Seconds(4);
   document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
       ->PostDelayedTask(FROM_HERE,
                         WTF::BindOnce(&ViewTransition::OnRenderingPausedTimeout,
                                       WrapWeakPersistent(this)),
-                        kTimeout);
+                        timeout_delay);
 }
 
 void ViewTransition::OnRenderingPausedTimeout() {

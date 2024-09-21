@@ -37,7 +37,6 @@ class WebTestContentSettingsClient : public RenderFrameObserver,
   bool AllowStorageAccessSync(StorageType storage_type) override;
   bool AllowRunningInsecureContent(bool enabled_per_settings,
                                    const blink::WebURL& url) override;
-  bool IncreaseViewTransitionCallbackTimeout() const override;
 
  private:
   const raw_ptr<TestRunner> test_runner_;

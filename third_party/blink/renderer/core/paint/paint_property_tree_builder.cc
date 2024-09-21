@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/outsets_f.h"
@@ -2070,8 +2071,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
 
   if (properties_->Filter()) {
     context_.current_effect = properties_->Filter();
-    if (const auto* input_clip = properties_->PixelMovingFilterClipExpander())
+    if (const auto* input_clip = properties_->PixelMovingFilterClipExpander()) {
       context_.current.clip = input_clip;
+    }
   } else {
     DCHECK(!properties_->PixelMovingFilterClipExpander());
   }
@@ -3247,12 +3249,26 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     }
     UpdateElementCaptureEffect();
     UpdateViewTransitionSubframeRootEffect();
-    UpdateViewTransitionEffect();
-    UpdateViewTransitionClip();
+
+    // When layered capture is enabled (see the inverse condition below), the
+    // effects (clip/clip-path/opacity/mask/filter) are rendered in an ancestor
+    // of the view transition capture. The corresponding CSS is copied to the
+    // view-transition pseudo-elements instead of being captured into the
+    // texture as content.
+    if (!RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled()) {
+      UpdateViewTransitionEffect();
+      UpdateViewTransitionClip();
+    }
     UpdateClipPathClip();
     UpdateEffect();
     UpdateCssClip();
     UpdateFilter();
+
+    // See comment above in inverse condition.
+    if (RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled()) {
+      UpdateViewTransitionEffect();
+      UpdateViewTransitionClip();
+    }
     UpdateOverflowControlsClip();
     UpdateBackgroundClip();
   } else if (!object_.IsAnonymous()) {

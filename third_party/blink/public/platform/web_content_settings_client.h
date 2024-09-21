@@ -89,10 +89,6 @@ class WebContentSettingsClient {
   // frame.
   virtual bool ShouldAutoupgradeMixedContent() { return true; }
 
-  // Controls whether the ViewTransition callback needs to be larger than
-  // default.
-  virtual bool IncreaseViewTransitionCallbackTimeout() const { return false; }
-
   virtual ~WebContentSettingsClient() = default;
 };
 

@@ -4403,6 +4403,14 @@
       status: "stable",
     },
     {
+      name: "ViewTransitionLayeredCapture",
+      status: "experimental",
+    },
+    {
+      name: "ViewTransitionLongCallbackTimeoutForTesting",
+      status: "test",
+    },
+    {
       // If enabled, ViewTransition API is supported for navigations including
       // cross-document transitions.
       // See https://drafts.csswg.org/css-view-transitions-1/.

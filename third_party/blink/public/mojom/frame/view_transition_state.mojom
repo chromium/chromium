@@ -14,7 +14,11 @@ enum ViewTransitionPropertyId {
   kColorScheme,
   kMixBlendMode,
   kTextOrientation,
-  kWritingMode
+  kWritingMode,
+  kOpacity,
+  kClipPath,
+  kFilter,
+  kMask
 };
 
 // This represents the necessary information for a shared element to
