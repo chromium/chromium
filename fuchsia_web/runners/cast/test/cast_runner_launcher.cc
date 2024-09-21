@@ -137,6 +137,7 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
               Protocol{fuchsia::kernel::VmexResource::Name_},
               Protocol{"fuchsia.logger.LogSink"},
               Protocol{fuchsia::media::ProfileProvider::Name_},
+              Protocol{"fuchsia.scheduler.RoleManager"},
               Protocol{fuchsia::memorypressure::Provider::Name_},
               Protocol{"fuchsia.process.Launcher"},
               Protocol{"fuchsia.sysmem.Allocator"},

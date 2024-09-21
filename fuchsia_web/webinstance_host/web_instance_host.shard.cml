@@ -85,6 +85,7 @@
         // Required to schedule display-critical and realtime audio threads.
         // TODO(crbug.com/42050308): Migrate to `fuchsia.scheduler`.
         "fuchsia.media.ProfileProvider",
+        "fuchsia.scheduler.RoleManager",
 
         // Required by Frame.SetPreferredTheme(DEFAULT).
         "fuchsia.settings.Display",
