@@ -154,20 +154,20 @@ targets.bundle(
     ],
     per_test_modifications = {
         "android_blink_wpt_tests": targets.mixin(
+            # TODO(crbug.com/40279492): Remove ci_only status once this
+            # suite is stable on gardened CI.
+            ci_only = True,
             swarming = targets.swarming(
                 shards = 4,
             ),
-            # TODO(crbug.com/40279492): Remove experimental status once this
-            # suite is stable on CQ and gardened CI.
-            experiment_percentage = 100,
         ),
         "webview_blink_wpt_tests": targets.mixin(
+            # TODO(crbug.com/40279492): Remove ci_only status once this
+            # suite is stable on gardened CI.
+            ci_only = True,
             swarming = targets.swarming(
                 shards = 4,
             ),
-            # TODO(crbug.com/40279492): Remove experimental status once this
-            # suite is stable on CQ and gardened CI.
-            experiment_percentage = 100,
         ),
     },
 )
