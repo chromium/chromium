@@ -107,21 +107,24 @@ bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options) {
 WebNNContextProviderImpl::WebNNContextProviderImpl(
     scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
-    gpu::GPUInfo gpu_info)
+    gpu::GPUInfo gpu_info,
+    LoseAllContextsCallback lose_all_contexts_callback)
     : shared_context_state_(std::move(shared_context_state)),
       gpu_feature_info_(std::move(gpu_feature_info)),
-      gpu_info_(std::move(gpu_info)) {}
+      gpu_info_(std::move(gpu_info)),
+      lose_all_contexts_callback_(std::move(lose_all_contexts_callback)) {}
 
 WebNNContextProviderImpl::~WebNNContextProviderImpl() = default;
 
 std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
     scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
-    gpu::GPUInfo gpu_info) {
+    gpu::GPUInfo gpu_info,
+    LoseAllContextsCallback lose_all_contexts_callback) {
   CHECK_NE(shared_context_state, nullptr);
   return base::WrapUnique(new WebNNContextProviderImpl(
       std::move(shared_context_state), std::move(gpu_feature_info),
-      std::move(gpu_info)));
+      std::move(gpu_info), std::move(lose_all_contexts_callback)));
 }
 
 void WebNNContextProviderImpl::BindWebNNContextProvider(
@@ -154,10 +157,11 @@ void WebNNContextProviderImpl::CreateForTesting(
         DISABLE_WEBNN_FOR_NPU);
   }
 
+  LoseAllContextsCallback lose_all_contexts_callback = base::BindOnce([]() {});
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
       base::WrapUnique(new WebNNContextProviderImpl(
           /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
-          std::move(gpu_info))),
+          std::move(gpu_info), std::move(lose_all_contexts_callback))),
       std::move(receiver));
 }
 
@@ -166,6 +170,18 @@ void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
   CHECK(it != impls_.end());
   impls_.erase(it);
 }
+
+#if BUILDFLAG(IS_WIN)
+void WebNNContextProviderImpl::DestroyContextsAndKillGpuProcess(
+    std::string_view reason) {
+  // Send the contexts lost reason to the renderer process.
+  for (const auto& impl : impls_) {
+    impl->ResetReceiverWithReason(reason);
+  }
+
+  std::move(lose_all_contexts_callback_).Run();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // static
 void WebNNContextProviderImpl::SetBackendForTesting(

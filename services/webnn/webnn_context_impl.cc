@@ -127,8 +127,12 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNTensorImpl(
   tensor_impls_.erase(it);
 }
 
-void WebNNContextImpl::OnLost(std::string_view message) {
+void WebNNContextImpl::ResetReceiverWithReason(std::string_view message) {
   receiver_.ResetWithReason(/*custom_reason_code=*/0, message);
+}
+
+void WebNNContextImpl::OnLost(std::string_view message) {
+  ResetReceiverWithReason(message);
   context_provider_->OnConnectionError(this);
 }
 

@@ -909,7 +909,8 @@ void GpuServiceImpl::BindWebNNContextProvider(
     // TODO(crbug.com/345352987): manage `WebNNContextProviderImpl` instance per
     // `client_id` in order to support memory metrics.
     webnn_context_provider_ = webnn::WebNNContextProviderImpl::Create(
-        GetContextState(), gpu_feature_info_, gpu_info_);
+        GetContextState(), gpu_feature_info_, gpu_info_,
+        base::BindOnce(&GpuServiceImpl::LoseAllContexts, weak_ptr_));
   }
 
   webnn_context_provider_->BindWebNNContextProvider(
