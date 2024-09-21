@@ -36,7 +36,7 @@ public class IncognitoStartup {
                         componentNames)) {
             ProfileManager.destroyWhenAppropriate(profileProvider.getOffTheRecordProfile(false));
         } else {
-            cookiesFetcher.restoreCookies();
+            cookiesFetcher.restoreCookies(() -> {});
         }
     }
 
