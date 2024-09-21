@@ -209,14 +209,14 @@ VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
       return {"libsoda", dlc_name};
     }
     case VcEffectId::kBackgroundBlur:
+    case VcEffectId::kFaceRetouch:
     case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kStudioLook:
       return {"ml-core-internal"};
     case VcEffectId::kTestEffect:
     case VcEffectId::kNoiseCancellation:
     case VcEffectId::kStyleTransfer:
     case VcEffectId::kCameraFraming:
-    case VcEffectId::kFaceRetouch:
-    case VcEffectId::kStudioLook:
       return {};
   }
 }
